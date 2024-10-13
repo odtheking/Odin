@@ -17,15 +17,32 @@ import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object KuudraUtils {
+
+
+    // minor thing - make array or arraylist atleast
     var kuudraTeammates: List<KuudraPlayer> = emptyList()
+
+    // pointless no?
     var kuudraTeammatesNoSelf: List<KuudraPlayer> = emptyList()
-    var giantZombies: List<EntityGiantZombie> = emptyList()
+
+    // arraylist
+    var giantZombies: ArrayList<EntityGiantZombie> = arrayListOf()
+
     var supplies = BooleanArray(6) { true }
+
+    // nullable? more sense imo
     var kuudraEntity: EntityMagmaCube = EntityMagmaCube(mc.theWorld)
+
+    //build helper?
     var builders = 0
     var build = 0
+    private val buildRegex = Regex("Building Progress (\\d+)% \\((\\d+) Players Helping\\)")
+
     var phase = 0
-    var buildingPiles = listOf<EntityArmorStand>()
+
+    //build helper
+    var buildingPiles = arrayListOf<EntityArmorStand>()
+    private val progressRegex = Regex("PROGRESS: (\\d+)%")
 
     inline val inKuudra get() = LocationUtils.currentArea.isArea(Island.Kuudra)
 
@@ -35,13 +52,14 @@ object KuudraUtils {
     fun onWorldLoad(event: WorldEvent.Load) {
         kuudraTeammates = emptyList()
         kuudraTeammatesNoSelf = emptyList()
-        giantZombies = emptyList()
+
+        giantZombies = arrayListOf()
         supplies = BooleanArray(6) { true }
         kuudraEntity = EntityMagmaCube(mc.theWorld)
         builders = 0
         build = 0
         phase = 0
-        buildingPiles = listOf()
+        buildingPiles = arrayListOf()
         NoPre.missing = ""
     }
 
@@ -59,16 +77,6 @@ object KuudraUtils {
                 }
             }
         }
-
-        when (message) {
-            "[NPC] Elle: Okay adventurers, I will go and fish up Kuudra!" -> phase = 1
-
-            "[NPC] Elle: OMG! Great work collecting my supplies!" -> phase = 2
-
-            "[NPC] Elle: Phew! The Ballista is finally ready! It should be strong enough to tank Kuudra's blows now!" -> phase = 3
-
-            "[NPC] Elle: POW! SURELY THAT'S IT! I don't think he has any more in him!" -> phase = 4
-        }
     }
 
 
@@ -76,30 +84,52 @@ object KuudraUtils {
         Executor(500) {
             if (!inKuudra) return@Executor
             val entities = mc.theWorld?.loadedEntityList ?: return@Executor
-            giantZombies = entities.filterIsInstance<EntityGiantZombie>().filter { it.heldItem.unformattedName == "Head" }.toMutableList()
 
-            kuudraEntity = entities.filterIsInstance<EntityMagmaCube>().filter { it.slimeSize == 30 && it.getEntityAttribute(SharedMonsterAttributes.maxHealth).baseValue.toFloat() == 100000f }[0]
+            // maybe possible to add on spawn and remove on leave
+            giantZombies.clear()
+            buildingPiles.clear()
 
-            entities.filterIsInstance<EntityArmorStand>().forEach {
-                if (phase == 2) {
-                    Regex("Building Progress (\\d+)% \\((\\d+) Players Helping\\)").find(it.name.noControlCodes)?.let {
-                        build = it.groupValues[1].toIntOrNull() ?: 0
-                        builders = it.groupValues[2].toIntOrNull() ?: 0
+            // todo: replace with loop from ui branch
+            entities.forEach { entity ->
+                when (entity) {
+                    is EntityGiantZombie -> {
+                        if (entity.heldItem.unformattedName == "Head") {
+                            giantZombies.add(entity)
+                        }
+                    }
+                    is EntityMagmaCube -> {
+                        if (
+                            entity.slimeSize == 30 &&
+                            entity.getEntityAttribute(SharedMonsterAttributes.maxHealth).baseValue.toFloat() == 100000f
+                        ) {
+                            kuudraEntity = entity
+                        }
+                    }
+                    is EntityArmorStand -> {
+                        if (entity.name.noControlCodes.matches(progressRegex)) {
+                            buildingPiles.add(entity)
+                        }
+
+                        if (phase == 2) {
+                            buildRegex.find(entity.name.noControlCodes)?.let {
+                                build = it.groupValues[1].toIntOrNull() ?: 0
+                                builders = it.groupValues[2].toIntOrNull() ?: 0
+                            }
+                        }
+                        if (phase != 1 || !entity.name.contains("SUPPLIES RECEIVED")) return@forEach
+                        val x = entity.posX.toInt()
+                        val z = entity.posY.toInt()
+                        when {
+                            x == -98 && z == -112 -> supplies[0] = false
+                            x == -98 && z == -99 -> supplies[1] = false
+                            x == -110 && z == -106 -> supplies[2] = false
+                            x == -106 && z == -112 -> supplies[3] = false
+                            x == -94 && z == -106 -> supplies[4] = false
+                            x == -106 && z == -99 -> supplies[5] = false
+                        }
                     }
                 }
-
-                if (phase != 1 || !it.name.contains("SUPPLIES RECEIVED")) return@forEach
-                val x = it.posX.toInt()
-                val z = it.posZ.toInt()
-                if (x == -98 && z == -112) supplies[0] = false
-                if (x == -98 && z == -99) supplies[1] = false
-                if (x == -110 && z == -106) supplies[2] = false
-                if (x == -106 && z == -112) supplies[3] = false
-                if (x == -94 && z == -106) supplies[4] = false
-                if (x == -106 && z == -99) supplies[5] = false
             }
-
-            buildingPiles = entities.filterIsInstance<EntityArmorStand>().filter { it.name.noControlCodes.matches(Regex("PROGRESS: (\\d+)%")) }.map { it }
         }.register()
     }
 
