@@ -11,7 +11,7 @@ import net.minecraftforge.fml.common.eventhandler.Cancelable
 import net.minecraftforge.fml.common.eventhandler.Event
 
 
-sealed class GuiEvent : Event() {
+abstract class GuiEvent : Event() {
 
     data class Loaded(val name: String, val gui: ContainerChest) : GuiEvent()
 

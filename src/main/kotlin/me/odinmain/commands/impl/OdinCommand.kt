@@ -4,7 +4,6 @@ import com.github.stivais.commodore.utils.SyntaxException
 import com.github.stivais.ui.UIScreen.Companion.open
 import me.odinmain.OdinMain.mc
 import me.odinmain.commands.commodore
-import me.odinmain.features.ModuleManager
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints
 import me.odinmain.features.impl.render.ClickGUI
 import me.odinmain.features.impl.render.ClickGUI.clickGUI

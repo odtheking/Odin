@@ -63,7 +63,7 @@ class ColorSerializer : JsonSerializer<Color>, JsonDeserializer<Color> {
     }
 
     override fun deserialize(json: JsonElement?, typeOfT: Type?, context: JsonDeserializationContext?): Color {
-        val hexValue = json?.asString?.removePrefix("#") ?: "00000000"
+        val hexValue = json?.asString ?: "00000000"
         val color = hexToRGBA(hexValue)
         return Color.RGB(color.red, color.green, color.blue, color.alpha.toFloat())
     }

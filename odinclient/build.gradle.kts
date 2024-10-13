@@ -1,97 +1,19 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import dev.architectury.pack200.java.Pack200Adapter
 import org.apache.commons.lang3.SystemUtils
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-plugins {
-    id("gg.essential.loom") version "0.10.0.+"
-    id("dev.architectury.architectury-pack200") version "0.1.3"
-}
-
 group = "me.odinclient"
-
-val lwjgl: Configuration by configurations.creating
-val lwjglNative: Configuration by configurations.creating {
-    isTransitive =true
-}
-
-val lwjglJar = tasks.create<ShadowJar>("lwjglJar") {
-    group = "shadow"
-    destinationDirectory.set(layout.buildDirectory.dir("archiveJars"))
-    archiveClassifier.set("lwjgl")
-    configurations = listOf(lwjgl)
-    exclude("META-INF/versions/**")
-    exclude("**/module-info.class")
-    exclude("**/package-info.class")
-    relocate("org.lwjgl", "org.lwjgl3") {
-        include("org.lwjgl.PointerBuffer")
-        include("org.lwjgl.BufferUtils")
-    }
-}
-
-val lwjglVersion = "3.3.3"
-
-val lwjglNatives: String = run {
-    val arch = System.getProperty("os.arch")!!
-    if (arch.contains("64")) {
-        "natives-windows${if (arch.startsWith("aarch64")) "-arm64" else ""}"
-    } else {
-        "natives-windows-x86"
-    }
-}
-
-sourceSets.main {
-    java.srcDir(file("$projectDir/src/main/kotlin"))
-    output.setResourcesDir(sourceSets.main.flatMap { it.java.classesDirectory })
-    runtimeClasspath += configurations.getByName("lwjglNative")
-}
 
 val shadowImpl: Configuration by configurations.creating {
     configurations.implementation.get().extendsFrom(this)
 }
 
 dependencies {
-    minecraft("com.mojang:minecraft:1.8.9")
-    mappings("de.oceanlabs.mcp:mcp_stable:22-1.8.9")
-    forge("net.minecraftforge:forge:1.8.9-11.15.1.2318-1.8.9")
-
-    implementation(kotlin("stdlib-jdk8"))
-    shadowImpl("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0-RC")
-    shadowImpl("org.jetbrains.kotlin:kotlin-reflect:2.0.0")
-    implementation(project(mapOf("path" to ":odinmain")))
-    shadowImpl(project(":odinmain")) {
-        exclude(module = "kotlin-stdlib-jdk8")
-    }
-
-    shadowImpl("org.spongepowered:mixin:0.7.11-SNAPSHOT") { isTransitive = false }
-    annotationProcessor("org.spongepowered:mixin:0.8.5-SNAPSHOT")
-
-    shadowImpl("com.github.Stivais:Commodore:3f4a14b1cf") {
-        exclude(module = "kotlin-stdlib-jdk8")
-        exclude(module = "kotlin-reflect")
-    }
-
-    lwjgl("org.lwjgl:lwjgl:3.3.1")
-    lwjgl("org.lwjgl:lwjgl-stb:3.3.1")
-    lwjgl("org.lwjgl:lwjgl-tinyfd:3.3.1")
-    lwjgl("org.lwjgl:lwjgl-nanovg:3.3.1")
-
-    lwjglNative("org.lwjgl:lwjgl:3.3.1:natives-windows")
-    lwjglNative("org.lwjgl:lwjgl-stb:3.3.1:natives-windows")
-    lwjglNative("org.lwjgl:lwjgl-tinyfd:3.3.1:natives-windows")
-    lwjglNative("org.lwjgl:lwjgl-nanovg:3.3.1:natives-windows")
-    lwjglNative("org.lwjgl:lwjgl:3.3.1:natives-linux")
-    lwjglNative("org.lwjgl:lwjgl-stb:3.3.1:natives-linux")
-    lwjglNative("org.lwjgl:lwjgl-tinyfd:3.3.1:natives-linux")
-    lwjglNative("org.lwjgl:lwjgl-nanovg:3.3.1:natives-linux")
-    lwjglNative("org.lwjgl:lwjgl:3.3.1:natives-macos")
-    lwjglNative("org.lwjgl:lwjgl-stb:3.3.1:natives-macos")
-    lwjglNative("org.lwjgl:lwjgl-tinyfd:3.3.1:natives-macos")
-    lwjglNative("org.lwjgl:lwjgl-nanovg:3.3.1:natives-macos")
-    shadowImpl(lwjglJar.outputs.files)
+    implementation(project(":"))
+    shadowImpl(project(":"))
 }
 
 loom {
-    log4jConfigs.from(file("log4j2.xml"))
     launchConfigs {
         getByName("client") {
             property("mixin.debug", "true")
@@ -106,7 +28,7 @@ loom {
         remove(getByName("server"))
     }
     forge {
-        pack200Provider.set(dev.architectury.pack200.java.Pack200Adapter())
+        pack200Provider.set(Pack200Adapter())
         mixinConfig("mixins.odinclient.json")
     }
     @Suppress("UnstableApiUsage")
@@ -131,29 +53,31 @@ tasks {
             "MixinConfigs" to "mixins.odinclient.json",
             "TweakClass" to "org.spongepowered.asm.launch.MixinTweaker",
         )
-        dependsOn(lwjglJar)
         dependsOn(shadowJar)
         enabled = false
     }
 
     remapJar {
-        archiveBaseName = "OdinClient"
-        input = shadowJar.get().archiveFile
+        archiveBaseName.set("OdinClient")
+        input.set(shadowJar.get().archiveFile)
     }
 
     shadowJar {
         destinationDirectory.set(layout.buildDirectory.dir("archiveJars"))
-        archiveBaseName = "OdinClient"
-        archiveClassifier = "dev"
+        archiveBaseName.set("OdinClient")
+        archiveClassifier.set("dev")
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-        configurations = listOf(shadowImpl, lwjglNative)
+        configurations = listOf(
+            project.configurations.getByName("shadowImpl"),
+            project.configurations.getByName("lwjglNative")
+        )
         exclude("META-INF/versions/**")
         mergeServiceFiles()
     }
 
     withType<JavaCompile> {
         options.encoding = "UTF-8"
-        mustRunAfter(":odinmain:processResources")
+        mustRunAfter(":processResources")
     }
 
     withType<KotlinCompile> {
@@ -162,6 +86,3 @@ tasks {
         }
     }
 }
-
-java.toolchain.languageVersion.set(JavaLanguageVersion.of(8))
-kotlin.jvmToolchain(8)

@@ -7,7 +7,6 @@ import kotlinx.coroutines.*
 import me.odinmain.OdinMain.mc
 import me.odinmain.features.impl.render.ClickGUI.devSize
 import me.odinmain.utils.getDataFromServer
-import me.odinmain.utils.render.*
 import net.minecraft.client.entity.AbstractClientPlayer
 import net.minecraft.client.model.ModelBase
 import net.minecraft.client.model.ModelRenderer
