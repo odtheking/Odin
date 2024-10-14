@@ -9,6 +9,7 @@ import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.render.*
 import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.skyblock.modMessage
 
 object MapInfo : Module(
     name = "Map Info",
@@ -18,6 +19,7 @@ object MapInfo : Module(
     private val disableInBoss by BooleanSetting("Disable in boss", default = true, description = "Disables the information display when you're in boss.")
     private val scoreTitle by BooleanSetting("300 Score Title", default = true, description = "Displays a title on 300 score.")
     private val scoreText by StringSetting("Title Text", default = "&c300 Score!", description = "Text to be displayed on 300 score.").withDependency { scoreTitle }
+    private val printWhenScore by BooleanSetting("Print Score Time", default = false, description = "Sends elapsed time in chat when 300 score is reached.")
     val togglePaul by SelectorSetting("Paul Settings", "Automatic", options = arrayListOf("Automatic", "Force Disable", "Force Enable"), description = "Toggle Paul's settings.")
 
     private val fullHud: HudElement by HudSetting("Full Hud", 10f, 10f, 1f, true) {
@@ -90,8 +92,9 @@ object MapInfo : Module(
 
     init {
         execute(250) {
-            if (DungeonUtils.score < 300 || shownTitle || !scoreTitle || !DungeonUtils.inDungeons) return@execute
-            PlayerUtils.alert(scoreText.replace("&", "§"))
+            if (DungeonUtils.score < 300 || shownTitle || (!scoreTitle && !printWhenScore) || !DungeonUtils.inDungeons) return@execute
+            if (scoreTitle) PlayerUtils.alert(scoreText.replace("&", "§"))
+            if (printWhenScore) modMessage("§a${DungeonUtils.score} §bscore reached in §c${DungeonUtils.dungeonTime}.")
             shownTitle = true
         }
     }
