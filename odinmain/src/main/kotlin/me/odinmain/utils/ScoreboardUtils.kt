@@ -72,5 +72,5 @@ val tabListOrder = Comparator<NetworkPlayerInfo> { o1, o2 ->
     val teamNameComparison = compareValuesBy(o1, o2) { it.playerTeam?.registeredName.orEmpty() }
     if (teamNameComparison != 0) return@Comparator teamNameComparison
 
-    return@Comparator compareValuesBy(o1, o2) { it.gameProfile.name }
+    compareValuesBy(o1, o2) { it.gameProfile.name }
 }

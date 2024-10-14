@@ -77,5 +77,7 @@ object NoPre : Module(
         onMessage(partyChatRegex) {
             missing = partyChatRegex.find(it)?.groupValues?.lastOrNull() ?: return@onMessage
         }
+
+        onWorldLoad { missing = "" }
     }
 }

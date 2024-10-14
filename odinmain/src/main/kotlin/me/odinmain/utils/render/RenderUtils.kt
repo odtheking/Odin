@@ -89,6 +89,9 @@ object RenderUtils {
             renderZ + this.width / 2
         )
 
+    fun AxisAlignedBB.outlineBounds(): AxisAlignedBB =
+        expand(0.0020000000949949026, 0.0020000000949949026, 0.0020000000949949026)
+
     inline operator fun WorldRenderer.invoke(block: WorldRenderer.() -> Unit) {
         block.invoke(this)
     }
@@ -179,107 +182,6 @@ object RenderUtils {
         if (!depth) resetDepth()
         GL11.glLineWidth(2f)
         postDraw()
-        GlStateManager.popMatrix()
-    }
-
-    /**
-     * Draws a beacon beam at the specified position.
-     * @param vec3 The position at which to draw the beacon beam.
-     * @param color The color of the beacon beam.
-     * @param depth Whether to enable depth testing.
-     */
-    fun drawBeaconBeam(vec3: Vec3, color: Color, depth: Boolean = true, height: Int = 300) {
-        if (color.isTransparent) return
-        val bottomOffset = 0
-        val topOffset = bottomOffset + height
-        depth(depth)
-
-        mc.textureManager.bindTexture(beaconBeam)
-
-        GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT.toFloat())
-        GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_REPEAT.toFloat())
-
-        GlStateManager.pushMatrix()
-
-        GlStateManager.disableLighting()
-        GlStateManager.enableCull()
-        GlStateManager.enableTexture2D()
-        GlStateManager.tryBlendFuncSeparate(770, 1, 1, 0)
-        GlStateManager.enableBlend()
-        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
-        translate(-renderManager.viewerPosX, -renderManager.viewerPosY, -renderManager.viewerPosZ)
-
-        val time: Double = mc.theWorld.worldTime.toDouble() + partialTicks
-        val x = vec3.xCoord
-        val y = vec3.yCoord
-        val z = vec3.zCoord
-        val d1 = MathHelper.func_181162_h(-time * 0.2 - floor(-time * 0.1))
-        val d2 = time * 0.025 * -1.5
-        val d4 = 0.5 + cos(d2 + 2.356194490192345) * 0.2
-        val d5 = 0.5 + sin(d2 + 2.356194490192345) * 0.2
-        val d6 = 0.5 + cos(d2 + (Math.PI / 4)) * 0.2
-        val d7 = 0.5 + sin(d2 + (Math.PI / 4)) * 0.2
-        val d8 = 0.5 + cos(d2 + 3.9269908169872414) * 0.2
-        val d9 = 0.5 + sin(d2 + 3.9269908169872414) * 0.2
-        val d10 = 0.5 + cos(d2 + 5.497787143782138) * 0.2
-        val d11 = 0.5 + sin(d2 + 5.497787143782138) * 0.2
-        val d14 = -1 + d1
-        val d15 = height * 2.5 + d14
-
-        fun WorldRenderer.color(alpha: Float = color.alpha) { // local function is used to simplify this.
-            this.color(color.r / 255f, color.g / 255f, color.b / 255f, alpha).endVertex()
-        }
-
-        worldRenderer {
-            begin(7, DefaultVertexFormats.POSITION_TEX_COLOR)
-
-            pos(x + d4, y + topOffset, z + d5).tex(1.0, d15).color()
-            pos(x + d4, y + bottomOffset, z + d5).tex(1.0, d14).color()
-            pos(x + d6, y + bottomOffset, z + d7).tex(0.0, d14).color()
-            pos(x + d6, y + topOffset, z + d7).tex(0.0, d15).color()
-            pos(x + d10, y + topOffset, z + d11).tex(1.0, d15).color()
-            pos(x + d10, y + bottomOffset, z + d11).tex(1.0, d14).color()
-            pos(x + d8, y + bottomOffset, z + d9).tex(0.0, d14).color()
-            pos(x + d8, y + topOffset, z + d9).tex(0.0, d15).color()
-            pos(x + d6, y + topOffset, z + d7).tex(1.0, d15).color()
-            pos(x + d6, y + bottomOffset, z + d7).tex(1.0, d14).color()
-            pos(x + d10, y + bottomOffset, z + d11).tex(0.0, d14).color()
-            pos(x + d10, y + topOffset, z + d11).tex(0.0, d15).color()
-            pos(x + d8, y + topOffset, z + d9).tex(1.0, d15).color()
-            pos(x + d8, y + bottomOffset, z + d9).tex(1.0, d14).color()
-            pos(x + d4, y + bottomOffset, z + d5).tex(0.0, d14).color()
-            pos(x + d4, y + topOffset, z + d5).tex(0.0, d15).color()
-        }
-        tessellator.draw()
-        GlStateManager.disableCull()
-        val d12 = -1 + d1
-        val d13 = height + d12
-        val alpha = color.alpha
-        worldRenderer {
-            begin(7, DefaultVertexFormats.POSITION_TEX_COLOR)
-            pos(x + 0.2, y + topOffset, z + 0.2).tex(1.0, d13).color(.25f * alpha)
-            pos(x + 0.2, y + bottomOffset, z + 0.2).tex(1.0, d12).color(.25f * alpha)
-            pos(x + 0.8, y + bottomOffset, z + 0.2).tex(0.0, d12).color(.25f * alpha)
-            pos(x + 0.8, y + topOffset, z + 0.2).tex(0.0, d13).color(.25f * alpha)
-            pos(x + 0.8, y + topOffset, z + 0.8).tex(1.0, d13).color(.25f * alpha)
-            pos(x + 0.8, y + bottomOffset, z + 0.8).tex(1.0, d12).color(.25f * alpha)
-            pos(x + 0.2, y + bottomOffset, z + 0.8).tex(0.0, d12).color(.25f * alpha)
-            pos(x + 0.2, y + topOffset, z + 0.8).tex(0.0, d13).color(.25f * alpha)
-            pos(x + 0.8, y + topOffset, z + 0.2).tex(1.0, d13).color(.25f * alpha)
-            pos(x + 0.8, y + bottomOffset, z + 0.2).tex(1.0, d12).color(.25f * alpha)
-            pos(x + 0.8, y + bottomOffset, z + 0.8).tex(0.0, d12).color(.25f * alpha)
-            pos(x + 0.8, y + topOffset, z + 0.8).tex(0.0, d13).color(.25f * alpha)
-            pos(x + 0.2, y + topOffset, z + 0.8).tex(1.0, d13).color(.25f * alpha)
-            pos(x + 0.2, y + bottomOffset, z + 0.8).tex(1.0, d12).color(.25f * alpha)
-            pos(x + 0.2, y + bottomOffset, z + 0.2).tex(0.0, d12).color(.25f * alpha)
-            pos(x + 0.2, y + topOffset, z + 0.2).tex(0.0, d13).color(.25f * alpha)
-
-            endVertex()
-        }
-        tessellator.draw()
-        GlStateManager.resetColor()
-        if (!depth) resetDepth()
-        GlStateManager.enableCull()
         GlStateManager.popMatrix()
     }
 
@@ -411,6 +313,185 @@ object RenderUtils {
         tessellator.draw()
     }
 
+    fun drawText(
+        text: String,
+        x: Float,
+        y: Float,
+        scale: Double = 1.0,
+        color: Color = Color.WHITE,
+        shadow: Boolean = true,
+        center: Boolean = false
+    ) {
+        GlStateManager.pushMatrix()
+        GlStateManager.enableBlend()
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
+        translate(x, y, 0f)
+        scale(scale, scale, scale)
+        mc.fontRendererObj.drawString("${text}§r", if (center) mc.fontRendererObj.getStringWidth(text) / -2f else 0f, 0f, color.rgba, shadow)
+        GlStateManager.resetColor()
+        GlStateManager.disableBlend()
+        GlStateManager.popMatrix()
+    }
+
+    fun drawBoxes(boxes: Collection<DungeonWaypoint>, glList: Int, disableDepth: Boolean = false): Int {
+        if (boxes.isEmpty()) return -1
+        var newGlList = glList
+
+        if (newGlList == -1) {
+            newGlList = GL11.glGenLists(1)
+            GL11.glNewList(newGlList, GL11.GL_COMPILE)
+
+            GL11.glDisable(GL11.GL_CULL_FACE)
+            GL11.glLineWidth(3f)
+
+            GL11.glDisable(GL11.GL_TEXTURE_2D)
+            GL11.glEnable(GL11.GL_BLEND)
+            GL11.glDisable(GL11.GL_ALPHA_TEST)
+            GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
+
+            for (box in boxes) {
+                if (box.clicked) continue
+                (box.depth && !disableDepth).let {
+                    if (it) GL11.glEnable(GL11.GL_DEPTH_TEST)
+                    else GL11.glDisable(GL11.GL_DEPTH_TEST)
+                    GL11.glDepthMask(it)
+                }
+
+                box.aabb.offset(box.x, box.y, box.z).let {
+                    box.color.bind()
+
+                    if (box.filled) addVertexesForFilledBox(it)
+                    else addVertexesForOutlinedBox(it)
+
+                    tessellator.draw()
+                }
+            }
+
+            GL11.glEnable(GL11.GL_DEPTH_TEST)
+            GL11.glDepthMask(true)
+
+            GL11.glEnable(GL11.GL_TEXTURE_2D)
+            GL11.glDisable(GL11.GL_BLEND)
+            GL11.glEnable(GL11.GL_ALPHA_TEST)
+
+            GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
+            GL11.glLineWidth(2f)
+            GL11.glEnable(GL11.GL_CULL_FACE)
+
+            GL11.glEndList()
+        }
+
+        GlStateManager.pushMatrix()
+        GlStateManager.translate(-renderManager.viewerPosX, -renderManager.viewerPosY, -renderManager.viewerPosZ)
+        GlStateManager.disableLighting()
+
+        GL11.glCallList(newGlList)
+        GlStateManager.popMatrix()
+
+        return newGlList
+    }
+
+    /**
+     * Draws a beacon beam at the specified position.
+     * @param vec3 The position at which to draw the beacon beam.
+     * @param color The color of the beacon beam.
+     * @param depth Whether to enable depth testing.
+     */
+    fun drawBeaconBeam(vec3: Vec3, color: Color, depth: Boolean = true, height: Int = 300) {
+        if (color.isTransparent) return
+        val bottomOffset = 0
+        val topOffset = bottomOffset + height
+        depth(depth)
+
+        mc.textureManager.bindTexture(beaconBeam)
+
+        GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT.toFloat())
+        GL11.glTexParameterf(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_REPEAT.toFloat())
+
+        GlStateManager.pushMatrix()
+
+        GlStateManager.disableLighting()
+        GlStateManager.enableCull()
+        GlStateManager.enableTexture2D()
+        GlStateManager.tryBlendFuncSeparate(770, 1, 1, 0)
+        GlStateManager.enableBlend()
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
+        translate(-renderManager.viewerPosX, -renderManager.viewerPosY, -renderManager.viewerPosZ)
+
+        val time: Double = mc.theWorld.worldTime.toDouble() + partialTicks
+        val x = vec3.xCoord
+        val y = vec3.yCoord
+        val z = vec3.zCoord
+        val d1 = MathHelper.func_181162_h(-time * 0.2 - floor(-time * 0.1))
+        val d2 = time * 0.025 * -1.5
+        val d4 = 0.5 + cos(d2 + 2.356194490192345) * 0.2
+        val d5 = 0.5 + sin(d2 + 2.356194490192345) * 0.2
+        val d6 = 0.5 + cos(d2 + (Math.PI / 4)) * 0.2
+        val d7 = 0.5 + sin(d2 + (Math.PI / 4)) * 0.2
+        val d8 = 0.5 + cos(d2 + 3.9269908169872414) * 0.2
+        val d9 = 0.5 + sin(d2 + 3.9269908169872414) * 0.2
+        val d10 = 0.5 + cos(d2 + 5.497787143782138) * 0.2
+        val d11 = 0.5 + sin(d2 + 5.497787143782138) * 0.2
+        val d14 = -1 + d1
+        val d15 = height * 2.5 + d14
+
+        fun WorldRenderer.color(alpha: Float = color.alpha) { // local function is used to simplify this.
+            this.color(color.r / 255f, color.g / 255f, color.b / 255f, alpha).endVertex()
+        }
+
+        worldRenderer {
+            begin(7, DefaultVertexFormats.POSITION_TEX_COLOR)
+
+            pos(x + d4, y + topOffset, z + d5).tex(1.0, d15).color()
+            pos(x + d4, y + bottomOffset, z + d5).tex(1.0, d14).color()
+            pos(x + d6, y + bottomOffset, z + d7).tex(0.0, d14).color()
+            pos(x + d6, y + topOffset, z + d7).tex(0.0, d15).color()
+            pos(x + d10, y + topOffset, z + d11).tex(1.0, d15).color()
+            pos(x + d10, y + bottomOffset, z + d11).tex(1.0, d14).color()
+            pos(x + d8, y + bottomOffset, z + d9).tex(0.0, d14).color()
+            pos(x + d8, y + topOffset, z + d9).tex(0.0, d15).color()
+            pos(x + d6, y + topOffset, z + d7).tex(1.0, d15).color()
+            pos(x + d6, y + bottomOffset, z + d7).tex(1.0, d14).color()
+            pos(x + d10, y + bottomOffset, z + d11).tex(0.0, d14).color()
+            pos(x + d10, y + topOffset, z + d11).tex(0.0, d15).color()
+            pos(x + d8, y + topOffset, z + d9).tex(1.0, d15).color()
+            pos(x + d8, y + bottomOffset, z + d9).tex(1.0, d14).color()
+            pos(x + d4, y + bottomOffset, z + d5).tex(0.0, d14).color()
+            pos(x + d4, y + topOffset, z + d5).tex(0.0, d15).color()
+        }
+        tessellator.draw()
+        GlStateManager.disableCull()
+        val d12 = -1 + d1
+        val d13 = height + d12
+        val alpha = color.alpha
+        worldRenderer {
+            begin(7, DefaultVertexFormats.POSITION_TEX_COLOR)
+            pos(x + 0.2, y + topOffset, z + 0.2).tex(1.0, d13).color(.25f * alpha)
+            pos(x + 0.2, y + bottomOffset, z + 0.2).tex(1.0, d12).color(.25f * alpha)
+            pos(x + 0.8, y + bottomOffset, z + 0.2).tex(0.0, d12).color(.25f * alpha)
+            pos(x + 0.8, y + topOffset, z + 0.2).tex(0.0, d13).color(.25f * alpha)
+            pos(x + 0.8, y + topOffset, z + 0.8).tex(1.0, d13).color(.25f * alpha)
+            pos(x + 0.8, y + bottomOffset, z + 0.8).tex(1.0, d12).color(.25f * alpha)
+            pos(x + 0.2, y + bottomOffset, z + 0.8).tex(0.0, d12).color(.25f * alpha)
+            pos(x + 0.2, y + topOffset, z + 0.8).tex(0.0, d13).color(.25f * alpha)
+            pos(x + 0.8, y + topOffset, z + 0.2).tex(1.0, d13).color(.25f * alpha)
+            pos(x + 0.8, y + bottomOffset, z + 0.2).tex(1.0, d12).color(.25f * alpha)
+            pos(x + 0.8, y + bottomOffset, z + 0.8).tex(0.0, d12).color(.25f * alpha)
+            pos(x + 0.8, y + topOffset, z + 0.8).tex(0.0, d13).color(.25f * alpha)
+            pos(x + 0.2, y + topOffset, z + 0.8).tex(1.0, d13).color(.25f * alpha)
+            pos(x + 0.2, y + bottomOffset, z + 0.8).tex(1.0, d12).color(.25f * alpha)
+            pos(x + 0.2, y + bottomOffset, z + 0.2).tex(0.0, d12).color(.25f * alpha)
+            pos(x + 0.2, y + topOffset, z + 0.2).tex(0.0, d13).color(.25f * alpha)
+
+            endVertex()
+        }
+        tessellator.draw()
+        GlStateManager.resetColor()
+        if (!depth) resetDepth()
+        GlStateManager.enableCull()
+        GlStateManager.popMatrix()
+    }
+
     private val BUF_FLOAT_4 = BufferUtils.createFloatBuffer(4)
     var isRenderingOutlinedEntities = false
         private set
@@ -482,87 +563,6 @@ object RenderUtils {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     fun onRenderWorld(event: RenderWorldLastEvent) {
         this.partialTicks = event.partialTicks
-    }
-
-    fun drawText(
-        text: String,
-        x: Float,
-        y: Float,
-        scale: Double = 1.0,
-        color: Color = Color.WHITE,
-        shadow: Boolean = true,
-        center: Boolean = false
-    ) {
-        GlStateManager.pushMatrix()
-        GlStateManager.enableBlend()
-        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
-        translate(x, y, 0f)
-        scale(scale, scale, scale)
-        mc.fontRendererObj.drawString("${text}§r", if (center) mc.fontRendererObj.getStringWidth(text) / -2f else 0f, 0f, color.rgba, shadow)
-        GlStateManager.resetColor()
-        GlStateManager.disableBlend()
-        GlStateManager.popMatrix()
-    }
-
-    fun AxisAlignedBB.outlineBounds(): AxisAlignedBB =
-        expand(0.0020000000949949026, 0.0020000000949949026, 0.0020000000949949026)
-
-    fun drawBoxes(boxes: Collection<DungeonWaypoint>, glList: Int, disableDepth: Boolean = false): Int {
-        if (boxes.isEmpty()) return -1
-        var newGlList = glList
-
-        if (newGlList == -1) {
-            newGlList = GL11.glGenLists(1)
-            GL11.glNewList(newGlList, GL11.GL_COMPILE)
-
-            GL11.glDisable(GL11.GL_CULL_FACE)
-            GL11.glLineWidth(3f)
-
-            GL11.glDisable(GL11.GL_TEXTURE_2D)
-            GL11.glDisable(GL11.GL_LIGHTING)
-            GL11.glEnable(GL11.GL_BLEND)
-            GL11.glDisable(GL11.GL_ALPHA_TEST)
-            GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
-
-            for (box in boxes) {
-                if (box.clicked) continue
-                (box.depth && !disableDepth).let {
-                    if (it) GL11.glEnable(GL11.GL_DEPTH_TEST)
-                    else GL11.glDisable(GL11.GL_DEPTH_TEST)
-                    GL11.glDepthMask(it)
-                }
-
-                box.aabb.offset(box.x, box.y, box.z).let {
-                    box.color.bind()
-
-                    if (box.filled) addVertexesForFilledBox(it)
-                    else addVertexesForOutlinedBox(it)
-
-                    tessellator.draw()
-                }
-            }
-
-            GL11.glEnable(GL11.GL_DEPTH_TEST)
-            GL11.glDepthMask(true)
-
-            GL11.glEnable(GL11.GL_TEXTURE_2D)
-            GL11.glDisable(GL11.GL_BLEND)
-            GL11.glEnable(GL11.GL_ALPHA_TEST)
-
-            GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
-            GL11.glLineWidth(2f)
-            GL11.glEnable(GL11.GL_CULL_FACE)
-
-            GL11.glEndList()
-        }
-
-        GlStateManager.pushMatrix()
-        GlStateManager.translate(-renderManager.viewerPosX, -renderManager.viewerPosY, -renderManager.viewerPosZ)
-
-        GL11.glCallList(newGlList)
-        GlStateManager.popMatrix()
-
-        return newGlList
     }
 
     private fun addVertexesForFilledBox(aabb: AxisAlignedBB) {

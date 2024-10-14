@@ -73,8 +73,8 @@ val devCommand = commodore("oddev") {
                 |giantZombies: ${KuudraUtils.giantZombies.joinToString { it.positionVector.toString() }}
                 |supplies: ${KuudraUtils.supplies.joinToString()}
                 |kuudraEntity: ${KuudraUtils.kuudraEntity}
-                |builders: ${KuudraUtils.builders}
-                |build: ${KuudraUtils.build}
+                |builders: ${KuudraUtils.playersBuildingAmount}
+                |build: ${KuudraUtils.buildDonePercentage}
                 |phase: ${KuudraUtils.phase}
                 |buildingPiles: ${KuudraUtils.buildingPiles.joinToString { it.positionVector.toString() }}
                 ${getChatBreak()}

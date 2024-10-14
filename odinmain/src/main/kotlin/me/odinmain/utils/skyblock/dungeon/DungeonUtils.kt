@@ -200,7 +200,7 @@ object DungeonUtils {
 
     private val tablistRegex = Regex("^\\[(\\d+)] (?:\\[\\w+] )*(\\w+) .*?\\((\\w+)(?: (\\w+))*\\)$")
 
-    fun getDungeonTeammates(previousTeammates: MutableList<DungeonPlayer>, tabList: List<S38PacketPlayerListItem.AddPlayerData>): List<DungeonPlayer> {
+    fun getDungeonTeammates(previousTeammates: ArrayList<DungeonPlayer>, tabList: List<S38PacketPlayerListItem.AddPlayerData>): ArrayList<DungeonPlayer> {
         for (line in tabList) {
             val displayName = line.displayName?.unformattedText?.noControlCodes ?: continue
             val (_, name, clazz, _) = tablistRegex.find(displayName)?.destructured ?: continue
