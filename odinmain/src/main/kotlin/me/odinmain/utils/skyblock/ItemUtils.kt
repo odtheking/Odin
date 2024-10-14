@@ -196,15 +196,17 @@ fun ItemStack.setLore(lines: List<String>): ItemStack {
     })
     return this
 }
+
+val strengthRegex = Regex("Strength: \\+(\\d+)")
+
 /**
  * Returns the primary Strength value for an Item
  */
-val ItemStack.strength: Int
+val ItemStack.getSBStrength: Int
     get() {
-        return this.lore.firstOrNull { it.contains("Strength:") }
+        return this.lore.firstOrNull { it.noControlCodes.startsWith("Strength:") }
             ?.let { loreLine ->
-                val strengthRegex = Regex("§7Strength: §c\\+(\\d+)")
-                strengthRegex.find(loreLine)?.groups?.get(1)?.value?.toIntOrNull()
+                strengthRegex.find(loreLine.noControlCodes)?.groups?.get(1)?.value?.toIntOrNull()
             } ?: 0
     }
 

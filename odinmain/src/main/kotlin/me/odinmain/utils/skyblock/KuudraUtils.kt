@@ -90,6 +90,7 @@ object KuudraUtils {
                             entity.getEntityAttribute(SharedMonsterAttributes.maxHealth).baseValue.toFloat() == 100000f
                         ) kuudraEntity = entity
                     }
+
                     is EntityArmorStand -> {
                         if (entity.name.noControlCodes.matches(progressRegex)) buildingPiles.add(entity)
 

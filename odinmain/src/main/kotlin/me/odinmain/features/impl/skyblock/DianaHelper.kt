@@ -6,6 +6,7 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
+import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.*
 import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.render.Color
@@ -20,6 +21,7 @@ import net.minecraft.util.Vec3
 import net.minecraft.util.Vec3i
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import org.lwjgl.input.Keyboard
 import java.util.concurrent.ConcurrentHashMap
 
 object DianaHelper : Module(
@@ -34,13 +36,18 @@ object DianaHelper : Module(
     private val tracerBurrows by BooleanSetting("Tracer Burrows", default = true, description = "Draws a line from your position to the burrows.")
     private val style by SelectorSetting("Style", "Filled", arrayListOf("Filled", "Outline", "Filled Outline"), description = "Whether or not the box should be filled.")
     private val sendInqMsg by BooleanSetting("Send Inq Msg", default = true, description = "Sends your coordinates to the party chat when you dig out an inquisitor.")
-    private val showWarpSettings by BooleanSetting("Show Warp Settings", default = true, description = "Shows the warp settings.")
+    private val showWarpSettings by DropdownSetting("Show Warp Settings")
     private val castle by BooleanSetting("Castle Warp", description = "Warp to the castle.").withDependency { showWarpSettings }
     private val crypt by BooleanSetting("Crypt Warp", description = "Warp to the crypt.").withDependency { showWarpSettings }
     private val stonks by BooleanSetting("Stonks Warp", description = "Warp to the stonks.").withDependency { showWarpSettings }
     private val darkAuction by BooleanSetting("DA Warp", description = "Warp to the dark auction.").withDependency { showWarpSettings }
     private val museum by BooleanSetting("Museum Warp", description = "Warp to the museum.").withDependency { showWarpSettings }
     private val wizard by BooleanSetting("Wizard Warp", description = "Warp to the wizard.").withDependency { showWarpSettings }
+    private val warpKeybind by KeybindSetting("Warp Keybind", Keyboard.KEY_NONE, description = "Keybind to warp to the nearest warp location.").onPress {
+        if (!cmdCooldown.hasTimePassed()) return@onPress
+        sendCommand("warp ${warpLocation?.name ?: return@onPress}")
+        warpLocation = null
+    }
     private val autoWarp by BooleanSetting("Auto Warp", description = "Automatically warps you to the nearest warp location 2 seconds after you activate the spade ability.").withDependency { !isLegitVersion }
     private var warpLocation: WarpPoint? = null
 
@@ -53,10 +60,10 @@ object DianaHelper : Module(
         get() = hasSpade && LocationUtils.currentArea.isArea(Island.Hub) && enabled
 
     enum class BurrowType(val text: String, val color: Color) {
-        START("§aStart", Color.GREEN),
-        MOB("§cMob", Color.RED),
-        TREASURE("§6Treasure", Color.ORANGE),
-        UNKNOWN("§fUnknown?!", Color.WHITE),
+        START("§aStart", Color.GREEN.withAlpha(.75f)),
+        MOB("§cMob", Color.RED.withAlpha(.75f)),
+        TREASURE("§6Treasure", Color.ORANGE.withAlpha(.75f)),
+        UNKNOWN("§fUnknown?!", Color.WHITE.withAlpha(.75f)),
     }
 
     init {
@@ -125,12 +132,6 @@ object DianaHelper : Module(
         runIn(40) {
             onKeybind()
         }
-    }
-
-    override fun onKeybind() {
-        if (!cmdCooldown.hasTimePassed()) return
-        sendCommand("warp ${warpLocation?.name ?: return}")
-        warpLocation = null
     }
 
     private enum class WarpPoint(

@@ -5,10 +5,10 @@ import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.utils.skyblock.PlayerUtils
+import me.odinmain.utils.skyblock.getSBStrength
 import me.odinmain.utils.skyblock.heldItem
 import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.skyblock.partyMessage
-import me.odinmain.utils.skyblock.strength
 import net.minecraft.network.play.server.S29PacketSoundEffect
 
 object RagAxe : Module(
@@ -29,7 +29,7 @@ object RagAxe : Module(
         onPacket(S29PacketSoundEffect::class.java) {
             if (it.soundName != "mob.wolf.howl" || it.pitch != 1.4920635f) return@onPacket
             if (alert) PlayerUtils.alert("§aCasted Rag Axe")
-            val strengthGain = ((heldItem?.strength ?: return@onPacket) * 1.5).toInt()
+            val strengthGain = ((heldItem?.getSBStrength ?: return@onPacket) * 1.5).toInt()
             if (strengthGainedMessage) modMessage("Gained strength: $strengthGain")
             if (announceStrengthGained) partyMessage("Gained strength from rag axe: $strengthGain")
         }

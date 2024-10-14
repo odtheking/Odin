@@ -155,7 +155,7 @@ object ScanUtils {
     @SubscribeEvent
     fun enterDungeonRoom(event: RoomEnterEvent) {
         currentFullRoom = event.fullRoom
-        if (passedRooms.none { it.room.data.name == currentFullRoom?.room?.data?.name }) (currentFullRoom ?: return)
+        if (passedRooms.none { it.room.data.name == currentFullRoom?.room?.data?.name }) passedRooms.add(currentFullRoom ?: return)
         devMessage("${event.fullRoom?.room?.data?.name} - ${event.fullRoom?.room?.rotation} || clay: ${event.fullRoom?.clayPos}")
     }
 
