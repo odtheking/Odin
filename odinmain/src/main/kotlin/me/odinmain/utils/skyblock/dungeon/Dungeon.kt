@@ -21,7 +21,7 @@ import net.minecraft.network.play.server.*
 // could add some system to look back at previous runs.
 class Dungeon(val floor: Floor) {
 
-    var expectingBloodUpdate: Boolean = false
+    private var expectingBloodUpdate: Boolean = false
 
     var paul = false
     val inBoss: Boolean get() = getBoss()
@@ -52,7 +52,8 @@ class Dungeon(val floor: Floor) {
     }
 
     fun enterDungeonRoom(event: RoomEnterEvent) {
-        val roomSecrets = ScanUtils.getRoomSecrets(event.fullRoom?.room?.data?.name ?: return)
+        val room = event.fullRoom?.takeUnless { it in passedRooms } ?: return
+        val roomSecrets = ScanUtils.getRoomSecrets(room.room.data.name)
         dungeonStats.knownSecrets = dungeonStats.knownSecrets?.plus(roomSecrets) ?: roomSecrets
     }
 
@@ -75,7 +76,7 @@ class Dungeon(val floor: Floor) {
 
     private fun handleChatPacket(packet: S02PacketChat) {
         val message = packet.chatComponent.unformattedText.noControlCodes
-        if (Regex("\\[BOSS] The Watcher: You have proven yourself. You may pass.").matches(message)) dungeonStats.bloodDone = true
+        if (Regex("\\[BOSS] The Watcher: You have proven yourself. You may pass.").matches(message)) expectingBloodUpdate = true
         Regex("(?:\\[\\w+] )?(\\w+) opened a (?:WITHER|Blood) door!").find(message)?.let { dungeonStats.doorOpener = it.groupValues[1] }
 
         val partyMessage = Regex("Party > .*?: (.+)\$").find(message)?.groupValues?.get(1)?.lowercase() ?: return
