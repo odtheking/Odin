@@ -17,8 +17,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object KuudraUtils {
 
-    var kuudraTeammates: ArrayList<KuudraPlayer> = ArrayList()
-    var kuudraTeammatesNoSelf: ArrayList<KuudraPlayer> = ArrayList()
+    var kuudraTeammates: ArrayList<KuudraPlayer> = ArrayList<KuudraPlayer>(4)
     var giantZombies: ArrayList<EntityGiantZombie> = arrayListOf()
     var supplies = BooleanArray(6) { true }
     var kuudraEntity: EntityMagmaCube? = null
@@ -38,7 +37,6 @@ object KuudraUtils {
     @SubscribeEvent
     fun onWorldLoad(event: WorldEvent.Load) {
         kuudraTeammates = ArrayList()
-        kuudraTeammatesNoSelf = ArrayList()
 
         giantZombies = arrayListOf()
         supplies = BooleanArray(6) { true }
@@ -119,13 +117,11 @@ object KuudraUtils {
     fun handleTabListPacket(event: PacketReceivedEvent) {
         if (!inKuudra || event.packet !is S38PacketPlayerListItem || !event.packet.action.equalsOneOf(S38PacketPlayerListItem.Action.UPDATE_DISPLAY_NAME, S38PacketPlayerListItem.Action.ADD_PLAYER)) return
         kuudraTeammates = updateKuudraTeammates(kuudraTeammates, event.packet.entries)
-        kuudraTeammatesNoSelf = ArrayList(kuudraTeammates.filter { it.playerName != mc.thePlayer?.name })
     }
 
     private val tablistRegex = Regex("^\\[(\\d+)] (?:\\[\\w+] )*(\\w+)")
 
     private fun updateKuudraTeammates(previousTeammates: ArrayList<KuudraPlayer>, tabList: List<S38PacketPlayerListItem.AddPlayerData>): ArrayList<KuudraPlayer> {
-
         for (line in tabList) {
             val text = line.displayName?.unformattedText?.noControlCodes ?: continue
             val (_, name) = tablistRegex.find(text)?.destructured ?: continue

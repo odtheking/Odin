@@ -11,7 +11,7 @@ import me.odinmain.utils.render.HighlightRenderer
 import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.KuudraUtils
-import me.odinmain.utils.skyblock.KuudraUtils.kuudraTeammatesNoSelf
+import me.odinmain.utils.skyblock.KuudraUtils.kuudraTeammates
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraftforge.client.event.RenderLivingEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -34,7 +34,8 @@ object TeamHighlight : Module(
         HighlightRenderer.addEntityGetter({ HighlightRenderer.HighlightType.entries[mode] }) {
             if (!enabled || !KuudraUtils.inKuudra || KuudraUtils.phase < 1 || !showHighlight) emptyList()
             else {
-                kuudraTeammatesNoSelf.mapNotNull {
+                kuudraTeammates.mapNotNull {
+                    if (it.entity == mc.thePlayer) return@mapNotNull null
                     it.entity?.let { entity -> HighlightRenderer.HighlightEntity(entity, if (it.eatFresh && highlightFresh) highlightFreshColor else outlineColor, thickness, depthCheck, style) }
                 }
             }
@@ -43,8 +44,8 @@ object TeamHighlight : Module(
 
     @SubscribeEvent
     fun onRenderEntity(event: RenderLivingEvent.Specials.Pre<EntityOtherPlayerMP>) {
-        if (!showName || !KuudraUtils.inKuudra || KuudraUtils.phase < 1) return
-        val teammate = kuudraTeammatesNoSelf.find { it.entity == event.entity } ?: return
+        if (!showName || !KuudraUtils.inKuudra || KuudraUtils.phase < 1 || event.entity == mc.thePlayer) return
+        val teammate = kuudraTeammates.find { it.entity == event.entity } ?: return
 
         RenderUtils.drawMinecraftLabel(event.entity, teammate.playerName, event.x, event.y + 0.5, event.z, 0.05, false, if (teammate.eatFresh) highlightFreshColor else nameColor)
         event.isCanceled = true

@@ -45,8 +45,8 @@ object KuudraReminders : Module(
 
         onMessage(Regex("Used Extreme Focus! \\((\\d+) Mana\\)"), { manaDrain && enabled }) {
             val mana = Regex("Used Extreme Focus! \\((\\d+) Mana\\)").find(it)?.groupValues?.get(1)?.toIntOrNull() ?: return@onMessage
-            val amount = mc.theWorld?.loadedEntityList?.filterIsInstance<EntityOtherPlayerMP>()
-                ?.filter { entity -> entity.getPing() == 1 && entity.getDistanceSqToEntity(mc.thePlayer) < 49 }?.size?.coerceAtLeast(0)
+            val amount = mc.theWorld?.loadedEntityList?.filter { entity ->
+                entity is EntityOtherPlayerMP && entity.getPing() == 1 && entity.getDistanceSqToEntity(mc.thePlayer) < 49 }?.size?.coerceAtLeast(0)
             partyMessage("Used $mana mana on $amount people.")
         }
     }

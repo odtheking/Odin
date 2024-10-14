@@ -31,10 +31,11 @@ object ItemsHighlight : Module(
 
     init {
         execute(100) {
-            currentEntityItems = mc.theWorld?.loadedEntityList
-                ?.filterIsInstance<EntityItem>()
-                ?.filter { it.entityItem.displayName.noControlCodes.containsOneOf(dungeonItemDrops, true) || !onlySecrets }
-                ?.toMutableSet() ?: mutableSetOf()
+            currentEntityItems = mutableSetOf()
+            mc.theWorld?.loadedEntityList?.forEach { entity ->
+                if (entity !is EntityItem) return@forEach
+                if (!onlySecrets || entity.entityItem.displayName.noControlCodes.containsOneOf(dungeonItemDrops, true)) currentEntityItems.add(entity)
+            }
         }
 
         HighlightRenderer.addEntityGetter({ HighlightRenderer.HighlightType.entries[mode]}) {

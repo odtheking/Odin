@@ -144,10 +144,7 @@ object Trajectories : Module(
     }
 
     private fun setBowTrajectoryHeading(yawOffset: Float, bowCharge: Boolean): Pair<ArrayList<Vec3>, MovingObjectPosition?> {
-        var charge = if (bowCharge) {
-            val calculatedCharge = (72000 - mc.thePlayer.itemInUseCount) / 20f
-            minOf(calculatedCharge, 1.0f) * 2
-        } else 2f
+        var charge = if (bowCharge) minOf((72000 - mc.thePlayer.itemInUseCount) / 20f, 1.0f) * 2 else 2f
 
         val yawRadians = Math.toRadians((mc.thePlayer.rotationYaw + yawOffset).toDouble())
         val pitchRadians = Math.toRadians(mc.thePlayer.rotationPitch.toDouble())

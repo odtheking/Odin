@@ -23,9 +23,9 @@ object BlazeSolver {
         if (!DungeonUtils.inDungeons || !room.data.name.equalsOneOf("Lower Blaze", "Higher Blaze")) return
         val hpMap = mutableMapOf<EntityArmorStand, Int>()
         blazes.clear()
-        mc.theWorld?.loadedEntityList?.filterIsInstance<EntityArmorStand>()?.filter { it !in blazes }?.forEach { entity ->
-            val matchResult = Regex("^\\[Lv15] Blaze [\\d,]+/([\\d,]+)❤$").find(entity.name.noControlCodes) ?: return@forEach
-            val hp = matchResult.groups[1]?.value?.replace(",", "")?.toIntOrNull() ?: return@forEach
+        mc.theWorld?.loadedEntityList?.forEach { entity ->
+            if (entity !is EntityArmorStand || entity in blazes) return@forEach
+            val hp = Regex("^\\[Lv15] Blaze [\\d,]+/([\\d,]+)❤$").find(entity.name.noControlCodes)?.groups?.get(1)?.value?.replace(",", "")?.toIntOrNull() ?: return@forEach
             hpMap[entity] = hp
             blazes.add(entity)
         }

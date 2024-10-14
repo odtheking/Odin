@@ -108,7 +108,7 @@ object CanClip : Module(
     private fun getDirection(block: IBlockState): String {
         var dir = "block is not stairs"
         var half = "block is not stairs"
-        if (block.block is BlockStairs) {
+        if (block.block !is BlockStairs) {
             block.properties.forEach { (key: IProperty<*>, value: Comparable<*>) ->
                 if (key.name == "half") half = value.toString()
                 if (key.name == "facing") dir = value.toString()

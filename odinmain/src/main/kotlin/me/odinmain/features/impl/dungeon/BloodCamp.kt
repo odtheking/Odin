@@ -117,8 +117,8 @@ object BloodCamp : Module(
     fun onTick() {
         entityList.ifEmpty { return }
         watcher.removeAll {it.isDead}
-        entityList.filter { (entity) -> watcher.any { it.getDistanceToEntity(entity) < 20 }
-        }.forEach { (entity, data) ->
+        entityList.forEach { (entity, data) ->
+            if (watcher.none { it.getDistanceToEntity(entity) < 20 }) return@forEach
             data.started?.let { data.timetook = tickTime - it }
 
             val timeTook = data.timetook ?: return@forEach
@@ -172,7 +172,8 @@ object BloodCamp : Module(
 
         if (!bloodHelper) return
 
-        forRender.filter { !it.key.isDead }.forEach { (entity, renderData) ->
+        forRender.forEach { (entity, renderData) ->
+            if (entity.isDead) return@forEach
             val entityData = entityList[entity] ?: return@forEach
 
             val timeTook = entityData.timetook ?: return@forEach

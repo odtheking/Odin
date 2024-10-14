@@ -37,7 +37,7 @@ object BuildHelper : Module(
 
             text("Build ${colorBuild(KuudraUtils.buildDonePercentage)}§8%", 1f, 9f, buildHelperColor, 12f, OdinFont.REGULAR, shadow = true)
             text("Builders ${colorBuilders(KuudraUtils.playersBuildingAmount)}", 1f,  24f, buildHelperColor, 12f, OdinFont.REGULAR, shadow = true)
-            text("Freshers: ${colorBuilders(KuudraUtils.kuudraTeammates.filter { teammate -> teammate.eatFresh }.size)}", 1f, 39f, buildHelperColor, 12f, OdinFont.REGULAR, shadow = true)
+            text("Freshers: ${colorBuilders(KuudraUtils.kuudraTeammates.count { teammate -> teammate.eatFresh })}", 1f, 39f, buildHelperColor, 12f, OdinFont.REGULAR, shadow = true)
             getTextWidth("4Build 50%", 12f) + 2f to 42f
         }
     }

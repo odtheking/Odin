@@ -52,7 +52,6 @@ val devCommand = commodore("oddev") {
             |doorOpener: ${DungeonUtils.doorOpener}
             |currentRoom: ${DungeonUtils.currentFullRoom?.room?.data?.name}, roomsPassed: ${DungeonUtils.passedRooms.map { it.room.data.name }}
             |Teammates: ${DungeonUtils.dungeonTeammates.joinToString { "${it.name} (${it.clazz})" }}
-            |TeammatesNoSelf: ${DungeonUtils.dungeonTeammatesNoSelf.map { it.name }}
             |LeapTeammates: ${DungeonUtils.leapTeammates.map { it.name }}
             |Blessings: ${Blessing.entries.joinToString { "${it.name}: ${it.current}" }}
             ${getChatBreak()}
@@ -69,7 +68,6 @@ val devCommand = commodore("oddev") {
                 ${getChatBreak()}
                 |inKuudra: ${KuudraUtils.inKuudra}
                 |kuudraTeammates: ${KuudraUtils.kuudraTeammates.joinToString { it.playerName }}
-                |kuudraTeammatesNoSelf: ${KuudraUtils.kuudraTeammatesNoSelf.joinToString { it.playerName }}
                 |giantZombies: ${KuudraUtils.giantZombies.joinToString { it.positionVector.toString() }}
                 |supplies: ${KuudraUtils.supplies.joinToString()}
                 |kuudraEntity: ${KuudraUtils.kuudraEntity}
