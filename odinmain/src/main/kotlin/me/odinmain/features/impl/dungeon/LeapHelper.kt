@@ -26,11 +26,11 @@ object LeapHelper {
         get() = getPlayer()
 
     fun getPlayer(): String {
-        if (DungeonUtils.leapTeammates.isEmpty()) return ""
+        if (DungeonUtils.dungeonTeammatesNoSelf.isEmpty()) return ""
         if (!DungeonUtils.inBoss) return DungeonUtils.doorOpener
         if (DungeonUtils.getF7Phase() == M7Phases.P3) scanGates()
         if (currentPos == NONE) return ""
-        return DungeonUtils.leapTeammates
+        return DungeonUtils.dungeonTeammatesNoSelf
             .filter {
                 val entity = it.entity
                 entity != null && (if (currentPos.equal(Vec3(54.0, 4.0, 95.0))) entity.posY < 54.0 else true) // To make sure the player is underneath necron's platform
