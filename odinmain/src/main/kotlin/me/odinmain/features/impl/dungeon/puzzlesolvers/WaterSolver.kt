@@ -20,6 +20,7 @@ import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
 import java.io.InputStreamReader
 import java.nio.charset.StandardCharsets
+import java.util.Locale
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.collections.component1
 import kotlin.collections.component2
@@ -72,7 +73,7 @@ object WaterSolver {
         }
 
         extendedSlots = ""
-        WoolColor.entries.filter { it.isExtended }.forEach { extendedSlots += it.ordinal.toString() }
+        WoolColor.entries.forEach { if (it.isExtended) extendedSlots += it.ordinal.toString() }
 
         // If the extendedSlots length is not 3, then retry.
         if (extendedSlots.length != 3) {
@@ -112,13 +113,9 @@ object WaterSolver {
             .flatMap { (lever, times) -> times.drop(lever.i).map { Pair(lever, it) } }
             .sortedBy { (lever, time) -> time + if (lever == LeverBlock.WATER) 0.01 else 0.0 }
 
-        val sortedSolutions = mutableListOf<Double>().apply {
-            solutions.forEach { (lever, times) ->
-                times.drop(lever.i).filter { it != 0.0 }.forEach { time ->
-                    add(time)
-                }
-            }
-        }.sortedBy { it }
+        val sortedSolutions = solutions.flatMap { (lever, times) ->
+            times.drop(lever.i).filter { it != 0.0 }
+        }.sorted()
 
         val first = solutionList.firstOrNull() ?: return
 
@@ -152,7 +149,7 @@ object WaterSolver {
                     else "§e${time}s"
                 } else {
                     val remainingTime = openedWater + time * 1000L - System.currentTimeMillis()
-                    if (remainingTime > 0) "§e${String.format("%.2f",remainingTime / 1000)}s"
+                    if (remainingTime > 0) "§e${String.format(Locale.US, "%.2f",remainingTime / 1000)}s"
                     else "§a§lCLICK ME!"
                 }
 

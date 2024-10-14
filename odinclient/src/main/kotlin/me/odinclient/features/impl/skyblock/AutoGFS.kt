@@ -20,7 +20,7 @@ object AutoGFS : Module(
     private val refillPearl by BooleanSetting("Refill Pearl", true, description = "Refill ender pearls.")
     private val refillJerry by BooleanSetting("Refill Jerry", true, description = "Refill inflatable jerrys.")
     private val refillOnTimer by BooleanSetting("Refill on Timer", true, description = "Refill on a 5s intervals.")
-    private val timerIncrements by NumberSetting("Timer Increments", 5L, 0.5, 60, description = "The interval in which to refill.")
+    private val timerIncrements by NumberSetting("Timer Increments", 5L, 0.5, 60, description = "The interval in which to refill.", unit = "s")
 
     init {
         execute({ timerIncrements * 1000 }) {

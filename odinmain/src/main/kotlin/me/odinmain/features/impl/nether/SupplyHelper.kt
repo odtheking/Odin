@@ -36,8 +36,7 @@ object SupplyHelper : Module(
 
         onMessageCancellable(Regex("(\\[\\w+])?(\\w+) recovered one of Elle's supplies! \\((\\d)/(\\d)\\)")) {
             if (!sendSupplyTime) return@onMessageCancellable
-            val matchResult = Regex("(\\[\\w+])?(\\w+) recovered one of Elle's supplies! \\((\\d)/(\\d)\\)").find(it.message) ?: return@onMessageCancellable
-            val (_, name, current, total) = matchResult.groupValues
+            val (name, current, total) = Regex("(\\[\\w+])?(\\w+) recovered one of Elle's supplies! \\((\\d)/(\\d)\\)").find(it.message)?.destructured ?: return@onMessageCancellable
             modMessage("$name, §a§lrecovered a supply at ${formatTime((System.currentTimeMillis() - startRun))}!, §r§8($current/$total)", false)
             it.isCanceled = true
         }
@@ -52,9 +51,8 @@ object SupplyHelper : Module(
 
     private fun renderSupplyWaypoints() {
         KuudraUtils.giantZombies.forEach {
-            val yaw = it.rotationYaw
             Renderer.drawCustomBeacon("Supply",
-                Vec3(it.posX + (3.7 * cos((yaw + 130) * (Math.PI / 180))), 72.0, it.posZ + (3.7 * sin((yaw + 130) * (Math.PI / 180)))), supplyWaypointColor, increase = false)
+                Vec3(it.posX + (3.7 * cos((it.rotationYaw + 130) * (Math.PI / 180))), 72.0, it.posZ + (3.7 * sin((it.rotationYaw + 130) * (Math.PI / 180)))), supplyWaypointColor, increase = false)
         }
     }
 

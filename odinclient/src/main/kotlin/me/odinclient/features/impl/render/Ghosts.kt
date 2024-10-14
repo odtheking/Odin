@@ -21,15 +21,13 @@ object Ghosts : Module(
 
     init {
         execute(500) {
-            mc.theWorld?.loadedEntityList
-                ?.filterIsInstance<EntityCreeper>()
-                ?.filter { entityCreeper -> entityCreeper.getEntityAttribute(SharedMonsterAttributes.maxHealth).baseValue >= 1000000 }
-                ?.forEach { creeper ->
-                    creeper.isInvisible = showGhosts
-                    creeper.dataWatcher.updateObject(17, (if (hideChargedLayer) 0 else 1).toByte())
+            mc.theWorld?.loadedEntityList?.forEach { entity ->
+                if (entity !is EntityCreeper || entity.getEntityAttribute(SharedMonsterAttributes.maxHealth).baseValue < 1000000) return@forEach
+                entity.isInvisible = showGhosts
+                entity.dataWatcher.updateObject(17, (if (hideChargedLayer) 0 else 1).toByte())
 
-                    if (showGhostNametag) drawGhostNameTag(creeper)
-                }
+                if (showGhostNametag) drawGhostNameTag(entity)
+            }
         }
     }
 

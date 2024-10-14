@@ -69,9 +69,8 @@ object PosMessages : Module(
         val msgSent = sentMessages.getOrDefault(posMessage, false)
         if (mc.thePlayer != null && isVecInXZ(mc.thePlayer.positionVector, AxisAlignedBB(posMessage.x, posMessage.y, posMessage.z, posMessage.x2 ?: return, posMessage.y2 ?: return, posMessage.z2 ?: return))) {
             if (!msgSent) Timer().schedule(posMessage.delay) {
-                if (isVecInXZ(mc.thePlayer.positionVector, AxisAlignedBB(posMessage.x, posMessage.y, posMessage.z, posMessage.x2, posMessage.y2, posMessage.z2))) {
+                if (isVecInXZ(mc.thePlayer.positionVector, AxisAlignedBB(posMessage.x, posMessage.y, posMessage.z, posMessage.x2, posMessage.y2, posMessage.z2)))
                     partyMessage(posMessage.message)
-                }
             }
             sentMessages[posMessage] = true
         } else sentMessages[posMessage] = false
@@ -102,5 +101,4 @@ object PosMessages : Module(
         val delayLong = delay.toLongOrNull() ?: return null.also { modMessage("Failed to parse delay: $delay") }
         return PosMessage(xDouble, yDouble, zDouble, x2Double, y2Double, z2Double, delayLong, null, message)
     }
-
 }

@@ -25,7 +25,7 @@ object LeapHelper {
     val leapHelperName
         get() = getPlayer()
 
-    fun getPlayer() : String {
+    fun getPlayer(): String {
         if (DungeonUtils.dungeonTeammatesNoSelf.isEmpty()) return ""
         if (!DungeonUtils.inBoss) return DungeonUtils.doorOpener
         if (DungeonUtils.getF7Phase() == M7Phases.P3) scanGates()

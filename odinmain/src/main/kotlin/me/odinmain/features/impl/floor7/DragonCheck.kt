@@ -69,9 +69,11 @@ object DragonCheck {
         if (packet.itemStack?.item != Item.getItemFromBlock(Blocks.packed_ice)) return
         val sprayedEntity = mc.theWorld?.getEntityByID(packet.entityID) as? EntityArmorStand ?: return
 
-        WitherDragonsEnum.entries.filter{ !it.isSprayed && it.state == WitherDragonState.ALIVE && sprayedEntity.getDistanceToEntity(it.entity) <= 8 }.forEach {
-            if (sendSpray) modMessage("§${it.colorCode}${it.name} §fdragon was sprayed in §c${System.currentTimeMillis() - it.spawnedTime}§fms ")
-            it.isSprayed = true
+        WitherDragonsEnum.entries.forEach { dragon ->
+            if (!dragon.isSprayed && dragon.state == WitherDragonState.ALIVE && dragon.entity != null && sprayedEntity.getDistanceToEntity(dragon.entity) <= 8) {
+                if (sendSpray) modMessage("§${dragon.colorCode}${dragon.name} §fdragon was sprayed in §c${System.currentTimeMillis() - dragon.spawnedTime}§fms ")
+                dragon.isSprayed = true
+            }
         }
     }
 
@@ -92,7 +94,7 @@ object DragonCheck {
     fun updateTime() {
         WitherDragonsEnum.entries.forEach { dragon ->
             if (dragon.state != WitherDragonState.SPAWNING) return@forEach
-            dragon.timeToSpawn--.coerceAtLeast(0)
+            dragon.timeToSpawn = (dragon.timeToSpawn - 1).coerceAtLeast(0)
             if (dragon.timeToSpawn != 98) return@forEach
             priorityDragon = findPriority(WitherDragonsEnum.entries.filter { it.state == WitherDragonState.SPAWNING }.toMutableList())
             displaySpawningDragon(priorityDragon)

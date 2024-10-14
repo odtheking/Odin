@@ -96,9 +96,7 @@ object PearlWaypoints : Module(
     private fun getOrderedLineups(pos: Vec3i): SortedMap<Lineup, Color> {
         return pearlLineups.toSortedMap(
             compareBy { key ->
-                key.startPos.minOfOrNull { startPos ->
-                    startPos.distanceSq(pos)
-                } ?: Double.MAX_VALUE
+                key.startPos.minOfOrNull { it.distanceSq(pos) } ?: Double.MAX_VALUE
             }
         )
     }

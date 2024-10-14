@@ -11,6 +11,7 @@ import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import java.util.Locale
 import java.util.concurrent.CopyOnWriteArrayList
 
 object TerracottaTimer : Module(
@@ -40,7 +41,7 @@ object TerracottaTimer : Module(
         if (!DungeonUtils.isFloor(6) || !DungeonUtils.inBoss || terracottaSpawning.isEmpty()) return
         terracottaSpawning.forEach {
             Renderer.drawStringInWorld(
-                "${String.format("%.2f", it.time / 100.0)}s",
+                "${String.format(Locale.US, "%.2f", it.time / 100.0)}s",
                 it.pos, getColor(it.time / 100.0), depth = false, scale = 0.03f
             )
         }

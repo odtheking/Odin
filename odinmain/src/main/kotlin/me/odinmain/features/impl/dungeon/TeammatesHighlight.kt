@@ -9,7 +9,7 @@ import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.dungeonTeammatesNoSelf
-import net.minecraft.entity.EntityLivingBase
+import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraftforge.client.event.RenderLivingEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -39,7 +39,7 @@ object TeammatesHighlight : Module(
     }
 
     @SubscribeEvent
-    fun onRenderEntity(event: RenderLivingEvent.Specials.Pre<EntityLivingBase>) {
+    fun onRenderEntity(event: RenderLivingEvent.Specials.Pre<EntityOtherPlayerMP>) {
         if (!showName || !shouldRender()) return
         val teammate = dungeonTeammatesNoSelf.find { it.entity == event.entity } ?: return
         val text = if (showClass) "§${teammate.clazz.colorCode}${teammate.name} §e[${teammate.clazz.name[0]}]" else "§${teammate.clazz.colorCode}${teammate.name}"

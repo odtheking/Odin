@@ -96,8 +96,8 @@ object AutoExperiments : Module(
         if (!hasAdded && invSlots[49].stack?.item == Item.getItemFromBlock(Blocks.glowstone)) {
             if (!invSlots[44].hasStack) return
             ultrasequencerOrder.clear()
-            invSlots.filter { it.slotNumber in 9..44 }.forEach {
-                if (it.stack?.item == Items.dye)
+            invSlots.forEach {
+                if (it.slotNumber in 9..44 && it.stack?.item == Items.dye)
                     ultrasequencerOrder[it.stack.stackSize - 1] = it.slotNumber
             }
             hasAdded = true

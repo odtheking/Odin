@@ -4,6 +4,7 @@ import me.odinmain.utils.addVec
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.RenderUtils.renderVec
 import me.odinmain.utils.render.Renderer
+import java.util.Locale
 
 object DragonHealth{
     fun renderHP() {
@@ -24,7 +25,7 @@ object DragonHealth{
 
     private fun formatHealth(health: Float): String {
         return when {
-            health >= 1_000_000_000 -> "${String.format("%.2f", health / 1_000_000_000)}b"
+            health >= 1_000_000_000 -> "${String.format(Locale.US, "%.2f", health / 1_000_000_000)}b"
             health >= 1_000_000 -> "${(health.toInt() / 1_000_000)}m"
             health >= 1_000 -> "${(health.toInt() / 1_000)}k"
             else -> "${health.toInt()}"

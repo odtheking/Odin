@@ -45,8 +45,7 @@ object WardrobeKeybinds : Module(
         val chest = (event.gui as? GuiChest)?.inventorySlots ?: return
         if (chest !is ContainerChest) return
 
-        val matchResult = Regex("Wardrobe \\((\\d)/(\\d)\\)").find(chest.name) ?: return
-        val (current, total) = matchResult.destructured
+        val (current, total) = Regex("Wardrobe \\((\\d)/(\\d)\\)").find(chest.name)?.destructured ?: return
         val equippedIndex = getItemIndexInContainerChest(chest, "equipped", 36..44, true)
 
         val index = when {

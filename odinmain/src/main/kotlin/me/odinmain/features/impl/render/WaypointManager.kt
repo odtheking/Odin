@@ -27,10 +27,10 @@ object WaypointManager {
     private var temporaryWaypoints = mutableListOf<Pair<Waypoint, Clock>>()
 
     fun addWaypoint(name: String = "§fWaypoint", x: Int, y: Int, z: Int, color: Color = randomColor()) =
-        addWaypoint(Waypoint(if (Waypoints.onlyDistance) "" else name, x, y, z, color))
+        addWaypoint(Waypoint(name, x, y, z, color))
 
     fun addWaypoint(name: String = "§fWaypoint", vec3: Vec3i, color: Color = randomColor()) =
-        addWaypoint(Waypoint(if (Waypoints.onlyDistance) "" else name, vec3.x, vec3.y, vec3.z, color))
+        addWaypoint(Waypoint(name, vec3.x, vec3.y, vec3.z, color))
 
     fun addWaypoint(waypoint: Waypoint, area: String = currentArea.displayName) {
         waypoints.getOrPut(area) { mutableListOf() }.add(waypoint)
@@ -52,13 +52,13 @@ object WaypointManager {
         WaypointConfig.saveConfig()
     }
 
-    fun addTempWaypoint(name: String = "§fWaypoint", x: Int, y: Int, z: Int) {
+    fun addTempWaypoint(name: String = "§fWaypoint", x: Int, y: Int, z: Int, time: Long = 60_000) {
         if (currentArea.isArea(Island.Unknown)) return modMessage("§cYou are not in Skyblock.")
         if (!Waypoints.enabled) return
         if (listOf(x, y,z).any { abs(it) > 5000}) return modMessage("§cWaypoint out of bounds.")
         if (temporaryWaypoints.any { it.first.x == x && it.first.y == y && it.first.z == z }) return modMessage("§cWaypoint already exists at $x, $y, $z.")
         modMessage("§aAdded temporary waypoint at §6$x§r, §3$y§r, §d$z§r.")
-        temporaryWaypoints.add(Pair(Waypoint(if (Waypoints.onlyDistance) "" else name, x, y, z, colors.random()), Clock(60_000)))
+        temporaryWaypoints.add(Pair(Waypoint(name, x, y, z, colors.random()), Clock(time)))
     }
 
     private val colors = listOf(
@@ -110,6 +110,6 @@ object WaypointManager {
     ) {
         constructor(name: String, vec3: Vec3i, color: Color) : this(name, vec3.x, vec3.y, vec3.z, color, true)
 
-        fun renderBeacon() = Renderer.drawCustomBeacon(name, Vec3(x + .5, y + .5, z + .5), color, !Waypoints.onlyBox)
+        fun renderBeacon() = Renderer.drawCustomBeacon(name, Vec3(x + .5, y + .5, z + .5), color)
     }
 }
