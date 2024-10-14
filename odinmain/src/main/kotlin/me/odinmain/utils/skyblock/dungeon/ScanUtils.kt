@@ -24,6 +24,7 @@ object ScanUtils {
     private const val START = -185
     private const val DEFAULT_HEIGHT = 170
 
+    private var lastRoomPos: Vec2 = Vec2(0, 0)
     private val roomList: Set<RoomData> = loadRoomData()
     var currentFullRoom: FullRoom? = null
         private set
@@ -67,6 +68,9 @@ object ScanUtils {
         } // If not in dungeon or in boss room, return and register current room as null
 
         val roomCenter = getRoomCenter(mc.thePlayer.posX.toInt(), mc.thePlayer.posZ.toInt())
+
+        if (lastRoomPos.equal(roomCenter)) return
+        lastRoomPos = roomCenter
 
         passedRooms.find { previousRoom -> previousRoom.components.any { it.vec2.equal(roomCenter) } }?.let { room ->
             if (currentFullRoom?.components?.none { it.vec2.equal(roomCenter) } == true) RoomEnterEvent(room).postAndCatch()
@@ -151,12 +155,14 @@ object ScanUtils {
     @SubscribeEvent
     fun enterDungeonRoom(event: RoomEnterEvent) {
         currentFullRoom = event.fullRoom
-        if (passedRooms.none { it.room.data.name == currentFullRoom?.room?.data?.name }) passedRooms.add(currentFullRoom ?: return)
+        if (passedRooms.none { it.room.data.name == currentFullRoom?.room?.data?.name }) (currentFullRoom ?: return)
+        devMessage("${event.fullRoom?.room?.data?.name} - ${event.fullRoom?.room?.rotation} || clay: ${event.fullRoom?.clayPos}")
     }
 
     @SubscribeEvent
     fun onWorldLoad(event: WorldEvent.Unload) {
         passedRooms.clear()
         currentFullRoom = null
+        lastRoomPos = Vec2(0, 0)
     }
 }

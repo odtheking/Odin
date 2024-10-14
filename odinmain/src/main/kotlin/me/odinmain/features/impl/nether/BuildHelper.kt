@@ -42,7 +42,7 @@ object BuildHelper : Module(
         }
     }
     private val stunNotification by BooleanSetting("Stun Notification", true, description = "Notifies you when to go to stun.")
-    private val stunNotificationNumber: Int by NumberSetting("Stun Notification", 93, 0.0, 100.0, description = "The build % to notify at.", unit = "%").withDependency { stunNotification }
+    private val stunNotificationNumber: Int by NumberSetting("Stun Percent", 93, 0.0, 100.0, description = "The build % to notify at.", unit = "%").withDependency { stunNotification }
 
     @SubscribeEvent
     fun renderWorldEvent(event: RenderWorldLastEvent) {

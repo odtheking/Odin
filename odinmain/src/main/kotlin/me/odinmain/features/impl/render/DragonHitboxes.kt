@@ -34,8 +34,7 @@ object DragonHitboxes : Module(
 
         for (dragon in entityDragons) {
             for (entity in dragon.dragonPartArray) {
-                val entityId = entity.entityId
-                val positions = entityPositions.computeIfAbsent(entityId) { DoubleArray(6) { entity.posX } }
+                val positions = entityPositions.computeIfAbsent(entity.entityId) { DoubleArray(6) { entity.posX } }
                 positions[0] = positions[3]
                 positions[1] = positions[4]
                 positions[2] = positions[5]
@@ -53,21 +52,16 @@ object DragonHitboxes : Module(
         for (dragon in dragonRenderQueue) {
             if (dragon.health.toInt() == 0 || dragon.entityId == PersonalDragon.dragon?.entityId) continue
             for (entity in dragon.dragonPartArray) {
-                val entityId = entity.entityId
-                val positions = entityPositions[entityId] ?: continue
+                val positions = entityPositions[entity.entityId] ?: continue
                 val lastX = positions[0]
                 val lastY = positions[1]
                 val lastZ = positions[2]
-                val x = positions[3]
-                val y = positions[4]
-                val z = positions[5]
 
-                val dX = lastX + (x - lastX) * event.partialTicks
-                val dY = lastY + (y - lastY) * event.partialTicks
-                val dZ = lastZ + (z - lastZ) * event.partialTicks
-                val w = entity.width
-                val h = entity.height
-                Renderer.drawBox(AxisAlignedBB(dX - w / 2, dY, dZ - w / 2, dX + w / 2, dY + h, dZ + w / 2), color, lineWidth, depth = true, fillAlpha = 0)
+                val dX = lastX + (positions[3] - lastX) * event.partialTicks
+                val dY = lastY + (positions[4] - lastY) * event.partialTicks
+                val dZ = lastZ + (positions[5] - lastZ) * event.partialTicks
+
+                Renderer.drawBox(AxisAlignedBB(dX - entity.width / 2, dY, dZ - entity.width / 2, dX + entity.width / 2, dY + entity.height, dZ + entity.width / 2), color, lineWidth, depth = true, fillAlpha = 0)
             }
         }
     }

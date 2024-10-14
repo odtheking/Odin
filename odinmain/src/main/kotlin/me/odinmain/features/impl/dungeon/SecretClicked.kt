@@ -67,8 +67,8 @@ object SecretClicked : Module(
     fun onSecret(event: SecretPickupEvent) {
         when (event) {
             is SecretPickupEvent.Interact -> secretBox(event.blockPos)
-            is SecretPickupEvent.Bat -> secretBox(event.packet.positionVector.toBlockPos(-0.5))
-            is SecretPickupEvent.Item -> secretBox(event.entity.positionVector.toBlockPos(-0.5))
+            is SecretPickupEvent.Bat -> secretBox(event.packet.positionVector.toBlockPos())
+            is SecretPickupEvent.Item -> secretBox(event.entity.positionVector.toBlockPos())
         }
         secretChime()
     }

@@ -74,11 +74,11 @@ object RenderOptimizer : Module(
         if (!LocationUtils.inSkyblock) return
         if (event.packet is S1CPacketEntityMetadata && hide0HealthNames) {
             val entity = mc.theWorld?.getEntityByID(event.packet.entityId) ?: return
-            val list = event.packet.func_149376_c() ?: return
-
-            list.filterIsInstance<String>()
-                .takeUnless { strings -> strings.any { healthMatches.any { regex -> regex.matches(it) } } }
-                ?.forEach { _ -> entity.alwaysRenderNameTag = false }
+            event.packet.func_149376_c()?.let {
+                it.filterIsInstance<String>()
+                    .takeUnless { strings -> strings.any { healthMatches.any { regex -> regex.matches(it) } } }
+                    ?.forEach { entity.alwaysRenderNameTag = false }
+            }
         }
 
         if (event.packet is S0EPacketSpawnObject && event.packet.type == 70 && fallingBlocks) event.isCanceled = true

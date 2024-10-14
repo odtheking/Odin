@@ -47,19 +47,22 @@ object DungeonWaypoints : Module(
     tag = TagType.NEW
 ) {
     private var allowEdits by BooleanSetting("Allow Edits", false, description = "Allows you to edit waypoints.")
-    private var reachEdits by BooleanSetting("Reach Edits", false, description = "Extends the reach of edit mode.")
-    private var reachColor by ColorSetting("Reach Color", default = Color(0, 255, 213, 0.43f), description = "Color of the reach box highlight.", allowAlpha = true).withDependency { reachEdits }
-    var editText by BooleanSetting("Edit Text", false, description = "Displays text under your crosshair telling you when you are editing waypoints.")
-    var color by ColorSetting("Color", default = Color.GREEN, description = "The color of the next waypoint you place.", allowAlpha = true).withDependency { colorPallet == 0 }
-    private val colorPallet by SelectorSetting("Color pallet", "None", arrayListOf("None", "Aqua", "Magenta", "Yellow", "Lime"), description = "The color pallet of the next waypoint you place.")
-    var filled by BooleanSetting("Filled", false, description = "If the next waypoint you place should be 'filled'.")
-    var throughWalls by BooleanSetting("Through walls", false, description = "If the next waypoint you place should be visible through walls.")
-    var useBlockSize by BooleanSetting("Use block size", false, description = "Use the size of the block you click for waypoint size.")
-    var size: Double by NumberSetting("Size", 1.0, .125, 1.0, increment = 0.01, description = "The size of the next waypoint you place.").withDependency { !useBlockSize }
-    private val disableDepth by BooleanSetting("Disable Depth", false, description = "Disables depth testing for waypoints.")
-    var waypointType by SelectorSetting("Waypoint Type", WaypointType.NONE.displayName, WaypointType.getArrayList(), description = "The type of waypoint you want to place.")
-    private val renderTitle by BooleanSetting("Render Title", true, description = "Renders the title of the waypoint.")
+    private var reachEdits by BooleanSetting("Reach Edits", false, description = "Extends the reach of edit mode.").withDependency { allowEdits }
+    private var reachColor by ColorSetting("Reach Color", default = Color(0, 255, 213, 0.43f), description = "Color of the reach box highlight.", allowAlpha = true).withDependency { reachEdits && allowEdits }
     private val allowTextEdit by BooleanSetting("Allow Text Edit", true, description = "Allows you to set the text of a waypoint while sneaking.")
+
+    var editText by BooleanSetting("Edit Text", false, description = "Displays text under your crosshair telling you when you are editing waypoints.")
+    private val renderTitle by BooleanSetting("Render Title", true, description = "Renders the title of the waypoint.")
+    private val disableDepth by BooleanSetting("Global Depth", false, description = "Disables depth testing for all waypoints.").withDependency { settingsDropDown }
+
+    private val settingsDropDown by DropdownSetting("Next Waypoint Settings")
+    var waypointType: Int by SelectorSetting("Waypoint Type", WaypointType.NONE.displayName, WaypointType.getArrayList(), description = "The type of waypoint you want to place.").withDependency { settingsDropDown }
+    private val colorPallet by SelectorSetting("Color pallet", "None", arrayListOf("None", "Aqua", "Magenta", "Yellow", "Lime"), description = "The color pallet of the next waypoint you place.").withDependency { settingsDropDown }
+    var color by ColorSetting("Color", default = Color.GREEN, description = "The color of the next waypoint you place.", allowAlpha = true).withDependency { colorPallet == 0 && settingsDropDown }
+    var filled by BooleanSetting("Filled", false, description = "If the next waypoint you place should be 'filled'.").withDependency { settingsDropDown }
+    var throughWalls by BooleanSetting("Through walls", false, description = "If the next waypoint you place should be visible through walls.").withDependency { settingsDropDown }
+    var useBlockSize by BooleanSetting("Use block size", false, description = "Use the size of the block you click for waypoint size.").withDependency { settingsDropDown }
+    var size: Double by NumberSetting("Size", 1.0, .125, 1.0, increment = 0.01, description = "The size of the next waypoint you place.").withDependency { !useBlockSize && settingsDropDown }
 
     private val resetButton by ActionSetting("Reset Current Room", description = "Resets the waypoints for the current room.") {
         val room = DungeonUtils.currentFullRoom ?: return@ActionSetting modMessage("§cRoom not found!")
@@ -73,8 +76,8 @@ object DungeonWaypoints : Module(
         modMessage("Successfully reset current room!")
     }
     private val debugWaypoint by BooleanSetting("Debug Waypoint", false, description = "Shows a waypoint in the middle of every extra room.").withDependency { DevPlayers.isDev }
-    var glList = -1
 
+    var glList = -1
     var offset = BlockPos(0.0, 0.0, 0.0)
 
     enum class WaypointType {
@@ -139,8 +142,7 @@ object DungeonWaypoints : Module(
         if (renderTitle) {
             for (waypoint in room.waypoints) {
                 if (waypoint.clicked) continue
-                val title = waypoint.title ?: continue
-                Renderer.drawStringInWorld(title, Vec3(waypoint.x + 0.5, waypoint.y + 0.5, waypoint.z + 0.5), depth = waypoint.depth)
+                Renderer.drawStringInWorld(waypoint.title ?: continue, Vec3(waypoint.x + 0.5, waypoint.y + 0.5, waypoint.z + 0.5), depth = waypoint.depth)
             }
         }
 
@@ -226,10 +228,7 @@ object DungeonWaypoints : Module(
     @SubscribeEvent
     fun onNewRoom(event: DungeonEvents.RoomEnterEvent) {
         glList = -1
-        event.fullRoom?.let {
-            setWaypoints(it)
-            devMessage("${event.fullRoom.room.data.name} - ${event.fullRoom.room.rotation} || clay: ${event.fullRoom.clayPos}")
-        }
+        event.fullRoom?.let { setWaypoints(it) }
     }
 
     fun DungeonWaypoint.toVec3() = Vec3(x, y, z)

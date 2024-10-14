@@ -25,6 +25,8 @@ object KuudraUtils {
     var buildingPiles = arrayListOf<EntityArmorStand>()
     var playersBuildingAmount = 0
     var buildDonePercentage = 0
+
+    private val freshRegex = Regex("^Party > ?(?:\\[\\S+])? (\\S{1,16}): FRESH")
     private val buildRegex = Regex("Building Progress (\\d+)% \\((\\d+) Players Helping\\)")
     private val progressRegex = Regex("PROGRESS: (\\d+)%")
 
@@ -37,7 +39,6 @@ object KuudraUtils {
     @SubscribeEvent
     fun onWorldLoad(event: WorldEvent.Load) {
         kuudraTeammates = ArrayList()
-
         giantZombies = arrayListOf()
         supplies = BooleanArray(6) { true }
         kuudraEntity = EntityMagmaCube(mc.theWorld)
@@ -49,8 +50,17 @@ object KuudraUtils {
 
     @SubscribeEvent
     fun onChat(event: ChatPacketEvent) {
-        if (event.message.matches(Regex("^Party > ?(?:\\[\\S+])? (\\S{1,16}): FRESH"))) {
-            val playerName = Regex("^Party > ?(?:\\[\\S+])? (\\S{1,16}): FRESH").find(event.message)?.groupValues?.get(1)?.takeIf { it == mc.thePlayer?.name } ?: return
+        if (!inKuudra) return
+
+        when (event.message) {
+            "[NPC] Elle: Okay adventurers, I will go and fish up Kuudra!" -> phase = 1
+            "[NPC] Elle: OMG! Great work collecting my supplies!" -> phase = 2
+            "[NPC] Elle: Phew! The Ballista is finally ready! It should be strong enough to tank Kuudra's blows now!" -> phase = 3
+            "[NPC] Elle: POW! SURELY THAT'S IT! I don't think he has any more in him!" -> phase = 4
+        }
+
+        if (event.message.matches(freshRegex)) {
+            val playerName = freshRegex.find(event.message)?.groupValues?.get(1)?.takeIf { it == mc.thePlayer?.name } ?: return
 
             kuudraTeammates.find { it.playerName == playerName }?.let { kuudraPlayer ->
                 kuudraPlayer.eatFresh = true
@@ -58,13 +68,6 @@ object KuudraUtils {
                     kuudraPlayer.eatFresh = false
                 }
             }
-        }
-
-        when (event.message) {
-            "[NPC] Elle: Okay adventurers, I will go and fish up Kuudra!" -> phase = 1
-            "[NPC] Elle: OMG! Great work collecting my supplies!" -> phase = 2
-            "[NPC] Elle: Phew! The Ballista is finally ready! It should be strong enough to tank Kuudra's blows now!" -> phase = 3
-            "[NPC] Elle: POW! SURELY THAT'S IT! I don't think he has any more in him!" -> phase = 4
         }
     }
 
