@@ -32,7 +32,6 @@ object Ragaxe : Module(
             val strengthGain = ((heldItem?.strength ?: 0) * 1.5).toInt()
             if (strengthGainedMessage) modMessage("Gained strength: $strengthGain")
             if (announceStrengthGained) partyMessage("Gained strength from rag axe: $strengthGain")
-
         }
     }
 }
