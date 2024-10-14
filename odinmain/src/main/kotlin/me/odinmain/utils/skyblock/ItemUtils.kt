@@ -196,6 +196,17 @@ fun ItemStack.setLore(lines: List<String>): ItemStack {
     })
     return this
 }
+/**
+ * Returns the primary Strength value for an Item
+ */
+val ItemStack.strength: Int
+    get() {
+        return this.lore.firstOrNull { it.contains("Strength:") }
+            ?.let { loreLine ->
+                val strengthRegex = Regex("§7Strength: §c\\+(\\d+)")
+                strengthRegex.find(loreLine)?.groups?.get(1)?.value?.toIntOrNull()
+            } ?: 0
+    }
 
 fun ItemStack.setLoreWidth(lines: List<String>, width: Int): ItemStack {
     setTagInfo("display", getSubCompound("display", true).apply {
