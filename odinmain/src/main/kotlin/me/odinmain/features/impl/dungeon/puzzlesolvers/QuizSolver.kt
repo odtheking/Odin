@@ -66,7 +66,8 @@ object QuizSolver {
 
     fun renderWorldLastQuiz() {
         if (triviaAnswers == null || triviaOptions.isEmpty() || DungeonUtils.inBoss || !DungeonUtils.inDungeons) return
-        triviaOptions.filter { it.correct }.forEach { answer ->
+        triviaOptions.forEach { answer ->
+            if (!answer.correct) return@forEach
             answer.vec3?.addVec(y= -1)?.let {
                 Renderer.drawBox(it.toAABB(), Color.GREEN, depth = quizDepth)
                 RenderUtils.drawBeaconBeam(it, Color.GREEN, depth = quizDepth)

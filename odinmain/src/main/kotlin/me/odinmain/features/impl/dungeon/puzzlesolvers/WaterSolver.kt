@@ -73,7 +73,7 @@ object WaterSolver {
         }
 
         extendedSlots = ""
-        WoolColor.entries.filter { it.isExtended }.forEach { extendedSlots += it.ordinal.toString() }
+        WoolColor.entries.forEach { if (it.isExtended) extendedSlots += it.ordinal.toString() }
 
         // If the extendedSlots length is not 3, then retry.
         if (extendedSlots.length != 3) {
@@ -113,13 +113,9 @@ object WaterSolver {
             .flatMap { (lever, times) -> times.drop(lever.i).map { Pair(lever, it) } }
             .sortedBy { (lever, time) -> time + if (lever == LeverBlock.WATER) 0.01 else 0.0 }
 
-        val sortedSolutions = mutableListOf<Double>().apply {
-            solutions.forEach { (lever, times) ->
-                times.drop(lever.i).filter { it != 0.0 }.forEach { time ->
-                    add(time)
-                }
-            }
-        }.sortedBy { it }
+        val sortedSolutions = solutions.flatMap { (lever, times) ->
+            times.drop(lever.i).filter { it != 0.0 }
+        }.sorted()
 
         val first = solutionList.firstOrNull() ?: return
 

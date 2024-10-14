@@ -23,7 +23,7 @@ object DragonHitboxes : Module(
     private val color by ColorSetting(name = "Hitbox Color", default = Color(0, 255, 255), description = "The color of the hitboxes.")
     private val lineWidth by NumberSetting(name = "Line Thickness", default = 3f, min = 0f, max = 10f, increment = 0.1f, description = "The thickness of the lines.")
 
-    private val entityPositions = mutableMapOf<Int, Array<Double>>()
+    private val entityPositions = mutableMapOf<Int, DoubleArray>()
     private var dragonRenderQueue: List<EntityDragon> = emptyList()
 
     @SubscribeEvent
@@ -35,24 +35,13 @@ object DragonHitboxes : Module(
         for (dragon in entityDragons) {
             for (entity in dragon.dragonPartArray) {
                 val entityId = entity.entityId
-                if (entityId !in entityPositions) {
-                    entityPositions[entityId] = arrayOf(
-                        entity.posX,
-                        entity.posY,
-                        entity.posZ,
-                        entity.posX,
-                        entity.posY,
-                        entity.posZ
-                    )
-                }
-                entityPositions[entityId]?.apply {
-                    this[0] = this[3]
-                    this[1] = this[4]
-                    this[2] = this[5]
-                    this[3] = entity.posX
-                    this[4] = entity.posY
-                    this[5] = entity.posZ
-                }
+                val positions = entityPositions.computeIfAbsent(entityId) { DoubleArray(6) { entity.posX } }
+                positions[0] = positions[3]
+                positions[1] = positions[4]
+                positions[2] = positions[5]
+                positions[3] = entity.posX
+                positions[4] = entity.posY
+                positions[5] = entity.posZ
             }
         }
     }
@@ -62,24 +51,23 @@ object DragonHitboxes : Module(
         if (dragonRenderQueue.isEmpty() || (onlyM7 && !DungeonUtils.isFloor(7))) return
 
         for (dragon in dragonRenderQueue) {
-            if (dragon.health.toInt() == 0 || dragon.entityId == PersonalDragon.dragon?.entityId) return
+            if (dragon.health.toInt() == 0 || dragon.entityId == PersonalDragon.dragon?.entityId) continue
             for (entity in dragon.dragonPartArray) {
                 val entityId = entity.entityId
-                entityPositions[entityId]?.apply {
-                    val lastX = this[0]
-                    val lastY = this[1]
-                    val lastZ = this[2]
-                    val x = this[3]
-                    val y = this[4]
-                    val z = this[5]
+                val positions = entityPositions[entityId] ?: continue
+                val lastX = positions[0]
+                val lastY = positions[1]
+                val lastZ = positions[2]
+                val x = positions[3]
+                val y = positions[4]
+                val z = positions[5]
 
-                    val dX = lastX + (x - lastX) * event.partialTicks
-                    val dY = lastY + (y - lastY) * event.partialTicks
-                    val dZ = lastZ + (z - lastZ) * event.partialTicks
-                    val w = entity.width
-                    val h = entity.height
-                    Renderer.drawBox(AxisAlignedBB(dX - w / 2, dY, dZ - w / 2, dX + w / 2, dY + h, dZ + w / 2), color, lineWidth, depth = true, fillAlpha = 0)
-                }
+                val dX = lastX + (x - lastX) * event.partialTicks
+                val dY = lastY + (y - lastY) * event.partialTicks
+                val dZ = lastZ + (z - lastZ) * event.partialTicks
+                val w = entity.width
+                val h = entity.height
+                Renderer.drawBox(AxisAlignedBB(dX - w / 2, dY, dZ - w / 2, dX + w / 2, dY + h, dZ + w / 2), color, lineWidth, depth = true, fillAlpha = 0)
             }
         }
     }

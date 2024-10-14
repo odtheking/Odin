@@ -140,7 +140,7 @@ object DungeonWaypoints : Module(
             for (waypoint in room.waypoints) {
                 if (waypoint.clicked) continue
                 val title = waypoint.title ?: continue
-                Renderer.drawStringInWorld(title, Vec3(waypoint.x + 0.5, waypoint.y + 0.5, waypoint.z + 0.5))
+                Renderer.drawStringInWorld(title, Vec3(waypoint.x + 0.5, waypoint.y + 0.5, waypoint.z + 0.5), depth = waypoint.depth)
             }
         }
 

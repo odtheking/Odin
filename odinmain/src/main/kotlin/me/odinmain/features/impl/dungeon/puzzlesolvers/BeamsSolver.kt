@@ -68,11 +68,11 @@ object BeamsSolver {
     }
 
     fun onBlockChange(event: BlockChangeEvent) {
-        currentLanternPairs.entries.filter {
-            event.pos.equalsOneOf(it.key, it.value.first) &&
-            event.update.block != Blocks.sea_lantern &&
-            event.old.block == Blocks.sea_lantern
-        }.forEach { currentLanternPairs.remove(it.key) }
+        currentLanternPairs.forEach { (key, value) ->
+            if (event.pos.equalsOneOf(key, value.first) &&
+                event.update.block != Blocks.sea_lantern &&
+                event.old.block == Blocks.sea_lantern) currentLanternPairs.remove(key)
+        }
     }
 
     fun reset() {

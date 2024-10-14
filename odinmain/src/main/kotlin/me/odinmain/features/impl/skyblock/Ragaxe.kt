@@ -28,11 +28,13 @@ object Ragaxe : Module(
         onMessage(Regex("^.+CASTING IN 3s(.+)?\$"), { alert && enabled && !casting }) {
             casting = true
             runIn(62) {
-                if (cancelled) {
+
+              if (cancelled) {
                     cancelled = false
                     casting = false
                     return@runIn
                 }
+
                 PlayerUtils.alert("§aCasted Rag Axe")
                 val strengthGain = ((heldItem?.strength ?: 0) * 1.5).toInt()
                 if (strengthGainedMessage) modMessage("Gained strength: $strengthGain")
@@ -44,6 +46,7 @@ object Ragaxe : Module(
         onMessage(Regex("Ragnarock was cancelled due to (?:being hit|taking damage)!"), { alertCancelled && enabled }) {
             PlayerUtils.alert("§cRag Axe Cancelled")
             cancelled = true
+
             casting = false
         }
 

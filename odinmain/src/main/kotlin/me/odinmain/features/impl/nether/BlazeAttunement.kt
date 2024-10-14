@@ -31,8 +31,8 @@ object BlazeAttunement : Module(
     init {
         execute(1000) {
             currentBlazes.clear()
-            mc.theWorld?.loadedEntityList?.filterIsInstance<EntityArmorStand>()?.forEach { entity ->
-                if (currentBlazes.any { it.key == entity }) return@forEach
+            mc.theWorld?.loadedEntityList?.forEach { entity ->
+                if (entity !is EntityArmorStand || currentBlazes.any { it.key == entity }) return@forEach
                 val name = entity.name.noControlCodes
 
                 val color = when {

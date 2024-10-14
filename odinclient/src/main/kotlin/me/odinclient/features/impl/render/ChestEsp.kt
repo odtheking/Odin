@@ -40,7 +40,7 @@ object ChestEsp : Module(
             if (getBlockAt(packet.position).equalsOneOf(Blocks.chest, Blocks.trapped_chest)) clickedChests.add(packet.position)
         }
 
-        execute(100) {
+        execute(200) {
             chests = mc.theWorld?.loadedTileEntityList?.filterIsInstance<TileEntityChest>()?.map { it.pos }?.toMutableSet() ?: mutableSetOf()
         }
     }

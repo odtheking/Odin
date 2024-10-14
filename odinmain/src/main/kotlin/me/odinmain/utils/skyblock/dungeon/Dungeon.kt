@@ -25,9 +25,9 @@ class Dungeon(val floor: Floor) {
 
     var paul = false
     val inBoss: Boolean get() = getBoss()
-    var dungeonTeammates: List<DungeonPlayer> = emptyList()
-    var dungeonTeammatesNoSelf: List<DungeonPlayer> = emptyList()
-    var leapTeammates: List<DungeonPlayer> = emptyList()
+    var dungeonTeammates: ArrayList<DungeonPlayer> = ArrayList<DungeonPlayer>(5)
+    var dungeonTeammatesNoSelf: ArrayList<DungeonPlayer> = ArrayList<DungeonPlayer>(4)
+    var leapTeammates: ArrayList<DungeonPlayer> = ArrayList<DungeonPlayer>(4)
     var dungeonStats = DungeonStats()
     val currentFullRoom: FullRoom? get() = ScanUtils.currentFullRoom
     val passedRooms: MutableList<FullRoom> get() = ScanUtils.passedRooms
@@ -66,9 +66,9 @@ class Dungeon(val floor: Floor) {
     }
 
     fun onWorldLoad() {
-        dungeonTeammates = emptyList()
-        dungeonTeammatesNoSelf = emptyList()
-        leapTeammates = emptyList()
+        dungeonTeammates = ArrayList()
+        dungeonTeammatesNoSelf = ArrayList()
+        leapTeammates = ArrayList()
         puzzles = emptyList()
         Blessing.entries.forEach { it.current = 0 }
     }
@@ -155,15 +155,15 @@ class Dungeon(val floor: Floor) {
     }
 
     private fun updateDungeonTeammates(tabList: List<S38PacketPlayerListItem.AddPlayerData>) {
-        dungeonTeammates = getDungeonTeammates(dungeonTeammates.toMutableList(), tabList)
-        dungeonTeammatesNoSelf = dungeonTeammates.filter { it.entity != mc.thePlayer }
+        dungeonTeammates = getDungeonTeammates(dungeonTeammates, tabList)
+        dungeonTeammatesNoSelf = ArrayList(dungeonTeammates.filter { it.entity != mc.thePlayer })
 
         leapTeammates =
             when (LeapMenu.type) {
-                0 -> odinSorting(dungeonTeammatesNoSelf.sortedBy { it.clazz.priority }).toMutableList()
-                1 -> dungeonTeammatesNoSelf.sortedWith(compareBy({ it.clazz.ordinal }, { it.name })).toMutableList()
-                2 -> dungeonTeammatesNoSelf.sortedBy { it.name }.toMutableList()
-                else -> dungeonTeammatesNoSelf.toMutableList()
+                0 -> ArrayList(odinSorting(dungeonTeammatesNoSelf.sortedBy { it.clazz.priority }).toList())
+                1 -> ArrayList(dungeonTeammatesNoSelf.sortedWith(compareBy({ it.clazz.ordinal }, { it.name })))
+                2 -> ArrayList(dungeonTeammatesNoSelf.sortedBy { it.name })
+                else -> dungeonTeammatesNoSelf
             }
     }
 }

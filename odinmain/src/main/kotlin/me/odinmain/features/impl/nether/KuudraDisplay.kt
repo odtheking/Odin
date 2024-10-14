@@ -47,11 +47,13 @@ object KuudraDisplay : Module(
     fun renderWorldEvent(event: RenderWorldLastEvent) {
         if (!KuudraUtils.inKuudra) return
 
-        if (highlightKuudra)
-            Renderer.drawBox(kuudraEntity.renderBoundingBox, kuudraColor, depth = false, fillAlpha = 0, outlineWidth = thickness)
+        kuudraEntity?.let {
+            if (highlightKuudra)
+                Renderer.drawBox(it.renderBoundingBox, kuudraColor, depth = false, fillAlpha = 0, outlineWidth = thickness)
 
-        if (kuudraHPDisplay)
-            Renderer.drawStringInWorld(getCurrentHealthDisplay(), kuudraEntity.positionVector.addVec(y = 10), Color.WHITE, depth = false, scale = healthSize, shadow = true)
+            if (kuudraHPDisplay)
+                Renderer.drawStringInWorld(getCurrentHealthDisplay(), it.positionVector.addVec(y = 10), Color.WHITE, depth = false, scale = healthSize, shadow = true)
+        }
     }
 
 
@@ -59,8 +61,8 @@ object KuudraDisplay : Module(
     fun onTick(event: TickEvent.ClientTickEvent) {
         if (event.phase != TickEvent.Phase.START || !KuudraUtils.inKuudra) return
 
-        kuudraHP = kuudraEntity.health
-        val kuudraPos = kuudraEntity.positionVector
+        kuudraHP = kuudraEntity?.health ?: return
+        val kuudraPos = kuudraEntity?.positionVector ?: return
         if (kuudraSpawnAlert && kuudraHP in 24900f..25000f) {
             when {
                 kuudraPos.xCoord < -128 -> "§c§lRIGHT"
