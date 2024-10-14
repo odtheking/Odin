@@ -98,7 +98,7 @@ object BloodCamp : Module(
     private val entityList = hashMapOf<EntityArmorStand, EntityData>()
     private data class EntityData(
         val vectors: MutableList<Vec3?> = mutableListOf(), var startVector: Vec3? = null, var finalVector: Vec3? = null,
-        var time: Int? = null, val started: Long? = null, var timetook: Long? = null, var firstSpawns: Boolean = true
+        var time: Int? = null, val started: Long? = null, var timeTook: Long? = null, var firstSpawns: Boolean = true
     )
 
     private var firstSpawns = true
@@ -119,9 +119,9 @@ object BloodCamp : Module(
         watcher.removeAll {it.isDead}
         entityList.forEach { (entity, data) ->
             if (watcher.none { it.getDistanceToEntity(entity) < 20 }) return@forEach
-            data.started?.let { data.timetook = tickTime - it }
+            data.started?.let { data.timeTook = tickTime - it }
 
-            val timeTook = data.timetook ?: return@forEach
+            val timeTook = data.timeTook ?: return@forEach
             val startVector = data.startVector ?: return@forEach
             val currVector = Vec3(entity.posX, entity.posY, entity.posZ)
 
@@ -176,7 +176,7 @@ object BloodCamp : Module(
             if (entity.isDead) return@forEach
             val entityData = entityList[entity] ?: return@forEach
 
-            val timeTook = entityData.timetook ?: return@forEach
+            val timeTook = entityData.timeTook ?: return@forEach
             val startVector = entityData.startVector ?: return@forEach
             val currVector = entity.positionVector ?: return@forEach
             val endVector = renderData.endVector ?: return@forEach

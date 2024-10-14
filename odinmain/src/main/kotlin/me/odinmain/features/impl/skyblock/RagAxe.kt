@@ -11,7 +11,7 @@ import me.odinmain.utils.skyblock.partyMessage
 import me.odinmain.utils.skyblock.strength
 import net.minecraft.network.play.server.S29PacketSoundEffect
 
-object Ragaxe : Module(
+object RagAxe : Module(
     name = "Rag Axe",
     description = "Tracks rag axe cooldowns.",
     category = Category.SKYBLOCK
@@ -29,7 +29,7 @@ object Ragaxe : Module(
         onPacket(S29PacketSoundEffect::class.java) {
             if (it.soundName != "mob.wolf.howl" || it.pitch != 1.4920635f) return@onPacket
             if (alert) PlayerUtils.alert("§aCasted Rag Axe")
-            val strengthGain = ((heldItem?.strength ?: 0) * 1.5).toInt()
+            val strengthGain = ((heldItem?.strength ?: return@onPacket) * 1.5).toInt()
             if (strengthGainedMessage) modMessage("Gained strength: $strengthGain")
             if (announceStrengthGained) partyMessage("Gained strength from rag axe: $strengthGain")
         }
