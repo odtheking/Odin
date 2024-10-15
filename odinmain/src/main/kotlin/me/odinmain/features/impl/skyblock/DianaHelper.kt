@@ -142,7 +142,7 @@ object DianaHelper : Module(
         HUB     (displayName = " §8(§fHub§8)",          Vec3(-3.0, 70.0, -70.0),   { true }),
         CASTLE  (displayName = " §8(§fCastle§8)",       Vec3(-250.0, 130.0, 45.0), { castle }),
         CRYPT   (displayName = " §8(§fCrypt§8)",        Vec3(-190.0, 74.0, -88.0), { crypt }),
-        STONK   (displayName = " §8(§fStonks§8)",       Vec3(-52.5, 70.0, -49.5),  { stonks }),
+        STONKS  (displayName = " §8(§fStonks§8)",       Vec3(-52.5, 70.0, -49.5),  { stonks }),
         DA      (displayName = " §8(§fDark Auction§8)", Vec3(91.0, 75.0, 173.0),   { darkAuction }),
         MUSEUM  (displayName = " §8(§fMuseum§8)",       Vec3(-75.0, 76.0, 81.0),   { museum }),
         WIZARD  (displayName = " §8(§fWizard§8)",       Vec3(42.5, 122.0, 69.0),   { wizard })

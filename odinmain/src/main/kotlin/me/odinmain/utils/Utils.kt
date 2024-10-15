@@ -21,6 +21,8 @@ import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
 import java.time.LocalDateTime
 import java.time.Month
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.*
 import kotlin.math.*
@@ -260,6 +262,10 @@ fun <T> Collection<T>.getSafe(index: Int?): T? {
 
 fun getCurrentMonthName(): String {
     return Month.entries[LocalDateTime.now().monthValue - 1].getDisplayName(TextStyle.FULL, Locale.getDefault())
+}
+
+fun getCurrentTimeWithTimezone(): String {
+    return ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss z"))
 }
 
 /**

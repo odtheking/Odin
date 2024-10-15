@@ -13,9 +13,9 @@ import me.odinmain.features.impl.floor7.DragonHealth.renderHP
 import me.odinmain.features.impl.floor7.DragonTimer.colorDragonTimer
 import me.odinmain.features.impl.floor7.DragonTimer.renderTime
 import me.odinmain.features.impl.floor7.DragonTracer.renderTracers
-import me.odinmain.features.impl.floor7.Relic.relicsBlockPlace
-import me.odinmain.features.impl.floor7.Relic.relicsOnMessage
-import me.odinmain.features.impl.floor7.Relic.relicsOnWorldLast
+import me.odinmain.features.impl.floor7.KingRelics.relicsBlockPlace
+import me.odinmain.features.impl.floor7.KingRelics.relicsOnMessage
+import me.odinmain.features.impl.floor7.KingRelics.relicsOnWorldLast
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.render.*
@@ -90,6 +90,7 @@ object WitherDragons : Module(
     val relicAnnounceTime by BooleanSetting("Relic Time", true, description = "Sends how long it took you to get that relic.").withDependency { relics }
     val relicSpawnTimer by BooleanSetting("Relic Spawn Timer", false, description = "Sends how long it took for the relic to spawn.").withDependency { relics }
     val relicSpawnTicks by NumberSetting("Relic Spawn Ticks", 42, 0, 100, description = "The amount of ticks for the relic to spawn.").withDependency { relicAnnounceTime && relics }
+    val cauldronHighlight by BooleanSetting("Cauldron Highlight", false, description = "Highlights the cauldron for held relic.").withDependency { relics }
 
     var priorityDragon = WitherDragonsEnum.None
 
@@ -128,19 +129,19 @@ object WitherDragons : Module(
             relicsOnMessage()
         }
 
-        onMessage(Regex("^\\[BOSS] Wither King: (Oh, this one hurts!|I have more of those\\.|My soul is disposable\\.)$"), { enabled && DungeonUtils.getF7Phase() != M7Phases.P5 } ) {
+        onMessage(Regex("^\\[BOSS] Wither King: (Oh, this one hurts!|I have more of those\\.|My soul is disposable\\.)$"), { enabled && DungeonUtils.getF7Phase() == M7Phases.P5 } ) {
             onChatPacket()
         }
 
         execute(200) {
-            if (enabled && DungeonUtils.getF7Phase() != M7Phases.P5) return@execute
+            if (!enabled || DungeonUtils.getF7Phase() != M7Phases.P5) return@execute
             DragonCheck.dragonStateConfirmation()
         }
     }
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-        if (DungeonUtils.getF7Phase() != M7Phases.P5 && enabled) return
+        if (DungeonUtils.getF7Phase() != M7Phases.P5 || !enabled) return
 
         if (dragonHealth) renderHP()
         if (dragonTimer) renderTime()
@@ -165,7 +166,7 @@ object WitherDragons : Module(
     @SubscribeEvent
     fun onServerTick(event: RealServerTick) {
         DragonCheck.updateTime()
-        Relic.onServerTick()
+        KingRelics.onServerTick()
     }
 
     fun arrowDeath(dragon: WitherDragonsEnum) {

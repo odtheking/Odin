@@ -26,7 +26,7 @@ object KuudraUtils {
     var playersBuildingAmount = 0
     var buildDonePercentage = 0
 
-    private val freshRegex = Regex("^Party > ?(?:\\[\\S+])? (\\S{1,16}): FRESH")
+    private val freshRegex = Regex("^Party > ?(?:\\[\\S+])? (\\S{1,16}): FRESH\$")
     private val buildRegex = Regex("Building Progress (\\d+)% \\((\\d+) Players Helping\\)")
     private val progressRegex = Regex("PROGRESS: (\\d+)%")
 
@@ -60,9 +60,10 @@ object KuudraUtils {
         }
 
         if (event.message.matches(freshRegex)) {
-            val playerName = freshRegex.find(event.message)?.groupValues?.get(1)?.takeIf { it == mc.thePlayer?.name } ?: return
+            val playerName = freshRegex.find(event.message)?.groupValues?.get(1) ?: return
 
             kuudraTeammates.find { it.playerName == playerName }?.let { kuudraPlayer ->
+                if (mc.thePlayer?.name == kuudraPlayer.playerName)
                 kuudraPlayer.eatFresh = true
                 runIn(200) {
                     kuudraPlayer.eatFresh = false

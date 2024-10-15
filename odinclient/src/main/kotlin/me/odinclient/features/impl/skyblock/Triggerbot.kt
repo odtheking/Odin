@@ -5,7 +5,7 @@ import me.odinclient.utils.skyblock.PlayerUtils.leftClick
 import me.odinclient.utils.skyblock.PlayerUtils.swapToIndex
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.features.impl.floor7.Relic.currentRelic
+import me.odinmain.features.impl.floor7.KingRelics.currentRelic
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.*
