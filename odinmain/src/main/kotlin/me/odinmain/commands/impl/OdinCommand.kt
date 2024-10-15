@@ -120,13 +120,17 @@ val mainCommand = commodore("od", "odin") {
     }
 
     runs { tier: String ->
-        if(tier[0].equalsOneOf('f', 'm')) {
-            if (tier.length != 2 || tier[1] !in '1'..'7') return@runs
-            sendCommand("joininstance ${if (tier[0] == 'm') "master_" else ""}catacombs_floor_${floors[tier[1]]}")
-        }
-        else if (tier[0] == 't'){
-            if (tier.length != 2 || tier[1] !in '1'..'5') return@runs
-            sendCommand("joininstance kuudra_${tiers[tier[1]]}")
+        val normalizedTier = tier.trim().replace(Regex(" +"), "")
+            .replace("floor", "f", ignoreCase = true)
+            .replace("tier", "t", ignoreCase = true)
+            .replace("master", "m", ignoreCase = true)
+
+        if (normalizedTier[0].equalsOneOf('f', 'm')) {
+            if (normalizedTier.length != 2 || normalizedTier[1] !in '1'..'7') return@runs
+            sendCommand("joininstance ${if (normalizedTier[0] == 'm') "master_" else ""}catacombs_floor_${floors[normalizedTier[1]]}")
+        } else if (normalizedTier[0] == 't') {
+            if (normalizedTier.length != 2 || normalizedTier[1] !in '1'..'5') return@runs
+            sendCommand("joininstance kuudra_${tiers[normalizedTier[1]]}")
         }
     } suggests {
         (tiers.keys.map { "t$it" } + floors.keys.map { "m$it" } + floors.keys.map { "f$it" }).toList()

@@ -60,8 +60,9 @@ object BlazeAttunement : Module(
         OutlineUtils.outlineEntity(event, color, thickness)
     }
 
+    @JvmStatic
     fun changeBlazeColor(entity: Entity) {
-        if (currentBlazes.isEmpty() || !overlay) return
+        if (!enabled || currentBlazes.isEmpty() || !overlay) return
         val color = currentBlazes[entity] ?: return
         GlStateManager.disableTexture2D()
         GlStateManager.enableBlend()
@@ -69,14 +70,16 @@ object BlazeAttunement : Module(
         color.bind()
     }
 
+    @JvmStatic
     fun renderModelBlazePost() {
         if (currentBlazes.isEmpty() || !overlay) return
         GlStateManager.disableBlend()
         GlStateManager.enableTexture2D()
     }
 
+    @JvmStatic
     fun changeBipedColor(entity: Entity) {
-        if (currentBlazes.isEmpty() || !overlay) return
+        if (!enabled || currentBlazes.isEmpty() || !overlay) return
         val color = currentBlazes[entity] ?: return
         GlStateManager.disableTexture2D()
         GlStateManager.enableBlend()
@@ -84,8 +87,9 @@ object BlazeAttunement : Module(
         color.bind()
     }
 
+    @JvmStatic
     fun renderModelBipedPost() {
-        if (currentBlazes.isEmpty() || !overlay) return
+        if (!enabled || currentBlazes.isEmpty() || !overlay) return
         GlStateManager.disableBlend()
         GlStateManager.enableTexture2D()
     }

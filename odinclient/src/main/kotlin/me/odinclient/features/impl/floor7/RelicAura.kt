@@ -30,6 +30,6 @@ object RelicAura : Module(
 
     private fun interactWithEntity(entity: Entity) {
         val objectMouseOver = mc.objectMouseOver?.hitVec ?: return
-        mc.netHandler.addToSendQueue(C02PacketUseEntity(entity, Vec3(objectMouseOver.xCoord - entity.posX, objectMouseOver.yCoord - entity.posY, objectMouseOver.zCoord - entity.posX)))
+        mc.netHandler.addToSendQueue(C02PacketUseEntity(entity, Vec3(objectMouseOver.xCoord - entity.posX, objectMouseOver.yCoord - entity.posY, objectMouseOver.zCoord - entity.posZ)))
     }
 }

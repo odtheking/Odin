@@ -7,6 +7,7 @@ import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.ServerUtils.getPing
 import me.odinmain.utils.render.*
+import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.entity.Entity
 import net.minecraft.entity.boss.EntityWither
@@ -49,6 +50,10 @@ object CustomHighlight : Module(
     }
 
     private fun getEntities() {
+        if (highlightList.isEmpty()) {
+            if (!starredMobESP && !shadowAssassin) return
+            if ((starredMobESP || shadowAssassin) && !DungeonUtils.inDungeons) return
+        }
         mc.theWorld?.loadedEntityList?.forEach { entity ->
             checkEntity(entity)
             if (starredMobESP) checkStarred(entity)

@@ -28,7 +28,7 @@ object ScanUtils {
     private val roomList: Set<RoomData> = loadRoomData()
     var currentFullRoom: FullRoom? = null
         private set
-    var passedRooms = ArrayList<FullRoom>()
+    var passedRooms: MutableSet<FullRoom> = mutableSetOf()
         private set
 
     private fun loadRoomData(): Set<RoomData> {
@@ -67,13 +67,11 @@ object ScanUtils {
             return
         } // If not in dungeon or in boss room, return and register current room as null
 
-        val roomCenter = getRoomCenter(mc.thePlayer.posX.toInt(), mc.thePlayer.posZ.toInt())
-
-        if (lastRoomPos.equal(roomCenter)) return
+        val roomCenter = getRoomCenter(mc.thePlayer.posX.toInt(), mc.thePlayer.posZ.toInt()).takeIf { it != lastRoomPos } ?: return
         lastRoomPos = roomCenter
 
-        passedRooms.find { previousRoom -> previousRoom.components.any { it.vec2.equal(roomCenter) } }?.let { room ->
-            if (currentFullRoom?.components?.none { it.vec2.equal(roomCenter) } == true) RoomEnterEvent(room).postAndCatch()
+        passedRooms.find { previousRoom -> previousRoom.components.any { it.vec2 == roomCenter } }?.let { room ->
+            if (currentFullRoom?.components?.none { it.vec2 == roomCenter } == true) RoomEnterEvent(room).postAndCatch()
             return
         } // If room is in passedRooms, post RoomEnterEvent and return only posts Event if room is not in currentFullRoom
 

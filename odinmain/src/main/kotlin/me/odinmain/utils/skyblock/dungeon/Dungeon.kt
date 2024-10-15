@@ -30,7 +30,7 @@ class Dungeon(val floor: Floor) {
     var leapTeammates: ArrayList<DungeonPlayer> = ArrayList<DungeonPlayer>(4)
     var dungeonStats = DungeonStats()
     val currentFullRoom: FullRoom? get() = ScanUtils.currentFullRoom
-    val passedRooms: MutableList<FullRoom> get() = ScanUtils.passedRooms
+    val passedRooms: MutableSet<FullRoom> get() = ScanUtils.passedRooms
     var puzzles = listOf<Puzzle>()
 
     private fun getBoss(): Boolean {

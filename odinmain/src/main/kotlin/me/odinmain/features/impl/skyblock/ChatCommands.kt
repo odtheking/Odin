@@ -38,8 +38,7 @@ object ChatCommands : Module(
     private var dt by BooleanSetting(name = "DT", default = true, description = "Sets a reminder for the end of the run.").withDependency { showSettings }
     private val invite by BooleanSetting(name = "invite", default = true, description = "Invites the player to your party.").withDependency { showSettings }
     private val racism by BooleanSetting(name = "Racism", default = true, description = "Sends a random racism percentage.").withDependency { showSettings }
-    private val queDungeons by BooleanSetting(name = "Queue dungeons cmds", default = true, description = "Queue dungeons commands.").withDependency { showSettings }
-    private val queKuudra by BooleanSetting(name = "Queue kuudra cmds", default = true, description = "Queue kuudra commands.").withDependency { showSettings }
+    private val queInstance by BooleanSetting(name = "Queue instance cmds", default = true, description = "Queue dungeons commands.").withDependency { showSettings }
     private val time by BooleanSetting(name = "Time", default = false, description = "Sends the current time.").withDependency { showSettings }
     private var demote by BooleanSetting(name = "Demote", default = false, description = "Executes the /party demote command.").withDependency { showSettings }
     private var promote by BooleanSetting(name = "Promote", default = false, description = "Executes the /party promote command.").withDependency { showSettings }
@@ -79,7 +78,7 @@ object ChatCommands : Module(
         val commandsMap = when (channel) {
             ChatChannel.PARTY -> mapOf (
                 "coords" to coords, "odin" to odin, "boop" to boop, "cf" to cf, "8ball" to eightball, "dice" to dice, "racism" to racism, "tps" to tps, "warp" to warp,
-                "warptransfer" to warptransfer, "allinvite" to allinvite, "pt" to pt, "dt" to dt, "m" to queDungeons, "f" to queDungeons, "t" to queKuudra, "time" to time,
+                "warptransfer" to warptransfer, "allinvite" to allinvite, "pt" to pt, "dt" to dt, "m?" to queInstance, "f?" to queInstance, "t?" to queInstance, "time" to time,
                 "demote" to demote, "promote" to promote
             )
             ChatChannel.GUILD -> mapOf ("coords" to coords, "odin" to odin, "boop" to boop, "cf" to cf, "8ball" to eightball, "dice" to dice, "racism" to racism, "ping" to ping, "tps" to tps, "time" to time)
@@ -87,7 +86,7 @@ object ChatCommands : Module(
         }
 
         if (!message.startsWith("!")) return
-        when (message.split(" ")[0].drop(1)) {
+        when (message.split(" ")[0].drop(1).lowercase()) {
             "help", "h" -> channelMessage("Commands: ${commandsMap.filterValues { it }.keys.joinToString(", ")}", name, channel)
             "coords", "co" -> if (coords) channelMessage(PlayerUtils.getPositionString(), name, channel)
             "odin", "od" -> if (odin) channelMessage("Odin! https://discord.gg/2nCbC9hkxT", name, channel)
@@ -122,26 +121,10 @@ object ChatCommands : Module(
                 dtPlayer = name
                 disableRequeue = true
             }
-            "master", "m" -> {
-                if (!queDungeons || channel != ChatChannel.PARTY) return
-                val floor = message.substringAfter("m ")
-                if (message.substringAfter("m ") == message) return modMessage("§cPlease specify a floor.")
-                modMessage("§aEntering master mode floor: $floor")
-                sendCommand("od m$floor", true)
-            }
-            "floor", "f" -> {
-                if (!queDungeons || channel != ChatChannel.PARTY) return
-                val floor = message.substringAfter("f ")
-                if (message.substringAfter("f ") == message) return modMessage("§cPlease specify a floor.")
-                modMessage("§aEntering floor: $floor")
-                sendCommand("od f$floor", true)
-            }
-            "tier", "t" -> {
-                if (!queKuudra || channel != ChatChannel.PARTY) return
-                val tier = message.substringAfter("t ")
-                if (message.substringAfter("t ") == message) return modMessage("§cPlease specify a tier.")
-                modMessage("§aEntering kuudra run: $tier")
-                sendCommand("od t$tier", true)
+            Regex("(?:f(?:loor)?|t(?:ier)?|m(?:aster)?)\\s?[1-7]").pattern -> { // https://regex101.com/r/WMIPMi/1
+                if (!queInstance || channel != ChatChannel.PARTY) return
+                modMessage("§aEntering -> ${message.substring(1).capitalizeFirst()}")
+                sendCommand("od ${message.substring(1)}", true)
             }
             "demote" -> if (demote && channel == ChatChannel.PARTY) sendCommand("p demote $name")
             "promote" -> if (promote && channel == ChatChannel.PARTY) sendCommand("p promote $name")

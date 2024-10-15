@@ -101,8 +101,8 @@ object DungeonUtils {
     val currentFullRoom: FullRoom?
         get() = currentDungeon?.currentFullRoom
 
-    val passedRooms: List<FullRoom>
-        get() = currentDungeon?.passedRooms ?: emptyList()
+    val passedRooms: Set<FullRoom>
+        get() = currentDungeon?.passedRooms ?: emptySet()
 
     val isPaul: Boolean
         get() = currentDungeon?.paul == true
