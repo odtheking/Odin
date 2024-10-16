@@ -103,8 +103,7 @@ object DianaHelper : Module(
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-        if (!LocationUtils.currentArea.isArea(Island.Hub)) return
-        if (renderPos == null && burrowsRender.isEmpty()) return
+        if (!isDoingDiana || (renderPos == null && burrowsRender.isEmpty())) return
         renderPos?.let { guess ->
             if (guess.yCoord == 110.0 && mc.thePlayer.positionVector.distanceTo(guess) < 64) {
                 renderPos = findNearestGrassBlock(guess)
