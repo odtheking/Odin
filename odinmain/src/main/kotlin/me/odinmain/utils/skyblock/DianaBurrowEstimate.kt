@@ -51,7 +51,7 @@ object DianaBurrowEstimate {
     }
 
     fun blockEvent(pos: Vec3i, isFullyBroken: Boolean = false) {
-        if (isFullyBroken) {
+        if (isFullyBroken && isHolding("ANCESTRAL_SPADE")) {
             burrows.remove(pos)
             DianaHelper.burrowsRender.remove(pos)
         }

@@ -266,11 +266,11 @@ object TerminalSolver : Module(
     }
 
     private fun solvePanes(items: List<ItemStack?>): List<Int> =
-        items.filter { it?.metadata == 14 }.map { items.indexOf(it) }
+        items.mapIndexedNotNull { index, item -> if (item?.metadata == 14) index else null }
 
     private val colorOrder = listOf(1, 4, 13, 11, 14)
     private fun solveColor(items: List<ItemStack?>): List<Int> {
-        val panes = items.filter { it?.metadata != 15 && Item.getIdFromItem(it?.item) == 160 }.filterNotNull()
+        val panes = items.mapNotNull { item -> if (item?.metadata != 15 && Item.getIdFromItem(item?.item) == 160) item else null }
         var temp = List(100) { i -> i }
         if (lastRubixSolution != null && lockRubixSolution) {
             temp = panes.flatMap { pane ->
@@ -306,21 +306,23 @@ object TerminalSolver : Module(
     private fun dist(pane: Int, most: Int): Int =
         if (pane > most) (most + colorOrder.size) - pane else most - pane
 
-    private fun solveNumbers(items: List<ItemStack?>): List<Int> =
-        items.filter { it?.metadata == 14 && Item.getIdFromItem(it.item) == 160 }.filterNotNull().sortedBy { it.stackSize }.map { items.indexOf(it) }
-
+    private fun solveNumbers(items: List<ItemStack?>): List<Int> {
+        return items.mapIndexedNotNull { index, item ->
+            if (item?.metadata == 14 && Item.getIdFromItem(item.item) == 160) index else null
+        }.sortedBy { items[it]?.stackSize }
+    }
 
     private fun solveStartsWith(items: List<ItemStack?>, letter: String): List<Int> =
-        items.filter { it?.unformattedName?.startsWith(letter, true) == true && !it.isItemEnchanted }.map { items.indexOf(it) }
-
+        items.mapIndexedNotNull { index, item -> if (item?.unformattedName?.startsWith(letter, true) == true && !item.isItemEnchanted) index else null }
 
     private fun solveSelect(items: List<ItemStack?>, color: String): List<Int> {
-        return items.filter {
-            it?.isItemEnchanted == false &&
-            it.unlocalizedName?.contains(color, true) == true &&
-            (color == "lightblue" || it.unlocalizedName?.contains("lightBlue", true) == false) && // color BLUE should not accept light blue items.
-            Item.getIdFromItem(it.item) != 160
-        }.map { items.indexOf(it) }
+        return items.mapIndexedNotNull { index, item ->
+            if (item?.isItemEnchanted == false &&
+                item.unlocalizedName?.contains(color, true) == true &&
+                (color == "lightblue" || item.unlocalizedName?.contains("lightBlue", true) == false) && // color BLUE should not accept light blue items.
+                Item.getIdFromItem(item.item) != 160
+            ) index else null
+        }
     }
 
     private fun solveMelody(items: List<ItemStack?>): List<Int> {

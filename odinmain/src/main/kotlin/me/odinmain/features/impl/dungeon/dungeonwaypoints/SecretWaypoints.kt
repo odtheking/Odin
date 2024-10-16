@@ -64,8 +64,10 @@ object SecretWaypoints {
         val vec = pos.subtractVec(x = room.clayPos.x, z = room.clayPos.z).rotateToNorth(room.room.rotation)
 
         val waypoint = if (distance == 0) getWaypoints(room).find { wp -> wp.toVec3().equal(vec) && wp.secret && !wp.clicked }
-        else getWaypoints(room).filter { it.secret && !it.clicked }
-            .minByOrNull { wp -> wp.toVec3().distanceTo(vec).takeIf { it <= distance } ?: Double.MAX_VALUE }
+        else getWaypoints(room).minByOrNull { wp ->
+            if (wp.secret && !wp.clicked) wp.toVec3().distanceTo(vec).takeIf { it <= distance } ?: Double.MAX_VALUE
+            else Double.MAX_VALUE
+        }
 
         waypoint?.let {
             if (block?.block is BlockChest) lastClicked = BlockPos(pos)

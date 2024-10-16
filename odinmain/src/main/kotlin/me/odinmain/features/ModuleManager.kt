@@ -103,27 +103,27 @@ object ModuleManager {
 
     @SubscribeEvent
     fun onReceivePacket(event: PacketReceivedEvent) {
-        packetFunctions
-            .filter { it.type.isInstance(event.packet) && it.shouldRun.invoke() }
-            .forEach { it.function(event.packet) }
+        packetFunctions.forEach {
+            if (it.type.isInstance(event.packet) && it.shouldRun.invoke()) it.function(event.packet)
+        }
     }
 
     @SubscribeEvent
     fun onSendPacket(event: PacketSentEvent) {
-        packetFunctions
-            .filter { it.type.isInstance(event.packet) && it.shouldRun.invoke() }
-            .forEach { it.function(event.packet) }
+        packetFunctions.forEach {
+            if (it.type.isInstance(event.packet) && it.shouldRun.invoke()) it.function(event.packet)
+        }
     }
 
     @SubscribeEvent
     fun onChatPacket(event: ChatPacketEvent) {
-        messageFunctions
-            .filter { event.message matches it.filter && it.shouldRun() }
-            .forEach { it.function(event.message) }
+        messageFunctions.forEach {
+            if (event.message matches it.filter && it.shouldRun()) it.function(event.message)
+        }
 
-        cancellableMessageFunctions
-            .filter { event.message matches it.filter && it.shouldRun() }
-            .forEach { it.function(event) }
+        cancellableMessageFunctions.forEach {
+            if (event.message matches it.filter && it.shouldRun()) it.function(event)
+        }
     }
 
     @SubscribeEvent

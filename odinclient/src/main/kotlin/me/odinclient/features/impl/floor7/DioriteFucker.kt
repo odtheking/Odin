@@ -45,7 +45,7 @@ object DioriteFucker : Module(
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
         profile("Diorite Fucker") {
-            if (DungeonUtils.getF7Phase() == M7Phases.P2 && event.phase == TickEvent.Phase.END && mc.theWorld != null) replaceDiorite()
+            if (event.phase == TickEvent.Phase.END && mc.theWorld != null && DungeonUtils.getF7Phase() == M7Phases.P2) replaceDiorite()
         }
     }
 
@@ -57,7 +57,6 @@ object DioriteFucker : Module(
 
     private fun setGlass(pos: BlockPos) =
         mc.theWorld?.setBlockState(pos, if (stainedGlass) Blocks.stained_glass.getStateFromMeta(color) else Blocks.glass.defaultState, 3)
-
 
     private fun isDiorite(pos: BlockPos): Boolean =
         mc.theWorld?.chunkProvider?.provideChunk(pos.x shr 4, pos.z shr 4)?.getBlock(pos) == Blocks.stone

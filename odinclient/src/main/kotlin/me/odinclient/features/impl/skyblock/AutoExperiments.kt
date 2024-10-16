@@ -76,7 +76,7 @@ object AutoExperiments : Module(
             if (chronomatronOrder.size > 11 - serumCount && autoClose) mc.thePlayer?.closeScreen()
         }
         if (!hasAdded && invSlots[49].stack?.item == Items.clock) {
-            invSlots.filter { it.slotNumber in 10..43 }.find { it.stack?.isItemEnchanted == true }?.let {
+            invSlots.find { it.slotNumber in 10..43 && it.stack?.isItemEnchanted == true }?.let {
                 chronomatronOrder.add(Pair(it.slotNumber, it.stack.displayName))
                 lastAdded = it.slotNumber
                 hasAdded = true

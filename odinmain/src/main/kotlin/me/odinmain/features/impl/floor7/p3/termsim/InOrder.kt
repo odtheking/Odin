@@ -25,12 +25,7 @@ object InOrder : TermSimGui(
     }
 
     override fun slotClick(slot: Slot, button: Int) {
-        if (
-            inventorySlots.inventorySlots
-                .subList(0, size)
-                .filter { it.stack?.metadata == 14 }
-                .minByOrNull { it.stack?.stackSize ?: 999 } != slot
-        ) return
+        if (inventorySlots.inventorySlots.subList(0, size).minByOrNull { if (it.stack?.metadata == 14) it.stack?.stackSize ?: 999 else 1000 } != slot) return
         slot.putStack(ItemStack(pane, slot.stack.stackSize, 5).apply { setStackDisplayName("") })
         if (!TerminalSounds.enabled || !clickSounds) mc.thePlayer.playSound("random.orb", 1f, 1f)
         GuiEvent.GuiLoadedEvent(name, inventorySlots as ContainerChest).postAndCatch()

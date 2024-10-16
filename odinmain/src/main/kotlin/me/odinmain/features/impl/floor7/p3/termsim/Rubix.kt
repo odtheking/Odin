@@ -15,7 +15,7 @@ object Rubix : TermSimGui(
 ) {
     private val indices = listOf(12, 13, 14, 21, 22, 23, 30, 31, 32)
     private val order = listOf(1, 4, 13, 11, 14)
-    private val grid get() = indices.map { inventorySlots.inventorySlots[it] }.filter { it?.stack?.metadata != 15 }
+    private val grid get() = indices.mapNotNull { inventorySlots.inventorySlots[it]?.takeIf { it.stack?.metadata != 15 } }
 
     override fun create() {
         this.inventorySlots.inventorySlots.subList(0, 45).forEachIndexed { index, it ->
