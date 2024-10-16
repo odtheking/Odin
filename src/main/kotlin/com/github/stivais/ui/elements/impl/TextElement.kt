@@ -41,11 +41,10 @@ open class TextElement(
     }
 
     open fun getTextWidth(): Float {
-        return renderer.textWidth(text, height)
+        return renderer.textWidth(text, height, font)
     }
 
     override fun draw() {
-//        renderer.hollowRect(x, y, width, height, 1f, Color.WHITE.rgba)
         renderer.text(text, x, y, height, color!!.get(this), font)
     }
 

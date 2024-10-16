@@ -1,5 +1,6 @@
 package me.odinmain.features.settings.impl
 
+import com.github.stivais.ui.elements.scope.ElementDSL
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import me.odinmain.features.Module
@@ -35,5 +36,9 @@ class HUDSetting(
 
     override fun reset() {
         super.reset()
+    }
+
+    override fun ElementDSL.createElement() {
+        // todo: style it like a dropdown, where it drops down settings under the hud
     }
 }

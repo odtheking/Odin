@@ -18,23 +18,31 @@ import com.github.stivais.ui.utils.loop
 
 abstract class Element(constraints: Constraints?, var color: Color? = null) {
 
-    val constraints: Constraints = constraints ?: Constraints(Undefined, Undefined, Undefined, Undefined)
-
     lateinit var ui: UI
+
+    // rework for constraints to be more flexible?
+    val constraints: Constraints = constraints ?: Constraints(Undefined, Undefined, Undefined, Undefined)
 
     val renderer: Renderer
         get() = ui.renderer
+
+    // element "hierarchy"
 
     var parent: Element? = null
 
     var elements: ArrayList<Element>? = null
 
+    //
+
+    // events
+
     var acceptsInput = false
 
     var events: HashMap<Event, ArrayList<(Event) -> Boolean>>? = null
 
-    val initialized
-        get() = ::ui.isInitialized
+    //
+
+    // Position
 
     var x: Float = 0f
     var y: Float = 0f
@@ -49,6 +57,10 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
             field = value.coerceAtLeast(0f)
         }
 
+    //
+
+
+    // todo: move to different element
     var scrollY: Animatable.Raw? = null
 
     var sy = 0f
@@ -57,11 +69,12 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
             redraw = true
             field = value
         }
+    //
 
-    // todo: needs change
+
+    // todo: rework
+
     var alphaAnim: Animatable? = null
-
-    // todo: needs change
     var rotateAnim: Animatable? = null
 
     var alpha = 1f
@@ -77,6 +90,8 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
     var scaledCentered = true
 
     var rotation = 0f
+
+    //
 
     open var enabled: Boolean = true
 
@@ -151,13 +166,25 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
 
     open fun preSize() {}
 
-    fun render() {
+    // IDK is it worth
+    fun preRender() {
         if (_redraw) {
             _redraw = false
             size()
             positionChildren()
             clip()
         }
+        preDraw()
+        elements?.loop {
+            it.preRender()
+        }
+    }
+
+    open fun preDraw() {
+
+    }
+
+    fun render() {
         if (!renders) return
         renderer.push()
         if (alphaAnim != null) {
@@ -274,7 +301,7 @@ abstract class Element(constraints: Constraints?, var color: Color? = null) {
         return intersects(other.x, other.y, other.width, other.height)
     }
 
-    fun intersects(x: Float, y: Float, width: Float, height: Float): Boolean {
+    private fun intersects(x: Float, y: Float, width: Float, height: Float): Boolean {
         val tx = this.x
         val ty = this.y
         val tw = this.width

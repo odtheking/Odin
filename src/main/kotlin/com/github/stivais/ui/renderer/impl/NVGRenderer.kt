@@ -74,6 +74,7 @@ object NVGRenderer : Renderer {
             h.toInt(),
             0
         ) ?: throw NullPointerException("Error creating nvg fbo")
+        println("FBO size: ${fbos.size}")
         return fbo
     }
 
@@ -93,7 +94,7 @@ object NVGRenderer : Renderer {
         nvgluBindFramebuffer(vg, nvgFbo)
         glViewport(0, 0, fbo.width.toInt(), fbo.height.toInt())
         glClearColor(0f, 0f,0f, 0f)
-        glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT)
+        glClear(GL_COLOR_BUFFER_BIT or GL_DEPTH_BUFFER_BIT or GL_STENCIL_BUFFER_BIT)
     }
 
     override fun unbindFramebuffer() {

@@ -23,7 +23,7 @@ class UI(val renderer: Renderer = NVGRenderer) {
     lateinit var window: Window
 
     /**
-     * The master element, acts as the border
+     * The master element, acts as the background/border
      */
     val main: Group = Group(Constraints(0.px, 0.px, 1920.px, 1080.px))
 
@@ -64,11 +64,12 @@ class UI(val renderer: Renderer = NVGRenderer) {
 
     // rework fbo
     fun render() {
-        renderer.beginFrame(main.width, main.height)
-        renderer.push()
         operations?.removeAll {
             it.run()
         }
+        main.preRender()
+        renderer.beginFrame(main.width, main.height)
+        renderer.push()
         main.render()
         performance?.let {
             renderer.text(it, main.width - renderer.textWidth(it, 12f), main.height - 12f, 12f)
