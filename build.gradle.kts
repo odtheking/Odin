@@ -48,9 +48,7 @@ allprojects {
         implementation("org.spongepowered:mixin:0.7.11-SNAPSHOT") { isTransitive = false }
 
         val lwjgl: Configuration by configurations.creating
-        val lwjglNative: Configuration by configurations.creating {
-            isTransitive = true
-        }
+        val lwjglNative: Configuration by configurations.creating { isTransitive = true }
 
         val lwjglJar = tasks.create<ShadowJar>("lwjglJar") {
             group = "shadow"

@@ -14,6 +14,7 @@ dependencies {
 }
 
 loom {
+    log4jConfigs.from(rootProject.file("log4j2.xml"))
     launchConfigs {
         getByName("client") {
             property("mixin.debug", "true")
