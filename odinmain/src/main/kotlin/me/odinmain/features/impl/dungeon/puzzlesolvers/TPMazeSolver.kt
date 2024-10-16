@@ -5,7 +5,6 @@ import me.odinmain.events.impl.DungeonEvents
 import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers.mazeColorMultiple
 import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers.mazeColorOne
 import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers.mazeColorVisited
-import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers.solutionThroughWalls
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.*
 import me.odinmain.utils.render.Color
@@ -54,7 +53,7 @@ object TPMazeSolver {
         tpPads.forEach {
             when (it) {
                 in visited -> Renderer.drawBlock(it, mazeColorVisited, outlineAlpha = 0, fillAlpha = mazeColorVisited.alpha, depth = true)
-                in correctPortals -> Renderer.drawBlock(it, color, outlineAlpha = 0, fillAlpha = color.alpha, depth = !(solutionThroughWalls && correctPortals.size == 1))
+                in correctPortals -> Renderer.drawBlock(it, color, outlineAlpha = 0, fillAlpha = color.alpha, depth = correctPortals.size != 1)
                 else -> Renderer.drawBlock(it, Color.WHITE.withAlpha(0.5f), outlineAlpha = 0, fillAlpha = 0.5f, depth = true)
             }
         }

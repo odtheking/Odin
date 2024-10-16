@@ -69,8 +69,8 @@ object QuizSolver {
         triviaOptions.forEach { answer ->
             if (!answer.isCorrect) return@forEach
             answer.vec3?.addVec(y= -1)?.let {
-                Renderer.drawBox(it.toAABB(), Color.GREEN, depth = quizDepth)
-                RenderUtils.drawBeaconBeam(it, Color.GREEN, depth = quizDepth)
+                Renderer.drawBox(it.toAABB(), PuzzleSolvers.quizColor, depth = quizDepth)
+                RenderUtils.drawBeaconBeam(it, PuzzleSolvers.quizColor, depth = quizDepth)
             }
         }
     }

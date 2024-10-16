@@ -53,7 +53,7 @@ object DungeonWaypoints : Module(
 
     var editText by BooleanSetting("Edit Text", false, description = "Displays text under your crosshair telling you when you are editing waypoints.")
     private val renderTitle by BooleanSetting("Render Title", true, description = "Renders the title of the waypoint.")
-    private val disableDepth by BooleanSetting("Global Depth", false, description = "Disables depth testing for all waypoints.").withDependency { settingsDropDown }
+    private val disableDepth by BooleanSetting("Global Depth", false, description = "Disables depth testing for all waypoints.")
 
     private val settingsDropDown by DropdownSetting("Next Waypoint Settings")
     var waypointType: Int by SelectorSetting("Waypoint Type", WaypointType.NONE.displayName, WaypointType.getArrayList(), description = "The type of waypoint you want to place.").withDependency { settingsDropDown }
@@ -61,7 +61,7 @@ object DungeonWaypoints : Module(
     var color by ColorSetting("Color", default = Color.GREEN, description = "The color of the next waypoint you place.", allowAlpha = true).withDependency { colorPallet == 0 && settingsDropDown }
     var filled by BooleanSetting("Filled", false, description = "If the next waypoint you place should be 'filled'.").withDependency { settingsDropDown }
     var throughWalls by BooleanSetting("Through walls", false, description = "If the next waypoint you place should be visible through walls.").withDependency { settingsDropDown }
-    var useBlockSize by BooleanSetting("Use block size", false, description = "Use the size of the block you click for waypoint size.").withDependency { settingsDropDown }
+    var useBlockSize by BooleanSetting("Use block size", true, description = "Use the size of the block you click for waypoint size.").withDependency { settingsDropDown }
     var size: Double by NumberSetting("Size", 1.0, .125, 1.0, increment = 0.01, description = "The size of the next waypoint you place.").withDependency { !useBlockSize && settingsDropDown }
 
     private val resetButton by ActionSetting("Reset Current Room", description = "Resets the waypoints for the current room.") {
