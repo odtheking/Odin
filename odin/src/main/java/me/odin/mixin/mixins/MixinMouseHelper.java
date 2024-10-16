@@ -1,6 +1,6 @@
 package me.odin.mixin.mixins;
 
-import me.odinmain.features.impl.render.NoCursorReset;
+import me.odinmain.features.impl.skyblock.NoCursorReset;
 import net.minecraft.util.MouseHelper;
 import org.lwjgl.input.Mouse;
 import org.spongepowered.asm.mixin.Mixin;
@@ -13,7 +13,7 @@ public class MixinMouseHelper {
     // This mixin is used to prevent the mouse from being reset when the player opens a gui
     @Inject(method = "ungrabMouseCursor", at = @At("HEAD"), cancellable = true)
     private void ungrabMouseCursor(CallbackInfo ci) {
-        if (NoCursorReset.INSTANCE.shouldHookMouse()) {
+        if (NoCursorReset.shouldHookMouse()) {
             ci.cancel();
             Mouse.setGrabbed(false);
         }

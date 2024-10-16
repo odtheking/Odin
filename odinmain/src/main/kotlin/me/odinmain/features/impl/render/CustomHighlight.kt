@@ -50,10 +50,7 @@ object CustomHighlight : Module(
     }
 
     private fun getEntities() {
-        if (highlightList.isEmpty()) {
-            if (!starredMobESP && !shadowAssassin) return
-            if ((starredMobESP || shadowAssassin) && !DungeonUtils.inDungeons) return
-        }
+        if (highlightList.isEmpty() && ((!starredMobESP && !shadowAssassin) || !DungeonUtils.inDungeons)) return
         mc.theWorld?.loadedEntityList?.forEach { entity ->
             checkEntity(entity)
             if (starredMobESP) checkStarred(entity)

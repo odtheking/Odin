@@ -9,7 +9,7 @@ import org.lwjgl.input.Keyboard
 object FarmKeys: Module(
     name = "Farm Keys",
     description = "Temporarily changes your keybinds for farming in Skyblock.",
-    category = Category.RENDER
+    category = Category.SKYBLOCK
 ) {
     private val blockBreakKey by KeybindSetting("Block breaking", Keyboard.KEY_NONE, "Changes the keybind for breaking blocks.")
     private val jumpKey by KeybindSetting("Jump", Keyboard.KEY_NONE, "Changes the keybind for jumping.")

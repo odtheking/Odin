@@ -4,7 +4,6 @@ import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.GuiEvent
 import me.odinmain.features.impl.floor7.p3.TerminalSolver
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.currentTerm
-import me.odinmain.features.impl.floor7.p3.TerminalSolver.openedTerminalTime
 import me.odinmain.features.impl.floor7.p3.TerminalTypes
 import me.odinmain.utils.postAndCatch
 import me.odinmain.utils.render.*
@@ -52,7 +51,7 @@ abstract class TermGui {
         itemIndexMap.entries.find {
             it.value.isPointWithin(x, y)
         }?.let {
-            if (System.currentTimeMillis() - openedTerminalTime < 300) return
+            if (System.currentTimeMillis() - currentTerm.timeOpened < 300) return
             if (GuiEvent.CustomTermGuiClick(it.key, if (button == 0) 3 else 0, button).postAndCatch()) return
             windowClick(it.key, if (button == 0) PlayerUtils.ClickType.Middle else PlayerUtils.ClickType.Right, true)
         }

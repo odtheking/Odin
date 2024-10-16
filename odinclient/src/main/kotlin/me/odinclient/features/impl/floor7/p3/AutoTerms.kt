@@ -40,7 +40,7 @@ object AutoTerms : Module(
         if (
             TerminalSolver.currentTerm.solution.isEmpty() ||
             !clock.hasTimePassed(autoDelay) ||
-            System.currentTimeMillis() - TerminalSolver.openedTerminalTime <= firstClickDelay ||
+            System.currentTimeMillis() - TerminalSolver.currentTerm.timeOpened <= firstClickDelay ||
             clickedThisWindow ||
             event.phase != TickEvent.Phase.START ||
             mc.thePlayer?.openContainer !is ContainerChest ||

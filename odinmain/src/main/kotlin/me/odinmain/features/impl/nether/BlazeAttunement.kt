@@ -30,6 +30,7 @@ object BlazeAttunement : Module(
 
     init {
         execute(1000) {
+            if (!overlay) return@execute
             currentBlazes.clear()
             mc.theWorld?.loadedEntityList?.forEach { entity ->
                 if (entity !is EntityArmorStand || currentBlazes.any { it.key == entity }) return@forEach
@@ -72,7 +73,7 @@ object BlazeAttunement : Module(
 
     @JvmStatic
     fun renderModelBlazePost() {
-        if (currentBlazes.isEmpty() || !overlay) return
+        if (!enabled || currentBlazes.isEmpty() || !overlay) return
         GlStateManager.disableBlend()
         GlStateManager.enableTexture2D()
     }

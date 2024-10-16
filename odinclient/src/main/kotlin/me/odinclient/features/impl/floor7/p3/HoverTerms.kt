@@ -5,7 +5,6 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.p3.TerminalSolver
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.currentTerm
-import me.odinmain.features.impl.floor7.p3.TerminalSolver.openedTerminalTime
 import me.odinmain.features.impl.floor7.p3.TerminalTypes
 import me.odinmain.features.impl.floor7.p3.termGUI.TermGui
 import me.odinmain.features.settings.impl.DualSetting
@@ -37,7 +36,7 @@ object HoverTerms : Module(
             mc.currentScreen !is GuiChest ||
             !enabled ||
             !triggerBotClock.hasTimePassed(triggerDelay) ||
-            System.currentTimeMillis() - openedTerminalTime <= firstClickDelay
+            System.currentTimeMillis() - currentTerm.timeOpened <= firstClickDelay
         ) return
         val gui = mc.currentScreen as GuiChest
         if (gui.inventorySlots !is ContainerChest) return
