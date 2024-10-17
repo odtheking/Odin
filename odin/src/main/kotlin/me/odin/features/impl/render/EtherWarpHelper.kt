@@ -79,7 +79,7 @@ object EtherWarpHelper : Module(
 
     @SubscribeEvent
     fun onRightClick(event: ClickEvent.RightClickEvent) {
-        if (DungeonUtils.currentFullRoom?.waypoints?.any { etherPos.vec?.equal(it.toVec3()) == true && (it.type == DungeonWaypoints.WaypointType.BLOCKETHERWARP) } == false || !mc.thePlayer.usingEtherWarp) return
+        if (DungeonUtils.currentFullRoom?.waypoints?.any { etherPos.vec?.equal(it.toVec3()) == true && (it.type == DungeonWaypoints.WaypointType.BLOCKETHERWARP) } != true || !mc.thePlayer.usingEtherWarp) return
         event.isCanceled = true
     }
 }
