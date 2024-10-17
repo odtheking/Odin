@@ -6,10 +6,8 @@ import me.odinmain.events.impl.ClickEvent
 import me.odinmain.events.impl.PacketReceivedEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.toBlockPos
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.toVec3
-import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.waypointType
 import me.odinmain.features.impl.render.DevPlayers.isDev
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
