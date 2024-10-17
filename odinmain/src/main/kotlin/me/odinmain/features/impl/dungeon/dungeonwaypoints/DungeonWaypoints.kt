@@ -22,6 +22,7 @@ import me.odinmain.utils.render.RenderUtils.renderVec
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.render.scale
 import me.odinmain.utils.skyblock.*
+import me.odinmain.utils.skyblock.EtherWarpHelper.etherPos
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.getRealCoords
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.getRelativeCoords
@@ -154,6 +155,8 @@ object DungeonWaypoints : Module(
         }
     }
 
+
+
     @SubscribeEvent
     fun onSecret(event: SecretPickupEvent) {
         if (!allowEdits) SecretWaypoints.onSecret(event)
@@ -206,12 +209,16 @@ object DungeonWaypoints : Module(
         if (mc.thePlayer.usingEtherWarp) {
             val pos = EtherWarpHelper.getEtherPos(mc.thePlayer.renderVec, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch)
             if (pos.succeeded && pos.pos != null) {
+                if (DungeonUtils.currentFullRoom?.waypoints?.any { pos.vec?.equal(it.toVec3()) == true && (it.type == DungeonWaypoints.WaypointType.BLOCKETHERWARP) } == true) {
+                    event.isCanceled = true
+                    return
+                }
                 lastEtherPos = pos
                 lastEtherTime = System.currentTimeMillis()
             }
         }
-        val pos = if (!reachEdits) mc.objectMouseOver?.blockPos ?: return else reachPos?.pos ?: return
         if (!allowEdits) return
+        val pos = if (!reachEdits) mc.objectMouseOver?.blockPos ?: return else reachPos?.pos ?: return
         val offsetPos = pos.add(offset)
         offset = BlockPos(0.0, 0.0, 0.0)
         if (isAir(offsetPos)) return

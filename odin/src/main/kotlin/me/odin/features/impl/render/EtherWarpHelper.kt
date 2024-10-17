@@ -20,6 +20,7 @@ import me.odinmain.utils.skyblock.EtherWarpHelper
 import me.odinmain.utils.skyblock.EtherWarpHelper.etherPos
 import me.odinmain.utils.skyblock.PlayerUtils.playLoudSound
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.skyblock.usingEtherWarp
 import net.minecraft.network.play.server.S29PacketSoundEffect
 import net.minecraft.util.Vec3
@@ -74,12 +75,5 @@ object EtherWarpHelper : Module(
             playLoudSound(if (sound == defaultSounds.size - 1) customSound else defaultSounds[sound], soundVolume, soundPitch, positionVector)
             event.isCanceled = true
         }
-    }
-
-
-    @SubscribeEvent
-    fun onRightClick(event: ClickEvent.RightClickEvent) {
-        if (DungeonUtils.currentFullRoom?.waypoints?.any { etherPos.vec?.equal(it.toVec3()) == true && (it.type == DungeonWaypoints.WaypointType.BLOCKETHERWARP) } != true || !mc.thePlayer.usingEtherWarp) return
-        event.isCanceled = true
     }
 }

@@ -94,14 +94,11 @@ object EtherWarpHelper : Module(
 
     @SubscribeEvent
     fun onClick(event: ClickEvent.RightClickEvent) {
-        if (!mc.thePlayer.usingEtherWarp) return
-
-        if (DungeonUtils.currentFullRoom?.waypoints?.any { etherPos.vec?.equal(it.toVec3()) == true && (it.type == DungeonWaypoints.WaypointType.BLOCKETHERWARP) } == true) event.isCanceled = true
-
         if (
             zeroPing &&
             etherPos.succeeded &&
-            LocationUtils.currentArea.isArea(Island.SinglePlayer)
+            LocationUtils.currentArea.isArea(Island.SinglePlayer) &&
+            mc.thePlayer.usingEtherWarp
         ) {
             val pos = etherPos.pos ?: return
             mc.thePlayer.setPosition(pos.x + .5, pos.y + 1.0, pos.z + .5)
