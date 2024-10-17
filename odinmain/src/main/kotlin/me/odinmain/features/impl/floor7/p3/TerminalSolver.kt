@@ -181,6 +181,8 @@ object TerminalSolver : Module(
                     Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, color)
                     event.isCanceled = true
                 }
+                val amount = event.slot.stack?.stackSize ?: 0
+                mcText(amount.toString(), event.x + 8.5f - getMCTextWidth(amount.toString()) / 2, event.y + 4.5f, 1, textColor, shadow = textShadow, false)
             }
             TerminalTypes.STARTS_WITH ->
                 if (renderType != 1 || (renderType == 1 && !removeWrong)) Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, startsWithColor.rgba)
