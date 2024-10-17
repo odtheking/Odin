@@ -94,9 +94,9 @@ object EtherWarpHelper : Module(
     fun onClick(event: ClickEvent.RightClickEvent) {
         if (
             zeroPing &&
+            mc.thePlayer.usingEtherWarp &&
             etherPos.succeeded &&
-            LocationUtils.currentArea.isArea(Island.SinglePlayer) &&
-            mc.thePlayer.usingEtherWarp
+            LocationUtils.currentArea.isArea(Island.SinglePlayer)
         ) {
             val pos = etherPos.pos ?: return
             mc.thePlayer.setPosition(pos.x + .5, pos.y + 1.0, pos.z + .5)
