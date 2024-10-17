@@ -4,11 +4,11 @@ import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.DungeonEvents.RoomEnterEvent
 import me.odinmain.events.impl.PacketReceivedEvent
 import me.odinmain.features.impl.dungeon.MapInfo.togglePaul
-import me.odinmain.utils.equalsOneOf
-import me.odinmain.utils.noControlCodes
+import me.odinmain.utils.*
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.LocationUtils.currentDungeon
 import me.odinmain.utils.skyblock.PlayerUtils.posY
+import me.odinmain.utils.skyblock.dungeon.DungeonUtils.getRelativeCoords
 import me.odinmain.utils.skyblock.dungeon.tiles.FullRoom
 import net.minecraft.block.BlockSkull
 import net.minecraft.block.state.IBlockState
@@ -16,6 +16,7 @@ import net.minecraft.init.Blocks
 import net.minecraft.network.play.server.S38PacketPlayerListItem
 import net.minecraft.tileentity.TileEntitySkull
 import net.minecraft.util.BlockPos
+import net.minecraft.util.Vec3
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import kotlin.math.ceil
@@ -24,7 +25,7 @@ import kotlin.math.floor
 object DungeonUtils {
 
     val inDungeons: Boolean
-        get() = LocationUtils.currentArea.isArea(Island.Dungeon)
+        get() = true
 
     val floorNumber: Int
         get() = currentDungeon?.floor?.floorNumber ?: 0
@@ -237,6 +238,9 @@ object DungeonUtils {
             else -> false
         }
     }
+
+    fun FullRoom.getRelativeCoords(pos: Vec3) = pos.subtractVec(x = this.clayPos.x, z = this.clayPos.z).rotateToNorth(this.room.rotation)
+    fun FullRoom.getRealCoords(pos: Vec3) = pos.rotateAroundNorth(this.room.rotation).addVec(x = this.clayPos.x, z = this.clayPos.z)
 
     val dungeonItemDrops = listOf(
         "Health Potion VIII Splash Potion", "Healing Potion 8 Splash Potion", "Healing Potion VIII Splash Potion", "Healing VIII Splash Potion", "Healing 8 Splash Potion",

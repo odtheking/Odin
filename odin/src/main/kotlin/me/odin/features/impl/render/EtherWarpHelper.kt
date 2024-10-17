@@ -1,13 +1,17 @@
 package me.odin.features.impl.render
 
 import me.odin.mixin.accessors.IEntityPlayerSPAccessor
+import me.odinmain.events.impl.ClickEvent
 import me.odinmain.events.impl.PacketReceivedEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
+import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints
+import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.toVec3
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.PositionLook
+import me.odinmain.utils.equal
 import me.odinmain.utils.positionVector
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.RenderUtils.renderVec
@@ -15,6 +19,7 @@ import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.EtherWarpHelper
 import me.odinmain.utils.skyblock.EtherWarpHelper.etherPos
 import me.odinmain.utils.skyblock.PlayerUtils.playLoudSound
+import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.usingEtherWarp
 import net.minecraft.network.play.server.S29PacketSoundEffect
 import net.minecraft.util.Vec3
@@ -69,5 +74,12 @@ object EtherWarpHelper : Module(
             playLoudSound(if (sound == defaultSounds.size - 1) customSound else defaultSounds[sound], soundVolume, soundPitch, positionVector)
             event.isCanceled = true
         }
+    }
+
+
+    @SubscribeEvent
+    fun onRightClick(event: ClickEvent.RightClickEvent) {
+        if (DungeonUtils.currentFullRoom?.waypoints?.any { etherPos.vec?.equal(it.toVec3()) == true && (it.type == DungeonWaypoints.WaypointType.BLOCKETHERWARP) } == false || !mc.thePlayer.usingEtherWarp) return
+        event.isCanceled = true
     }
 }

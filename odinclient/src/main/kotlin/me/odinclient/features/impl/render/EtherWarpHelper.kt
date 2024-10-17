@@ -6,8 +6,10 @@ import me.odinmain.events.impl.ClickEvent
 import me.odinmain.events.impl.PacketReceivedEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
+import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.toBlockPos
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.toVec3
+import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.waypointType
 import me.odinmain.features.impl.render.DevPlayers.isDev
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
@@ -92,9 +94,12 @@ object EtherWarpHelper : Module(
 
     @SubscribeEvent
     fun onClick(event: ClickEvent.RightClickEvent) {
+        if (!mc.thePlayer.usingEtherWarp) return
+
+        if (DungeonUtils.currentFullRoom?.waypoints?.any { etherPos.vec?.equal(it.toVec3()) == true && (it.type == DungeonWaypoints.WaypointType.BLOCKETHERWARP) } == true) event.isCanceled = true
+
         if (
             zeroPing &&
-            mc.thePlayer.usingEtherWarp &&
             etherPos.succeeded &&
             LocationUtils.currentArea.isArea(Island.SinglePlayer)
         ) {
