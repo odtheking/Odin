@@ -8,7 +8,6 @@ import me.odinmain.utils.*
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.LocationUtils.currentDungeon
 import me.odinmain.utils.skyblock.PlayerUtils.posY
-import me.odinmain.utils.skyblock.dungeon.DungeonUtils.getRelativeCoords
 import me.odinmain.utils.skyblock.dungeon.tiles.FullRoom
 import net.minecraft.block.BlockSkull
 import net.minecraft.block.state.IBlockState
@@ -25,7 +24,7 @@ import kotlin.math.floor
 object DungeonUtils {
 
     val inDungeons: Boolean
-        get() = true
+        get() = LocationUtils.currentArea.isArea(Island.Dungeon)
 
     val floorNumber: Int
         get() = currentDungeon?.floor?.floorNumber ?: 0
