@@ -26,7 +26,7 @@ object Waypoints : Module(
     private val pingLocation by KeybindSetting("Ping Location Keybind", Keyboard.KEY_NONE, description = "Sends the location you are looking at as coords in chat for waypoints.").onPress {
         if (!pingLocationToggle) return@onPress
         EtherWarpHelper.getEtherPos(PositionLook(mc.thePlayer.renderVec, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch), pingDistance).pos?.let { pos ->
-            WaypointManager.addTempWaypoint("§6$name", pos.x.toInt(), pos.y.toInt(), pos.z.toInt(), pingWaypointTime)
+            WaypointManager.addTempWaypoint(x = pos.x.toInt(), y = pos.y.toInt(), z = pos.z.toInt(), time = pingWaypointTime)
             if (sendPingedLocation) sendCommand("odinwaypoint share ${pos.x} ${pos.y} ${pos.z}", true)
         }
     }.withDependency { pingLocationToggle && pingLocationDropDown }

@@ -116,13 +116,16 @@ object ArrowsDevice : Module(
         serverTicksSinceLastTargetDisappeared = serverTicksSinceLastTargetDisappeared?.let {
             // There was no target last tick (or the count would be null)
 
-            if (targetPosition != null) return@let null // A target appeared
-            else if (it < 10)  return@let it + 1 // No target yet, count the ticks
-            else if (it == 10) {
-                // We reached 10 ticks, device is either done, or the player left the stand
-                if (isPlayerOnStand) onComplete()
-                return@let 11
-            } else return@let 11
+            when {
+                targetPosition != null -> return@let null // A target appeared
+                it < 10 -> return@let it + 1 // No target yet, count the ticks
+                it == 10 -> {
+                    // We reached 10 ticks, device is either done, or the player left the stand
+                    if (isPlayerOnStand) onComplete()
+                    return@let 11
+                }
+                else -> return@let 11
+            }
         } ?: run {
             // There was a target last tick (or one appeared this tick
             // Check if target disappeared, set count accordingly

@@ -31,11 +31,13 @@ object LeapHelper {
         if (DungeonUtils.getF7Phase() == M7Phases.P3) scanGates()
         if (currentPos == NONE) return ""
         return DungeonUtils.dungeonTeammatesNoSelf
-            .filter {
+            .minByOrNull {
                 val entity = it.entity
-                entity != null && (if (currentPos.equal(Vec3(54.0, 4.0, 95.0))) entity.posY < 54.0 else true) // To make sure the player is underneath necron's platform
+                if (entity == null) 10000.0 else {
+                    if (currentPos.equal(Vec3(54.0, 4.0, 95.0)) && entity.posY >= 54.0) 10000.0
+                    else entity.positionVector.distanceTo(currentPos)
+                }
             }
-            .minByOrNull { it.entity?.positionVector?.distanceTo(currentPos) ?: 10000.0 }
             ?.entity
             ?.displayNameString
             .noControlCodes

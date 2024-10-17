@@ -7,6 +7,7 @@ import me.odinmain.features.impl.floor7.p3.TerminalSolver.gap
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.orderColor
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.orderColor2
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.orderColor3
+import me.odinmain.features.impl.floor7.p3.TerminalSolver.textScale
 import me.odinmain.utils.render.*
 
 object OrderGui : TermGui() {
@@ -42,6 +43,7 @@ object OrderGui : TermGui() {
                     box.h.toFloat() * customScale
                 )
             }
+            mcText(amount.toString(), -163 + col * 70 + 26f , -60 + row * 70 + (27f - (textScale*3) - (gap * 0.5)), 2 + textScale, TerminalSolver.textColor, shadow = TerminalSolver.textShadow)
         }
     }
 }

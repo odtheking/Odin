@@ -31,7 +31,7 @@ object DungeonAbilities : Module(
         }
 
         onMessage("[BOSS] Sadan: My giants! Unleashed!", false, { enabled && autoUlt }) {
-            dropItem(ticks = 25)
+            dropItem(delay = 25)
             modMessage("§aUsing ult!")
         }
     }

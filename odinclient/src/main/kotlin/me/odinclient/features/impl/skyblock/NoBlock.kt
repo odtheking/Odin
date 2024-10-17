@@ -28,8 +28,7 @@ object NoBlock : Module(
 
     @SubscribeEvent
     fun onInteract(event: PlayerInteractEvent) {
-        if (!LocationUtils.inSkyblock || event.action != PlayerInteractEvent.Action.RIGHT_CLICK_AIR) return
-        if (onlyBoss && !DungeonUtils.inBoss) return
+        if (!LocationUtils.inSkyblock || event.action != PlayerInteractEvent.Action.RIGHT_CLICK_AIR || (onlyBoss && !DungeonUtils.inBoss)) return
 
         if (!mc.thePlayer.heldItem.hasAbility || mc.thePlayer.heldItem.item !is ItemSword) return
         event.isCanceled = true

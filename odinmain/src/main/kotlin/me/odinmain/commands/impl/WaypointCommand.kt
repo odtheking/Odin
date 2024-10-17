@@ -32,14 +32,14 @@ val waypointCommand = commodore("waypoint", "odinwaypoint") {
     }
 
     literal("addtemp") {
-        runs { name: String, x: Int?, y: Int?, z: Int? ->
-            val xPos = x ?: posX.floor().toInt(); val yPos = y ?: posY.floor().toInt(); val zPos = z ?: posZ.floor().toInt()
-            WaypointManager.addTempWaypoint(name, xPos, yPos, zPos)
-        }
-
         runs { x: Int?, y: Int?, z: Int? ->
             val xPos = x ?: posX.floor().toInt(); val yPos = y ?: posY.floor().toInt(); val zPos = z ?: posZ.floor().toInt()
             WaypointManager.addTempWaypoint("Waypoint", xPos, yPos, zPos)
+        }
+
+        runs { name: String, x: Int?, y: Int?, z: Int? ->
+            val xPos = x ?: posX.floor().toInt(); val yPos = y ?: posY.floor().toInt(); val zPos = z ?: posZ.floor().toInt()
+            WaypointManager.addTempWaypoint(name, xPos, yPos, zPos)
         }
 
         runs {

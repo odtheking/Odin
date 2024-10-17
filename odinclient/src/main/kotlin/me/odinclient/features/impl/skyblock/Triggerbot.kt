@@ -2,7 +2,6 @@ package me.odinclient.features.impl.skyblock
 
 import me.odinclient.utils.skyblock.PlayerUtils
 import me.odinclient.utils.skyblock.PlayerUtils.leftClick
-import me.odinclient.utils.skyblock.PlayerUtils.swapToIndex
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.KingRelics.currentRelic
@@ -42,8 +41,6 @@ object Triggerbot : Module(
 
     private val stbCH by BooleanSetting("Crystal Hollows Chests", true, description = "Opens chests in crystal hollows when looking at them.").withDependency { secretTriggerbot }
     private val secretTBInBoss by BooleanSetting("In Boss", true, description = "Makes the triggerbot work in dungeon boss aswell.").withDependency { secretTriggerbot }
-    private val swapSlot by BooleanSetting("Swap slow", false, description = "Swaps to the slot before clicking.").withDependency { secretTriggerbot }
-    private val secretTriggerBotSlot by NumberSetting("Slot", 0, 0, 8, description = "The slot to use for the triggerbot.").withDependency { secretTriggerbot && swapSlot }
 
     private val triggerBotClock = Clock(stbDelay)
     private var clickedPositions = mapOf<BlockPos, Long>()
@@ -66,41 +63,36 @@ object Triggerbot : Module(
     @SubscribeEvent
     fun onEntityJoin(event: EntityJoinWorldEvent) {
         if (event.entity !is EntityOtherPlayerMP || mc.currentScreen != null || !DungeonUtils.inDungeons) return
-        val ent = event.entity
-        val name = ent.name.replace(" ", "")
-        if (!(bloodMobs.contains(name) && blood) && !(name == "Spirit Bear" && spiritBear)) return
+        val name = event.entity.name.replace(" ", "")
+        if ((blood && name !in bloodMobs) || (spiritBear && name != "Spirit Bear")) return
 
-        val (x, y, z) = Triple(ent.posX, ent.posY, ent.posZ)
-        if (!isFacingAABB(AxisAlignedBB(x - .5, y - 2.0, z - .5, x + .5, y + 3.0, z + .5), 30f)) return
+        if (!isFacingAABB(AxisAlignedBB(event.entity.posX - .5, event.entity.posY - 2.0, event.entity.posZ - .5, event.entity.posX + .5, event.entity.posY + 3.0, event.entity.posZ + .5), 30f)) return
 
-        if (bloodClickType && name != "Spirit Bear") PlayerUtils.rightClick()
-        else leftClick()
-    }
-
-    @SubscribeEvent
-    fun onTick(event: TickEvent.ClientTickEvent) {
-        if (!DungeonUtils.inBoss || DungeonUtils.getF7Phase() != M7Phases.P1 || !clickClock.hasTimePassed() || mc.objectMouseOver == null || !crystal) return
-        if ((take && mc.objectMouseOver.entityHit is EntityEnderCrystal) || (place && mc.objectMouseOver.entityHit?.name?.noControlCodes == "Energy Crystal Missing" && mc.thePlayer.heldItem.displayName.noControlCodes == "Energy Crystal")) {
-            PlayerUtils.rightClick()
-            clickClock.update()
-        }
+        if (bloodClickType && name != "Spirit Bear") PlayerUtils.rightClick() else leftClick()
     }
 
     @SubscribeEvent
     fun onClientTickEvent(event: TickEvent.ClientTickEvent) {
-        if (!relicTriggerBot || !tbClock.hasTimePassed()) return
-        val obj = mc.objectMouseOver ?: return
-        if (obj.entityHit is EntityArmorStand && obj.entityHit?.inventory?.get(4)?.itemID in cauldronMap.keys) {
-            PlayerUtils.rightClick()
-            tbClock.update()
+        if (crystal && DungeonUtils.inBoss && DungeonUtils.getF7Phase() == M7Phases.P1 && clickClock.hasTimePassed() && mc.objectMouseOver != null) {
+            if ((take && mc.objectMouseOver.entityHit is EntityEnderCrystal) || (place && mc.objectMouseOver.entityHit?.name?.noControlCodes == "Energy Crystal Missing" && mc.thePlayer.heldItem.displayName.noControlCodes == "Energy Crystal")) {
+                PlayerUtils.rightClick()
+                clickClock.update()
+            }
         }
 
-        if (
-            Vec2(obj.blockPos?.x ?: 0, obj.blockPos?.z ?: 0) != cauldronMap[currentRelic] ||
-            !obj.blockPos?.y.equalsOneOf(6, 7)
-        ) return
-        PlayerUtils.rightClick()
-        tbClock.update()
+        if (relicTriggerBot && tbClock.hasTimePassed()) {
+            val obj = mc.objectMouseOver ?: return
+            when {
+                obj.entityHit is EntityArmorStand && obj.entityHit?.inventory?.get(4)?.itemID in cauldronMap.keys -> {
+                    PlayerUtils.rightClick()
+                    tbClock.update()
+                }
+                Vec2(obj.blockPos?.x ?: 0, obj.blockPos?.z ?: 0) == cauldronMap[currentRelic] && obj.blockPos?.y.equalsOneOf(6, 7) -> {
+                    PlayerUtils.rightClick()
+                    tbClock.update()
+                }
+            }
+        }
     }
 
     init {
@@ -115,27 +107,23 @@ object Triggerbot : Module(
             val pos = mc.objectMouseOver?.blockPos ?: return@execute
             val state = mc.theWorld?.getBlockState(pos) ?: return@execute
             clickedPositions = clickedPositions.filter { it.value + 1000L > System.currentTimeMillis() }
-            if (
-                (pos.x in 58..62 && pos.y in 133..136 && pos.z == 142) || // looking at lights device
-                clickedPositions.containsKey(pos) // already clicked
-            ) return@execute
 
-            if (stbCH && LocationUtils.currentArea.isArea(Island.CrystalHollows) && state.block == Blocks.chest) {
-                PlayerUtils.rightClick()
-                triggerBotClock.update()
-                clickedPositions = clickedPositions.plus(pos to System.currentTimeMillis())
-                return@execute
+            when {
+                (pos.x in 58..62 && pos.y in 133..136 && pos.z == 142) || clickedPositions.containsKey(pos) -> return@execute
+
+                stbCH && LocationUtils.currentArea.isArea(Island.CrystalHollows) && state.block == Blocks.chest -> {
+                    PlayerUtils.rightClick()
+                    triggerBotClock.update()
+                    clickedPositions = clickedPositions.plus(pos to System.currentTimeMillis())
+                    return@execute
+                }
+
+                (DungeonUtils.inDungeons && !(!secretTBInBoss && DungeonUtils.inBoss) && DungeonUtils.isSecret(state, pos)) -> {
+                    PlayerUtils.rightClick()
+                    triggerBotClock.update()
+                    clickedPositions = clickedPositions.plus(pos to System.currentTimeMillis())
+                }
             }
-
-            if (!DungeonUtils.inDungeons || (!secretTBInBoss && DungeonUtils.inBoss) || !DungeonUtils.isSecret(state, pos)) return@execute
-
-            val currentSlot = mc.thePlayer?.inventory?.currentItem ?: 0
-            if (swapSlot) swapToIndex(secretTriggerBotSlot)
-            PlayerUtils.rightClick()
-            if (swapSlot) swapToIndex(currentSlot)
-            triggerBotClock.update()
-
-            clickedPositions = clickedPositions.plus(pos to System.currentTimeMillis())
         }
     }
 }

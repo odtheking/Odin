@@ -57,7 +57,7 @@ class ModCore {
             AutoGFS, /*AutoIceFill,*/ AutoSell, CancelInteract, CloseChest, SecretHitboxes,
             HoverTerms, LightsDevice, SimonSays, ArrowsDevice, DioriteFucker, RelicAura,
             Trajectories, Ghosts, NoDebuff, ChocolateFactory, AutoExperiments, AutoHarp,
-            FarmingHitboxes, NoBlock, TermAC, Triggerbot, GhostBlocks, FreezeGame, EtherWarpHelper, ChestEsp,
+            FarmingHitboxes, NoBlock, AutoClicker, Triggerbot, GhostBlocks, FreezeGame, EtherWarpHelper, ChestEsp,
             EscrowFix, TerminalMove, TerminalAura, AutoTerms, Camera, DungeonAbilities/*, QueueTerms*/, HidePlayers,
 
         )

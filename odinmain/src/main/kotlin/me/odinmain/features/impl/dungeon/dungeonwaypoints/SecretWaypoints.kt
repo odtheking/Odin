@@ -74,8 +74,10 @@ object SecretWaypoints {
 
         val waypoints = getWaypoints(room)
         val waypoint = if (distance == 0) getWaypoints(room).find { wp -> wp.toVec3().equal(vec) && wp.secret && !wp.clicked }
-        else waypoints.filter { it.secret && !it.clicked }
-            .minByOrNull { wp -> wp.toVec3().distanceTo(vec).takeIf { it <= distance } ?: Double.MAX_VALUE }
+        else waypoints.minByOrNull { wp ->
+            if (wp.secret && !wp.clicked) wp.toVec3().distanceTo(vec).takeIf { it <= distance } ?: Double.MAX_VALUE
+            else Double.MAX_VALUE
+        }
 
         waypoint?.let {
             handleTimer(it, waypoints, room)

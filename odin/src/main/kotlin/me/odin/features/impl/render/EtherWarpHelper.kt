@@ -54,7 +54,7 @@ object EtherWarpHelper : Module(
 
     @SubscribeEvent
     fun onRenderWorldLast(event: RenderWorldLastEvent) {
-        if (!mc.thePlayer.usingEtherWarp) return
+        if (!mc.thePlayer.usingEtherWarp || !render) return
         val player = mc.thePlayer as? IEntityPlayerSPAccessor ?: return
         val positionLook =
             if (useServerPosition)
@@ -63,7 +63,7 @@ object EtherWarpHelper : Module(
                 PositionLook(mc.thePlayer.renderVec, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch)
 
         etherPos = EtherWarpHelper.getEtherPos(positionLook)
-        if (render && (etherPos.succeeded || renderFail))
+        if (etherPos.succeeded || renderFail)
             Renderer.drawStyledBlock(etherPos.pos ?: return, if (etherPos.succeeded) color else wrongColor, style, lineWidth, depthCheck)
     }
 
