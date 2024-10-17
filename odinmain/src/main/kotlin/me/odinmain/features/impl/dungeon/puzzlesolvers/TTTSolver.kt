@@ -2,10 +2,14 @@ package me.odinmain.features.impl.dungeon.puzzlesolvers
 
 import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.DungeonEvents
-import me.odinmain.utils.*
+import me.odinmain.events.impl.PostEntityMetadata
+import me.odinmain.utils.Vec2
+import me.odinmain.utils.addRotationCoords
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
+import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.tiles.Rotations
+import me.odinmain.utils.toAABB
 import net.minecraft.entity.item.EntityItemFrame
 import net.minecraft.init.Items
 import net.minecraft.util.BlockPos
@@ -34,7 +38,7 @@ object TTTSolver {
         val room = event.fullRoom?.room ?: return
         if (room.data.name != "Tic Tac Toe") return
 
-        //updateBoard(room.vec2.addRotationCoords(room.rotation, 7, 0), room.rotation)
+        updateBoard(room.vec2.addRotationCoords(room.rotation, 7, 0), room.rotation)
     }
 
     private fun updateBoard(bottomRight: Vec2, rotations: Rotations) {
@@ -49,6 +53,14 @@ object TTTSolver {
         }
     }
 
+    fun onMetaData(event: PostEntityMetadata) {
+        val room = DungeonUtils.currentFullRoom?.room ?: return
+        if (room.data.name != "Tic Tac Toe") return
+
+        mc.theWorld?.getEntityByID(event.packet.entityId) as? EntityItemFrame ?: return
+        updateBoard(room.vec2.addRotationCoords(room.rotation, 7, 0), room.rotation)
+    }
+
     fun tttRenderWorld() {
         board.forEach { slot ->
             val color = when (slot.state) {
@@ -58,32 +70,11 @@ object TTTSolver {
             }
             Renderer.drawBox(slot.location.toAABB(), color, 1f, fillAlpha = 0f)
         }
-
-        toRender?.let {
-            Renderer.drawBox(it.toAABB(), Color.ORANGE, 1f, fillAlpha = 1f)
-        }
     }
 
-    fun firstMove() : BlockPos? {
-        if (board.filter { it.state == State.X }.size != 1) return null
-        return when (board.first { it.state == State.X }.position) {
-            BoardPosition.Middle -> board[0].location
-            BoardPosition.Corner -> board[4].location
-            else -> null
-        }
-    }
 
-    fun secondMove() : BlockPos? {
-        if (board.filter { it.state == State.X }.size != 2) return null
-        val slot = board.last { it.state == State.X }
-        return when (slot.position) {
-            BoardPosition.Middle -> board[8].location
-            BoardPosition.Corner -> board[0].location
-            else -> null
-        }
-    }
 
-    fun tttReset() {
+    fun reset() {
         toRender = null
         board = Array(9) { index ->
             BoardSlot(

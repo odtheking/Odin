@@ -2,6 +2,7 @@ package me.odinmain.features.impl.dungeon.puzzlesolvers
 
 import me.odinmain.events.impl.BlockChangeEvent
 import me.odinmain.events.impl.DungeonEvents.RoomEnterEvent
+import me.odinmain.events.impl.PostEntityMetadata
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.dungeon.puzzlesolvers.WaterSolver.waterInteract
@@ -130,6 +131,7 @@ object PuzzleSolvers : Module(
             WeirdosSolver.reset()
             QuizSolver.reset()
             BoulderSolver.reset()
+            TTTSolver.reset()
         }
     }
 
@@ -138,7 +140,7 @@ object PuzzleSolvers : Module(
         profile("Puzzle Solvers") {
             if (waterSolver) WaterSolver.waterRender()
             if (tpMaze) TPMazeSolver.tpRender()
-            //if (tttSolver) TTTSolver.tttRenderWorld()
+            //TTTSolver.tttRenderWorld()
             if (iceFillSolver) IceFillSolver.onRenderWorldLast(iceFillColor)
             if (blazeSolver) BlazeSolver.renderBlazes()
             if (beamsSolver) BeamsSolver.onRenderWorld()
@@ -146,6 +148,11 @@ object PuzzleSolvers : Module(
             if (quizSolver) QuizSolver.renderWorldLastQuiz()
             if (boulderSolver) BoulderSolver.onRenderWorld()
         }
+    }
+
+    @SubscribeEvent
+    fun onMetaData(event: PostEntityMetadata) {
+        //TTTSolver.onMetaData(event)
     }
 
     @SubscribeEvent

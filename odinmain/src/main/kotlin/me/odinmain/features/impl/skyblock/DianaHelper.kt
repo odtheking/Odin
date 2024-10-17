@@ -6,7 +6,6 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
-import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.*
 import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.render.Color
@@ -60,10 +59,10 @@ object DianaHelper : Module(
         get() = hasSpade && LocationUtils.currentArea.isArea(Island.Hub) && enabled
 
     enum class BurrowType(val text: String, val color: Color) {
-        START("§aStart", Color.GREEN.withAlpha(.75f)),
-        MOB("§cMob", Color.RED.withAlpha(.75f)),
-        TREASURE("§6Treasure", Color.ORANGE.withAlpha(.75f)),
-        UNKNOWN("§fUnknown?!", Color.WHITE.withAlpha(.75f)),
+        START("§aStart", Color.GREEN),
+        MOB("§cMob", Color.RED),
+        TREASURE("§6Treasure", Color.ORANGE),
+        UNKNOWN("§fUnknown?!", Color.WHITE),
     }
 
     init {
