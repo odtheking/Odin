@@ -126,7 +126,7 @@ object SecretWaypoints {
                 true
             }
             waypoint.timer == TimerType.CHECKPOINT && !waypoint.clicked && routeTimer != null -> {
-                modMessage("Collected a checkpoint at ${routeTimer?.let { (System.currentTimeMillis() - it)/1000.0 }?.round(2)}.")
+                modMessage("Collected a checkpoint at ${routeTimer?.let { (System.currentTimeMillis() - it)/1000.0 }?.round(2)}s.")
                 checkpoints++
                 true
             }
