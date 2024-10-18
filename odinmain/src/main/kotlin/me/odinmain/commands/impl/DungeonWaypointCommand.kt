@@ -36,14 +36,14 @@ val dungeonWaypointsCommand = commodore("dwp", "dungeonwaypoints") {
     literal("type").runs { type: String ->
         DungeonWaypoints.WaypointType.getByName(type)?.let {
             DungeonWaypoints.waypointType = it.ordinal
-            modMessage("Changed waypoint type to: ${it.displayName}")
+            modMessage("Changed waypoint type to: §a${it.displayName}")
         } ?: modMessage("Invalid type!")
     }
 
     literal("timer").runs { type: String ->
         DungeonWaypoints.TimerType.getByName(type)?.let {
             DungeonWaypoints.timerSetting = it.ordinal
-            modMessage("Changed waypoint type to: ${it.displayName}")
+            modMessage("Changed waypoint timer type to: §a${it.displayName}")
         } ?: modMessage("Invalid type!")
     }
 

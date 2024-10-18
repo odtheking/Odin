@@ -350,7 +350,7 @@ object RenderUtils {
             GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
 
             for (box in boxes) {
-                if (box.clicked) continue
+                if (box.clicked || box.color.alpha <= 0f) continue
                 (box.depth && !disableDepth).let {
                     if (it) GL11.glEnable(GL11.GL_DEPTH_TEST)
                     else GL11.glDisable(GL11.GL_DEPTH_TEST)

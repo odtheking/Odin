@@ -53,12 +53,10 @@ object SecretWaypoints {
         if (!DungeonUtils.inDungeons) return
         val etherpos = lastEtherPos?.pos?.toVec3() ?: return
         if (System.currentTimeMillis() - lastEtherTime > 1000) return
-        val pos = Vec3(packet.x, packet.y, packet.z)
-        if (pos.distanceTo(etherpos) > 3) return
+        if (Vec3(packet.x, packet.y, packet.z).distanceTo(etherpos) > 3) return
         val room = DungeonUtils.currentFullRoom ?: return
-        val vec = room.getRelativeCoords(etherpos)
         val waypoints = getWaypoints(room)
-        waypoints.find { wp -> wp.toVec3().equal(vec) && wp.type == WaypointType.ETHERWARP }?.let {
+        waypoints.find { wp -> wp.toVec3().equal(room.getRelativeCoords(etherpos)) && wp.type == WaypointType.ETHERWARP }?.let {
             handleTimer(it, waypoints, room)
             it.clicked = true
             setWaypoints(room)
@@ -100,10 +98,9 @@ object SecretWaypoints {
 
     fun onPosUpdate(pos: Vec3) {
         val room = DungeonUtils.currentFullRoom ?: return
-        val vec = room.getRelativeCoords(pos)
 
         val waypoints = getWaypoints(room)
-        waypoints.find { wp -> wp.toVec3().addVec(y = 0.5).distanceTo(vec) <= 2 && wp.type == WaypointType.MOVE && !wp.clicked }?.let { wp ->
+        waypoints.find { wp -> wp.toVec3().addVec(y = 0.5).distanceTo(room.getRelativeCoords(pos)) <= 2 && wp.type == WaypointType.MOVE && !wp.clicked }?.let { wp ->
             wp.timer?.let { if (handleTimer(wp, waypoints, room)) wp.clicked = true else return } ?: run { wp.clicked = true }
             setWaypoints(room)
             devMessage("clicked ${wp.toVec3()}")
@@ -114,19 +111,19 @@ object SecretWaypoints {
     private fun handleTimer(waypoint: DungeonWaypoint, waypoints: MutableList<DungeonWaypoint>, room: FullRoom): Boolean {
         return when {
             waypoint.timer == TimerType.START && (routeTimer?.let { System.currentTimeMillis() - it >= 2000 } == true || routeTimer == null) -> {
-                modMessage("${routeTimer?.let { "Route timer restarted" } ?: "Route timer started"} ")
+                modMessage("${routeTimer?.let { "§2Route timer restarted" } ?: "§aRoute timer started"} ")
                 waypoints.forEach { if (it.timer == TimerType.CHECKPOINT) it.clicked = false }
                 routeTimer = System.currentTimeMillis()
                 true
             }
             waypoint.timer == TimerType.END && routeTimer != null -> {
-                modMessage("Route took ${routeTimer?.let { (System.currentTimeMillis() - it)/1000.0 }?.round(2)}s to complete! Room: ${room.room.data.name}, Checkpoints collected: ${checkpoints}${waypoint.title?.let { name -> ", Route: $name" } ?: "."}")
+                modMessage("§aRoute took §c${routeTimer?.let { (System.currentTimeMillis() - it)/1000.0 }?.round(2)}§as to complete! §aRoom: §e${room.room.data.name}§a, §aCheckpoints collected: §9${checkpoints}§a${waypoint.title?.let { name -> ", Route: §d$name" } ?: "."}")
                 routeTimer = null
                 checkpoints = 0
                 true
             }
             waypoint.timer == TimerType.CHECKPOINT && !waypoint.clicked && routeTimer != null -> {
-                modMessage("Collected a checkpoint at ${routeTimer?.let { (System.currentTimeMillis() - it)/1000.0 }?.round(2)}s.")
+                modMessage("§7Collected a checkpoint at §c${routeTimer?.let { (System.currentTimeMillis() - it)/1000.0 }?.round(2)}§7s.")
                 checkpoints++
                 true
             }
