@@ -220,6 +220,16 @@ fun Vec2.addRotationCoords(rotation: Rotations, dist: Int = 4): Vec2 {
     }
 }
 
+fun Vec3.addRotationCoords(rotations: Rotations, dist: Int = 4): Vec3 {
+    return when (rotations) {
+        Rotations.NORTH -> Vec3(this.xCoord, this.yCoord, this.zCoord + dist)
+        Rotations.WEST -> Vec3(this.xCoord + dist, this.yCoord, this.zCoord)
+        Rotations.SOUTH -> Vec3(this.xCoord, this.yCoord, this.zCoord - dist)
+        Rotations.EAST -> Vec3(this.xCoord - dist, this.yCoord, this.zCoord)
+        Rotations.NONE -> this
+    }
+}
+
 fun Vec2.addRotationCoords(rotation: Rotations, x: Number = 0, z: Number = 0): Vec2 {
     return when(rotation){
         Rotations.NORTH -> Vec2(this.x + x.toInt(), this.z + z.toInt())

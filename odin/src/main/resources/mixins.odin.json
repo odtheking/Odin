@@ -36,6 +36,7 @@
     "mixins.MixinRenderItem",
     "mixins.MixinRenderPlayer",
     "mixins.MixinSoundManager",
+    "mixins.MixinTileEntityChestRenderer",
     "mixins.model.MixinModelBiped",
     "mixins.model.MixinModelBlaze"
   ]

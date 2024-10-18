@@ -190,7 +190,7 @@ object DungeonUtils {
                 status == "§r§a§l✔" -> PuzzleStatus.Completed
                 status == "§r§6§l✦" -> PuzzleStatus.Incomplete
                 else -> {
-                    modMessage(text.replace("§", "&"), false)
+                    modMessage(text.replace("§", "&"))
                     return@mapNotNull null
                 }
             }

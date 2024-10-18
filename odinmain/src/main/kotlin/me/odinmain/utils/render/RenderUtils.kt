@@ -356,6 +356,10 @@ object RenderUtils {
                     else GL11.glDisable(GL11.GL_DEPTH_TEST)
                     GL11.glDepthMask(it)
                 }
+                if (!box.filled) {
+                    GL11.glEnable(GL11.GL_LINE_SMOOTH)
+                    GL11.glHint(GL11.GL_LINE_SMOOTH_HINT, GL11.GL_NICEST)
+                }
 
                 box.aabb.offset(box.x, box.y, box.z).let {
                     box.color.bind()
@@ -365,6 +369,8 @@ object RenderUtils {
 
                     tessellator.draw()
                 }
+
+                if (!box.filled) GL11.glDisable(GL11.GL_LINE_SMOOTH)
             }
 
             GL11.glEnable(GL11.GL_DEPTH_TEST)
@@ -385,6 +391,7 @@ object RenderUtils {
         GlStateManager.disableLighting()
 
         GL11.glCallList(newGlList)
+        postDraw()
         GlStateManager.popMatrix()
 
         return newGlList

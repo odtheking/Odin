@@ -8,6 +8,8 @@ import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.*
 import me.odinmain.utils.skyblock.*
 import net.minecraft.event.ClickEvent
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 import kotlin.math.floor
 import kotlin.random.Random
 
@@ -98,7 +100,7 @@ object ChatCommands : Module(
             "ping" -> if (ping) channelMessage("Current Ping: ${floor(ServerUtils.averagePing).toInt()}ms", name, channel)
             "tps" -> if (tps) channelMessage("Current TPS: ${ServerUtils.averageTps.floor()}", name, channel)
             "fps" -> if (fps) channelMessage("Current FPS: ${ServerUtils.fps}", name, channel)
-            "time" -> if (time) channelMessage("Current Time: ${getCurrentTimeWithTimezone()}", name, channel)
+            "time" -> if (time) channelMessage("Current Time: ${ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss z"))}", name, channel)
 
             // Party cmds only
             "warp", "w" -> if (warp && channel == ChatChannel.PARTY) sendCommand("p warp")

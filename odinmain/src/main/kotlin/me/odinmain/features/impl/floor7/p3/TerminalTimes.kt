@@ -58,7 +58,7 @@ object TerminalTimes : Module(
 
         onMessage(terminalCompleteRegex, { enabled && terminalSplits }) {
             val (name, activated, type, current, total) = terminalCompleteRegex.find(it)?.destructured ?: return@onMessage
-            modMessage("§6$name §a$activated a $type! (§c${current}§a/${total}) §8(§7${sectionTimer.seconds}s §8| §7${phaseTimer.seconds}s§8)", false)
+            modMessage("§6$name §a$activated a $type! (§c${current}§a/${total}) §8(§7${sectionTimer.seconds}s §8| §7${phaseTimer.seconds}s§8)", "")
             if ((current == total && gateBlown) || (current.toIntOrNull() ?: return@onMessage) < completed.first) resetSection()
             else completed = Pair(current.toIntOrNull() ?: return@onMessage, total.toIntOrNull() ?: return@onMessage)
         }
