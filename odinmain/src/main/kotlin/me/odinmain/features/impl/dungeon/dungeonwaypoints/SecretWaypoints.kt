@@ -102,6 +102,7 @@ object SecretWaypoints {
         val waypoints = getWaypoints(room)
         waypoints.find { wp -> wp.toVec3().addVec(y = 0.5).distanceTo(room.getRelativeCoords(pos)) <= 2 && wp.type == WaypointType.MOVE && !wp.clicked }?.let { wp ->
             wp.timer?.let { if (handleTimer(wp, waypoints, room)) wp.clicked = true else return } ?: run { wp.clicked = true }
+
             setWaypoints(room)
             devMessage("clicked ${wp.toVec3()}")
             glList = -1
@@ -112,6 +113,7 @@ object SecretWaypoints {
         return when {
             waypoint.timer == TimerType.START && (routeTimer?.let { System.currentTimeMillis() - it >= 2000 } == true || routeTimer == null) -> {
                 modMessage("${routeTimer?.let { "§2Route timer restarted" } ?: "§aRoute timer started"} ")
+                checkpoints = 0
                 waypoints.forEach { if (it.timer == TimerType.CHECKPOINT) it.clicked = false }
                 routeTimer = System.currentTimeMillis()
                 true
