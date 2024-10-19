@@ -185,7 +185,7 @@ object RenderUtils {
         GlStateManager.popMatrix()
     }
 
-    fun drawLines(vararg points: Vec3, color: Color, lineWidth: Float, depth: Boolean) {
+    fun drawLines(points: Collection<Vec3>, color: Color, lineWidth: Float, depth: Boolean) {
         if (points.size < 2) return
 
         GlStateManager.pushMatrix()

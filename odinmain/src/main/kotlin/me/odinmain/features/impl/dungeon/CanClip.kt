@@ -101,7 +101,7 @@ object CanClip : Module(
                 else -> return
             }
 
-            if (line) Renderer.draw3DLine(pos1, pos2, color = Color.RED, depth = true)
+            if (line) Renderer.draw3DLine(listOf(pos1, pos2), color = Color.RED, depth = true)
         }
     }
 

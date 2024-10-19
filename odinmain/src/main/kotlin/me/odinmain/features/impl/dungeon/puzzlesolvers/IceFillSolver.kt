@@ -38,7 +38,7 @@ object IceFillSolver {
     fun onRenderWorldLast(color: Color) {
         if (currentPatterns.isEmpty() || DungeonUtils.currentRoomName != "Ice Fill") return
 
-        Renderer.draw3DLine(*currentPatterns.toTypedArray(), color = color, depth = true)
+        Renderer.draw3DLine(currentPatterns, color = color, depth = true)
     }
 
     fun enterDungeonRoom(event: RoomEnterEvent) {

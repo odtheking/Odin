@@ -2,12 +2,10 @@ package me.odinmain.features.impl.dungeon.puzzlesolvers
 
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
-import me.odinmain.OdinMain.mc
 import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers.showOrder
 import me.odinmain.utils.Vec2
 import me.odinmain.utils.addRotationCoords
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.RenderUtils.renderVec
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.tiles.Room
@@ -105,13 +103,14 @@ object WaterSolver {
 
         val first = solutionList.firstOrNull() ?: return
 
-        if (PuzzleSolvers.showTracer) Renderer.draw3DLine(mc.thePlayer.renderVec, Vec3(first.first.leverPos).addVector(.5, .5, .5), color = PuzzleSolvers.tracerColorFirst, depth = true)
+        if (PuzzleSolvers.showTracer)
+            Renderer.drawTracer(Vec3(first.first.leverPos).addVector(.5, .5, .5), color = PuzzleSolvers.tracerColorFirst, depth = true)
 
         if (solutionList.size > 1 && PuzzleSolvers.showTracer) {
             if (first.first.leverPos != solutionList[1].first.leverPos) {
                 Renderer.draw3DLine(
-                    Vec3(solutionList.first().first.leverPos).addVector(0.5, 0.5, 0.5),
-                    Vec3(solutionList[1].first.leverPos).addVector(0.5, 0.5, 0.5),
+                    listOf(Vec3(solutionList.first().first.leverPos).addVector(0.5, 0.5, 0.5),
+                    Vec3(solutionList[1].first.leverPos).addVector(0.5, 0.5, 0.5)),
                     color = PuzzleSolvers.tracerColorSecond,
                     lineWidth = 1.5f,
                     depth = true

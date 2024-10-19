@@ -217,8 +217,7 @@ object BloodCamp : Module(
 
             if (drawLine) {
                 Renderer.draw3DLine(
-                    Vec3(currVector.xCoord, currVector.yCoord + 2.0, currVector.zCoord),
-                    Vec3(endPoint.xCoord, endPoint.yCoord + 2.0, endPoint.zCoord),
+                    listOf(currVector.addVec(y = 2.0), endPoint.addVec(y = 2.0)),
                     color = Color.RED, depth = true
                 )
             }

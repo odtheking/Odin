@@ -6,6 +6,7 @@ import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.*
 import me.odinmain.utils.render.RenderUtils.drawBeaconBeam
 import me.odinmain.utils.render.RenderUtils.outlineBounds
+import me.odinmain.utils.render.RenderUtils.renderVec
 import me.odinmain.utils.skyblock.getBlockAt
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.entity.Entity
@@ -108,8 +109,20 @@ object Renderer {
      * @param lineWidth The width of the line (default is 3).
      * @param depth     Indicates whether to draw with depth (default is false).
      */
-    fun draw3DLine(vararg points: Vec3, color: Color, lineWidth: Float = 3f, depth: Boolean = false) {
-        RenderUtils.drawLines(*points, color = color, lineWidth = lineWidth, depth = depth)
+    fun draw3DLine(points: Collection<Vec3>, color: Color, lineWidth: Float = 3f, depth: Boolean = false) {
+        RenderUtils.drawLines(points, color = color, lineWidth = lineWidth, depth = depth)
+    }
+
+    /**
+     * Draws a 3D line between two specified points in the world.
+     *
+     * @param goal       The end point of the line.
+     * @param color     The color of the line.
+     * @param lineWidth The width of the line (default is 3).
+     * @param depth     Indicates whether to draw with depth (default is false).
+     */
+    fun drawTracer(goal: Vec3, color: Color, lineWidth: Float = 3f, depth: Boolean = false) {
+        RenderUtils.drawLines(listOf(mc.thePlayer.renderVec.addVec(y = fastEyeHeight()), goal), color, lineWidth, depth)
     }
 
     /**
