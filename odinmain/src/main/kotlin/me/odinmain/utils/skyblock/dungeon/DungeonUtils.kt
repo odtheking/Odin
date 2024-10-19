@@ -16,6 +16,7 @@ import net.minecraft.network.play.server.S38PacketPlayerListItem
 import net.minecraft.tileentity.TileEntitySkull
 import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
+import net.minecraftforge.event.entity.EntityJoinWorldEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import kotlin.math.ceil
@@ -175,6 +176,11 @@ object DungeonUtils {
     @SubscribeEvent
     fun onWorldLoad(event: WorldEvent.Load) {
         currentDungeon?.onWorldLoad()
+    }
+
+    @SubscribeEvent
+    fun onEntityJoin(event: EntityJoinWorldEvent) {
+        currentDungeon?.onEntityJoin(event)
     }
 
     private val puzzleRegex = Regex("^§r (\\w+(?: \\w+)*|\\?\\?\\?): §r§7\\[(§r§c§l✖|§r§a§l✔|§r§6§l✦)§r§7] ?(?:§r§f\\(§r§[a-z](\\w+)§r§f\\))?§r$")

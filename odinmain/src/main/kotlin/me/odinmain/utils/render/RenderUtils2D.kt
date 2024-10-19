@@ -1,6 +1,8 @@
 package me.odinmain.utils.render
 
 import me.odinmain.OdinMain.mc
+import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
+import me.odinmain.utils.addVec
 import me.odinmain.utils.corners
 import me.odinmain.utils.render.RenderUtils.bind
 import me.odinmain.utils.render.RenderUtils.renderVec
@@ -9,6 +11,7 @@ import me.odinmain.utils.render.RenderUtils.worldRenderer
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
+import net.minecraft.entity.Entity
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
@@ -75,6 +78,29 @@ object RenderUtils2D {
             }
         }
         return if (x1 != Double.MAX_VALUE) Box2D(x1, y1, x2, y2) else null
+    }
+
+    fun drawBackgroundNameTag(
+        text: String,
+        entity: Entity,
+        padding: Number,
+        backgroundColor: Color = Color.GRAY.withAlpha(0.5f),
+        accentColor: Color = Color.BLUE,
+        textColor: Color = Color.WHITE,
+        scale: Float = 1f,
+        shadow: Boolean = false
+    ) {
+        worldToScreenPosition(entity.renderVec.addVec(y = 0.5 + entity.height))?.let {
+            val width = getMCTextWidth(text).toDouble() + padding.toDouble()
+            val height = getMCTextHeight().toDouble() + padding.toDouble()
+            GlStateManager.pushMatrix()
+            translate(it.xCoord, it.yCoord, 0)
+            scale(scale, scale, scale)
+            roundedRectangle(-width/2.0, -height/2.0, width, height*0.9, backgroundColor)
+            roundedRectangle(-width/2.0, -height/2.0 + height*0.9, width, height*0.1, accentColor)
+            mcText(text, 0, -getMCTextHeight()/2,  1f, textColor, shadow = shadow)
+            GlStateManager.popMatrix()
+        }
     }
 
 
