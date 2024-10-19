@@ -106,6 +106,7 @@ object DungeonWaypoints : Module(
 
     override fun onKeybind() {
         allowEdits = !allowEdits
+        glList = -1
         modMessage("Dungeon Waypoint editing ${if (allowEdits) "§aenabled" else "§cdisabled"}§r!")
     }
 
@@ -135,7 +136,22 @@ object DungeonWaypoints : Module(
         if ((DungeonUtils.inBoss || !DungeonUtils.inDungeons) && !LocationUtils.currentArea.isArea(Island.SinglePlayer)) return
         val room = DungeonUtils.currentFullRoom ?: return
         startProfile("Dungeon Waypoints")
-        glList = RenderUtils.drawBoxes(room.waypoints, glList, disableDepth)
+
+        /*
+        *   Draw invisible waypoints in edit mode.
+        *
+         */
+
+        val toDraw: ArrayList<DungeonWaypoint> = arrayListOf()
+
+        if(allowEdits) {
+            toDraw.addAll(room.waypoints.map { if(it.color.alpha == 0f) it.copy(color = it.color.withAlpha(0.3f)) else it })
+        } else {
+            toDraw.addAll(room.waypoints)
+        }
+
+        glList = RenderUtils.drawBoxes(toDraw, glList, disableDepth)
+
         if (renderTitle) {
             for (waypoint in room.waypoints) {
                 if (waypoint.clicked) continue
