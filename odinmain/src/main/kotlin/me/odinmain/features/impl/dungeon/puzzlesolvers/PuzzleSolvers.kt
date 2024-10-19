@@ -46,7 +46,7 @@ object PuzzleSolvers : Module(
     private val iceFillDropDown by DropdownSetting("Ice Fill")
     private val iceFillSolver by BooleanSetting("Ice Fill Solver", false, description = "Solver for the ice fill puzzle.").withDependency { iceFillDropDown }
     private val iceFillColor by ColorSetting("Ice Fill Color", Color.PINK, true, description = "Color for the ice fill solver.").withDependency { iceFillSolver && iceFillDropDown }
-    val useOptimizedPatterns by BooleanSetting("Use Optimized Patterns", true, description = "Use optimized patterns for the ice fill solver.").withDependency { iceFillSolver && iceFillDropDown }
+    val useOptimizedPatterns by BooleanSetting("Use Optimized Patterns", false, description = "Use optimized patterns for the ice fill solver.").withDependency { iceFillSolver && iceFillDropDown }
     private val action by ActionSetting("Reset", description = "Resets the solver.") {
         IceFillSolver.reset()
     }.withDependency { iceFillSolver && iceFillDropDown }

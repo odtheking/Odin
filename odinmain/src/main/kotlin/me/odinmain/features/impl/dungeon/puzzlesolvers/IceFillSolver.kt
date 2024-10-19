@@ -17,7 +17,7 @@ import java.io.InputStreamReader
 import java.nio.charset.StandardCharsets
 
 object IceFillSolver {
-    var currentPatterns: ArrayList<List<Vec3>> = ArrayList()
+    var currentPatterns: ArrayList<Vec3> = ArrayList()
 
     private var representativeFloors: List<List<List<Int>>>
     private val gson = GsonBuilder().setPrettyPrinting().create()
@@ -38,9 +38,7 @@ object IceFillSolver {
     fun onRenderWorldLast(color: Color) {
         if (currentPatterns.isEmpty() || DungeonUtils.currentRoomName != "Ice Fill") return
 
-        currentPatterns.forEach {
-            Renderer.draw3DLine(*it.toTypedArray(), color = color, depth = true)
-        }
+        Renderer.draw3DLine(*currentPatterns.toTypedArray(), color = color, depth = true)
     }
 
     fun enterDungeonRoom(event: RoomEnterEvent) {
@@ -63,7 +61,7 @@ object IceFillSolver {
                     modMessage("Section $floorIndex scan took ${(System.nanoTime() - startTime) / 1000000.0}ms pattern: $patternIndex")
 
                     (if (PuzzleSolvers.useOptimizedPatterns) IceFillFloors.advanced[floorIndex][patternIndex] else IceFillFloors.IceFillFloors[floorIndex][patternIndex]).toMutableList().let {
-                        currentPatterns.add(it.map { startPosition.addVec(x= 0.5, y = 0.1, z = 0.5).add(transformTo(it, rotation)) })
+                        currentPatterns.addAll(it.map { startPosition.addVec(x = 0.5, y = 0.1, z = 0.5).add(transformTo(it, rotation)) })
                     }
 
                     return@forEachIndexed
