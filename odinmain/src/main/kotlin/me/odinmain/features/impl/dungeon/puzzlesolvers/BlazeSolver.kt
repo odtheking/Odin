@@ -58,7 +58,7 @@ object BlazeSolver {
                 outlineAlpha = if (PuzzleSolvers.blazeStyle == 0) 0 else color.alpha, fillAlpha = if (PuzzleSolvers.blazeStyle == 1) 0 else color.alpha, depth = true)
 
             if (PuzzleSolvers.blazeLineNext && index > 0 && index <= PuzzleSolvers.blazeLineAmount)
-                Renderer.draw3DLine(blazes[index - 1].renderVec, entity.renderBoundingBox.middle, color = color, lineWidth = 1f, depth = true)
+                Renderer.draw3DLine(listOf(blazes[index - 1].renderVec, entity.renderBoundingBox.middle), color = color, lineWidth = 1f, depth = true)
         }
     }
 

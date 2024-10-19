@@ -19,11 +19,6 @@ import org.lwjgl.opengl.GL11
 import org.lwjgl.util.glu.GLU
 import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
-import java.time.LocalDateTime
-import java.time.Month
-import java.time.ZonedDateTime
-import java.time.format.DateTimeFormatter
-import java.time.format.TextStyle
 import java.util.*
 import kotlin.math.*
 
@@ -203,7 +198,7 @@ inline fun profile(name: String, func: () -> Unit) {
 
 /**
  * Starts a minecraft profiler section with the specified name + "Odin: ".
- */
+ * */
 fun startProfile(name: String) {
     mc.mcProfiler.startSection("Odin: $name")
 }
@@ -258,14 +253,6 @@ fun <T> Collection<T>.getSafe(index: Int?): T? {
     } catch (_: Exception) {
         null
     }
-}
-
-fun getCurrentMonthName(): String {
-    return Month.entries[LocalDateTime.now().monthValue - 1].getDisplayName(TextStyle.FULL, Locale.getDefault())
-}
-
-fun getCurrentTimeWithTimezone(): String {
-    return ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss z"))
 }
 
 /**
@@ -351,3 +338,7 @@ inline fun <T> MutableCollection<T>.removeFirstOrNull(predicate: (T) -> Boolean)
 fun Int.rangeAdd(add: Int): IntRange = this..this+add
 
 val Entity.rotation get() = Pair(rotationYaw, rotationPitch)
+
+fun runOnMCThread(run: () -> Unit) {
+    if (!mc.isCallingFromMinecraftThread) mc.addScheduledTask(run) else run()
+}

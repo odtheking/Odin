@@ -190,7 +190,7 @@ object DungeonUtils {
                 status == "§r§a§l✔" -> PuzzleStatus.Completed
                 status == "§r§6§l✦" -> PuzzleStatus.Incomplete
                 else -> {
-                    modMessage(text.replace("§", "&"), false)
+                    modMessage(text.replace("§", "&"))
                     return@mapNotNull null
                 }
             }
@@ -214,7 +214,7 @@ object DungeonUtils {
         return previousTeammates
     }
 
-    private const val WITHER_ESSENCE_ID = "26bb1a8d-7c66-31c6-82d5-a9c04c94fb02"
+    const val WITHER_ESSENCE_ID = "26bb1a8d-7c66-31c6-82d5-a9c04c94fb02"
     private const val REDSTONE_KEY = "edb0155f-379c-395a-9c7d-1b6005987ac8"
 
     /**

@@ -226,7 +226,7 @@ object Trajectories : Module(
     }
 
     private fun drawLine(lines: ArrayList<Vec3>) {
-        Renderer.draw3DLine(*lines.toTypedArray(), color = color, lineWidth = width, depth = true)
+        Renderer.draw3DLine(lines, color = color, lineWidth = width, depth = true)
     }
 
     private fun drawPearlCollisionBox() {

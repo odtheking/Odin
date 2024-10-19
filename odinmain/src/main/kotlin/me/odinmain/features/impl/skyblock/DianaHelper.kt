@@ -9,7 +9,6 @@ import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.*
 import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.RenderUtils.renderVec
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.*
 import net.minecraft.network.play.client.C07PacketPlayerDigging
@@ -113,13 +112,13 @@ object DianaHelper : Module(
             }.takeIf { it.location.distanceTo(guess) + 35 < mc.thePlayer.positionVector.distanceTo(guess) }
 
             if (tracer)
-                Renderer.draw3DLine(mc.thePlayer.renderVec.addVec(y = fastEyeHeight()), guess.addVec(.5, .5, .5), color = tracerColor, lineWidth = tracerWidth, depth = false)
+                Renderer.drawTracer(guess.addVec(.5, .5, .5), color = tracerColor, lineWidth = tracerWidth, depth = false)
 
             Renderer.drawCustomBeacon("§6Guess${warpLocation?.displayName ?: ""}§r", guess, guessColor, increase = true, style = style)
         }
 
         burrowsRender.forEach { (location, type) ->
-            if (tracerBurrows) Renderer.draw3DLine(mc.thePlayer.renderVec.addVec(y = fastEyeHeight()), Vec3(location).addVec(.5, .5, .5), color = type.color, lineWidth = tracerWidth, depth = false)
+            if (tracerBurrows) Renderer.drawTracer(Vec3(location).addVec(.5, .5, .5), color = type.color, lineWidth = tracerWidth, depth = false)
             Renderer.drawCustomBeacon(type.text, Vec3(location), type.color, style = style)
         }
     }

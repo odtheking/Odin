@@ -56,7 +56,7 @@ val devCommand = commodore("oddev") {
             |LeapTeammates: ${DungeonUtils.leapTeammates.map { it.name }}
             |Blessings: ${Blessing.entries.joinToString { "${it.name}: ${it.current}" }}
             ${getChatBreak()}
-        """.trimIndent(), false)
+        """.trimIndent(), "")
     }
 
     literal("getlocation").runs {
@@ -77,7 +77,7 @@ val devCommand = commodore("oddev") {
                 |phase: ${KuudraUtils.phase}
                 |buildingPiles: ${KuudraUtils.buildingPiles.joinToString { it.positionVector.toString() }}
                 ${getChatBreak()}
-            """.trimIndent(), false)
+            """.trimIndent(), "")
         }
     }
     literal("simulate").runs { str: GreedyString ->
@@ -98,8 +98,7 @@ val devCommand = commodore("oddev") {
             Rotation: ${room?.room?.rotation ?: "NONE"}
             Positions: ${room?.components?.joinToString { "(${it.x}, ${it.z})" } ?: "None"}
             ${getChatBreak()}
-            """.trimIndent(), false
-        )
+            """.trimIndent(), "")
         writeToClipboard(core.toString(), "§aCopied $core to clipboard!")
     }
 

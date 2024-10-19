@@ -37,7 +37,7 @@ object SupplyHelper : Module(
         onMessageCancellable(Regex("(\\[\\w+])?(\\w+) recovered one of Elle's supplies! \\((\\d)/(\\d)\\)")) {
             if (!sendSupplyTime) return@onMessageCancellable
             val (name, current, total) = Regex("(\\[\\w+])?(\\w+) recovered one of Elle's supplies! \\((\\d)/(\\d)\\)").find(it.message)?.destructured ?: return@onMessageCancellable
-            modMessage("$name, §a§lrecovered a supply at ${formatTime((System.currentTimeMillis() - startRun))}!, §r§8($current/$total)", false)
+            modMessage("$name, §a§lrecovered a supply at ${formatTime((System.currentTimeMillis() - startRun))}!, §r§8($current/$total)", "")
             it.isCanceled = true
         }
     }

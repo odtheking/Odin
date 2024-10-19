@@ -1,11 +1,11 @@
 package me.odinmain.utils.skyblock
 
-import me.odinmain.OdinMain.logger
 import me.odinmain.OdinMain.mc
 import me.odinmain.features.impl.render.ClickGUIModule.devMessages
 import me.odinmain.features.impl.render.DevPlayers
 import me.odinmain.features.impl.skyblock.ChatCommands
 import me.odinmain.utils.noControlCodes
+import me.odinmain.utils.runOnMCThread
 import net.minecraft.event.*
 import net.minecraft.util.*
 import net.minecraftforge.client.ClientCommandHandler
@@ -53,7 +53,9 @@ fun sendCommand(text: Any, clientSide: Boolean = false) {
  * @param message Message to be sent.
  */
 fun sendChatMessage(message: Any) {
-    mc.thePlayer?.sendChatMessage(message.toString())
+    runOnMCThread {
+        mc.thePlayer?.sendChatMessage(message.toString())
+    }
 }
 
 /**
@@ -63,11 +65,10 @@ fun sendChatMessage(message: Any) {
  * @param prefix If `true`, adds a prefix to the message.
  * @param chatStyle Optional chat style to be applied to the message.
  */
-fun modMessage(message: Any?, prefix: Boolean = true, chatStyle: ChatStyle? = null) {
-    val chatComponent = ChatComponentText(if (prefix) "§3Odin §8»§r $message" else message.toString())
+fun modMessage(message: Any?, prefix: String = "§3Odin §8»§r ", chatStyle: ChatStyle? = null) {
+    val chatComponent = ChatComponentText("$prefix$message")
     chatStyle?.let { chatComponent.setChatStyle(it) } // Set chat style using setChatStyle method
-    try { mc.thePlayer?.addChatMessage(chatComponent) }
-    catch (e: Exception) { logger.error("Error sending message: $message", e)}
+    runOnMCThread { mc.thePlayer?.addChatMessage(chatComponent) }
 }
 
 
@@ -75,12 +76,10 @@ fun modMessage(message: Any?, prefix: Boolean = true, chatStyle: ChatStyle? = nu
  * Sends a client-side message for developers only.
  *
  * @param message Message to be sent.
- * @param prefix If `true`, adds a prefix to the message.
  */
-fun devMessage(message: Any?, prefix: Boolean = true) {
+fun devMessage(message: Any?) {
     if (!devMessages || !DevPlayers.isDev) return
-    val msg = if (prefix) "§3Odin§bDev §8»§r $message" else message.toString()
-    mc.thePlayer?.addChatMessage(ChatComponentText(msg))
+    modMessage(message, prefix = "§3Odin§bDev §8»§r ")
 }
 
 /**

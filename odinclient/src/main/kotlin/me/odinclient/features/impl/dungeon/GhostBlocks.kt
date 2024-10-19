@@ -11,6 +11,7 @@ import me.odinmain.utils.rangeAdd
 import me.odinmain.utils.runIn
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.skyblock.dungeon.DungeonUtils.WITHER_ESSENCE_ID
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.getF7Phase
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.inDungeons
 import net.minecraft.block.state.IBlockState
@@ -45,7 +46,7 @@ object GhostBlocks : Module(
 
     // ghost pickaxe
     private val ghostPickDropDown by DropdownSetting("Ghost Tools Dropdown", false)
-    private val slot by NumberSetting("Ghost pick slot", 1, 1.0, 9.0, 1.0, description = "The slot at which the ghost tool will spawn.").withDependency { ghostPickDropDown }
+    private val slot by NumberSetting("Ghost tool slot", 1, 1.0, 9.0, 1.0, description = "The slot at which the ghost tool will spawn.").withDependency { ghostPickDropDown }
     private val level by NumberSetting("Efficiency level", 10, 1.0, 100.0, 1.0, description = "The efficiency level the ghost tool will spawn with.").withDependency { ghostPickDropDown }
     private val delay by NumberSetting("Delay to Create", 0, 0, 1000, 10, unit = "ms", description = "The delay between clicking to the spawning of the ghost tool.").withDependency { ghostPickDropDown }
     private val pickaxeKey by KeybindSetting("Pickaxe Keybind", Keyboard.KEY_NONE, description = "Press this keybind to create a ghost pickaxe.").onPress { giveItem(278) }.withDependency { ghostPickDropDown }
@@ -112,7 +113,7 @@ object GhostBlocks : Module(
     private fun toAir(blockPos: BlockPos) {
         getBlockAt(blockPos).let { block ->
             if (block !in blacklist && (block !== Blocks.skull || (ghostBlockSkulls && (mc.theWorld?.getTileEntity(blockPos) as? TileEntitySkull)
-                    ?.playerProfile?.id?.toString() != "26bb1a8d-7c66-31c6-82d5-a9c04c94fb02"))) mc.theWorld?.setBlockToAir(blockPos)
+                    ?.playerProfile?.id?.toString() != WITHER_ESSENCE_ID))) mc.theWorld?.setBlockToAir(blockPos)
         }
     }
 

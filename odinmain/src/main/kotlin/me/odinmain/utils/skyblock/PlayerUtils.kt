@@ -8,6 +8,7 @@ import me.odinmain.utils.clock.Executor.Companion.register
 import me.odinmain.utils.floored
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
+import me.odinmain.utils.runOnMCThread
 import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.item.ItemStack
@@ -27,7 +28,7 @@ object PlayerUtils {
      * @author Aton
      */
     fun playLoudSound(sound: String?, volume: Float, pitch: Float, pos: Vec3? = null) {
-        mc.addScheduledTask {
+        runOnMCThread {
             shouldBypassVolume = true
             mc.theWorld?.playSound(pos?.xCoord ?: mc.thePlayer.posX, pos?.yCoord ?: mc.thePlayer.posY, pos?.zCoord  ?: mc.thePlayer.posZ, sound, volume, pitch, false)
             shouldBypassVolume = false
