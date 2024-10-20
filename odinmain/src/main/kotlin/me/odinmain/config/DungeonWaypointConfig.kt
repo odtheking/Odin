@@ -89,9 +89,7 @@ object DungeonWaypointConfig {
 
             val waypoint = DungeonWaypoint(x, y, z, color, filled, depth, aabb, title, type = waypointType, timer = timerType)
             // Handle the "secret" to "type" migration
-            if (waypointType == null && jsonObj.has("secret") && jsonObj["secret"]?.asBoolean == true) {
-                waypoint.secret = true
-            }
+            if (waypointType == null && jsonObj.has("secret") && jsonObj["secret"]?.asBoolean == true) waypoint.secret = true
 
             return waypoint
         }

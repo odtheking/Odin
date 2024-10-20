@@ -5,7 +5,6 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
-import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.mcTextAndWidth
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -20,7 +19,7 @@ object TickTimers : Module(
     private val symbolDisplay: Boolean by BooleanSetting("Display Symbol", default = true, description = "Displays s or t after the timers.")
     private val showPrefix: Boolean by BooleanSetting("Show Prefix", default = true, description = "Shows the prefix of the timers.")
 
-    private val necronHud: HudElement by HudSetting("Necron Hud", 10f, 10f, 1f, true) {
+    private val necronHud by HudSetting("Necron Hud", 10f, 10f, 1f, true) {
         if (it) {
             mcTextAndWidth(formatTimer(35, 60, "§4Necron dropping in"), 1f, 1f, 2, Color.DARK_RED, shadow = true, center = false) * 2 + 2f to 16f
         } else if (necronTime >= 0) {
@@ -30,7 +29,7 @@ object TickTimers : Module(
 
     private var necronTime: Byte = -1
 
-    private val goldorHud: HudElement by HudSetting("Goldor Hud", 10f, 10f, 1f, true) {
+    private val goldorHud by HudSetting("Goldor Hud", 10f, 10f, 1f, true) {
         if (it) {
             mcTextAndWidth(formatTimer(35, 60, "§7Tick:"), 1f, 1f, 2, Color.DARK_RED, shadow = true ,center = false) * 2 + 2f to 16f
         } else if ((goldorStartTime >= 0 && startTimer) || goldorTickTime >= 0) {
@@ -43,7 +42,7 @@ object TickTimers : Module(
     private var goldorTickTime: Int = -1
     private var goldorStartTime: Int = -1
 
-    private val stormHud: HudElement by HudSetting("Storm Pad Hud", 10f, 10f, 1f, true) {
+    private val stormHud by HudSetting("Storm Pad Hud", 10f, 10f, 1f, true) {
         if (it) {
             mcTextAndWidth(formatTimer(15, 20, "§bPad:"), 1f, 1f, 2, Color.DARK_RED, shadow = true ,center = false) * 2 + 2f to 16f
         } else if (padTickTime >= 0) {

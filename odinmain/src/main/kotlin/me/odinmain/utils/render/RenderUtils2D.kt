@@ -91,14 +91,14 @@ object RenderUtils2D {
         shadow: Boolean = false
     ) {
         worldToScreenPosition(entity.renderVec.addVec(y = 0.5 + entity.height))?.let {
-            val width = getMCTextWidth(text).toDouble() + padding.toDouble()
-            val height = getMCTextHeight().toDouble() + padding.toDouble()
+            val width = getMCTextWidth(text) + padding.toDouble()
+            val height = getMCTextHeight() + padding.toDouble()
             GlStateManager.pushMatrix()
             translate(it.xCoord, it.yCoord, 0)
             scale(scale, scale, scale)
-            roundedRectangle(-width/2.0, -height/2.0, width, height*0.9, backgroundColor)
-            roundedRectangle(-width/2.0, -height/2.0 + height*0.9, width, height*0.1, accentColor)
-            mcText(text, 0, -getMCTextHeight()/2,  1f, textColor, shadow = shadow)
+            roundedRectangle(-width / 2, -height / 2, width, height * 0.9, backgroundColor)
+            roundedRectangle(-width / 2, -height / 2 + height * 0.9, width, height * 0.1, accentColor)
+            mcText(text, 0, -getMCTextHeight() / 2,  1f, textColor, shadow = shadow)
             GlStateManager.popMatrix()
         }
     }

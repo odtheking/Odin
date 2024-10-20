@@ -12,6 +12,7 @@ import me.odinmain.features.impl.render.DevPlayers.updateDevs
 import me.odinmain.utils.*
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.*
+import me.odinmain.utils.skyblock.dungeon.DungeonUtils.getRelativeCoords
 import me.odinmain.utils.skyblock.dungeon.ScanUtils.getRoomCenter
 import net.minecraft.network.play.server.S02PacketChat
 import net.minecraft.util.ChatComponentText
@@ -51,7 +52,7 @@ val devCommand = commodore("oddev") {
             |currentDungeonPlayer: ${DungeonUtils.currentDungeonPlayer.name}, ${DungeonUtils.currentDungeonPlayer.clazz}, ${DungeonUtils.currentDungeonPlayer.isDead}, ${DungeonUtils.isGhost}
             |doorOpener: ${DungeonUtils.doorOpener}
             |currentRoom: ${DungeonUtils.currentFullRoom?.room?.data?.name}, roomsPassed: ${DungeonUtils.passedRooms.map { it.room.data.name }}
-            |Teammates: ${DungeonUtils.dungeonTeammates.joinToString { "${it.name} (${it.clazz})" }}
+            |Teammates: ${DungeonUtils.dungeonTeammates.joinToString { "${it.clazz.colorCode}${it.name} (${it.clazz})" }}
             |TeammatesNoSelf: ${DungeonUtils.dungeonTeammatesNoSelf.map { it.name }}
             |LeapTeammates: ${DungeonUtils.leapTeammates.map { it.name }}
             |Blessings: ${Blessing.entries.joinToString { "${it.name}: ${it.current}" }}
@@ -102,9 +103,18 @@ val devCommand = commodore("oddev") {
         writeToClipboard(core.toString(), "§aCopied $core to clipboard!")
     }
 
-    literal("generatereadme").runs {
-        val readmeContent = generateFeatureList()
+    literal("relativecoords").runs {
+        val block = mc.objectMouseOver.blockPos ?: return@runs
+        modMessage(
+            """
+            ${getChatBreak()}
+            Middle: $block
+            Relative Coords: ${DungeonUtils.currentFullRoom?.getRelativeCoords(block.toVec3())?.toString()}
+            ${getChatBreak()}
+            """.trimIndent(), "")
+    }
 
-        writeToClipboard(readmeContent)
+    literal("generatereadme").runs {
+        writeToClipboard(generateFeatureList())
     }
 }

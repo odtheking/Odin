@@ -205,17 +205,15 @@ object DungeonUtils {
     }
 
     private val tablistRegex = Regex("^\\[(\\d+)] (?:\\[\\w+] )*(\\w+) .*?\\((\\w+)(?: (\\w+))*\\)$")
+    var customLeapOrder: List<String> = emptyList()
 
     fun getDungeonTeammates(previousTeammates: ArrayList<DungeonPlayer>, tabList: List<S38PacketPlayerListItem.AddPlayerData>): ArrayList<DungeonPlayer> {
         for (line in tabList) {
             val displayName = line.displayName?.unformattedText?.noControlCodes ?: continue
             val (_, name, clazz, _) = tablistRegex.find(displayName)?.destructured ?: continue
 
-            previousTeammates.find { it.name == name }?.let { player ->
-                player.isDead = clazz == "DEAD"
-                player.entity = mc.theWorld?.getPlayerEntityByName(name)
-            } ?: previousTeammates.add(DungeonPlayer(name, DungeonClass.entries.find { it.name == clazz } ?: continue,
-                     mc.netHandler.getPlayerInfo(name).locationSkin, mc.theWorld?.getPlayerEntityByName(name), clazz == "DEAD"))
+            previousTeammates.find { it.name == name }?.let { player -> player.isDead = clazz == "DEAD" } ?:
+            previousTeammates.add(DungeonPlayer(name, DungeonClass.entries.find { it.name == clazz } ?: continue, mc.netHandler.getPlayerInfo(name).locationSkin, mc.theWorld?.getPlayerEntityByName(name), false))
         }
         return previousTeammates
     }

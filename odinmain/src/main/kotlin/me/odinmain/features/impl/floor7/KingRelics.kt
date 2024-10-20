@@ -1,7 +1,6 @@
 package me.odinmain.features.impl.floor7
 
 import me.odinmain.OdinMain.mc
-import me.odinmain.features.impl.floor7.WitherDragons.cauldronHighlight
 import me.odinmain.features.impl.floor7.WitherDragons.colors
 import me.odinmain.features.impl.floor7.WitherDragons.relicAnnounceTime
 import me.odinmain.features.impl.floor7.WitherDragons.selected
@@ -9,11 +8,9 @@ import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.*
-import me.odinmain.utils.toAABB
 import net.minecraft.init.Blocks
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.util.Vec3
-import java.util.Locale
 
 object KingRelics {
     val currentRelic get() = mc.thePlayer?.heldItem?.itemID ?: ""
@@ -33,33 +30,32 @@ object KingRelics {
     }
 
     private val relicPBs = PersonalBest("Relics", 5)
-    private var timer = 0L
-    private var ticks = 0
+    private var relicPlaceTimer = 0L
+    var relicTicksToSpawn = 0
 
     fun relicsOnMessage(){
         if (WitherDragons.relicAnnounce) partyMessage("${colors[selected]} Relic")
-        timer = System.currentTimeMillis()
-        ticks = WitherDragons.relicSpawnTicks
+        relicPlaceTimer = System.currentTimeMillis()
+        relicTicksToSpawn = WitherDragons.relicSpawnTicks
     }
 
     fun relicsBlockPlace(packet: C08PacketPlayerBlockPlacement) {
-        if (timer == 0L || !getBlockAt(packet.position).equalsOneOf(Blocks.cauldron, Blocks.anvil)) return
+        if (relicPlaceTimer == 0L || !getBlockAt(packet.position).equalsOneOf(Blocks.cauldron, Blocks.anvil)) return
 
         Relic.entries.find { it.id == currentRelic }?.let {
-            relicPBs.time(it.ordinal, (System.currentTimeMillis() - timer) / 1000.0, "s§7!", "§${it.colorCode}${it.name} relic §7took §6", addPBString = true, addOldPBString = true, sendOnlyPB = false, sendMessage = relicAnnounceTime)
-            timer = 0L
+            relicPBs.time(it.ordinal, (System.currentTimeMillis() - relicPlaceTimer) / 1000.0, "s§7!", "§${it.colorCode}${it.name} relic §7took §6", addPBString = true, addOldPBString = true, sendOnlyPB = false, sendMessage = relicAnnounceTime)
+            relicPlaceTimer = 0L
         }
     }
 
     fun relicsOnWorldLast() {
-        if (ticks <= 0) return
+        if (relicTicksToSpawn <= 0) return
         Relic.entries.forEach {
-            Renderer.drawStringInWorld("§${it.colorCode}${it.name.first()}: ${String.format(Locale.US, "%.2f", ticks / 20.0)}s", it.spawnPosition, depth = false, scale = 0.02f, shadow = true)
-            if (cauldronHighlight && currentRelic == it.id) Renderer.drawBox(it.cauldronPosition.toAABB(), it.color)
+            if (currentRelic == it.id) Renderer.drawCustomBeacon("", it.cauldronPosition, it.color, distance = false)
         }
     }
 
     fun onServerTick() {
-        ticks = (ticks - 1).coerceAtLeast(0)
+        relicTicksToSpawn = (relicTicksToSpawn - 1).coerceAtLeast(0)
     }
 }

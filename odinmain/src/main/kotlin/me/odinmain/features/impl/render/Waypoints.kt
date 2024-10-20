@@ -8,6 +8,7 @@ import me.odinmain.features.settings.impl.DropdownSetting
 import me.odinmain.features.settings.impl.KeybindSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.PositionLook
+import me.odinmain.utils.addVec
 import me.odinmain.utils.render.RenderUtils.renderVec
 import me.odinmain.utils.skyblock.EtherWarpHelper
 import me.odinmain.utils.skyblock.sendCommand
@@ -26,8 +27,9 @@ object Waypoints : Module(
     private val pingLocation by KeybindSetting("Ping Location Keybind", Keyboard.KEY_NONE, description = "Sends the location you are looking at as coords in chat for waypoints.").onPress {
         if (!pingLocationToggle) return@onPress
         EtherWarpHelper.getEtherPos(PositionLook(mc.thePlayer.renderVec, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch), pingDistance).pos?.let { pos ->
-            WaypointManager.addTempWaypoint(x = pos.x.toInt(), y = pos.y.toInt(), z = pos.z.toInt(), time = pingWaypointTime)
-            if (sendPingedLocation) sendCommand("odinwaypoint share ${pos.x} ${pos.y} ${pos.z}", true)
+            val position = pos.addVec(0.5, 0.5, 0.5)
+            WaypointManager.addTempWaypoint(x = position.x.toInt(), y = position.y.toInt(), z = position.z.toInt(), time = pingWaypointTime)
+            if (sendPingedLocation) sendCommand("odinwaypoint share ${position.x} ${position.y} ${position.z}", true)
         }
     }.withDependency { pingLocationToggle && pingLocationDropDown }
     private val sendPingedLocation: Boolean by BooleanSetting("Send Pinged Location", false, description = "Sends the location you are looking at as coords in chat for waypoints.").withDependency { pingLocationToggle && pingLocationDropDown }

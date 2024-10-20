@@ -654,7 +654,7 @@ object RenderUtils {
     fun drawMinecraftLabel(str: String, pos: Vec3, scale: Double, depth: Boolean = true, color: Color = Color.WHITE) {
         GlStateManager.pushMatrix()
         depth(depth)
-        GlStateManager.translate(pos.xCoord + 0.0f, pos.yCoord + (mc.thePlayer?.height ?: 0f) + 0.5f, pos.zCoord)
+        GlStateManager.translate(pos.xCoord + 0.0f, pos.yCoord + 2.5f, pos.zCoord)
         GL11.glNormal3f(0.0f, 1.0f, 0.0f)
         GlStateManager.rotate(-this.renderManager.playerViewY, 0.0f, 1.0f, 0.0f)
         GlStateManager.rotate(this.renderManager.playerViewX, 1.0f, 0.0f, 0.0f)

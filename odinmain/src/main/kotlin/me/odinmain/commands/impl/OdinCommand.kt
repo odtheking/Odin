@@ -13,6 +13,7 @@ import me.odinmain.ui.clickgui.ClickGUI
 import me.odinmain.ui.hud.EditHUDGui
 import me.odinmain.utils.*
 import me.odinmain.utils.skyblock.*
+import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import java.awt.Desktop
 import java.net.URI
 import kotlin.math.round
@@ -134,6 +135,12 @@ val mainCommand = commodore("od", "odin") {
         }
     } suggests {
         (tiers.keys.map { "t$it" } + floors.keys.map { "m$it" } + floors.keys.map { "f$it" }).toList()
+    }
+
+    literal("leap").runs { player1: String?, player2: String?, player3: String?, player4: String? ->
+        val players = listOfNotNull(player1, player2, player3, player4)
+        DungeonUtils.customLeapOrder = players
+        modMessage("§aCustom leap order set to: §f${players.joinToString(", ")}")
     }
 }
 

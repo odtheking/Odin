@@ -5,6 +5,7 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
+import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.ServerUtils.getPing
 import me.odinmain.utils.render.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
@@ -23,8 +24,8 @@ object CustomHighlight : Module(
     private val shadowAssassin by BooleanSetting("Shadow Assassin", false, description = "Highlights Shadow Assassins.").withDependency { !isLegitVersion }
     private val mode by SelectorSetting("Mode", HighlightRenderer.HIGHLIGHT_MODE_DEFAULT, HighlightRenderer.highlightModeList, description = HighlightRenderer.HIGHLIGHT_MODE_DESCRIPTION)
 
-    private val color by ColorSetting("Color", Color.WHITE, true, description = "The color of the highlight.")
-    private val thickness by NumberSetting("Line Width", 1f, .1f, 4f, .1f, description = "The line width of Outline / Boxes/ 2D Boxes.").withDependency { mode != HighlightRenderer.HighlightType.Overlay.ordinal }
+    private val color by ColorSetting("Color", Color.WHITE.withAlpha(0.75f), true, description = "The color of the highlight.")
+    private val thickness by NumberSetting("Line Width", 2f, 1f, 6f, .1f, description = "The line width of Outline / Boxes/ 2D Boxes.").withDependency { mode != HighlightRenderer.HighlightType.Overlay.ordinal }
     private val style by SelectorSetting("Style", Renderer.DEFAULT_STYLE, Renderer.styles, description = Renderer.STYLE_DESCRIPTION).withDependency { mode == HighlightRenderer.HighlightType.Boxes.ordinal }
     private val scanDelay by NumberSetting("Scan Delay", 100L, 20L, 2000L, 20L, description = "The delay between entity scans.", unit = "ms")
 

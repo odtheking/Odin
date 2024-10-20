@@ -171,6 +171,7 @@ class Dungeon(val floor: Floor) {
                 0 -> ArrayList(odinSorting(dungeonTeammatesNoSelf.sortedBy { it.clazz.priority }).toList())
                 1 -> ArrayList(dungeonTeammatesNoSelf.sortedWith(compareBy({ it.clazz.ordinal }, { it.name })))
                 2 -> ArrayList(dungeonTeammatesNoSelf.sortedBy { it.name })
+                3 -> ArrayList(dungeonTeammatesNoSelf.sortedBy { DungeonUtils.customLeapOrder.indexOf(it.name.lowercase()).takeIf { it != -1 } ?: Int.MAX_VALUE })
                 else -> dungeonTeammatesNoSelf
             }
     }

@@ -13,6 +13,7 @@ import me.odinmain.features.impl.floor7.DragonHealth.renderHP
 import me.odinmain.features.impl.floor7.DragonTimer.colorDragonTimer
 import me.odinmain.features.impl.floor7.DragonTimer.renderTime
 import me.odinmain.features.impl.floor7.DragonTracer.renderTracers
+import me.odinmain.features.impl.floor7.KingRelics.Relic
 import me.odinmain.features.impl.floor7.KingRelics.relicsBlockPlace
 import me.odinmain.features.impl.floor7.KingRelics.relicsOnMessage
 import me.odinmain.features.impl.floor7.KingRelics.relicsOnWorldLast
@@ -91,6 +92,17 @@ object WitherDragons : Module(
     val relicSpawnTicks by NumberSetting("Relic Spawn Ticks", 42, 0, 100, description = "The amount of ticks for the relic to spawn.").withDependency { relicAnnounceTime && relics }
     val cauldronHighlight by BooleanSetting("Cauldron Highlight", false, description = "Highlights the cauldron for held relic.").withDependency { relics }
 
+    private val relicHud by HudSetting("Relic Hud", 10f, 10f, 1f, true) {
+        if (it) {
+            getMCTextWidth("§${Relic.entries.first().colorCode}${Relic.entries.first().name.first()}: 45") + 2f to 16f
+        } else {
+            Relic.entries.forEach {
+                mcText("§${it.colorCode}${it.name.first()}: ${String.format(Locale.US, "%.2f", KingRelics.relicTicksToSpawn / 20.0)}s", 2, 5f + (it.ordinal - 1) * 15f, 1, Color.WHITE, center = false)
+            }
+            getMCTextWidth("R: 45") * 2 + 2f to 16f
+        }
+    }
+
     var priorityDragon = WitherDragonsEnum.None
 
     init {
@@ -145,7 +157,7 @@ object WitherDragons : Module(
         if (dragonHealth) renderHP()
         if (dragonTimer) renderTime()
         if (dragonBoxes) renderBoxes()
-        if (relicSpawnTimer) relicsOnWorldLast()
+        if (cauldronHighlight) relicsOnWorldLast()
         if (priorityDragon != WitherDragonsEnum.None && dragonTracers)
             renderTracers(priorityDragon)
     }
