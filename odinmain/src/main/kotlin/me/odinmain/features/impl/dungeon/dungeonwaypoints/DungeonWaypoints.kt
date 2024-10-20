@@ -137,20 +137,10 @@ object DungeonWaypoints : Module(
         val room = DungeonUtils.currentFullRoom ?: return
         startProfile("Dungeon Waypoints")
 
-        /*
-        *   Draw invisible waypoints in edit mode.
-        *
-         */
 
-        val toDraw: ArrayList<DungeonWaypoint> = arrayListOf()
-
-        if(allowEdits) {
-            toDraw.addAll(room.waypoints.map { if(it.color.alpha == 0f) it.copy(color = it.color.withAlpha(0.3f)) else it })
-        } else {
-            toDraw.addAll(room.waypoints)
-        }
-
-        glList = RenderUtils.drawBoxes(toDraw, glList, disableDepth)
+        glList =  RenderUtils.drawBoxes(room.waypoints.map {
+            it.copy(color = it.color.withAlpha(if (it.color.isTransparent) 0.30f else it.color.alpha))
+        }, glList, disableDepth).takeIf { allowEdits } ?: RenderUtils.drawBoxes(room.waypoints, glList, disableDepth)
 
         if (renderTitle) {
             for (waypoint in room.waypoints) {
