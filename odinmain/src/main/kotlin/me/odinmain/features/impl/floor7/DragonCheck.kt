@@ -79,6 +79,7 @@ object DragonCheck {
 
     fun onChatPacket() {
         WitherDragonsEnum.entries.find { lastDragonDeath == it }?.let {
+            if (lastDragonDeath == WitherDragonsEnum.None) return
             if (sendNotification && WitherDragons.enabled) modMessage("§${it.colorCode}${it.name} dragon counts.")
         }
     }

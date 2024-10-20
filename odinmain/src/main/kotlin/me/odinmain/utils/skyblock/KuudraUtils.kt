@@ -26,7 +26,7 @@ object KuudraUtils {
     var playersBuildingAmount = 0
     var buildDonePercentage = 0
 
-    private val freshRegex = Regex("^Party > ?(?:\\[\\S+])? (\\S{1,16}): FRESH\$")
+    private val freshRegex = Regex("^Party > (\\[[^]]*?] )?(\\w{1,16}): FRESH\$")
     private val buildRegex = Regex("Building Progress (\\d+)% \\((\\d+) Players Helping\\)")
     private val progressRegex = Regex("PROGRESS: (\\d+)%")
 

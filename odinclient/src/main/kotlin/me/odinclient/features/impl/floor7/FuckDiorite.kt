@@ -15,16 +15,17 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 
-object DioriteFucker : Module(
+object FuckDiorite : Module(
     name = "Fuck Diorite",
     description = "Replaces the pillars in the storm fight with glass.",
     category = Category.FLOOR7,
 ) {
-    private val stainedGlass by BooleanSetting("Stained glass", default = false, description = "Swaps the diorite with stained glass.")
-    private val color by NumberSetting("Color", 0, 0.0, 15.0, 1.0, description = "Color for the stained glass.").withDependency { stainedGlass }
-    private val pillars = listOf(listOf(46, 169, 41), listOf(46, 169, 65), listOf(100, 169, 65), listOf(100, 179, 41))
-    private val coordinates: MutableList<BlockPos> = mutableListOf<BlockPos>().apply {
-        pillars.forEach { (x, y, z) ->
+    private val stainedGlass by BooleanSetting("Stained glass", default = true, description = "Swaps the diorite with stained glass.")
+    private val pillarBasedColor by BooleanSetting("Pillar Based", default = true, description = "Swaps the diorite in the pillar to a corresponding color.").withDependency { stainedGlass }
+    private val colorIndex by NumberSetting("Color", 0, 0.0, 15.0, 1.0, description = "Color for the stained glass.").withDependency { stainedGlass }
+    private val pillars = listOf(listOf(46, 169, 41), listOf(46, 169, 65), listOf(100, 169, 65), listOf(100, 179, 41)) // Green, Yellow, Purple, Red
+    private val coordinates: List<List<BlockPos>> = pillars.map { (x, y, z) ->
+        mutableListOf<BlockPos>().apply {
             (-3..3).forEach { dx ->
                 (0..37).forEach { dy ->
                     (-3..3).forEach { dz ->
@@ -50,13 +51,20 @@ object DioriteFucker : Module(
     }
 
     private fun replaceDiorite() {
-        coordinates.forEach {
-            if (isDiorite(it)) setGlass(it)
+        coordinates.forEach { pillar ->
+            pillar.forEach { blockPosition ->
+                if (isDiorite(blockPosition)) setGlass(blockPosition)
+            }
         }
     }
 
-    private fun setGlass(pos: BlockPos) =
-        mc.theWorld?.setBlockState(pos, if (stainedGlass) Blocks.stained_glass.getStateFromMeta(color) else Blocks.glass.defaultState, 3)
+    private val pillarColors = listOf(5, 4, 10, 14) // Green, Yellow, Purple, Red
+
+    private fun setGlass(pos: BlockPos) {
+        val pillarIndex = coordinates.indexOfFirst { pos in it }
+        val glassColor = if (pillarBasedColor && pillarIndex != -1) pillarColors[pillarIndex] else colorIndex
+        mc.theWorld?.setBlockState(pos, if (stainedGlass) Blocks.stained_glass.getStateFromMeta(glassColor) else Blocks.glass.defaultState, 3)
+    }
 
     private fun isDiorite(pos: BlockPos): Boolean =
         mc.theWorld?.chunkProvider?.provideChunk(pos.x shr 4, pos.z shr 4)?.getBlock(pos) == Blocks.stone
