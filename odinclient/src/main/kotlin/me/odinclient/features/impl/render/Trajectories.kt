@@ -79,9 +79,9 @@ object Trajectories : Module(
                 drawPlaneCollision(pair3.second)
             }
             if (lines) {
-                drawLine(pair1.first)
-                drawLine(pair2.first)
-                drawLine(pair3.first)
+                Renderer.draw3DLine(pair1.first, color = color, lineWidth = width, depth = true)
+                Renderer.draw3DLine(pair2.first, color = color, lineWidth = width, depth = true)
+                Renderer.draw3DLine(pair3.first, color = color, lineWidth = width, depth = true)
             }
         }
         if (pearls) {
@@ -90,7 +90,7 @@ object Trajectories : Module(
             if (itemStack.item is ItemEnderPearl && !itemStack.displayName.contains("leap", ignoreCase = true)) {
                 val pair = setPearlTrajectoryHeading()
                 if (boxes) drawPearlCollisionBox()
-                if (lines) drawLine(pair.first)
+                if (lines) Renderer.draw3DLine(pair.first, color = color, lineWidth = width, depth = true)
                 if (plane) drawPlaneCollision(pair.second)
             }
         }
@@ -223,10 +223,6 @@ object Trajectories : Module(
             else -> return
         }
         RenderUtils.drawFilledAABB(AxisAlignedBB(vec1.xCoord, vec1.yCoord, vec1.zCoord, vec2.xCoord, vec2.yCoord, vec2.zCoord), color.withAlpha(color.alpha / 2, true), false)
-    }
-
-    private fun drawLine(lines: ArrayList<Vec3>) {
-        Renderer.draw3DLine(lines, color = color, lineWidth = width, depth = true)
     }
 
     private fun drawPearlCollisionBox() {

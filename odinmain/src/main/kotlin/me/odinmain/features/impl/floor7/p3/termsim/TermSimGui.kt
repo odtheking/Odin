@@ -76,6 +76,7 @@ open class TermSimGui(val name: String, val size: Int, private val inv: Inventor
         val packet = event.packet as? S2FPacketSetSlot ?: return
         if (mc.currentScreen != this) return
         packet.func_149174_e()?.let {
+            if (event.packet.func_149173_d() !in 0 until size) return@let
             mc.thePlayer?.inventoryContainer?.putStackInSlot(packet.func_149173_d(), it)
         }
         event.isCanceled = true

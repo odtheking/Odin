@@ -1,11 +1,7 @@
 package me.odinmain.utils
 
 import me.odinmain.OdinMain.mc
-import me.odinmain.utils.skyblock.devMessage
-import net.minecraft.client.network.NetworkPlayerInfo
 import net.minecraft.scoreboard.ScorePlayerTeam
-import net.minecraft.world.WorldSettings
-
 
 fun cleanSB(scoreboard: String?): String {
     return scoreboard.noControlCodes.filter { it.code in 21..126 }
@@ -34,43 +30,10 @@ val sidebarLines: List<String>
 
 fun cleanLine(scoreboard: String): String = scoreboard.noControlCodes.filter { it.code in 32..126 }
 
-fun getLines(): List<String> {
-    return mc.theWorld?.scoreboard?.run {
-        getSortedScores(getObjectiveInDisplaySlot(1) ?: return emptyList())
-            .filter { it?.playerName?.startsWith("#") == false }
-            .let { if (it.size > 15) it.drop(15) else it }
-            .map { ScorePlayerTeam.formatPlayerName(getPlayersTeam(it.playerName), it.playerName) }
-    } ?: emptyList()
-}
-
-
 // Tablist utils
 
-val getTabList: List<Pair<NetworkPlayerInfo, String>>
+val getTabList: List<String>
     get() {
-        try {
-            val playerInfoList = mc.thePlayer?.sendQueue?.playerInfoMap?.toList() ?: emptyList()
-            return playerInfoList.sortedWith(tabListOrder)
-                .map { Pair(it, mc.ingameGUI.tabList.getPlayerName(it)) }
-        } catch (e: ConcurrentModificationException) {
-            devMessage("Caught a $e. running getTabList")
-            println(e.message)
-            e.printStackTrace()
-            return emptyList()
-        }
+        val playerInfoMap = mc.thePlayer?.sendQueue?.playerInfoMap?.toMutableList() ?: return emptyList()
+        return playerInfoMap.map { mc.ingameGUI.tabList.getPlayerName(it) }
     }
-
-
-val tabListOrder = Comparator<NetworkPlayerInfo> { o1, o2 ->
-    if (o1 == null && o2 == null) return@Comparator 0
-    if (o1 == null) return@Comparator -1
-    if (o2 == null) return@Comparator 1
-
-    val spectatorComparison = compareValuesBy(o1, o2) { it.gameType == WorldSettings.GameType.SPECTATOR }
-    if (spectatorComparison != 0) return@Comparator spectatorComparison
-
-    val teamNameComparison = compareValuesBy(o1, o2) { it.playerTeam?.registeredName.orEmpty() }
-    if (teamNameComparison != 0) return@Comparator teamNameComparison
-
-    compareValuesBy(o1, o2) { it.gameProfile.name }
-}

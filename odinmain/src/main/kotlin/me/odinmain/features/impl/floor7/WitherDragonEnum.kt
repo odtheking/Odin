@@ -65,7 +65,7 @@ fun handleSpawnPacket(particle: S2APacketParticles) {
     ) return
 
     WitherDragonsEnum.entries.forEach { dragon ->
-        if (!checkParticle(particle, dragon) || dragon.timeToSpawn != 100) return@forEach
+        if (!checkParticle(particle, dragon) || dragon.state == WitherDragonState.SPAWNING) return@forEach
         if (sendSpawning && WitherDragons.enabled) modMessage("§${dragon.colorCode}$dragon §fdragon is spawning.")
         dragon.state = WitherDragonState.SPAWNING
     }

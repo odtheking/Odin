@@ -45,7 +45,7 @@ object EventDispatcher {
      */
     @SubscribeEvent
     fun onPacket(event: PacketReceivedEvent) {
-        if (event.packet is S29PacketSoundEffect && (event.packet.soundName.equalsOneOf("mob.bat.hurt", "mob.bat.death"))) SecretPickupEvent.Bat(event.packet).postAndCatch()
+        if (event.packet is S29PacketSoundEffect && inDungeons && (event.packet.soundName.equalsOneOf("mob.bat.hurt", "mob.bat.death"))) SecretPickupEvent.Bat(event.packet).postAndCatch()
 
         if (event.packet is S32PacketConfirmTransaction) RealServerTick().postAndCatch()
 
@@ -75,11 +75,10 @@ object EventDispatcher {
         val container = (event.gui as GuiChest).inventorySlots
 
         if (container !is ContainerChest) return@launch
-        val chestName = container.name
 
         val deferred = waitUntilLastItem(container)
-        try { deferred.await() } catch (e: Exception) { return@launch } // Wait until the last item in the chest isn't null
+        try { deferred.await() } catch (_: Exception) { return@launch } // Wait until the last item in the chest isn't null
 
-        GuiEvent.GuiLoadedEvent(chestName, container).postAndCatch()
+        GuiEvent.GuiLoadedEvent(container.name, container).postAndCatch()
     }
 }

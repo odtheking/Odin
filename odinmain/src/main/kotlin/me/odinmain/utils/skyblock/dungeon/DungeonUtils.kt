@@ -208,8 +208,8 @@ object DungeonUtils {
             previousTeammates.find { it.name == name }?.let { player ->
                 player.isDead = clazz == "DEAD"
                 player.entity = mc.theWorld?.getPlayerEntityByName(name)
-            } ?: previousTeammates.add(DungeonPlayer(name, DungeonClass.entries.find { it.name == clazz } ?: return previousTeammates,
-                 mc.netHandler.getPlayerInfo(name).locationSkin, mc.theWorld?.getPlayerEntityByName(name), clazz == "DEAD"))
+            } ?: previousTeammates.add(DungeonPlayer(name, DungeonClass.entries.find { it.name == clazz } ?: continue,
+                     mc.netHandler.getPlayerInfo(name).locationSkin, mc.theWorld?.getPlayerEntityByName(name), clazz == "DEAD"))
         }
         return previousTeammates
     }

@@ -48,8 +48,7 @@ object WitherDragons : Module(
             if (!dragonTimer) return@HudSetting 0f to 0f
             WitherDragonsEnum.entries.forEachIndexed { index, dragon ->
                 if (dragon.state != WitherDragonState.SPAWNING) return@forEachIndexed
-                val coloredTime = colorDragonTimer(String.format(Locale.US, "%.2f", dragon.timeToSpawn / 20.0).toDouble())
-                mcText("§${dragon.colorCode}${dragon.name.first()}: ${coloredTime}s", 2, 5f + (index - 1) * 15f, 1, Color.WHITE, center = false)
+                mcText("§${dragon.colorCode}${dragon.name.first()}: ${colorDragonTimer(dragon.timeToSpawn)}${String.format(Locale.US, "%.2f", dragon.timeToSpawn / 20.0)}", 2, 5f + (index - 1) * 15f, 1, Color.WHITE, center = false)
             }
             getMCTextWidth("§5P §a4.5s")+ 2f to 33f
         }

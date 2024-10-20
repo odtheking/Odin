@@ -18,7 +18,7 @@ object ItemsHighlight : Module(
     description = "Outlines dropped item entities.",
     category = Category.RENDER
 ) {
-    private val mode by SelectorSetting("Mode", HighlightRenderer.HIGHLIGHT_MODE_DEFAULT, HighlightRenderer.highlightModeList, description = HighlightRenderer.HIGHLIGHT_MODE_DESCRIPTION)
+    private val mode by SelectorSetting("Mode", "Overlay", arrayListOf("Boxes", "Box 2D", "Overlay"), description = HighlightRenderer.HIGHLIGHT_MODE_DESCRIPTION)
     private val onlySecrets by BooleanSetting("Only Secrets", default = false, description = "Only highlights secret drops in dungeons.")
     private val thickness by NumberSetting("Line Width", 1f, .1f, 4f, .1f, description = "The line width of Outline / Boxes/ 2D Boxes.").withDependency { mode != HighlightRenderer.HighlightType.Overlay.ordinal }
     private val style by SelectorSetting("Style", Renderer.DEFAULT_STYLE, Renderer.styles, description = Renderer.STYLE_DESCRIPTION).withDependency { mode == HighlightRenderer.HighlightType.Boxes.ordinal }
@@ -38,7 +38,7 @@ object ItemsHighlight : Module(
             }
         }
 
-        HighlightRenderer.addEntityGetter({ HighlightRenderer.HighlightType.entries[mode]}) {
+        HighlightRenderer.addEntityGetter({ HighlightRenderer.HighlightType.entries[mode + 1]}) {
             if (!enabled) emptyList()
             else currentEntityItems.map { HighlightRenderer.HighlightEntity(it, getEntityOutlineColor(it), thickness, depthCheck, style) }
         }
