@@ -12,6 +12,8 @@
 	],
 	"logoFile": "assets/odinclient/logo.png",
 	"screenshots": [],
-	"dependencies": []
+	"dependencies": [
+		"oneconfig"
+	]
   }
 ]

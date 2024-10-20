@@ -5,48 +5,51 @@ import org.objectweb.asm.*
 import org.objectweb.asm.tree.*
 
 class LWJGLClassTransformer : IClassTransformer {
-    override fun transform(name: String?, transformedName: String?, basicClass: ByteArray?): ByteArray? {
-        if (name == "org.lwjgl.nanovg.NanoVGGLConfig" && basicClass != null) {
-            val reader = ClassReader(basicClass)
-            val node = ClassNode()
-            reader.accept(node, ClassReader.EXPAND_FRAMES)
+	override fun transform(name: String?, transformedName: String?, basicClass: ByteArray?): ByteArray? {
+		if (name == "org.lwjgl.nanovg.NanoVGGLConfig" && basicClass != null) {
+			// println("Transforming NanoVGGLConfig")
 
-            for (method in node.methods) {
-                if (method.name == "configGL") {
-                    val list = InsnList()
+			val reader = ClassReader(basicClass)
+			val node = ClassNode()
+			reader.accept(node, ClassReader.EXPAND_FRAMES)
 
-                    list.add(VarInsnNode(Opcodes.LLOAD, 0))
-                    list.add(TypeInsnNode(Opcodes.NEW, "me/odinmain/lwjgl/LWJGLFunctionProvider"))
-                    list.add(InsnNode(Opcodes.DUP))
-                    list.add(
-                        MethodInsnNode(
-                            Opcodes.INVOKESPECIAL,
-                            "me/odinmain/lwjgl/LWJGLFunctionProvider",
-                            "<init>",
-                            "()V",
-                            false
-                        )
-                    )
-                    list.add(
-                        MethodInsnNode(
-                            Opcodes.INVOKESTATIC,
-                            "org/lwjgl/nanovg/NanoVGGLConfig",
-                            "config",
-                            "(JLorg/lwjgl/system/FunctionProvider;)V",
-                            false
-                        )
-                    )
-                    list.add(InsnNode(Opcodes.RETURN))
+			for (method in node.methods) {
+				if (method.name == "configGL") {
+					val list = InsnList()
 
-                    method.instructions.clear()
-                    method.instructions.insert(list)
-                }
-            }
+					list.add(VarInsnNode(Opcodes.LLOAD, 0))
+					list.add(TypeInsnNode(Opcodes.NEW, "me/odin/lwjgl/LWJGLFunctionProvider"))
+					list.add(InsnNode(Opcodes.DUP))
+					list.add(
+						MethodInsnNode(
+							Opcodes.INVOKESPECIAL,
+							"me/odin/lwjgl/LWJGLFunctionProvider",
+							"<init>",
+							"()V",
+							false
+						)
+					)
+					list.add(
+						MethodInsnNode(
+							Opcodes.INVOKESTATIC,
+							"org/lwjgl/nanovg/NanoVGGLConfig",
+							"config",
+							"(JLorg/lwjgl/system/FunctionProvider;)V",
+							false
+						)
+					)
+					list.add(InsnNode(Opcodes.RETURN))
 
-            val cw = ClassWriter(ClassWriter.COMPUTE_FRAMES)
-            node.accept(cw)
-            return cw.toByteArray()
-        }
-        return basicClass
-    }
+					method.instructions.clear()
+					method.instructions.insert(list)
+				}
+			}
+
+			val cw = ClassWriter(reader, ClassWriter.COMPUTE_FRAMES)
+			node.accept(cw)
+			return cw.toByteArray()
+		}
+
+		return basicClass
+	}
 }

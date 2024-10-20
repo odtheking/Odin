@@ -47,42 +47,11 @@ allprojects {
         annotationProcessor("org.spongepowered:mixin:0.8.5-SNAPSHOT")
         implementation("org.spongepowered:mixin:0.7.11-SNAPSHOT") { isTransitive = false }
 
-        val lwjgl: Configuration by configurations.creating
-        val lwjglNative: Configuration by configurations.creating { isTransitive = true }
-
-        val lwjglJar = tasks.create<ShadowJar>("lwjglJar") {
-            group = "shadow"
-            destinationDirectory.set(layout.buildDirectory.dir("archiveJars"))
-            archiveClassifier.set("lwjgl")
-            configurations = listOf(lwjgl)
-            exclude("META-INF/versions/**")
-            exclude("**/module-info.class")
-            exclude("**/package-info.class")
-            relocate("org.lwjgl", "org.lwjgl3") {
-                include("org.lwjgl.PointerBuffer")
-                include("org.lwjgl.BufferUtils")
-            }
-        }
-
-        lwjgl("org.lwjgl:lwjgl:3.3.1")
-        lwjgl("org.lwjgl:lwjgl-stb:3.3.1")
-        lwjgl("org.lwjgl:lwjgl-nanovg:3.3.1")
-
-        lwjglNative("org.lwjgl:lwjgl:3.3.1:natives-windows")
-        lwjglNative("org.lwjgl:lwjgl-stb:3.3.1:natives-windows")
-        lwjglNative("org.lwjgl:lwjgl-nanovg:3.3.1:natives-windows")
-        lwjglNative("org.lwjgl:lwjgl:3.3.1:natives-linux")
-        lwjglNative("org.lwjgl:lwjgl-stb:3.3.1:natives-linux")
-        lwjglNative("org.lwjgl:lwjgl-nanovg:3.3.1:natives-linux")
-        lwjglNative("org.lwjgl:lwjgl:3.3.1:natives-macos")
-        lwjglNative("org.lwjgl:lwjgl-stb:3.3.1:natives-macos")
-        lwjglNative("org.lwjgl:lwjgl-nanovg:3.3.1:natives-macos")
-        implementation(lwjglJar.outputs.files)
+        implementation("com.github.unlimitedcoder2:odin-lwjgl:5065fe5c1e")
 
         sourceSets.main {
             java.srcDir(file("$projectDir/src/main/kotlin"))
             output.setResourcesDir(sourceSets.main.flatMap { it.java.classesDirectory })
-            runtimeClasspath += configurations.getByName("lwjglNative")
         }
 
         java.toolchain.languageVersion.set(JavaLanguageVersion.of(8))

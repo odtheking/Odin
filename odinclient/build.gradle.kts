@@ -69,8 +69,7 @@ tasks {
         archiveClassifier.set("dev")
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
         configurations = listOf(
-            project.configurations.getByName("shadowImpl"),
-            project.configurations.getByName("lwjglNative")
+            project.configurations.getByName("shadowImpl")
         )
         exclude("META-INF/versions/**")
         mergeServiceFiles()

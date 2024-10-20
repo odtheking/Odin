@@ -12,10 +12,11 @@ import com.github.stivais.ui.renderer.Font
 import com.github.stivais.ui.renderer.Renderer
 import com.github.stivais.ui.renderer.impl.NVGRenderer
 import com.github.stivais.ui.utils.loop
+import me.odinmain.OdinMain
 import me.odinmain.utils.round
 import java.util.logging.Logger
 
-class UI(val renderer: Renderer = NVGRenderer) {
+class UI(val renderer: Renderer = NVGRenderer(OdinMain.wrapper)) {
 
     /**
      * Used to reference the handler for this UI
@@ -32,7 +33,7 @@ class UI(val renderer: Renderer = NVGRenderer) {
      */
     var eventManager: EventManager = EventManager(this)
 
-    constructor(renderer: Renderer = NVGRenderer, dsl: ElementScope<Group>.() -> Unit) : this(renderer) {
+    constructor(renderer: Renderer = NVGRenderer(OdinMain.wrapper), dsl: ElementScope<Group>.() -> Unit) : this(renderer) {
         main.initialize(this)
         ElementScope(main).dsl()
     }

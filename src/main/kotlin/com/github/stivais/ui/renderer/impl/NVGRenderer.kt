@@ -5,24 +5,18 @@ import com.github.stivais.ui.color.blue
 import com.github.stivais.ui.color.green
 import com.github.stivais.ui.color.red
 import com.github.stivais.ui.renderer.*
+import me.odin.lwjgl.Lwjgl3Wrapper
+import me.odin.lwjgl.NanoVGColorWrapper
+import me.odin.lwjgl.NanoVGGLUFramebufferWrapper
+import me.odin.lwjgl.NanoVGPaintWrapper
 import me.odinmain.OdinMain.mc
-import org.lwjgl.nanovg.NVGColor
-import org.lwjgl.nanovg.NVGLUFramebuffer
-import org.lwjgl.nanovg.NVGPaint
-import org.lwjgl.nanovg.NanoSVG
-import org.lwjgl.nanovg.NanoSVG.nsvgParse
-import org.lwjgl.nanovg.NanoVG.*
-import org.lwjgl.nanovg.NanoVGGL2.*
 import org.lwjgl.opengl.GL11.*
-import org.lwjgl.stb.STBImage
-import org.lwjgl.system.MemoryUtil
 import java.util.*
 
-object NVGRenderer : Renderer {
-
-    private val nvgPaint: NVGPaint = NVGPaint.malloc()
-    private val nvgColor: NVGColor = NVGColor.malloc()
-    private val nvgColor2: NVGColor = NVGColor.malloc()
+class NVGRenderer(private val wrapper: Lwjgl3Wrapper) : Renderer, Lwjgl3Wrapper by wrapper {
+    private val nvgPaint: NanoVGPaintWrapper = createPaint()
+    private val nvgColor: NanoVGColorWrapper = createColor()
+    private val nvgColor2: NanoVGColorWrapper = createColor()
 
     private val fonts = HashMap<Font, Int>()
 
@@ -33,7 +27,7 @@ object NVGRenderer : Renderer {
     // private val svgs = HashMap<Image, NVGSvg>()
 
 
-    private val fbos = HashMap<Framebuffer, NVGLUFramebuffer>()
+    private val fbos = HashMap<Framebuffer, NanoVGGLUFramebufferWrapper>()
     private var vg: Long = -1
 
     // used in getTextWidth to avoid reallocating
@@ -44,8 +38,9 @@ object NVGRenderer : Renderer {
     private var drawing: Boolean = false
 
     init {
-        vg = nvgCreate(NVG_ANTIALIAS)
+        vg = nvgCreate(Lwjgl3Wrapper.NVG_ANTIALIAS)
         require(vg != -1L) { "Failed to initialize NanoVG" }
+	    check(vg != 0L) { "NanoVG nvgCreate null" }
     }
 
     override fun beginFrame(width: Float, height: Float) {
@@ -54,7 +49,7 @@ object NVGRenderer : Renderer {
         if (!mc.framebuffer.isStencilEnabled) mc.framebuffer.enableStencil()
         glPushAttrib(GL_ALL_ATTRIB_BITS)
         nvgBeginFrame(vg, width, height, 1f)
-        nvgTextAlign(vg, NVG_ALIGN_LEFT or NVG_ALIGN_TOP)
+        nvgTextAlign(vg, Lwjgl3Wrapper.NVG_ALIGN_LEFT or Lwjgl3Wrapper.NVG_ALIGN_TOP)
     }
 
     override fun endFrame() {
@@ -102,7 +97,7 @@ object NVGRenderer : Renderer {
         glPopAttrib()
     }
 
-    private fun getFramebuffer(fbo: Framebuffer): NVGLUFramebuffer {
+    private fun getFramebuffer(fbo: Framebuffer): NanoVGGLUFramebufferWrapper {
         return fbos[fbo] ?: throw NullPointerException("Unable to find $fbo")
     }
 
@@ -169,7 +164,7 @@ object NVGRenderer : Renderer {
         nvgBeginPath(vg)
         nvgRoundedRectVarying(vg, x, y, w, h, tl, tr, br, bl)
         nvgStrokeWidth(vg, thickness)
-        nvgPathWinding(vg, NVG_HOLE)
+        nvgPathWinding(vg, Lwjgl3Wrapper.NVG_HOLE)
         color(color)
         nvgStrokeColor(vg, nvgColor)
         nvgStroke(vg)
@@ -275,7 +270,7 @@ object NVGRenderer : Renderer {
         val w = IntArray(1)
         val h = IntArray(1)
         val channels = IntArray(1)
-        val buffer = STBImage.stbi_load_from_memory(
+        val buffer = stbi_load_from_memory(
             image.buffer(),
             w,
             h,
@@ -292,12 +287,12 @@ object NVGRenderer : Renderer {
         image.width = svg.width()
         image.height = svg.height()
 
-        val memAlloc = MemoryUtil.memAlloc((svg.width() * svg.height() * 4).toInt())
-        val rasterizer = NanoSVG.nsvgCreateRasterizer()
-        NanoSVG.nsvgRasterize(rasterizer, svg, 0f, 0f, 1f, memAlloc, svg.width().toInt(), svg.height().toInt(), svg.width().toInt() * 4)
+        val memAlloc = memAlloc((svg.width() * svg.height() * 4).toInt())
+        val rasterizer = nsvgCreateRasterizer()
+        nsvgRasterize(rasterizer, svg, 0f, 0f, 1f, memAlloc, svg.width().toInt(), svg.height().toInt(), svg.width().toInt() * 4)
         val nvgImage = nvgCreateImageRGBA(vg, svg.width().toInt(), svg.height().toInt(), 0, memAlloc)
-        NanoSVG.nsvgDeleteRasterizer(rasterizer)
-        NanoSVG.nsvgDelete(svg)
+        nsvgDeleteRasterizer(rasterizer)
+        nsvgDelete(svg)
         return nvgImage
     }
 
@@ -315,6 +310,8 @@ object NVGRenderer : Renderer {
     }
 
     private fun getIDFromFont(font: Font): Int {
+//		return fonts.computeIfAbsent(font) {nvgCreateFontMem(vg, font.name, font.buffer, 0)}
+
         return fonts[font] ?: nvgCreateFontMem(vg, font.name, font.buffer, 0).also {
             fonts[font] = it
         }

@@ -6,6 +6,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import me.odin.lwjgl.Lwjgl3Loader
+import me.odin.lwjgl.Lwjgl3Wrapper
 import me.odinmain.commands.impl.*
 import me.odinmain.commands.registerCommands
 import me.odinmain.config.Config
@@ -46,6 +48,8 @@ object OdinMain {
     var display: GuiScreen? = null
     val isLegitVersion: Boolean
         get() = Loader.instance().activeModList.none { it.modId == "odclient" }
+
+	val wrapper: Lwjgl3Wrapper by lazy { Lwjgl3Loader.load() }
 
     fun init() {
         scope.launch(Dispatchers.IO) {
