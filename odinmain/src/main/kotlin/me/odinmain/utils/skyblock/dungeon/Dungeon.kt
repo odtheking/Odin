@@ -16,7 +16,9 @@ import me.odinmain.utils.skyblock.PlayerUtils.posZ
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.getDungeonPuzzles
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.getDungeonTeammates
 import me.odinmain.utils.skyblock.dungeon.tiles.FullRoom
+import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.network.play.server.*
+import net.minecraftforge.event.entity.EntityJoinWorldEvent
 
 // could add some system to look back at previous runs.
 class Dungeon(val floor: Floor) {
@@ -52,7 +54,7 @@ class Dungeon(val floor: Floor) {
     }
 
     fun enterDungeonRoom(event: RoomEnterEvent) {
-        val room = event.fullRoom?.takeUnless { it in passedRooms } ?: return
+        val room = event.fullRoom?.takeUnless { room -> passedRooms.any { it.room.data.name == room.room.data.name } } ?: return
         val roomSecrets = ScanUtils.getRoomSecrets(room.room.data.name)
         dungeonStats.knownSecrets = dungeonStats.knownSecrets?.plus(roomSecrets) ?: roomSecrets
     }
@@ -72,6 +74,11 @@ class Dungeon(val floor: Floor) {
         leapTeammates = ArrayList()
         puzzles = emptyList()
         Blessing.entries.forEach { it.current = 0 }
+    }
+
+    fun onEntityJoin(event: EntityJoinWorldEvent) {
+        val teammate = dungeonTeammatesNoSelf.find { it.name == event.entity.name } ?: return
+        teammate.entity = event.entity as? EntityPlayer ?: return
     }
 
     private fun handleChatPacket(packet: S02PacketChat) {

@@ -350,7 +350,7 @@ object RenderUtils {
             GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
 
             for (box in boxes) {
-                if (box.clicked) continue
+                if (box.clicked || box.color.isTransparent) continue
                 (box.depth && !disableDepth).let {
                     if (it) GL11.glEnable(GL11.GL_DEPTH_TEST)
                     else GL11.glDisable(GL11.GL_DEPTH_TEST)
@@ -651,10 +651,10 @@ object RenderUtils {
         }
     }
 
-    fun drawMinecraftLabel(entityIn: Entity, str: String, x: Double, y: Double, z: Double, scale: Double, depth: Boolean = true, color: Color = Color.WHITE) {
+    fun drawMinecraftLabel(str: String, pos: Vec3, scale: Double, depth: Boolean = true, color: Color = Color.WHITE) {
         GlStateManager.pushMatrix()
         depth(depth)
-        GlStateManager.translate(x + 0.0f, y + entityIn.height + 0.5f, z)
+        GlStateManager.translate(pos.xCoord + 0.0f, pos.yCoord + (mc.thePlayer?.height ?: 0f) + 0.5f, pos.zCoord)
         GL11.glNormal3f(0.0f, 1.0f, 0.0f)
         GlStateManager.rotate(-this.renderManager.playerViewY, 0.0f, 1.0f, 0.0f)
         GlStateManager.rotate(this.renderManager.playerViewX, 1.0f, 0.0f, 0.0f)

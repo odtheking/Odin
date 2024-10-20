@@ -13,6 +13,7 @@ import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.KuudraUtils
 import me.odinmain.utils.skyblock.KuudraUtils.kuudraTeammates
 import net.minecraft.client.entity.EntityOtherPlayerMP
+import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderLivingEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -47,7 +48,7 @@ object TeamHighlight : Module(
         if (!showName || !KuudraUtils.inKuudra || KuudraUtils.phase < 1 || event.entity == mc.thePlayer) return
         val teammate = kuudraTeammates.find { it.entity == event.entity } ?: return
 
-        RenderUtils.drawMinecraftLabel(event.entity, teammate.playerName, event.x, event.y + 0.5, event.z, 0.05, false, if (teammate.eatFresh) highlightFreshColor else nameColor)
+        RenderUtils.drawMinecraftLabel(teammate.playerName, Vec3( event.x, event.y + 0.5, event.z), 0.05, false, if (teammate.eatFresh) highlightFreshColor else nameColor)
         event.isCanceled = true
     }
 }
