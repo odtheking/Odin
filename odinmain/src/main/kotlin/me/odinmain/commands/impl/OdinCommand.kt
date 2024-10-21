@@ -142,6 +142,10 @@ val mainCommand = commodore("od", "odin") {
         DungeonUtils.customLeapOrder = players
         modMessage("§aCustom leap order set to: §f${players.joinToString(", ")}")
     }
+
+    literal("copy").runs { message: GreedyString ->
+        writeToClipboard(message.string, "§aCopied to clipboard.")
+    }
 }
 
 private val floors = mapOf(

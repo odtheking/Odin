@@ -70,7 +70,7 @@ object EtherWarpHelper : Module(
         if (
             etherWarpTriggerBot &&
             tbClock.hasTimePassed(etherWarpTBDelay) &&
-            DungeonUtils.currentFullRoom?.waypoints?.any { etherPos.vec?.equal(it.toVec3()) == true } == true &&
+            DungeonUtils.currentFullRoom?.waypoints?.any { etherPos.vec == it.toVec3() } == true &&
             mc.thePlayer.usingEtherWarp
         ) {
             tbClock.update()

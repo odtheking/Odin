@@ -159,7 +159,7 @@ object PuzzleSolvers : Module(
     fun onRoomEnter(event: RoomEnterEvent) {
         IceFillSolver.enterDungeonRoom(event)
         BeamsSolver.enterDungeonRoom(event)
-        TTTSolver.tttRoomEnter(event)
+        //TTTSolver.tttRoomEnter(event)
         QuizSolver.enterRoomQuiz(event)
         BoulderSolver.onRoomEnter(event)
         TPMazeSolver.onRoomEnter(event)

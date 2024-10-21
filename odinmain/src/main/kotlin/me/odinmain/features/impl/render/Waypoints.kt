@@ -36,7 +36,8 @@ object Waypoints : Module(
     private val pingWaypointTime by NumberSetting("Ping Waypoint Time", 15000L, 0L, 128000L, 1000L, description = "Time to wait before sending the waypoint command.").withDependency { pingLocationToggle && pingLocationDropDown }
     private val pingDistance by NumberSetting("Ping Distance", 64.0, 1, 128, 1, description = "Distance to ping location.").withDependency { pingLocationToggle && pingLocationDropDown }
 
-    private val partyChatRegex = Regex("^(Co-op|Party) (\\[[^]]*?] )?(\\w{1,16})(?: [ቾ⚒])?: x: (-?\\d+), y: (-?\\d+), z: (-?\\d+).*")
+    // https://regex101.com/r/3IFer3/4
+    private val partyChatRegex = Regex("^Party > (?:\\[\\w+] )?(?:\\[.{1,7}]? )?(.{1,16}): x: (-?\\d+), y: (-?\\d+), z: (-?\\d+).*")
     private val allChatRegex = Regex("(?:\\[\\d+])? (\\[(.{1,7})]? )(.{1,16}): x: (-?\\d+),? y: (-?\\d+),? z: (-?\\d+).*")
 
     init {

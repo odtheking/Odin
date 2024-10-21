@@ -26,18 +26,14 @@ object AutoClicker : Module(
     fun onRenderWorldLast(event: RenderWorldLastEvent) {
         val nowMillis = System.currentTimeMillis()
 
-        if (enableLeftClick && mc.gameSettings.keyBindAttack.isKeyDown) {
-            if (nowMillis >= nextLeftClick) {
-                nextLeftClick = nowMillis + ((1000 / leftCps) + ((Math.random() - .5) * 60.0))
-                leftClick()
-            }
+        if (enableLeftClick && mc.gameSettings.keyBindAttack.isKeyDown && nowMillis >= nextLeftClick) {
+            nextLeftClick = nowMillis + ((1000 / leftCps) + ((Math.random() - .5) * 60.0))
+            leftClick()
         }
 
-        if (enableRightClick && mc.gameSettings.keyBindUseItem.isKeyDown) {
-            if (nowMillis >= nextRightClick) {
-                nextRightClick = nowMillis + ((1000 / rightCps) + ((Math.random() - .5) * 60.0))
-                rightClick()
-            }
+        if (enableRightClick && mc.gameSettings.keyBindUseItem.isKeyDown && nowMillis >= nextRightClick) {
+            nextRightClick = nowMillis + ((1000 / rightCps) + ((Math.random() - .5) * 60.0))
+            rightClick()
         }
     }
 }

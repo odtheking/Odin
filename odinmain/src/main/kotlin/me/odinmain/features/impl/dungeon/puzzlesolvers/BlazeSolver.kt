@@ -11,6 +11,7 @@ import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.*
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.util.AxisAlignedBB
+import net.minecraft.util.BlockPos
 import kotlin.collections.set
 
 object BlazeSolver {
@@ -30,7 +31,7 @@ object BlazeSolver {
             blazes.add(entity)
         }
         blazes.sortBy { hpMap[it] }
-        if (getBlockIdAt(room.x + 1, 118, room.z) != 4) blazes.reverse()
+        if (getBlockIdAt(BlockPos(room.x + 1, 118, room.z)) != 4) blazes.reverse()
     }
 
     fun renderBlazes() {

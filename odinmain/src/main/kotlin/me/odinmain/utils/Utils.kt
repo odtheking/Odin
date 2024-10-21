@@ -12,8 +12,12 @@ import me.odinmain.utils.render.Color
 import me.odinmain.utils.skyblock.*
 import net.minecraft.entity.Entity
 import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.event.ClickEvent
+import net.minecraft.event.HoverEvent
 import net.minecraft.inventory.Container
 import net.minecraft.inventory.ContainerChest
+import net.minecraft.util.ChatComponentText
+import net.minecraft.util.ChatStyle
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.eventhandler.Event
 import org.lwjgl.opengl.GL11
@@ -167,8 +171,11 @@ fun Event.postAndCatch(): Boolean {
     }.onFailure {
         it.printStackTrace()
         logger.error("An error occurred", it)
-        modMessage("${OdinMain.VERSION} Caught and logged an ${it::class.simpleName ?: "error"} at ${this::class.simpleName}. §cPlease report this with a log in the discord!")
-    }.getOrDefault(isCanceled)
+        val style = ChatStyle()
+        style.chatClickEvent = ClickEvent(ClickEvent.Action.RUN_COMMAND, "/od copy ```${it.stackTraceToString().lineSequence().take(10).joinToString("\n")}```")
+        style.chatHoverEvent = HoverEvent(HoverEvent.Action.SHOW_TEXT, ChatComponentText("§6Click to copy the error to your clipboard."))
+        modMessage("${OdinMain.VERSION} Caught an ${it::class.simpleName ?: "error"} at ${this::class.simpleName}. §cPlease click this message to copy and send it in the Odin discord!",
+            chatStyle = style)}.getOrDefault(isCanceled)
 }
 
 /**

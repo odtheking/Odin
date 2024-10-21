@@ -20,7 +20,7 @@ object CustomHighlight : Module(
     tag = TagType.FPSTAX,
     description = "Allows you to highlight selected mobs. (/highlight)"
 ) {
-    private val starredMobESP by BooleanSetting("Starred Mob Highlight", true, description = "Highlights mobs with a star in their name (remove star from the separate list).")
+    private val starredMobESP by BooleanSetting("Starred Mob Highlight", true, description = "Highlights mobs with a star in their name.")
     private val shadowAssassin by BooleanSetting("Shadow Assassin", false, description = "Highlights Shadow Assassins.").withDependency { !isLegitVersion }
     private val mode by SelectorSetting("Mode", HighlightRenderer.HIGHLIGHT_MODE_DEFAULT, HighlightRenderer.highlightModeList, description = HighlightRenderer.HIGHLIGHT_MODE_DESCRIPTION)
 
@@ -77,7 +77,7 @@ object CustomHighlight : Module(
 
     private fun getMobEntity(entity: Entity): Entity? {
         return mc.theWorld?.getEntitiesWithinAABBExcludingEntity(entity, entity.entityBoundingBox.offset(0.0, -1.0, 0.0))
-            ?.filter { it !is EntityArmorStand && mc.thePlayer != it && !(it is EntityWither && it.isInvisible) && !(it is EntityOtherPlayerMP && !it.isOtherPlayer()) }
+            ?.filter { it !is EntityArmorStand && mc.thePlayer != it && !(it is EntityWither && it.isInvisible) && !(it is EntityOtherPlayerMP && it.isOtherPlayer()) }
             ?.minByOrNull { entity.getDistanceToEntity(it) }
     }
 }

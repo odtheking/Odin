@@ -2,10 +2,10 @@ package me.odinmain.features.impl.dungeon.dungeonwaypoints
 
 import me.odinmain.config.DungeonWaypointConfig
 import me.odinmain.events.impl.SecretPickupEvent
-import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.WaypointType
-import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.TimerType
-import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.getWaypoints
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.DungeonWaypoint
+import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.TimerType
+import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.WaypointType
+import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.getWaypoints
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.glList
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.lastEtherPos
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.lastEtherTime
@@ -31,8 +31,7 @@ object SecretWaypoints {
 
     fun onLocked() {
         val room = DungeonUtils.currentFullRoom ?: return
-        val vec = room.getRelativeCoords(lastClicked?.toVec3() ?: return)
-        getWaypoints(room).find { wp -> wp.toVec3().equal(vec) && wp.secret && wp.clicked }?.let {
+        getWaypoints(room).find { wp -> wp.toVec3() == room.getRelativeCoords(lastClicked?.toVec3() ?: return) && wp.secret && wp.clicked }?.let {
             it.clicked = false
             setWaypoints(room)
             devMessage("unclicked ${it.toVec3()}")
@@ -56,7 +55,7 @@ object SecretWaypoints {
         if (Vec3(packet.x, packet.y, packet.z).distanceTo(etherpos) > 3) return
         val room = DungeonUtils.currentFullRoom ?: return
         val waypoints = getWaypoints(room)
-        waypoints.find { wp -> wp.toVec3().equal(room.getRelativeCoords(etherpos)) && wp.type == WaypointType.ETHERWARP }?.let {
+        waypoints.find { wp -> wp.toVec3() == room.getRelativeCoords(etherpos) && wp.type == WaypointType.ETHERWARP }?.let {
             handleTimer(it, waypoints, room)
             it.clicked = true
             setWaypoints(room)
@@ -71,7 +70,7 @@ object SecretWaypoints {
         val vec = room.getRelativeCoords(pos)
 
         val waypoints = getWaypoints(room)
-        val waypoint = if (distance == 0) getWaypoints(room).find { wp -> wp.toVec3().equal(vec) && wp.secret && !wp.clicked }
+        val waypoint = if (distance == 0) getWaypoints(room).find { wp -> wp.toVec3() == vec && wp.secret && !wp.clicked }
         else waypoints.minByOrNull { wp ->
             if (wp.secret && !wp.clicked) wp.toVec3().distanceTo(vec).takeIf { it <= distance } ?: Double.MAX_VALUE
             else Double.MAX_VALUE

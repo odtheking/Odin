@@ -1,6 +1,5 @@
 package me.odinmain.features.impl.dungeon
 
-import me.odinmain.utils.equal
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.M7Phases
@@ -34,7 +33,7 @@ object LeapHelper {
             .minByOrNull {
                 val entity = it.entity
                 if (entity == null) 10000.0 else {
-                    if (currentPos.equal(Vec3(54.0, 4.0, 95.0)) && entity.posY >= 54.0) 10000.0
+                    if (currentPos == Vec3(54.0, 4.0, 95.0) && entity.posY >= 54.0) 10000.0
                     else entity.positionVector.distanceTo(currentPos)
                 }
             }

@@ -2,85 +2,52 @@ package me.odinmain.utils.skyblock
 
 import me.odinmain.OdinMain.mc
 import net.minecraft.block.Block
+import net.minecraft.block.state.IBlockState
 import net.minecraft.init.Blocks
 import net.minecraft.util.BlockPos
 
 /**
  * Retrieves the block ID at the specified `BlockPos` in the Minecraft world.
  *
- * @param blockpos The position in the world to query for the block ID.
+ * @param blockPos The position in the world to query for the block ID.
  * @return The block ID as an `Int`, or `null` if the block at the given position is not present.
  */
-fun getBlockIdAt(blockpos: BlockPos): Int? {
-    return Block.getIdFromBlock(mc.theWorld?.getBlockState(blockpos)?.block ?: return null)
+fun getBlockIdAt(blockPos: BlockPos): Int? {
+    return Block.getIdFromBlock(getBlockStateAt(blockPos).block ?: return null)
 }
 
 /**
  * Checks if the block at the specified `BlockPos` is considered "air" in the Minecraft world.
  *
- * @param blockPos The position in the world to check for an air block.
+ * @param blockPos The position in the world to query.
  * @return `true` if the block at the given position is air, `false` otherwise.
  */
-fun isAir(blockPos: BlockPos): Boolean {
-    return Block.getIdFromBlock(mc.theWorld?.getBlockState(blockPos)?.block) == 0
-}
+fun isAir(blockPos: BlockPos): Boolean =
+    getBlockAt(blockPos) == Blocks.air
 
 /**
- * Checks if the block at the specified `BlockPos` is considered "air" in the Minecraft world.
+ * Checks if the block at the specified `BlockPos` is a gold block in the Minecraft world.
  *
- * @param x The x-coordinate of the position to query.
- * @param y The y-coordinate of the position to query.
- * @param z The z-coordinate of the position to query.
- * @return `true` if the block at the given position is air, `false` otherwise.
+ * @param blockPos The position in the world to query.
+ * @return `true` if the block at the given position is a gold block, `false` otherwise.
  */
-fun isAir(x: Int, y: Int, z: Int): Boolean {
-    return getBlockAt(x, y, z) == Blocks.air
-}
-
-fun isGold(x: Int, y: Int, z: Int): Boolean {
-    return getBlockAt(x, y, z) == Blocks.gold_block
-}
+fun isGold(blockPos: BlockPos): Boolean =
+    getBlockAt(blockPos) == Blocks.gold_block
 
 /**
- * Retrieves the block ID at the specified coordinates in the Minecraft world.
+ * Retrieves the block at the specified `BlockPos` in the Minecraft world.
  *
- * @param x The x-coordinate of the position to query.
- * @param y The y-coordinate of the position to query.
- * @param z The z-coordinate of the position to query.
- * @return The block ID as an `Int`.
- */
-fun getBlockIdAt(x: Double, y: Double, z: Double): Int {
-    return Block.getIdFromBlock(mc.theWorld?.getBlockState(BlockPos(x, y, z))?.block)
-}
-
-/**
- * Retrieves the block ID at the specified integer coordinates in the Minecraft world.
- *
- * @param x The x-coordinate of the position to query.
- * @param y The y-coordinate of the position to query.
- * @param z The z-coordinate of the position to query.
- * @return The block ID as an `Int`.
- */
-fun getBlockIdAt(x: Int, y: Int, z: Int): Int {
-    return Block.getIdFromBlock(mc.theWorld?.getBlockState(BlockPos(x, y, z))?.block)
-}
-
-/**
- * Retrieves the block object at the specified position
- *
- * @param pos The position to query.
- * @return The block as a `Block`.
+ * @param pos The position in the world to query for the block.
+ * @return The block at the given position, or `Blocks.air` if the block is not present.
  */
 fun getBlockAt(pos: BlockPos): Block =
-    mc.theWorld?.getBlockState(pos)?.block ?: Blocks.air
+    mc.theWorld?.chunkProvider?.provideChunk(pos.x shr 4, pos.z shr 4)?.getBlock(pos) ?: Blocks.air
 
 /**
- * Retrieves the block object at the specified integer coordinates.
+ * Retrieves the block state at the specified `BlockPos` in the Minecraft world.
  *
- * @param x The x-coordinate of the position to query.
- * @param y The y-coordinate of the position to query.
- * @param z The z-coordinate of the position to query.
- * @return The block as a `Block`.
+ * @param pos The position in the world to query for the block state.
+ * @return The block state at the given position, or the default state of `Blocks.air` if the block is not present.
  */
-fun getBlockAt(x: Int, y: Int, z: Int): Block =
-    getBlockAt(BlockPos(x, y, z))
+fun getBlockStateAt(pos: BlockPos): IBlockState =
+    mc.theWorld?.chunkProvider?.provideChunk(pos.x shr 4, pos.z shr 4)?.getBlockState(pos) ?: Blocks.air.defaultState
