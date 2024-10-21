@@ -1,14 +1,13 @@
 package me.odinmain.features.impl.floor7
 
 import me.odinmain.events.impl.RealServerTick
-import me.odinmain.events.impl.PostEntityStatus
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.DragonBoxes.renderBoxes
-import me.odinmain.features.impl.floor7.DragonCheck.dragonDeath
-import me.odinmain.features.impl.floor7.DragonCheck.dragonJoinWorld
+import me.odinmain.features.impl.floor7.DragonCheck.dragonEntityList
 import me.odinmain.features.impl.floor7.DragonCheck.dragonSpawn
 import me.odinmain.features.impl.floor7.DragonCheck.dragonSprayed
+import me.odinmain.features.impl.floor7.DragonCheck.dragonUpdate
 import me.odinmain.features.impl.floor7.DragonCheck.lastDragonDeath
 import me.odinmain.features.impl.floor7.DragonCheck.onChatPacket
 import me.odinmain.features.impl.floor7.DragonHealth.renderHP
@@ -27,7 +26,6 @@ import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.server.*
 import net.minecraftforge.client.event.RenderWorldLastEvent
-import net.minecraftforge.event.entity.EntityJoinWorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.util.*
 import kotlin.concurrent.schedule
@@ -110,6 +108,7 @@ object WitherDragons : Module(
                 it.isSprayed = false
                 it.spawnedTime = 0
             }
+            dragonEntityList.clear()
             priorityDragon = WitherDragonsEnum.None
             lastDragonDeath = WitherDragonsEnum.None
         }
@@ -132,7 +131,11 @@ object WitherDragons : Module(
         }
 
         onPacket(S0FPacketSpawnMob::class.java, { DungeonUtils.getF7Phase() == M7Phases.P5 && enabled }) {
-            dragonSpawn(it.entityID)
+            if (it.entityType == 63) dragonSpawn(it)
+        }
+
+        onPacket(S1CPacketEntityMetadata::class.java, { DungeonUtils.getF7Phase() == M7Phases.P5 && enabled }) {
+            dragonUpdate(it)
         }
 
         onMessage("[BOSS] Necron: All this, for nothing...", false) {
@@ -156,17 +159,18 @@ object WitherDragons : Module(
             renderTracers(priorityDragon)
     }
 
-    @SubscribeEvent
-    fun onEntityJoin(event: EntityJoinWorldEvent) {
-        if (DungeonUtils.getF7Phase() != M7Phases.P5) return
-        dragonJoinWorld(event)
-    }
+//    @SubscribeEvent
+//    fun onEntityJoin(event: EntityJoinWorldEvent) {
+//        if (DungeonUtils.getF7Phase() != M7Phases.P5) return
+//        dragonJoinWorld(event)
+//    }
 
-    @SubscribeEvent
-    fun onEntityStatus(event: PostEntityStatus) {
-        if (DungeonUtils.getF7Phase() != M7Phases.P5 || event.status.toInt() != 3) return
-        dragonDeath(event.entityId)
-    }
+//    @SubscribeEvent
+//    fun onEntityStatus(event: PostEntityStatus) {
+//        modMessage(mc.theWorld.getEntityByID(event.entityId))
+//        if (DungeonUtils.getF7Phase() != M7Phases.P5 || event.status.toInt() != 3) return
+//        dragonDeath(event.entityId)
+//    }
 
     @SubscribeEvent
     fun onServerTick(event: RealServerTick) {

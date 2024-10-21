@@ -1,9 +1,19 @@
 package me.odinmain.features.impl.floor7
 
+import me.odinmain.OdinMain.mc
+import me.odinmain.features.impl.floor7.DragonCheck.dragonEntityList
+import me.odinmain.features.impl.floor7.DragonCheck.lastDragonDeath
 import me.odinmain.features.impl.floor7.DragonPriority.displaySpawningDragon
 import me.odinmain.features.impl.floor7.DragonPriority.findPriority
+import me.odinmain.features.impl.floor7.WitherDragons.arrowDeath
+import me.odinmain.features.impl.floor7.WitherDragons.arrowSpawn
 import me.odinmain.features.impl.floor7.WitherDragons.priorityDragon
+import me.odinmain.features.impl.floor7.WitherDragons.sendArrowHit
+import me.odinmain.features.impl.floor7.WitherDragons.sendSpawned
 import me.odinmain.features.impl.floor7.WitherDragons.sendSpawning
+import me.odinmain.features.impl.floor7.WitherDragons.sendTime
+import me.odinmain.features.impl.skyblock.ArrowHit.onDragonSpawn
+import me.odinmain.features.impl.skyblock.ArrowHit.resetOnDragons
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.skyblock.PersonalBest
 import me.odinmain.utils.skyblock.modMessage
@@ -21,6 +31,7 @@ enum class WitherDragonsEnum (
     var timeToSpawn: Int = 100,
     var state: WitherDragonState = WitherDragonState.DEAD,
     var timesSpawned: Int = 0,
+    var entityId: Int? = null,
     var entity: EntityDragon? = null,
     var isSprayed: Boolean = false,
     var spawnedTime: Long = 0,
@@ -43,6 +54,46 @@ enum class WitherDragonsEnum (
 
     None(Vec3(0.0, 0.0, 0.0), AxisAlignedBB(0.0, 0.0, 0.0, 0.0, 0.0, 0.0), 'f', Color.WHITE,
         0.0..0.0, 0.0..0.0);
+
+    fun setAlive(entityId: Int) {
+        state = WitherDragonState.ALIVE
+
+        timeToSpawn = 100
+        timesSpawned += 1
+        this.entityId = entityId
+        spawnedTime = System.currentTimeMillis()
+        isSprayed = false
+
+        if (sendArrowHit && WitherDragons.enabled) arrowSpawn(this)
+        if (resetOnDragons && WitherDragons.enabled) onDragonSpawn()
+        if (sendSpawned && WitherDragons.enabled) {
+            val numberSuffix = when (timesSpawned) {
+                1 -> "st"
+                2 -> "nd"
+                3 -> "rd"
+                else -> "th"
+            }
+            modMessage("§${colorCode}${name} §fdragon spawned. This is the §${colorCode}${timesSpawned}${numberSuffix}§f time it has spawned.")
+        }
+    }
+
+    fun setDead() {
+        state = WitherDragonState.DEAD
+        dragonEntityList.remove(entity)
+        entity = null
+        lastDragonDeath = this
+
+        if (sendTime && WitherDragons.enabled)
+            dragonPBs.time(ordinal, (System.currentTimeMillis() - spawnedTime) / 1000.0, "s§7!", "§${colorCode}${name} §7was alive for §6", addPBString = true, addOldPBString = true)
+
+        if (sendArrowHit && WitherDragons.enabled) arrowDeath(this)
+    }
+
+    fun updateEntity(entityId: Int) {
+        val dragon = mc.theWorld.getEntityByID(entityId) as? EntityDragon ?: return
+        entity = dragon
+        dragonEntityList.add(dragon)
+    }
 }
 
 enum class WitherDragonState {
@@ -67,7 +118,7 @@ fun handleSpawnPacket(particle: S2APacketParticles) {
         particle.zCoordinate % 1 != 0.0
     ) return
 
-    WitherDragonsEnum.entries.fold(0 to mutableListOf<WitherDragonsEnum>()) { (spawned, dragons), dragon ->
+    val (spawned, dragons) = WitherDragonsEnum.entries.fold(0 to mutableListOf<WitherDragonsEnum>()) { (spawned, dragons), dragon ->
         val newSpawned = spawned + dragon.timesSpawned
 
         if (dragon.state == WitherDragonState.SPAWNING) {
@@ -80,14 +131,12 @@ fun handleSpawnPacket(particle: S2APacketParticles) {
 
         dragon.state = WitherDragonState.SPAWNING
         dragons.add(dragon)
-
-        if (dragons.size == 2 || newSpawned > 2) {
-            priorityDragon = findPriority(dragons)
-            displaySpawningDragon(priorityDragon)
-            return
-        }
-
         newSpawned to dragons
+    }
+
+    if (dragons.size == 2 || spawned > 2) {
+        priorityDragon = findPriority(dragons).takeIf { it != priorityDragon }?.also { displaySpawningDragon(it) } ?: priorityDragon
+        return
     }
 }
 

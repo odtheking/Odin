@@ -26,7 +26,7 @@ object DragonPriority {
 
     fun displaySpawningDragon(dragon: WitherDragonsEnum) {
         if (dragon == WitherDragonsEnum.None) return
-        if (dragonTitle && WitherDragons.enabled) PlayerUtils.alert("§${dragon.colorCode}${dragon.name} is spawning!")
+        if (dragonTitle && WitherDragons.enabled) PlayerUtils.alert("§${dragon.colorCode}${dragon.name} is spawning!", 30)
         if (dragonPriorityToggle && WitherDragons.enabled) modMessage("§${dragon.colorCode}${dragon.name} §7is your priority dragon!")
     }
 
@@ -51,7 +51,7 @@ object DragonPriority {
                 if (spawningDragon.any { it == WitherDragonsEnum.Purple } || soloDebuffOnAll) spawningDragon.sortByDescending { priorityList.indexOf(it) }
             }
         }
-        devMessage("§7Priority: §6$totalPower §7Class: ${playerClass.colorCode}${playerClass.name} §7Dragons: §a${spawningDragon.joinToString(", ") { it.name }} §7-> §c${priorityList.joinToString(", ") { it.name.first().toString() }}")
+        devMessage("§7Priority: §6$totalPower §7Class: §${playerClass.colorCode}${playerClass.name} §7Dragons: §a${spawningDragon.joinToString(", ") { it.name }} §7-> §c${priorityList.joinToString(", ") { it.name.first().toString() }}")
         return spawningDragon[0]
     }
 }
