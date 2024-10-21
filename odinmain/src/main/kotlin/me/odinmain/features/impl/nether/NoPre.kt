@@ -4,6 +4,7 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.utils.skyblock.*
+import me.odinmain.utils.skyblock.KuudraUtils.PreSpot
 import me.odinmain.utils.skyblock.KuudraUtils.giantZombies
 import net.minecraft.util.Vec3
 
@@ -16,17 +17,6 @@ object NoPre : Module(
 
     private var preLoc = PreSpot.None
     var missing = PreSpot.None
-
-    enum class PreSpot(val location: Vec3) {
-        Triangle(Vec3(-67.5, 77.0, -122.5)),
-        X(Vec3(-142.5, 77.0, -151.0)),
-        Equals(Vec3(-65.5, 76.0, -87.5)),
-        Slash(Vec3(-113.5, 77.0, -68.5)),
-        Shop(Vec3(-81.0, 76.0, -143.0)),
-        xCannon(Vec3(-143.0, 76.0, -125.0)),
-        Square(Vec3(-143.0, 76.0, -80.0)),
-        None(Vec3(0.0, 0.0, 0.0))
-    }
 
     private val partyChatRegex = Regex("^Party > (\\[[^]]*?])? ?(\\w{1,16}): No ?(Triangle|X|Equals|Slash)!\$")
 
