@@ -7,6 +7,7 @@ import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.DragonBoxes.renderBoxes
 import me.odinmain.features.impl.floor7.DragonCheck.dragonDeath
 import me.odinmain.features.impl.floor7.DragonCheck.dragonJoinWorld
+import me.odinmain.features.impl.floor7.DragonCheck.dragonSpawn
 import me.odinmain.features.impl.floor7.DragonCheck.dragonSprayed
 import me.odinmain.features.impl.floor7.DragonCheck.lastDragonDeath
 import me.odinmain.features.impl.floor7.DragonCheck.onChatPacket
@@ -128,6 +129,10 @@ object WitherDragons : Module(
 
         onPacket(S04PacketEntityEquipment::class.java, { DungeonUtils.getF7Phase() == M7Phases.P5 && enabled }) {
             dragonSprayed(it)
+        }
+
+        onPacket(S0FPacketSpawnMob::class.java, { DungeonUtils.getF7Phase() == M7Phases.P5 && enabled }) {
+            dragonSpawn(it.entityID)
         }
 
         onMessage("[BOSS] Necron: All this, for nothing...", false) {

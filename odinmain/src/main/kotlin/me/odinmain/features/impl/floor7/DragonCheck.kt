@@ -49,6 +49,32 @@ object DragonCheck {
         }
     }
 
+    fun dragonSpawn(entityId: Int) {
+        val entity = mc.theWorld?.getEntityByID(entityId) as? EntityDragon ?: return
+        val dragon = WitherDragonsEnum.entries.find { isVecInXZ(entity.positionVector, it.boxesDimensions) } ?: return
+        modMessage("Detected spawn for ${dragon.colorCode}${dragon.name}")
+//        if (dragon.state == WitherDragonState.DEAD) return
+//
+//        dragon.state = WitherDragonState.ALIVE
+//        dragon.timeToSpawn = 100
+//        dragon.timesSpawned += 1
+//        dragon.entity = entity
+//        dragon.spawnedTime = System.currentTimeMillis()
+//        dragon.isSprayed = false
+//
+//        if (sendArrowHit && WitherDragons.enabled) arrowSpawn(dragon)
+//        if (resetOnDragons && WitherDragons.enabled) onDragonSpawn()
+//        if (sendSpawned && WitherDragons.enabled) {
+//            val numberSuffix = when (dragon.timesSpawned) {
+//                1 -> "st"
+//                2 -> "nd"
+//                3 -> "rd"
+//                else -> "th"
+//            }
+//            modMessage("§${dragon.colorCode}${dragon.name} §fdragon spawned. This is the §${dragon.colorCode}${dragon.timesSpawned}${numberSuffix}§f time it has spawned.")
+//        }
+    }
+
     fun dragonDeath(entityId: Int) {
         val dragon = WitherDragonsEnum.entries.find { it.entity?.entityId == entityId } ?: return
         dragon.state = WitherDragonState.DEAD
