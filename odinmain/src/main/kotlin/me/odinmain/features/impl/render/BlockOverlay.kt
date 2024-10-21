@@ -28,10 +28,8 @@ object BlockOverlay : Module(
         if (event.target.typeOfHit != MovingObjectType.BLOCK || mc.gameSettings?.thirdPersonView != 0) return
         event.isCanceled = true
 
-        val blockPos = event.target.blockPos
+        if (getBlockAt(event.target.blockPos).material === Material.air || event.target.blockPos !in mc.theWorld.worldBorder) return
 
-        if (getBlockAt(blockPos).material === Material.air || blockPos !in mc.theWorld.worldBorder) return
-
-        Renderer.drawStyledBlock(blockPos, color, style, lineWidth, depthCheck, lineSmoothing)
+        Renderer.drawStyledBlock(event.target.blockPos, color, style, lineWidth, depthCheck, lineSmoothing)
     }
 }

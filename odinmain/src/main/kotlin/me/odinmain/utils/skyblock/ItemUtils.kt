@@ -34,7 +34,7 @@ val ItemStack.unformattedName: String
 val ItemStack.lore: List<String>
     get() = this.tagCompound?.getCompoundTag("display")?.getTagList("Lore", 8)?.let {
         List(it.tagCount()) { i -> it.getStringTagAt(i) }
-    } ?: emptyList()
+    }.orEmpty()
 
 /**
  * Returns Item ID for an Item

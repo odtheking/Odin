@@ -19,7 +19,7 @@ class RoomDataDeserializer : JsonDeserializer<RoomData> {
         val name = jsonObject?.get("name")?.asString ?: ""
         val type = context?.deserialize(jsonObject?.get("type"), RoomType::class.java) ?: RoomType.NORMAL
         val coresType = object : TypeToken<List<Int>>() {}.type
-        val cores = context?.deserialize<List<Int>>(jsonObject?.get("cores"), coresType) ?: emptyList()
+        val cores = context?.deserialize<List<Int>>(jsonObject?.get("cores"), coresType).orEmpty()
         val crypts = jsonObject?.get("crypts")?.asInt ?: 0
         val secrets = jsonObject?.get("secrets")?.asInt ?: 0
         val trappedChests = jsonObject?.get("trappedChests")?.asInt ?: 0

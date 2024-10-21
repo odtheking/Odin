@@ -30,9 +30,8 @@ object Splits : Module(
             mcText(time, x, 9f + index * getMCTextHeight(), 1f, Color.WHITE, shadow = true, center = false)
         }
         if (bossEntrySplit && currentSplits.splits.size > 3) {
-            val time = formatTime(times.take(3).sum(), numbersAfterDecimal)
             mcText("§9Boss Entry", 1f, (currentSplits.splits.size) * getMCTextHeight(), 1f, Color.WHITE, shadow = true, center = false)
-            mcText(time, x, (currentSplits.splits.size) * getMCTextHeight(), 1f, Color.WHITE, shadow = true, center = false)
+            mcText(formatTime(times.take(3).sum(), numbersAfterDecimal), x, (currentSplits.splits.size) * getMCTextHeight(), 1f, Color.WHITE, shadow = true, center = false)
         }
         getMCTextWidth("Split 0: 0h 00m 00s") + 2f to 80f
     }

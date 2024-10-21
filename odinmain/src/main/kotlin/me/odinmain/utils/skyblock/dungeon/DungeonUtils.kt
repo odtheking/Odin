@@ -67,7 +67,7 @@ object DungeonUtils {
         get() = if (completedRoomCount == 0 || percentCleared == 0) 0 else floor((completedRoomCount / (percentCleared * 0.01).toFloat()) + 0.4).toInt()
 
     val puzzles: List<Puzzle>
-        get() = currentDungeon?.puzzles ?: emptyList()
+        get() = currentDungeon?.puzzles.orEmpty()
 
     val puzzleCount: Int
         get() = currentDungeon?.puzzles?.size ?: 0
@@ -82,13 +82,13 @@ object DungeonUtils {
         get() = currentDungeon?.currentFullRoom?.room?.data?.name ?: "Unknown"
 
     val dungeonTeammates: List<DungeonPlayer>
-        get() = currentDungeon?.dungeonTeammates ?: emptyList()
+        get() = currentDungeon?.dungeonTeammates.orEmpty()
 
     val dungeonTeammatesNoSelf: List<DungeonPlayer>
-        get() = currentDungeon?.dungeonTeammatesNoSelf ?: emptyList()
+        get() = currentDungeon?.dungeonTeammatesNoSelf.orEmpty()
 
     val leapTeammates: List<DungeonPlayer>
-        get() = currentDungeon?.leapTeammates ?: emptyList()
+        get() = currentDungeon?.leapTeammates.orEmpty()
 
     val currentDungeonPlayer: DungeonPlayer
         get() = dungeonTeammates.find { it.name == mc.thePlayer?.name } ?: DungeonPlayer(mc.thePlayer?.name ?: "Unknown", DungeonClass.Unknown, entity = mc.thePlayer)
@@ -103,7 +103,7 @@ object DungeonUtils {
         get() = currentDungeon?.currentFullRoom
 
     val passedRooms: Set<FullRoom>
-        get() = currentDungeon?.passedRooms ?: emptySet()
+        get() = currentDungeon?.passedRooms.orEmpty()
 
     val isPaul: Boolean
         get() = currentDungeon?.paul == true
