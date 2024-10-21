@@ -147,7 +147,7 @@ object ScanUtils {
     }
 
     private fun getTopLayerOfRoom(vec2: Vec2, currentHeight: Int = DEFAULT_HEIGHT): Int {
-        return if ((isAir(vec2.x, currentHeight, vec2.z) || isGold(vec2.x, currentHeight, vec2.z)) && currentHeight > 70) getTopLayerOfRoom(vec2, currentHeight - 1) else currentHeight
+        return if ((isAir(BlockPos(vec2.x, currentHeight, vec2.z)) || isGold(BlockPos(vec2.x, currentHeight, vec2.z))) && currentHeight > 70) getTopLayerOfRoom(vec2, currentHeight - 1) else currentHeight
     }
 
     @SubscribeEvent

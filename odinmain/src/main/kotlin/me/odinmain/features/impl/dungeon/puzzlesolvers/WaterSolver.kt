@@ -166,7 +166,7 @@ object WaterSolver {
         PURPLE, ORANGE, BLUE, GREEN, RED;
 
         val isExtended: Boolean
-            get() = chestPosition.addRotationCoords(roomFacing, 3 + ordinal).let { getBlockAt(it.x, 56, it.z ) == Blocks.wool }
+            get() = chestPosition.addRotationCoords(roomFacing, 3 + ordinal).let { getBlockAt(BlockPos(it.x, 56, it.z)) == Blocks.wool }
     }
 
     enum class LeverBlock(var i: Int = 0) {

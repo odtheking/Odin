@@ -14,8 +14,8 @@ val OdinClientCommand = commodore("odinclient") {
     }
 
     literal("rotate") {
-        runs { yaw: Float, pitch: Float, time: Long ->
-            smoothRotateTo(yaw, pitch, time) { modMessage("§aFinished rotating!") }
+        runs { yaw: Float, pitch: Float, time: Long? ->
+            smoothRotateTo(yaw, pitch, time ?: 100L) { modMessage("§aFinished rotating!") }
         }
     }
 }

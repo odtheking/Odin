@@ -170,8 +170,7 @@ private val rarityRegex: Regex = Regex("§l(?<rarity>${ItemRarity.entries.joinTo
 fun getRarity(lore: List<String>): ItemRarity? {
     // Start from the end since the rarity is usually the last line or one of the last.
     for (i in lore.indices.reversed()) {
-        val match = rarityRegex.find(lore[i]) ?: continue
-        val rarity: String = match.groups["rarity"]?.value ?: continue
+        val rarity = rarityRegex.find(lore[i])?.groups["rarity"]?.value ?: continue
         return ItemRarity.entries.find { it.loreName == rarity }
     }
     return null

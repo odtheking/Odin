@@ -12,7 +12,6 @@ class Room(override val x: Int, override val z: Int, var data: RoomData, var cor
     override var state: RoomState = RoomState.UNDISCOVERED
 }
 
-
 data class FullRoom(val room: Room, var clayPos: BlockPos, val components: ArrayList<ExtraRoom>, var waypoints: ArrayList<DungeonWaypoint>)
 data class ExtraRoom(val x: Int, val z: Int, val core: Int) {
     val vec2 = Vec2(x, z)

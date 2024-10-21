@@ -36,7 +36,7 @@ object BoulderSolver {
         var str = ""
         for (z in -3..2) {
             for (x in -3..3) {
-                room.vec2.addRotationCoords(room.rotation, x * 3, z * 3).let { str += if (getBlockIdAt(it.x, 66, it.z) == 0) "0" else "1" }
+                room.vec2.addRotationCoords(room.rotation, x * 3, z * 3).let { str += if (getBlockIdAt(BlockPos(it.x, 66, it.z)) == 0) "0" else "1" }
             }
         }
         currentPositions = solutions[str]?.map { sol ->
