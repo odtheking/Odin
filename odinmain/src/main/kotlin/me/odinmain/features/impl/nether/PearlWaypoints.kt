@@ -6,6 +6,7 @@ import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.KuudraUtils
+import me.odinmain.utils.skyblock.KuudraUtils.PreSpot
 import me.odinmain.utils.toAABB
 import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3i
@@ -65,12 +66,12 @@ object PearlWaypoints : Module(
     )
 
     private val blockNameMap = hashMapOf(
-        "X Cannon" to BlockPos(-110, 155, -106),
-        "X" to BlockPos(-46, 120, -150),
-        "Shop" to BlockPos(-46, 135, -139),
-        "Triangle" to BlockPos(-37, 139, -125),
-        "Equals" to BlockPos(-28, 128, -112),
-        "Slash" to BlockPos(-106, 157, -99)
+        PreSpot.xCannon to BlockPos(-110, 155, -106),
+        PreSpot.X to BlockPos(-46, 120, -150),
+        PreSpot.Shop to BlockPos(-46, 135, -139),
+        PreSpot.Triangle to BlockPos(-37, 139, -125),
+        PreSpot.Equals to BlockPos(-28, 128, -112),
+        PreSpot.Slash to BlockPos(-106, 157, -99)
     )
 
     @SubscribeEvent
@@ -84,7 +85,7 @@ object PearlWaypoints : Module(
                     outlineAlpha = if (!closest && hideFarWaypoints) 0.25f else 1f, fillAlpha = 0f, depth = false)
             }
             lineup.lineups.forEach lineupLoop@{
-                if (NoPre.missing == "" || NoPre.missing == "Square") return@lineupLoop Renderer.drawBox(aabb = it.toAABB(), color = color, outlineAlpha = 0f, fillAlpha = if (!closest && hideFarWaypoints) 0f else 3f, depth = false)
+                if (NoPre.missing == PreSpot.None || NoPre.missing == PreSpot.Square) return@lineupLoop Renderer.drawBox(aabb = it.toAABB(), color = color, outlineAlpha = 0f, fillAlpha = if (!closest && hideFarWaypoints) 0f else 3f, depth = false)
                 if (lineup.startPos == setOf(BlockPos(-141, 78, -91)) && blockNameMap[NoPre.missing] != it) return@lineupLoop
 
                 Renderer.drawBox(aabb = it.toAABB(), color = color, outlineAlpha = 0f, fillAlpha = if (!closest && hideFarWaypoints) 0f else 3f, depth = false)

@@ -11,6 +11,7 @@ import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.skyblock.*
 import net.minecraft.entity.Entity
+import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.inventory.Container
 import net.minecraft.inventory.ContainerChest
 import net.minecraftforge.common.MinecraftForge
@@ -341,4 +342,8 @@ val Entity.rotation get() = Pair(rotationYaw, rotationPitch)
 
 fun runOnMCThread(run: () -> Unit) {
     if (!mc.isCallingFromMinecraftThread) mc.addScheduledTask(run) else run()
+}
+
+fun EntityPlayer?.isOtherPlayer(): Boolean {
+    return this != null && this != mc.thePlayer && this.uniqueID.version() != 2
 }

@@ -19,7 +19,7 @@ object WarpCooldown : Module(
             getTextWidth("Warp: 30s", 12f) + 2f to 16f
         } else {
             if (warpTimer.timeLeft() <= 0) return@HudSetting 0f to 0f
-            text("§eWarp: §a${String.format(Locale.US, "%.2f", warpTimer.timeLeft().toFloat() / 1000)}s", 1f, 9f, Color.WHITE, 12f, OdinFont.REGULAR, shadow = true)
+            text("§eWarp: §a${String.format(Locale.US, "%.2f", warpTimer.timeLeft() / 1000f)}s", 1f, 9f, Color.WHITE, 12f, OdinFont.REGULAR, shadow = true)
             getTextWidth("§eWarp: §a30s", 12f) + 2f to 12f
         }
     }

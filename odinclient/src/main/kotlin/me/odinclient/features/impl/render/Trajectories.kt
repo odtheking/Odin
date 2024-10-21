@@ -179,7 +179,7 @@ object Trajectories : Module(
                 .offset(posVec.xCoord, posVec.yCoord, posVec.zCoord)
                 .addCoord(motionVec.xCoord, motionVec.yCoord, motionVec.zCoord)
                 .expand(0.01, 0.01, 0.01)
-            val entityHit = mc.theWorld?.getEntitiesWithinAABBExcludingEntity(mc.thePlayer, aabb)?.filter { it !is EntityArrow && it !is EntityArmorStand } ?: emptyList()
+            val entityHit = mc.theWorld?.getEntitiesWithinAABBExcludingEntity(mc.thePlayer, aabb)?.filter { it !is EntityArrow && it !is EntityArmorStand }.orEmpty()
             if (entityHit.isNotEmpty()) {
                 hitResult = true
                 entityRenderQueue.addAll(entityHit)
