@@ -25,12 +25,10 @@ object FuckDiorite : Module(
     private val colorIndex by NumberSetting("Color", 0, 0.0, 15.0, 1.0, description = "Color for the stained glass.").withDependency { stainedGlass }
     private val pillars = listOf(listOf(46, 169, 41), listOf(46, 169, 65), listOf(100, 169, 65), listOf(100, 179, 41)) // Green, Yellow, Purple, Red
     private val coordinates: List<List<BlockPos>> = pillars.map { (x, y, z) ->
-        mutableListOf<BlockPos>().apply {
-            (-3..3).forEach { dx ->
-                (0..37).forEach { dy ->
-                    (-3..3).forEach { dz ->
-                        add(BlockPos(x + dx, y + dy, z + dz))
-                    }
+        (x - 3..x + 3).flatMap { dx ->
+            (y..y + 37).flatMap { dy ->
+                (z - 3..z + 3).map { dz ->
+                    BlockPos(dx, dy, dz)
                 }
             }
         }
@@ -38,7 +36,7 @@ object FuckDiorite : Module(
 
     init {
         onMessage("[BOSS] Storm: Pathetic Maxor, just like expected.", false) {
-            modMessage("Fucking Diorite")
+            modMessage("§3Fucking Diorite!")
             replaceDiorite()
         }
     }
@@ -61,9 +59,9 @@ object FuckDiorite : Module(
     private val pillarColors = listOf(5, 4, 10, 14) // Green, Yellow, Purple, Red
 
     private fun setGlass(pos: BlockPos) {
-        val pillarIndex = coordinates.indexOfFirst { pos in it }
-        val glassColor = if (pillarBasedColor && pillarIndex != -1) pillarColors[pillarIndex] else colorIndex
-        mc.theWorld?.setBlockState(pos, if (stainedGlass) Blocks.stained_glass.getStateFromMeta(glassColor) else Blocks.glass.defaultState, 3)
+        Blocks.stained_glass.getStateFromMeta(if (pillarBasedColor) pillarColors[coordinates.indexOfFirst { pos in it }] else colorIndex).let {
+            mc.theWorld?.setBlockState(pos, if (stainedGlass) it else Blocks.glass.defaultState, 3)
+        }
     }
 
     private fun isDiorite(pos: BlockPos): Boolean =

@@ -104,7 +104,7 @@ val devCommand = commodore("oddev") {
     }
 
     literal("relativecoords").runs {
-        val block = mc.objectMouseOver.blockPos ?: return@runs
+        val block = mc.objectMouseOver?.blockPos ?: return@runs
         modMessage(
             """
             ${getChatBreak()}
@@ -112,6 +112,11 @@ val devCommand = commodore("oddev") {
             Relative Coords: ${DungeonUtils.currentFullRoom?.getRelativeCoords(block.toVec3())?.toString()}
             ${getChatBreak()}
             """.trimIndent(), "")
+    }
+
+    literal("getplayers").runs {
+        val playerEntities = mc.theWorld?.playerEntities?.filter { it.isOtherPlayer() } ?: return@runs modMessage("No players found.")
+        modMessage("Players: ${playerEntities.joinToString { it.name ?: "Unknown" }}")
     }
 
     literal("generatereadme").runs {

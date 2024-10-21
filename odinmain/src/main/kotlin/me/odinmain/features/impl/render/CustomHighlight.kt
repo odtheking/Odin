@@ -6,7 +6,7 @@ import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
-import me.odinmain.utils.ServerUtils.getPing
+import me.odinmain.utils.isOtherPlayer
 import me.odinmain.utils.render.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.client.entity.EntityOtherPlayerMP
@@ -77,7 +77,7 @@ object CustomHighlight : Module(
 
     private fun getMobEntity(entity: Entity): Entity? {
         return mc.theWorld?.getEntitiesWithinAABBExcludingEntity(entity, entity.entityBoundingBox.offset(0.0, -1.0, 0.0))
-            ?.filter { it != null && it !is EntityArmorStand && it.getPing() != 1 && it != mc.thePlayer && !(it is EntityWither && it.isInvisible)}
+            ?.filter { it !is EntityArmorStand && mc.thePlayer != it && !(it is EntityWither && it.isInvisible) && !(it is EntityOtherPlayerMP && !it.isOtherPlayer()) }
             ?.minByOrNull { entity.getDistanceToEntity(it) }
     }
 }

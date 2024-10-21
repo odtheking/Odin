@@ -29,7 +29,7 @@ object NoPre : Module(
         PreSpot("Square", Vec3(-143.0, 76.0, -80.0))
     )
 
-    private val partyChatRegex = Regex("^Party > (\\[[^]]*?] )?(\\w{1,16}): No ?(Triangle|X|Equals|Slash)!\$")
+    private val partyChatRegex = Regex("^Party > (\\[[^]]*?])? ?(\\w{1,16}): No ?(Triangle|X|Equals|Slash)!\$")
 
     init {
         onMessage("[NPC] Elle: Head over to the main platform, I will join you when I get a bite!", false) {
