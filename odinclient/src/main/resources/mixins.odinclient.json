@@ -24,6 +24,7 @@
     "accessors.IEntityPlayerSPAccessor",
     "accessors.IEntityRendererAccessor",
     "accessors.IMinecraftAccessor",
+    "accessors.S19PacketEntityStatusAccessor",
     "mixins.MixinFontRenderer",
     "mixins.MixinGuiContainer",
     "mixins.MixinGuiIngame",

@@ -12,6 +12,7 @@
     "mixins.MixinWorld"
   ],
   "client": [
+    "accessors.S19PacketEntityStatusAccessor",
     "accessors.EntityRendererAccessor",
     "accessors.IEntityPlayerSPAccessor",
     "accessors.IMinecraftAccessor",

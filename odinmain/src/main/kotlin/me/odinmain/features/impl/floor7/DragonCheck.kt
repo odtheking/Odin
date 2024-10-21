@@ -1,11 +1,8 @@
 package me.odinmain.features.impl.floor7
 
 import me.odinmain.OdinMain.mc
-import me.odinmain.features.impl.floor7.DragonPriority.displaySpawningDragon
-import me.odinmain.features.impl.floor7.DragonPriority.findPriority
 import me.odinmain.features.impl.floor7.WitherDragons.arrowDeath
 import me.odinmain.features.impl.floor7.WitherDragons.arrowSpawn
-import me.odinmain.features.impl.floor7.WitherDragons.priorityDragon
 import me.odinmain.features.impl.floor7.WitherDragons.sendArrowHit
 import me.odinmain.features.impl.floor7.WitherDragons.sendNotification
 import me.odinmain.features.impl.floor7.WitherDragons.sendSpawned
@@ -21,7 +18,6 @@ import net.minecraft.init.Blocks
 import net.minecraft.item.Item
 import net.minecraft.network.play.server.S04PacketEntityEquipment
 import net.minecraftforge.event.entity.EntityJoinWorldEvent
-import net.minecraftforge.event.entity.living.LivingDeathEvent
 
 object DragonCheck {
 
@@ -53,14 +49,39 @@ object DragonCheck {
         }
     }
 
-    fun dragonLeaveWorld(event: LivingDeathEvent) {
-        val entity = event.entity as? EntityDragon ?: return
-        val dragon = WitherDragonsEnum.entries.find { it.entity?.entityId == entity.entityId } ?: return
+    fun dragonSpawn(entityId: Int) {
+        val entity = mc.theWorld?.getEntityByID(entityId) as? EntityDragon ?: return
+        val dragon = WitherDragonsEnum.entries.find { isVecInXZ(entity.positionVector, it.boxesDimensions) } ?: return
+        modMessage("Detected spawn for ${dragon.colorCode}${dragon.name}")
+//        if (dragon.state == WitherDragonState.DEAD) return
+//
+//        dragon.state = WitherDragonState.ALIVE
+//        dragon.timeToSpawn = 100
+//        dragon.timesSpawned += 1
+//        dragon.entity = entity
+//        dragon.spawnedTime = System.currentTimeMillis()
+//        dragon.isSprayed = false
+//
+//        if (sendArrowHit && WitherDragons.enabled) arrowSpawn(dragon)
+//        if (resetOnDragons && WitherDragons.enabled) onDragonSpawn()
+//        if (sendSpawned && WitherDragons.enabled) {
+//            val numberSuffix = when (dragon.timesSpawned) {
+//                1 -> "st"
+//                2 -> "nd"
+//                3 -> "rd"
+//                else -> "th"
+//            }
+//            modMessage("§${dragon.colorCode}${dragon.name} §fdragon spawned. This is the §${dragon.colorCode}${dragon.timesSpawned}${numberSuffix}§f time it has spawned.")
+//        }
+    }
+
+    fun dragonDeath(entityId: Int) {
+        val dragon = WitherDragonsEnum.entries.find { it.entity?.entityId == entityId } ?: return
         dragon.state = WitherDragonState.DEAD
         lastDragonDeath = dragon
 
         if (sendTime && WitherDragons.enabled)
-            dragonPBs.time(dragon.ordinal, entity.ticksExisted / 20.0, "s§7!", "§${dragon.colorCode}${dragon.name} §7was alive for §6", addPBString = true, addOldPBString = true)
+            dragonPBs.time(dragon.ordinal, (System.currentTimeMillis() - dragon.spawnedTime) / 1000.0, "s§7!", "§${dragon.colorCode}${dragon.name} §7was alive for §6", addPBString = true, addOldPBString = true)
 
         if (sendArrowHit && WitherDragons.enabled) arrowDeath(dragon)
     }
@@ -84,21 +105,10 @@ object DragonCheck {
         }
     }
 
-    fun dragonStateConfirmation() {
-        dragonEntityList = mc.theWorld?.loadedEntityList?.filterIsInstance<EntityDragon>() ?: return
-        WitherDragonsEnum.entries.forEach { dragon ->
-            dragon.state = if (dragon.entity !in dragonEntityList && dragon.state == WitherDragonState.ALIVE) WitherDragonState.DEAD else dragon.state
-            dragon.state = if (dragon.state == WitherDragonState.SPAWNING && dragon.timeToSpawn == 0) WitherDragonState.ALIVE else dragon.state
-        }
-    }
-
     fun updateTime() {
         WitherDragonsEnum.entries.forEach { dragon ->
             if (dragon.state != WitherDragonState.SPAWNING) return@forEach
             dragon.timeToSpawn = (dragon.timeToSpawn - 1).coerceAtLeast(0)
-            if (dragon.timeToSpawn != 98) return@forEach
-            priorityDragon = findPriority(WitherDragonsEnum.entries.filter { it.state == WitherDragonState.SPAWNING }.toMutableList())
-            displaySpawningDragon(priorityDragon)
         }
     }
 }
