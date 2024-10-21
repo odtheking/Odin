@@ -8,11 +8,15 @@ import me.odinclient.features.impl.floor7.p3.*
 import me.odinclient.features.impl.render.*
 import me.odinclient.features.impl.skyblock.*
 import me.odinclient.mixin.accessors.IEntityRendererAccessor
+import me.odinclient.mixin.accessors.S19PacketEntityStatusAccessor
 import me.odinmain.OdinMain
 import me.odinmain.OdinMain.mc
 import me.odinmain.commands.registerCommands
+import me.odinmain.events.impl.PacketReceivedEvent
+import me.odinmain.events.impl.PostEntityStatus
 import me.odinmain.features.ModuleManager
 import me.odinmain.ui.util.shader.FramebufferShader
+import me.odinmain.utils.postAndCatch
 import me.odinmain.utils.render.RenderUtils
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.Mod
@@ -62,6 +66,12 @@ class ModCore {
 
         )
         OdinMain.loadComplete()
+    }
+
+    @SubscribeEvent
+    fun onPacket(event: PacketReceivedEvent) {
+        val packet = event.packet as? S19PacketEntityStatusAccessor ?: return
+        PostEntityStatus(packet.entityId, packet.logicOpcode).postAndCatch()
     }
 
     @SubscribeEvent
