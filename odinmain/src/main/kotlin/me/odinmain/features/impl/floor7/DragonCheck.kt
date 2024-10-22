@@ -28,31 +28,6 @@ object DragonCheck {
     var lastDragonDeath: WitherDragonsEnum = WitherDragonsEnum.None
     val dragonEntityList = mutableListOf<EntityDragon>()
 
-//    fun dragonJoinWorld(event: EntityJoinWorldEvent) {
-//        val entity = event.entity as? EntityDragon ?: return
-//        val dragon = WitherDragonsEnum.entries.find { isVecInXZ(entity.positionVector, it.boxesDimensions) } ?: return
-//        if (dragon.state == WitherDragonState.DEAD) return
-//
-//        dragon.state = WitherDragonState.ALIVE
-//        dragon.timeToSpawn = 100
-//        dragon.timesSpawned += 1
-//        dragon.entity = entity
-//        dragon.spawnedTime = System.currentTimeMillis()
-//        dragon.isSprayed = false
-//
-//        if (sendArrowHit && WitherDragons.enabled) arrowSpawn(dragon)
-//        if (resetOnDragons && WitherDragons.enabled) onDragonSpawn()
-//        if (sendSpawned && WitherDragons.enabled) {
-//            val numberSuffix = when (dragon.timesSpawned) {
-//                1 -> "st"
-//                2 -> "nd"
-//                3 -> "rd"
-//                else -> "th"
-//            }
-//            modMessage("§${dragon.colorCode}${dragon.name} §fdragon spawned. This is the §${dragon.colorCode}${dragon.timesSpawned}${numberSuffix}§f time it has spawned.")
-//        }
-//    }
-
     fun dragonUpdate(packet: S1CPacketEntityMetadata) {
         val dragon = WitherDragonsEnum.entries.find { it.entityId == packet.entityId } ?: return
         if (dragon.entity == null) return dragon.updateEntity(packet.entityId)
@@ -66,18 +41,6 @@ object DragonCheck {
         if (dragon.state != WitherDragonState.SPAWNING) return
         dragon.setAlive(packet.entityID)
     }
-
-//    fun dragonDeath(entityId: Int) {
-//        val dragon = WitherDragonsEnum.entries.find { it.entity?.entityId == entityId } ?: return
-//        modMessage("dragon death from status")
-//        dragon.state = WitherDragonState.DEAD
-//        lastDragonDeath = dragon
-//
-//        if (sendTime && WitherDragons.enabled)
-//            dragonPBs.time(dragon.ordinal, (System.currentTimeMillis() - dragon.spawnedTime) / 1000.0, "s§7!", "§${dragon.colorCode}${dragon.name} §7was alive for §6", addPBString = true, addOldPBString = true)
-//
-//        if (sendArrowHit && WitherDragons.enabled) arrowDeath(dragon)
-//    }
 
     fun dragonSprayed(packet: S04PacketEntityEquipment) {
         if (packet.itemStack?.item != Item.getItemFromBlock(Blocks.packed_ice)) return

@@ -159,19 +159,6 @@ object WitherDragons : Module(
             renderTracers(priorityDragon)
     }
 
-//    @SubscribeEvent
-//    fun onEntityJoin(event: EntityJoinWorldEvent) {
-//        if (DungeonUtils.getF7Phase() != M7Phases.P5) return
-//        dragonJoinWorld(event)
-//    }
-
-//    @SubscribeEvent
-//    fun onEntityStatus(event: PostEntityStatus) {
-//        modMessage(mc.theWorld.getEntityByID(event.entityId))
-//        if (DungeonUtils.getF7Phase() != M7Phases.P5 || event.status.toInt() != 3) return
-//        dragonDeath(event.entityId)
-//    }
-
     @SubscribeEvent
     fun onServerTick(event: RealServerTick) {
         DragonCheck.updateTime()
