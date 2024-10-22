@@ -117,13 +117,23 @@ object BloodCamp : Module(
     fun onTick() {
         entityList.ifEmpty { return }
         watcher.removeAll {it.isDead}
-        entityList.forEach { (entity, data) ->
-            if (watcher.none { it.getDistanceToEntity(entity) < 20 }) return@forEach
+    }
+
+    private fun onPacketLookMove(packet: S17PacketEntityLookMove) {
+        val entity = packet.getEntity(mc.theWorld) as? EntityArmorStand ?: return
+        if (!watcher.any { it.getDistanceToEntity(entity) < 20 }) return
+
+        if (entity.getEquipmentInSlot(4)?.item != Items.skull || !allowedMobSkulls.contains(getSkullValue(entity))) return
+
+        if (entity !in entityList) entityList[entity] = EntityData(startVector = entity.positionVector, started = tickTime, firstSpawns = firstSpawns)
+
+        if (watcher.none { it.getDistanceToEntity(entity) < 20 }) return
+        entityList[entity]?.let { data ->
             data.started?.let { data.timeTook = tickTime - it }
 
-            val timeTook = data.timeTook ?: return@forEach
-            val startVector = data.startVector ?: return@forEach
-            val currVector = Vec3(entity.posX, entity.posY, entity.posZ)
+            val timeTook = data.timeTook ?: return
+            val startVector = data.startVector ?: return
+            val currVector = entity.positionVector
 
             val speedVectors = Vec3(
                 (currVector.xCoord - startVector.xCoord) / timeTook,
@@ -151,15 +161,6 @@ object BloodCamp : Module(
                 it.speedVectors = speedVectors
             }
         }
-    }
-
-    private fun onPacketLookMove(packet: S17PacketEntityLookMove) {
-        val entity = packet.getEntity(mc.theWorld) as? EntityArmorStand ?: return
-        if (!watcher.any { it.getDistanceToEntity(entity) < 20 }) return
-
-        if (entity.getEquipmentInSlot(4)?.item != Items.skull || !allowedMobSkulls.contains(getSkullValue(entity)) || entity in entityList) return
-
-        entityList[entity] = EntityData(startVector = entity.positionVector, started = tickTime, firstSpawns = firstSpawns)
     }
 
     @SubscribeEvent

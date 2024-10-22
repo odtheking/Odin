@@ -4,16 +4,16 @@ import me.odinmain.events.impl.RealServerTick
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.DragonBoxes.renderBoxes
-import me.odinmain.features.impl.floor7.DragonCheck.dragonJoinWorld
-import me.odinmain.features.impl.floor7.DragonCheck.dragonLeaveWorld
+import me.odinmain.features.impl.floor7.DragonCheck.dragonEntityList
+import me.odinmain.features.impl.floor7.DragonCheck.dragonSpawn
 import me.odinmain.features.impl.floor7.DragonCheck.dragonSprayed
+import me.odinmain.features.impl.floor7.DragonCheck.dragonUpdate
 import me.odinmain.features.impl.floor7.DragonCheck.lastDragonDeath
 import me.odinmain.features.impl.floor7.DragonCheck.onChatPacket
 import me.odinmain.features.impl.floor7.DragonHealth.renderHP
 import me.odinmain.features.impl.floor7.DragonTimer.colorDragonTimer
 import me.odinmain.features.impl.floor7.DragonTimer.renderTime
 import me.odinmain.features.impl.floor7.DragonTracer.renderTracers
-import me.odinmain.features.impl.floor7.KingRelics.Relic
 import me.odinmain.features.impl.floor7.KingRelics.relicsBlockPlace
 import me.odinmain.features.impl.floor7.KingRelics.relicsOnMessage
 import me.odinmain.features.impl.floor7.KingRelics.relicsOnWorldLast
@@ -26,8 +26,6 @@ import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.server.*
 import net.minecraftforge.client.event.RenderWorldLastEvent
-import net.minecraftforge.event.entity.EntityJoinWorldEvent
-import net.minecraftforge.event.entity.living.LivingDeathEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.util.*
 import kotlin.concurrent.schedule
@@ -80,7 +78,7 @@ object WitherDragons : Module(
     val dragonPriorityToggle by BooleanSetting("Dragon Priority", false, description = "Displays the priority of dragons spawning.").withDependency { dragonPriorityDropDown }
     val normalPower by NumberSetting("Normal Power", 22.0, 0.0, 32.0, description = "Power needed to split.").withDependency { dragonPriorityToggle && dragonPriorityDropDown }
     val easyPower by NumberSetting("Easy Power", 19.0, 0.0, 32.0, description = "Power needed when its Purple and another dragon.").withDependency { dragonPriorityToggle && dragonPriorityDropDown }
-    val soloDebuff by DualSetting("Purple Solo Debuff", "Tank", "Healer", false, description = "Displays the debuff of the config. The class that solo debuffs purple, the other class helps b/m.").withDependency { dragonPriorityToggle && dragonPriorityDropDown }
+    val soloDebuff by SelectorSetting("Purple Solo Debuff", "Tank", arrayListOf("Tank", "Healer"), false, description = "Displays the debuff of the config. The class that solo debuffs purple, the other class helps b/m.").withDependency { dragonPriorityToggle && dragonPriorityDropDown }
     val soloDebuffOnAll by BooleanSetting("Solo Debuff on All Splits", true, description = "Same as Purple Solo Debuff but for all dragons (A will only have 1 debuff).").withDependency { dragonPriorityToggle && dragonPriorityDropDown }
     val paulBuff by BooleanSetting("Paul Buff", false, description = "Multiplies the power in your run by 1.25.").withDependency { dragonPriorityToggle && dragonPriorityDropDown }
 
@@ -93,30 +91,16 @@ object WitherDragons : Module(
     val cauldronHighlight by BooleanSetting("Cauldron Highlight", false, description = "Highlights the cauldron for held relic.").withDependency { relicDropDown }
 
     private val relicHud by HudSetting("Relic Hud", 10f, 10f, 1f, true) {
-        if (it) {
-            getMCTextWidth("§${Relic.entries.first().colorCode}${Relic.entries.first().name.first()}: 45") + 2f to 16f
-        } else {
-            Relic.entries.forEach {
-                mcText("§${it.colorCode}${it.name.first()}: ${String.format(Locale.US, "%.2f", KingRelics.relicTicksToSpawn / 20.0)}s", 2, 5f + (it.ordinal - 1) * 15f, 1, Color.WHITE, center = false)
-            }
-            getMCTextWidth("R: 45") * 2 + 2f to 16f
-        }
-    }
+        if (it) return@HudSetting mcTextAndWidth("§3Relics: 4.30s", 2, 5f, 1, Color.WHITE, center = false) + 2f to 16f
+        if (DungeonUtils.getF7Phase() != M7Phases.P5 || KingRelics.relicTicksToSpawn <= 0) return@HudSetting 0f to 0f
+        mcTextAndWidth("§3Relics: ${String.format(Locale.US, "%.2f", KingRelics.relicTicksToSpawn / 20.0)}s", 2, 5f, 1, Color.WHITE, center = false) + 2f to 16f
+    }.withDependency { relicDropDown }
 
     var priorityDragon = WitherDragonsEnum.None
 
     init {
         onWorldLoad {
-            WitherDragonsEnum.entries.forEach {
-                it.timeToSpawn = 100
-                it.timesSpawned = 0
-                it.state = WitherDragonState.DEAD
-                it.entity = null
-                it.isSprayed = false
-                it.spawnedTime = 0
-            }
-            priorityDragon = WitherDragonsEnum.None
-            lastDragonDeath = WitherDragonsEnum.None
+            WitherDragonsEnum.reset()
         }
 
         onPacket(S2APacketParticles::class.java, { DungeonUtils.getF7Phase() == M7Phases.P5 }) {
@@ -136,17 +120,20 @@ object WitherDragons : Module(
             dragonSprayed(it)
         }
 
+        onPacket(S0FPacketSpawnMob::class.java, { DungeonUtils.getF7Phase() == M7Phases.P5 && enabled }) {
+            if (it.entityType == 63) dragonSpawn(it)
+        }
+
+        onPacket(S1CPacketEntityMetadata::class.java, { DungeonUtils.getF7Phase() == M7Phases.P5 && enabled }) {
+            dragonUpdate(it)
+        }
+
         onMessage("[BOSS] Necron: All this, for nothing...", false) {
             relicsOnMessage()
         }
 
         onMessage(Regex("^\\[BOSS] Wither King: (Oh, this one hurts!|I have more of those\\.|My soul is disposable\\.)$"), { enabled && DungeonUtils.getF7Phase() == M7Phases.P5 } ) {
             onChatPacket()
-        }
-
-        execute(200) {
-            if (!enabled || DungeonUtils.getF7Phase() != M7Phases.P5) return@execute
-            DragonCheck.dragonStateConfirmation()
         }
     }
 
@@ -160,18 +147,6 @@ object WitherDragons : Module(
         if (cauldronHighlight) relicsOnWorldLast()
         if (priorityDragon != WitherDragonsEnum.None && dragonTracers)
             renderTracers(priorityDragon)
-    }
-
-    @SubscribeEvent
-    fun onEntityJoin(event: EntityJoinWorldEvent) {
-        if (DungeonUtils.getF7Phase() != M7Phases.P5) return
-        dragonJoinWorld(event)
-    }
-
-    @SubscribeEvent
-    fun onEntityLeave(event: LivingDeathEvent) {
-        if (DungeonUtils.getF7Phase() != M7Phases.P5) return
-        dragonLeaveWorld(event)
     }
 
     @SubscribeEvent

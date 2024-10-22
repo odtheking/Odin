@@ -8,6 +8,12 @@ import me.odinmain.commands.commodore
 import me.odinmain.events.impl.PacketReceivedEvent
 import me.odinmain.features.ModuleManager.generateFeatureList
 import me.odinmain.features.impl.dungeon.MapInfo
+import me.odinmain.features.impl.floor7.DragonCheck.lastDragonDeath
+import me.odinmain.features.impl.floor7.DragonPriority.displaySpawningDragon
+import me.odinmain.features.impl.floor7.DragonPriority.findPriority
+import me.odinmain.features.impl.floor7.WitherDragonState
+import me.odinmain.features.impl.floor7.WitherDragons.priorityDragon
+import me.odinmain.features.impl.floor7.WitherDragonsEnum
 import me.odinmain.features.impl.render.DevPlayers.updateDevs
 import me.odinmain.utils.*
 import me.odinmain.utils.skyblock.*
@@ -19,6 +25,54 @@ import net.minecraft.util.ChatComponentText
 
 
 val devCommand = commodore("oddev") {
+
+    literal("drags") {
+        runs { text: GreedyString ->
+            WitherDragonsEnum.entries.forEach {
+                if (text.string.lowercase().contains(it.name.lowercase())) {
+                    when (it.name) {
+                        "Red" -> sendChatMessage("/particle flame 27 18 60 1 1 1 1 100 force")
+                        "Orange" -> sendChatMessage("/particle flame 84 18 56 1 1 1 1 100 force")
+                        "Green" -> sendChatMessage("/particle flame 26 18 95 1 1 1 1 100 force")
+                        "Blue" -> sendChatMessage("/particle flame 84 18 95 1 1 1 1 100 force")
+                        "Purple" -> sendChatMessage("/particle flame 57 18 125 1 1 1 1 100 force")
+                    }
+                }
+            }
+        }
+
+        literal("reset") {
+            runs { soft: Boolean? ->
+                WitherDragonsEnum.reset(soft == true)
+            }
+        }
+
+        literal("status").runs {
+            val (spawned, dragons) = WitherDragonsEnum.entries.fold(0 to mutableListOf<WitherDragonsEnum>()) { (spawned, dragons), dragon ->
+                val newSpawned = spawned + dragon.timesSpawned
+
+                if (dragon.state == WitherDragonState.SPAWNING) {
+                    if (dragon !in dragons) {
+                        modMessage("§${dragon.colorCode}${dragon.name} has been added to spawning list!")
+                        dragons.add(dragon)
+                    } else modMessage("§${dragon.colorCode}${dragon.name} his already in spawning list!!")
+                    return@fold newSpawned to dragons
+                }
+
+                modMessage("§${dragons.size} is the current size of dragons")
+                modMessage("§${newSpawned} is how many dragons have spawned in total")
+                modMessage("§${dragon.colorCode}${dragon.name} has been skipped, since it isnt spawning!!")
+
+                newSpawned to dragons
+            }
+
+            if (dragons.size == 2 || spawned > 2) {
+                priorityDragon = findPriority(dragons)
+                displaySpawningDragon(priorityDragon)
+                return@runs modMessage("shouldve worked!")
+            }
+        }
+    }
 
     literal("giveaotv").runs {
         sendCommand("give @p minecraft:diamond_shovel 1 0 {ExtraAttributes:{ethermerge:1b}}")

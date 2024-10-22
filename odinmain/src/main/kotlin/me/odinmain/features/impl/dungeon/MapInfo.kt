@@ -69,7 +69,7 @@ object MapInfo : Module(
         width.toFloat() to 9f
     }
 
-    private val compactAddRemaining: Boolean by BooleanSetting("Include remaining", default = false, description = "Adds remaining to the secrets display.").withDependency { compactSecrets.enabled }
+    private val compactAddRemaining: Boolean by BooleanSetting("Compact Include remaining", default = false, description = "Adds remaining to the secrets display.").withDependency { compactSecrets.enabled }
     private val compactRemaining: Boolean by DualSetting("Min Secrets", "Minimum", "Remaining", default = false, description = "Display minimum secrets or secrets until s+.").withDependency { !compactAddRemaining && compactSecrets.enabled }
     private val compactSecretBackground: Boolean by BooleanSetting("Secret Background", default = false, description = "Render a background behind the score info.").withDependency { compactSecrets.enabled }
     private val compactSecretMargin: Float by NumberSetting("Secret Margin", default = 0f, min = 0f, max = 5f, increment = 1f, description = "The margin around the hud.").withDependency { compactSecretBackground && compactSecrets.enabled }
