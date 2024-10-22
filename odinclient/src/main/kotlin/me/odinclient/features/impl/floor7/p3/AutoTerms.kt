@@ -6,10 +6,9 @@ import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.p3.TerminalSolver
 import me.odinmain.features.impl.floor7.p3.TerminalTypes
 import me.odinmain.features.settings.impl.*
-import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.PlayerUtils.windowClick
-import net.minecraft.inventory.ContainerChest
+import me.odinmain.utils.skyblock.modMessage
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
@@ -23,29 +22,29 @@ object AutoTerms : Module(
     private val firstClickDelay by NumberSetting("First Click Delay", 350L, 300, 500, unit = "ms", description = "Delay before first click.")
     private val middleClick by DualSetting("Click Type", "Left", "Middle", default = true, description = "What Click type to use.")
     private val breakThreshold by NumberSetting("Break Threshold", 500L, 350L, 1000L, 10L, unit = "ms", description = "Time before breaking the click.")
-    private val clickingOrder by SelectorSetting("Clicking order", "from first", arrayListOf("from first", "from last", "random"), description = "The order to click the items in.")
+    private val clickingOrder by SelectorSetting("Clicking order", "random", arrayListOf("from first", "from last", "random"), description = "The order to click the items in.")
     private val disableMelody by BooleanSetting("Disable Melody", false, description = "Disables melody terminals.")
-    private val clock = Clock(autoDelay)
-    private var breakClock = Clock(breakThreshold)
+    private val timeBetweenClicks by BooleanSetting("Time Between Clicks", false, description = "Prints the time between clicks.")
     private var clickedThisWindow = false
-
-    @SubscribeEvent
-    fun onGuiLoaded(event: GuiEvent.GuiLoadedEvent) {
-        clickedThisWindow = false
-    }
+    private var lastClickTime = 0L
+    private var firstClick = true
 
     @SubscribeEvent
     fun onTick(event: TickEvent.ClientTickEvent) {
-        if (breakClock.hasTimePassed(breakThreshold) && clickedThisWindow) clickedThisWindow = false
-        if (
-            TerminalSolver.currentTerm.solution.isEmpty() ||
-            !clock.hasTimePassed(autoDelay) ||
-            System.currentTimeMillis() - TerminalSolver.currentTerm.timeOpened <= firstClickDelay ||
-            clickedThisWindow ||
-            event.phase != TickEvent.Phase.START ||
-            mc.thePlayer?.openContainer !is ContainerChest ||
-            (disableMelody && TerminalSolver.currentTerm.type == TerminalTypes.MELODY)
-        ) return
+        if (event.phase != TickEvent.Phase.START) return
+        if (TerminalSolver.currentTerm.type == TerminalTypes.NONE) {
+            lastClickTime = System.currentTimeMillis()
+            firstClick = true
+        }
+
+        if (firstClick && System.currentTimeMillis() - lastClickTime < firstClickDelay) return
+
+        if (System.currentTimeMillis() - lastClickTime < autoDelay) return
+
+        if (System.currentTimeMillis() - lastClickTime < breakThreshold) clickedThisWindow = false
+
+        if (TerminalSolver.currentTerm.solution.isEmpty() || TerminalSolver.currentTerm.type == TerminalTypes.NONE ||
+            (disableMelody && TerminalSolver.currentTerm.type == TerminalTypes.MELODY) || clickedThisWindow) return
 
         val item =
             if (clickingOrder == 0) TerminalSolver.currentTerm.solution.firstOrNull() ?: return else if (clickingOrder == 1) TerminalSolver.currentTerm.solution.lastOrNull() ?: return else TerminalSolver.currentTerm.solution.random()
@@ -62,8 +61,17 @@ object AutoTerms : Module(
 
             else -> windowClick(item, if (middleClick) PlayerUtils.ClickType.Middle else PlayerUtils.ClickType.Left)
         }
+
+        val currentTime = System.currentTimeMillis()
+        if (timeBetweenClicks) modMessage("Time between clicks: ${currentTime - lastClickTime}ms")
+
+        lastClickTime = currentTime
         clickedThisWindow = true
-        clock.update()
-        breakClock.update()
+        firstClick = false
+    }
+
+    @SubscribeEvent
+    fun onGuiLoaded(event: GuiEvent.GuiLoadedEvent) {
+        clickedThisWindow = false
     }
 }

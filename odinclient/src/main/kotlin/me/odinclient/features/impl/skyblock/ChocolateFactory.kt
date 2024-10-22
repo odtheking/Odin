@@ -65,7 +65,7 @@ object ChocolateFactory : Module(
             if (container.name != "Chocolate Factory") return@execute
             val choco = container.getSlot(13)?.stack ?: return@execute
 
-            chocolate = choco.displayName?.noControlCodes?.replace(Regex("\\D"), "")?.toLongOrNull() ?: 0L
+            chocolate = choco.unformattedName.replace(Regex("\\D"), "").toLongOrNull() ?: 0L
 
             findWorker(container)
             if (!found) return@execute
