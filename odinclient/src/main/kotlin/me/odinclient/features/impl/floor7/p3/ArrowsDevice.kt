@@ -52,6 +52,7 @@ object ArrowsDevice : Module(
 
     private val autoDropdown by DropdownSetting("Auto Device")
     private val auto by BooleanSetting("Auto Enabled", description = "Automatically complete device.").withDependency { autoDropdown }
+    private val autoShoot by BooleanSetting("Auto Shoot", description = "Automatically aim and shoot at targets.").withDependency { auto && autoDropdown }
     private val autoPhoenix by BooleanSetting("Auto Phoenix", default = true, description = "Automatically swap to phoenix pet using cast rod pet rules, must be set up correctly.").withDependency { auto && autoDropdown }
     private val autoLeap by BooleanSetting("Auto Leap", default = true, description = "Automatically leap once device is done.").withDependency { auto && autoDropdown }
     private val autoLeapClass by SelectorSetting("Leap to", defaultSelected = "Mage", arrayListOf("Archer", "Berserk", "Healer", "Mage", "Tank"), description = "Who to leap to.").withDependency { autoLeap && auto && autoDropdown }
@@ -105,7 +106,6 @@ object ArrowsDevice : Module(
         execute(1000) {
             if (DungeonUtils.getF7Phase() != M7Phases.P3) return@execute
 
-            // Cast is safe since we won't return an entity that isn't an armor stand
             activeArmorStand = mc.theWorld?.loadedEntityList?.filterIsInstance<EntityArmorStand>()?.find {
                 it.name.equalsOneOf(INACTIVE_DEVICE_STRING, ACTIVE_DEVICE_STRING) && it.distanceSquaredTo(standPosition.toVec3()) <= 4.0
             }
@@ -285,7 +285,8 @@ object ArrowsDevice : Module(
         if (isDeviceComplete) return
 
         isDeviceComplete = true
-        releaseClick()
+        if (autoShoot)
+            releaseClick()
 
         if (alertOnDeviceComplete) {
             modMessage("§aSharp shooter device complete")
@@ -308,12 +309,20 @@ object ArrowsDevice : Module(
 
         clock.update()
 
-        actionQueue.add {
-            getItemIndexInContainerChest(chest, leapTo.name, 11..16)?.let {
+        var attempts = 0
+
+        fun tryClick () {
+            if (attempts > 2) return
+            getItemIndexInContainerChest(chest, leapTo.name, 11..16)?.also {
                 PlayerUtils.windowClick(it, PlayerUtils.ClickType.Middle, instant = false)
+                autoState = AutoState.Stopped
+            } ?: run {
+                attempts += 1
+                actionQueue.add(::tryClick)
             }
-            autoState = AutoState.Stopped
         }
+
+        actionQueue.add(::tryClick)
     }
 
     @SubscribeEvent
@@ -325,11 +334,12 @@ object ArrowsDevice : Module(
         if (autoState != AutoState.Stopped) {
             if (!isPlayerOnStand) {
                 autoState = AutoState.Stopped
-                releaseClick()
+                if(autoShoot)
+                    releaseClick()
                 return
             }
 
-            if (autoState == AutoState.Shooting && !isPhoenixSwapping) holdClick()
+            if (autoShoot && autoState == AutoState.Shooting && !isPhoenixSwapping) holdClick()
 
             if (clock.hasTimePassed(delay) && actionQueue.isNotEmpty()) {
                 actionQueue.removeFirst()()
@@ -369,7 +379,7 @@ object ArrowsDevice : Module(
             if (targetPosition == event.pos) {
                 targetPosition = null
 
-                if (autoState != AutoState.Stopped) autoState = AutoState.Aiming //releaseClick()
+                if (autoState != AutoState.Stopped) autoState = AutoState.Aiming
             }
         }
 
@@ -388,8 +398,12 @@ object ArrowsDevice : Module(
                     modMessage("§aStarting sharp shooter")
                 }
 
-                autoState = AutoState.Aiming
-                aimAtTarget()
+                if (autoShoot) {
+                    autoState = AutoState.Aiming
+                    aimAtTarget()
+                } else {
+                    autoState = AutoState.Shooting
+                }
             }
         }
     }
