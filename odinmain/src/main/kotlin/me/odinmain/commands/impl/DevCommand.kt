@@ -42,27 +42,13 @@ val devCommand = commodore("oddev") {
         }
 
         literal("reset") {
-            runs {
-                WitherDragonsEnum.entries.forEach {
-                    it.timeToSpawn = 100
-                    it.timesSpawned = 0
-                    it.state = WitherDragonState.DEAD
-                    it.entity = null
-                    it.isSprayed = false
-                    it.spawnedTime = 0
-                }
-                priorityDragon = WitherDragonsEnum.None
-                lastDragonDeath = WitherDragonsEnum.None
-            }
-            literal("soft").runs {
-                WitherDragonsEnum.entries.forEach {
-                    it.state = WitherDragonState.DEAD
-                    it.timesSpawned++
-                }
+            runs { soft: Boolean? ->
+                WitherDragonsEnum.reset(soft == true)
             }
         }
+
         literal("status").runs {
-            WitherDragonsEnum.entries.fold(0 to mutableListOf<WitherDragonsEnum>()) { (spawned, dragons), dragon ->
+            val (spawned, dragons) = WitherDragonsEnum.entries.fold(0 to mutableListOf<WitherDragonsEnum>()) { (spawned, dragons), dragon ->
                 val newSpawned = spawned + dragon.timesSpawned
 
                 if (dragon.state == WitherDragonState.SPAWNING) {
@@ -73,23 +59,17 @@ val devCommand = commodore("oddev") {
                     return@fold newSpawned to dragons
                 }
 
-//                if (!checkParticle(particle, dragon)) return@fold newSpawned to dragons
-//                if (sendSpawning && WitherDragons.enabled) modMessage("§${dragon.colorCode}$dragon §fdragon is spawning.")
-//
-//                dragon.state = WitherDragonState.SPAWNING
-//                dragons.add(dragon)
-
                 modMessage("§${dragons.size} is the current size of dragons")
                 modMessage("§${newSpawned} is how many dragons have spawned in total")
-
-                if (dragons.size == 2 || newSpawned > 2) {
-                    priorityDragon = findPriority(dragons)
-                    displaySpawningDragon(priorityDragon)
-                    return@runs modMessage("shouldve worked!")
-                }
-
                 modMessage("§${dragon.colorCode}${dragon.name} has been skipped, since it isnt spawning!!")
+
                 newSpawned to dragons
+            }
+
+            if (dragons.size == 2 || spawned > 2) {
+                priorityDragon = findPriority(dragons)
+                displaySpawningDragon(priorityDragon)
+                return@runs modMessage("shouldve worked!")
             }
         }
     }

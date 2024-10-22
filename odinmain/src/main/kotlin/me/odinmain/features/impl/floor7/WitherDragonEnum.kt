@@ -80,6 +80,7 @@ enum class WitherDragonsEnum (
     fun setDead() {
         state = WitherDragonState.DEAD
         dragonEntityList.remove(entity)
+        entityId = null
         entity = null
         lastDragonDeath = this
 
@@ -93,6 +94,28 @@ enum class WitherDragonsEnum (
         val dragon = mc.theWorld.getEntityByID(entityId) as? EntityDragon ?: return
         entity = dragon
         dragonEntityList.add(dragon)
+    }
+
+    companion object {
+        fun reset(soft: Boolean = false) {
+            if (soft) return WitherDragonsEnum.entries.forEach {
+                it.state = WitherDragonState.DEAD
+                it.timesSpawned++
+            }
+
+            WitherDragonsEnum.entries.forEach {
+                it.timeToSpawn = 100
+                it.timesSpawned = 0
+                it.state = WitherDragonState.DEAD
+                it.entityId = null
+                it.entity = null
+                it.isSprayed = false
+                it.spawnedTime = 0
+            }
+            dragonEntityList.clear()
+            priorityDragon = None
+            lastDragonDeath = None
+        }
     }
 }
 

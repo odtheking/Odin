@@ -100,17 +100,7 @@ object WitherDragons : Module(
 
     init {
         onWorldLoad {
-            WitherDragonsEnum.entries.forEach {
-                it.timeToSpawn = 100
-                it.timesSpawned = 0
-                it.state = WitherDragonState.DEAD
-                it.entity = null
-                it.isSprayed = false
-                it.spawnedTime = 0
-            }
-            dragonEntityList.clear()
-            priorityDragon = WitherDragonsEnum.None
-            lastDragonDeath = WitherDragonsEnum.None
+            WitherDragonsEnum.reset()
         }
 
         onPacket(S2APacketParticles::class.java, { DungeonUtils.getF7Phase() == M7Phases.P5 }) {
