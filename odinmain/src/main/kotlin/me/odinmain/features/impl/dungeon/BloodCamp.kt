@@ -57,6 +57,7 @@ object BloodCamp : Module(
     init {
         execute(100) {
             getWatcherHealth()
+            watcher.removeAll { it.isDead }
         }
 
         onPacket(S17PacketEntityLookMove::class.java, { bloodHelper && enabled }) {
@@ -78,7 +79,6 @@ object BloodCamp : Module(
     }
 
     private fun getWatcherHealth() {
-        watcher.removeAll {it.isDead}
         if (!inDungeons || BossStatus.bossName.noControlCodes != "The Watcher" || !watcherBar) return
         val amount = 12 + DungeonUtils.floor.floorNumber
         currentName = if (BossStatus.healthScale < 0.05) null else " ${(amount * BossStatus.healthScale).roundToInt()}/$amount"
