@@ -39,7 +39,7 @@ object DragonCheck {
     fun dragonSpawn(packet: S0FPacketSpawnMob) {
         val dragon = WitherDragonsEnum.entries
             .find { isVecInXZ(Vec3(packet.x / 32.0, packet.y / 32.0, packet.z / 32.0), it.boxesDimensions) }
-            ?.takeIf { it.state != WitherDragonState.SPAWNING } ?: return
+            ?.takeIf { it.state == WitherDragonState.SPAWNING } ?: return
         dragon.setAlive(packet.entityID)
     }
 
