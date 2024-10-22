@@ -49,7 +49,7 @@ object EtherWarpHelper : Module(
 
     @SubscribeEvent
     fun onRenderWorldLast(event: RenderWorldLastEvent) {
-        if (!mc.thePlayer.usingEtherWarp || !render) return
+        if (mc.thePlayer?.usingEtherWarp == false || !render) return
         val player = mc.thePlayer as? IEntityPlayerSPAccessor ?: return
         val positionLook =
             if (useServerPosition)

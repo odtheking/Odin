@@ -126,7 +126,7 @@ fun Number.round(decimals: Int): Number {
 }
 
 val ContainerChest.name: String
-    get() = this.lowerChestInventory.displayName.unformattedText
+    get() = this.lowerChestInventory?.displayName?.unformattedText ?: ""
 
 val Container.name: String
     get() = (this as? ContainerChest)?.name ?: "Undefined Container"
@@ -333,7 +333,7 @@ fun romanToInt(s: String): Int {
 }
 
 fun fillItemFromSack(amount: Int, itemId: String, sackName: String, sendMessage: Boolean) {
-    val needed = mc.thePlayer.inventory.mainInventory.find { it?.itemID == itemId }?.stackSize ?: 0
+    val needed = mc.thePlayer?.inventory?.mainInventory?.find { it?.itemID == itemId }?.stackSize ?: 0
     if (needed != amount) sendCommand("gfs $sackName ${amount - needed}") else if (sendMessage) modMessage("§cAlready at max stack size.")
 }
 

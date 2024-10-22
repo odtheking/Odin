@@ -29,7 +29,7 @@ object AutoExperiments : Module(
     private var hasAdded = false
     private var clicks = 0
     private var lastClickTime: Long = 0
-    private val chronomatronOrder = ArrayList<Pair<Int, String>>(28)
+    private val chronomatronOrder = ArrayList<Int>(28)
     private var lastAdded = 0
     private var ultrasequencerOrder = HashMap<Int, Int>()
 
@@ -77,14 +77,14 @@ object AutoExperiments : Module(
         }
         if (!hasAdded && invSlots[49].stack?.item == Items.clock) {
             invSlots.find { it.slotNumber in 10..43 && it.stack?.isItemEnchanted == true }?.let {
-                chronomatronOrder.add(Pair(it.slotNumber, it.stack.displayName))
+                chronomatronOrder.add(it.slotNumber)
                 lastAdded = it.slotNumber
                 hasAdded = true
                 clicks = 0
             }
         }
         if (hasAdded && invSlots[49].stack?.item == Items.clock && chronomatronOrder.size > clicks && System.currentTimeMillis() - lastClickTime > delay) {
-            mc.playerController.windowClick(mc.thePlayer.openContainer.windowId, chronomatronOrder[clicks].first, 2, 3, mc.thePlayer)
+            mc.playerController.windowClick(mc.thePlayer.openContainer.windowId, chronomatronOrder[clicks], 2, 3, mc.thePlayer)
             lastClickTime = System.currentTimeMillis()
             clicks++
         }
@@ -97,21 +97,15 @@ object AutoExperiments : Module(
             if (!invSlots[44].hasStack) return
             ultrasequencerOrder.clear()
             invSlots.forEach {
-                if (it.slotNumber in 9..44 && it.stack?.item == Items.dye)
-                    ultrasequencerOrder[it.stack.stackSize - 1] = it.slotNumber
+                if (it.slotNumber in 9..44 && it.stack?.item == Items.dye) ultrasequencerOrder[it.stack.stackSize - 1] = it.slotNumber
             }
             hasAdded = true
             clicks = 0
             if (ultrasequencerOrder.size > 9 - serumCount && autoClose) mc.thePlayer?.closeScreen()
         }
-        if (invSlots[49].stack?.item == Items.clock && ultrasequencerOrder.contains(clicks)
-            && System.currentTimeMillis() - lastClickTime > delay
-        ) {
+        if (invSlots[49].stack?.item == Items.clock && ultrasequencerOrder.contains(clicks) && System.currentTimeMillis() - lastClickTime > delay) {
             ultrasequencerOrder[clicks]?.let {
-                mc.playerController.windowClick(
-                    mc.thePlayer.openContainer.windowId,
-                    it, 2, 3, mc.thePlayer
-                )
+                mc.playerController.windowClick(mc.thePlayer.openContainer.windowId, it, 2, 3, mc.thePlayer)
             }
             lastClickTime = System.currentTimeMillis()
             clicks++

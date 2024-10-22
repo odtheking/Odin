@@ -6,11 +6,11 @@ import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.containsOneOf
-import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.dungeonItemDrops
 import me.odinmain.utils.skyblock.getRarity
 import me.odinmain.utils.skyblock.lore
+import me.odinmain.utils.skyblock.unformattedName
 import net.minecraft.entity.item.EntityItem
 
 object ItemsHighlight : Module(
@@ -34,7 +34,7 @@ object ItemsHighlight : Module(
             currentEntityItems = mutableSetOf()
             mc.theWorld?.loadedEntityList?.forEach { entity ->
                 if (entity !is EntityItem) return@forEach
-                if (!onlySecrets || entity.entityItem.displayName.noControlCodes.containsOneOf(dungeonItemDrops, true)) currentEntityItems.add(entity)
+                if (!onlySecrets || entity.entityItem?.unformattedName?.containsOneOf(dungeonItemDrops, true) == true) currentEntityItems.add(entity)
             }
         }
 

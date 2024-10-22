@@ -245,14 +245,14 @@ object DungeonWaypoints : Module(
 
         if (allowTextEdit && mc.thePlayer?.isSneaking == true) {
             GuiSign.setCallback { enteredText ->
-                waypoints.removeIf { it.toVec3() == vec }
+                waypoints.removeIf { it.toVec3().equal(vec) }
                 waypoints.add(DungeonWaypoint(vec.xCoord, vec.yCoord, vec.zCoord, color.copy(), filled, !throughWalls, aabb, enteredText, type, timer))
                 DungeonWaypointConfig.saveConfig()
                 setWaypoints(room)
                 glList = -1
             }
             mc.displayGuiScreen(GuiSign)
-        } else if (waypoints.removeIf { it.toVec3() == vec }) {
+        } else if (waypoints.removeIf { it.toVec3().equal(vec) }) {
             devMessage("Removed waypoint at $vec")
         } else {
             waypoints.add(DungeonWaypoint(vec.xCoord, vec.yCoord, vec.zCoord, color.copy(), filled, !throughWalls, aabb, type = type, timer = timer))

@@ -148,6 +148,10 @@ fun Vec3.divide(divisor: Number): Vec3 {
     return Vec3(this.xCoord / divisor.toDouble(), this.yCoord / divisor.toDouble(), this.zCoord / divisor.toDouble())
 }
 
+fun Vec3.equal(other: Vec3): Boolean {
+    return this.xCoord == other.xCoord && this.yCoord == other.yCoord && this.zCoord == other.zCoord
+}
+
 /**
  * Gets the coordinate of the given index of a Vec3. ( 0 = x, 1 = y, 2 = z )
  * @param index The index to get

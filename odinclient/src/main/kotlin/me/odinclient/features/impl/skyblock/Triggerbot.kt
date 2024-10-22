@@ -74,7 +74,7 @@ object Triggerbot : Module(
     @SubscribeEvent
     fun onClientTickEvent(event: TickEvent.ClientTickEvent) {
         if (crystal && DungeonUtils.inBoss && DungeonUtils.getF7Phase() == M7Phases.P1 && clickClock.hasTimePassed() && mc.objectMouseOver != null) {
-            if ((take && mc.objectMouseOver.entityHit is EntityEnderCrystal) || (place && mc.objectMouseOver.entityHit?.name?.noControlCodes == "Energy Crystal Missing" && mc.thePlayer.heldItem.displayName.noControlCodes == "Energy Crystal")) {
+            if ((take && mc.objectMouseOver.entityHit is EntityEnderCrystal) || (place && mc.objectMouseOver.entityHit?.name?.noControlCodes == "Energy Crystal Missing" && mc.thePlayer?.heldItem?.unformattedName == "Energy Crystal")) {
                 PlayerUtils.rightClick()
                 clickClock.update()
             }

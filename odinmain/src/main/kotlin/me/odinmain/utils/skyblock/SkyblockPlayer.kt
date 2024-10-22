@@ -42,6 +42,6 @@ object SkyblockPlayer {
         overflowMana = oMana.replace(",", "").replace("ʬ","").toIntOrNull() ?: 0
         currentDefense = Regex("([\\d|,]+)❈ Defense").find(middleRegion)?.groupValues?.get(1)?.replace(",", "")?.toIntOrNull() ?: return
         effectiveHP = (currentHealth * (1 + currentDefense / 100))
-        currentSpeed = floor(mc.thePlayer.capabilities.walkSpeed * 1000f).toInt()
+        currentSpeed = floor((mc.thePlayer?.capabilities?.walkSpeed ?: 0f) * 1000f).toInt()
     }
 }

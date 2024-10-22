@@ -48,7 +48,7 @@ object StartGui : TermSimGui(
     @SubscribeEvent
     fun onTooltip(event: ItemTooltipEvent) {
         if (event.itemStack.item != dye || event.toolTip.isEmpty()) return
-        val index = termItems.indexOfFirst { it.displayName == event.itemStack.displayName }.takeIf { it != -1 } ?: return
+        val index = termItems.indexOfFirst { it.displayName == event.itemStack?.displayName }.takeIf { it != -1 } ?: return
         event.toolTip.add(1, "§7Personal Best: §d${TerminalSimulator.simPBs.pb?.get(index)?.round(2) ?: 999.0}")
     }
 
