@@ -157,10 +157,8 @@ fun handleSpawnPacket(particle: S2APacketParticles) {
         newSpawned to dragons
     }
 
-    if (dragons.size == 2 || spawned >= 2) {
+    if (dragons.size == 2 || spawned >= 2)
         priorityDragon = findPriority(dragons).takeIf { it != priorityDragon }?.also { displaySpawningDragon(it) } ?: priorityDragon
-        return
-    }
 }
 
 private fun checkParticle(event: S2APacketParticles, dragon: WitherDragonsEnum): Boolean {

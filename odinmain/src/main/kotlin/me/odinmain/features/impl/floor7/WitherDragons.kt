@@ -91,7 +91,7 @@ object WitherDragons : Module(
     val cauldronHighlight by BooleanSetting("Cauldron Highlight", false, description = "Highlights the cauldron for held relic.").withDependency { relicDropDown }
 
     private val relicHud by HudSetting("Relic Hud", 10f, 10f, 1f, true) {
-        if (it)  return@HudSetting mcTextAndWidth("§3Relics: 4.30s", 2, 5f, 1, Color.WHITE, center = false) + 2f to 16f
+        if (it) return@HudSetting mcTextAndWidth("§3Relics: 4.30s", 2, 5f, 1, Color.WHITE, center = false) + 2f to 16f
         if (DungeonUtils.getF7Phase() != M7Phases.P5 || KingRelics.relicTicksToSpawn <= 0) return@HudSetting 0f to 0f
         mcTextAndWidth("§3Relics: ${String.format(Locale.US, "%.2f", KingRelics.relicTicksToSpawn / 20.0)}s", 2, 5f, 1, Color.WHITE, center = false) + 2f to 16f
     }.withDependency { relicDropDown }
