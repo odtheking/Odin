@@ -56,7 +56,6 @@ object BloodCamp : Module(
 
     init {
         execute(100) {
-            onTick()
             getWatcherHealth()
         }
 
@@ -79,6 +78,7 @@ object BloodCamp : Module(
     }
 
     private fun getWatcherHealth() {
+        watcher.removeAll {it.isDead}
         if (!inDungeons || BossStatus.bossName.noControlCodes != "The Watcher" || !watcherBar) return
         val amount = 12 + DungeonUtils.floor.floorNumber
         currentName = if (BossStatus.healthScale < 0.05) null else " ${(amount * BossStatus.healthScale).roundToInt()}/$amount"
@@ -112,11 +112,6 @@ object BloodCamp : Module(
         if (!watcherSkulls.contains(getSkullValue(entity))) return
         watcher.add(entity)
         devMessage("Watcher found at ${entity.positionVector}")
-    }
-
-    fun onTick() {
-        entityList.ifEmpty { return }
-        watcher.removeAll {it.isDead}
     }
 
     private fun onPacketLookMove(packet: S17PacketEntityLookMove) {
