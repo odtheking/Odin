@@ -19,7 +19,7 @@ object QuizSolver {
     private var triviaAnswers: List<String>? = null
 
     private var triviaOptions: MutableList<TriviaAnswer> = MutableList(3) { TriviaAnswer(null, false) }
-    private data class TriviaAnswer(var vec3: Vec3?, var correct: Boolean)
+    private data class TriviaAnswer(var vec3: Vec3?, var isCorrect: Boolean)
 
     init {
         try {
@@ -35,14 +35,14 @@ object QuizSolver {
     fun onMessage(msg: String) {
         if (msg.startsWith("[STATUE] Oruo the Omniscient: ") && msg.endsWith("correctly!")) {
             if (msg.contains("answered the final question")) return reset()
-            if (msg.contains("answered Question #")) triviaOptions.forEach { it.correct = false }
+            if (msg.contains("answered Question #")) triviaOptions.forEach { it.isCorrect = false }
         }
         if (msg.trim().startsWithOneOf("ⓐ", "ⓑ", "ⓒ", ignoreCase = true)) {
             if (triviaAnswers?.any { msg.endsWith(it) } ?: return) {
                 when (msg.trim()[0]) {
-                    'ⓐ' -> triviaOptions[0].correct = true
-                    'ⓑ' -> triviaOptions[1].correct = true
-                    'ⓒ' -> triviaOptions[2].correct = true
+                    'ⓐ' -> triviaOptions[0].isCorrect = true
+                    'ⓑ' -> triviaOptions[1].isCorrect = true
+                    'ⓒ' -> triviaOptions[2].isCorrect = true
                 }
             }
         }
@@ -66,10 +66,11 @@ object QuizSolver {
 
     fun renderWorldLastQuiz() {
         if (triviaAnswers == null || triviaOptions.isEmpty() || DungeonUtils.inBoss || !DungeonUtils.inDungeons) return
-        triviaOptions.filter { it.correct }.forEach { answer ->
+        triviaOptions.forEach { answer ->
+            if (!answer.isCorrect) return@forEach
             answer.vec3?.addVec(y= -1)?.let {
-                Renderer.drawBox(it.toAABB(), Color.GREEN, depth = quizDepth)
-                RenderUtils.drawBeaconBeam(it, Color.GREEN, depth = quizDepth)
+                Renderer.drawBox(it.toAABB(), PuzzleSolvers.quizColor, depth = quizDepth)
+                RenderUtils.drawBeaconBeam(it, PuzzleSolvers.quizColor, depth = quizDepth)
             }
         }
     }

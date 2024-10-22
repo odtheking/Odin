@@ -3,7 +3,6 @@ package me.odinmain.utils.skyblock
 import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.events.impl.PacketReceivedEvent
-import me.odinmain.features.impl.nether.NoPre
 import me.odinmain.utils.*
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.clock.Executor.Companion.register
@@ -13,36 +12,26 @@ import net.minecraft.entity.monster.EntityGiantZombie
 import net.minecraft.entity.monster.EntityMagmaCube
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.network.play.server.S38PacketPlayerListItem
+import net.minecraft.util.Vec3
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object KuudraUtils {
 
-
-    // minor thing - make array or arraylist atleast
-    var kuudraTeammates: List<KuudraPlayer> = emptyList()
-
-    // pointless no?
-    var kuudraTeammatesNoSelf: List<KuudraPlayer> = emptyList()
-
-    // arraylist
+    var kuudraTeammates: ArrayList<KuudraPlayer> = ArrayList<KuudraPlayer>(4)
     var giantZombies: ArrayList<EntityGiantZombie> = arrayListOf()
-
     var supplies = BooleanArray(6) { true }
+    var kuudraEntity: EntityMagmaCube? = null
 
-    // nullable? more sense imo
-    var kuudraEntity: EntityMagmaCube = EntityMagmaCube(mc.theWorld)
+    var buildingPiles = arrayListOf<EntityArmorStand>()
+    var playersBuildingAmount = 0
+    var buildDonePercentage = 0
 
-    //build helper?
-    var builders = 0
-    var build = 0
+    private val freshRegex = Regex("^Party > (\\[[^]]*?])? ?(\\w{1,16}): FRESH\$")
     private val buildRegex = Regex("Building Progress (\\d+)% \\((\\d+) Players Helping\\)")
+    private val progressRegex = Regex("PROGRESS: (\\d+)%")
 
     var phase = 0
-
-    //build helper
-    var buildingPiles = arrayListOf<EntityArmorStand>()
-    private val progressRegex = Regex("PROGRESS: (\\d+)%")
 
     inline val inKuudra get() = LocationUtils.currentArea.isArea(Island.Kuudra)
 
@@ -50,27 +39,32 @@ object KuudraUtils {
 
     @SubscribeEvent
     fun onWorldLoad(event: WorldEvent.Load) {
-        kuudraTeammates = emptyList()
-        kuudraTeammatesNoSelf = emptyList()
-
+        kuudraTeammates = ArrayList()
         giantZombies = arrayListOf()
         supplies = BooleanArray(6) { true }
         kuudraEntity = EntityMagmaCube(mc.theWorld)
-        builders = 0
-        build = 0
+        playersBuildingAmount = 0
+        buildDonePercentage = 0
         phase = 0
         buildingPiles = arrayListOf()
-        NoPre.missing = ""
     }
 
     @SubscribeEvent
     fun onChat(event: ChatPacketEvent) {
-        val message = event.message
+        if (!inKuudra) return
 
-        if (message.matches(Regex("^Party > ?(?:\\[\\S+])? (\\S{1,16}): FRESH"))) {
-            val playerName = Regex("^Party > ?(?:\\[\\S+])? (\\S{1,16}): FRESH").find(message)?.groupValues?.get(1)?.takeIf { it == mc.thePlayer?.name } ?: return
+        when (event.message) {
+            "[NPC] Elle: Okay adventurers, I will go and fish up Kuudra!" -> phase = 1
+            "[NPC] Elle: OMG! Great work collecting my supplies!" -> phase = 2
+            "[NPC] Elle: Phew! The Ballista is finally ready! It should be strong enough to tank Kuudra's blows now!" -> phase = 3
+            "[NPC] Elle: POW! SURELY THAT'S IT! I don't think he has any more in him!" -> phase = 4
+        }
+
+        if (event.message.matches(freshRegex)) {
+            val playerName = freshRegex.find(event.message)?.groupValues?.get(1) ?: return
 
             kuudraTeammates.find { it.playerName == playerName }?.let { kuudraPlayer ->
+                if (mc.thePlayer?.name == kuudraPlayer.playerName)
                 kuudraPlayer.eatFresh = true
                 runIn(200) {
                     kuudraPlayer.eatFresh = false
@@ -79,44 +73,36 @@ object KuudraUtils {
         }
     }
 
-
     init {
         Executor(500) {
             if (!inKuudra) return@Executor
             val entities = mc.theWorld?.loadedEntityList ?: return@Executor
 
-            // maybe possible to add on spawn and remove on leave
             giantZombies.clear()
             buildingPiles.clear()
 
-            // todo: replace with loop from ui branch
             entities.forEach { entity ->
                 when (entity) {
-                    is EntityGiantZombie -> {
-                        if (entity.heldItem.unformattedName == "Head") {
-                            giantZombies.add(entity)
-                        }
-                    }
+                    is EntityGiantZombie ->
+                        if (entity.heldItem.unformattedName == "Head") giantZombies.add(entity)
+
                     is EntityMagmaCube -> {
                         if (
                             entity.slimeSize == 30 &&
                             entity.getEntityAttribute(SharedMonsterAttributes.maxHealth).baseValue.toFloat() == 100000f
-                        ) {
-                            kuudraEntity = entity
-                        }
+                        ) kuudraEntity = entity
                     }
+
                     is EntityArmorStand -> {
-                        if (entity.name.noControlCodes.matches(progressRegex)) {
-                            buildingPiles.add(entity)
-                        }
+                        if (entity.name.noControlCodes.matches(progressRegex)) buildingPiles.add(entity)
 
                         if (phase == 2) {
                             buildRegex.find(entity.name.noControlCodes)?.let {
-                                build = it.groupValues[1].toIntOrNull() ?: 0
-                                builders = it.groupValues[2].toIntOrNull() ?: 0
+                                buildDonePercentage = it.groupValues[1].toIntOrNull() ?: 0
+                                playersBuildingAmount = it.groupValues[2].toIntOrNull() ?: 0
                             }
                         }
-                        if (phase != 1 || !entity.name.contains("SUPPLIES RECEIVED")) return@forEach
+                        if (phase != 1 || entity.name.noControlCodes != "✓ SUPPLIES RECEIVED ✓") return@forEach
                         val x = entity.posX.toInt()
                         val z = entity.posY.toInt()
                         when {
@@ -136,14 +122,12 @@ object KuudraUtils {
     @SubscribeEvent
     fun handleTabListPacket(event: PacketReceivedEvent) {
         if (!inKuudra || event.packet !is S38PacketPlayerListItem || !event.packet.action.equalsOneOf(S38PacketPlayerListItem.Action.UPDATE_DISPLAY_NAME, S38PacketPlayerListItem.Action.ADD_PLAYER)) return
-        kuudraTeammates = updateKuudraTeammates(kuudraTeammates.toMutableList(), event.packet.entries)
-        kuudraTeammatesNoSelf = kuudraTeammates.filter { it.playerName != mc.thePlayer?.name }
+        kuudraTeammates = updateKuudraTeammates(kuudraTeammates, event.packet.entries)
     }
 
     private val tablistRegex = Regex("^\\[(\\d+)] (?:\\[\\w+] )*(\\w+)")
 
-    private fun updateKuudraTeammates(previousTeammates: MutableList<KuudraPlayer>, tabList: List<S38PacketPlayerListItem.AddPlayerData>): List<KuudraPlayer> {
-
+    private fun updateKuudraTeammates(previousTeammates: ArrayList<KuudraPlayer>, tabList: List<S38PacketPlayerListItem.AddPlayerData>): ArrayList<KuudraPlayer> {
         for (line in tabList) {
             val text = line.displayName?.unformattedText?.noControlCodes ?: continue
             val (_, name) = tablistRegex.find(text)?.destructured ?: continue
@@ -153,5 +137,16 @@ object KuudraUtils {
             } ?: previousTeammates.add(KuudraPlayer(name, entity = mc.theWorld?.getPlayerEntityByName(name)))
         }
         return previousTeammates
+    }
+
+    enum class PreSpot(val location: Vec3) {
+        Triangle(Vec3(-67.5, 77.0, -122.5)),
+        X(Vec3(-142.5, 77.0, -151.0)),
+        Equals(Vec3(-65.5, 76.0, -87.5)),
+        Slash(Vec3(-113.5, 77.0, -68.5)),
+        Shop(Vec3(-81.0, 76.0, -143.0)),
+        xCannon(Vec3(-143.0, 76.0, -125.0)),
+        Square(Vec3(-143.0, 76.0, -80.0)),
+        None(Vec3(0.0, 0.0, 0.0))
     }
 }

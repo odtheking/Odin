@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import static me.odinmain.utils.Utils.postAndCatch;
 
-@Mixin(value = {NetworkManager.class}, priority = 1002)
+@Mixin(value = {NetworkManager.class}, priority = 1001)
 public class MixinNetworkManager {
 
     @Inject(method = "channelRead0*", at = @At("HEAD"), cancellable = true)

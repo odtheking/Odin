@@ -26,7 +26,7 @@ val ItemStack?.extraAttributes: NBTTagCompound?
  * Returns displayName without control codes.
  */
 val ItemStack.unformattedName: String
-    get() = this.displayName.noControlCodes
+    get() = this.displayName?.noControlCodes ?: ""
 
 /**
  * Returns the lore for an Item
@@ -34,7 +34,7 @@ val ItemStack.unformattedName: String
 val ItemStack.lore: List<String>
     get() = this.tagCompound?.getCompoundTag("display")?.getTagList("Lore", 8)?.let {
         List(it.tagCount()) { i -> it.getStringTagAt(i) }
-    } ?: emptyList()
+    }.orEmpty()
 
 /**
  * Returns Item ID for an Item
@@ -106,7 +106,7 @@ fun EntityPlayerSP.isHolding(id: String): Boolean =
  * Returns first slot of an Item
  */
 fun getItemSlot(item: String, ignoreCase: Boolean = true): Int? =
-    mc.thePlayer.inventory.mainInventory.indexOfFirst { it?.unformattedName?.contains(item, ignoreCase) == true }.takeIf { it != -1 }
+    mc.thePlayer?.inventory?.mainInventory?.indexOfFirst { it?.unformattedName?.contains(item, ignoreCase) == true }.takeIf { it != -1 }
 
 /**
  * Gets index of an item in a chest.
@@ -170,8 +170,7 @@ private val rarityRegex: Regex = Regex("§l(?<rarity>${ItemRarity.entries.joinTo
 fun getRarity(lore: List<String>): ItemRarity? {
     // Start from the end since the rarity is usually the last line or one of the last.
     for (i in lore.indices.reversed()) {
-        val match = rarityRegex.find(lore[i]) ?: continue
-        val rarity: String = match.groups["rarity"]?.value ?: continue
+        val rarity = rarityRegex.find(lore[i])?.groups["rarity"]?.value ?: continue
         return ItemRarity.entries.find { it.loreName == rarity }
     }
     return null
@@ -196,6 +195,19 @@ fun ItemStack.setLore(lines: List<String>): ItemStack {
     })
     return this
 }
+
+val strengthRegex = Regex("Strength: \\+(\\d+)")
+
+/**
+ * Returns the primary Strength value for an Item
+ */
+val ItemStack.getSBStrength: Int
+    get() {
+        return this.lore.firstOrNull { it.noControlCodes.startsWith("Strength:") }
+            ?.let { loreLine ->
+                strengthRegex.find(loreLine.noControlCodes)?.groups?.get(1)?.value?.toIntOrNull()
+            } ?: 0
+    }
 
 fun ItemStack.setLoreWidth(lines: List<String>, width: Int): ItemStack {
     setTagInfo("display", getSubCompound("display", true).apply {

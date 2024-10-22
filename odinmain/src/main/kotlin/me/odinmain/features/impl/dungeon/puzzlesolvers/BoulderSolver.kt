@@ -36,13 +36,13 @@ object BoulderSolver {
         var str = ""
         for (z in -3..2) {
             for (x in -3..3) {
-                room.vec2.addRotationCoords(room.rotation, x * 3, z * 3).let { str += if (getBlockIdAt(it.x, 66, it.z) == 0) "0" else "1" }
+                room.vec2.addRotationCoords(room.rotation, x * 3, z * 3).let { str += if (getBlockIdAt(BlockPos(it.x, 66, it.z)) == 0) "0" else "1" }
             }
         }
         currentPositions = solutions[str]?.map { sol ->
-            val render = room.vec2.addRotationCoords(room.rotation, sol[0], sol[1])
-            val click = room.vec2.addRotationCoords(room.rotation, sol[2], sol[3])
-            BoxPosition(BlockPos(render.x, 65, render.z), BlockPos(click.x, 65, click.z))
+            val render = room.vec2.addRotationCoords(room.rotation, sol[0], sol[1]).let { BlockPos(it.x, 65, it.z) }
+            val click = room.vec2.addRotationCoords(room.rotation, sol[2], sol[3]).let { BlockPos(it.x, 65, it.z) }
+            BoxPosition(render, click)
         }?.toMutableList() ?: return
     }
 

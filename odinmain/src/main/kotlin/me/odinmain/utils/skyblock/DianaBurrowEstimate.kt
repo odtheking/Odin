@@ -51,7 +51,7 @@ object DianaBurrowEstimate {
     }
 
     fun blockEvent(pos: Vec3i, isFullyBroken: Boolean = false) {
-        if (isFullyBroken) {
+        if (isFullyBroken && isHolding("ANCESTRAL_SPADE")) {
             burrows.remove(pos)
             DianaHelper.burrowsRender.remove(pos)
         }
@@ -96,16 +96,18 @@ object DianaBurrowEstimate {
 
         val firstPosition = firstParticlePoint ?: return
 
-        val burrowDistance = (Math.E / if (dingPitchSlopes.isNotEmpty()) dingPitchSlopes.average() else return) - firstPosition.distanceTo(packetSound.positionVector)
-        if (burrowDistance > 100) {
+        estimatedBurrowDistance = (Math.E / if (dingPitchSlopes.isNotEmpty()) dingPitchSlopes.average() else 0.0) - firstPosition.distanceTo(packetSound.positionVector)
+
+        if (estimatedBurrowDistance?.let { it > 1000 } == true) {
             estimatedBurrowDistance = null
             return
         }
-        estimatedBurrowDistance = burrowDistance
 
-        val currentParticle = currentParticlePosition ?: return
         val secondLastParticle = secondLastParticlePosition ?: return
-        estimatedBurrowPosition = lastSoundPoint?.add(currentParticle.subtract(secondLastParticle).normalize().multiply(burrowDistance))
+
+        estimatedBurrowDistance?.let { distance ->
+            estimatedBurrowPosition = lastSoundPoint?.add(currentParticlePosition?.subtract(secondLastParticle)?.normalize()?.multiply(distance))
+        }
     }
 
     fun handleParticlePacket(packet: S2APacketParticles) {

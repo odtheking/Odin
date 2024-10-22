@@ -34,7 +34,7 @@ object LeapMenu : Module(
     description = "Renders a custom leap menu when in the Spirit Leap gui.",
     category = Category.DUNGEON
 ) {
-    val type by SelectorSetting("Sorting", "Odin Sorting", arrayListOf("Odin Sorting", "A-Z Class (BetterMap)", "A-Z Name", "No Sorting"), description = "How to sort the leap menu.")
+    val type by SelectorSetting("Sorting", "Odin Sorting", arrayListOf("Odin Sorting", "A-Z Class (BetterMap)", "A-Z Name", "Custom sorting", "No Sorting"), description = "How to sort the leap menu.")
     private val colorStyle by DualSetting("Color Style", "Gray", "Color", default = false, description = "Which color style to use.")
     private val backgroundColor by ColorSetting("Background Color", default = Color.DARK_GRAY.withAlpha(0.9f), allowAlpha = true, description = "Color of the background of the leap menu.")
     private val roundedRect by BooleanSetting("Rounded Rect", true, description = "Toggles the rounded rect for the gui.")

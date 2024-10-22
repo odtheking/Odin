@@ -19,30 +19,37 @@ val dungeonWaypointsCommand = commodore("dwp", "dungeonwaypoints") {
 
     literal("fill").runs {
         DungeonWaypoints.filled = !DungeonWaypoints.filled
-        modMessage("Changed fill to: ${DungeonWaypoints.filled}")
+        modMessage("Fill status changed to: ${DungeonWaypoints.filled}")
     }
 
     literal("size").runs { size: Double ->
-        if (size !in 0.1..1.0) return@runs modMessage("Size is not within 0.1 - 1 !")
+        if (size !in 0.1..1.0) return@runs modMessage("§cSize must be between 0.1 and 1.0!")
         DungeonWaypoints.size = size
-        modMessage("Changed size to: ${DungeonWaypoints.size}")
+        modMessage("Size changed to: ${DungeonWaypoints.size}")
     }
 
     literal("resetsecrets").runs {
         resetSecrets()
-        modMessage("reset secret waypoints")
+        modMessage("§aSecrets have been reset!")
     }
 
     literal("type").runs { type: String ->
         DungeonWaypoints.WaypointType.getByName(type)?.let {
             DungeonWaypoints.waypointType = it.ordinal
-            modMessage("Changed waypoint type to: ${it.displayName}")
-        } ?: modMessage("Invalid type!")
+            modMessage("Waypoint type changed to: ${it.displayName}")
+        } ?: modMessage("§cInvalid waypoint type!")
+    }
+
+    literal("timer").runs { type: String ->
+        DungeonWaypoints.TimerType.getByName(type)?.let {
+            DungeonWaypoints.timerSetting = it.ordinal
+            modMessage("Waypoint timer type changed to: ${it.displayName}")
+        } ?: modMessage("§cInvalid timer type!")
     }
 
     literal("useblocksize").runs {
         DungeonWaypoints.useBlockSize = !DungeonWaypoints.useBlockSize
-        modMessage("Changed use block size to: ${DungeonWaypoints.useBlockSize}")
+        modMessage("Use block size status changed to: ${DungeonWaypoints.useBlockSize}")
     }
 
     literal("offset").runs { x: Double, y: Double, z: Double ->
@@ -52,17 +59,17 @@ val dungeonWaypointsCommand = commodore("dwp", "dungeonwaypoints") {
 
     literal("through").runs {
         DungeonWaypoints.throughWalls = !DungeonWaypoints.throughWalls
-        modMessage("Changed through walls to: ${DungeonWaypoints.throughWalls}")
+        modMessage("Next waypoint will be added with through walls: ${DungeonWaypoints.throughWalls}")
     }
 
     literal("edittext").runs {
         DungeonWaypoints.editText = !DungeonWaypoints.editText
-        modMessage("Changed editing text to: ${DungeonWaypoints.editText}")
+        modMessage("Editing text status changed to: ${DungeonWaypoints.editText}")
     }
 
     literal("color").runs { hex: String ->
         if (hex.length != 8 || hex.any { !it.isHexaDecimal }) return@runs modMessage("Color hex not properly formatted! Use format RRGGBBAA")
         DungeonWaypoints.color = Color(hex)
-        modMessage("Changed color to: $hex")
+        modMessage("Color changed to: $hex")
     }
 }

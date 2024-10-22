@@ -126,19 +126,6 @@ private fun isXZInterceptable(start: Vec3, goal: Vec3?, aabb: AxisAlignedBB): Bo
             isVecInX(start.getIntermediateWithZValue(goal, aabb.maxZ), aabb)
 }
 
-fun Vec2.equal(other: Vec2): Boolean {
-    return this.x == other.x && this.z == other.z
-}
-
-/**
- * Checks if every coordinate of the given Vec3 is equal to the other Vec3.
- * @param other The Vec3 to check against
- * @return True if every coordinate of the given Vec3 is equal to the other Vec3
- */
-fun Vec3.equal(other: Vec3): Boolean {
-    return this.xCoord == other.xCoord && this.yCoord == other.yCoord && this.zCoord == other.zCoord
-}
-
 /**
  * Multiplies every coordinate of a Vec3 by the given factor.
  * @param factor The factor to multiply by
@@ -159,6 +146,10 @@ fun Vec3.multiply(x: Double = 1.0, y: Double = 1.0, z: Double = 1.0): Vec3 {
  */
 fun Vec3.divide(divisor: Number): Vec3 {
     return Vec3(this.xCoord / divisor.toDouble(), this.yCoord / divisor.toDouble(), this.zCoord / divisor.toDouble())
+}
+
+fun Vec3.equal(other: Vec3): Boolean {
+    return this.xCoord == other.xCoord && this.yCoord == other.yCoord && this.zCoord == other.zCoord
 }
 
 /**
@@ -220,6 +211,16 @@ fun Vec2.addRotationCoords(rotation: Rotations, dist: Int = 4): Vec2 {
     }
 }
 
+fun Vec3.addRotationCoords(rotations: Rotations, dist: Int = 4): Vec3 {
+    return when (rotations) {
+        Rotations.NORTH -> Vec3(this.xCoord, this.yCoord, this.zCoord + dist)
+        Rotations.WEST -> Vec3(this.xCoord + dist, this.yCoord, this.zCoord)
+        Rotations.SOUTH -> Vec3(this.xCoord, this.yCoord, this.zCoord - dist)
+        Rotations.EAST -> Vec3(this.xCoord - dist, this.yCoord, this.zCoord)
+        Rotations.NONE -> this
+    }
+}
+
 fun Vec2.addRotationCoords(rotation: Rotations, x: Number = 0, z: Number = 0): Vec2 {
     return when(rotation){
         Rotations.NORTH -> Vec2(this.x + x.toInt(), this.z + z.toInt())
@@ -240,10 +241,6 @@ fun Vec3.addRotationCoords(rotation: Rotations, x: Number = 0, z: Number = 0): V
     }
 }
 
-fun Vec2.offset(rotation: Rotations, n: Int): Vec2 {
-    return if (n == 0) this else Vec2(this.x + rotation.x * n, this.z + rotation.z * n)
-}
-
 /**
  * Checks if an axis-aligned bounding box (AABB) is interceptable based on the player's position, range, yaw, and pitch.
  *
@@ -254,14 +251,11 @@ fun Vec2.offset(rotation: Rotations, n: Int): Vec2 {
  * @return `true` if the AABB is interceptable, `false` otherwise.
  */
 private fun isInterceptable(aabb: AxisAlignedBB, range: Float, yaw: Float, pitch: Float): Boolean {
-    val player = mc.thePlayer ?: return false
-    val position = Vec3(player.posX, player.posY + fastEyeHeight(), player.posZ)
-
-    return isInterceptable3(
-        position,
-        position.add(getLook(yaw, pitch).multiply(range)),
-        aabb
-    )
+    mc.thePlayer?.let { player ->
+        val position = Vec3(player.posX, player.posY + fastEyeHeight(), player.posZ)
+        return isInterceptable3(position, position.add(getLook(yaw, pitch).multiply(range)), aabb)
+    }
+    return false
 }
 
 /**

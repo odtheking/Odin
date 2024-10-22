@@ -98,7 +98,7 @@ object BloodCamp : Module(
     private val entityList = hashMapOf<EntityArmorStand, EntityData>()
     private data class EntityData(
         val vectors: MutableList<Vec3?> = mutableListOf(), var startVector: Vec3? = null, var finalVector: Vec3? = null,
-        var time: Int? = null, val started: Long? = null, var timetook: Long? = null, var firstSpawns: Boolean = true
+        var time: Int? = null, val started: Long? = null, var timeTook: Long? = null, var firstSpawns: Boolean = true
     )
 
     private var firstSpawns = true
@@ -117,13 +117,23 @@ object BloodCamp : Module(
     fun onTick() {
         entityList.ifEmpty { return }
         watcher.removeAll {it.isDead}
-        entityList.filter { (entity) -> watcher.any { it.getDistanceToEntity(entity) < 20 }
-        }.forEach { (entity, data) ->
-            data.started?.let { data.timetook = tickTime - it }
+    }
 
-            val timeTook = data.timetook ?: return@forEach
-            val startVector = data.startVector ?: return@forEach
-            val currVector = Vec3(entity.posX, entity.posY, entity.posZ)
+    private fun onPacketLookMove(packet: S17PacketEntityLookMove) {
+        val entity = packet.getEntity(mc.theWorld) as? EntityArmorStand ?: return
+        if (!watcher.any { it.getDistanceToEntity(entity) < 20 }) return
+
+        if (entity.getEquipmentInSlot(4)?.item != Items.skull || !allowedMobSkulls.contains(getSkullValue(entity))) return
+
+        if (entity !in entityList) entityList[entity] = EntityData(startVector = entity.positionVector, started = tickTime, firstSpawns = firstSpawns)
+
+        if (watcher.none { it.getDistanceToEntity(entity) < 20 }) return
+        entityList[entity]?.let { data ->
+            data.started?.let { data.timeTook = tickTime - it }
+
+            val timeTook = data.timeTook ?: return
+            val startVector = data.startVector ?: return
+            val currVector = entity.positionVector
 
             val speedVectors = Vec3(
                 (currVector.xCoord - startVector.xCoord) / timeTook,
@@ -153,15 +163,6 @@ object BloodCamp : Module(
         }
     }
 
-    private fun onPacketLookMove(packet: S17PacketEntityLookMove) {
-        val entity = packet.getEntity(mc.theWorld) as? EntityArmorStand ?: return
-        if (!watcher.any { it.getDistanceToEntity(entity) < 20 }) return
-
-        if (entity.getEquipmentInSlot(4)?.item != Items.skull || !allowedMobSkulls.contains(getSkullValue(entity)) || entity in entityList) return
-
-        entityList[entity] = EntityData(startVector = entity.positionVector, started = tickTime, firstSpawns = firstSpawns)
-    }
-
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
         if (watcher.isEmpty()) return
@@ -172,10 +173,11 @@ object BloodCamp : Module(
 
         if (!bloodHelper) return
 
-        forRender.filter { !it.key.isDead }.forEach { (entity, renderData) ->
+        forRender.forEach { (entity, renderData) ->
+            if (entity.isDead) return@forEach
             val entityData = entityList[entity] ?: return@forEach
 
-            val timeTook = entityData.timetook ?: return@forEach
+            val timeTook = entityData.timeTook ?: return@forEach
             val startVector = entityData.startVector ?: return@forEach
             val currVector = entity.positionVector ?: return@forEach
             val endVector = renderData.endVector ?: return@forEach
@@ -216,8 +218,7 @@ object BloodCamp : Module(
 
             if (drawLine) {
                 Renderer.draw3DLine(
-                    Vec3(currVector.xCoord, currVector.yCoord + 2.0, currVector.zCoord),
-                    Vec3(endPoint.xCoord, endPoint.yCoord + 2.0, endPoint.zCoord),
+                    listOf(currVector.addVec(y = 2.0), endPoint.addVec(y = 2.0)),
                     color = Color.RED, depth = true
                 )
             }

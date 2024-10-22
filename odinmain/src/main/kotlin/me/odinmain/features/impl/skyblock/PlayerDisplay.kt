@@ -34,7 +34,7 @@ object PlayerDisplay : Module(
     private val hideZeroSF by BooleanSetting("Hide 0 Overflow", true, description = "Hides the overflow mana when it's 0.").withDependency { overflow && separateOverflow }
 
     private val showIcons by BooleanSetting("Show Icons", true, description = "Shows icons indicating what the number means.")
-    private val thousandSeperator: String by StringSetting("Thousands Separator", "", 1, description = "The Separator between thousands and hundreds.")
+    private val thousandSeparator: String by StringSetting("Thousands Separator", "", 1, description = "The Separator between thousands and hundreds.")
 
     private val healthHud by HudSetting("Health Hud", 10f, 10f, 1f, true) { example ->
         val text =
@@ -91,10 +91,8 @@ object PlayerDisplay : Module(
         val text = if (example)
             generateText(1000000, "", true)
         else if(!LocationUtils.inSkyblock) return@HudSetting 0f to 0f
-        else if (SkyblockPlayer.effectiveHP != 0)
-            generateText(SkyblockPlayer.effectiveHP, "", true)
+        else if (SkyblockPlayer.effectiveHP != 0) generateText(SkyblockPlayer.effectiveHP, "", true)
         else return@HudSetting 0f to 0f
-
 
         return@HudSetting mcTextAndWidth(text, 2, 2, 2, ehpColor, center = false) * 2f + 2f to 20f
     }
@@ -122,11 +120,10 @@ object PlayerDisplay : Module(
 
     private fun formatNumberWithCustomSeparator(number: Int): String {
         val symbols = DecimalFormatSymbols(Locale.US).apply {
-            groupingSeparator = thousandSeperator.toCharArray().firstOrNull() ?: return number.toString()
+            groupingSeparator = thousandSeparator.toCharArray().firstOrNull() ?: return number.toString()
         }
-        val formatter = DecimalFormat("#,###", symbols)
 
-        return formatter.format(number)
+        return DecimalFormat("#,###", symbols).format(number)
     }
 
     @SubscribeEvent

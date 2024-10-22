@@ -9,6 +9,7 @@ import me.odinmain.features.impl.floor7.WitherDragons.soloDebuff
 import me.odinmain.features.impl.floor7.WitherDragons.soloDebuffOnAll
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.skyblock.PlayerUtils
+import me.odinmain.utils.skyblock.devMessage
 import me.odinmain.utils.skyblock.dungeon.*
 import me.odinmain.utils.skyblock.modMessage
 
@@ -25,7 +26,7 @@ object DragonPriority {
 
     fun displaySpawningDragon(dragon: WitherDragonsEnum) {
         if (dragon == WitherDragonsEnum.None) return
-        if (dragonTitle && WitherDragons.enabled) PlayerUtils.alert("§${dragon.colorCode}${dragon.name} is spawning!")
+        if (dragonTitle && WitherDragons.enabled) PlayerUtils.alert("§${dragon.colorCode}${dragon.name} is spawning!", 30)
         if (dragonPriorityToggle && WitherDragons.enabled) modMessage("§${dragon.colorCode}${dragon.name} §7is your priority dragon!")
     }
 
@@ -42,7 +43,7 @@ object DragonPriority {
         spawningDragon.sortBy { priorityList.indexOf(it) }
 
         if (totalPower >= easyPower) {
-            if (soloDebuff) {
+            if (soloDebuff == 1) {
                 if (playerClass == DungeonClass.Tank) {
                     if (spawningDragon.any { it == WitherDragonsEnum.Purple } || soloDebuffOnAll) spawningDragon.sortByDescending { priorityList.indexOf(it) }
                 }
@@ -50,7 +51,7 @@ object DragonPriority {
                 if (spawningDragon.any { it == WitherDragonsEnum.Purple } || soloDebuffOnAll) spawningDragon.sortByDescending { priorityList.indexOf(it) }
             }
         }
-
+        devMessage("§7Priority: §6$totalPower §7Class: §${playerClass.colorCode}${playerClass.name} §7Dragons: §a${spawningDragon.joinToString(", ") { it.name }} §7-> §c${priorityList.joinToString(", ") { it.name.first().toString() }}")
         return spawningDragon[0]
     }
 }

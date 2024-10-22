@@ -83,12 +83,13 @@ object DungeonWaypointConfig {
             val waypointType = jsonObj["type"]?.asString?.let {
                 runCatching { DungeonWaypoints.WaypointType.valueOf(it) }.getOrNull()
             }
-
-            val waypoint = DungeonWaypoint(x, y, z, color, filled, depth, aabb, title, type = waypointType)
-            // Handle the "secret" to "type" migration
-            if (waypointType == null && jsonObj.has("secret") && jsonObj["secret"]?.asBoolean == true) {
-                waypoint.secret = true
+            val timerType = jsonObj["timer"]?.asString?.let {
+                runCatching { DungeonWaypoints.TimerType.valueOf(it) }.getOrNull()
             }
+
+            val waypoint = DungeonWaypoint(x, y, z, color, filled, depth, aabb, title, type = waypointType, timer = timerType)
+            // Handle the "secret" to "type" migration
+            if (waypointType == null && jsonObj.has("secret") && jsonObj["secret"]?.asBoolean == true) waypoint.secret = true
 
             return waypoint
         }

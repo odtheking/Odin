@@ -6,6 +6,7 @@ import me.odinmain.utils.noControlCodes
 import net.minecraft.network.play.server.S02PacketChat
 import net.minecraftforge.fml.common.eventhandler.EventPriority
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import kotlin.math.floor
 
 object SkyblockPlayer {
     /*
@@ -41,5 +42,6 @@ object SkyblockPlayer {
         overflowMana = oMana.replace(",", "").replace("ʬ","").toIntOrNull() ?: 0
         currentDefense = Regex("([\\d|,]+)❈ Defense").find(middleRegion)?.groupValues?.get(1)?.replace(",", "")?.toIntOrNull() ?: return
         effectiveHP = (currentHealth * (1 + currentDefense / 100))
+        currentSpeed = floor((mc.thePlayer?.capabilities?.walkSpeed ?: 0f) * 1000f).toInt()
     }
 }

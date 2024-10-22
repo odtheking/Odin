@@ -11,17 +11,19 @@ import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.skyblock.*
 import net.minecraft.entity.Entity
+import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.event.ClickEvent
+import net.minecraft.event.HoverEvent
 import net.minecraft.inventory.Container
 import net.minecraft.inventory.ContainerChest
+import net.minecraft.util.ChatComponentText
+import net.minecraft.util.ChatStyle
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.eventhandler.Event
 import org.lwjgl.opengl.GL11
 import org.lwjgl.util.glu.GLU
 import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
-import java.time.LocalDateTime
-import java.time.Month
-import java.time.format.TextStyle
 import java.util.*
 import kotlin.math.*
 
@@ -124,7 +126,7 @@ fun Number.round(decimals: Int): Number {
 }
 
 val ContainerChest.name: String
-    get() = this.lowerChestInventory.displayName.unformattedText
+    get() = this.lowerChestInventory?.displayName?.unformattedText ?: ""
 
 val Container.name: String
     get() = (this as? ContainerChest)?.name ?: "Undefined Container"
@@ -169,8 +171,11 @@ fun Event.postAndCatch(): Boolean {
     }.onFailure {
         it.printStackTrace()
         logger.error("An error occurred", it)
-        modMessage("${OdinMain.VERSION} Caught and logged an ${it::class.simpleName ?: "error"} at ${this::class.simpleName}. §cPlease report this with a log in the discord!")
-    }.getOrDefault(isCanceled)
+        val style = ChatStyle()
+        style.chatClickEvent = ClickEvent(ClickEvent.Action.RUN_COMMAND, "/od copy ```${it.stackTraceToString().lineSequence().take(10).joinToString("\n")}```")
+        style.chatHoverEvent = HoverEvent(HoverEvent.Action.SHOW_TEXT, ChatComponentText("§6Click to copy the error to your clipboard."))
+        modMessage("${OdinMain.VERSION} Caught an ${it::class.simpleName ?: "error"} at ${this::class.simpleName}. §cPlease click this message to copy and send it in the Odin discord!",
+            chatStyle = style)}.getOrDefault(isCanceled)
 }
 
 /**
@@ -201,7 +206,7 @@ inline fun profile(name: String, func: () -> Unit) {
 
 /**
  * Starts a minecraft profiler section with the specified name + "Odin: ".
- */
+ * */
 fun startProfile(name: String) {
     mc.mcProfiler.startSection("Odin: $name")
 }
@@ -256,10 +261,6 @@ fun <T> Collection<T>.getSafe(index: Int?): T? {
     } catch (_: Exception) {
         null
     }
-}
-
-fun getCurrentMonthName(): String {
-    return Month.entries[LocalDateTime.now().monthValue - 1].getDisplayName(TextStyle.FULL, Locale.getDefault())
 }
 
 /**
@@ -332,7 +333,7 @@ fun romanToInt(s: String): Int {
 }
 
 fun fillItemFromSack(amount: Int, itemId: String, sackName: String, sendMessage: Boolean) {
-    val needed = mc.thePlayer.inventory.mainInventory.find { it?.itemID == itemId }?.stackSize ?: 0
+    val needed = mc.thePlayer?.inventory?.mainInventory?.find { it?.itemID == itemId }?.stackSize ?: 0
     if (needed != amount) sendCommand("gfs $sackName ${amount - needed}") else if (sendMessage) modMessage("§cAlready at max stack size.")
 }
 
@@ -345,3 +346,11 @@ inline fun <T> MutableCollection<T>.removeFirstOrNull(predicate: (T) -> Boolean)
 fun Int.rangeAdd(add: Int): IntRange = this..this+add
 
 val Entity.rotation get() = Pair(rotationYaw, rotationPitch)
+
+fun runOnMCThread(run: () -> Unit) {
+    if (!mc.isCallingFromMinecraftThread) mc.addScheduledTask(run) else run()
+}
+
+fun EntityPlayer?.isOtherPlayer(): Boolean {
+    return this != null && this != mc.thePlayer && this.uniqueID.version() != 2
+}

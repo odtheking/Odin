@@ -35,7 +35,6 @@ object SkillsSucks : Module(
         mcText(currentPronoun ?: pronouns.random(), Mouse.getX().toFloat() + 75, Mouse.getY().toFloat() + 150f, 2, Color.WHITE)
     }
 
-
     private val pronouns = listOf(
         "they/them",
         "she/her/hers",

@@ -6,11 +6,11 @@ import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.containsOneOf
-import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.dungeonItemDrops
 import me.odinmain.utils.skyblock.getRarity
 import me.odinmain.utils.skyblock.lore
+import me.odinmain.utils.skyblock.unformattedName
 import net.minecraft.entity.item.EntityItem
 
 object ItemsHighlight : Module(
@@ -18,7 +18,7 @@ object ItemsHighlight : Module(
     description = "Outlines dropped item entities.",
     category = Category.RENDER
 ) {
-    private val mode by SelectorSetting("Mode", HighlightRenderer.HIGHLIGHT_MODE_DEFAULT, HighlightRenderer.highlightModeList, description = HighlightRenderer.HIGHLIGHT_MODE_DESCRIPTION)
+    private val mode by SelectorSetting("Mode", "Overlay", arrayListOf("Boxes", "Box 2D", "Overlay"), description = HighlightRenderer.HIGHLIGHT_MODE_DESCRIPTION)
     private val onlySecrets by BooleanSetting("Only Secrets", default = false, description = "Only highlights secret drops in dungeons.")
     private val thickness by NumberSetting("Line Width", 1f, .1f, 4f, .1f, description = "The line width of Outline / Boxes/ 2D Boxes.").withDependency { mode != HighlightRenderer.HighlightType.Overlay.ordinal }
     private val style by SelectorSetting("Style", Renderer.DEFAULT_STYLE, Renderer.styles, description = Renderer.STYLE_DESCRIPTION).withDependency { mode == HighlightRenderer.HighlightType.Boxes.ordinal }
@@ -31,13 +31,14 @@ object ItemsHighlight : Module(
 
     init {
         execute(100) {
-            currentEntityItems = mc.theWorld?.loadedEntityList
-                ?.filterIsInstance<EntityItem>()
-                ?.filter { it.entityItem.displayName.noControlCodes.containsOneOf(dungeonItemDrops, true) || !onlySecrets }
-                ?.toMutableSet() ?: mutableSetOf()
+            currentEntityItems = mutableSetOf()
+            mc.theWorld?.loadedEntityList?.forEach { entity ->
+                if (entity !is EntityItem) return@forEach
+                if (!onlySecrets || entity.entityItem?.unformattedName?.containsOneOf(dungeonItemDrops, true) == true) currentEntityItems.add(entity)
+            }
         }
 
-        HighlightRenderer.addEntityGetter({ HighlightRenderer.HighlightType.entries[mode]}) {
+        HighlightRenderer.addEntityGetter({ HighlightRenderer.HighlightType.entries[mode + 1]}) {
             if (!enabled) emptyList()
             else currentEntityItems.map { HighlightRenderer.HighlightEntity(it, getEntityOutlineColor(it), thickness, depthCheck, style) }
         }

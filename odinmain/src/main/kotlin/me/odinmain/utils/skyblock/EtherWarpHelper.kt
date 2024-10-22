@@ -2,6 +2,7 @@ package me.odinmain.utils.skyblock
 
 import me.odinmain.OdinMain.mc
 import me.odinmain.utils.*
+import me.odinmain.utils.render.RenderUtils.renderVec
 import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
 import kotlin.math.*
@@ -32,7 +33,7 @@ object EtherWarpHelper {
         return traverseVoxels(startPos, endPos)
     }
 
-    fun getEtherPos(positionLook: PositionLook, distance: Double = 60.0): EtherPos {
+    fun getEtherPos(positionLook: PositionLook = PositionLook(mc.thePlayer.renderVec, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch), distance: Double = 60.0): EtherPos {
         return getEtherPos(positionLook.pos, positionLook.yaw, positionLook.pitch, distance)
     }
 

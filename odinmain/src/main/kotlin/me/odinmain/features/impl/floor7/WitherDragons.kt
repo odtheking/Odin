@@ -4,18 +4,19 @@ import me.odinmain.events.impl.RealServerTick
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.DragonBoxes.renderBoxes
-import me.odinmain.features.impl.floor7.DragonCheck.dragonJoinWorld
-import me.odinmain.features.impl.floor7.DragonCheck.dragonLeaveWorld
+import me.odinmain.features.impl.floor7.DragonCheck.dragonEntityList
+import me.odinmain.features.impl.floor7.DragonCheck.dragonSpawn
 import me.odinmain.features.impl.floor7.DragonCheck.dragonSprayed
+import me.odinmain.features.impl.floor7.DragonCheck.dragonUpdate
 import me.odinmain.features.impl.floor7.DragonCheck.lastDragonDeath
 import me.odinmain.features.impl.floor7.DragonCheck.onChatPacket
 import me.odinmain.features.impl.floor7.DragonHealth.renderHP
 import me.odinmain.features.impl.floor7.DragonTimer.colorDragonTimer
 import me.odinmain.features.impl.floor7.DragonTimer.renderTime
 import me.odinmain.features.impl.floor7.DragonTracer.renderTracers
-import me.odinmain.features.impl.floor7.Relic.relicsBlockPlace
-import me.odinmain.features.impl.floor7.Relic.relicsOnMessage
-import me.odinmain.features.impl.floor7.Relic.relicsOnWorldLast
+import me.odinmain.features.impl.floor7.KingRelics.relicsBlockPlace
+import me.odinmain.features.impl.floor7.KingRelics.relicsOnMessage
+import me.odinmain.features.impl.floor7.KingRelics.relicsOnWorldLast
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.render.*
@@ -25,8 +26,6 @@ import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.server.*
 import net.minecraftforge.client.event.RenderWorldLastEvent
-import net.minecraftforge.event.entity.EntityJoinWorldEvent
-import net.minecraftforge.event.entity.living.LivingDeathEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.util.*
 import kotlin.concurrent.schedule
@@ -38,6 +37,7 @@ object WitherDragons : Module(
 ) {
     private val dragonTimerDropDown by DropdownSetting("Dragon Timer Dropdown")
     private val dragonTimer by BooleanSetting("Dragon Timer", true, description = "Displays a timer for when M7 dragons spawn.").withDependency { dragonTimerDropDown }
+    val addUselessDecimal by BooleanSetting("Add Useless Decimal", false, description = "Adds a decimal to the timer.").withDependency { dragonTimer && dragonTimerDropDown }
     private val hud by HudSetting("Dragon Timer HUD", 10f, 10f, 1f, true) {
         if (it) {
             mcText("§5P §a4.5s", 2f, 5f, 1, Color.WHITE, center = false)
@@ -48,8 +48,7 @@ object WitherDragons : Module(
             if (!dragonTimer) return@HudSetting 0f to 0f
             WitherDragonsEnum.entries.forEachIndexed { index, dragon ->
                 if (dragon.state != WitherDragonState.SPAWNING) return@forEachIndexed
-                val coloredTime = colorDragonTimer(String.format(Locale.US, "%.2f", dragon.timeToSpawn / 20.0).toDouble())
-                mcText("§${dragon.colorCode}${dragon.name.first()}: ${coloredTime}s", 2, 5f + (index - 1) * 15f, 1, Color.WHITE, center = false)
+                mcText("§${dragon.colorCode}${dragon.name.first()}: ${colorDragonTimer(dragon.timeToSpawn)}${String.format(Locale.US, "%.2f", dragon.timeToSpawn / 20.0)}${if (addUselessDecimal) "0" else ""}", 2, 5f + (index - 1) * 15f, 1, Color.WHITE, center = false)
             }
             getMCTextWidth("§5P §a4.5s")+ 2f to 33f
         }
@@ -79,32 +78,29 @@ object WitherDragons : Module(
     val dragonPriorityToggle by BooleanSetting("Dragon Priority", false, description = "Displays the priority of dragons spawning.").withDependency { dragonPriorityDropDown }
     val normalPower by NumberSetting("Normal Power", 22.0, 0.0, 32.0, description = "Power needed to split.").withDependency { dragonPriorityToggle && dragonPriorityDropDown }
     val easyPower by NumberSetting("Easy Power", 19.0, 0.0, 32.0, description = "Power needed when its Purple and another dragon.").withDependency { dragonPriorityToggle && dragonPriorityDropDown }
-    val soloDebuff by DualSetting("Purple Solo Debuff", "Tank", "Healer", false, description = "Displays the debuff of the config. The class that solo debuffs purple, the other class helps b/m.").withDependency { dragonPriorityToggle && dragonPriorityDropDown }
+    val soloDebuff by SelectorSetting("Purple Solo Debuff", "Tank", arrayListOf("Tank", "Healer"), false, description = "Displays the debuff of the config. The class that solo debuffs purple, the other class helps b/m.").withDependency { dragonPriorityToggle && dragonPriorityDropDown }
     val soloDebuffOnAll by BooleanSetting("Solo Debuff on All Splits", true, description = "Same as Purple Solo Debuff but for all dragons (A will only have 1 debuff).").withDependency { dragonPriorityToggle && dragonPriorityDropDown }
     val paulBuff by BooleanSetting("Paul Buff", false, description = "Multiplies the power in your run by 1.25.").withDependency { dragonPriorityToggle && dragonPriorityDropDown }
 
     val colors = arrayListOf("Green", "Purple", "Blue", "Orange", "Red")
-    private val relics by DropdownSetting("Relics Dropdown")
-    val relicAnnounce by BooleanSetting("Relic Announce", false, description = "Announce your relic to the rest of the party.").withDependency { relics }
-    val selected by SelectorSetting("Color", "Green", colors, description = "The color of your relic.").withDependency { relicAnnounce && relics}
-    val relicAnnounceTime by BooleanSetting("Relic Time", true, description = "Sends how long it took you to get that relic.").withDependency { relics }
-    val relicSpawnTimer by BooleanSetting("Relic Spawn Timer", false, description = "Sends how long it took for the relic to spawn.").withDependency { relics }
-    val relicSpawnTicks by NumberSetting("Relic Spawn Ticks", 42, 0, 100, description = "The amount of ticks for the relic to spawn.").withDependency { relicAnnounceTime && relics }
+    private val relicDropDown by DropdownSetting("Relics Dropdown")
+    val relicAnnounce by BooleanSetting("Relic Announce", false, description = "Announce your relic to the rest of the party.").withDependency { relicDropDown }
+    val selected by SelectorSetting("Color", "Green", colors, description = "The color of your relic.").withDependency { relicAnnounce && relicDropDown}
+    val relicAnnounceTime by BooleanSetting("Relic Time", true, description = "Sends how long it took you to get that relic.").withDependency { relicDropDown }
+    val relicSpawnTicks by NumberSetting("Relic Spawn Ticks", 42, 0, 100, description = "The amount of ticks for the relic to spawn.").withDependency {  relicDropDown }
+    val cauldronHighlight by BooleanSetting("Cauldron Highlight", false, description = "Highlights the cauldron for held relic.").withDependency { relicDropDown }
+
+    private val relicHud by HudSetting("Relic Hud", 10f, 10f, 1f, true) {
+        if (it) return@HudSetting mcTextAndWidth("§3Relics: 4.30s", 2, 5f, 1, Color.WHITE, center = false) + 2f to 16f
+        if (DungeonUtils.getF7Phase() != M7Phases.P5 || KingRelics.relicTicksToSpawn <= 0) return@HudSetting 0f to 0f
+        mcTextAndWidth("§3Relics: ${String.format(Locale.US, "%.2f", KingRelics.relicTicksToSpawn / 20.0)}s", 2, 5f, 1, Color.WHITE, center = false) + 2f to 16f
+    }.withDependency { relicDropDown }
 
     var priorityDragon = WitherDragonsEnum.None
 
     init {
         onWorldLoad {
-            WitherDragonsEnum.entries.forEach {
-                it.timeToSpawn = 100
-                it.timesSpawned = 0
-                it.state = WitherDragonState.DEAD
-                it.entity = null
-                it.isSprayed = false
-                it.spawnedTime = 0
-            }
-            priorityDragon = WitherDragonsEnum.None
-            lastDragonDeath = WitherDragonsEnum.None
+            WitherDragonsEnum.reset()
         }
 
         onPacket(S2APacketParticles::class.java, { DungeonUtils.getF7Phase() == M7Phases.P5 }) {
@@ -124,48 +120,39 @@ object WitherDragons : Module(
             dragonSprayed(it)
         }
 
+        onPacket(S0FPacketSpawnMob::class.java, { DungeonUtils.getF7Phase() == M7Phases.P5 && enabled }) {
+            if (it.entityType == 63) dragonSpawn(it)
+        }
+
+        onPacket(S1CPacketEntityMetadata::class.java, { DungeonUtils.getF7Phase() == M7Phases.P5 && enabled }) {
+            dragonUpdate(it)
+        }
+
         onMessage("[BOSS] Necron: All this, for nothing...", false) {
             relicsOnMessage()
         }
 
-        onMessage(Regex("^\\[BOSS] Wither King: (Oh, this one hurts!|I have more of those\\.|My soul is disposable\\.)$"), { enabled && DungeonUtils.getF7Phase() != M7Phases.P5 } ) {
+        onMessage(Regex("^\\[BOSS] Wither King: (Oh, this one hurts!|I have more of those\\.|My soul is disposable\\.)$"), { enabled && DungeonUtils.getF7Phase() == M7Phases.P5 } ) {
             onChatPacket()
-        }
-
-        execute(200) {
-            if (enabled && DungeonUtils.getF7Phase() != M7Phases.P5) return@execute
-            DragonCheck.dragonStateConfirmation()
         }
     }
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-        if (DungeonUtils.getF7Phase() != M7Phases.P5 && enabled) return
+        if (DungeonUtils.getF7Phase() != M7Phases.P5 || !enabled) return
 
         if (dragonHealth) renderHP()
         if (dragonTimer) renderTime()
         if (dragonBoxes) renderBoxes()
-        if (relicSpawnTimer) relicsOnWorldLast()
+        if (cauldronHighlight) relicsOnWorldLast()
         if (priorityDragon != WitherDragonsEnum.None && dragonTracers)
             renderTracers(priorityDragon)
     }
 
     @SubscribeEvent
-    fun onEntityJoin(event: EntityJoinWorldEvent) {
-        if (DungeonUtils.getF7Phase() != M7Phases.P5) return
-        dragonJoinWorld(event)
-    }
-
-    @SubscribeEvent
-    fun onEntityLeave(event: LivingDeathEvent) {
-        if (DungeonUtils.getF7Phase() != M7Phases.P5) return
-        dragonLeaveWorld(event)
-    }
-
-    @SubscribeEvent
     fun onServerTick(event: RealServerTick) {
         DragonCheck.updateTime()
-        Relic.onServerTick()
+        KingRelics.onServerTick()
     }
 
     fun arrowDeath(dragon: WitherDragonsEnum) {

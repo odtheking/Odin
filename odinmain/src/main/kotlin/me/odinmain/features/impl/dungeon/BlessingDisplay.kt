@@ -34,8 +34,7 @@ object BlessingDisplay : Module(
 
     private val hud by HudSetting("Display", 10f, 10f, 1f, false) { example ->
         (0..5).reduce { acc, index ->
-            val blessing = blessings[index - 1]
-            if (!blessing.enabled.invoke()) return@reduce acc
+            val blessing = blessings[index - 1].takeIf { it.enabled.invoke() } ?: return@reduce acc
             val level = if (example) 19 else if (blessing.type.current > 0) blessing.type.current else return@reduce acc
             mcText("${blessing.type.displayString} §a$level§r", 0, 10 * acc, 1, blessing.color.invoke(), center = false)
             acc + 1

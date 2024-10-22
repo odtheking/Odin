@@ -4,8 +4,7 @@ import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.DungeonEvents.RoomEnterEvent
 import me.odinmain.events.impl.PacketReceivedEvent
 import me.odinmain.features.impl.dungeon.MapInfo.togglePaul
-import me.odinmain.utils.equalsOneOf
-import me.odinmain.utils.noControlCodes
+import me.odinmain.utils.*
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.LocationUtils.currentDungeon
 import me.odinmain.utils.skyblock.PlayerUtils.posY
@@ -16,6 +15,8 @@ import net.minecraft.init.Blocks
 import net.minecraft.network.play.server.S38PacketPlayerListItem
 import net.minecraft.tileentity.TileEntitySkull
 import net.minecraft.util.BlockPos
+import net.minecraft.util.Vec3
+import net.minecraftforge.event.entity.EntityJoinWorldEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import kotlin.math.ceil
@@ -66,7 +67,7 @@ object DungeonUtils {
         get() = if (completedRoomCount == 0 || percentCleared == 0) 0 else floor((completedRoomCount / (percentCleared * 0.01).toFloat()) + 0.4).toInt()
 
     val puzzles: List<Puzzle>
-        get() = currentDungeon?.puzzles ?: emptyList()
+        get() = currentDungeon?.puzzles.orEmpty()
 
     val puzzleCount: Int
         get() = currentDungeon?.puzzles?.size ?: 0
@@ -81,13 +82,13 @@ object DungeonUtils {
         get() = currentDungeon?.currentFullRoom?.room?.data?.name ?: "Unknown"
 
     val dungeonTeammates: List<DungeonPlayer>
-        get() = currentDungeon?.dungeonTeammates ?: emptyList()
+        get() = currentDungeon?.dungeonTeammates.orEmpty()
 
     val dungeonTeammatesNoSelf: List<DungeonPlayer>
-        get() = currentDungeon?.dungeonTeammatesNoSelf ?: emptyList()
+        get() = currentDungeon?.dungeonTeammatesNoSelf.orEmpty()
 
     val leapTeammates: List<DungeonPlayer>
-        get() = currentDungeon?.leapTeammates ?: emptyList()
+        get() = currentDungeon?.leapTeammates.orEmpty()
 
     val currentDungeonPlayer: DungeonPlayer
         get() = dungeonTeammates.find { it.name == mc.thePlayer?.name } ?: DungeonPlayer(mc.thePlayer?.name ?: "Unknown", DungeonClass.Unknown, entity = mc.thePlayer)
@@ -101,8 +102,8 @@ object DungeonUtils {
     val currentFullRoom: FullRoom?
         get() = currentDungeon?.currentFullRoom
 
-    val passedRooms: List<FullRoom>
-        get() = currentDungeon?.passedRooms ?: emptyList()
+    val passedRooms: Set<FullRoom>
+        get() = currentDungeon?.passedRooms.orEmpty()
 
     val isPaul: Boolean
         get() = currentDungeon?.paul == true
@@ -177,6 +178,11 @@ object DungeonUtils {
         currentDungeon?.onWorldLoad()
     }
 
+    @SubscribeEvent
+    fun onEntityJoin(event: EntityJoinWorldEvent) {
+        currentDungeon?.onEntityJoin(event)
+    }
+
     private val puzzleRegex = Regex("^§r (\\w+(?: \\w+)*|\\?\\?\\?): §r§7\\[(§r§c§l✖|§r§a§l✔|§r§6§l✦)§r§7] ?(?:§r§f\\(§r§[a-z](\\w+)§r§f\\))?§r$")
 
     fun getDungeonPuzzles(list: List<String> = listOf()): List<Puzzle> {
@@ -190,7 +196,7 @@ object DungeonUtils {
                 status == "§r§a§l✔" -> PuzzleStatus.Completed
                 status == "§r§6§l✦" -> PuzzleStatus.Incomplete
                 else -> {
-                    modMessage(text.replace("§", "&"), false)
+                    modMessage(text.replace("§", "&"))
                     return@mapNotNull null
                 }
             }
@@ -199,22 +205,20 @@ object DungeonUtils {
     }
 
     private val tablistRegex = Regex("^\\[(\\d+)] (?:\\[\\w+] )*(\\w+) .*?\\((\\w+)(?: (\\w+))*\\)$")
+    var customLeapOrder: List<String> = emptyList()
 
-    fun getDungeonTeammates(previousTeammates: MutableList<DungeonPlayer>, tabList: List<S38PacketPlayerListItem.AddPlayerData>): List<DungeonPlayer> {
+    fun getDungeonTeammates(previousTeammates: ArrayList<DungeonPlayer>, tabList: List<S38PacketPlayerListItem.AddPlayerData>): ArrayList<DungeonPlayer> {
         for (line in tabList) {
             val displayName = line.displayName?.unformattedText?.noControlCodes ?: continue
             val (_, name, clazz, _) = tablistRegex.find(displayName)?.destructured ?: continue
 
-            previousTeammates.find { it.name == name }?.let { player ->
-                player.isDead = clazz == "DEAD"
-                player.entity = mc.theWorld?.getPlayerEntityByName(name)
-            } ?: previousTeammates.add(DungeonPlayer(name, DungeonClass.entries.find { it.name == clazz } ?: return previousTeammates,
-                 mc.netHandler.getPlayerInfo(name).locationSkin, mc.theWorld?.getPlayerEntityByName(name), clazz == "DEAD"))
+            previousTeammates.find { it.name == name }?.let { player -> player.isDead = clazz == "DEAD" } ?:
+            previousTeammates.add(DungeonPlayer(name, DungeonClass.entries.find { it.name == clazz } ?: continue, mc.netHandler?.getPlayerInfo(name)?.locationSkin ?: continue, mc.theWorld?.getPlayerEntityByName(name), false))
         }
         return previousTeammates
     }
 
-    private const val WITHER_ESSENCE_ID = "26bb1a8d-7c66-31c6-82d5-a9c04c94fb02"
+    const val WITHER_ESSENCE_ID = "26bb1a8d-7c66-31c6-82d5-a9c04c94fb02"
     private const val REDSTONE_KEY = "edb0155f-379c-395a-9c7d-1b6005987ac8"
 
     /**
@@ -237,6 +241,9 @@ object DungeonUtils {
             else -> false
         }
     }
+
+    fun FullRoom.getRelativeCoords(pos: Vec3) = pos.subtractVec(x = this.clayPos.x, z = this.clayPos.z).rotateToNorth(this.room.rotation)
+    fun FullRoom.getRealCoords(pos: Vec3) = pos.rotateAroundNorth(this.room.rotation).addVec(x = this.clayPos.x, z = this.clayPos.z)
 
     val dungeonItemDrops = listOf(
         "Health Potion VIII Splash Potion", "Healing Potion 8 Splash Potion", "Healing Potion VIII Splash Potion", "Healing VIII Splash Potion", "Healing 8 Splash Potion",

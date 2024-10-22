@@ -30,9 +30,10 @@ object BlazeAttunement : Module(
 
     init {
         execute(1000) {
+            if (!overlay) return@execute
             currentBlazes.clear()
-            mc.theWorld?.loadedEntityList?.filterIsInstance<EntityArmorStand>()?.forEach { entity ->
-                if (currentBlazes.any { it.key == entity }) return@forEach
+            mc.theWorld?.loadedEntityList?.forEach { entity ->
+                if (entity !is EntityArmorStand || currentBlazes.any { it.key == entity }) return@forEach
                 val name = entity.name.noControlCodes
 
                 val color = when {
@@ -60,8 +61,9 @@ object BlazeAttunement : Module(
         OutlineUtils.outlineEntity(event, color, thickness)
     }
 
+    @JvmStatic
     fun changeBlazeColor(entity: Entity) {
-        if (currentBlazes.isEmpty() || !overlay) return
+        if (!enabled || currentBlazes.isEmpty() || !overlay) return
         val color = currentBlazes[entity] ?: return
         GlStateManager.disableTexture2D()
         GlStateManager.enableBlend()
@@ -69,14 +71,16 @@ object BlazeAttunement : Module(
         color.bind()
     }
 
+    @JvmStatic
     fun renderModelBlazePost() {
-        if (currentBlazes.isEmpty() || !overlay) return
+        if (!enabled || currentBlazes.isEmpty() || !overlay) return
         GlStateManager.disableBlend()
         GlStateManager.enableTexture2D()
     }
 
+    @JvmStatic
     fun changeBipedColor(entity: Entity) {
-        if (currentBlazes.isEmpty() || !overlay) return
+        if (!enabled || currentBlazes.isEmpty() || !overlay) return
         val color = currentBlazes[entity] ?: return
         GlStateManager.disableTexture2D()
         GlStateManager.enableBlend()
@@ -84,8 +88,9 @@ object BlazeAttunement : Module(
         color.bind()
     }
 
+    @JvmStatic
     fun renderModelBipedPost() {
-        if (currentBlazes.isEmpty() || !overlay) return
+        if (!enabled || currentBlazes.isEmpty() || !overlay) return
         GlStateManager.disableBlend()
         GlStateManager.enableTexture2D()
     }

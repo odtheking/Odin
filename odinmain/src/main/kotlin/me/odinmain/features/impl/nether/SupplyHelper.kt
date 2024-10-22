@@ -10,6 +10,7 @@ import me.odinmain.utils.formatTime
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.KuudraUtils
+import me.odinmain.utils.skyblock.KuudraUtils.PreSpot
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
@@ -37,7 +38,7 @@ object SupplyHelper : Module(
         onMessageCancellable(Regex("(\\[\\w+])?(\\w+) recovered one of Elle's supplies! \\((\\d)/(\\d)\\)")) {
             if (!sendSupplyTime) return@onMessageCancellable
             val (name, current, total) = Regex("(\\[\\w+])?(\\w+) recovered one of Elle's supplies! \\((\\d)/(\\d)\\)").find(it.message)?.destructured ?: return@onMessageCancellable
-            modMessage("$name, §a§lrecovered a supply at ${formatTime((System.currentTimeMillis() - startRun))}!, §r§8($current/$total)", false)
+            modMessage("$name, §a§lrecovered a supply at ${formatTime((System.currentTimeMillis() - startRun))}!, §r§8($current/$total)", "")
             it.isCanceled = true
         }
     }
@@ -51,19 +52,18 @@ object SupplyHelper : Module(
 
     private fun renderSupplyWaypoints() {
         KuudraUtils.giantZombies.forEach {
-            val yaw = it.rotationYaw
             Renderer.drawCustomBeacon("Supply",
-                Vec3(it.posX + (3.7 * cos((yaw + 130) * (Math.PI / 180))), 72.0, it.posZ + (3.7 * sin((yaw + 130) * (Math.PI / 180)))), supplyWaypointColor, increase = false)
+                Vec3(it.posX + (3.7 * cos((it.rotationYaw + 130) * (Math.PI / 180))), 72.0, it.posZ + (3.7 * sin((it.rotationYaw + 130) * (Math.PI / 180)))), supplyWaypointColor, increase = false)
         }
     }
 
     private val locations = listOf(
-        Pair(Vec3(-98.0, 78.0, -112.0), "Shop"),
-        Pair(Vec3(-98.0, 78.0, -99.0), "Equals"),
-        Pair(Vec3(-110.0, 78.0, -106.0), "X Cannon"),
-        Pair(Vec3(-106.0, 78.0, -112.0), "X"),
-        Pair(Vec3(-94.0, 78.0, -106.0), "Triangle"),
-        Pair(Vec3(-106.0, 78.0, -99.0), "Slash")
+        Pair(Vec3(-98.0, 78.0, -112.0), PreSpot.Shop),
+        Pair(Vec3(-98.0, 78.0, -99.0), PreSpot.Equals),
+        Pair(Vec3(-110.0, 78.0, -106.0), PreSpot.xCannon),
+        Pair(Vec3(-106.0, 78.0, -112.0), PreSpot.X ),
+        Pair(Vec3(-94.0, 78.0, -106.0), PreSpot.Triangle),
+        Pair(Vec3(-106.0, 78.0, -99.0), PreSpot.Slash),
     )
 
     private fun renderDropLocations() {

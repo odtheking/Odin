@@ -8,6 +8,8 @@ import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.*
 import me.odinmain.utils.skyblock.*
 import net.minecraft.event.ClickEvent
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 import kotlin.math.floor
 import kotlin.random.Random
 
@@ -31,23 +33,24 @@ object ChatCommands : Module(
     private var cf by BooleanSetting(name = "Coinflip (cf)", default = true, description = "Sends the result of a coinflip..").withDependency { showSettings }
     private var eightball by BooleanSetting(name = "Eightball", default = true, description = "Sends a random 8ball response.").withDependency { showSettings }
     private var dice by BooleanSetting(name = "Dice", default = true, description = "Rolls a dice.").withDependency { showSettings }
-    private var pt by BooleanSetting(name = "Party transfer (pt)", default = true, description = "Executes the /party transfer command.").withDependency { showSettings }
+    private var pt by BooleanSetting(name = "Party transfer (pt)", default = false, description = "Executes the /party transfer command.").withDependency { showSettings }
     private var ping by BooleanSetting(name = "Ping", default = true, description = "Sends your current ping.").withDependency { showSettings }
     private var tps by BooleanSetting(name = "TPS", default = true, description = "Sends the server's current TPS.").withDependency { showSettings }
     private var fps by BooleanSetting(name = "FPS", default = true, description = "Sends your current FPS.").withDependency { showSettings }
     private var dt by BooleanSetting(name = "DT", default = true, description = "Sets a reminder for the end of the run.").withDependency { showSettings }
-    private var inv by BooleanSetting(name = "inv", default = true, description = "Invites the player to your party.").withDependency { showSettings }
     private val invite by BooleanSetting(name = "invite", default = true, description = "Invites the player to your party.").withDependency { showSettings }
     private val racism by BooleanSetting(name = "Racism", default = true, description = "Sends a random racism percentage.").withDependency { showSettings }
-    private val queDungeons by BooleanSetting(name = "Queue dungeons cmds", default = true, description = "Queue dungeons commands.").withDependency { showSettings }
-    private val queKuudra by BooleanSetting(name = "Queue kuudra cmds", default = true, description = "Queue kuudra commands.").withDependency { showSettings }
+    private val queInstance by BooleanSetting(name = "Queue instance cmds", default = true, description = "Queue dungeons commands.").withDependency { showSettings }
+    private val time by BooleanSetting(name = "Time", default = false, description = "Sends the current time.").withDependency { showSettings }
+    private var demote by BooleanSetting(name = "Demote", default = false, description = "Executes the /party demote command.").withDependency { showSettings }
+    private var promote by BooleanSetting(name = "Promote", default = false, description = "Executes the /party promote command.").withDependency { showSettings }
 
     private var dtPlayer: String? = null
     private val dtReason = mutableListOf<Pair<String, String>>()
     val blacklist: MutableList<String> by ListSetting("Blacklist", mutableListOf())
 
-    // https://regex101.com/r/cxWqYg/1
-    private val messageRegex = Regex("^(?:Party > (\\[.+])? ?(.{1,16}): ?(.+)\$|Guild > (\\[.+])? ?(.{1,16}?)(?= ?\\[| ?: ) ?(\\[.+])? ?: ?(.+)|From (\\[.+])? ?(.{1,16}): ?(.+)\$)")
+    // https://regex101.com/r/in8hej/6
+    private val messageRegex = Regex("^(?:Party > (\\[[^]]*?])? ?(\\w{1,16})(?: [ቾ⚒])?: ?(.+)\$|Guild > (\\[[^]]*?])? ?(\\w{1,16})(?: \\[([^]]*?)])?: ?(.+)\$|From (\\[[^]]*?])? ?(\\w{1,16}): ?(.+)\$)")
 
     init {
         onMessage(Regex(" {29}> EXTRA STATS <|^\\[NPC] Elle: Good job everyone. A hard fought battle come to an end. Let's get out of here before we run into any more trouble!$")) {
@@ -55,11 +58,6 @@ object ChatCommands : Module(
         }
 
         onMessage(messageRegex) {
-            val chatMessage = messageRegex.find(it) ?: return@onMessage
-            val (_, ign, message) = chatMessage.destructured
-
-            if (whitelistOnly != isInBlacklist(ign)) return@onMessage
-
             val channel = when(it.split(" ")[0]) {
                 "Party" -> if (!party) return@onMessage else ChatChannel.PARTY
                 "Guild" -> if (!guild) return@onMessage else ChatChannel.GUILD
@@ -67,24 +65,34 @@ object ChatCommands : Module(
                 else -> return@onMessage
             }
 
-            runIn(5) {
-                handleChatCommands(message, ign, channel)
+            val match = messageRegex.find(it) ?: return@onMessage
+            val ign = match.groups[2]?.value ?: match.groups[5]?.value ?: match.groups[9]?.value ?: return@onMessage
+            val msg = match.groups[3]?.value ?: match.groups[7]?.value ?: match.groups[10]?.value ?: return@onMessage
+
+            if (whitelistOnly != isInBlacklist(ign)) return@onMessage modMessage("§cPlayer is not in the list!")
+
+            runIn(8) {
+                handleChatCommands(msg, ign, channel)
             }
         }
     }
 
     private fun handleChatCommands(message: String, name: String, channel: ChatChannel) {
         val commandsMap = when (channel) {
-            ChatChannel.PARTY -> mapOf("coords" to coords, "odin" to odin, "boop" to boop, "cf" to cf, "8ball" to eightball, "dice" to dice, "racism" to racism, "tps" to tps, "warp" to warp, "warptransfer" to warptransfer, "allinvite" to allinvite, "pt" to pt, "dt" to dt, "m" to queDungeons, "f" to queDungeons)
-            ChatChannel.GUILD -> mapOf("coords" to coords, "odin" to odin, "boop" to boop, "cf" to cf, "8ball" to eightball, "dice" to dice, "racism" to racism, "ping" to ping, "tps" to tps)
-            ChatChannel.PRIVATE -> mapOf("coords" to coords, "odin" to odin, "boop" to boop, "cf" to cf, "8ball" to eightball, "dice" to dice, "racism" to racism, "ping" to ping, "tps" to tps, "inv" to inv, "invite" to invite)
+            ChatChannel.PARTY -> mapOf (
+                "coords" to coords, "odin" to odin, "boop" to boop, "cf" to cf, "8ball" to eightball, "dice" to dice, "racism" to racism, "tps" to tps, "warp" to warp,
+                "warptransfer" to warptransfer, "allinvite" to allinvite, "pt" to pt, "dt" to dt, "m?" to queInstance, "f?" to queInstance, "t?" to queInstance, "time" to time,
+                "demote" to demote, "promote" to promote
+            )
+            ChatChannel.GUILD -> mapOf ("coords" to coords, "odin" to odin, "boop" to boop, "cf" to cf, "8ball" to eightball, "dice" to dice, "racism" to racism, "ping" to ping, "tps" to tps, "time" to time)
+            ChatChannel.PRIVATE -> mapOf ("coords" to coords, "odin" to odin, "boop" to boop, "cf" to cf, "8ball" to eightball, "dice" to dice, "racism" to racism, "ping" to ping, "tps" to tps, "invite" to invite, "time" to time)
         }
 
         if (!message.startsWith("!")) return
-        when (message.split(" ")[0].drop(1)) {
-            "help" -> channelMessage("Commands: ${commandsMap.filterValues { it }.keys.joinToString(", ")}", name, channel)
-            "coords" -> if (coords) channelMessage(PlayerUtils.getPositionString(), name, channel)
-            "odin" -> if (odin) channelMessage("Odin! https://discord.gg/2nCbC9hkxT", name, channel)
+        when (message.split(" ")[0].drop(1).lowercase()) {
+            "help", "h" -> channelMessage("Commands: ${commandsMap.filterValues { it }.keys.joinToString(", ")}", name, channel)
+            "coords", "co" -> if (coords) channelMessage(PlayerUtils.getPositionString(), name, channel)
+            "odin", "od" -> if (odin) channelMessage("Odin! https://discord.gg/2nCbC9hkxT", name, channel)
             "boop" -> if (boop) sendChatMessage("/boop ${message.substringAfter("boop ")}")
             "cf" -> if (cf) channelMessage(flipCoin(), name, channel)
             "8ball" -> if (eightball) channelMessage(eightBall(), name, channel)
@@ -93,24 +101,19 @@ object ChatCommands : Module(
             "ping" -> if (ping) channelMessage("Current Ping: ${floor(ServerUtils.averagePing).toInt()}ms", name, channel)
             "tps" -> if (tps) channelMessage("Current TPS: ${ServerUtils.averageTps.floor()}", name, channel)
             "fps" -> if (fps) channelMessage("Current FPS: ${ServerUtils.fps}", name, channel)
+            "time" -> if (time) channelMessage("Current Time: ${ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss z"))}", name, channel)
 
             // Party cmds only
-
-            "warp" -> if (warp && channel == ChatChannel.PARTY) sendCommand("p warp")
-
-            "warptransfer" ->
-                if (warptransfer && channel == ChatChannel.PARTY) {
-                    sendCommand("p warp")
-                    runIn(12) {
-                        sendCommand("p transfer $name")
-                    }
+            "warp", "w" -> if (warp && channel == ChatChannel.PARTY) sendCommand("p warp")
+            "warptransfer", "wt" -> if (warptransfer && channel == ChatChannel.PARTY) {
+                sendCommand("p warp")
+                runIn(12) {
+                    sendCommand("p transfer $name")
                 }
-
-            "allinvite" -> if (allinvite && channel == ChatChannel.PARTY) sendCommand("p settings allinvite")
-
-            "pt" -> if (pt && channel == ChatChannel.PARTY) sendCommand("p transfer $name")
-
-            "dt" -> {
+            }
+            "allinvite", "allinv" -> if (allinvite && channel == ChatChannel.PARTY) sendCommand("p settings allinvite")
+            "pt", "ptme" -> if (pt && channel == ChatChannel.PARTY) sendCommand("p transfer $name")
+            "downtime", "dt" -> {
                 if (!dt || channel != ChatChannel.PARTY) return
                 var reason = "No reason given"
                 if (message.substringAfter("dt ") != message && !message.substringAfter("dt ").contains("!dt"))
@@ -121,35 +124,16 @@ object ChatCommands : Module(
                 dtPlayer = name
                 disableRequeue = true
             }
-
-            "m" -> {
-                if (!queDungeons || channel != ChatChannel.PARTY) return
-                val floor = message.substringAfter("m ")
-                if (message.substringAfter("m ") == message) return modMessage("§cPlease specify a floor.")
-                modMessage("§aEntering master mode floor: $floor")
-                sendCommand("od m$floor", true)
+            "f1", "f2", "f3", "f4", "f5", "f6", "f7", "m1", "m2", "m3", "m4", "m5", "m6", "m7", "t1", "t2", "t3", "t4", "t5" -> {
+                if (!queInstance || channel != ChatChannel.PARTY) return
+                modMessage("§aEntering -> ${message.substring(1).capitalizeFirst()}")
+                sendCommand("od ${message.substring(1)}", true)
             }
-
-            "f" -> {
-                if (!queDungeons || channel != ChatChannel.PARTY) return
-                val floor = message.substringAfter("f ")
-                if (message.substringAfter("f ") == message) return modMessage("§cPlease specify a floor.")
-                modMessage("§aEntering floor: $floor")
-                sendCommand("od f$floor", true)
-            }
-
-            "t" -> {
-                if (!queKuudra || channel != ChatChannel.PARTY) return
-                val tier = message.substringAfter("t ")
-                if (message.substringAfter("t ") == message) return modMessage("§cPlease specify a tier.")
-                modMessage("§aEntering kuudra run: $tier")
-                sendCommand("od t$tier", true)
-            }
+            "demote" -> if (demote && channel == ChatChannel.PARTY) sendCommand("p demote $name")
+            "promote" -> if (promote && channel == ChatChannel.PARTY) sendCommand("p promote $name")
 
             // Private cmds only
-
-            "inv" -> if (inv && channel == ChatChannel.PRIVATE) inviteCommand(name)
-            "invite" -> if (invite && channel == ChatChannel.PRIVATE) inviteCommand(name)
+            "invite", "inv" -> if (invite && channel == ChatChannel.PRIVATE) inviteCommand(name)
         }
     }
 
@@ -160,7 +144,7 @@ object ChatCommands : Module(
     }
 
     private fun dt() {
-        if (dtReason.isEmpty()) return
+        if (dtReason.isEmpty() || !dt) return
         runIn(30) {
             PlayerUtils.alert("§cPlayers need DT")
             partyMessage("Players need DT: ${dtReason.joinToString(separator = ", ") { (name, reason) -> "$name: $reason" }}")

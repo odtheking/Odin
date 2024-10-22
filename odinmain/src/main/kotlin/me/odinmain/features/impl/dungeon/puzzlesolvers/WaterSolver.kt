@@ -38,8 +38,7 @@ object WaterSolver {
     private var chestPosition: Vec2 = Vec2(0, 0)
     private var roomFacing: Rotations = Rotations.NONE
     private var variant = -1
-    private var extendedSlots = ""
-    private var solutions = mutableMapOf<LeverBlock, Array<Double>>()
+    private var solutions = ConcurrentHashMap<LeverBlock, Array<Double>>()
     private var openedWater = -1L
 
     fun scan() {
@@ -49,10 +48,12 @@ object WaterSolver {
     }
 
     private fun solve(room: Room) {
-        roomFacing = room.rotation
         chestPosition = room.vec2.addRotationCoords(roomFacing, -7)
+        roomFacing = room.rotation
 
-        val pistonHeadPosition = chestPosition.addRotationCoords(roomFacing, -5).let { BlockPos(it.x, 82, it.z) }
+        val extendedSlots = WoolColor.entries.joinToString("") { if (it.isExtended) it.ordinal.toString() else "" }.takeIf { it.length == 3 } ?: return
+
+        val pistonHeadPosition = chestPosition.addRotationCoords(roomFacing, -5)
         val foundBlocks = mutableListOf(false, false, false, false, false)
         BlockPos.getAllInBox(BlockPos(pistonHeadPosition.x + 1, 78, pistonHeadPosition.z + 1), BlockPos(pistonHeadPosition.x - 1, 77, pistonHeadPosition.z - 1)).forEach {
             when (getBlockAt(it)) {
@@ -72,64 +73,45 @@ object WaterSolver {
             else -> -1
         }
 
-        extendedSlots = ""
-        WoolColor.entries.filter { it.isExtended }.forEach { extendedSlots += it.ordinal.toString() }
-
-        // If the extendedSlots length is not 3, then retry.
-        if (extendedSlots.length != 3) {
-            extendedSlots = ""
-            variant = -1
-            return
-        }
-
-        // Print the variant and extendedSlots.
         modMessage("Variant: $variant:$extendedSlots:${roomFacing.name}")
 
-        // Clear the solutions and add the new solutions.
         solutions.clear()
-        val solutionObj = waterSolutions[variant.toString()].asJsonObject[extendedSlots].asJsonObject
-        for (mutableEntry in solutionObj.entrySet()) {
+        waterSolutions[variant.toString()].asJsonObject[extendedSlots].asJsonObject.entrySet().forEach {
             solutions[
-                when (mutableEntry.key) {
-                    "minecraft:quartz_block" -> LeverBlock.QUARTZ
-                    "minecraft:gold_block" -> LeverBlock.GOLD
-                    "minecraft:coal_block" -> LeverBlock.COAL
-                    "minecraft:diamond_block" -> LeverBlock.DIAMOND
-                    "minecraft:emerald_block" -> LeverBlock.EMERALD
-                    "minecraft:hardened_clay" -> LeverBlock.CLAY
-                    "minecraft:water" -> LeverBlock.WATER
+                when (it.key) {
+                    "quartz_block" -> LeverBlock.QUARTZ
+                    "gold_block" -> LeverBlock.GOLD
+                    "coal_block" -> LeverBlock.COAL
+                    "diamond_block" -> LeverBlock.DIAMOND
+                    "emerald_block" -> LeverBlock.EMERALD
+                    "hardened_clay" -> LeverBlock.CLAY
+                    "water" -> LeverBlock.WATER
                     else -> LeverBlock.NONE
                 }
-            ] = mutableEntry.value.asJsonArray.map { it.asDouble }.toTypedArray()
+            ] = it.value.asJsonArray.map { it.asDouble }.toTypedArray()
         }
     }
 
     fun waterRender() {
         if (DungeonUtils.currentRoomName != "Water Board" || variant == -1) return
 
-        val solutions = ConcurrentHashMap(solutions)
-
         val solutionList = solutions
             .flatMap { (lever, times) -> times.drop(lever.i).map { Pair(lever, it) } }
             .sortedBy { (lever, time) -> time + if (lever == LeverBlock.WATER) 0.01 else 0.0 }
 
-        val sortedSolutions = mutableListOf<Double>().apply {
-            solutions.forEach { (lever, times) ->
-                times.drop(lever.i).filter { it != 0.0 }.forEach { time ->
-                    add(time)
-                }
-            }
-        }.sortedBy { it }
+        val sortedSolutions = solutions.flatMap { (lever, times) ->
+            times.drop(lever.i).filter { it != 0.0 }
+        }.sorted()
 
         val first = solutionList.firstOrNull() ?: return
 
-        if (PuzzleSolvers.showTracer) Renderer.draw3DLine(mc.thePlayer.renderVec, Vec3(first.first.leverPos).addVector(.5, .5, .5), color = PuzzleSolvers.tracerColorFirst, depth = true)
+        if (PuzzleSolvers.showTracer) Renderer.draw3DLine(listOf(mc.thePlayer.renderVec, Vec3(first.first.leverPos).addVector(.5, .5, .5)), color = PuzzleSolvers.tracerColorFirst, depth = true)
 
         if (solutionList.size > 1 && PuzzleSolvers.showTracer) {
             if (first.first.leverPos != solutionList[1].first.leverPos) {
                 Renderer.draw3DLine(
-                    Vec3(solutionList.first().first.leverPos).addVector(0.5, 0.5, 0.5),
-                    Vec3(solutionList[1].first.leverPos).addVector(0.5, 0.5, 0.5),
+                    listOf(Vec3(solutionList.first().first.leverPos).addVector(0.5, 0.5, 0.5),
+                    Vec3(solutionList[1].first.leverPos).addVector(0.5, 0.5, 0.5)),
                     color = PuzzleSolvers.tracerColorSecond,
                     lineWidth = 1.5f,
                     depth = true
@@ -153,7 +135,7 @@ object WaterSolver {
                     else "§e${time}s"
                 } else {
                     val remainingTime = openedWater + time * 1000L - System.currentTimeMillis()
-                    if (remainingTime > 0) "§e${String.format(Locale.US, "%.2f",remainingTime / 1000)}s"
+                    if (remainingTime > 0) "§e${String.format(Locale.US, "%.2f", remainingTime / 1000)}s"
                     else "§a§lCLICK ME!"
                 }
 
@@ -175,7 +157,6 @@ object WaterSolver {
         chestPosition = Vec2(0, 0)
         roomFacing = Rotations.NONE
         variant = -1
-        extendedSlots = ""
         solutions.clear()
         openedWater = -1
         LeverBlock.entries.forEach { it.i = 0 }
@@ -185,7 +166,7 @@ object WaterSolver {
         PURPLE, ORANGE, BLUE, GREEN, RED;
 
         val isExtended: Boolean
-            get() = chestPosition.addRotationCoords(roomFacing, 3 + ordinal).let { getBlockAt(it.x, 56, it.z ) == Blocks.wool }
+            get() = chestPosition.addRotationCoords(roomFacing, 3 + ordinal).let { getBlockAt(BlockPos(it.x, 56, it.z)) == Blocks.wool }
     }
 
     enum class LeverBlock(var i: Int = 0) {

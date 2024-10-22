@@ -6,12 +6,14 @@ import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
+import me.odinmain.utils.positionVector
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.runIn
 import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.toAABB
+import me.odinmain.utils.toBlockPos
 import net.minecraft.util.BlockPos
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -63,7 +65,11 @@ object SecretClicked : Module(
 
     @SubscribeEvent
     fun onSecret(event: SecretPickupEvent) {
-        if (event is SecretPickupEvent.Interact) secretBox(event.blockPos)
+        when (event) {
+            is SecretPickupEvent.Interact -> secretBox(event.blockPos)
+            is SecretPickupEvent.Bat -> secretBox(event.packet.positionVector.toBlockPos())
+            is SecretPickupEvent.Item -> secretBox(event.entity.positionVector.toBlockPos())
+        }
         secretChime()
     }
 
@@ -82,8 +88,6 @@ object SecretClicked : Module(
     init {
         onWorldLoad { clickedSecretsList.clear() }
 
-        onMessage("That chest is locked!", true) {
-            clickedSecretsList.lastOrNull()?.apply { locked = true }
-        }
+        onMessage("That chest is locked!", true) { clickedSecretsList.lastOrNull()?.locked = true }
     }
 }

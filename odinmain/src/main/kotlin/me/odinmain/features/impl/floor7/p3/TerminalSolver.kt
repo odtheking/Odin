@@ -40,58 +40,62 @@ object TerminalSolver : Module(
     val customGuiText by SelectorSetting("Custom Gui Title", "Top Left", arrayListOf("Top Left", "Middle", "Disabled"), description = "Where the custom gui text should be rendered.").withDependency { renderType == 3 }
     val customScale by NumberSetting("Custom Scale", 1f, .8f, 2.5f, .1f, description = "Size of the Custom Terminal Gui.").withDependency { renderType == 3 }
     val textShadow by BooleanSetting("Text Shadow", true, description = "Adds a shadow to the text.")
-    val renderOrderNumbers by BooleanSetting("Render Order Numbers", false, description = "Renders all numbers in the order terminal.")
     private val lockRubixSolution by BooleanSetting("Lock Rubix Solution", true, description = "Locks the 'correct' color of the rubix terminal to the one that was scanned first, should make the solver less 'jumpy'.")
     private val cancelToolTip by BooleanSetting("Stop Tooltips", true, description = "Stops rendering tooltips in terminals.")
     private val blockIncorrectClicks by BooleanSetting("Block Incorrect Clicks", true, description = "Blocks incorrect clicks in terminals.")
     private val cancelMelodySolver by BooleanSetting("Stop Melody Solver", false, description = "Stops rendering the melody solver.")
 
-    private val showRemoveWrongSettings by DropdownSetting("Render Wrong Settings").withDependency { renderType.equalsOneOf(1,2) }
-    private val removeWrong by BooleanSetting("Stop Rendering Wrong", true, description = "Main toggle for stopping the rendering of incorrect items in terminals.").withDependency { renderType.equalsOneOf(1,2) && showRemoveWrongSettings }
-    private val removeWrongPanes by BooleanSetting("Stop Panes", true, description = "Stops rendering wrong panes in the panes terminal.").withDependency { renderType.equalsOneOf(1,2) && showRemoveWrongSettings && removeWrong }
-    private val removeWrongRubix by BooleanSetting("Stop Rubix", true, description = "Stops rendering wrong colors in the rubix terminal.").withDependency { renderType.equalsOneOf(1,2) && showRemoveWrongSettings && removeWrong }
-    private val removeWrongStartsWith by BooleanSetting("Stop Starts With", true, description = "Stops rendering wrong items in the starts with terminal.").withDependency { renderType.equalsOneOf(1,2) && showRemoveWrongSettings && removeWrong }
-    private val removeWrongSelect by BooleanSetting("Stop Select", true, description = "Stops rendering wrong items in the select terminal.").withDependency { renderType.equalsOneOf(1,2) && showRemoveWrongSettings && removeWrong }
-    private val removeWrongMelody by BooleanSetting("Stop Melody", true, description = "Stops rendering wrong items in the melody terminal.").withDependency { renderType.equalsOneOf(1,2) && showRemoveWrongSettings && removeWrong }
+    private val showRemoveWrongSettings by DropdownSetting("Render Wrong Settings").withDependency { renderType == 1 }
+    private val removeWrong by BooleanSetting("Stop Rendering Wrong", true, description = "Main toggle for stopping the rendering of incorrect items in terminals.").withDependency { renderType == 1 && showRemoveWrongSettings }
+    private val removeWrongPanes by BooleanSetting("Stop Panes", true, description = "Stops rendering wrong panes in the panes terminal.").withDependency { renderType == 1 && showRemoveWrongSettings && removeWrong }
+    private val removeWrongRubix by BooleanSetting("Stop Rubix", true, description = "Stops rendering wrong colors in the rubix terminal.").withDependency { renderType == 1 && showRemoveWrongSettings && removeWrong }
+    private val removeWrongStartsWith by BooleanSetting("Stop Starts With", true, description = "Stops rendering wrong items in the starts with terminal.").withDependency { renderType == 1 && showRemoveWrongSettings && removeWrong }
+    private val removeWrongSelect by BooleanSetting("Stop Select", true, description = "Stops rendering wrong items in the select terminal.").withDependency { renderType == 1 && showRemoveWrongSettings && removeWrong }
+    private val removeWrongMelody by BooleanSetting("Stop Melody", true, description = "Stops rendering wrong items in the melody terminal.").withDependency { renderType == 1 && showRemoveWrongSettings && removeWrong }
+
+    val gap: Int by NumberSetting("Gap", 10, 0, 20, 1, false, "Gap between items for the custom gui.").withDependency { renderType == 3 }
+    val textScale: Int by NumberSetting("Text Scale", 1, 1, 3, increment = 1, description = "Scale of the text in the custom gui.").withDependency { renderType == 3 }
 
     private val showColors by DropdownSetting("Color Settings")
     private val backgroundColor by ColorSetting("Background Color", Color(45, 45, 45), true, description = "Background color of the terminal solver.").withDependency { renderType == 0 && showColors }
+
     val customGuiColor by ColorSetting("Custom Gui Color", ColorUtil.moduleButtonColor.withAlpha(.8f), true, description = "Color of the custom gui.").withDependency { renderType == 3 && showColors }
-    val gap: Int by NumberSetting("Gap", 10, 0, 20, 1, false, "Gap between items for the custom gui.").withDependency { renderType == 3 }
-    val textScale: Int by NumberSetting("Text Scale", 1, 1, 3, increment = 1, description = "Scale of the text in the custom gui.").withDependency { renderType == 3 }
     val textColor by ColorSetting("Text Color", Color(220, 220, 220), true, description = "Text color of the terminal solver.").withDependency { showColors }
     val panesColor by ColorSetting("Panes Color", Color(0, 170, 170), true, description = "Color of the panes terminal solver.").withDependency { showColors }
+
     val rubixColor1 by ColorSetting("Rubix Color 1", Color(0, 170, 170), true, description = "Color of the rubix terminal solver for 1 click.").withDependency { showColors }
     val rubixColor2 by ColorSetting("Rubix Color 2", Color(0, 100, 100), true, description = "Color of the rubix terminal solver for 2 click.").withDependency { showColors }
     val oppositeRubixColor1 by ColorSetting("Rubix Color -1", Color(170, 85, 0), true, description = "Color of the rubix terminal solver for -1 click.").withDependency { showColors }
     val oppositeRubixColor2 by ColorSetting("Rubix Color -2", Color(210, 85, 0), true, description = "Color of the rubix terminal solver for -2 click.").withDependency { showColors }
+
     val orderColor by ColorSetting("Order Color 1", Color(0, 170, 170, 1f), true, description = "Color of the order terminal solver for 1st item.").withDependency { showColors }
     val orderColor2 by ColorSetting("Order Color 2", Color(0, 100, 100, 1f), true, description = "Color of the order terminal solver for 2nd item.").withDependency { showColors }
     val orderColor3 by ColorSetting("Order Color 3", Color(0, 65, 65, 1f), true, description = "Color of the order terminal solver for 3rd item.").withDependency { showColors }
+
     val startsWithColor by ColorSetting("Starts With Color", Color(0, 170, 170), true, description = "Color of the starts with terminal solver.").withDependency { showColors }
+
     val selectColor by ColorSetting("Select Color", Color(0, 170, 170), true, description = "Color of the select terminal solver.").withDependency { showColors }
-    val melodyColumColor by ColorSetting("Melody Column Color", Color.PURPLE.withAlpha(0.75f), true, description = "Color of the colum indicator for melody.").withDependency { showColors }
-    val melodyRowColor by ColorSetting("Melody Row Color", Color.GREEN.withAlpha(0.75f), true, description = "Color of the row indicator for melody.").withDependency { showColors }
-    val melodyPressColumColor by ColorSetting("Melody Press Column Color", Color.YELLOW.withAlpha(0.75f), true, description = "Color of the location for pressing for melody.").withDependency { showColors }
-    val melodyPressColor by ColorSetting("Melody Press Color", Color.CYAN.withAlpha(0.75f), true, description = "Color of the location for pressing for melody.").withDependency { showColors }
-    val melodyCorrectRowColor by ColorSetting("Melody Correct Row Color", Color.WHITE.withAlpha(0.75f), true, description = "Color of the whole row for melody.").withDependency { showColors }
+
+    val melodyColumColor by ColorSetting("Melody Column Color", Color.PURPLE.withAlpha(0.75f), true, description = "Color of the colum indicator for melody.").withDependency { showColors && !cancelMelodySolver }
+    val melodyRowColor by ColorSetting("Melody Row Color", Color.GREEN.withAlpha(0.75f), true, description = "Color of the row indicator for melody.").withDependency { showColors && !cancelMelodySolver }
+    val melodyPressColumColor by ColorSetting("Melody Press Column Color", Color.YELLOW.withAlpha(0.75f), true, description = "Color of the location for pressing for melody.").withDependency { showColors && !cancelMelodySolver }
+    val melodyPressColor by ColorSetting("Melody Press Color", Color.CYAN.withAlpha(0.75f), true, description = "Color of the location for pressing for melody.").withDependency { showColors && !cancelMelodySolver }
+    val melodyCorrectRowColor by ColorSetting("Melody Correct Row Color", Color.WHITE.withAlpha(0.75f), true, description = "Color of the whole row for melody.").withDependency { showColors && !cancelMelodySolver }
 
     private val zLevel get() = if (renderType == 1 && currentTerm.equalsOneOf(TerminalTypes.STARTS_WITH, TerminalTypes.SELECT)) 100f else 400f
 
-    data class Terminal(var type: TerminalTypes, var solution: List<Int>, var items: MutableList<ItemStack>)
+    data class Terminal(var type: TerminalTypes, var solution: List<Int>, var items: MutableList<ItemStack>, var timeOpened: Long = 0L)
     var currentTerm = Terminal(TerminalTypes.NONE, listOf(), mutableListOf())
     private var lastRubixSolution: Int? = null
     private var lastTermOpened = TerminalTypes.NONE
-    var openedTerminalTime = 0L
 
     @SubscribeEvent
     fun onGuiLoad(event: GuiEvent.GuiLoadedEvent) {
         val newTerm = TerminalTypes.entries.find { event.name.startsWith(it.guiName) } ?: TerminalTypes.NONE
         val items = event.gui.inventory.subList(0, event.gui.inventory.size - 37)
         if (newTerm != currentTerm.type) {
-            currentTerm = Terminal(newTerm, listOf(), items)
+            currentTerm = Terminal(newTerm, listOf(), items, System.currentTimeMillis())
             lastTermOpened = currentTerm.type
-            openedTerminalTime = System.currentTimeMillis()
             lastRubixSolution = null
         }
         if (currentTerm.type == TerminalTypes.NONE) return leftTerm()
@@ -128,7 +132,8 @@ object TerminalSolver : Module(
     }
 
     private fun getShouldBlockWrong(): Boolean {
-        if (!removeWrong) return false
+        if (renderType.equalsOneOf(0, 3)) return true
+        if (!removeWrong || renderType == 2) return false
         return when (currentTerm.type) {
             TerminalTypes.PANES -> removeWrongPanes
             TerminalTypes.RUBIX -> removeWrongRubix
@@ -142,9 +147,9 @@ object TerminalSolver : Module(
 
     @SubscribeEvent
     fun drawSlot(event: GuiEvent.DrawSlotEvent) {
-        if (currentTerm.type == TerminalTypes.MELODY && cancelMelodySolver) return
-        if ((removeWrong || renderType == 0) && enabled && getShouldBlockWrong() && event.slot.slotIndex <= event.container.inventorySlots.size - 37 && event.slot.slotIndex !in currentTerm.solution && event.slot.inventory !is InventoryPlayer) event.isCanceled = true
-        if (event.slot.slotIndex !in currentTerm.solution || event.slot.slotIndex > event.container.inventorySlots.size - 37 || !enabled || renderType == 3 || event.slot.inventory is InventoryPlayer) return
+        if (currentTerm.type == TerminalTypes.NONE || (currentTerm.type == TerminalTypes.MELODY && cancelMelodySolver) || renderType == 3) return
+        if (event.slot.slotIndex !in currentTerm.solution && event.slot.slotIndex <= event.container.inventorySlots.size - 37 && enabled && getShouldBlockWrong() && event.slot.inventory !is InventoryPlayer) event.isCanceled = true
+        if (event.slot.slotIndex !in currentTerm.solution || event.slot.slotIndex > event.container.inventorySlots.size - 37 || !enabled || event.slot.inventory is InventoryPlayer) return
 
         translate(0f, 0f, zLevel)
         GlStateManager.disableLighting()
@@ -176,10 +181,8 @@ object TerminalSolver : Module(
                     Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, color)
                     event.isCanceled = true
                 }
-                if (renderOrderNumbers) {
-                    val amount = event.slot.stack?.stackSize ?: 0
-                    mcText(amount.toString(), event.x + 8.5f - getMCTextWidth(amount.toString()) / 2, event.y + 4.5f, 1, textColor, shadow = textShadow, false)
-                }
+                val amount = event.slot.stack?.stackSize ?: 0
+                mcText(amount.toString(), event.x + 8.5f - getMCTextWidth(amount.toString()) / 2, event.y + 4.5f, 1, textColor, shadow = textShadow, false)
             }
             TerminalTypes.STARTS_WITH ->
                 if (renderType != 1 || (renderType == 1 && !removeWrong)) Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, startsWithColor.rgba)
@@ -249,8 +252,9 @@ object TerminalSolver : Module(
 
         onPacket(S2FPacketSetSlot::class.java, { currentTerm.type == TerminalTypes.MELODY }) { packet ->
             packet.func_149174_e()?.let {
-                if (packet.func_149173_d() !in 0..53) return@onPacket
-                currentTerm.items[packet.func_149173_d()] = it
+                val index = packet.func_149173_d()
+                if (index !in 0 until currentTerm.items.size) return@onPacket
+                currentTerm.items[index] = it
                 currentTerm.solution = solveMelody(currentTerm.items)
             }
         }
@@ -264,11 +268,11 @@ object TerminalSolver : Module(
     }
 
     private fun solvePanes(items: List<ItemStack?>): List<Int> =
-        items.filter { it?.metadata == 14 }.map { items.indexOf(it) }
+        items.mapIndexedNotNull { index, item -> if (item?.metadata == 14) index else null }
 
     private val colorOrder = listOf(1, 4, 13, 11, 14)
     private fun solveColor(items: List<ItemStack?>): List<Int> {
-        val panes = items.filter { it?.metadata != 15 && Item.getIdFromItem(it?.item) == 160 }.filterNotNull()
+        val panes = items.mapNotNull { item -> if (item?.metadata != 15 && Item.getIdFromItem(item?.item) == 160) item else null }
         var temp = List(100) { i -> i }
         if (lastRubixSolution != null && lockRubixSolution) {
             temp = panes.flatMap { pane ->
@@ -304,21 +308,23 @@ object TerminalSolver : Module(
     private fun dist(pane: Int, most: Int): Int =
         if (pane > most) (most + colorOrder.size) - pane else most - pane
 
-    private fun solveNumbers(items: List<ItemStack?>): List<Int> =
-        items.filter { it?.metadata == 14 && Item.getIdFromItem(it.item) == 160 }.filterNotNull().sortedBy { it.stackSize }.map { items.indexOf(it) }
-
+    private fun solveNumbers(items: List<ItemStack?>): List<Int> {
+        return items.mapIndexedNotNull { index, item ->
+            if (item?.metadata == 14 && Item.getIdFromItem(item.item) == 160) index else null
+        }.sortedBy { items[it]?.stackSize }
+    }
 
     private fun solveStartsWith(items: List<ItemStack?>, letter: String): List<Int> =
-        items.filter { it?.unformattedName?.startsWith(letter, true) == true && !it.isItemEnchanted }.map { items.indexOf(it) }
-
+        items.mapIndexedNotNull { index, item -> if (item?.unformattedName?.startsWith(letter, true) == true && !item.isItemEnchanted) index else null }
 
     private fun solveSelect(items: List<ItemStack?>, color: String): List<Int> {
-        return items.filter {
-            it?.isItemEnchanted == false &&
-            it.unlocalizedName?.contains(color, true) == true &&
-            (color == "lightblue" || it.unlocalizedName?.contains("lightBlue", true) == false) && // color BLUE should not accept light blue items.
-            Item.getIdFromItem(it.item) != 160
-        }.map { items.indexOf(it) }
+        return items.mapIndexedNotNull { index, item ->
+            if (item?.isItemEnchanted == false &&
+                item.unlocalizedName?.contains(color, true) == true &&
+                (color == "lightblue" || item.unlocalizedName?.contains("lightBlue", true) == false) && // color BLUE should not accept light blue items.
+                Item.getIdFromItem(item.item) != 160
+            ) index else null
+        }
     }
 
     private fun solveMelody(items: List<ItemStack?>): List<Int> {

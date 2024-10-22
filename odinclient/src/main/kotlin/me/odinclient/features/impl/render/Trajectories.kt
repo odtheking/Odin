@@ -14,6 +14,7 @@ import me.odinmain.utils.render.RenderUtils.renderY
 import me.odinmain.utils.render.RenderUtils.renderZ
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.isHolding
+import me.odinmain.utils.skyblock.isLeap
 import me.odinmain.utils.skyblock.isShortbow
 import net.minecraft.entity.Entity
 import net.minecraft.entity.boss.EntityWither
@@ -79,18 +80,18 @@ object Trajectories : Module(
                 drawPlaneCollision(pair3.second)
             }
             if (lines) {
-                drawLine(pair1.first)
-                drawLine(pair2.first)
-                drawLine(pair3.first)
+                Renderer.draw3DLine(pair1.first, color = color, lineWidth = width, depth = true)
+                Renderer.draw3DLine(pair2.first, color = color, lineWidth = width, depth = true)
+                Renderer.draw3DLine(pair3.first, color = color, lineWidth = width, depth = true)
             }
         }
         if (pearls) {
             pearlImpactPos = null
             val itemStack = mc.thePlayer?.heldItem ?: return
-            if (itemStack.item is ItemEnderPearl && !itemStack.displayName.contains("leap", ignoreCase = true)) {
+            if (itemStack.item is ItemEnderPearl && !itemStack.isLeap) {
                 val pair = setPearlTrajectoryHeading()
                 if (boxes) drawPearlCollisionBox()
-                if (lines) drawLine(pair.first)
+                if (lines) Renderer.draw3DLine(pair.first, color = color, lineWidth = width, depth = true)
                 if (plane) drawPlaneCollision(pair.second)
             }
         }
@@ -144,10 +145,7 @@ object Trajectories : Module(
     }
 
     private fun setBowTrajectoryHeading(yawOffset: Float, bowCharge: Boolean): Pair<ArrayList<Vec3>, MovingObjectPosition?> {
-        var charge = if (bowCharge) {
-            val calculatedCharge = (72000 - mc.thePlayer.itemInUseCount) / 20f
-            minOf(calculatedCharge, 1.0f) * 2
-        } else 2f
+        var charge = if (bowCharge) minOf((72000 - mc.thePlayer.itemInUseCount) / 20f, 1.0f) * 2 else 2f
 
         val yawRadians = Math.toRadians((mc.thePlayer.rotationYaw + yawOffset).toDouble())
         val pitchRadians = Math.toRadians(mc.thePlayer.rotationPitch.toDouble())
@@ -182,7 +180,7 @@ object Trajectories : Module(
                 .offset(posVec.xCoord, posVec.yCoord, posVec.zCoord)
                 .addCoord(motionVec.xCoord, motionVec.yCoord, motionVec.zCoord)
                 .expand(0.01, 0.01, 0.01)
-            val entityHit = mc.theWorld?.getEntitiesWithinAABBExcludingEntity(mc.thePlayer, aabb)?.filter { it !is EntityArrow && it !is EntityArmorStand } ?: emptyList()
+            val entityHit = mc.theWorld?.getEntitiesWithinAABBExcludingEntity(mc.thePlayer, aabb)?.filter { it !is EntityArrow && it !is EntityArmorStand }.orEmpty()
             if (entityHit.isNotEmpty()) {
                 hitResult = true
                 entityRenderQueue.addAll(entityHit)
@@ -226,10 +224,6 @@ object Trajectories : Module(
             else -> return
         }
         RenderUtils.drawFilledAABB(AxisAlignedBB(vec1.xCoord, vec1.yCoord, vec1.zCoord, vec2.xCoord, vec2.yCoord, vec2.zCoord), color.withAlpha(color.alpha / 2, true), false)
-    }
-
-    private fun drawLine(lines: ArrayList<Vec3>) {
-        Renderer.draw3DLine(*lines.toTypedArray(), color = color, lineWidth = width, depth = true)
     }
 
     private fun drawPearlCollisionBox() {

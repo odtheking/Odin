@@ -26,21 +26,11 @@ object TerminalTimes : Module(
     private val useRealTime by BooleanSetting("Use Real Time", default = true, description = "Use real time rather than server ticks.")
 
     private val termPBs = PersonalBest("Terminals", 7)
-    private var startTimer = 0L
-    private var type = TerminalTypes.NONE
-
-    @SubscribeEvent
-    fun onTerminalOpen(event: TerminalOpenedEvent) {
-        if (event.type == type || mc.currentScreen is TermSimGui) return
-        type = event.type
-        startTimer = System.currentTimeMillis()
-    }
 
     @SubscribeEvent
     fun onTerminalClose(event: TerminalSolvedEvent) {
-        if (type == TerminalTypes.NONE || mc.currentScreen is TermSimGui || event.playerName != mc.thePlayer?.name) return
-        termPBs.time(event.type.ordinal, (System.currentTimeMillis() - startTimer) / 1000.0, "s§7!", "§a${event.type.guiName} §7solved in §6", addPBString = true, addOldPBString = true, sendOnlyPB = sendMessage)
-        type = TerminalTypes.NONE
+        if (event.type == TerminalTypes.NONE || mc.currentScreen is TermSimGui || event.playerName != mc.thePlayer?.name) return
+        termPBs.time(event.type.ordinal, (System.currentTimeMillis() - TerminalSolver.currentTerm.timeOpened) / 1000.0, "s§7!", "§a${event.type.guiName} §7solved in §6", addPBString = true, addOldPBString = true, sendOnlyPB = sendMessage)
     }
 
     private val terminalCompleteRegex = Regex("(.{1,16}) (activated|completed) a (terminal|lever|device)! \\((\\d)/(\\d)\\)")
@@ -59,8 +49,7 @@ object TerminalTimes : Module(
 
     init {
         onMessage("The gate has been destroyed!", false, { enabled && terminalSplits }) {
-            if (completed.first == completed.second) resetSection()
-            else gateBlown = true
+            if (completed.first == completed.second) resetSection() else gateBlown = true
         }
 
         onMessage("[BOSS] Goldor: Who dares trespass into my domain?", false, { enabled && terminalSplits }) {
@@ -69,7 +58,7 @@ object TerminalTimes : Module(
 
         onMessage(terminalCompleteRegex, { enabled && terminalSplits }) {
             val (name, activated, type, current, total) = terminalCompleteRegex.find(it)?.destructured ?: return@onMessage
-            modMessage("§6$name §a$activated a $type! (§c${current}§a/${total}) §8(§7${sectionTimer.seconds}s §8| §7${phaseTimer.seconds}s§8)", false)
+            modMessage("§6$name §a$activated a $type! (§c${current}§a/${total}) §8(§7${sectionTimer.seconds}s §8| §7${phaseTimer.seconds}s§8)", "")
             if ((current == total && gateBlown) || (current.toIntOrNull() ?: return@onMessage) < completed.first) resetSection()
             else completed = Pair(current.toIntOrNull() ?: return@onMessage, total.toIntOrNull() ?: return@onMessage)
         }

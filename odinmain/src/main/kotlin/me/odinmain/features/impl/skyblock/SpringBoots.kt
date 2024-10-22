@@ -28,12 +28,12 @@ object SpringBoots : Module(
 ) {
     private val hud by HudSetting("Display", 10f, 10f, 1f, true) {
         if (it) {
-            mcText("Jump: 6.5", 2f, 5f, 1, Color.WHITE)
+            mcText("Jump: 6.5", 1f, 1f, 1, Color.WHITE)
             getTextWidth("Jump: 6.5", 12f) to 12f
         } else {
             val blockAmount = blocksList.getSafe(pitchCounts.sum())
             if (blockAmount == 0.0) return@HudSetting 0f to 0f
-            mcText("Jump: ${blockAmount ?: "61 (MAX)"}", 2f, 5f, 1, Color.WHITE)
+            mcText("Jump: ${blockAmount ?: "61 (MAX)"}", 1f, 1f, 1, Color.WHITE)
             getTextWidth("Jump: ${blockAmount ?: "61 (MAX)"}", 12f) to 12f
         }
     }

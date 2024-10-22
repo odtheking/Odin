@@ -59,20 +59,20 @@ object BeamsSolver {
         currentLanternPairs.entries.forEach { positions ->
             val color = positions.value.second
 
-            Renderer.drawBox(positions.key.toAABB(), color, depth = PuzzleSolvers.beamsDepth, outlineAlpha = if (PuzzleSolvers.beamStyle == 0) 0 else color.alpha, fillAlpha = if (PuzzleSolvers.beamStyle == 1) 0 else beamsAlpha)
-            Renderer.drawBox(positions.value.first.toAABB(), color, depth = PuzzleSolvers.beamsDepth, outlineAlpha = if (PuzzleSolvers.beamStyle == 0) 0 else color.alpha, fillAlpha = if (PuzzleSolvers.beamStyle == 1) 0 else beamsAlpha)
+            Renderer.drawBox(positions.key.toAABB(), color, depth = false, outlineAlpha = if (PuzzleSolvers.beamStyle == 0) 0 else color.alpha, fillAlpha = if (PuzzleSolvers.beamStyle == 1) 0 else beamsAlpha)
+            Renderer.drawBox(positions.value.first.toAABB(), color, depth = false, outlineAlpha = if (PuzzleSolvers.beamStyle == 0) 0 else color.alpha, fillAlpha = if (PuzzleSolvers.beamStyle == 1) 0 else beamsAlpha)
 
             if (PuzzleSolvers.beamsTracer)
-                Renderer.draw3DLine(positions.key.toVec3().addVec(0.5, 0.5, 0.5), positions.value.first.toVec3().addVec(0.5, 0.5, 0.5), color = color.withAlpha(beamsAlpha), depth = PuzzleSolvers.beamsDepth, lineWidth = 1f)
+                Renderer.draw3DLine(listOf(positions.key.toVec3().addVec(0.5, 0.5, 0.5), positions.value.first.toVec3().addVec(0.5, 0.5, 0.5)), color = color.withAlpha(beamsAlpha), depth = false, lineWidth = 2f)
         }
     }
 
     fun onBlockChange(event: BlockChangeEvent) {
-        currentLanternPairs.entries.filter {
-            event.pos.equalsOneOf(it.key, it.value.first) &&
-            event.update.block != Blocks.sea_lantern &&
-            event.old.block == Blocks.sea_lantern
-        }.forEach { currentLanternPairs.remove(it.key) }
+        currentLanternPairs.forEach { (key, value) ->
+            if (event.pos.equalsOneOf(key, value.first) &&
+                event.update.block != Blocks.sea_lantern &&
+                event.old.block == Blocks.sea_lantern) currentLanternPairs.remove(key)
+        }
     }
 
     fun reset() {

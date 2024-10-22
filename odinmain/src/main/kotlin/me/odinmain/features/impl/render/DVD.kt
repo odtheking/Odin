@@ -36,7 +36,7 @@ object DVD : Module(
     
     private var x = Display.getWidth() / 2
     private var y = Display.getHeight() / 2
-    var color = Color.WHITE
+    private var color = Color.WHITE
 
     private fun getDVDColor() {
         val hue = (Math.random() * 360).toFloat()

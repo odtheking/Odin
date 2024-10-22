@@ -56,7 +56,7 @@ object ChocolateFactory : Module(
             if (clickFactory) windowClick(13, PlayerUtils.ClickType.Right)
             
             if (!claimStray) return@execute
-            val found = (mc.thePlayer?.openContainer as? ContainerChest)?.inventorySlots?.find { it.stack.displayName.contains("CLICK ME!") } ?: return@execute
+            val found = (mc.thePlayer?.openContainer as? ContainerChest)?.inventorySlots?.find { it.stack?.displayName?.contains("CLICK ME!") == true } ?: return@execute
             windowClick(found.slotNumber, PlayerUtils.ClickType.Left)
         }
 
@@ -65,7 +65,7 @@ object ChocolateFactory : Module(
             if (container.name != "Chocolate Factory") return@execute
             val choco = container.getSlot(13)?.stack ?: return@execute
 
-            chocolate = choco.displayName.noControlCodes.replace(Regex("\\D"), "").toLongOrNull() ?: 0L
+            chocolate = choco.unformattedName.replace(Regex("\\D"), "").toLongOrNull() ?: 0L
 
             findWorker(container)
             if (!found) return@execute
@@ -76,7 +76,7 @@ object ChocolateFactory : Module(
         }
 
         execute(delay = { 3000 }) {
-            if(!eggEsp) currentDetectedEggs = arrayOfNulls(3)
+            if (!eggEsp) currentDetectedEggs = arrayOfNulls(3)
             if (eggEsp && possibleLocations.contains(LocationUtils.currentArea) && currentDetectedEggs.filterNotNull().size < 3) scanForEggs()
         }
 
@@ -147,7 +147,8 @@ object ChocolateFactory : Module(
     }
 
     private fun scanForEggs() {
-        mc.theWorld?.loadedEntityList?.filterIsInstance<EntityArmorStand>()?.forEach { entity ->
+        mc.theWorld?.loadedEntityList?.forEach { entity ->
+            if (entity !is EntityArmorStand) return@forEach
             val eggType = getEggType(entity) ?: return@forEach
             currentDetectedEggs[eggType.index] = currentDetectedEggs[eggType.index] ?: Egg(entity, eggType.type, eggType.color)
         }
@@ -155,7 +156,8 @@ object ChocolateFactory : Module(
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-        currentDetectedEggs.filterNotNull().filter { !it.isFound }.forEach { egg ->
+        currentDetectedEggs.forEach { egg ->
+            if (egg == null || egg.isFound) return@forEach
             Renderer.drawCustomBeacon(egg.renderName, Vec3(egg.entity.posX - 0.5, egg.entity.posY + 1.47, egg.entity.posZ - 0.5), egg.color, increase = true, beacon = false)
         }
     }

@@ -8,6 +8,7 @@ import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.dungeonItemDrops
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.inDungeons
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.isSecret
+import me.odinmain.utils.skyblock.unformattedName
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.entity.item.EntityItem
 import net.minecraft.inventory.ContainerChest
@@ -24,7 +25,7 @@ object EventDispatcher {
      */
     @SubscribeEvent
     fun onRemoveEntity(event: EntityLeaveWorldEvent) {
-        if (!inDungeons || event.entity !is EntityItem || !event.entity.entityItem.displayName.noControlCodes.containsOneOf(dungeonItemDrops, true) || mc.thePlayer.getDistanceToEntity(event.entity) > 6) return
+        if (!inDungeons || event.entity !is EntityItem || event.entity.entityItem?.unformattedName?.containsOneOf(dungeonItemDrops, true) == false || mc.thePlayer.getDistanceToEntity(event.entity) > 6) return
         SecretPickupEvent.Item(event.entity).postAndCatch()
     }
 
@@ -45,7 +46,8 @@ object EventDispatcher {
      */
     @SubscribeEvent
     fun onPacket(event: PacketReceivedEvent) {
-        if (event.packet is S29PacketSoundEffect && (event.packet.soundName.equalsOneOf("mob.bat.hurt", "mob.bat.death")) && inDungeons) SecretPickupEvent.Bat(event.packet).postAndCatch()
+
+        if (event.packet is S29PacketSoundEffect && inDungeons && (event.packet.soundName.equalsOneOf("mob.bat.hurt", "mob.bat.death"))) SecretPickupEvent.Bat(event.packet).postAndCatch()
 
         if (event.packet is S32PacketConfirmTransaction) RealServerTick().postAndCatch()
 
@@ -75,11 +77,10 @@ object EventDispatcher {
         val container = (event.gui as GuiChest).inventorySlots
 
         if (container !is ContainerChest) return@launch
-        val chestName = container.name
 
         val deferred = waitUntilLastItem(container)
-        try { deferred.await() } catch (e: Exception) { return@launch } // Wait until the last item in the chest isn't null
+        try { deferred.await() } catch (_: Exception) { return@launch } // Wait until the last item in the chest isn't null
 
-        GuiEvent.GuiLoadedEvent(chestName, container).postAndCatch()
+        GuiEvent.GuiLoadedEvent(container.name, container).postAndCatch()
     }
 }

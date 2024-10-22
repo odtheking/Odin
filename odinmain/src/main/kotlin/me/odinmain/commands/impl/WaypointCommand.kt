@@ -32,19 +32,18 @@ val waypointCommand = commodore("waypoint", "odinwaypoint") {
     }
 
     literal("addtemp") {
+        runs { x: Int, y: Int, z: Int ->
+            WaypointManager.addTempWaypoint("Waypoint", x, y, z)
+        }
+
         runs { name: String, x: Int?, y: Int?, z: Int? ->
             val xPos = x ?: posX.floor().toInt(); val yPos = y ?: posY.floor().toInt(); val zPos = z ?: posZ.floor().toInt()
             WaypointManager.addTempWaypoint(name, xPos, yPos, zPos)
         }
 
-        runs { x: Int?, y: Int?, z: Int? ->
-            val xPos = x ?: posX.floor().toInt(); val yPos = y ?: posY.floor().toInt(); val zPos = z ?: posZ.floor().toInt()
-            WaypointManager.addTempWaypoint("Waypoint", xPos, yPos, zPos)
-        }
-
         runs {
             val position = PlayerUtils.posFloored
-            WaypointManager.addTempWaypoint(name, position.x, position.y, position.z)
+            WaypointManager.addTempWaypoint("", position.x, position.y, position.z)
         }
     }
 

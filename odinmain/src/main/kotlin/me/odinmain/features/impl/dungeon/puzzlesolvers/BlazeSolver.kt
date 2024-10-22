@@ -11,6 +11,7 @@ import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.*
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.util.AxisAlignedBB
+import net.minecraft.util.BlockPos
 import kotlin.collections.set
 
 object BlazeSolver {
@@ -23,14 +24,14 @@ object BlazeSolver {
         if (!DungeonUtils.inDungeons || !room.data.name.equalsOneOf("Lower Blaze", "Higher Blaze")) return
         val hpMap = mutableMapOf<EntityArmorStand, Int>()
         blazes.clear()
-        mc.theWorld?.loadedEntityList?.filterIsInstance<EntityArmorStand>()?.filter { it !in blazes }?.forEach { entity ->
-            val matchResult = Regex("^\\[Lv15] Blaze [\\d,]+/([\\d,]+)❤$").find(entity.name.noControlCodes) ?: return@forEach
-            val hp = matchResult.groups[1]?.value?.replace(",", "")?.toIntOrNull() ?: return@forEach
+        mc.theWorld?.loadedEntityList?.forEach { entity ->
+            if (entity !is EntityArmorStand || entity in blazes) return@forEach
+            val hp = Regex("^\\[Lv15] Blaze [\\d,]+/([\\d,]+)❤$").find(entity.name.noControlCodes)?.groups?.get(1)?.value?.replace(",", "")?.toIntOrNull() ?: return@forEach
             hpMap[entity] = hp
             blazes.add(entity)
         }
         blazes.sortBy { hpMap[it] }
-        if (getBlockIdAt(room.x + 1, 118, room.z) != 4) blazes.reverse()
+        if (getBlockIdAt(BlockPos(room.x + 1, 118, room.z)) != 4) blazes.reverse()
     }
 
     fun renderBlazes() {
@@ -58,7 +59,7 @@ object BlazeSolver {
                 outlineAlpha = if (PuzzleSolvers.blazeStyle == 0) 0 else color.alpha, fillAlpha = if (PuzzleSolvers.blazeStyle == 1) 0 else color.alpha, depth = true)
 
             if (PuzzleSolvers.blazeLineNext && index > 0 && index <= PuzzleSolvers.blazeLineAmount)
-                Renderer.draw3DLine(blazes[index - 1].renderVec, entity.renderBoundingBox.middle, color = color, lineWidth = 1f, depth = true)
+                Renderer.draw3DLine(listOf(blazes[index - 1].renderVec, entity.renderBoundingBox.middle), color = color, lineWidth = 1f, depth = true)
         }
     }
 

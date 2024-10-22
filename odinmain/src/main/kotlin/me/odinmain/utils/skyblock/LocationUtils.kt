@@ -29,7 +29,7 @@ object LocationUtils {
                 inSkyblock = onHypixel && mc.theWorld?.scoreboard?.getObjectiveInDisplaySlot(1)?.let { cleanSB(it.displayName).contains("SKYBLOCK") } == true
 
             if (currentArea.isArea(Island.Kuudra) && kuudraTier == 0)
-                getLines().find { cleanLine(it).contains("Kuudra's Hollow (") }?.let {
+                sidebarLines.find { cleanLine(it).contains("Kuudra's Hollow (") }?.let {
                     kuudraTier = it.substringBefore(")").lastOrNull()?.digitToIntOrNull() ?: 0 }
 
             if (currentArea.isArea(Island.Unknown)) {
@@ -67,8 +67,7 @@ object LocationUtils {
     @SubscribeEvent
     fun onConnect(event: FMLNetworkEvent.ClientConnectedToServerEvent) {
         onHypixel = if (ClickGUIModule.forceHypixel) true else mc.runCatching {
-            !event.isLocal && ((thePlayer?.clientBrand?.lowercase()?.contains("hypixel")
-                ?: currentServerData?.serverIP?.contains("hypixel", true)) == true)
+            !event.isLocal && ((thePlayer?.clientBrand?.contains("hypixel", true) ?: currentServerData?.serverIP?.contains("hypixel", true)) == true)
         }.getOrDefault(false)
     }
 
@@ -89,7 +88,7 @@ object LocationUtils {
                     it?.displayName?.unformattedText?.startsWith("Dungeon: ") == true
         }?.displayName?.formattedText
 
-        return Island.entries.firstOrNull { area?.contains(it.displayName) == true } ?: Island.Unknown
+        return Island.entries.firstOrNull { area?.contains(it.displayName, true) == true } ?: Island.Unknown
     }
 
     fun getFloor(): Floor? {

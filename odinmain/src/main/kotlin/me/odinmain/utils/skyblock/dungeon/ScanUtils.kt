@@ -24,10 +24,11 @@ object ScanUtils {
     private const val START = -185
     private const val DEFAULT_HEIGHT = 170
 
+    private var lastRoomPos: Vec2 = Vec2(0, 0)
     private val roomList: Set<RoomData> = loadRoomData()
     var currentFullRoom: FullRoom? = null
         private set
-    var passedRooms = ArrayList<FullRoom>()
+    var passedRooms: MutableSet<FullRoom> = mutableSetOf()
         private set
 
     private fun loadRoomData(): Set<RoomData> {
@@ -66,10 +67,11 @@ object ScanUtils {
             return
         } // If not in dungeon or in boss room, return and register current room as null
 
-        val roomCenter = getRoomCenter(mc.thePlayer.posX.toInt(), mc.thePlayer.posZ.toInt())
+        val roomCenter = getRoomCenter(mc.thePlayer.posX.toInt(), mc.thePlayer.posZ.toInt()).takeIf { it != lastRoomPos } ?: return
+        lastRoomPos = roomCenter
 
-        passedRooms.find { previousRoom -> previousRoom.components.any { it.vec2.equal(roomCenter) } }?.let { room ->
-            if (currentFullRoom?.components?.none { it.vec2.equal(roomCenter) } == true) RoomEnterEvent(room).postAndCatch()
+        passedRooms.find { previousRoom -> previousRoom.components.any { it.vec2 == roomCenter } }?.let { room ->
+            if (currentFullRoom?.components?.none { it.vec2 == roomCenter } == true) RoomEnterEvent(room).postAndCatch()
             return
         } // If room is in passedRooms, post RoomEnterEvent and return only posts Event if room is not in currentFullRoom
 
@@ -145,18 +147,20 @@ object ScanUtils {
     }
 
     private fun getTopLayerOfRoom(vec2: Vec2, currentHeight: Int = DEFAULT_HEIGHT): Int {
-        return if ((isAir(vec2.x, currentHeight, vec2.z) || isGold(vec2.x, currentHeight, vec2.z)) && currentHeight > 70) getTopLayerOfRoom(vec2, currentHeight - 1) else currentHeight
+        return if ((isAir(BlockPos(vec2.x, currentHeight, vec2.z)) || isGold(BlockPos(vec2.x, currentHeight, vec2.z))) && currentHeight > 70) getTopLayerOfRoom(vec2, currentHeight - 1) else currentHeight
     }
 
     @SubscribeEvent
     fun enterDungeonRoom(event: RoomEnterEvent) {
         currentFullRoom = event.fullRoom
         if (passedRooms.none { it.room.data.name == currentFullRoom?.room?.data?.name }) passedRooms.add(currentFullRoom ?: return)
+        devMessage("${event.fullRoom?.room?.data?.name} - ${event.fullRoom?.room?.rotation} || clay: ${event.fullRoom?.clayPos}")
     }
 
     @SubscribeEvent
     fun onWorldLoad(event: WorldEvent.Unload) {
         passedRooms.clear()
         currentFullRoom = null
+        lastRoomPos = Vec2(0, 0)
     }
 }
