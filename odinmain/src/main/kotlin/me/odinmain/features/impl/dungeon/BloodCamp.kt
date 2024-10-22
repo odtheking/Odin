@@ -133,7 +133,7 @@ object BloodCamp : Module(
 
             val timeTook = data.timeTook ?: return
             val startVector = data.startVector ?: return
-            val currVector = Vec3(packet.func_149062_c() / 32.0, packet.func_149061_d() / 32.0, packet.func_149064_e() / 32.0)
+            val currVector = entity.positionVector
 
             val speedVectors = Vec3(
                 (currVector.xCoord - startVector.xCoord) / timeTook,
