@@ -34,6 +34,6 @@ fun cleanLine(scoreboard: String): String = scoreboard.noControlCodes.filter { i
 
 val getTabList: List<String>
     get() {
-        val playerInfoMap = mc.thePlayer?.sendQueue?.playerInfoMap?.toMutableList() ?: return emptyList()
-        return playerInfoMap.map { mc.ingameGUI.tabList.getPlayerName(it) }
+        val playerInfoMap = mc.thePlayer?.sendQueue?.playerInfoMap ?: return emptyList()
+        return playerInfoMap.toMutableList().map { mc.ingameGUI.tabList.getPlayerName(it) }
     }

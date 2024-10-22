@@ -26,7 +26,7 @@ val ItemStack?.extraAttributes: NBTTagCompound?
  * Returns displayName without control codes.
  */
 val ItemStack.unformattedName: String
-    get() = this.displayName.noControlCodes
+    get() = this.displayName?.noControlCodes ?: ""
 
 /**
  * Returns the lore for an Item
@@ -106,7 +106,7 @@ fun EntityPlayerSP.isHolding(id: String): Boolean =
  * Returns first slot of an Item
  */
 fun getItemSlot(item: String, ignoreCase: Boolean = true): Int? =
-    mc.thePlayer.inventory.mainInventory.indexOfFirst { it?.unformattedName?.contains(item, ignoreCase) == true }.takeIf { it != -1 }
+    mc.thePlayer?.inventory?.mainInventory?.indexOfFirst { it?.unformattedName?.contains(item, ignoreCase) == true }.takeIf { it != -1 }
 
 /**
  * Gets index of an item in a chest.

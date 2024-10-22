@@ -94,7 +94,7 @@ object PuzzleSolvers : Module(
 
     private val boulderDropDown by DropdownSetting("Boulder")
     private val boulderSolver by BooleanSetting("Boulder Solver", false, description = "Solver for the boulder puzzle.").withDependency { boulderDropDown }
-    val showAllBoulderClicks by DualSetting("Boulder clicks", "Only First", "All Clicks", false, description = "Shows all the clicks or only the first.").withDependency { boulderDropDown && boulderSolver }
+    val showAllBoulderClicks by DualSetting("Boulder clicks", "Only First", "All Clicks", true, description = "Shows all the clicks or only the first.").withDependency { boulderDropDown && boulderSolver }
     val boulderStyle by SelectorSetting("Boulder Style", Renderer.DEFAULT_STYLE, Renderer.styles, description = Renderer.STYLE_DESCRIPTION).withDependency { boulderDropDown && boulderSolver }
     val boulderColor by ColorSetting("Boulder Color", Color.GREEN.withAlpha(.5f), allowAlpha = true, description = "The color of the box.").withDependency { boulderDropDown && boulderSolver }
     val boulderLineWidth by NumberSetting("Boulder Line Width", 2f, 0.1f, 10f, 0.1f, description = "The width of the box's lines.").withDependency { boulderDropDown && boulderSolver }
@@ -113,12 +113,12 @@ object PuzzleSolvers : Module(
             if (waterSolver) waterInteract(it)
         }
 
-        onMessage(Regex("\\[NPC] (.+): (.+).?"), {enabled && weirdosSolver}) { str ->
+        onMessage(Regex("\\[NPC] (.+): (.+).?"), { enabled && weirdosSolver }) { str ->
             val (npc, message) = Regex("\\[NPC] (.+): (.+).?").find(str)?.destructured ?: return@onMessage
             WeirdosSolver.onNPCMessage(npc, message)
         }
 
-        onMessage(Regex(".*"), {enabled && quizSolver}) {
+        onMessage(Regex(".*"), { enabled && quizSolver }) {
             QuizSolver.onMessage(it)
         }
 

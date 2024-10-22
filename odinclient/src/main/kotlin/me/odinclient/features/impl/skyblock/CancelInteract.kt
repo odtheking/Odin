@@ -56,8 +56,8 @@ object CancelInteract : Module(
         // When the module is not enabled preform the vanilla action.
         if (cancelInteract && enabled) {
             if (interactionWhitelist.contains(instance.getBlockState(blockPos).block)) return false
-            if (mc.thePlayer.isHolding("Ender Pearl")) return true
-            if (!onlyWithAbility || mc.thePlayer.heldItem.hasAbility)
+            if (mc.thePlayer?.isHolding("Ender Pearl") == true) return true
+            if (!onlyWithAbility || mc.thePlayer?.heldItem?.hasAbility == true)
                 return interactionBlacklist.contains(instance.getBlockState(blockPos).block) || instance.isAirBlock(blockPos)
         }
         return instance.isAirBlock(blockPos)

@@ -56,7 +56,7 @@ object ChocolateFactory : Module(
             if (clickFactory) windowClick(13, PlayerUtils.ClickType.Right)
             
             if (!claimStray) return@execute
-            val found = (mc.thePlayer?.openContainer as? ContainerChest)?.inventorySlots?.find { it.stack.displayName.contains("CLICK ME!") } ?: return@execute
+            val found = (mc.thePlayer?.openContainer as? ContainerChest)?.inventorySlots?.find { it.stack?.displayName?.contains("CLICK ME!") == true } ?: return@execute
             windowClick(found.slotNumber, PlayerUtils.ClickType.Left)
         }
 
@@ -65,7 +65,7 @@ object ChocolateFactory : Module(
             if (container.name != "Chocolate Factory") return@execute
             val choco = container.getSlot(13)?.stack ?: return@execute
 
-            chocolate = choco.displayName.noControlCodes.replace(Regex("\\D"), "").toLongOrNull() ?: 0L
+            chocolate = choco.displayName?.noControlCodes?.replace(Regex("\\D"), "")?.toLongOrNull() ?: 0L
 
             findWorker(container)
             if (!found) return@execute
