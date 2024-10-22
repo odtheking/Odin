@@ -29,6 +29,7 @@ import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import java.util.*
 import kotlin.math.roundToInt
 
 object BloodCamp : Module(
@@ -221,7 +222,7 @@ object BloodCamp : Module(
                 timeDisplay in 0.0..0.5 -> Color.RED
                 else -> Color.BLUE
             }
-            if (drawTime) Renderer.drawStringInWorld("${timeDisplay}s", endPoint.addVec(y = 2), colorTime, depth = true, scale = 0.03f)
+            if (drawTime) Renderer.drawStringInWorld("${String.format(Locale.US, "%.2f", timeDisplay)}s", endPoint.addVec(y = 2), colorTime, depth = true, scale = 0.03f)
         }
     }
 
