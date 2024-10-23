@@ -28,6 +28,9 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.CopyOnWriteArrayList
+import java.util.concurrent.CopyOnWriteArraySet
 import kotlin.math.roundToInt
 
 object BloodCamp : Module(
@@ -90,17 +93,17 @@ object BloodCamp : Module(
 
     private var tickTime: Long = 0
 
-    private val forRender = hashMapOf<EntityArmorStand, RenderEData>()
+    private val forRender = ConcurrentHashMap<EntityArmorStand, RenderEData>()
     private data class RenderEData(
         var currVector: Vec3, var endVector: Vec3, var endVecUpdated: Long, var speedVectors: Vec3,
         var lastEndVector: Vec3? = null, var lastPingPoint: Vec3? = null, var lastEndPoint: Vec3? = null,
     )
 
-    private val entityList = hashMapOf<EntityArmorStand, EntityData>()
+    private val entityList = ConcurrentHashMap<EntityArmorStand, EntityData>()
     private data class EntityData(var startVector: Vec3, val started: Long, var firstSpawns: Boolean = true)
 
     private var firstSpawns = true
-    private var watcher = mutableListOf<Entity>()
+    private var watcher = CopyOnWriteArrayList<Entity>()
 
     @SubscribeEvent
     fun onPostMetadata(event: PostEntityMetadata) {
@@ -124,7 +127,7 @@ object BloodCamp : Module(
             (entity.serverPosZ + packet.func_149064_e()) / 32.0,
         )
 
-        if (entity !in entityList) entityList[entity] = EntityData(startVector = packetVector, started = tickTime, firstSpawns = firstSpawns)
+        if (!entityList.containsKey(entity)) entityList[entity] = EntityData(startVector = packetVector, started = tickTime, firstSpawns = firstSpawns)
 
         if (watcher.none { it.getDistanceToEntity(entity) < 20 }) return
         val data = entityList[entity] ?: return
@@ -146,7 +149,7 @@ object BloodCamp : Module(
             packetVector.zCoord + speedVectors.zCoord * time,
         )
 
-        if (entity !in forRender) forRender[entity] = RenderEData(packetVector, endpoint, tickTime, speedVectors)
+        if (!forRender.containsKey(entity)) forRender[entity] = RenderEData(packetVector, endpoint, tickTime, speedVectors)
         else forRender[entity]?.let {
             it.lastEndVector = it.endVector.clone()
             it.currVector = packetVector
