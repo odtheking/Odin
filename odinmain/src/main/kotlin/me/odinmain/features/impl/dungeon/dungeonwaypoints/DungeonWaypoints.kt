@@ -35,6 +35,7 @@ import net.minecraft.network.play.server.S08PacketPlayerPosLook
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
+import net.minecraftforge.client.event.MouseEvent
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -51,6 +52,8 @@ object DungeonWaypoints : Module(
 ) {
     private var allowEdits by BooleanSetting("Allow Edits", false, description = "Allows you to edit waypoints.")
     private var reachEdits by BooleanSetting("Reach Edits", false, description = "Extends the reach of edit mode.").withDependency { allowEdits }
+    private var distance by NumberSetting("Reach distance", min = 0, max = 100, increment = 1.0, default = 60.0, description = "How long reach is extended by").withDependency { allowEdits && reachEdits }
+    private var returnEnd by BooleanSetting("Allow Midair", default = false, description = "Allows waypoints to be placed midair if they reach the end of distance without hitting a block").withDependency { allowEdits && reachEdits }
     private var reachColor by ColorSetting("Reach Color", default = Color(0, 255, 213, 0.43f), description = "Color of the reach box highlight.", allowAlpha = true).withDependency { reachEdits && allowEdits }
     private val allowTextEdit by BooleanSetting("Allow Text Edit", true, description = "Allows you to set the text of a waypoint while sneaking.")
 
@@ -190,7 +193,7 @@ object DungeonWaypoints : Module(
         endProfile()
 
         if (reachEdits && allowEdits) {
-            reachPos = EtherWarpHelper.getEtherPos(mc.thePlayer.renderVec, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch)
+            reachPos = EtherWarpHelper.getEtherPos(mc.thePlayer.renderVec, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch, distance, returnEnd)
             reachPos?.pos?.let {
                 if (useBlockSize) Renderer.drawStyledBlock(it, reachColor, style = if (filled) 0 else 1, 1, !throughWalls)
                 else Renderer.drawStyledBox(AxisAlignedBB(it.x + 0.5 - (size / 2), it.y + .5 - (size / 2), it.z + .5 - (size / 2), it.x + .5 + (size / 2), it.y + .5 + (size / 2), it.z + .5 + (size / 2)).outlineBounds(), reachColor, style = if (filled) 0 else 1, 1, !throughWalls)
@@ -202,7 +205,13 @@ object DungeonWaypoints : Module(
     fun onRenderOverlay(event: RenderGameOverlayEvent.Post) {
         if (mc.currentScreen != null || event.type != RenderGameOverlayEvent.ElementType.ALL || !allowEdits || !editText) return
         val sr = ScaledResolution(mc)
-        val pos = if (!reachEdits) mc.objectMouseOver?.blockPos ?: return else reachPos?.pos ?: return
+        val pos = if (!reachEdits) mc.objectMouseOver?.blockPos else reachPos?.pos
+        if (pos == null) {
+            scale(2f / sr.scaleFactor, 2f / sr.scaleFactor, 1f)
+            mcText("Editing Waypoints", mc.displayWidth / 4, mc.displayHeight  / 4 + 10, 1f, Color.WHITE.withAlpha(.8f))
+            scale(sr.scaleFactor / 2f, sr.scaleFactor / 2f, 1f)
+            return
+        }
         val room = DungeonUtils.currentFullRoom ?: return
         val vec = room.getRelativeCoords(pos.add(offset).toVec3())
         val waypoints = getWaypoints(room)
@@ -212,10 +221,8 @@ object DungeonWaypoints : Module(
         val text = waypoint?.let {"§fType: §5${waypoint.type?.displayName ?: "None"}${waypoint.timer?.let { "§7, §fTimer: §a${it.displayName}" } ?: ""}" }
             ?: "§fType: §5${WaypointType.getByInt(waypointType)?.displayName ?: "None"}§7, §r#${selectedColor.hex}§7, ${if (filled) "§2Filled" else "§3Outline"}§7, ${if (throughWalls) "§cThrough Walls§7, " else ""}${if (useBlockSize) "§2Block Size" else "§3Size: $size"}${TimerType.getType()?.let { "§7, §fTimer: §a${it.displayName}" } ?: ""}"
 
-        val editText = "§fEditing Waypoints §8|§f ${waypoint?.let { "Viewing" } ?: "Placing"}"
-
         scale(2f / sr.scaleFactor, 2f / sr.scaleFactor, 1f)
-        mcText(editText, mc.displayWidth / 4, mc.displayHeight  / 4 + 10, 1f, Color.WHITE.withAlpha(.8f))
+        mcText("§fEditing Waypoints §8|§f ${waypoint?.let { "Viewing" } ?: "Placing"}", mc.displayWidth / 4, mc.displayHeight  / 4 + 10, 1f, Color.WHITE.withAlpha(.8f))
         mcText(text,mc.displayWidth / 4,  mc.displayHeight / 4 + 20, 1f, selectedColor)
         scale(sr.scaleFactor / 2f, sr.scaleFactor / 2f, 1f)
     }
@@ -237,7 +244,7 @@ object DungeonWaypoints : Module(
         val pos = if (!reachEdits) mc.objectMouseOver?.blockPos ?: return else reachPos?.pos ?: return
         val offsetPos = pos.add(offset)
         offset = BlockPos(0.0, 0.0, 0.0)
-        if (isAir(offsetPos)) return
+        if (isAir(offsetPos) && !returnEnd) return
         val room = DungeonUtils.currentFullRoom ?: return
         val vec = room.getRelativeCoords(offsetPos.toVec3())
         val block = getBlockAt(offsetPos)
