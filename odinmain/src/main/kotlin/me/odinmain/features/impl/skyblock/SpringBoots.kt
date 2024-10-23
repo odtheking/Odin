@@ -5,6 +5,7 @@ import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.features.settings.impl.HudSetting
+import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.addVec
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.getSafe
@@ -39,6 +40,7 @@ object SpringBoots : Module(
     }
     private val renderGoal by BooleanSetting("Render Goal", true, description = "Render the goal block.")
     private val goalColor by ColorSetting("Goal Color", Color.GREEN, description = "Color of the goal block.")
+    private val offset by NumberSetting("Offset", 0.0, -10.0, 10.0, 0.1, description = "The offset of the goal block.")
 
     private val blocksList: List<Double> = listOf(
         0.0, 3.0, 6.5, 9.0, 11.5, 13.5, 16.0, 18.0, 19.0,
@@ -70,7 +72,7 @@ object SpringBoots : Module(
     fun onTick(event: TickEvent.ClientTickEvent) {
         if (event.phase != TickEvent.Phase.END || !LocationUtils.inSkyblock) return
         if (mc.thePlayer?.getCurrentArmor(0)?.skyblockID != "SPRING_BOOTS" || mc.thePlayer?.isSneaking == false) pitchCounts.fill(0)
-        blocksList.getSafe(pitchCounts.sum())?.let { blockPos = if (it != 0.0) mc.thePlayer?.positionVector?.addVec(x = -0.5, y = it, z = -0.5) else null }
+        blocksList.getSafe(pitchCounts.sum())?.let { blockPos = if (it != 0.0) mc.thePlayer?.positionVector?.addVec(x = -0.5 + offset, y = it, z = -0.5) else null }
     }
 
     @SubscribeEvent
