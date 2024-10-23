@@ -13,7 +13,7 @@ import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.util.Vec3
 
 object KingRelics {
-    val currentRelic get() = mc.thePlayer?.heldItem?.skyblockID ?: ""
+    var currentRelic = Relic.None
 
     enum class Relic (
         val id: String,
@@ -27,6 +27,7 @@ object KingRelics {
         Blue("BLUE_KING_RELIC", 'b', Color.BLUE, Vec3(91.5, 6.5, 94.5), Vec3(59.0, 7.0, 44.0)) ,
         Orange("ORANGE_KING_RELIC", '6', Color.ORANGE, Vec3(90.5, 6.5, 56.5), Vec3(57.0, 7.0, 42.0)),
         Red("RED_KING_RELIC", 'c', Color.RED, Vec3(22.5, 6.5, 59.5), Vec3(51.0, 7.0, 42.0)),
+        None("", 'f', Color.WHITE, Vec3(0.0, 0.0, 0.0), Vec3(0.0, 0.0, 0.0))
     }
 
     private val relicPBs = PersonalBest("Relics", 5)
@@ -42,7 +43,8 @@ object KingRelics {
     fun relicsBlockPlace(packet: C08PacketPlayerBlockPlacement) {
         if (relicPlaceTimer == 0L || !getBlockAt(packet.position).equalsOneOf(Blocks.cauldron, Blocks.anvil)) return
 
-        Relic.entries.find { it.id == currentRelic }?.let {
+        Relic.entries.find { it.id == currentRelic.id }?.let {
+            if (it == Relic.None) return
             relicPBs.time(it.ordinal, (System.currentTimeMillis() - relicPlaceTimer) / 1000.0, "s§7!", "§${it.colorCode}${it.name} relic §7took §6", addPBString = true, addOldPBString = true, sendOnlyPB = false, sendMessage = relicAnnounceTime)
             relicPlaceTimer = 0L
         }
@@ -50,11 +52,13 @@ object KingRelics {
 
     fun relicsOnWorldLast() {
         Relic.entries.forEach {
-            if (currentRelic == it.id) Renderer.drawCustomBeacon("", it.cauldronPosition, it.color, distance = false)
+            if (it == Relic.None) return
+            if (currentRelic.id == it.id) Renderer.drawCustomBeacon("", it.cauldronPosition, it.color, distance = false)
         }
     }
 
     fun onServerTick() {
         relicTicksToSpawn = (relicTicksToSpawn - 1).coerceAtLeast(0)
+        currentRelic = Relic.entries.find { mc.thePlayer?.inventory?.mainInventory?.any { item -> item.skyblockID == it.id } == true } ?: Relic.None
     }
 }

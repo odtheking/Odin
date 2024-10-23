@@ -1,17 +1,9 @@
 package me.odinmain.features.impl.floor7
 
 import me.odinmain.OdinMain.mc
-import me.odinmain.features.impl.floor7.WitherDragons.arrowDeath
-import me.odinmain.features.impl.floor7.WitherDragons.arrowSpawn
-import me.odinmain.features.impl.floor7.WitherDragons.sendArrowHit
 import me.odinmain.features.impl.floor7.WitherDragons.sendNotification
-import me.odinmain.features.impl.floor7.WitherDragons.sendSpawned
 import me.odinmain.features.impl.floor7.WitherDragons.sendSpray
-import me.odinmain.features.impl.floor7.WitherDragons.sendTime
-import me.odinmain.features.impl.skyblock.ArrowHit.onDragonSpawn
-import me.odinmain.features.impl.skyblock.ArrowHit.resetOnDragons
 import me.odinmain.utils.isVecInXZ
-import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.entity.boss.EntityDragon
 import net.minecraft.entity.item.EntityArmorStand
@@ -21,7 +13,6 @@ import net.minecraft.network.play.server.S04PacketEntityEquipment
 import net.minecraft.network.play.server.S0FPacketSpawnMob
 import net.minecraft.network.play.server.S1CPacketEntityMetadata
 import net.minecraft.util.Vec3
-import net.minecraftforge.event.entity.EntityJoinWorldEvent
 
 object DragonCheck {
 

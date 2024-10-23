@@ -16,13 +16,11 @@ import me.odinmain.utils.skyblock.devMessage
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.inDungeons
 import me.odinmain.utils.skyblock.getSkullValue
-import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.entity.Entity
 import net.minecraft.entity.boss.BossStatus
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.entity.monster.EntityZombie
 import net.minecraft.init.Items
-import net.minecraft.network.play.server.S14PacketEntity.S15PacketEntityRelMove
 import net.minecraft.network.play.server.S14PacketEntity.S17PacketEntityLookMove
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.Vec3
@@ -147,9 +145,8 @@ object BloodCamp : Module(
                 packetVector.zCoord + speedVectors.zCoord * time,
             )
 
-            if (entity !in forRender) {
-                forRender[entity] = RenderEData(packetVector, endpoint, tickTime, speedVectors)
-            } else forRender[entity]?.let {
+            if (entity !in forRender) forRender[entity] = RenderEData(packetVector, endpoint, tickTime, speedVectors)
+            else forRender[entity]?.let {
                 it.lastEndVector = it.endVector.clone()
                 it.currVector = packetVector
                 it.endVector = endpoint

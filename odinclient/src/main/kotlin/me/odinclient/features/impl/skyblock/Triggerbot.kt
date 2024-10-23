@@ -87,7 +87,7 @@ object Triggerbot : Module(
                     PlayerUtils.rightClick()
                     tbClock.update()
                 }
-                Vec2(obj.blockPos?.x ?: 0, obj.blockPos?.z ?: 0) == cauldronMap[currentRelic] && obj.blockPos?.y.equalsOneOf(6, 7) -> {
+                Vec2(obj.blockPos?.x ?: 0, obj.blockPos?.z ?: 0) == cauldronMap[currentRelic.id] && obj.blockPos?.y.equalsOneOf(6, 7) -> {
                     PlayerUtils.rightClick()
                     tbClock.update()
                 }

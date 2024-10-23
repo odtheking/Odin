@@ -91,7 +91,7 @@ object ArrowAlign : Module(
 
     private fun getFrames(): List<Int> {
         val itemFrames = mc.theWorld?.loadedEntityList?.mapNotNull {
-            if (it is EntityItemFrame && it.displayedItem?.item == Items.arrow) it else null }?.ifEmpty { return List(25) { -1 } } ?: return List(25) { -1 }
+            if (it is EntityItemFrame && it.displayedItem?.item == Items.arrow) it else null }?.takeIf { it.isNotEmpty() } ?: return List(25) { -1 }
 
         return (0..24).map { index ->
             if (recentClickTimestamps[index]?.let { System.currentTimeMillis() - it < 1000 } == true && currentFrameRotations != null)
