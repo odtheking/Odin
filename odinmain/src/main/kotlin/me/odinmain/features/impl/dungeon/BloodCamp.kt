@@ -127,32 +127,32 @@ object BloodCamp : Module(
         if (entity !in entityList) entityList[entity] = EntityData(startVector = packetVector, started = tickTime, firstSpawns = firstSpawns)
 
         if (watcher.none { it.getDistanceToEntity(entity) < 20 }) return
-        entityList[entity]?.let { data ->
-            val timeTook = tickTime - data.started
-            val startVector = data.startVector
+        val data = entityList[entity] ?: return
 
-            val speedVectors = Vec3(
-                (packetVector.xCoord - startVector.xCoord) / timeTook,
-                (packetVector.yCoord - startVector.yCoord) / timeTook,
-                (packetVector.zCoord - startVector.zCoord) / timeTook,
-            )
+        val timeTook = tickTime - data.started
+        val startVector = data.startVector
 
-            val time = getTime(data.firstSpawns, timeTook)
+        val speedVectors = Vec3(
+            (packetVector.xCoord - startVector.xCoord) / timeTook,
+            (packetVector.yCoord - startVector.yCoord) / timeTook,
+            (packetVector.zCoord - startVector.zCoord) / timeTook,
+        )
 
-            val endpoint = Vec3(
-                packetVector.xCoord + speedVectors.xCoord * time,
-                packetVector.yCoord + speedVectors.yCoord * time,
-                packetVector.zCoord + speedVectors.zCoord * time,
-            )
+        val time = getTime(data.firstSpawns, timeTook)
 
-            if (entity !in forRender) forRender[entity] = RenderEData(packetVector, endpoint, tickTime, speedVectors)
-            else forRender[entity]?.let {
-                it.lastEndVector = it.endVector.clone()
-                it.currVector = packetVector
-                it.endVector = endpoint
-                it.endVecUpdated = tickTime
-                it.speedVectors = speedVectors
-            }
+        val endpoint = Vec3(
+            packetVector.xCoord + speedVectors.xCoord * time,
+            packetVector.yCoord + speedVectors.yCoord * time,
+            packetVector.zCoord + speedVectors.zCoord * time,
+        )
+
+        if (entity !in forRender) forRender[entity] = RenderEData(packetVector, endpoint, tickTime, speedVectors)
+        else forRender[entity]?.let {
+            it.lastEndVector = it.endVector.clone()
+            it.currVector = packetVector
+            it.endVector = endpoint
+            it.endVecUpdated = tickTime
+            it.speedVectors = speedVectors
         }
     }
 
@@ -167,15 +167,12 @@ object BloodCamp : Module(
         if (!bloodHelper) return
 
         forRender.forEach { (entity, renderData) ->
-            if (entity.isDead) return@forEach
-            val entityData = entityList[entity] ?: return@forEach
+            val (_, started, firstSpawn) = entityList[entity]?.takeUnless { entity.isDead } ?: return@forEach
 
             val (currVector, endVector, endVecUpdated, speedVectors) = renderData
-            val lastEndVector = renderData.lastEndVector ?: return@forEach
-
             val endVectorUpdated = min(tickTime - endVecUpdated, 100)
 
-            val endPoint = calcEndVector(endVector, lastEndVector, endVectorUpdated / 100)
+            val endPoint = calcEndVector(endVector, renderData.lastEndVector, endVectorUpdated / 100)
 
             val pingPoint = Vec3(
                 entity.posX + speedVectors.xCoord * averagePing,
@@ -193,7 +190,7 @@ object BloodCamp : Module(
             val pingAABB = AxisAlignedBB(boxSize,boxSize,boxSize, 0.0, 0.0, 0.0).offset(boxOffset + renderPingPoint)
             val endAABB = AxisAlignedBB(boxSize,boxSize,boxSize, 0.0, 0.0, 0.0).offset(boxOffset + renderEndPoint)
 
-            val time = getTime(entityData.firstSpawns,  tickTime - entityData.started)
+            val time = getTime(firstSpawn,  tickTime - started)
 
             if (averagePing < time) {
                 Renderer.drawBox(pingAABB, mboxColor, fillAlpha = 0f, outlineAlpha = mboxColor.alpha, depth = true)
