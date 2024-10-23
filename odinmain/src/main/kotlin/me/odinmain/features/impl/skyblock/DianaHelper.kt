@@ -53,7 +53,7 @@ object DianaHelper : Module(
     var renderPos: Vec3? = null
     val burrowsRender = ConcurrentHashMap<Vec3i, BurrowType>()
     private val hasSpade: Boolean
-        get() = mc.thePlayer?.inventory?.mainInventory?.find { it.itemID == "ANCESTRAL_SPADE" } != null
+        get() = mc.thePlayer?.inventory?.mainInventory?.find { it.skyblockID == "ANCESTRAL_SPADE" } != null
     private val isDoingDiana: Boolean
         get() = hasSpade && LocationUtils.currentArea.isArea(Island.Hub) && enabled
 

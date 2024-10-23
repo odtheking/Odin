@@ -333,7 +333,7 @@ fun romanToInt(s: String): Int {
 }
 
 fun fillItemFromSack(amount: Int, itemId: String, sackName: String, sendMessage: Boolean) {
-    val needed = mc.thePlayer?.inventory?.mainInventory?.find { it?.itemID == itemId }?.stackSize ?: 0
+    val needed = mc.thePlayer?.inventory?.mainInventory?.find { it?.skyblockID == itemId }?.stackSize ?: 0
     if (needed != amount) sendCommand("gfs $sackName ${amount - needed}") else if (sendMessage) modMessage("§cAlready at max stack size.")
 }
 

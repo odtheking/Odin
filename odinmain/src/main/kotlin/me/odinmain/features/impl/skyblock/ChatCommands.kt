@@ -54,7 +54,12 @@ object ChatCommands : Module(
 
     init {
         onMessage(Regex(" {29}> EXTRA STATS <|^\\[NPC] Elle: Good job everyone. A hard fought battle come to an end. Let's get out of here before we run into any more trouble!$")) {
-            dt()
+            if (dtReason.isEmpty() || !dt) return@onMessage
+            runIn(30) {
+                PlayerUtils.alert("§cPlayers need DT")
+                partyMessage("Players need DT: ${dtReason.groupBy({ it.second }, { it.first }).entries.joinToString(separator = ", ") { (reason, names) -> "${names.joinToString(", ")}: $reason" }}")
+                dtReason.clear()
+            }
         }
 
         onMessage(messageRegex) {
@@ -74,6 +79,8 @@ object ChatCommands : Module(
             runIn(8) {
                 handleChatCommands(msg, ign, channel)
             }
+
+            onWorldLoad { dtReason.clear() }
         }
     }
 
@@ -115,12 +122,10 @@ object ChatCommands : Module(
             "pt", "ptme" -> if (pt && channel == ChatChannel.PARTY) sendCommand("p transfer $name")
             "downtime", "dt" -> {
                 if (!dt || channel != ChatChannel.PARTY) return
-                var reason = "No reason given"
-                if (message.substringAfter("dt ") != message && !message.substringAfter("dt ").contains("!dt"))
-                    reason = message.substringAfter("dt ")
+                val reason = message.substringAfter("dt ").takeIf { it != message && !it.contains("!dt") } ?: "No reason given"
                 if (dtReason.any { it.first == name }) return modMessage("§cThat player already has a reminder!")
-                dtReason.add(Pair(name, reason))
-                modMessage("§aReminder set for the end of the run!")
+                dtReason.add(name to reason)
+                modMessage("§aReminder set for the end of the run! §7(disabled auto requeue for this run)")
                 dtPlayer = name
                 disableRequeue = true
             }
@@ -133,22 +138,11 @@ object ChatCommands : Module(
             "promote" -> if (promote && channel == ChatChannel.PARTY) sendCommand("p promote $name")
 
             // Private cmds only
-            "invite", "inv" -> if (invite && channel == ChatChannel.PRIVATE) inviteCommand(name)
-        }
-    }
-
-    private fun inviteCommand(name: String) {
-        PlayerUtils.playLoudSound("note.pling", 100f, 1f)
-        modMessage("Click on this message to invite $name to your party!",
-            chatStyle = createClickStyle(ClickEvent.Action.RUN_COMMAND, "/party invite $name"))
-    }
-
-    private fun dt() {
-        if (dtReason.isEmpty() || !dt) return
-        runIn(30) {
-            PlayerUtils.alert("§cPlayers need DT")
-            partyMessage("Players need DT: ${dtReason.joinToString(separator = ", ") { (name, reason) -> "$name: $reason" }}")
-            dtReason.clear()
+            "invite", "inv" -> if (invite && channel == ChatChannel.PRIVATE) {
+                PlayerUtils.playLoudSound("note.pling", 100f, 1f)
+                modMessage("§aClick on this message to invite $name to your party!",
+                    chatStyle = createClickStyle(ClickEvent.Action.RUN_COMMAND, "/party invite $name"))
+            }
         }
     }
 

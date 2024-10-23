@@ -64,9 +64,9 @@ object PlayerUtils {
     fun EntityPlayerSP?.isHolding(regex: Regex, mode: Int = 0): Boolean {
         return this.isHolding { it?.run {
             when (mode) {
-                0 -> displayName.contains(regex) || itemID.matches(regex)
+                0 -> displayName.contains(regex) || skyblockID.matches(regex)
                 1 -> displayName.contains(regex)
-                2 -> itemID.matches(regex)
+                2 -> skyblockID.matches(regex)
                 else -> false
             } } == true
         }

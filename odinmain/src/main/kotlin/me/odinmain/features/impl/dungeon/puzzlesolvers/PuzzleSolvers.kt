@@ -15,7 +15,6 @@ import me.odinmain.utils.render.Renderer
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
 import net.minecraftforge.client.event.RenderWorldLastEvent
-import net.minecraftforge.event.entity.player.PlayerInteractEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object PuzzleSolvers : Module(
@@ -111,6 +110,7 @@ object PuzzleSolvers : Module(
 
         onPacket(C08PacketPlayerBlockPlacement::class.java) {
             if (waterSolver) waterInteract(it)
+            if (boulderSolver) BoulderSolver.playerInteract(it)
         }
 
         onMessage(Regex("\\[NPC] (.+): (.+).?"), { enabled && weirdosSolver }) { str ->
@@ -168,10 +168,5 @@ object PuzzleSolvers : Module(
     @SubscribeEvent
     fun blockUpdateEvent(event: BlockChangeEvent) {
         BeamsSolver.onBlockChange(event)
-    }
-
-    @SubscribeEvent
-    fun onInteract(event: PlayerInteractEvent) {
-        BoulderSolver.playerInteract(event)
     }
 }

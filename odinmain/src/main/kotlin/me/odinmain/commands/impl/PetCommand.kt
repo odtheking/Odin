@@ -9,7 +9,7 @@ import me.odinmain.utils.skyblock.*
 val petCommand = commodore("petkeys") {
 
     literal("add").runs {
-        val petID = if (mc.thePlayer?.heldItem.itemID == "PET") mc.thePlayer?.heldItem.uuid else null
+        val petID = if (mc.thePlayer?.heldItem.skyblockID == "PET") mc.thePlayer?.heldItem.uuid else null
         if (petID == null) return@runs modMessage("You can only add pets to the pet list!")
         if (petList.size >= 9) return@runs modMessage("You cannot add more than 9 pets to the list. Remove a pet using /petkeys remove or clear the list using /petkeys clear.")
         if (petID in petList) return@runs modMessage("This pet is already in the list!")
@@ -20,13 +20,13 @@ val petCommand = commodore("petkeys") {
     }
 
     literal("petpos").runs {
-        val petID = if (mc.thePlayer?.heldItem.itemID == "PET") mc.thePlayer?.heldItem.uuid else return@runs modMessage("This is not a pet!")
+        val petID = if (mc.thePlayer?.heldItem.skyblockID == "PET") mc.thePlayer?.heldItem.uuid else return@runs modMessage("This is not a pet!")
         if (petID !in petList) return@runs modMessage("This pet is not in the list!")
         modMessage("This pet is position ${petList.indexOf(petID) +1} in the list.")
     }
 
     literal("remove").runs {
-        val petID = if (mc.thePlayer?.heldItem.itemID == "PET") mc.thePlayer?.heldItem.uuid else return@runs modMessage("This is not a pet!")
+        val petID = if (mc.thePlayer?.heldItem.skyblockID == "PET") mc.thePlayer?.heldItem.uuid else return@runs modMessage("This is not a pet!")
         if (petID !in petList) return@runs modMessage("This pet is not in the list!")
 
         petList.remove(petID)

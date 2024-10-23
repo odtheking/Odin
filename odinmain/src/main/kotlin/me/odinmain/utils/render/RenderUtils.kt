@@ -27,8 +27,8 @@ import org.lwjgl.util.glu.Cylinder
 import java.awt.image.BufferedImage
 import kotlin.math.cos
 import kotlin.math.floor
+import kotlin.math.roundToInt
 import kotlin.math.sin
-
 
 object RenderUtils {
 
@@ -668,5 +668,33 @@ object RenderUtils {
         GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f)
         if (!depth) resetDepth()
         GlStateManager.popMatrix()
+    }
+
+    fun renderDurabilityBar(x: Int, y: Int, percentFilled: Double) {
+        val percent = percentFilled.coerceIn(0.0, 1.0).takeIf { it > 0.0 } ?: return
+        val barColorIndex = (percent * 255.0).roundToInt()
+        GlStateManager.disableLighting()
+        GlStateManager.disableDepth()
+        GlStateManager.disableTexture2D()
+        GlStateManager.disableAlpha()
+        GlStateManager.disableBlend()
+        draw(x + 2, y + 13, 13, 2, 0, 0, 0, 255)
+        draw(x + 2, y + 13, 12, 1, (255 - barColorIndex) / 4, 64, 0, 255)
+        draw(x + 2, y + 13, (percent * 13.0).roundToInt(), 1, 255 - barColorIndex, barColorIndex, 0, 255)
+        GlStateManager.enableAlpha()
+        GlStateManager.enableTexture2D()
+        GlStateManager.enableLighting()
+        GlStateManager.enableDepth()
+    }
+
+    private fun draw(x: Int, y: Int, width: Int, height: Int, red: Int, green: Int, blue: Int, alpha: Int) {
+        worldRenderer {
+            begin(7, DefaultVertexFormats.POSITION_COLOR)
+            pos((x + 0).toDouble(), (y + 0).toDouble(), 0.0).color(red, green, blue, alpha).endVertex()
+            pos((x + 0).toDouble(), (y + height).toDouble(), 0.0).color(red, green, blue, alpha).endVertex()
+            pos((x + width).toDouble(), (y + height).toDouble(), 0.0).color(red, green, blue, alpha).endVertex()
+            pos((x + width).toDouble(), (y + 0).toDouble(), 0.0).color(red, green, blue, alpha).endVertex()
+        }
+        tessellator.draw()
     }
 }

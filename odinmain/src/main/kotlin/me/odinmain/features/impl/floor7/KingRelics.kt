@@ -13,7 +13,7 @@ import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.util.Vec3
 
 object KingRelics {
-    val currentRelic get() = mc.thePlayer?.heldItem?.itemID ?: ""
+    val currentRelic get() = mc.thePlayer?.heldItem?.skyblockID ?: ""
 
     enum class Relic (
         val id: String,

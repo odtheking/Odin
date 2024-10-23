@@ -18,28 +18,26 @@ import net.minecraftforge.common.util.Constants
  * Returns the ExtraAttribute Compound
  */
 val ItemStack?.extraAttributes: NBTTagCompound?
-    get() {
-        return this?.getSubCompound("ExtraAttributes", false)
-    }
+    get() = this?.getSubCompound("ExtraAttributes", false)
 
 /**
  * Returns displayName without control codes.
  */
-val ItemStack.unformattedName: String
-    get() = this.displayName?.noControlCodes ?: ""
+val ItemStack?.unformattedName: String
+    get() = this?.displayName?.noControlCodes ?: ""
 
 /**
  * Returns the lore for an Item
  */
-val ItemStack.lore: List<String>
-    get() = this.tagCompound?.getCompoundTag("display")?.getTagList("Lore", 8)?.let {
+val ItemStack?.lore: List<String>
+    get() = this?.tagCompound?.getCompoundTag("display")?.getTagList("Lore", 8)?.let {
         List(it.tagCount()) { i -> it.getStringTagAt(i) }
     }.orEmpty()
 
 /**
  * Returns Item ID for an Item
  */
-val ItemStack?.itemID: String
+val ItemStack?.skyblockID: String
     get() = this?.extraAttributes?.getString("id") ?: ""
 
 /**
@@ -83,13 +81,13 @@ val ItemStack?.isFishingRod: Boolean
  */
 val ItemStack?.isLeap: Boolean
     get() {
-        return this?.itemID?.equalsOneOf("INFINITE_SPIRIT_LEAP", "SPIRIT_LEAP") == true
+        return this?.skyblockID?.equalsOneOf("INFINITE_SPIRIT_LEAP", "SPIRIT_LEAP") == true
     }
 
 val EntityPlayerSP.usingEtherWarp: Boolean
     get() {
         val item = heldItem ?: return false
-        if (item.itemID == "ETHERWARP_CONDUIT") return true
+        if (item.skyblockID == "ETHERWARP_CONDUIT") return true
         return isSneaking && item.extraAttributes?.getBoolean("ethermerge") == true
     }
 
@@ -97,10 +95,10 @@ val EntityPlayerSP.usingEtherWarp: Boolean
  * Returns the ID of held item
  */
 fun isHolding(id: String): Boolean =
-    mc.thePlayer?.heldItem?.itemID == id
+    mc.thePlayer?.heldItem?.skyblockID == id
 
 fun EntityPlayerSP.isHolding(id: String): Boolean =
-    this.heldItem?.itemID == id
+    this.heldItem?.skyblockID == id
 
 /**
  * Returns first slot of an Item
@@ -201,9 +199,9 @@ val strengthRegex = Regex("Strength: \\+(\\d+)")
 /**
  * Returns the primary Strength value for an Item
  */
-val ItemStack.getSBStrength: Int
+val ItemStack?.getSBStrength: Int
     get() {
-        return this.lore.firstOrNull { it.noControlCodes.startsWith("Strength:") }
+        return this?.lore?.firstOrNull { it.noControlCodes.startsWith("Strength:") }
             ?.let { loreLine ->
                 strengthRegex.find(loreLine.noControlCodes)?.groups?.get(1)?.value?.toIntOrNull()
             } ?: 0

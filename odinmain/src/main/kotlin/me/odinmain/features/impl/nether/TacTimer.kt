@@ -6,7 +6,7 @@ import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.HudSetting
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.mcTextAndWidth
-import me.odinmain.utils.skyblock.itemID
+import me.odinmain.utils.skyblock.skyblockID
 import net.minecraft.network.play.server.S29PacketSoundEffect
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -35,7 +35,7 @@ object TacTimer : Module(
 
     init {
         onPacket(S29PacketSoundEffect::class.java) {
-            if (mc.thePlayer?.heldItem?.itemID != "TACTICAL_INSERTION" || it.soundName != "fire.ignite" || it.volume != 1f || it.pitch != 0.74603176f) return@onPacket
+            if (mc.thePlayer?.heldItem?.skyblockID != "TACTICAL_INSERTION" || it.soundName != "fire.ignite" || it.volume != 1f || it.pitch != 0.74603176f) return@onPacket
             tacTimer = 60
         }
     }

@@ -73,11 +73,12 @@ object RenderOptimizer : Module(
     fun onPacket(event: PacketReceivedEvent) {
         if (!LocationUtils.inSkyblock) return
         if (event.packet is S1CPacketEntityMetadata && hide0HealthNames) {
-            val entity = mc.theWorld?.getEntityByID(event.packet.entityId) ?: return
-            event.packet.func_149376_c()?.let {
-                it.filterIsInstance<String>()
-                    .takeUnless { strings -> strings.any { healthMatches.any { regex -> regex.matches(it) } } }
-                    ?.forEach { entity.alwaysRenderNameTag = false }
+            mc.theWorld?.getEntityByID(event.packet.entityId)?.let { entity ->
+                event.packet.func_149376_c()?.let {
+                    it.filterIsInstance<String>()
+                        .takeUnless { strings -> strings.any { healthMatches.any { regex -> regex.matches(it) } } }
+                        ?.forEach { entity.alwaysRenderNameTag = false }
+                }
             }
         }
 

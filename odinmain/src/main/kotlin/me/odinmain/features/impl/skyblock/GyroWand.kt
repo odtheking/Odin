@@ -28,7 +28,7 @@ object GyroWand : Module(
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-        if (heldItem?.itemID != "GYROKINETIC_WAND") return
+        if (!isHolding("GYROKINETIC_WAND")) return
         val position = EtherWarpHelper.getEtherPos(distance = 25.0).pos?.takeIf { !getBlockAt(it).isAir(mc.theWorld, it) }?.toVec3() ?: return
 
         Renderer.drawCylinder(

@@ -94,8 +94,7 @@ object DungeonWaypoints : Module(
             fun getArrayList() = ArrayList(entries.map { it.displayName })
             fun getByInt(i: Int) = entries.getOrNull(i).takeIf { it != NONE }
             fun getByName(name: String): WaypointType? {
-                val text = name.uppercase()
-                return entries.find { it.name == text }
+                return entries.find { it.name == name.uppercase() }
             }
         }
     }
@@ -109,8 +108,7 @@ object DungeonWaypoints : Module(
             fun getArrayList() = ArrayList(TimerType.entries.map { it.displayName })
             fun getByInt(i: Int) = TimerType.entries.getOrNull(i).takeIf { it != NONE }
             fun getByName(name: String): TimerType? {
-                val text = name.uppercase()
-                return TimerType.entries.find { it.name == text }
+                return TimerType.entries.find { it.name == name.uppercase() }
             }
         }
     }
@@ -154,8 +152,6 @@ object DungeonWaypoints : Module(
         }
     }
 
-
-
     @SubscribeEvent
     fun onSecret(event: SecretPickupEvent) {
         if (!allowEdits) SecretWaypoints.onSecret(event)
@@ -198,8 +194,10 @@ object DungeonWaypoints : Module(
     fun onRenderOverlay(event: RenderGameOverlayEvent.Post) {
         if (mc.currentScreen != null || event.type != RenderGameOverlayEvent.ElementType.ALL || !allowEdits || !editText) return
         val sr = ScaledResolution(mc)
+        val stats = "type: ${WaypointType.getByInt(waypointType)}, filled: $filled, depth: $throughWalls"
         scale(2f / sr.scaleFactor, 2f / sr.scaleFactor, 1f)
         mc.fontRendererObj.drawString("Editing Waypoints", mc.displayWidth / 4 - mc.fontRendererObj.getStringWidth("Editing Waypoints") / 2, mc.displayHeight / 4 + 10, Color.WHITE.withAlpha(.5f).rgba)
+        mc.fontRendererObj.drawString(stats, mc.displayWidth / 4 - mc.fontRendererObj.getStringWidth(stats) / 2, mc.displayHeight / 4 + 20, Color.WHITE.withAlpha(.5f).rgba)
         scale(sr.scaleFactor / 2f, sr.scaleFactor / 2f, 1f)
     }
 

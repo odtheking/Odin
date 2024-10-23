@@ -83,7 +83,7 @@ object Triggerbot : Module(
         if (relicTriggerBot && tbClock.hasTimePassed()) {
             val obj = mc.objectMouseOver ?: return
             when {
-                obj.entityHit is EntityArmorStand && obj.entityHit?.inventory?.get(4)?.itemID in cauldronMap.keys -> {
+                obj.entityHit is EntityArmorStand && obj.entityHit?.inventory?.get(4)?.skyblockID in cauldronMap.keys -> {
                     PlayerUtils.rightClick()
                     tbClock.update()
                 }

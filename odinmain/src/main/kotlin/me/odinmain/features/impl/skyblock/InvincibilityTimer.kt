@@ -1,14 +1,16 @@
 package me.odinmain.features.impl.skyblock
 
 import me.odinmain.events.impl.ChatPacketEvent
+import me.odinmain.events.impl.GuiEvent.DrawSlotOverlayEvent
 import me.odinmain.events.impl.RealServerTick
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.HudSetting
-import me.odinmain.utils.matchesOneOf
 import me.odinmain.utils.render.*
+import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.partyMessage
+import me.odinmain.utils.skyblock.skyblockID
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object InvincibilityTimer : Module(
@@ -30,6 +32,7 @@ object InvincibilityTimer : Module(
             getMCTextWidth("Bonzo: 59t") + 2f to 1f
         }
     }
+    private val showCooldown by BooleanSetting("Show Cooldown", default = true, description = "Shows the cooldown of the mask.")
 
     private data class Timer(var time: Int, var type: String)
     private var invincibilityTime = Timer(0, "")
@@ -37,17 +40,41 @@ object InvincibilityTimer : Module(
     private val phoenixPetRegex = Regex("^Your Phoenix Pet saved you from certain death!$")
     private val spiritPetRegex = Regex("^Second Wind Activated! Your Spirit Mask saved your life!\$")
 
+    private var spiritMaskProc = 0L
+    private var bonzoMaskProc = 0L
+
     @SubscribeEvent
     fun onChat(event: ChatPacketEvent) {
-        if (!event.message.matchesOneOf(bonzoMaskRegex, phoenixPetRegex, spiritPetRegex)) return
+        val type = when {
+            event.message.matches(bonzoMaskRegex) -> {
+                bonzoMaskProc = System.currentTimeMillis()
+                "Bonzo"
+            }
+            event.message.matches(spiritPetRegex) -> {
+                spiritMaskProc = System.currentTimeMillis()
+                "Spirit"
+            }
+            event.message.matches(phoenixPetRegex) -> "Phoenix"
+            else -> return
+        }
 
-        val invincibilityType = if (event.message.contains("Bonzo's Mask")) "Bonzo" else if (event.message.contains("Phoenix")) "Phoenix" else "Spirit"
-        if (invincibilityAnnounce) partyMessage("$invincibilityType Procced")
-        invincibilityTime = Timer(60, invincibilityType)
+        if (invincibilityAnnounce) partyMessage("$type Procced")
+        invincibilityTime = Timer(60, type)
     }
 
     @SubscribeEvent
     fun onServerTick(event: RealServerTick) {
         invincibilityTime.time--
+    }
+
+    @SubscribeEvent
+    fun onRenderSlotOverlay(event: DrawSlotOverlayEvent) {
+        if (!LocationUtils.inSkyblock || !showCooldown) return
+        val durability = when (event.stack.skyblockID) {
+            "BONZO_MASK" -> (System.currentTimeMillis() - bonzoMaskProc) / 180000.0
+            "SPIRIT_MASK" -> (System.currentTimeMillis() - spiritMaskProc) / 30000.0
+            else -> return
+        }
+        if (durability < 1.0) RenderUtils.renderDurabilityBar(event.x ?: return, event.y ?: return, durability)
     }
 }

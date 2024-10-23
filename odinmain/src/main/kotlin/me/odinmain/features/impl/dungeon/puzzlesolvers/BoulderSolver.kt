@@ -7,8 +7,8 @@ import me.odinmain.utils.*
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.getBlockIdAt
+import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.util.BlockPos
-import net.minecraftforge.event.entity.player.PlayerInteractEvent
 import java.io.InputStreamReader
 import java.nio.charset.StandardCharsets
 
@@ -56,9 +56,9 @@ object BoulderSolver {
         }
     }
 
-    fun playerInteract(event: PlayerInteractEvent) {
-        if (event.action == PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK && getBlockIdAt(event.pos).equalsOneOf(77, 323))
-            currentPositions.removeFirstOrNull { it.click == event.pos }
+    fun playerInteract(event: C08PacketPlayerBlockPlacement) {
+        if (getBlockIdAt(event.position).equalsOneOf(77, 323))
+            currentPositions.removeFirstOrNull { it.click == event.position }
     }
 
     fun reset() {

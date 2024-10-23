@@ -84,8 +84,8 @@ object TerminalSolver : Module(
 
     private val zLevel get() = if (renderType == 1 && currentTerm.equalsOneOf(TerminalTypes.STARTS_WITH, TerminalTypes.SELECT)) 100f else 400f
 
-    data class Terminal(var type: TerminalTypes, var solution: List<Int>, var items: MutableList<ItemStack>, var timeOpened: Long = 0L)
-    var currentTerm = Terminal(TerminalTypes.NONE, listOf(), mutableListOf())
+    data class Terminal(var type: TerminalTypes, var solution: List<Int> = listOf(), var items: MutableList<ItemStack> = mutableListOf(), var timeOpened: Long = 0L)
+    var currentTerm = Terminal(TerminalTypes.NONE)
     private var lastRubixSolution: Int? = null
     private var lastTermOpened = TerminalTypes.NONE
 
@@ -94,7 +94,7 @@ object TerminalSolver : Module(
         val newTerm = TerminalTypes.entries.find { event.name.startsWith(it.guiName) } ?: TerminalTypes.NONE
         val items = event.gui.inventory.subList(0, event.gui.inventory.size - 37)
         if (newTerm != currentTerm.type) {
-            currentTerm = Terminal(newTerm, listOf(), items, System.currentTimeMillis())
+            currentTerm = Terminal(type = newTerm, items = items, timeOpened = System.currentTimeMillis())
             lastTermOpened = currentTerm.type
             lastRubixSolution = null
         }

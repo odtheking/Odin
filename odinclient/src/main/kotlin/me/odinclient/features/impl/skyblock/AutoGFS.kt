@@ -7,7 +7,7 @@ import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.fillItemFromSack
 import me.odinmain.utils.skyblock.KuudraUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
-import me.odinmain.utils.skyblock.itemID
+import me.odinmain.utils.skyblock.skyblockID
 
 object AutoGFS : Module(
     name = "Auto Gfs",
@@ -36,8 +36,8 @@ object AutoGFS : Module(
         if (DungeonUtils.isGhost || mc.currentScreen != null || !(inKuudra && KuudraUtils.inKuudra) && !(inDungeon && DungeonUtils.inDungeons)) return
         val inventory = mc.thePlayer?.inventory?.mainInventory ?: return
 
-        inventory.find { it?.itemID == "ENDER_PEARL" }?.takeIf { refillPearl }?.also { fillItemFromSack(16, "ENDER_PEARL", "ender_pearl", false) }
+        inventory.find { it?.skyblockID == "ENDER_PEARL" }?.takeIf { refillPearl }?.also { fillItemFromSack(16, "ENDER_PEARL", "ender_pearl", false) }
 
-        inventory.find { it?.itemID == "INFLATABLE_JERRY" }?.takeIf { refillJerry }?.also { fillItemFromSack(64, "INFLATABLE_JERRY", "inflatable_jerry", false) }
+        inventory.find { it?.skyblockID == "INFLATABLE_JERRY" }?.takeIf { refillJerry }?.also { fillItemFromSack(64, "INFLATABLE_JERRY", "inflatable_jerry", false) }
     }
 }

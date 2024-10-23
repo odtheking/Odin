@@ -13,7 +13,7 @@ import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.render.getTextWidth
 import me.odinmain.utils.render.mcText
 import me.odinmain.utils.skyblock.LocationUtils
-import me.odinmain.utils.skyblock.itemID
+import me.odinmain.utils.skyblock.skyblockID
 import me.odinmain.utils.toAABB
 import net.minecraft.network.play.server.S29PacketSoundEffect
 import net.minecraft.util.Vec3
@@ -56,7 +56,7 @@ object SpringBoots : Module(
             if (!LocationUtils.inSkyblock) return@onPacket
             when (it.soundName) {
                 "random.eat", "fireworks.launch" -> if (it.pitch.equalsOneOf(0.0952381f, 1.6984127f)) pitchCounts.fill(0)
-                "note.pling" -> if (mc.thePlayer?.isSneaking == true && mc.thePlayer?.getCurrentArmor(0)?.itemID == "SPRING_BOOTS") {
+                "note.pling" -> if (mc.thePlayer?.isSneaking == true && mc.thePlayer?.getCurrentArmor(0)?.skyblockID == "SPRING_BOOTS") {
                     when (it.pitch) {
                         0.6984127f -> pitchCounts[0] = (pitchCounts[0] + 1).takeIf { it <= 2 } ?: 0
                         0.82539684f, 0.8888889f, 0.93650794f, 1.0476191f, 1.1746032f, 1.3174603f, 1.7777778f -> pitchCounts[1]++
@@ -69,7 +69,7 @@ object SpringBoots : Module(
     @SubscribeEvent
     fun onTick(event: TickEvent.ClientTickEvent) {
         if (event.phase != TickEvent.Phase.END || !LocationUtils.inSkyblock) return
-        if (mc.thePlayer?.getCurrentArmor(0)?.itemID != "SPRING_BOOTS" || mc.thePlayer?.isSneaking == false) pitchCounts.fill(0)
+        if (mc.thePlayer?.getCurrentArmor(0)?.skyblockID != "SPRING_BOOTS" || mc.thePlayer?.isSneaking == false) pitchCounts.fill(0)
         blocksList.getSafe(pitchCounts.sum())?.let { blockPos = if (it != 0.0) mc.thePlayer?.positionVector?.addVec(x = -0.5, y = it, z = -0.5) else null }
     }
 
