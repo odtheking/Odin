@@ -28,11 +28,13 @@ object SplitsManager {
         if (index == currentSplits.splits.size - 1) {
             val (times, _) = getAndUpdateSplitsTimes(currentSplits)
             currentSplits.personalBest?.time(index, times.last() / 1000.0, "s§7!", "§6Total time §7took §6", addPBString = true, addOldPBString = true, alwaysSendPB = true, sendOnlyPB = Splits.sendOnlyPB, sendMessage = Splits.enabled)
+            if (!sendSplits || !Splits.enabled) return
             runIn(10) {
-                times.forEachIndexed { i, it ->
+                val splits = times.withIndex().joinToString("\n") { (i, it) ->
                     val name = if (i == currentSplits.splits.size - 1) "Total" else currentSplits.splits.getSafe(i)?.name
-                    if (sendSplits && Splits.enabled) modMessage("§6$name §7took §6${formatTime(it)} §7to complete.")
+                    "§6$name §7took §6${formatTime(it)} §7to complete."
                 }
+                modMessage("Splits: \n${splits}")
             }
         }
     }

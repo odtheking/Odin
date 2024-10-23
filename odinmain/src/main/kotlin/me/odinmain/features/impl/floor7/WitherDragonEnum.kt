@@ -83,12 +83,13 @@ enum class WitherDragonsEnum (
         entityId = null
         entity = null
         lastDragonDeath = this
-        if (priorityDragon == this) priorityDragon = None
+        if (priorityDragon == this) {
+            if (sendArrowHit && WitherDragons.enabled) arrowDeath(this)
+            priorityDragon = None
+        }
 
         if (sendTime && WitherDragons.enabled)
             dragonPBs.time(ordinal, (System.currentTimeMillis() - spawnedTime) / 1000.0, "s§7!", "§${colorCode}${name} §7was alive for §6", addPBString = true, addOldPBString = true)
-
-        if (sendArrowHit && WitherDragons.enabled) arrowDeath(this)
     }
 
     fun updateEntity(entityId: Int) {

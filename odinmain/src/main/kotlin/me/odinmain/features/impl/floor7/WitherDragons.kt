@@ -154,9 +154,8 @@ object WitherDragons : Module(
     }
 
     fun arrowDeath(dragon: WitherDragonsEnum) {
-        if (priorityDragon == WitherDragonsEnum.None || dragon != priorityDragon) return
         if (!sendArrowHit || System.currentTimeMillis() - dragon.spawnedTime >= dragon.skipKillTime) return
-        modMessage("§fYou hit §6$arrowsHit §farrows on §${priorityDragon.colorCode}${priorityDragon.name}.")
+        modMessage("§fYou hit §6$arrowsHit §farrows on §${dragon.colorCode}${dragon.name}.")
         arrowsHit = 0
     }
 
