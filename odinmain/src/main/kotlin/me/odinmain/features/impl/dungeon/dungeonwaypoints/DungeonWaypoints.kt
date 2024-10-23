@@ -208,7 +208,7 @@ object DungeonWaypoints : Module(
         if (mc.thePlayer.usingEtherWarp) {
             val pos = EtherWarpHelper.getEtherPos(mc.thePlayer.renderVec, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch)
             if (pos.succeeded && pos.pos != null) {
-                if (DungeonUtils.currentFullRoom?.waypoints?.any { pos.vec == it.toVec3() && (it.type == WaypointType.BLOCKETHERWARP) } == true) {
+                if (DungeonUtils.currentFullRoom?.waypoints?.any { pos.vec?.equal(it.toVec3()) == true && (it.type == WaypointType.BLOCKETHERWARP) } == true) {
                     event.isCanceled = true
                     return
                 }

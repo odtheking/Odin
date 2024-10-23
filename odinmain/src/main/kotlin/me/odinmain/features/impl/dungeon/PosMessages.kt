@@ -36,7 +36,7 @@ object PosMessages : Module(
         }
     }
 
-    var parsed = false
+    private var parsed = false
 
     init {
         onWorldLoad {
