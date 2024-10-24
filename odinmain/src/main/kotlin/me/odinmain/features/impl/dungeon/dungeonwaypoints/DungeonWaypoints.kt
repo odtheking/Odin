@@ -173,7 +173,7 @@ object DungeonWaypoints : Module(
     var lastEtherTime = 0L
 
     private inline val reachPosition: BlockPos? get() =
-        mc.objectMouseOver?.takeUnless { it.typeOfHit == MovingObjectType.MISS || distance <= 4.5 && allowMidair}?.blockPos ?: reachPos?.pos
+        mc.objectMouseOver?.takeUnless { it.typeOfHit == MovingObjectType.MISS || (distance <= 4.5 && allowMidair) }?.blockPos ?: reachPos?.pos
 
     @SubscribeEvent
     fun onRender(event: RenderWorldLastEvent) {
