@@ -167,13 +167,12 @@ object DungeonWaypoints : Module(
         if (!allowEdits) SecretWaypoints.onSecret(event)
     }
 
-    private var reachPos: EtherWarpHelper.EtherPos? = null
     var distance = 5.0
     var lastEtherPos: EtherWarpHelper.EtherPos? = null
     var lastEtherTime = 0L
 
     private inline val reachPosition: BlockPos? get() =
-        mc.objectMouseOver?.takeUnless { it.typeOfHit == MovingObjectType.MISS || (distance <= 4.5 && allowMidair) }?.blockPos ?: reachPos?.pos
+        mc.objectMouseOver?.takeUnless { it.typeOfHit == MovingObjectType.MISS || (distance <= 4.5 && allowMidair) }?.blockPos ?: EtherWarpHelper.getEtherPos(mc.thePlayer.renderVec, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch, distance, allowMidair).pos
 
     @SubscribeEvent
     fun onRender(event: RenderWorldLastEvent) {
@@ -196,12 +195,9 @@ object DungeonWaypoints : Module(
         endProfile()
 
 
-        if (allowEdits) {
-            reachPos = EtherWarpHelper.getEtherPos(mc.thePlayer.renderVec, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch, distance, allowMidair)
-            reachPosition?.let {
-                if (useBlockSize) Renderer.drawStyledBlock(it, reachColor, style = if (filled) 0 else 1, 1, !throughWalls)
-                else Renderer.drawStyledBox(AxisAlignedBB(it.x + 0.5, it.y + .5, it.z + .5, it.x + .5, it.y + .5, it.z + .5).outlineBounds(), reachColor, style = if (filled) 0 else 1, 1, !throughWalls)
-            }
+        reachPosition?.takeIf { allowEdits }?.let {
+            if (useBlockSize) Renderer.drawStyledBlock(it, reachColor, style = if (filled) 0 else 1, 1, !throughWalls)
+            else Renderer.drawStyledBox(AxisAlignedBB(it.x + 0.5, it.y + .5, it.z + .5, it.x + .5, it.y + .5, it.z + .5).outlineBounds(), reachColor, style = if (filled) 0 else 1, 1, !throughWalls)
         }
     }
 
@@ -231,7 +227,7 @@ object DungeonWaypoints : Module(
     @SubscribeEvent
     fun onMouseInput(event: MouseEvent) {
         if (allowEdits && event.dwheel.sign != 0) {
-            distance = (distance + event.dwheel.sign).coerceAtLeast(0.0)
+            distance = (distance + event.dwheel.sign).coerceIn(0.0, 100.0)
             event.isCanceled = true
         }
     }
