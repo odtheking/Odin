@@ -12,14 +12,14 @@ import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.util.Locale
-import java.util.concurrent.CopyOnWriteArrayList
+import java.util.concurrent.CopyOnWriteArraySet
 
 object TerracottaTimer : Module(
     name = "Terracotta Timer",
     description = "Displays the time until the terracotta respawns.",
     category = Category.DUNGEON
 ) {
-    private var terracottaSpawning = CopyOnWriteArrayList<Terracotta>()
+    private var terracottaSpawning = CopyOnWriteArraySet<Terracotta>()
     private data class Terracotta(val pos: Vec3, var time: Double)
 
     @SubscribeEvent
