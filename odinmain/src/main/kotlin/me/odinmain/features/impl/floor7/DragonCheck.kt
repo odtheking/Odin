@@ -13,11 +13,12 @@ import net.minecraft.network.play.server.S04PacketEntityEquipment
 import net.minecraft.network.play.server.S0FPacketSpawnMob
 import net.minecraft.network.play.server.S1CPacketEntityMetadata
 import net.minecraft.util.Vec3
+import java.util.concurrent.CopyOnWriteArrayList
 
 object DragonCheck {
 
     var lastDragonDeath: WitherDragonsEnum = WitherDragonsEnum.None
-    val dragonEntityList = mutableListOf<EntityDragon>()
+    val dragonEntityList = CopyOnWriteArrayList<EntityDragon>()
 
     fun dragonUpdate(packet: S1CPacketEntityMetadata) {
         val dragon = WitherDragonsEnum.entries.find { it.entityId == packet.entityId } ?: return

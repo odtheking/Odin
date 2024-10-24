@@ -87,6 +87,9 @@ object SecretWaypoints {
     }
 
     fun resetSecrets() {
+        checkpoints = 0
+        routeTimer = null
+
         DungeonWaypointConfig.waypoints.entries.forEach { (_, room) ->
             room.forEach { it.clicked = false }
         }
