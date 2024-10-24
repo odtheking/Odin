@@ -17,6 +17,7 @@ val PosMsgCommand = commodore("posmsg") {
             val saveData = "x: ${x}, y: ${y}, z: ${z}, delay: ${delay}, distance: ${distance}, message: \"${message}\""
             if (posMessageStrings.contains(saveData)) return@runs modMessage("This message already exists!")
             modMessage("Message \"${message}\" added at $x, $y, $z, with ${delay}ms delay, triggered up to $distance blocks away.")
+            parsedStrings.add(PosMessages.PosMessage(x, y, z, null, null, null, delay, distance, message.string))
             posMessageStrings.add(saveData)
             Config.save()
         }

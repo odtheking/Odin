@@ -34,6 +34,7 @@ object SecretClicked : Module(
     private val timeToStay by NumberSetting("Time To Stay (seconds)", 7, 1, 60, 1, description = "The time the chests should remain highlighted.").withDependency { boxesDropdown && boxes }
     private val useRealSize by BooleanSetting("Use Real Size", true, description = "Whether or not to use the real size of the block.").withDependency { boxesDropdown && boxes }
     private val boxInBoss by BooleanSetting("Box In Boss", false, description = "Highlight clicks in boss.").withDependency { boxesDropdown && boxes }
+    private val toggleItems by BooleanSetting("Item Boxes", default = true, description = "Render boxes for collected items.").withDependency { boxesDropdown && boxes }
 
     private val chimeDropdownSetting by DropdownSetting("Secret Chime Dropdown")
     private val chime by BooleanSetting("Secret Chime", true, description = "Whether or not to play a sound when a secret is clicked.").withDependency { chimeDropdownSetting }
@@ -65,10 +66,10 @@ object SecretClicked : Module(
 
     @SubscribeEvent
     fun onSecret(event: SecretPickupEvent) {
-        when (event) {
-            is SecretPickupEvent.Interact -> secretBox(event.blockPos)
-            is SecretPickupEvent.Bat -> secretBox(event.packet.positionVector.toBlockPos())
-            is SecretPickupEvent.Item -> secretBox(event.entity.positionVector.toBlockPos())
+        when {
+            event is SecretPickupEvent.Interact -> secretBox(event.blockPos)
+            event is SecretPickupEvent.Bat -> secretBox(event.packet.positionVector.toBlockPos())
+            event is SecretPickupEvent.Item && toggleItems -> secretBox(event.entity.positionVector.toBlockPos())
         }
         secretChime()
     }

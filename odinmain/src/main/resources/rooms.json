@@ -1021,7 +1021,8 @@
     "name": "Sarcophagus",
     "type": "NORMAL",
     "cores": [
-      1986002687
+      1986002687,
+      1907859753
     ],
     "crypts": 1,
     "secrets": 3
