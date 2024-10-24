@@ -31,7 +31,7 @@ object ExtraStats : Module(
         modMessage(getCenteredText("§b${extraStats.secretsFound}§r-§6${DungeonUtils.cryptCount}§r-§c${DungeonUtils.deathCount}"), prefix = "")
         modMessage(getCenteredText(if (DungeonUtils.dungeonTeammatesNoSelf.isNotEmpty()) DungeonUtils.dungeonTeammatesNoSelf.joinToString(separator = "§r, ") { "§${it.clazz.colorCode}${it.name}" } else "§3Solo"), prefix = "")
         modMessage("", prefix = "")
-        modMessage(getChatBreak(), prefix = "", chatStyle = createClickStyle(ClickEvent.Action.SUGGEST_COMMAND, "Passed rooms: \n${DungeonUtils.passedRooms.joinToString("\n") { "§a${it.room.data.name}" }}"))
+        modMessage(getChatBreak(), prefix = "", chatStyle = createClickStyle(ClickEvent.Action.SUGGEST_COMMAND, "Passed rooms: \n${DungeonUtils.passedRooms.joinToString("\n") { "§a${it.data.name}" }}"))
     }
 
     init {

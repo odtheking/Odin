@@ -4,7 +4,6 @@ import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.DungeonEvents
 import me.odinmain.events.impl.PostEntityMetadata
 import me.odinmain.utils.Vec2
-import me.odinmain.utils.addRotationCoords
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
@@ -35,30 +34,30 @@ object TTTSolver {
     private var toRender: BlockPos? = null
 
     fun tttRoomEnter(event: DungeonEvents.RoomEnterEvent) {
-        val room = event.fullRoom?.room ?: return
+        val room = event.room ?: return
         if (room.data.name != "Tic Tac Toe") return
 
-        updateBoard(room.vec2.addRotationCoords(room.rotation, 7, 0), room.rotation)
+        //updateBoard(room.vec2.addRotationCoords(room.rotation, 7, 0), room.rotation)
     }
 
     private fun updateBoard(bottomRight: Vec2, rotations: Rotations) {
         for (index in 0 until 9) {
-            val currentSlot = bottomRight.addRotationCoords(rotations, 0, -index / 3).let { BlockPos(it.x.toDouble(), 70.0 + index % 3, it.z.toDouble())}
-            board[index] = BoardSlot(findSlotState(currentSlot), currentSlot, index % 3, index / 3,
-                when (index) {
-                    4 -> BoardPosition.Middle
-                    0, 2, 6, 8 -> BoardPosition.Corner
-                    else -> BoardPosition.Edge
-                })
+//            val currentSlot = bottomRight.addRotationCoords(rotations, 0, -index / 3).let { BlockPos(it.x.toDouble(), 70.0 + index % 3, it.z.toDouble())}
+//            board[index] = BoardSlot(findSlotState(currentSlot), currentSlot, index % 3, index / 3,
+//                when (index) {
+//                    4 -> BoardPosition.Middle
+//                    0, 2, 6, 8 -> BoardPosition.Corner
+//                    else -> BoardPosition.Edge
+//                })
         }
     }
 
     fun onMetaData(event: PostEntityMetadata) {
-        val room = DungeonUtils.currentFullRoom?.room ?: return
+        val room = DungeonUtils.currentRoom ?: return
         if (room.data.name != "Tic Tac Toe") return
 
         mc.theWorld?.getEntityByID(event.packet.entityId) as? EntityItemFrame ?: return
-        updateBoard(room.vec2.addRotationCoords(room.rotation, 7, 0), room.rotation)
+       // updateBoard(room.vec2.addRotationCoords(room.rotation, 7, 0), room.rotation)
     }
 
     fun tttRenderWorld() {

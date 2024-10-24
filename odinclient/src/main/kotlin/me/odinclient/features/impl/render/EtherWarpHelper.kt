@@ -70,7 +70,7 @@ object EtherWarpHelper : Module(
         if (
             etherWarpTriggerBot &&
             tbClock.hasTimePassed(etherWarpTBDelay) &&
-            DungeonUtils.currentFullRoom?.waypoints?.any { etherPos.vec?.equal(it.toVec3()) == true } == true &&
+            DungeonUtils.currentRoom?.waypoints?.any { etherPos.vec?.equal(it.toVec3()) == true } == true &&
             mc.thePlayer.usingEtherWarp
         ) {
             tbClock.update()
@@ -110,7 +110,7 @@ object EtherWarpHelper : Module(
             etherWarpHelper &&
             mc.thePlayer.usingEtherWarp
         ) {
-            val (_, yaw, pitch) = DungeonUtils.currentFullRoom?.waypoints?.mapNotNull {
+            val (_, yaw, pitch) = DungeonUtils.currentRoom?.waypoints?.mapNotNull {
                 etherwarpRotateTo(it.toBlockPos()) ?: return@mapNotNull null
             }?.minByOrNull {
                 val (_, yaw, pitch) = it

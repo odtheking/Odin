@@ -11,7 +11,6 @@ import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.*
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.util.AxisAlignedBB
-import net.minecraft.util.BlockPos
 import kotlin.collections.set
 
 object BlazeSolver {
@@ -20,7 +19,7 @@ object BlazeSolver {
     private var lastBlazeCount = 10
 
     fun getBlaze() {
-        val room = DungeonUtils.currentFullRoom?.room ?: return
+        val room = DungeonUtils.currentRoom ?: return
         if (!DungeonUtils.inDungeons || !room.data.name.equalsOneOf("Lower Blaze", "Higher Blaze")) return
         val hpMap = mutableMapOf<EntityArmorStand, Int>()
         blazes.clear()
@@ -30,8 +29,9 @@ object BlazeSolver {
             hpMap[entity] = hp
             blazes.add(entity)
         }
-        blazes.sortBy { hpMap[it] }
-        if (getBlockIdAt(BlockPos(room.x + 1, 118, room.z)) != 4) blazes.reverse()
+
+        if (room.data.name == "Lower Blaze") blazes.sortBy { hpMap[it] }
+        else blazes.sortByDescending { hpMap[it] }
     }
 
     fun renderBlazes() {

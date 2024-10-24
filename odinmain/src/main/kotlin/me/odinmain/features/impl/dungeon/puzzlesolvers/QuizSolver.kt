@@ -8,6 +8,7 @@ import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers.quizDepth
 import me.odinmain.utils.*
 import me.odinmain.utils.render.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.skyblock.dungeon.DungeonUtils.getRealCoords
 import net.minecraft.util.Vec3
 import java.io.InputStreamReader
 import java.nio.charset.StandardCharsets
@@ -54,14 +55,12 @@ object QuizSolver {
     }
 
     fun enterRoomQuiz(event: RoomEnterEvent) {
-        val room = event.fullRoom?.room ?: return
+        val room = event.room ?: return
         if (room.data.name != "Quiz") return
 
-        room.vec3.addRotationCoords(room.rotation, 0, 6).let { middleAnswerBlock ->
-            triviaOptions[0].vec3 = middleAnswerBlock.addRotationCoords(room.rotation, -5, 3)
-            triviaOptions[1].vec3 = middleAnswerBlock
-            triviaOptions[2].vec3 = middleAnswerBlock.addRotationCoords(room.rotation, 5, 3)
-        }
+        triviaOptions[0].vec3 = room.getRealCoords(Vec3(20.0, 70.0, 6.0))
+        triviaOptions[1].vec3 = room.getRealCoords(Vec3(15.0, 70.0, 9.0))
+        triviaOptions[2].vec3 = room.getRealCoords(Vec3(10.0, 70.0, 6.0))
     }
 
     fun renderWorldLastQuiz() {

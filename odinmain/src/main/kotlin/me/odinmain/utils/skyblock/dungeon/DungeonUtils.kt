@@ -8,7 +8,7 @@ import me.odinmain.utils.*
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.LocationUtils.currentDungeon
 import me.odinmain.utils.skyblock.PlayerUtils.posY
-import me.odinmain.utils.skyblock.dungeon.tiles.FullRoom
+import me.odinmain.utils.skyblock.dungeon.tiles.Room
 import net.minecraft.block.BlockSkull
 import net.minecraft.block.state.IBlockState
 import net.minecraft.init.Blocks
@@ -79,7 +79,7 @@ object DungeonUtils {
         get() = getItemSlot("Haunt", true) != null
 
     val currentRoomName: String
-        get() = currentDungeon?.currentFullRoom?.room?.data?.name ?: "Unknown"
+        get() = currentDungeon?.currentFullRoom?.data?.name ?: "Unknown"
 
     val dungeonTeammates: List<DungeonPlayer>
         get() = currentDungeon?.dungeonTeammates.orEmpty()
@@ -99,10 +99,10 @@ object DungeonUtils {
     val mimicKilled: Boolean
         get() = currentDungeon?.dungeonStats?.mimicKilled == true
 
-    val currentFullRoom: FullRoom?
+    val currentRoom: Room?
         get() = currentDungeon?.currentFullRoom
 
-    val passedRooms: Set<FullRoom>
+    val passedRooms: Set<Room>
         get() = currentDungeon?.passedRooms.orEmpty()
 
     val isPaul: Boolean
@@ -242,8 +242,10 @@ object DungeonUtils {
         }
     }
 
-    fun FullRoom.getRelativeCoords(pos: Vec3) = pos.subtractVec(x = this.clayPos.x, z = this.clayPos.z).rotateToNorth(this.room.rotation)
-    fun FullRoom.getRealCoords(pos: Vec3) = pos.rotateAroundNorth(this.room.rotation).addVec(x = this.clayPos.x, z = this.clayPos.z)
+    fun Room.getRelativeCoords(pos: Vec3) = pos.subtractVec(x = this.clayPos.x, z = this.clayPos.z).rotateToNorth(this.rotation)
+    fun Room.getRealCoords(pos: Vec3) = pos.rotateAroundNorth(this.rotation).addVec(x = this.clayPos.x, z = this.clayPos.z)
+    fun Room.getRelativeCoords(pos: BlockPos) = getRelativeCoords(Vec3(pos.x.toDouble(), pos.y.toDouble(), pos.z.toDouble()))
+    fun Room.getRealCoords(pos: BlockPos) = getRealCoords(Vec3(pos.x.toDouble(), pos.y.toDouble(), pos.z.toDouble()))
 
     val dungeonItemDrops = listOf(
         "Health Potion VIII Splash Potion", "Healing Potion 8 Splash Potion", "Healing Potion VIII Splash Potion", "Healing VIII Splash Potion", "Healing 8 Splash Potion",
