@@ -196,26 +196,6 @@ fun Vec3.rotateToNorth(rotation: Rotations): Vec3 {
     }
 }
 
-fun Vec2.addRotationCoords(rotation: Rotations, x: Number = 0, z: Number = 0): Vec2 {
-    return when(rotation){
-        Rotations.NORTH -> Vec2(this.x + x.toInt(), this.z + z.toInt())
-        Rotations.WEST -> Vec2(this.x + z.toInt(), this.z - x.toInt())
-        Rotations.SOUTH -> Vec2(this.x - x.toInt(), this.z - z.toInt())
-        Rotations.EAST -> Vec2(this.x - z.toInt(), this.z + x.toInt())
-        Rotations.NONE -> this
-    }
-}
-
-fun Vec3.addRotationCoords(rotation: Rotations, x: Number = 0, z: Number = 0): Vec3 {
-    return when(rotation){
-        Rotations.NORTH -> Vec3(this.xCoord + x.toDouble(), this.yCoord, this.zCoord + z.toDouble())
-        Rotations.WEST -> Vec3(this.xCoord + z.toDouble(), this.yCoord, this.zCoord - x.toDouble())
-        Rotations.SOUTH -> Vec3(this.xCoord - x.toDouble(), this.yCoord, this.zCoord - z.toDouble())
-        Rotations.EAST -> Vec3(this.xCoord - z.toDouble(), this.yCoord, this.zCoord + x.toDouble())
-        Rotations.NONE -> this
-    }
-}
-
 /**
  * Checks if an axis-aligned bounding box (AABB) is interceptable based on the player's position, range, yaw, and pitch.
  *

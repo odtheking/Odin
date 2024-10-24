@@ -151,7 +151,7 @@ object WaterSolver {
         LeverBlock.entries.forEach { it.i = 0 }
     }
 
-    private enum class WoolColor(val position: Vec3) {
+    private enum class WoolColor(val relativePosition: Vec3) {
         RED(Vec3(15.0, 56.0, 15.0)),
         GREEN(Vec3(15.0, 56.0, 16.0)),
         BLUE(Vec3(15.0, 56.0, 17.0)),
@@ -159,10 +159,10 @@ object WaterSolver {
         PURPLE(Vec3(15.0, 56.0, 19.0));
 
         val isExtended: Boolean get() =
-            getBlockAt(DungeonUtils.currentRoom?.getRealCoords(position)?.toBlockPos() ?: BlockPos(0, 0, 0)) == Blocks.wool
+            getBlockAt(DungeonUtils.currentRoom?.getRealCoords(relativePosition)?.toBlockPos() ?: BlockPos(0, 0, 0)) == Blocks.wool
     }
 
-    private enum class LeverBlock(val leverPosition: Vec3, var i: Int = 0) {
+    private enum class LeverBlock(val relativePosition: Vec3, var i: Int = 0) {
         QUARTZ(Vec3(21.0, 61.0, 20.0)),
         GOLD(Vec3(21.0, 61.0, 15.0)),
         COAL(Vec3(21.0, 61.0, 10.0)),
@@ -173,6 +173,6 @@ object WaterSolver {
         NONE(Vec3(0.0, 0.0, 0.0));
 
         val leverPos: Vec3
-            get() = DungeonUtils.currentRoom?.getRealCoords(leverPosition) ?: Vec3(0.0, 0.0, 0.0)
+            get() = DungeonUtils.currentRoom?.getRealCoords(relativePosition) ?: Vec3(0.0, 0.0, 0.0)
     }
 }

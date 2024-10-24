@@ -22,7 +22,6 @@ import java.io.FileNotFoundException
 object ScanUtils {
     private const val ROOM_SIZE_SHIFT = 5  // Since ROOM_SIZE = 32 (2^5)
     private const val START = -185
-    private const val DEFAULT_HEIGHT = 170
 
     private var lastRoomPos: Vec2 = Vec2(0, 0)
     private val roomList: Set<RoomData> = loadRoomData()
@@ -67,7 +66,7 @@ object ScanUtils {
             return
         } // If not in dungeon or in boss room, return and register current room as null
 
-        val roomCenter = getRoomCenter(mc.thePlayer.posX.toInt(), mc.thePlayer.posZ.toInt()).takeIf { it != lastRoomPos } ?: return
+        val roomCenter = getRoomCenter(mc.thePlayer.posX.toInt(), mc.thePlayer.posZ.toInt()).takeIf { it != lastRoomPos || LocationUtils.currentArea.isArea(Island.SinglePlayer) } ?: return
         lastRoomPos = roomCenter
 
         passedRooms.find { previousRoom -> previousRoom.roomComponents.any { it.vec2 == roomCenter } }?.let { room ->
@@ -79,6 +78,11 @@ object ScanUtils {
     }
 
     private fun updateRotation(room: Room) {
+        if (room.data.name == "Fairy") {
+            room.rotation = Rotations.SOUTH
+            room.clayPos = room.roomComponents.firstOrNull()?.let { BlockPos(it.x - 15, getTopLayerOfRoom(it.vec2), it.z - 15) } ?: return
+            return
+        }
         room.rotation = Rotations.entries.dropLast(1).find { rotation ->
             room.roomComponents.any { component ->
                 BlockPos(component.x + rotation.x, getTopLayerOfRoom(component.vec2), component.z + rotation.z).let { blockPos ->
@@ -94,18 +98,13 @@ object ScanUtils {
         getCore(vec2).let { core -> getRoomData(core)?.let { Room(data = it, roomComponents = findRoomComponentsRecursively(vec2, it.cores)) }?.apply { updateRotation(this) } }
 
     private fun findRoomComponentsRecursively(vec2: Vec2, cores: List<Int>, visited: MutableSet<Vec2> = mutableSetOf(), tiles: MutableSet<RoomComponent> = mutableSetOf()): MutableSet<RoomComponent> {
-        if (vec2 in visited) return tiles
-        visited.add(vec2)
-        val core = getCore(vec2).takeIf { it in cores } ?: return tiles
-        tiles.add(RoomComponent(vec2.x, vec2.z, core))
+        if (vec2 in visited) return tiles else visited.add(vec2)
+        tiles.add(RoomComponent(vec2.x, vec2.z, getCore(vec2).takeIf { it in cores } ?: return tiles))
         EnumFacing.HORIZONTALS.forEach { facing ->
             findRoomComponentsRecursively(Vec2(vec2.x + (facing.frontOffsetX shl ROOM_SIZE_SHIFT), vec2.z + (facing.frontOffsetZ shl ROOM_SIZE_SHIFT)), cores, visited, tiles)
         }
         return tiles
     }
-
-    fun getRoomSecrets(name: String): Int =
-        roomList.find { it.name == name }?.secrets ?: 0
 
     private fun getRoomData(hash: Int): RoomData? =
         roomList.find { hash in it.cores }
@@ -139,8 +138,9 @@ object ScanUtils {
         return sb.toString().hashCode()
     }
 
-    private fun getTopLayerOfRoom(vec2: Vec2, currentHeight: Int = DEFAULT_HEIGHT): Int {
-        return if ((isAir(BlockPos(vec2.x, currentHeight, vec2.z)) || isGold(BlockPos(vec2.x, currentHeight, vec2.z))) && currentHeight > 70) getTopLayerOfRoom(vec2, currentHeight - 1) else currentHeight
+    private fun getTopLayerOfRoom(vec2: Vec2): Int {
+        val height = mc.theWorld?.getChunkFromChunkCoords(vec2.x shr 4, vec2.z shr 4)?.getHeightValue(vec2.x and 15, vec2.z and 15) ?: 0
+        return if (isGold(BlockPos(vec2.x, height, vec2.z))) height else height - 1
     }
 
     @SubscribeEvent

@@ -47,7 +47,6 @@ object IceFillSolver {
         if (room.data.name != "Ice Fill" || currentPatterns.isNotEmpty()) return
 
         scanAllFloors(room.getRealCoords(Vec3(15.0, 70.0, 7.0)), room.rotation)
-        modMessage(room.getRealCoords(Vec3(15.0, 69.0, 7.0)))
     }
 
     private fun scanAllFloors(pos: Vec3, rotation: Rotations) {
