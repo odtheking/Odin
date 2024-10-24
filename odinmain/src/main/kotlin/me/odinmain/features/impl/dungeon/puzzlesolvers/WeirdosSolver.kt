@@ -17,7 +17,7 @@ object WeirdosSolver {
         if (solutions.none { it.matches(msg) } && wrong.none { it.matches(msg) }) return
         val correctNPC = mc.theWorld?.loadedEntityList?.find { it is EntityArmorStand && it.name.noControlCodes == npc } ?: return
         val room = DungeonUtils.currentRoom ?: return
-        val pos = Vec3(correctNPC.posX - 0.5, 69.0, correctNPC.posZ - 0.5)//.addRotationCoords(room.rotation, -1, 0)
+        val pos = Vec3(correctNPC.posX - 0.5, 69.0, correctNPC.posZ - 0.5).addRotationCoords(room.rotation, -1, 0)
 
         if (solutions.any { it.matches(msg) }) {
             correctPos = pos

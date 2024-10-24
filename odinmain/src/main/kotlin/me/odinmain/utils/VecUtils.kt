@@ -604,3 +604,13 @@ fun wrapAngle(angle: Float): Float {
 fun bezier(t: Float, initial: Float, p1: Float, p2: Float, final: Float): Float {
     return (1 - t).pow(3) * initial + 3 * (1 - t).pow(2) * t * p1 + 3 * (1 - t) * t.pow(2) * p2 + t.pow(3) * final
 }
+
+fun Vec3.addRotationCoords(rotation: Rotations, x: Int, z: Int): Vec3 {
+    return when (rotation) {
+        Rotations.NORTH -> Vec3(this.xCoord + x, this.yCoord, this.zCoord + z)
+        Rotations.WEST -> Vec3(this.xCoord + z, this.yCoord, this.zCoord - x)
+        Rotations.SOUTH -> Vec3(this.xCoord - x, this.yCoord, this.zCoord - z)
+        Rotations.EAST -> Vec3(this.xCoord - z, this.yCoord, this.zCoord + x)
+        else -> this
+    }
+}
