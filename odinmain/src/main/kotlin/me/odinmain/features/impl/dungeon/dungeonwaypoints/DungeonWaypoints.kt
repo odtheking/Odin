@@ -39,6 +39,7 @@ import net.minecraftforge.client.event.MouseEvent
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import kotlin.math.sign
 
 /**
  * Custom Waypoints for Dungeons
@@ -205,26 +206,31 @@ object DungeonWaypoints : Module(
     fun onRenderOverlay(event: RenderGameOverlayEvent.Post) {
         if (mc.currentScreen != null || event.type != RenderGameOverlayEvent.ElementType.ALL || !allowEdits || !editText) return
         val sr = ScaledResolution(mc)
-        val pos = if (!reachEdits) mc.objectMouseOver?.blockPos else reachPos?.pos
-        if (pos == null) {
-            scale(2f / sr.scaleFactor, 2f / sr.scaleFactor, 1f)
-            mcText("Editing Waypoints", mc.displayWidth / 4, mc.displayHeight  / 4 + 10, 1f, Color.WHITE.withAlpha(.8f))
-            scale(sr.scaleFactor / 2f, sr.scaleFactor / 2f, 1f)
-            return
-        }
-        val room = DungeonUtils.currentFullRoom ?: return
-        val vec = room.getRelativeCoords(pos.add(offset).toVec3())
-        val waypoints = getWaypoints(room)
+        val pos = if (!reachEdits) mc.objectMouseOver?.blockPos?.takeUnless { isAir(it.add(offset)) } else reachPos?.pos
+        val (text, editText) = pos?.add(offset)?.let {
+            val room = DungeonUtils.currentFullRoom ?: return
+            val vec = room.getRelativeCoords(it.add(offset).toVec3())
+            val waypoint = getWaypoints(room).find { it.toVec3().equal(vec) }
 
-        val waypoint = waypoints.find { it.toVec3().equal(vec) }
+            val text = waypoint?.let {"§fType: §5${waypoint.type?.displayName ?: "None"}${waypoint.timer?.let { "§7, §fTimer: §a${it.displayName}" } ?: ""}" }
+                ?: "§fType: §5${WaypointType.getByInt(waypointType)?.displayName ?: "None"}§7, §r#${selectedColor.hex}§7, ${if (filled) "§2Filled" else "§3Outline"}§7, ${if (throughWalls) "§cThrough Walls§7, " else ""}${if (useBlockSize) "§2Block Size" else "§3Size: $size"}${TimerType.getType()?.let { "§7, §fTimer: §a${it.displayName}" } ?: ""}"
 
-        val text = waypoint?.let {"§fType: §5${waypoint.type?.displayName ?: "None"}${waypoint.timer?.let { "§7, §fTimer: §a${it.displayName}" } ?: ""}" }
-            ?: "§fType: §5${WaypointType.getByInt(waypointType)?.displayName ?: "None"}§7, §r#${selectedColor.hex}§7, ${if (filled) "§2Filled" else "§3Outline"}§7, ${if (throughWalls) "§cThrough Walls§7, " else ""}${if (useBlockSize) "§2Block Size" else "§3Size: $size"}${TimerType.getType()?.let { "§7, §fTimer: §a${it.displayName}" } ?: ""}"
+
+            text to "§fEditing Waypoints §8|§f ${waypoint?.let { "Viewing" } ?: "Placing"}"
+        } ?: ("" to "Editing Waypoints")
 
         scale(2f / sr.scaleFactor, 2f / sr.scaleFactor, 1f)
-        mcText("§fEditing Waypoints §8|§f ${waypoint?.let { "Viewing" } ?: "Placing"}", mc.displayWidth / 4, mc.displayHeight  / 4 + 10, 1f, Color.WHITE.withAlpha(.8f))
+        mcText(editText, mc.displayWidth / 4, mc.displayHeight  / 4 + 10, 1f, Color.WHITE.withAlpha(.8f))
         mcText(text,mc.displayWidth / 4,  mc.displayHeight / 4 + 20, 1f, selectedColor)
         scale(sr.scaleFactor / 2f, sr.scaleFactor / 2f, 1f)
+    }
+
+    @SubscribeEvent
+    fun onMouseInput(event: MouseEvent) {
+        if (allowEdits && reachEdits && event.dwheel.sign != 0) {
+            distance = (distance + event.dwheel.sign).coerceAtLeast(0.0)
+            event.isCanceled = true
+        }
     }
 
     @SubscribeEvent
@@ -244,7 +250,7 @@ object DungeonWaypoints : Module(
         val pos = if (!reachEdits) mc.objectMouseOver?.blockPos ?: return else reachPos?.pos ?: return
         val offsetPos = pos.add(offset)
         offset = BlockPos(0.0, 0.0, 0.0)
-        if (isAir(offsetPos) && !returnEnd) return
+        if (isAir(offsetPos) && !(returnEnd && reachEdits)) return
         val room = DungeonUtils.currentFullRoom ?: return
         val vec = room.getRelativeCoords(offsetPos.toVec3())
         val block = getBlockAt(offsetPos)
