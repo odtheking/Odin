@@ -159,7 +159,7 @@ fun handleSpawnPacket(particle: S2APacketParticles) {
         newSpawned to dragons
     }
 
-    if (dragons.isNotEmpty() && (dragons.size == 2 || spawned >= 2) && priorityDragon == WitherDragonsEnum.None)
+    if (dragons.isNotEmpty() && (dragons.size == 2 || spawned >= 2) && (priorityDragon == WitherDragonsEnum.None || priorityDragon.entity?.isDead == false))
         priorityDragon = findPriority(dragons).also { displaySpawningDragon(it) }
 }
 

@@ -111,9 +111,6 @@ object ScanUtils {
     private fun scanRoom(vec2: Vec2): Room? =
         getCore(vec2).let { core -> getRoomData(core)?.let { Room(vec2.x, vec2.z, it, core) } }
 
-    fun getRoomSecrets(name: String): Int =
-        roomList.find { it.name == name }?.secrets ?: 0
-
     private fun getRoomData(hash: Int): RoomData? =
         roomList.find { hash in it.cores }
 
