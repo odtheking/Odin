@@ -28,12 +28,12 @@ import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.GuiTextField
 import net.minecraft.client.gui.ScaledResolution
-import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
 import net.minecraft.network.play.client.C03PacketPlayer.C06PacketPlayerPosLook
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
+import net.minecraft.util.MovingObjectPosition.MovingObjectType
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.MouseEvent
 import net.minecraftforge.client.event.RenderGameOverlayEvent
@@ -52,10 +52,8 @@ object DungeonWaypoints : Module(
     tag = TagType.NEW
 ) {
     private var allowEdits by BooleanSetting("Allow Edits", false, description = "Allows you to edit waypoints.")
-    private var reachEdits by BooleanSetting("Reach Edits", false, description = "Extends the reach of edit mode.").withDependency { allowEdits }
-    private var distance by NumberSetting("Reach distance", min = 0, max = 100, increment = 1.0, default = 60.0, description = "How long reach is extended by").withDependency { allowEdits && reachEdits }
-    private var returnEnd by BooleanSetting("Allow Midair", default = false, description = "Allows waypoints to be placed midair if they reach the end of distance without hitting a block").withDependency { allowEdits && reachEdits }
-    private var reachColor by ColorSetting("Reach Color", default = Color(0, 255, 213, 0.43f), description = "Color of the reach box highlight.", allowAlpha = true).withDependency { reachEdits && allowEdits }
+    private var allowMidair by BooleanSetting("Allow Midair", default = false, description = "Allows waypoints to be placed midair if they reach the end of distance without hitting a block").withDependency { allowEdits}
+    private var reachColor by ColorSetting("Reach Color", default = Color(0, 255, 213, 0.43f), description = "Color of the reach box highlight.", allowAlpha = true).withDependency { allowEdits }
     private val allowTextEdit by BooleanSetting("Allow Text Edit", true, description = "Allows you to set the text of a waypoint while sneaking.")
 
     var editText by BooleanSetting("Edit Text", false, description = "Displays text under your crosshair telling you when you are editing waypoints.")
@@ -170,8 +168,12 @@ object DungeonWaypoints : Module(
     }
 
     private var reachPos: EtherWarpHelper.EtherPos? = null
+    var distance = 5.0
     var lastEtherPos: EtherWarpHelper.EtherPos? = null
     var lastEtherTime = 0L
+
+    private inline val reachPosition: BlockPos? get() =
+        mc.objectMouseOver?.takeUnless { it.typeOfHit == MovingObjectType.MISS || distance <= 4.5 && allowMidair}?.blockPos ?: reachPos?.pos
 
     @SubscribeEvent
     fun onRender(event: RenderWorldLastEvent) {
@@ -193,11 +195,12 @@ object DungeonWaypoints : Module(
         }
         endProfile()
 
-        if (reachEdits && allowEdits) {
-            reachPos = EtherWarpHelper.getEtherPos(mc.thePlayer.renderVec, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch, distance, returnEnd)
-            reachPos?.pos?.let {
+
+        if (allowEdits) {
+            reachPos = EtherWarpHelper.getEtherPos(mc.thePlayer.renderVec, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch, distance, allowMidair)
+            reachPosition?.let {
                 if (useBlockSize) Renderer.drawStyledBlock(it, reachColor, style = if (filled) 0 else 1, 1, !throughWalls)
-                else Renderer.drawStyledBox(AxisAlignedBB(it.x + 0.5 - (size / 2), it.y + .5 - (size / 2), it.z + .5 - (size / 2), it.x + .5 + (size / 2), it.y + .5 + (size / 2), it.z + .5 + (size / 2)).outlineBounds(), reachColor, style = if (filled) 0 else 1, 1, !throughWalls)
+                else Renderer.drawStyledBox(AxisAlignedBB(it.x + 0.5, it.y + .5, it.z + .5, it.x + .5, it.y + .5, it.z + .5).outlineBounds(), reachColor, style = if (filled) 0 else 1, 1, !throughWalls)
             }
         }
     }
@@ -206,7 +209,7 @@ object DungeonWaypoints : Module(
     fun onRenderOverlay(event: RenderGameOverlayEvent.Post) {
         if (mc.currentScreen != null || event.type != RenderGameOverlayEvent.ElementType.ALL || !allowEdits || !editText) return
         val sr = ScaledResolution(mc)
-        val pos = if (!reachEdits) mc.objectMouseOver?.blockPos?.takeUnless { isAir(it.add(offset)) } else reachPos?.pos
+        val pos = reachPosition
         val (text, editText) = pos?.add(offset)?.let {
             val room = DungeonUtils.currentFullRoom ?: return
             val vec = room.getRelativeCoords(it.add(offset).toVec3())
@@ -227,7 +230,7 @@ object DungeonWaypoints : Module(
 
     @SubscribeEvent
     fun onMouseInput(event: MouseEvent) {
-        if (allowEdits && reachEdits && event.dwheel.sign != 0) {
+        if (allowEdits && event.dwheel.sign != 0) {
             distance = (distance + event.dwheel.sign).coerceAtLeast(0.0)
             event.isCanceled = true
         }
@@ -247,10 +250,10 @@ object DungeonWaypoints : Module(
             }
         }
         if (!allowEdits) return
-        val pos = if (!reachEdits) mc.objectMouseOver?.blockPos ?: return else reachPos?.pos ?: return
+        val pos = reachPosition ?: return
         val offsetPos = pos.add(offset)
         offset = BlockPos(0.0, 0.0, 0.0)
-        if (isAir(offsetPos) && !(returnEnd && reachEdits)) return
+        if (isAir(offsetPos) && !allowMidair) return
         val room = DungeonUtils.currentFullRoom ?: return
         val vec = room.getRelativeCoords(offsetPos.toVec3())
         val block = getBlockAt(offsetPos)
