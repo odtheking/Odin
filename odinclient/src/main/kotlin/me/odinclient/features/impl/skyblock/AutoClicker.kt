@@ -5,10 +5,12 @@ import me.odinclient.utils.skyblock.PlayerUtils.rightClick
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
+import me.odinmain.features.settings.impl.KeybindSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.skyblock.isHolding
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import org.lwjgl.input.Keyboard
 
 object AutoClicker : Module(
     name = "Auto Clicker",
@@ -20,6 +22,8 @@ object AutoClicker : Module(
     private val leftCps by NumberSetting("Left Clicks Per Second", 5.0, 3.0, 15.0, .5, false, description = "The amount of left clicks per second to perform.")
     private val rightCps by NumberSetting("Right Clicks Per Second", 5.0, 3.0, 15.0, .5, false, description = "The amount of right clicks per second to perform.")
     private val terminatorOnly by BooleanSetting("Terminator Only", false, description = "Only click when the terminator is enabled.")
+    private val leftClickKeybind by KeybindSetting("Left Click", Keyboard.KEY_NONE, description = "The keybind to hold for the auto clicker to click left click.")
+    private val rightClickKeybind by KeybindSetting("Right Click", Keyboard.KEY_NONE, description = "The keybind to hold for the auto clicker to click right click.")
 
     private var nextLeftClick = .0
     private var nextRightClick = .0
@@ -29,12 +33,12 @@ object AutoClicker : Module(
         val nowMillis = System.currentTimeMillis()
         if (terminatorOnly && !isHolding("TERMINATOR")) return
 
-        if (enableLeftClick && mc.gameSettings.keyBindAttack.isKeyDown && nowMillis >= nextLeftClick) {
+        if (enableLeftClick && leftClickKeybind.isDown() && nowMillis >= nextLeftClick) {
             nextLeftClick = nowMillis + ((1000 / leftCps) + ((Math.random() - .5) * 60.0))
             leftClick()
         }
 
-        if (enableRightClick && mc.gameSettings.keyBindUseItem.isKeyDown && nowMillis >= nextRightClick) {
+        if (enableRightClick && rightClickKeybind.isDown() && nowMillis >= nextRightClick) {
             nextRightClick = nowMillis + ((1000 / rightCps) + ((Math.random() - .5) * 60.0))
             rightClick()
         }
