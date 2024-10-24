@@ -10,6 +10,7 @@ import me.odinmain.utils.*
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.skyblock.dungeon.DungeonUtils.getRealCoords
 import me.odinmain.utils.skyblock.getBlockAt
 import net.minecraft.init.Blocks
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
@@ -22,9 +23,10 @@ object TPMazeSolver {
     private var visited = CopyOnWriteArraySet<BlockPos>()
 
     fun onRoomEnter(event: DungeonEvents.RoomEnterEvent) {
-        val room = event.fullRoom?.room ?: return
+        val room = event.room ?: return
         if (room.data.name != "Teleport Maze") return
-        tpPads = BlockPos.getAllInBox(room.vec3.addRotationCoords(room.rotation, -16, -16).addVec(y = -1).toBlockPos(), room.vec3.addRotationCoords(room.rotation, 16, 16).addVec(y = -1).toBlockPos())
+
+        tpPads = BlockPos.getAllInBox(room.getRealCoords(Vec3(30.0, 69.0, 30.0)).toBlockPos(), room.getRealCoords(Vec3(0.0, 69.0, 0.0)).toBlockPos())
             .filter { getBlockAt(it) == Blocks.end_portal_frame }.toSet()
     }
 

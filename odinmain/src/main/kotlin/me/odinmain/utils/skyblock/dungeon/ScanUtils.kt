@@ -26,9 +26,9 @@ object ScanUtils {
 
     private var lastRoomPos: Vec2 = Vec2(0, 0)
     private val roomList: Set<RoomData> = loadRoomData()
-    var currentFullRoom: FullRoom? = null
+    var currentRoom: Room? = null
         private set
-    var passedRooms: MutableSet<FullRoom> = mutableSetOf()
+    var passedRooms: MutableSet<Room> = mutableSetOf()
         private set
 
     private fun loadRoomData(): Set<RoomData> {
@@ -63,53 +63,46 @@ object ScanUtils {
         if (event.phase != TickEvent.Phase.END || mc.theWorld == null || mc.thePlayer == null) return
 
         if ((!inDungeons && !LocationUtils.currentArea.isArea(Island.SinglePlayer)) || inBoss) {
-            currentFullRoom?.let { RoomEnterEvent(null).postAndCatch() }
+            currentRoom?.let { RoomEnterEvent(null).postAndCatch() }
             return
         } // If not in dungeon or in boss room, return and register current room as null
 
         val roomCenter = getRoomCenter(mc.thePlayer.posX.toInt(), mc.thePlayer.posZ.toInt()).takeIf { it != lastRoomPos } ?: return
         lastRoomPos = roomCenter
 
-        passedRooms.find { previousRoom -> previousRoom.components.any { it.vec2 == roomCenter } }?.let { room ->
-            if (currentFullRoom?.components?.none { it.vec2 == roomCenter } == true) RoomEnterEvent(room).postAndCatch()
+        passedRooms.find { previousRoom -> previousRoom.roomComponents.any { it.vec2 == roomCenter } }?.let { room ->
+            if (currentRoom?.roomComponents?.none { it.vec2 == roomCenter } == true) RoomEnterEvent(room).postAndCatch()
             return
         } // If room is in passedRooms, post RoomEnterEvent and return only posts Event if room is not in currentFullRoom
 
-        scanRoom(roomCenter)?.let { room ->
-            FullRoom(room, BlockPos(0, 0, 0), findRoomTilesRecursively(room.vec2, room, mutableSetOf()), arrayListOf()).apply {
-                updateRotation(this)
-                if (room.rotation != Rotations.NONE) RoomEnterEvent(this).postAndCatch()
-            }
-        }
+        scanRoom(roomCenter)?.let { room -> if (room.rotation != Rotations.NONE) RoomEnterEvent(room).postAndCatch() }
     }
 
-    private fun updateRotation(fullRoom: FullRoom) {
-        fullRoom.room.rotation = Rotations.entries.dropLast(1).find { rotation ->
-            fullRoom.components.any { pos ->
-                BlockPos(pos.x + rotation.x, getTopLayerOfRoom(fullRoom.room.vec2), pos.z + rotation.z).let { blockPos ->
-                    getBlockIdAt(blockPos) == 159 && (fullRoom.components.size == 1 || EnumFacing.HORIZONTALS.all { facing ->
+    private fun updateRotation(room: Room) {
+        room.rotation = Rotations.entries.dropLast(1).find { rotation ->
+            room.roomComponents.any { component ->
+                BlockPos(component.x + rotation.x, getTopLayerOfRoom(component.vec2), component.z + rotation.z).let { blockPos ->
+                    getBlockIdAt(blockPos) == 159 && (room.roomComponents.size == 1 || EnumFacing.HORIZONTALS.all { facing ->
                         getBlockIdAt(blockPos.add(facing.frontOffsetX, 0, facing.frontOffsetZ)).equalsOneOf(159, 0)
-                    }).also { isCorrectClay -> if (isCorrectClay) fullRoom.clayPos = blockPos }
+                    }).also { isCorrectClay -> if (isCorrectClay) room.clayPos = blockPos }
                 }
             }
         } ?: Rotations.NONE
     }
 
-    private fun findRoomTilesRecursively(vec2: Vec2, room: Room, visited: MutableSet<Vec2>, tiles: ArrayList<ExtraRoom> = arrayListOf()): ArrayList<ExtraRoom> {
+    private fun scanRoom(vec2: Vec2): Room? =
+        getCore(vec2).let { core -> getRoomData(core)?.let { Room(data = it, roomComponents = findRoomComponentsRecursively(vec2, it.cores)) }?.apply { updateRotation(this) } }
+
+    private fun findRoomComponentsRecursively(vec2: Vec2, cores: List<Int>, visited: MutableSet<Vec2> = mutableSetOf(), tiles: MutableSet<RoomComponent> = mutableSetOf()): MutableSet<RoomComponent> {
         if (vec2 in visited) return tiles
         visited.add(vec2)
-        val core = getCore(vec2)
-        if (core in room.data.cores) {
-            tiles.add(ExtraRoom(vec2.x, vec2.z, core))
-            EnumFacing.HORIZONTALS.forEach { facing ->
-                findRoomTilesRecursively(Vec2(vec2.x + (facing.frontOffsetX shl ROOM_SIZE_SHIFT), vec2.z + (facing.frontOffsetZ shl ROOM_SIZE_SHIFT)), room, visited, tiles)
-            }
+        val core = getCore(vec2).takeIf { it in cores } ?: return tiles
+        tiles.add(RoomComponent(vec2.x, vec2.z, core))
+        EnumFacing.HORIZONTALS.forEach { facing ->
+            findRoomComponentsRecursively(Vec2(vec2.x + (facing.frontOffsetX shl ROOM_SIZE_SHIFT), vec2.z + (facing.frontOffsetZ shl ROOM_SIZE_SHIFT)), cores, visited, tiles)
         }
         return tiles
     }
-
-    private fun scanRoom(vec2: Vec2): Room? =
-        getCore(vec2).let { core -> getRoomData(core)?.let { Room(vec2.x, vec2.z, it, core) } }
 
     fun getRoomSecrets(name: String): Int =
         roomList.find { it.name == name }?.secrets ?: 0
@@ -152,15 +145,15 @@ object ScanUtils {
 
     @SubscribeEvent
     fun enterDungeonRoom(event: RoomEnterEvent) {
-        currentFullRoom = event.fullRoom
-        if (passedRooms.none { it.room.data.name == currentFullRoom?.room?.data?.name }) passedRooms.add(currentFullRoom ?: return)
-        devMessage("${event.fullRoom?.room?.data?.name} - ${event.fullRoom?.room?.rotation} || clay: ${event.fullRoom?.clayPos}")
+        currentRoom = event.room
+        if (passedRooms.none { it.data.name == currentRoom?.data?.name }) passedRooms.add(currentRoom ?: return)
+        devMessage("${event.room?.data?.name} - ${event.room?.rotation} || clay: ${event.room?.clayPos}")
     }
 
     @SubscribeEvent
     fun onWorldLoad(event: WorldEvent.Unload) {
         passedRooms.clear()
-        currentFullRoom = null
+        currentRoom = null
         lastRoomPos = Vec2(0, 0)
     }
 }

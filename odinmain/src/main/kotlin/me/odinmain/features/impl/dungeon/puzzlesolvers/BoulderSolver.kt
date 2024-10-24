@@ -31,19 +31,19 @@ object BoulderSolver {
     }
 
     fun onRoomEnter(event: DungeonEvents.RoomEnterEvent) {
-        val room = event.fullRoom?.room ?: return reset()
+        val room = event.room ?: return reset()
         if (room.data.name != "Boulder") return reset()
         var str = ""
         for (z in -3..2) {
             for (x in -3..3) {
-                room.vec2.addRotationCoords(room.rotation, x * 3, z * 3).let { str += if (getBlockIdAt(BlockPos(it.x, 66, it.z)) == 0) "0" else "1" }
+               // room.vec2.addRotationCoords(room.rotation, x * 3, z * 3).let { str += if (getBlockIdAt(BlockPos(it.x, 66, it.z)) == 0) "0" else "1" }
             }
         }
-        currentPositions = solutions[str]?.map { sol ->
-            val render = room.vec2.addRotationCoords(room.rotation, sol[0], sol[1]).let { BlockPos(it.x, 65, it.z) }
-            val click = room.vec2.addRotationCoords(room.rotation, sol[2], sol[3]).let { BlockPos(it.x, 65, it.z) }
-            BoxPosition(render, click)
-        }?.toMutableList() ?: return
+//        currentPositions = solutions[str]?.map { sol ->
+//            val render = room.vec2.addRotationCoords(room.rotation, sol[0], sol[1]).let { BlockPos(it.x, 65, it.z) }
+//            val click = room.vec2.addRotationCoords(room.rotation, sol[2], sol[3]).let { BlockPos(it.x, 65, it.z) }
+//            BoxPosition(render, click)
+//        }?.toMutableList() ?: return
     }
 
     fun onRenderWorld() {

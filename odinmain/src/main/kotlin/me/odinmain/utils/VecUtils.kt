@@ -196,31 +196,6 @@ fun Vec3.rotateToNorth(rotation: Rotations): Vec3 {
     }
 }
 
-/**
- * Rotates a Vec2 to the given rotation.
- * @param rotation The rotation to rotate to
- * @return The rotated Vec2
- */
-fun Vec2.addRotationCoords(rotation: Rotations, dist: Int = 4): Vec2 {
-    return when (rotation) {
-        Rotations.NORTH -> Vec2(x, z + dist)
-        Rotations.WEST -> Vec2(x + dist, z)
-        Rotations.SOUTH -> Vec2(x, z - dist)
-        Rotations.EAST -> Vec2(x - dist, z)
-        Rotations.NONE -> this
-    }
-}
-
-fun Vec3.addRotationCoords(rotations: Rotations, dist: Int = 4): Vec3 {
-    return when (rotations) {
-        Rotations.NORTH -> Vec3(this.xCoord, this.yCoord, this.zCoord + dist)
-        Rotations.WEST -> Vec3(this.xCoord + dist, this.yCoord, this.zCoord)
-        Rotations.SOUTH -> Vec3(this.xCoord, this.yCoord, this.zCoord - dist)
-        Rotations.EAST -> Vec3(this.xCoord - dist, this.yCoord, this.zCoord)
-        Rotations.NONE -> this
-    }
-}
-
 fun Vec2.addRotationCoords(rotation: Rotations, x: Number = 0, z: Number = 0): Vec2 {
     return when(rotation){
         Rotations.NORTH -> Vec2(this.x + x.toInt(), this.z + z.toInt())

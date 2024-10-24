@@ -9,6 +9,7 @@ import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.IceFillFloors
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.skyblock.dungeon.DungeonUtils.getRealCoords
 import me.odinmain.utils.skyblock.dungeon.tiles.Rotations
 import me.odinmain.utils.skyblock.isAir
 import me.odinmain.utils.skyblock.modMessage
@@ -42,10 +43,11 @@ object IceFillSolver {
     }
 
     fun enterDungeonRoom(event: RoomEnterEvent) {
-        val room = event.fullRoom?.room ?: return
-        if (room.data.name != "Ice Fill") return
+        val room = event.room ?: return
+        if (room.data.name != "Ice Fill" || currentPatterns.isNotEmpty()) return
 
-        scanAllFloors(room.vec3.addRotationCoords(room.rotation, 8), room.rotation)
+        scanAllFloors(room.getRealCoords(Vec3(15.0, 70.0, 7.0)), room.rotation)
+        modMessage(room.getRealCoords(Vec3(15.0, 69.0, 7.0)))
     }
 
     private fun scanAllFloors(pos: Vec3, rotation: Rotations) {
