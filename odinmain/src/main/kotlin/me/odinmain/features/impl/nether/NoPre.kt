@@ -78,40 +78,63 @@ object NoPre : Module(
     fun cratePriority(): String {
         return when {
             // Shop Missing
-            missing == PreSpot.Shop && (preSpot == PreSpot.Triangle || preSpot == PreSpot.X) -> "Go X Cannon"
-            missing == PreSpot.Shop && (preSpot == PreSpot.Equals || preSpot == PreSpot.Slash) -> "Go Square"
+            missing == PreSpot.Shop -> when (preSpot) {
+                PreSpot.Triangle, PreSpot.X -> "Go X Cannon"
+                PreSpot.Equals -> if (advanced) "Go X Cannon" else "Go Shop"
+                PreSpot.Slash -> "Go Square"
+                else -> ""
+            }
 
             // Triangle Missing
-            missing == PreSpot.Triangle && preSpot == PreSpot.Triangle -> if (advanced) "Pull Square and X Cannon. Next: collect Shop" else "Pull Square. Next: collect Shop"
-            missing == PreSpot.Triangle && preSpot == PreSpot.X -> "Go X Cannon"
-            missing == PreSpot.Triangle && preSpot == PreSpot.Equals -> if (advanced) "Go Shop" else "Go X Cannon"
-            missing == PreSpot.Triangle && preSpot == PreSpot.Slash -> "Go Square"
+            missing == PreSpot.Triangle -> when (preSpot) {
+                PreSpot.Triangle -> if (advanced) "Pull Square and X Cannon. Next: collect Shop" else "Pull Square. Next: collect Shop"
+                PreSpot.X, PreSpot.Equals -> "Go X Cannon"
+                PreSpot.Slash -> "Go Square, place on Triangle"
+                else -> ""
+            }
 
             // Equals Missing
-            missing == PreSpot.Equals && preSpot == PreSpot.Triangle -> if (advanced) "Go Shop" else "Go X Cannon"
-            missing == PreSpot.Equals && preSpot == PreSpot.X -> "Go X Cannon"
-            missing == PreSpot.Equals && preSpot == PreSpot.Equals -> if (advanced) "Pull Square and X Cannon. Next: collect Shop" else "Pull Square. Next: collect Shop"
-            missing == PreSpot.Equals && preSpot == PreSpot.Slash -> "Go Square"
+            missing == PreSpot.Equals -> when (preSpot) {
+                PreSpot.Triangle -> if (advanced) "Go Shop" else "Go X Cannon"
+                PreSpot.X -> "Go X Cannon"
+                PreSpot.Equals -> if (advanced) "Pull Square and X Cannon. Next: collect Shop" else "Pull Square. Next: collect Shop"
+                PreSpot.Slash -> "Go Square, place on Equals"
+                else -> ""
+            }
 
             // Slash Missing
-            missing == PreSpot.Slash && preSpot == PreSpot.Triangle -> "Go Square"
-            missing == PreSpot.Slash && preSpot == PreSpot.X -> "Go X Cannon"
-            missing == PreSpot.Slash && preSpot == PreSpot.Equals -> if (advanced) "Go Shop" else "Go X Cannon"
-            missing == PreSpot.Slash && preSpot == PreSpot.Slash -> if (advanced) "Pull Square and X Cannon. Next: collect Shop" else "Pull Square. Next: collect Shop"
+            missing == PreSpot.Slash -> when (preSpot) {
+                PreSpot.Triangle -> "Go Square, place on Triangle"
+                PreSpot.X -> "Go X Cannon"
+                PreSpot.Equals -> "Go Square, place on Equals"
+                PreSpot.Slash -> if (advanced) "Pull Square and X Cannon. Next: collect Shop" else "Pull Square. Next: collect Shop"
+                else -> ""
+            }
 
             // Square Missing
-            missing == PreSpot.Square && (preSpot == PreSpot.Triangle || preSpot == PreSpot.Equals) -> "Go Shop"
-            missing == PreSpot.Square && (preSpot == PreSpot.X || preSpot == PreSpot.Slash) -> "Go X Cannon"
+            missing == PreSpot.Square -> when (preSpot) {
+                PreSpot.Triangle, PreSpot.Equals -> "Go Shop"
+                PreSpot.X -> "Go X Cannon"
+                PreSpot.Slash -> "Go X Cannon"
+                else -> ""
+            }
 
             // X Cannon Missing
-            missing == PreSpot.xCannon && (preSpot == PreSpot.Triangle || preSpot == PreSpot.Equals) -> "Go Shop"
-            missing == PreSpot.xCannon && (preSpot == PreSpot.X || preSpot == PreSpot.Slash) -> "Go Square"
+            missing == PreSpot.xCannon -> when (preSpot) {
+                PreSpot.Triangle, PreSpot.Equals -> "Go Shop"
+                PreSpot.X -> "Go Square"
+                PreSpot.Slash -> "Go Square, place on X Cannon"
+                else -> ""
+            }
 
             // X Missing
-            missing == PreSpot.X && preSpot == PreSpot.Triangle -> "Go X Cannon"
-            missing == PreSpot.X && preSpot == PreSpot.X -> if (advanced) "Pull Square and X Cannon. Next: collect Shop" else "Pull Square. Next: collect Shop"
-            missing == PreSpot.X && preSpot == PreSpot.Equals -> if (advanced) "Go Shop" else "X Cannon"
-            missing == PreSpot.X && preSpot == PreSpot.Slash -> "Go Square"
+            missing == PreSpot.X -> when (preSpot) {
+                PreSpot.Triangle -> "Go X Cannon"
+                PreSpot.X -> if (advanced) "Pull Square and X Cannon. Next: collect Shop" else "Pull Square. Next: collect Shop"
+                PreSpot.Equals -> if (advanced) "Go Shop" else "Go X Cannon"
+                PreSpot.Slash -> "Go Square, place on X"
+                else -> ""
+            }
 
             else -> ""
         }
