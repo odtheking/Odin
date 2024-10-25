@@ -52,7 +52,7 @@ object DungeonWaypoints : Module(
     tag = TagType.NEW
 ) {
     private var allowEdits by BooleanSetting("Allow Edits", false, description = "Allows you to edit waypoints.")
-    private var allowMidair by BooleanSetting("Allow Midair", default = false, description = "Allows waypoints to be placed midair if they reach the end of distance without hitting a block").withDependency { allowEdits}
+    private var allowMidair by BooleanSetting("Allow Midair", default = false, description = "Allows waypoints to be placed midair if they reach the end of distance without hitting a block.").withDependency { allowEdits}
     private var reachColor by ColorSetting("Reach Color", default = Color(0, 255, 213, 0.43f), description = "Color of the reach box highlight.", allowAlpha = true).withDependency { allowEdits }
     private val allowTextEdit by BooleanSetting("Allow Text Edit", true, description = "Allows you to set the text of a waypoint while sneaking.")
 
@@ -226,10 +226,9 @@ object DungeonWaypoints : Module(
 
     @SubscribeEvent
     fun onMouseInput(event: MouseEvent) {
-        if (allowEdits && event.dwheel.sign != 0) {
-            distance = (distance + event.dwheel.sign).coerceIn(0.0, 100.0)
-            event.isCanceled = true
-        }
+        if (!allowEdits || event.dwheel.sign == 0) return
+        distance = (distance + event.dwheel.sign).coerceIn(0.0, 100.0)
+        event.isCanceled = true
     }
 
     @SubscribeEvent
