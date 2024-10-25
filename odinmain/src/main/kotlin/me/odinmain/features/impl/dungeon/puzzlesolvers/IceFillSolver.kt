@@ -43,7 +43,7 @@ object IceFillSolver {
 
     fun enterDungeonRoom(event: RoomEnterEvent) {
         val room = event.fullRoom?.room ?: return
-        if (room.data.name != "Ice Fill") return
+        if (room.data.name != "Ice Fill" || currentPatterns.isNotEmpty()) return
 
         scanAllFloors(room.vec3.addRotationCoords(room.rotation, 8), room.rotation)
     }

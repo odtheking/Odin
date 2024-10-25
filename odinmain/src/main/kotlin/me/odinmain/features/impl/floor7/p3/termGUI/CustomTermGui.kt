@@ -48,9 +48,7 @@ abstract class TermGui {
     protected val itemIndexMap: MutableMap<Int, Box> = mutableMapOf()
 
     fun mouseClicked(x: Int, y: Int, button: Int) {
-        itemIndexMap.entries.find {
-            it.value.isPointWithin(x, y)
-        }?.let {
+        itemIndexMap.entries.find { it.value.isPointWithin(x, y) }?.let {
             if (System.currentTimeMillis() - currentTerm.timeOpened < 300) return
             if (GuiEvent.CustomTermGuiClick(it.key, if (button == 0) 3 else 0, button).postAndCatch()) return
             windowClick(it.key, if (button == 0) PlayerUtils.ClickType.Middle else PlayerUtils.ClickType.Right, true)

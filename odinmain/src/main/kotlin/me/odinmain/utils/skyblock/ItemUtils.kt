@@ -20,11 +20,14 @@ import net.minecraftforge.common.util.Constants
 val ItemStack?.extraAttributes: NBTTagCompound?
     get() = this?.getSubCompound("ExtraAttributes", false)
 
+fun ItemStack.displayName(): String =
+    this.tagCompound?.getCompoundTag("display")?.takeIf { it.hasKey("Name", 8) }?.getString("Name") ?: this.item.getItemStackDisplayName(this)
+
 /**
  * Returns displayName without control codes.
  */
 val ItemStack?.unformattedName: String
-    get() = this?.displayName?.noControlCodes ?: ""
+    get() = this?.displayName()?.noControlCodes ?: ""
 
 /**
  * Returns the lore for an Item
