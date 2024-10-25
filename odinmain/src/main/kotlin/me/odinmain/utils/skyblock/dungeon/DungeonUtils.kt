@@ -242,10 +242,12 @@ object DungeonUtils {
         }
     }
 
-    fun Room.getRelativeCoords(pos: Vec3) = pos.subtractVec(x = this.clayPos.x, z = this.clayPos.z).rotateToNorth(this.rotation)
-    fun Room.getRealCoords(pos: Vec3) = pos.rotateAroundNorth(this.rotation).addVec(x = this.clayPos.x, z = this.clayPos.z)
-    fun Room.getRelativeCoords(pos: BlockPos) = getRelativeCoords(Vec3(pos.x.toDouble(), pos.y.toDouble(), pos.z.toDouble()))
-    fun Room.getRealCoords(pos: BlockPos) = getRealCoords(Vec3(pos.x.toDouble(), pos.y.toDouble(), pos.z.toDouble()))
+    fun Room.getRelativeCoords(pos: Vec3) = pos.subtractVec(x = clayPos.x, z = clayPos.z).rotateToNorth(rotation)
+    fun Room.getRealCoords(pos: Vec3) = pos.rotateAroundNorth(rotation).addVec(x = clayPos.x, z = clayPos.z)
+    fun Room.getRelativeCoords(pos: BlockPos) = getRelativeCoords(Vec3(pos.x.toDouble(), pos.y.toDouble(), pos.z.toDouble())).toBlockPos()
+    fun Room.getRealCoords(pos: BlockPos) = getRealCoords(Vec3(pos.x.toDouble(), pos.y.toDouble(), pos.z.toDouble())).toBlockPos()
+    fun Room.getRelativeCoords(x: Int, y: Int, z: Int) = getRelativeCoords(BlockPos(x.toDouble(), y.toDouble(), z.toDouble()))
+    fun Room.getRealCoords(x: Int, y: Int, z: Int) = getRealCoords(BlockPos(x.toDouble(), y.toDouble(), z.toDouble()))
 
     val dungeonItemDrops = listOf(
         "Health Potion VIII Splash Potion", "Healing Potion 8 Splash Potion", "Healing Potion VIII Splash Potion", "Healing VIII Splash Potion", "Healing 8 Splash Potion",

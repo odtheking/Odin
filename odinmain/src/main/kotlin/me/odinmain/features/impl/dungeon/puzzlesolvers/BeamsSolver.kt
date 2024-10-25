@@ -45,8 +45,8 @@ object BeamsSolver {
 
         currentLanternPairs.clear()
         lanternPairs.forEach {
-            val pos = room.getRealCoords(BlockPos(it[0], it[1], it[2])).toBlockPos()
-            val pos2 = room.getRealCoords(BlockPos(it[3], it[4], it[5])).toBlockPos()
+            val pos = room.getRealCoords(it[0], it[1], it[2])
+            val pos2 = room.getRealCoords(it[3], it[4], it[5])
 
             if (getBlockIdAt(pos) == 169 && getBlockIdAt(pos2) == 169)
                 currentLanternPairs[pos] = pos2 to colors[currentLanternPairs.size]

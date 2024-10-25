@@ -26,7 +26,7 @@ object TPMazeSolver {
         val room = event.room ?: return
         if (room.data.name != "Teleport Maze") return
 
-        tpPads = BlockPos.getAllInBox(room.getRealCoords(Vec3(30.0, 69.0, 30.0)).toBlockPos(), room.getRealCoords(Vec3(0.0, 69.0, 0.0)).toBlockPos())
+        tpPads = BlockPos.getAllInBox(room.getRealCoords(BlockPos(0.0, 69.0, 0.0)), room.getRealCoords(BlockPos(30.0, 69.0, 30.0)))
             .filter { getBlockAt(it) == Blocks.end_portal_frame }.toSet()
     }
 
