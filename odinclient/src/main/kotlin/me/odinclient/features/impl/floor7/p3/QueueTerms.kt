@@ -65,8 +65,6 @@ object QueueTerms : Module(
         if ((TerminalSolver.currentTerm.type == TerminalTypes.ORDER && slot != TerminalSolver.currentTerm.solution.first()) || TerminalSolver.renderType == 3) return
         if (slot in previouslyClicked) return modMessage("Already clicked slot $slot")
         if (TerminalSolver.currentTerm.type == TerminalTypes.RUBIX) {
-            if ((TerminalSolver.currentTerm.solution.count { it == slot } < 3 && button != 0) ||
-                (TerminalSolver.currentTerm.solution.count { it == slot } >= 3 && button != 1)) return modMessage("Wrong button for this slot")
             if (TerminalSolver.currentTerm.solution.count { it == slot }.equalsOneOf(1, 4)) previouslyClicked += slot
         } else previouslyClicked += slot
         queue.takeIf { it.count { click -> click.slot == slot } < 2 }?.add(Click(slot = slot, mode = mode, button = button))
