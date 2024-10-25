@@ -7,7 +7,6 @@ import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.skyblock.Island
 import me.odinmain.utils.skyblock.LocationUtils
-import me.odinmain.utils.skyblock.LocationUtils.inSkyblock
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.init.Blocks
 import net.minecraft.init.Items
@@ -61,12 +60,13 @@ object AutoExperiments : Module(
      */
     @SubscribeEvent
     fun onGuiDraw(event: GuiEvent.DrawGuiContainerScreenEvent) {
-        if (!inSkyblock) return
-        val invSlots = ((event.gui as? GuiChest)?.inventorySlots as? ContainerChest)?.inventorySlots?.takeIf { it.size >= 54 } ?: return
-        when (currentExperiment) {
-            ExperimentType.CHRONOMATRON -> solveChronomatron(invSlots)
-            ExperimentType.ULTRASEQUENCER -> solveUltraSequencer(invSlots)
-            else -> return
+        if (!LocationUtils.currentArea.isArea(Island.PrivateIsland)) return
+        ((event.gui as? GuiChest)?.inventorySlots as? ContainerChest)?.inventorySlots?.takeIf { it.size >= 54 }?.let {
+            when (currentExperiment) {
+                ExperimentType.CHRONOMATRON -> solveChronomatron(it)
+                ExperimentType.ULTRASEQUENCER -> solveUltraSequencer(it)
+                else -> return
+            }
         }
     }
 

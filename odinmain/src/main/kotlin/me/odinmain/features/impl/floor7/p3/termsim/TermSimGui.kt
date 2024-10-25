@@ -83,6 +83,7 @@ open class TermSimGui(val name: String, val size: Int, private val inv: Inventor
     }
 
     fun delaySlotClick(slot: Slot, button: Int) {
+        if (mc.currentScreen == StartGui) return slotClick(slot, button)
         if (!doesAcceptClick || slot.inventory != this.inv) return
         doesAcceptClick = false
         runIn((ping / 50).toInt()) {
