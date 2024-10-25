@@ -114,7 +114,9 @@ class Dungeon(val floor: Floor) {
         }
 
         updateDungeonTeammates(packet.entries)
-        puzzles = getDungeonPuzzles(getTabList) // transfer to packet based
+        runOnMCThread {
+            puzzles = getDungeonPuzzles(getTabList) // transfer to packet based
+        }
     }
 
     private val timeRegex = Regex("§r Time: §r§6((?:\\d+h ?)?(?:\\d+m ?)?\\d+s)§r")

@@ -51,6 +51,8 @@ abstract class TermGui {
         itemIndexMap.entries.find { it.value.isPointWithin(x, y) }?.let {
             if (System.currentTimeMillis() - currentTerm.timeOpened < 300) return
             if (GuiEvent.CustomTermGuiClick(it.key, if (button == 0) 3 else 0, button).postAndCatch()) return
+            val needed = currentTerm.solution.count { slot -> slot == it.key }
+            if (currentTerm.type == TerminalTypes.RUBIX && ((needed < 3 && button != 0) || (needed >= 3 && button != 1))) return
             windowClick(it.key, if (button == 0) PlayerUtils.ClickType.Middle else PlayerUtils.ClickType.Right, true)
         }
     }
