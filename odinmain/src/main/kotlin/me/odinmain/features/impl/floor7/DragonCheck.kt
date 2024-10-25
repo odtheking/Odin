@@ -24,15 +24,13 @@ object DragonCheck {
         val dragon = WitherDragonsEnum.entries.find { it.entityId == packet.entityId } ?: return
         if (dragon.entity == null) return dragon.updateEntity(packet.entityId)
         val health = packet.func_149376_c().find { it.dataValueId == 6 }?.`object` as? Float ?: return
-        if (health > 0 || dragon.state == WitherDragonState.DEAD) return
-        dragon.setDead()
+        if (health <= 0 && dragon.state != WitherDragonState.DEAD) dragon.setDead()
     }
 
     fun dragonSpawn(packet: S0FPacketSpawnMob) {
-        val dragon = WitherDragonsEnum.entries
-            .find { isVecInXZ(Vec3(packet.x / 32.0, packet.y / 32.0, packet.z / 32.0), it.boxesDimensions) }
-            ?.takeIf { it.state == WitherDragonState.SPAWNING } ?: return
-        dragon.setAlive(packet.entityID)
+        WitherDragonsEnum.entries
+            .find { isVecInXZ(Vec3(packet.x / 32.0, packet.y / 32.0, packet.z / 32.0), it.boxesDimensions) && it.state == WitherDragonState.SPAWNING }
+            ?.setAlive(packet.entityID)
     }
 
     fun dragonSprayed(packet: S04PacketEntityEquipment) {

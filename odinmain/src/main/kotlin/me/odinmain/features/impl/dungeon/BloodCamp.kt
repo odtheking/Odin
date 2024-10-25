@@ -117,9 +117,7 @@ object BloodCamp : Module(
 
     private fun onPacketLookMove(packet: S17PacketEntityLookMove) {
         val entity = packet.getEntity(mc.theWorld) as? EntityArmorStand ?: return
-        if (!watcher.any { it.getDistanceToEntity(entity) < 20 }) return
-
-        if (entity.getEquipmentInSlot(4)?.item != Items.skull || !allowedMobSkulls.contains(getSkullValue(entity))) return
+        if (watcher.none { it.getDistanceToEntity(entity) < 20 } || entity.getEquipmentInSlot(4)?.item != Items.skull || !allowedMobSkulls.contains(getSkullValue(entity))) return
 
         val packetVector = Vec3(
             (entity.serverPosX + packet.func_149062_c()) / 32.0,
@@ -128,8 +126,6 @@ object BloodCamp : Module(
         )
 
         if (!entityList.containsKey(entity)) entityList[entity] = EntityData(startVector = packetVector, started = tickTime, firstSpawns = firstSpawns)
-
-        if (watcher.none { it.getDistanceToEntity(entity) < 20 }) return
         val data = entityList[entity] ?: return
 
         val timeTook = tickTime - data.started
