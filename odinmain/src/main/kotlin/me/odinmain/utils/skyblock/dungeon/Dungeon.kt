@@ -55,7 +55,7 @@ class Dungeon(val floor: Floor) {
 
     fun enterDungeonRoom(event: RoomEnterEvent) {
         val room = event.fullRoom?.takeUnless { room -> passedRooms.any { it.room.data.name == room.room.data.name } } ?: return
-        dungeonStats.knownSecrets = dungeonStats.knownSecrets?.plus(room.room.data.secrets) ?: roomSecrets
+        dungeonStats.knownSecrets = dungeonStats.knownSecrets?.plus(room.room.data.secrets) ?: room.room.data.secrets
     }
 
     fun onPacket(event: PacketReceivedEvent) {
