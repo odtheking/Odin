@@ -35,6 +35,7 @@ object AutoTerms : Module(
         if (TerminalSolver.currentTerm.type == TerminalTypes.NONE) {
             lastClickTime = System.currentTimeMillis()
             firstClick = true
+            return
         }
 
         if (firstClick && System.currentTimeMillis() - lastClickTime < firstClickDelay) return

@@ -10,7 +10,6 @@ import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.skyblock.PlayerUtils.windowClick
 import me.odinmain.utils.skyblock.devMessage
-import me.odinmain.utils.skyblock.modMessage
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
@@ -56,14 +55,14 @@ object QueueTerms : Module(
 
     @SubscribeEvent
     fun onCustomTermClick(event: GuiEvent.CustomTermGuiClick) {
-        if (TerminalSolver.currentTerm.type == TerminalTypes.NONE || TerminalSolver.renderType != 3) return modMessage("Not in custom term gui")
+        if (TerminalSolver.currentTerm.type == TerminalTypes.NONE || TerminalSolver.renderType != 3) return
         event.isCanceled = true
         handleWindowClick(event.slot, event.mode, event.button)
     }
 
     fun handleWindowClick(slot: Int, mode: Int, button: Int) {
         if ((TerminalSolver.currentTerm.type == TerminalTypes.ORDER && slot != TerminalSolver.currentTerm.solution.first()) || TerminalSolver.renderType != 3) return
-        if (slot in previouslyClicked) return modMessage("Already clicked slot $slot")
+        if (slot in previouslyClicked) return
         if (TerminalSolver.currentTerm.type == TerminalTypes.RUBIX) {
             if (TerminalSolver.currentTerm.solution.count { it == slot }.equalsOneOf(1, 4)) previouslyClicked += slot
         } else previouslyClicked += slot

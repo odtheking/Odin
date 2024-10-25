@@ -33,6 +33,7 @@ object HoverTerms : Module(
     @SubscribeEvent(receiveCanceled = true)
     fun onDrawGuiContainer(event: GuiEvent.DrawGuiContainerScreenEvent) {
         if (
+            TerminalSolver.currentTerm.type == TerminalTypes.NONE ||
             TerminalSolver.currentTerm.solution.isEmpty() ||
             !triggerBotClock.hasTimePassed(triggerDelay) ||
             System.currentTimeMillis() - currentTerm.timeOpened <= firstClickDelay ||
