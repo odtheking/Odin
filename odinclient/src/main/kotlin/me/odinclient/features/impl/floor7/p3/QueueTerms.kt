@@ -40,7 +40,7 @@ object QueueTerms : Module(
 
     @SubscribeEvent
     fun onTick(event: TickEvent.ClientTickEvent) {
-        if (TerminalSolver.currentTerm.type == TerminalTypes.NONE || TerminalSolver.renderType == 3) return
+        if (TerminalSolver.currentTerm.type == TerminalTypes.NONE || TerminalSolver.renderType != 3) return
         TerminalSolver.currentTerm.solution = TerminalSolver.currentTerm.solution.filter { it !in previouslyClicked }
         if (
             event.phase != TickEvent.Phase.START ||
@@ -56,13 +56,13 @@ object QueueTerms : Module(
 
     @SubscribeEvent
     fun onCustomTermClick(event: GuiEvent.CustomTermGuiClick) {
-        if (TerminalSolver.currentTerm.type == TerminalTypes.NONE || TerminalSolver.renderType == 3) return
+        if (TerminalSolver.currentTerm.type == TerminalTypes.NONE || TerminalSolver.renderType != 3) return modMessage("Not in custom term gui")
         event.isCanceled = true
         handleWindowClick(event.slot, event.mode, event.button)
     }
 
     fun handleWindowClick(slot: Int, mode: Int, button: Int) {
-        if ((TerminalSolver.currentTerm.type == TerminalTypes.ORDER && slot != TerminalSolver.currentTerm.solution.first()) || TerminalSolver.renderType == 3) return
+        if ((TerminalSolver.currentTerm.type == TerminalTypes.ORDER && slot != TerminalSolver.currentTerm.solution.first()) || TerminalSolver.renderType != 3) return
         if (slot in previouslyClicked) return modMessage("Already clicked slot $slot")
         if (TerminalSolver.currentTerm.type == TerminalTypes.RUBIX) {
             if (TerminalSolver.currentTerm.solution.count { it == slot }.equalsOneOf(1, 4)) previouslyClicked += slot
