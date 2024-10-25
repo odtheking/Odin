@@ -83,11 +83,13 @@ enum class WitherDragonsEnum (
         entityId = null
         entity = null
         lastDragonDeath = this
+        if (priorityDragon == this) {
+            if (sendArrowHit && WitherDragons.enabled) arrowDeath(this)
+            priorityDragon = None
+        }
 
         if (sendTime && WitherDragons.enabled)
             dragonPBs.time(ordinal, (System.currentTimeMillis() - spawnedTime) / 1000.0, "s§7!", "§${colorCode}${name} §7was alive for §6", addPBString = true, addOldPBString = true)
-
-        if (sendArrowHit && WitherDragons.enabled) arrowDeath(this)
     }
 
     fun updateEntity(entityId: Int) {
@@ -157,8 +159,8 @@ fun handleSpawnPacket(particle: S2APacketParticles) {
         newSpawned to dragons
     }
 
-    if (dragons.isNotEmpty() && (dragons.size == 2 || spawned >= 2))
-        priorityDragon = findPriority(dragons).takeIf { it != priorityDragon }?.also { displaySpawningDragon(it) } ?: priorityDragon
+    if (dragons.isNotEmpty() && (dragons.size == 2 || spawned >= 2) && (priorityDragon == WitherDragonsEnum.None || priorityDragon.entity?.isDead == false))
+        priorityDragon = findPriority(dragons).also { displaySpawningDragon(it) }
 }
 
 private fun checkParticle(event: S2APacketParticles, dragon: WitherDragonsEnum): Boolean {
