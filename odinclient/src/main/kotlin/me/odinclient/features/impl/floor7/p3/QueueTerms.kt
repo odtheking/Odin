@@ -16,7 +16,8 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 object QueueTerms : Module(
     name = "Queue Terms",
     category = Category.FLOOR7,
-    description = "Queues clicks in terminals to ensure every click is registered (only works in custom term gui)."
+    description = "Queues clicks in terminals to ensure every click is registered (only works in custom term gui).",
+    tag = TagType.RISKY
 ) {
     private val dispatchDelay by NumberSetting("Dispatch Delay", 140L, 140L, 300L, unit = "ms", description = "The delay between each click.")
     private data class Click(val slot: Int, val mode: Int, val button: Int)
@@ -39,7 +40,7 @@ object QueueTerms : Module(
 
     @SubscribeEvent
     fun onTick(event: TickEvent.ClientTickEvent) {
-        if (TerminalSolver.currentTerm.type == TerminalTypes.NONE || TerminalSolver.renderType != 3) return
+        if (TerminalSolver.currentTerm.type.equalsOneOf(TerminalTypes.NONE, TerminalTypes.MELODY) || TerminalSolver.renderType != 3) return
         TerminalSolver.currentTerm.solution = TerminalSolver.currentTerm.solution.filter { it !in previouslyClicked }
         if (
             event.phase != TickEvent.Phase.START ||
