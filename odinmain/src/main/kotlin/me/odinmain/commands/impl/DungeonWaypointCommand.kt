@@ -28,6 +28,10 @@ val dungeonWaypointsCommand = commodore("dwp", "dungeonwaypoints") {
         modMessage("Size changed to: ${DungeonWaypoints.size}")
     }
 
+    literal("distance").runs { reach: Int ->
+        DungeonWaypoints.distance = reach.toDouble()
+    }
+
     literal("resetsecrets").runs {
         resetSecrets()
         modMessage("§aSecrets have been reset!")

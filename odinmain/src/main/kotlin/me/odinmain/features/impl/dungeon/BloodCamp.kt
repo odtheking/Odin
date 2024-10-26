@@ -28,6 +28,9 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.CopyOnWriteArrayList
+import java.util.concurrent.CopyOnWriteArraySet
 import kotlin.math.roundToInt
 
 object BloodCamp : Module(
@@ -90,17 +93,17 @@ object BloodCamp : Module(
 
     private var tickTime: Long = 0
 
-    private val forRender = hashMapOf<EntityArmorStand, RenderEData>()
+    private val forRender = ConcurrentHashMap<EntityArmorStand, RenderEData>()
     private data class RenderEData(
         var currVector: Vec3, var endVector: Vec3, var endVecUpdated: Long, var speedVectors: Vec3,
         var lastEndVector: Vec3? = null, var lastPingPoint: Vec3? = null, var lastEndPoint: Vec3? = null,
     )
 
-    private val entityList = hashMapOf<EntityArmorStand, EntityData>()
+    private val entityList = ConcurrentHashMap<EntityArmorStand, EntityData>()
     private data class EntityData(var startVector: Vec3, val started: Long, var firstSpawns: Boolean = true)
 
     private var firstSpawns = true
-    private var watcher = mutableListOf<Entity>()
+    private var watcher = CopyOnWriteArrayList<Entity>()
 
     @SubscribeEvent
     fun onPostMetadata(event: PostEntityMetadata) {
@@ -114,9 +117,7 @@ object BloodCamp : Module(
 
     private fun onPacketLookMove(packet: S17PacketEntityLookMove) {
         val entity = packet.getEntity(mc.theWorld) as? EntityArmorStand ?: return
-        if (!watcher.any { it.getDistanceToEntity(entity) < 20 }) return
-
-        if (entity.getEquipmentInSlot(4)?.item != Items.skull || !allowedMobSkulls.contains(getSkullValue(entity))) return
+        if (watcher.none { it.getDistanceToEntity(entity) < 20 } || entity.getEquipmentInSlot(4)?.item != Items.skull || !allowedMobSkulls.contains(getSkullValue(entity))) return
 
         val packetVector = Vec3(
             (entity.serverPosX + packet.func_149062_c()) / 32.0,
@@ -124,35 +125,33 @@ object BloodCamp : Module(
             (entity.serverPosZ + packet.func_149064_e()) / 32.0,
         )
 
-        if (entity !in entityList) entityList[entity] = EntityData(startVector = packetVector, started = tickTime, firstSpawns = firstSpawns)
+        if (!entityList.containsKey(entity)) entityList[entity] = EntityData(startVector = packetVector, started = tickTime, firstSpawns = firstSpawns)
+        val data = entityList[entity] ?: return
 
-        if (watcher.none { it.getDistanceToEntity(entity) < 20 }) return
-        entityList[entity]?.let { data ->
-            val timeTook = tickTime - data.started
-            val startVector = data.startVector
+        val timeTook = tickTime - data.started
+        val startVector = data.startVector
 
-            val speedVectors = Vec3(
-                (packetVector.xCoord - startVector.xCoord) / timeTook,
-                (packetVector.yCoord - startVector.yCoord) / timeTook,
-                (packetVector.zCoord - startVector.zCoord) / timeTook,
-            )
+        val speedVectors = Vec3(
+            (packetVector.xCoord - startVector.xCoord) / timeTook,
+            (packetVector.yCoord - startVector.yCoord) / timeTook,
+            (packetVector.zCoord - startVector.zCoord) / timeTook,
+        )
 
-            val time = getTime(data.firstSpawns, timeTook)
+        val time = getTime(data.firstSpawns, timeTook)
 
-            val endpoint = Vec3(
-                packetVector.xCoord + speedVectors.xCoord * time,
-                packetVector.yCoord + speedVectors.yCoord * time,
-                packetVector.zCoord + speedVectors.zCoord * time,
-            )
+        val endpoint = Vec3(
+            packetVector.xCoord + speedVectors.xCoord * time,
+            packetVector.yCoord + speedVectors.yCoord * time,
+            packetVector.zCoord + speedVectors.zCoord * time,
+        )
 
-            if (entity !in forRender) forRender[entity] = RenderEData(packetVector, endpoint, tickTime, speedVectors)
-            else forRender[entity]?.let {
-                it.lastEndVector = it.endVector.clone()
-                it.currVector = packetVector
-                it.endVector = endpoint
-                it.endVecUpdated = tickTime
-                it.speedVectors = speedVectors
-            }
+        if (!forRender.containsKey(entity)) forRender[entity] = RenderEData(packetVector, endpoint, tickTime, speedVectors)
+        else forRender[entity]?.let {
+            it.lastEndVector = it.endVector.clone()
+            it.currVector = packetVector
+            it.endVector = endpoint
+            it.endVecUpdated = tickTime
+            it.speedVectors = speedVectors
         }
     }
 
@@ -167,15 +166,12 @@ object BloodCamp : Module(
         if (!bloodHelper) return
 
         forRender.forEach { (entity, renderData) ->
-            if (entity.isDead) return@forEach
-            val entityData = entityList[entity] ?: return@forEach
+            val (_, started, firstSpawn) = entityList[entity]?.takeUnless { entity.isDead } ?: return@forEach
 
             val (currVector, endVector, endVecUpdated, speedVectors) = renderData
-            val lastEndVector = renderData.lastEndVector ?: return@forEach
-
             val endVectorUpdated = min(tickTime - endVecUpdated, 100)
 
-            val endPoint = calcEndVector(endVector, lastEndVector, endVectorUpdated / 100)
+            val endPoint = calcEndVector(endVector, renderData.lastEndVector, endVectorUpdated / 100)
 
             val pingPoint = Vec3(
                 entity.posX + speedVectors.xCoord * averagePing,
@@ -193,7 +189,7 @@ object BloodCamp : Module(
             val pingAABB = AxisAlignedBB(boxSize,boxSize,boxSize, 0.0, 0.0, 0.0).offset(boxOffset + renderPingPoint)
             val endAABB = AxisAlignedBB(boxSize,boxSize,boxSize, 0.0, 0.0, 0.0).offset(boxOffset + renderEndPoint)
 
-            val time = getTime(entityData.firstSpawns,  tickTime - entityData.started)
+            val time = getTime(firstSpawn,  tickTime - started)
 
             if (averagePing < time) {
                 Renderer.drawBox(pingAABB, mboxColor, fillAlpha = 0f, outlineAlpha = mboxColor.alpha, depth = true)

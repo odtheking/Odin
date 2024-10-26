@@ -40,10 +40,8 @@ val devCommand = commodore("oddev") {
             }
         }
 
-        literal("reset") {
-            runs { soft: Boolean? ->
-                WitherDragonsEnum.reset(soft == true)
-            }
+        literal("reset").runs { soft: Boolean? ->
+            WitherDragonsEnum.reset(soft == true)
         }
 
         literal("status").runs {
