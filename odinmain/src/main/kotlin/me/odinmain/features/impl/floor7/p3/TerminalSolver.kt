@@ -235,7 +235,7 @@ object TerminalSolver : Module(
     @SubscribeEvent
     fun onGuiKeyPress(event: GuiEvent.GuiKeyPressEvent) {
         if (currentTerm.type == TerminalTypes.NONE || !enabled || (currentTerm.type == TerminalTypes.MELODY && cancelMelodySolver)) return
-        if (renderType == 3) event.isCanceled = true // maybe add normal gui keyboard clicking
+        if (renderType == 3 && (event.keyCode == mc.gameSettings.keyBindDrop.keyCode || event.keyCode in 2..10)) event.isCanceled = true
     }
 
     @SubscribeEvent

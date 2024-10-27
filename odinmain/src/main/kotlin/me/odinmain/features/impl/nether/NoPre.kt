@@ -21,7 +21,7 @@ object NoPre : Module(
     private var preSpot = PreSpot.None
     var missing = PreSpot.None
 
-    private val partyChatRegex = Regex("^Party > (\\[[^]]*?])? ?(\\w{1,16}): No ?(Triangle|X|Equals|Slash|X Cannon|Square|Shop)!\$")
+    private val partyChatRegex = Regex("^Party > (\\[[^]]*?])? ?(\\w{1,16}): No ?(Triangle|X|Equals|Slash|xCannon|Square|Shop)!\$")
 
     init {
         onMessage("[NPC] Elle: Head over to the main platform, I will join you when I get a bite!", false) {
@@ -54,7 +54,7 @@ object NoPre : Module(
             else if (!second) {
                 msg = when (preSpot) {
                     PreSpot.Triangle -> "No Shop!"
-                    PreSpot.X -> "No X Cannon!"
+                    PreSpot.X -> "No xCannon!"
                     PreSpot.Slash -> "No Square!"
                     else -> return@onMessage
                 }
@@ -104,9 +104,9 @@ object NoPre : Module(
 
             // Slash Missing
             PreSpot.Slash -> when (preSpot) {
-                PreSpot.Triangle -> "Go Square, place on Triangle"
+                PreSpot.Triangle -> "Go x Cannon"
                 PreSpot.X -> "Go X Cannon"
-                PreSpot.Equals -> "Go Square, place on Equals"
+                PreSpot.Equals -> "Go Square, place on Slash"
                 PreSpot.Slash -> if (advanced) "Pull Square and X Cannon. Next: collect Shop" else "Pull Square. Next: collect Shop"
                 else -> ""
             }

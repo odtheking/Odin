@@ -36,6 +36,7 @@ object OutlineUtils {
         render(event)
         renderFour()
         render(event)
+        glLineWidth(1f)
         glPopAttrib()
         glPopMatrix()
         mc.gameSettings.fancyGraphics = fancyGraphics

@@ -180,7 +180,7 @@ object RenderUtils {
         if (smoothLines) GL11.glDisable(GL11.GL_LINE_SMOOTH)
 
         if (!depth) resetDepth()
-        GL11.glLineWidth(2f)
+        GL11.glLineWidth(1f)
         postDraw()
         GlStateManager.popMatrix()
     }
@@ -205,7 +205,7 @@ object RenderUtils {
 
         if (!depth) resetDepth()
         GL11.glDisable(GL11.GL_LINE_SMOOTH)
-        GL11.glLineWidth(2f)
+        GL11.glLineWidth(1f)
         postDraw()
         GlStateManager.popMatrix()
     }
@@ -283,6 +283,7 @@ object RenderUtils {
         Cylinder().draw(baseRadius.toFloat(), topRadius.toFloat(), height.toFloat(), slices.toInt(), stacks.toInt())
 
         postDraw()
+        GL11.glLineWidth(1f)
         GlStateManager.enableCull()
         if (!depth) resetDepth()
         GlStateManager.popMatrix()
@@ -380,7 +381,7 @@ object RenderUtils {
             GL11.glEnable(GL11.GL_TEXTURE_2D)
 
             GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
-            GL11.glLineWidth(2f)
+            GL11.glLineWidth(1f)
             GL11.glEnable(GL11.GL_CULL_FACE)
 
             GL11.glEndList()

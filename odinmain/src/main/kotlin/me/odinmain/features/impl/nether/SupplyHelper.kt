@@ -13,6 +13,7 @@ import me.odinmain.utils.skyblock.KuudraUtils
 import me.odinmain.utils.skyblock.KuudraUtils.PreSpot
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.util.Vec3
+import net.minecraftforge.client.event.ClientChatReceivedEvent
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import kotlin.math.cos
@@ -29,18 +30,23 @@ object SupplyHelper : Module(
     private val sendSupplyTime by BooleanSetting("Send Supply Time", true, description = "Sends a message when a supply is collected.")
 
     private var startRun = 0L
-
+    private val supplyPickUpRegex = Regex("(?:\\[[^]]*])? ?(\\w{1,16}) recovered one of Elle's supplies! \\((\\d)/(\\d)\\)")
+    // https://regex101.com/r/xsDImP/1
     init {
         onMessage(Regex("\\[NPC] Elle: Okay adventurers, I will go and fish up Kuudra!")) {
             startRun = System.currentTimeMillis()
         }
 
-        onMessageCancellable(Regex("(\\[\\w+])?(\\w+) recovered one of Elle's supplies! \\((\\d)/(\\d)\\)")) {
-            if (!sendSupplyTime) return@onMessageCancellable
-            val (name, current, total) = Regex("(\\[\\w+])?(\\w+) recovered one of Elle's supplies! \\((\\d)/(\\d)\\)").find(it.message)?.destructured ?: return@onMessageCancellable
-            modMessage("$name, §a§lrecovered a supply at ${formatTime((System.currentTimeMillis() - startRun))}!, §r§8($current/$total)", "")
-            it.isCanceled = true
+        onMessage(supplyPickUpRegex, { sendSupplyTime && enabled }) {
+            val (name, current, total) = supplyPickUpRegex.find(it)?.destructured ?: return@onMessage
+            modMessage("$name, §a§lrecovered a supply in ${formatTime((System.currentTimeMillis() - startRun))}!, §r§8($current/$total)", "")
         }
+    }
+
+    @SubscribeEvent
+    fun onChatMessage(event: ClientChatReceivedEvent) {
+        if (!KuudraUtils.inKuudra || KuudraUtils.phase != 1 && !sendSupplyTime) return
+        if (supplyPickUpRegex.matches(event.message.unformattedText)) event.isCanceled = true
     }
 
     @SubscribeEvent
