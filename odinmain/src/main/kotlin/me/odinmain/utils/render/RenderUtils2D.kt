@@ -143,6 +143,7 @@ object RenderUtils2D {
         tessellator.draw()
 
         Color.WHITE.bind()
+        GL11.glLineWidth(1f)
         GlStateManager.enableTexture2D()
         GlStateManager.disableBlend()
         GL11.glDisable(GL11.GL_LINE_SMOOTH)

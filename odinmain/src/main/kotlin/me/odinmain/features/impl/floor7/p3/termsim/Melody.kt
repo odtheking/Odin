@@ -59,15 +59,14 @@ object Melody : TermSimGui(
     }
 
     override fun slotClick(slot: Slot, button: Int) {
-        val clickedRow = slot.slotIndex / 9
-        if (slot.slotIndex % 9 != 7 || (limeColumn != magentaColumn) || clickedRow != currentRow) return
+        if (slot.slotIndex % 9 != 7 || limeColumn != magentaColumn || slot.slotIndex / 9 != currentRow) return
 
         currentRow++
         magentaColumn = (1 until 5).random()
         updateGui()
 
         if (!TerminalSounds.enabled || !clickSounds) mc.thePlayer.playSound("random.orb", 1f, 1f)
-        if (clickedRow == 4) solved(this.name, 5)
+        if (currentRow >= 5) solved(this.name, 5)
     }
 }
 

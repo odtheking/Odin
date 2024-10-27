@@ -129,7 +129,7 @@ object RenderOptimizer : Module(
 
     private fun hideNonStarredMob(entity: Entity) {
         val name = entity.customNameTag
-        if (!name.startsWith("§6✯ ") && name.contains("§c❤") && dungeonMobSpawns.any { it in name })
+        if (!DungeonUtils.inBoss && !name.startsWith("§6✯ ") && name.contains("§c❤") && dungeonMobSpawns.any { it in name })
             entity.alwaysRenderNameTag = false
     }
 

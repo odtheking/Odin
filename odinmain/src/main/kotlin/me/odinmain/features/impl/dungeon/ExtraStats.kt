@@ -23,7 +23,7 @@ object ExtraStats : Module(
 
         modMessage(getChatBreak(), prefix = "")
         modMessage("", prefix = "")
-        modMessage(getCenteredText(if (DungeonUtils.floor.isInMM) "§cMaster Mode" else "§cThe Catacombs" + " §r- §e${DungeonUtils.floor.name}"), prefix = "")
+        modMessage(getCenteredText((if (DungeonUtils.floor.isInMM) "§cMaster Mode" else "§cThe Catacombs") + " §r- §e${DungeonUtils.floor.name}"), prefix = "")
         modMessage("", prefix = "")
         modMessage(getCenteredText(defeatedText), prefix = "")
         modMessage(getCenteredText("§aScore: §6${extraStats.score} §a(§b${extraStats.scoreLetter}§a${if (extraStats.scorePB) " §d§l(NEW RECORD!)" else ""})"), prefix = "")
@@ -79,7 +79,7 @@ object ExtraStats : Module(
                 Regex("^\\s*☠ Defeated (.+) in 0?([\\dhms ]+?)\\s*(\\(NEW RECORD!\\))?\$"),
                 Regex("^\\s*Team Score: \\d+ \\(.{1,2}\\)\\s?(?:\\(NEW RECORD!\\))?\$"),
                 Regex("^\\s*(\\+[\\d,.]+\\s?\\w+ Experience)\\s?(?:\\(.+\\))?\$"),
-                Regex("^\\s*(Master Mode)?(?:The)? Catacombs - (Entrance|Floor .{1,3})\$"),
+                Regex("^\\s*(Master Mode)? ?(?:The)? Catacombs - (Entrance|Floor .{1,3})\$"),
                 Regex("^\\s*Secrets Found: \\d+\$"),
 
                 Regex("^▬+\$"),

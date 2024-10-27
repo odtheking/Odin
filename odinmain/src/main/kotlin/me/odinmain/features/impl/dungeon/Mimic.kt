@@ -9,7 +9,6 @@ import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.RenderUtils.outlineBounds
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.LocationUtils.currentDungeon
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
@@ -51,7 +50,7 @@ object Mimic : Module(
     @SubscribeEvent
     fun onRenderLast(event: RenderChestEvent.Post) {
         if (!mimicBox || !DungeonUtils.inDungeons || DungeonUtils.inBoss || event.chest.chestType != 1) return
-        Renderer.drawStyledBox(event.chest.pos.toAABB().outlineBounds(), color = color, style =  style, width = lineWidth, depth = isLegitVersion)
+        Renderer.drawStyledBox(event.chest.pos.toAABB(), color = color, style =  style, width = lineWidth, depth = isLegitVersion)
     }
 
     private fun mimicKilled() {

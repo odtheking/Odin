@@ -212,7 +212,7 @@ object TerminalSolver : Module(
     }
 
     @SubscribeEvent
-    fun guiClick(event: GuiEvent.GuiMouseClickEvent) {
+    fun onGuiClick(event: GuiEvent.GuiMouseClickEvent) {
         val gui = event.gui as? GuiChest ?: return
         if (currentTerm.type == TerminalTypes.NONE || !enabled || (currentTerm.type == TerminalTypes.MELODY && cancelMelodySolver)) return
         if (renderType == 3) {
@@ -230,6 +230,12 @@ object TerminalSolver : Module(
                 else -> false
             }
         }
+    }
+
+    @SubscribeEvent
+    fun onGuiKeyPress(event: GuiEvent.GuiKeyPressEvent) {
+        if (currentTerm.type == TerminalTypes.NONE || !enabled || (currentTerm.type == TerminalTypes.MELODY && cancelMelodySolver)) return
+        if (renderType == 3 && (event.keyCode == mc.gameSettings.keyBindDrop.keyCode || event.keyCode in 2..10)) event.isCanceled = true
     }
 
     @SubscribeEvent

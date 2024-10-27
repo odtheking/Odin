@@ -40,10 +40,8 @@ val devCommand = commodore("oddev") {
             }
         }
 
-        literal("reset") {
-            runs { soft: Boolean? ->
-                WitherDragonsEnum.reset(soft == true)
-            }
+        literal("reset").runs { soft: Boolean? ->
+            WitherDragonsEnum.reset(soft == true)
         }
 
         literal("status").runs {
@@ -105,7 +103,7 @@ val devCommand = commodore("oddev") {
             |currentDungeonPlayer: ${DungeonUtils.currentDungeonPlayer.name}, ${DungeonUtils.currentDungeonPlayer.clazz}, ${DungeonUtils.currentDungeonPlayer.isDead}, ${DungeonUtils.isGhost}
             |doorOpener: ${DungeonUtils.doorOpener}
             |currentRoom: ${DungeonUtils.currentRoom?.data?.name}, roomsPassed: ${DungeonUtils.passedRooms.map { it.data.name }}
-            |Teammates: ${DungeonUtils.dungeonTeammates.joinToString { "${it.clazz.colorCode}${it.name} (${it.clazz})" }}
+            |Teammates: ${DungeonUtils.dungeonTeammates.joinToString { "§${it.clazz.colorCode}${it.name} (${it.clazz})" }}
             |TeammatesNoSelf: ${DungeonUtils.dungeonTeammatesNoSelf.map { it.name }}
             |LeapTeammates: ${DungeonUtils.leapTeammates.map { it.name }}
             |Blessings: ${Blessing.entries.joinToString { "${it.name}: ${it.current}" }}

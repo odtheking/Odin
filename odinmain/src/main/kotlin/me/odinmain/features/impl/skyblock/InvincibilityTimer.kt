@@ -18,8 +18,8 @@ object InvincibilityTimer : Module(
     description = "Timer to show how long you have left Invincible.",
     category = Category.SKYBLOCK
 )  {
+    private val showCooldown by BooleanSetting("Show Cooldown", default = true, description = "Shows the cooldown of the mask.")
     private val invincibilityAnnounce by BooleanSetting("Announce Invincibility", default = true, description = "Announces when you get invincibility.")
-    private val showPrefix by BooleanSetting("Show Prefix", default = true, description = "Shows the prefix of the timer.")
     private val hud by HudSetting("Timer Hud", 10f, 10f, 1f, true) {
         if (it) {
             mcText("${if(showPrefix) "§bBonzo§f: " else ""}59t", 1f, 1f, 1, Color.WHITE, center = false)
@@ -32,7 +32,7 @@ object InvincibilityTimer : Module(
             getMCTextWidth("Bonzo: 59t") + 2f to 1f
         }
     }
-    private val showCooldown by BooleanSetting("Show Cooldown", default = true, description = "Shows the cooldown of the mask.")
+    private val showPrefix by BooleanSetting("Show Prefix", default = true, description = "Shows the prefix of the timer.")
 
     private data class Timer(var time: Int, var type: String)
     private var invincibilityTime = Timer(0, "")
@@ -42,6 +42,14 @@ object InvincibilityTimer : Module(
 
     private var spiritMaskProc = 0L
     private var bonzoMaskProc = 0L
+
+    init {
+        onWorldLoad {
+            invincibilityTime = Timer(0, "")
+            spiritMaskProc = 0L
+            bonzoMaskProc = 0L
+        }
+    }
 
     @SubscribeEvent
     fun onChat(event: ChatPacketEvent) {
@@ -71,7 +79,7 @@ object InvincibilityTimer : Module(
     fun onRenderSlotOverlay(event: DrawSlotOverlayEvent) {
         if (!LocationUtils.inSkyblock || !showCooldown) return
         val durability = when (event.stack.skyblockID) {
-            "BONZO_MASK" -> (System.currentTimeMillis() - bonzoMaskProc) / 180000.0
+            "BONZO_MASK", "STARRED_BONZO_MASK" -> (System.currentTimeMillis() - bonzoMaskProc) / 180000.0
             "SPIRIT_MASK" -> (System.currentTimeMillis() - spiritMaskProc) / 30000.0
             else -> return
         }
