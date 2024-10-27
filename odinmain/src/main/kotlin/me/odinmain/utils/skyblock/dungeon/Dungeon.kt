@@ -31,7 +31,7 @@ class Dungeon(val floor: Floor) {
     var dungeonTeammatesNoSelf: ArrayList<DungeonPlayer> = ArrayList<DungeonPlayer>(4)
     var leapTeammates: ArrayList<DungeonPlayer> = ArrayList<DungeonPlayer>(4)
     var dungeonStats = DungeonStats()
-    val currentFullRoom: Room? get() = ScanUtils.currentRoom
+    val currentRoom: Room? get() = ScanUtils.currentRoom
     val passedRooms: MutableSet<Room> get() = ScanUtils.passedRooms
     var puzzles = listOf<Puzzle>()
 

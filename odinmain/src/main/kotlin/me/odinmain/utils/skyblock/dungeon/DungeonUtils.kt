@@ -79,7 +79,7 @@ object DungeonUtils {
         get() = getItemSlot("Haunt", true) != null
 
     val currentRoomName: String
-        get() = currentDungeon?.currentFullRoom?.data?.name ?: "Unknown"
+        get() = currentDungeon?.currentRoom?.data?.name ?: "Unknown"
 
     val dungeonTeammates: List<DungeonPlayer>
         get() = currentDungeon?.dungeonTeammates.orEmpty()
@@ -100,7 +100,7 @@ object DungeonUtils {
         get() = currentDungeon?.dungeonStats?.mimicKilled == true
 
     val currentRoom: Room?
-        get() = currentDungeon?.currentFullRoom
+        get() = currentDungeon?.currentRoom
 
     val passedRooms: Set<Room>
         get() = currentDungeon?.passedRooms.orEmpty()

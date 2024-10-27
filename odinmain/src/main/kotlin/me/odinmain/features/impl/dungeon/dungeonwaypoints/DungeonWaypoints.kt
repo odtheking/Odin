@@ -207,7 +207,7 @@ object DungeonWaypoints : Module(
         val sr = ScaledResolution(mc)
         val pos = reachPosition
         val (text, editText) = pos?.add(offset)?.let {
-            val room = DungeonUtils.currentFullRoom ?: return
+            val room = DungeonUtils.currentRoom ?: return
             val vec = room.getRelativeCoords(it.add(offset).toVec3())
             val waypoint = getWaypoints(room).find { it.toVec3().equal(vec) }
 

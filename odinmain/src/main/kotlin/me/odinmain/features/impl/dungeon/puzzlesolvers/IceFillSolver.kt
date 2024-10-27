@@ -46,7 +46,7 @@ object IceFillSolver {
         val room = event.room ?: return
         if (room.data.name != "Ice Fill" || currentPatterns.isNotEmpty()) return
 
-        scanAllFloors(room.getRealCoords(Vec3(15.0, 70.0, 7.0)), room.rotation)
+        scanAllFloors(room.getRealCoords(15, 70, 7).toVec3(), room.rotation)
     }
 
     private fun scanAllFloors(pos: Vec3, rotation: Rotations) {
