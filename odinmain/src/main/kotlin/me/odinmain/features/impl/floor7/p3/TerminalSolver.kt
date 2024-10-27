@@ -29,6 +29,7 @@ import net.minecraftforge.fml.common.Loader
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
+import org.lwjgl.input.Keyboard
 
 @AlwaysActive // So it can be used in other modules
 object TerminalSolver : Module(
@@ -95,6 +96,7 @@ object TerminalSolver : Module(
         val items = event.gui.inventory.subList(0, event.gui.inventory.size - 37)
         if (newTerm != currentTerm.type) {
             currentTerm = Terminal(type = newTerm, items = items, timeOpened = System.currentTimeMillis())
+            TerminalOpenedEvent(currentTerm.type).postAndCatch()
             lastTermOpened = currentTerm.type
             lastRubixSolution = null
         }
@@ -115,7 +117,6 @@ object TerminalSolver : Module(
             else -> return
         }
         if (renderType == 3 && Loader.instance().activeModList.any { it.modId == "notenoughupdates" }) NEUApi.setInventoryButtonsToDisabled()
-        TerminalOpenedEvent(currentTerm.type, currentTerm.solution).postAndCatch()
     }
 
     @SubscribeEvent
@@ -235,7 +236,10 @@ object TerminalSolver : Module(
     @SubscribeEvent
     fun onGuiKeyPress(event: GuiEvent.GuiKeyPressEvent) {
         if (currentTerm.type == TerminalTypes.NONE || !enabled || (currentTerm.type == TerminalTypes.MELODY && cancelMelodySolver)) return
-        if (renderType == 3 && (event.keyCode == mc.gameSettings.keyBindDrop.keyCode || event.keyCode in 2..10)) event.isCanceled = true
+        if (renderType == 3 && (event.keyCode == mc.gameSettings.keyBindDrop.keyCode || event.keyCode in 2..10)) {
+            CustomTermGui.mouseClicked(MouseUtils.mouseX.toInt(), MouseUtils.mouseY.toInt(), if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) && event.keyCode == mc.gameSettings.keyBindDrop.keyCode) 1 else 0)
+            event.isCanceled = true
+        }
     }
 
     @SubscribeEvent

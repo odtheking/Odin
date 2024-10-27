@@ -77,7 +77,7 @@ object RenderOptimizer : Module(
                 event.packet.func_149376_c()?.let {
                     it.filterIsInstance<String>()
                         .takeUnless { strings -> strings.any { healthMatches.any { regex -> regex.matches(it) } } }
-                        ?.forEach { entity.alwaysRenderNameTag = false }
+                        ?.forEach { entity.setDead() }
                 }
             }
         }
@@ -119,24 +119,23 @@ object RenderOptimizer : Module(
 
     private fun handleWitherMiner(entity: Entity) {
         if (entity.customNameTag.noControlCodes.containsOneOf("Wither Miner", "Wither Guard", "Apostle"))
-            entity.alwaysRenderNameTag = false
+            entity.setDead()
     }
 
     private fun handleTerracotta(entity: Entity) {
         if (entity.customNameTag.noControlCodes.contains("Terracotta "))
-            entity.alwaysRenderNameTag = false
+            entity.setDead()
     }
 
     private fun hideNonStarredMob(entity: Entity) {
         val name = entity.customNameTag
         if (!DungeonUtils.inBoss && !name.startsWith("§6✯ ") && name.contains("§c❤") && dungeonMobSpawns.any { it in name })
-            entity.alwaysRenderNameTag = false
+            entity.setDead()
     }
 
     private fun removeBlazePuzzleNames(entity: Entity) {
         if (entity is EntityBlaze) entity.setDead()
-        val name = entity.customNameTag
-        if (name.noControlCodes.startsWith("[Lv15] Blaze "))
+        if (entity.customNameTag.noControlCodes.startsWith("[Lv15] Blaze "))
             entity.alwaysRenderNameTag = false
     }
     

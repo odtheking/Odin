@@ -82,7 +82,7 @@ object InvincibilityTimer : Module(
             "BONZO_MASK", "STARRED_BONZO_MASK" -> (System.currentTimeMillis() - bonzoMaskProc) / 180000.0
             "SPIRIT_MASK" -> (System.currentTimeMillis() - spiritMaskProc) / 30000.0
             else -> return
-        }
-        if (durability < 1.0) RenderUtils.renderDurabilityBar(event.x ?: return, event.y ?: return, durability)
+        }.takeIf { it < 1.0 } ?: return
+        RenderUtils.renderDurabilityBar(event.x ?: return, event.y ?: return, durability)
     }
 }

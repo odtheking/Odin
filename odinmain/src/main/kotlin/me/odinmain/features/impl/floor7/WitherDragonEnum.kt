@@ -163,6 +163,5 @@ fun handleSpawnPacket(particle: S2APacketParticles) {
         priorityDragon = findPriority(dragons).also { displaySpawningDragon(it) }
 }
 
-private fun checkParticle(event: S2APacketParticles, dragon: WitherDragonsEnum): Boolean {
-    return event.xCoordinate in dragon.xRange && event.zCoordinate in dragon.zRange
-}
+private fun checkParticle(event: S2APacketParticles, dragon: WitherDragonsEnum): Boolean =
+    event.xCoordinate in dragon.xRange && event.zCoordinate in dragon.zRange

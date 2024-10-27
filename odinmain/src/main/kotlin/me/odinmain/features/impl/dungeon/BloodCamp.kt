@@ -1,6 +1,7 @@
 package me.odinmain.features.impl.dungeon
 
 import me.odinmain.OdinMain.isLegitVersion
+import me.odinmain.events.impl.EntityLeaveWorldEvent
 import me.odinmain.events.impl.PostEntityMetadata
 import me.odinmain.events.impl.RealServerTick
 import me.odinmain.features.Category
@@ -14,9 +15,9 @@ import me.odinmain.utils.render.RenderUtils.renderVec
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.devMessage
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.skyblock.dungeon.DungeonUtils.inBoss
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.inDungeons
 import me.odinmain.utils.skyblock.getSkullValue
-import net.minecraft.entity.Entity
 import net.minecraft.entity.boss.BossStatus
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.entity.monster.EntityZombie
@@ -29,8 +30,6 @@ import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.CopyOnWriteArrayList
-import java.util.concurrent.CopyOnWriteArraySet
 import kotlin.math.roundToInt
 
 object BloodCamp : Module(
@@ -56,11 +55,6 @@ object BloodCamp : Module(
     private val firstSpawnRegex = Regex("^\\[BOSS] The Watcher: Let's see how you can handle this.$")
 
     init {
-        execute(100) {
-            getWatcherHealth()
-            watcher.removeAll { it.isDead }
-        }
-
         onPacket(S17PacketEntityLookMove::class.java, { bloodHelper && enabled }) {
             onPacketLookMove(it)
         }
@@ -70,54 +64,53 @@ object BloodCamp : Module(
         }
 
         onWorldLoad {
-            entityList.clear()
+            entityDataMap.clear()
             firstSpawns = true
-            watcher.clear()
-            forRender.clear()
-            tickTime = 0
+            currentWatcherEntity = null
+            renderDataMap.clear()
+            currentTickTime = 0
             currentName = null
         }
     }
 
-    private fun getWatcherHealth() {
-        if (!inDungeons || BossStatus.bossName.noControlCodes != "The Watcher" || !watcherBar) return
-        val amount = 12 + DungeonUtils.floor.floorNumber
-        currentName = if (BossStatus.healthScale < 0.05) null else " ${(amount * BossStatus.healthScale).roundToInt()}/$amount"
-    }
-
     @SubscribeEvent
-    fun onRenderBossHealth(event: RenderGameOverlayEvent) {
-        if (!inDungeons || event.type != RenderGameOverlayEvent.ElementType.BOSSHEALTH || currentName == null || !watcherBar || BossStatus.bossName.noControlCodes != "The Watcher") return 
-        BossStatus.bossName += currentName
+    fun onRenderBossHealth(event: RenderGameOverlayEvent.Pre) {
+        if (!inDungeons || inBoss || event.type != RenderGameOverlayEvent.ElementType.BOSSHEALTH ||
+            currentName == null || !watcherBar || BossStatus.bossName.noControlCodes != "The Watcher") return
+        val amount = 12 + DungeonUtils.floor.floorNumber
+        BossStatus.bossName += if (BossStatus.healthScale < 0.05) null else " ${(amount * BossStatus.healthScale).roundToInt()}/$amount"
     }
 
-    private var tickTime: Long = 0
+    private var currentTickTime: Long = 0
 
-    private val forRender = ConcurrentHashMap<EntityArmorStand, RenderEData>()
+    private val renderDataMap = ConcurrentHashMap<EntityArmorStand, RenderEData>()
     private data class RenderEData(
         var currVector: Vec3, var endVector: Vec3, var endVecUpdated: Long, var speedVectors: Vec3,
         var lastEndVector: Vec3? = null, var lastPingPoint: Vec3? = null, var lastEndPoint: Vec3? = null,
     )
 
-    private val entityList = ConcurrentHashMap<EntityArmorStand, EntityData>()
+    private val entityDataMap = ConcurrentHashMap<EntityArmorStand, EntityData>()
     private data class EntityData(var startVector: Vec3, val started: Long, var firstSpawns: Boolean = true)
 
     private var firstSpawns = true
-    private var watcher = CopyOnWriteArrayList<Entity>()
+    private var currentWatcherEntity: EntityZombie? = null
 
     @SubscribeEvent
     fun onPostMetadata(event: PostEntityMetadata) {
-        val entity = mc.theWorld?.getEntityByID(event.packet.entityId) as? EntityZombie ?: return
-        if (watcher.isNotEmpty() || !bloodHelper) return
+        if (!bloodHelper) return
+        currentWatcherEntity = (mc.theWorld?.getEntityByID(event.packet.entityId) as? EntityZombie)?.takeIf { getSkullValue(it) in watcherSkulls } ?: return
+        devMessage("Watcher found at ${currentWatcherEntity?.positionVector}")
+    }
 
-        if (!watcherSkulls.contains(getSkullValue(entity))) return
-        watcher.add(entity)
-        devMessage("Watcher found at ${entity.positionVector}")
+    @SubscribeEvent
+    fun onEntityLeaveWorld(event: EntityLeaveWorldEvent) {
+        if (event.entity == currentWatcherEntity) currentWatcherEntity = null
     }
 
     private fun onPacketLookMove(packet: S17PacketEntityLookMove) {
         val entity = packet.getEntity(mc.theWorld) as? EntityArmorStand ?: return
-        if (watcher.none { it.getDistanceToEntity(entity) < 20 } || entity.getEquipmentInSlot(4)?.item != Items.skull || !allowedMobSkulls.contains(getSkullValue(entity))) return
+        if (currentWatcherEntity?.let { it.getDistanceToEntity(entity) < 20 } == true ||
+            entity.getEquipmentInSlot(4)?.item != Items.skull || getSkullValue(entity) !in allowedMobSkulls) return
 
         val packetVector = Vec3(
             (entity.serverPosX + packet.func_149062_c()) / 32.0,
@@ -125,10 +118,10 @@ object BloodCamp : Module(
             (entity.serverPosZ + packet.func_149064_e()) / 32.0,
         )
 
-        if (!entityList.containsKey(entity)) entityList[entity] = EntityData(startVector = packetVector, started = tickTime, firstSpawns = firstSpawns)
-        val data = entityList[entity] ?: return
+        if (!entityDataMap.containsKey(entity)) entityDataMap[entity] = EntityData(startVector = packetVector, started = currentTickTime, firstSpawns = firstSpawns)
+        val data = entityDataMap[entity] ?: return
 
-        val timeTook = tickTime - data.started
+        val timeTook = currentTickTime - data.started
         val startVector = data.startVector
 
         val speedVectors = Vec3(
@@ -145,31 +138,28 @@ object BloodCamp : Module(
             packetVector.zCoord + speedVectors.zCoord * time,
         )
 
-        if (!forRender.containsKey(entity)) forRender[entity] = RenderEData(packetVector, endpoint, tickTime, speedVectors)
-        else forRender[entity]?.let {
+        if (!renderDataMap.containsKey(entity)) renderDataMap[entity] = RenderEData(packetVector, endpoint, currentTickTime, speedVectors)
+        else renderDataMap[entity]?.let {
             it.lastEndVector = it.endVector.clone()
             it.currVector = packetVector
             it.endVector = endpoint
-            it.endVecUpdated = tickTime
+            it.endVecUpdated = currentTickTime
             it.speedVectors = speedVectors
         }
     }
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-        if (watcher.isEmpty()) return
-
-        if (watcherHighlight) watcher.forEach { watcher ->
-            Renderer.drawBox(watcher.renderVec.toAABB(), Color.RED, 1f, depth = isLegitVersion, fillAlpha = 0)
-        }
+        if (watcherHighlight)
+            currentWatcherEntity?.let { Renderer.drawBox(it.renderVec.toAABB(), Color.RED, 1f, depth = isLegitVersion, fillAlpha = 0) }
 
         if (!bloodHelper) return
 
-        forRender.forEach { (entity, renderData) ->
-            val (_, started, firstSpawn) = entityList[entity]?.takeUnless { entity.isDead } ?: return@forEach
+        renderDataMap.forEach { (entity, renderData) ->
+            val (_, started, firstSpawn) = entityDataMap[entity]?.takeUnless { entity.isDead } ?: return@forEach
 
             val (currVector, endVector, endVecUpdated, speedVectors) = renderData
-            val endVectorUpdated = min(tickTime - endVecUpdated, 100)
+            val endVectorUpdated = min(currentTickTime - endVecUpdated, 100)
 
             val endPoint = calcEndVector(endVector, renderData.lastEndVector, endVectorUpdated / 100)
 
@@ -179,29 +169,22 @@ object BloodCamp : Module(
                 entity.posZ + speedVectors.zCoord * averagePing
             )
 
-            val renderEndPoint = calcEndVector(endPoint, renderData.lastEndPoint, event.partialTicks, !interpolation)
-            val renderPingPoint = calcEndVector(pingPoint, renderData.lastPingPoint, event.partialTicks, !interpolation)
-
             renderData.lastEndPoint = endPoint
             renderData.lastPingPoint = pingPoint
 
             val boxOffset = Vec3(boxSize / -2, 1.5, boxSize / -2)
-            val pingAABB = AxisAlignedBB(boxSize,boxSize,boxSize, 0.0, 0.0, 0.0).offset(boxOffset + renderPingPoint)
-            val endAABB = AxisAlignedBB(boxSize,boxSize,boxSize, 0.0, 0.0, 0.0).offset(boxOffset + renderEndPoint)
+            val pingAABB = AxisAlignedBB(boxSize,boxSize,boxSize, 0.0, 0.0, 0.0).offset(boxOffset + calcEndVector(pingPoint, renderData.lastPingPoint, event.partialTicks, !interpolation))
+            val endAABB = AxisAlignedBB(boxSize,boxSize,boxSize, 0.0, 0.0, 0.0).offset(boxOffset + calcEndVector(endPoint, renderData.lastEndPoint, event.partialTicks, !interpolation))
 
-            val time = getTime(firstSpawn,  tickTime - started)
+            val time = getTime(firstSpawn,  currentTickTime - started)
 
             if (averagePing < time) {
                 Renderer.drawBox(pingAABB, mboxColor, fillAlpha = 0f, outlineAlpha = mboxColor.alpha, depth = true)
                 Renderer.drawBox(endAABB, pboxColor, fillAlpha = 0f, outlineAlpha = pboxColor.alpha, depth = true)
             } else Renderer.drawBox(endAABB, fboxColor, fillAlpha = 0f, outlineAlpha = fboxColor.alpha, depth = true)
 
-            if (drawLine) {
-                Renderer.draw3DLine(
-                    listOf(currVector.addVec(y = 2.0), endPoint.addVec(y = 2.0)),
-                    color = Color.RED, depth = true
-                )
-            }
+            if (drawLine)
+                Renderer.draw3DLine(listOf(currVector.addVec(y = 2.0), endPoint.addVec(y = 2.0)), color = Color.RED, depth = true)
 
             val timeDisplay = (time.toFloat() - offset) / 1000
             val colorTime = when {
@@ -228,7 +211,7 @@ object BloodCamp : Module(
 
     @SubscribeEvent
     fun onServerTick(event: RealServerTick) {
-        tickTime += 50
+        currentTickTime += 50
     }
 
     //Skull data gotten by DocilElm

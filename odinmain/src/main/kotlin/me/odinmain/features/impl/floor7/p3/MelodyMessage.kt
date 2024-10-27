@@ -1,6 +1,6 @@
 package me.odinmain.features.impl.floor7.p3
 
-import me.odinmain.events.impl.GuiEvent
+import me.odinmain.events.impl.TerminalOpenedEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.p3.termsim.TermSimGui
@@ -22,25 +22,14 @@ object MelodyMessage : Module(
     private val melodyMessage by StringSetting("Melody Message", "Melody Terminal start!", 128, description = "Message sent when the melody terminal opens.").withDependency { sendMelodyMessage }
     private val melodyProgress by BooleanSetting("Melody Progress", false, description = "Tells the party about melody terminal progress.")
 
-    private var saidMelody = false
     private var claySlots = hashMapOf(25 to "Melody terminal is at 25%", 34 to "Melody terminal is at 50%", 43 to "Melody terminal is at 75%")
 
     @SubscribeEvent
-    fun onGuiLoad(event: GuiEvent.GuiLoadedEvent) {
-        if (!DungeonUtils.inBoss || saidMelody || !event.name.startsWith("Click the button on time!") || mc.currentScreen is TermSimGui) return
+    fun onGuiLoad(event: TerminalOpenedEvent) {
+        if (!DungeonUtils.inBoss || !DungeonUtils.isFloor(7) || event.type != TerminalTypes.MELODY || mc.currentScreen is TermSimGui) return
         if (sendMelodyMessage) partyMessage(melodyMessage)
 
         claySlots = hashMapOf(25 to "Melody terminal is at 25%", 34 to "Melody terminal is at 50%", 43 to "Melody terminal is at 75%")
-        saidMelody = true
-    }
-
-    @SubscribeEvent
-    fun onGuiClose(event: GuiEvent.GuiClosedEvent) {
-        saidMelody = false
-    }
-
-    init {
-        onWorldLoad { saidMelody = false }
     }
 
     init {
