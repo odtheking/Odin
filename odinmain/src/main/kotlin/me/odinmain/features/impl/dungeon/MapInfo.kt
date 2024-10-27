@@ -19,7 +19,7 @@ object MapInfo : Module(
     private val disableInBoss by BooleanSetting("Disable in boss", default = true, description = "Disables the information display when you're in boss.")
     private val scoreTitle by BooleanSetting("300 Score Title", default = true, description = "Displays a title on 300 score.")
     private val scoreText by StringSetting("Title Text", default = "&c300 Score!", description = "Text to be displayed on 300 score.").withDependency { scoreTitle }
-    private val printWhenScore by BooleanSetting("Print Score Time", default = false, description = "Sends elapsed time in chat when 300 score is reached.")
+    private val printWhenScore by BooleanSetting("Print Score Time", default = true, description = "Sends elapsed time in chat when 300 score is reached.")
     val togglePaul by SelectorSetting("Paul Settings", "Automatic", options = arrayListOf("Automatic", "Force Disable", "Force Enable"), description = "Toggle Paul's settings.")
 
     private val fullHud: HudElement by HudSetting("Full Hud", 10f, 10f, 1f, true) {

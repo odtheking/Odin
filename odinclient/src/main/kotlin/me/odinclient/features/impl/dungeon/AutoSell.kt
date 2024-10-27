@@ -47,6 +47,6 @@ object AutoSell : Module(
         "Health Potion 8", "Beating Heart", "Premium Flesh", "Mimic Fragment", "Enchanted Rotten Flesh", "Sign",
         "Enchanted Bone", "Defuse Kit", "Optical Lens", "Tripwire Hook", "Button", "Carpet", "Lever", "Diamond Atom",
         "Health Potion VIII Splash Potion", "Healing Potion 8 Splash Potion", "Healing Potion VIII Splash Potion",
-        "Healing VIII Splash Potion", "Healing 8 Splash Potion", "Ancient Claw"
+        "Healing VIII Splash Potion", "Healing 8 Splash Potion"
     )
 }

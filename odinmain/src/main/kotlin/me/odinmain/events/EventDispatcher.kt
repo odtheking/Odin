@@ -6,6 +6,7 @@ import me.odinmain.events.impl.*
 import me.odinmain.utils.*
 import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.dungeonItemDrops
+import me.odinmain.utils.skyblock.dungeon.DungeonUtils.inBoss
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.inDungeons
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.isSecret
 import me.odinmain.utils.skyblock.unformattedName
@@ -46,7 +47,7 @@ object EventDispatcher {
      */
     @SubscribeEvent
     fun onPacket(event: PacketReceivedEvent) {
-        if (event.packet is S29PacketSoundEffect && inDungeons && (event.packet.soundName.equalsOneOf("mob.bat.hurt", "mob.bat.death") && event.packet.volume == 0.2f)) SecretPickupEvent.Bat(event.packet).postAndCatch()
+        if (event.packet is S29PacketSoundEffect && inDungeons && !inBoss && (event.packet.soundName.equalsOneOf("mob.bat.hurt", "mob.bat.death") && event.packet.volume == 0.1f)) SecretPickupEvent.Bat(event.packet).postAndCatch()
 
         if (event.packet is S32PacketConfirmTransaction) RealServerTick().postAndCatch()
 

@@ -21,7 +21,7 @@ object NoPre : Module(
     private var preSpot = PreSpot.None
     var missing = PreSpot.None
 
-    private val partyChatRegex = Regex("^Party > (\\[[^]]*?])? ?(\\w{1,16}): No ?(Triangle|X|Equals|Slash)!\$")
+    private val partyChatRegex = Regex("^Party > (\\[[^]]*?])? ?(\\w{1,16}): No ?(Triangle|X|Equals|Slash|X Cannon|Square|Shop)!\$")
 
     init {
         onMessage("[NPC] Elle: Head over to the main platform, I will join you when I get a bite!", false) {
@@ -67,18 +67,18 @@ object NoPre : Module(
         onMessage(partyChatRegex) {
             missing = PreSpot.valueOf(partyChatRegex.find(it)?.groupValues?.lastOrNull() ?: return@onMessage)
             if (!showCratePriority) return@onMessage
-            val cratePriority = cratePriority().ifEmpty { return@onMessage }
-            PlayerUtils.alert(cratePriority, time = 15)
+            val cratePriority = cratePriority(missing).ifEmpty { return@onMessage }
+            if (showAlert) PlayerUtils.alert(cratePriority, time = 15)
             modMessage("Crate Priority: $cratePriority")
         }
 
         onWorldLoad { missing = PreSpot.None }
     }
     
-    fun cratePriority(): String {
-        return when {
+    fun cratePriority(missing: PreSpot): String {
+        return when (missing) {
             // Shop Missing
-            missing == PreSpot.Shop -> when (preSpot) {
+            PreSpot.Shop -> when (preSpot) {
                 PreSpot.Triangle, PreSpot.X -> "Go X Cannon"
                 PreSpot.Equals -> if (advanced) "Go X Cannon" else "Go Shop"
                 PreSpot.Slash -> "Go Square"
@@ -86,7 +86,7 @@ object NoPre : Module(
             }
 
             // Triangle Missing
-            missing == PreSpot.Triangle -> when (preSpot) {
+            PreSpot.Triangle -> when (preSpot) {
                 PreSpot.Triangle -> if (advanced) "Pull Square and X Cannon. Next: collect Shop" else "Pull Square. Next: collect Shop"
                 PreSpot.X, PreSpot.Equals -> "Go X Cannon"
                 PreSpot.Slash -> "Go Square, place on Triangle"
@@ -94,7 +94,7 @@ object NoPre : Module(
             }
 
             // Equals Missing
-            missing == PreSpot.Equals -> when (preSpot) {
+            PreSpot.Equals -> when (preSpot) {
                 PreSpot.Triangle -> if (advanced) "Go Shop" else "Go X Cannon"
                 PreSpot.X -> "Go X Cannon"
                 PreSpot.Equals -> if (advanced) "Pull Square and X Cannon. Next: collect Shop" else "Pull Square. Next: collect Shop"
@@ -103,7 +103,7 @@ object NoPre : Module(
             }
 
             // Slash Missing
-            missing == PreSpot.Slash -> when (preSpot) {
+            PreSpot.Slash -> when (preSpot) {
                 PreSpot.Triangle -> "Go Square, place on Triangle"
                 PreSpot.X -> "Go X Cannon"
                 PreSpot.Equals -> "Go Square, place on Equals"
@@ -112,7 +112,7 @@ object NoPre : Module(
             }
 
             // Square Missing
-            missing == PreSpot.Square -> when (preSpot) {
+            PreSpot.Square -> when (preSpot) {
                 PreSpot.Triangle, PreSpot.Equals -> "Go Shop"
                 PreSpot.X -> "Go X Cannon"
                 PreSpot.Slash -> "Go X Cannon"
@@ -120,7 +120,7 @@ object NoPre : Module(
             }
 
             // X Cannon Missing
-            missing == PreSpot.xCannon -> when (preSpot) {
+            PreSpot.xCannon -> when (preSpot) {
                 PreSpot.Triangle, PreSpot.Equals -> "Go Shop"
                 PreSpot.X -> "Go Square"
                 PreSpot.Slash -> "Go Square, place on X Cannon"
@@ -128,7 +128,7 @@ object NoPre : Module(
             }
 
             // X Missing
-            missing == PreSpot.X -> when (preSpot) {
+            PreSpot.X -> when (preSpot) {
                 PreSpot.Triangle -> "Go X Cannon"
                 PreSpot.X -> if (advanced) "Pull Square and X Cannon. Next: collect Shop" else "Pull Square. Next: collect Shop"
                 PreSpot.Equals -> if (advanced) "Go Shop" else "Go X Cannon"
