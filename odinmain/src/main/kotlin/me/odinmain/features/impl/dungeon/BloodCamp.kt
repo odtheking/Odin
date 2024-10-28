@@ -51,7 +51,6 @@ object BloodCamp : Module(
     private val watcherBar by BooleanSetting("Watcher Bar", default = true, description = "Shows the watcher's health.")
     private val watcherHighlight by BooleanSetting("Watcher Highlight", default = false, description = "Highlights the watcher.")
 
-    private var currentName: String? = null
     private val firstSpawnRegex = Regex("^\\[BOSS] The Watcher: Let's see how you can handle this.$")
 
     init {
@@ -69,14 +68,13 @@ object BloodCamp : Module(
             currentWatcherEntity = null
             renderDataMap.clear()
             currentTickTime = 0
-            currentName = null
         }
     }
 
     @SubscribeEvent
     fun onRenderBossHealth(event: RenderGameOverlayEvent.Pre) {
-        if (!inDungeons || inBoss || event.type != RenderGameOverlayEvent.ElementType.BOSSHEALTH ||
-            currentName == null || !watcherBar || BossStatus.bossName.noControlCodes != "The Watcher") return
+        if (!inDungeons || inBoss || event.type != RenderGameOverlayEvent.ElementType.BOSSHEALTH
+            || !watcherBar || BossStatus.bossName.noControlCodes != "The Watcher") return
         val amount = 12 + DungeonUtils.floor.floorNumber
         BossStatus.bossName += if (BossStatus.healthScale < 0.05) null else " ${(amount * BossStatus.healthScale).roundToInt()}/$amount"
     }
@@ -97,7 +95,7 @@ object BloodCamp : Module(
 
     @SubscribeEvent
     fun onPostMetadata(event: PostEntityMetadata) {
-        if (!bloodHelper) return
+        if ((!bloodHelper && !watcherHighlight) || currentWatcherEntity != null) return
         currentWatcherEntity = (mc.theWorld?.getEntityByID(event.packet.entityId) as? EntityZombie)?.takeIf { getSkullValue(it) in watcherSkulls } ?: return
         devMessage("Watcher found at ${currentWatcherEntity?.positionVector}")
     }
@@ -109,7 +107,7 @@ object BloodCamp : Module(
 
     private fun onPacketLookMove(packet: S17PacketEntityLookMove) {
         val entity = packet.getEntity(mc.theWorld) as? EntityArmorStand ?: return
-        if (currentWatcherEntity?.let { it.getDistanceToEntity(entity) < 20 } == true ||
+        if (currentWatcherEntity?.let { it.getDistanceToEntity(entity) >= 20 } == true ||
             entity.getEquipmentInSlot(4)?.item != Items.skull || getSkullValue(entity) !in allowedMobSkulls) return
 
         val packetVector = Vec3(
