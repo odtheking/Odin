@@ -39,14 +39,13 @@ object BeamsSolver {
 
     private var currentLanternPairs = ConcurrentHashMap<BlockPos, Pair<BlockPos, Color>>()
 
-    fun onRoomEnter(event: RoomEnterEvent) {
-        val room = event.room ?: return
-        if (room.data.name != "Creeper Beams") return reset()
+    fun onRoomEnter(event: RoomEnterEvent) = with(event.room) {
+        if (this?.data?.name != "Creeper Beams") return reset()
 
         currentLanternPairs.clear()
         lanternPairs.forEach {
-            val pos = room.getRealCoords(it[0], it[1], it[2])
-            val pos2 = room.getRealCoords(it[3], it[4], it[5])
+            val pos = getRealCoords(it[0], it[1], it[2])
+            val pos2 = getRealCoords(it[3], it[4], it[5])
 
             if (getBlockIdAt(pos) == 169 && getBlockIdAt(pos2) == 169)
                 currentLanternPairs[pos] = pos2 to colors[currentLanternPairs.size]

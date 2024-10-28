@@ -42,11 +42,10 @@ object IceFillSolver {
         Renderer.draw3DLine(currentPatterns, color = color, depth = true)
     }
 
-    fun onRoomEnter(event: RoomEnterEvent) {
-        val room = event.room ?: return
-        if (room.data.name != "Ice Fill" || currentPatterns.isNotEmpty()) return
+    fun onRoomEnter(event: RoomEnterEvent) = with (event.room) {
+        if (this?.data?.name != "Ice Fill" || currentPatterns.isNotEmpty()) return
 
-        scanAllFloors(room.getRealCoords(15, 70, 7).toVec3(), room.rotation)
+        scanAllFloors(getRealCoords(15, 70, 7).toVec3(), rotation)
     }
 
     private fun scanAllFloors(pos: Vec3, rotation: Rotations) {

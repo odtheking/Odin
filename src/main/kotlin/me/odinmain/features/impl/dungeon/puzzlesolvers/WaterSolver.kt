@@ -38,10 +38,9 @@ object WaterSolver {
     private var solutions = ConcurrentHashMap<LeverBlock, Array<Double>>()
     private var openedWater = -1L
 
-    fun scan() {
-        val room = DungeonUtils.currentRoom ?: return
-        if (room.data.name != "Water Board" || variant != -1) return
-        solve(room)
+    fun scan() = with (DungeonUtils.currentRoom) {
+        if (this?.data?.name != "Water Board" || variant != -1) return
+        solve(this)
     }
 
     private fun solve(room: Room) {
@@ -97,12 +96,12 @@ object WaterSolver {
             times.drop(lever.i).filter { it != 0.0 }
         }.sorted()
 
-        val first = solutionList.firstOrNull() ?: return
+        val firstSolution = solutionList.firstOrNull() ?: return
 
-        if (PuzzleSolvers.showTracer) Renderer.draw3DLine(listOf(mc.thePlayer.renderVec, first.first.leverPos.addVector(.5, .5, .5)), color = PuzzleSolvers.tracerColorFirst, depth = true)
+        if (PuzzleSolvers.showTracer) Renderer.draw3DLine(listOf(mc.thePlayer.renderVec, firstSolution.first.leverPos.addVector(.5, .5, .5)), color = PuzzleSolvers.tracerColorFirst, depth = true)
 
         if (solutionList.size > 1 && PuzzleSolvers.showTracer) {
-            if (first.first.leverPos != solutionList[1].first.leverPos) {
+            if (firstSolution.first.leverPos != solutionList[1].first.leverPos) {
                 Renderer.draw3DLine(
                     listOf(solutionList.first().first.leverPos.addVector(0.5, 0.5, 0.5), solutionList[1].first.leverPos.addVector(0.5, 0.5, 0.5)),
                     color = PuzzleSolvers.tracerColorSecond, lineWidth = 1.5f, depth = true

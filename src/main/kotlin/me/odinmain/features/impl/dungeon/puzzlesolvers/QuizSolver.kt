@@ -7,7 +7,6 @@ import me.odinmain.events.impl.DungeonEvents.RoomEnterEvent
 import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers.quizDepth
 import me.odinmain.utils.*
 import me.odinmain.utils.render.*
-import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.getRealCoords
 import net.minecraft.util.BlockPos
 import java.io.InputStreamReader
@@ -57,9 +56,9 @@ object QuizSolver {
     fun onRoomEnter(event: RoomEnterEvent) = with(event.room) {
         if (this?.data?.name != "Quiz") return
 
-        triviaOptions[0].blockPos = this.getRealCoords(BlockPos(20.0, 70.0, 6.0))
-        triviaOptions[1].blockPos = this.getRealCoords(BlockPos(15.0, 70.0, 9.0))
-        triviaOptions[2].blockPos = this.getRealCoords(BlockPos(10.0, 70.0, 6.0))
+        triviaOptions[0].blockPos = getRealCoords(BlockPos(20.0, 70.0, 6.0))
+        triviaOptions[1].blockPos = getRealCoords(BlockPos(15.0, 70.0, 9.0))
+        triviaOptions[2].blockPos = getRealCoords(BlockPos(10.0, 70.0, 6.0))
     }
 
     fun onRenderWorld() {

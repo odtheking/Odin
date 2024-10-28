@@ -22,11 +22,10 @@ object TPMazeSolver {
     private var correctPortals = listOf<BlockPos>()
     private var visited = CopyOnWriteArraySet<BlockPos>()
 
-    fun onRoomEnter(event: DungeonEvents.RoomEnterEvent) {
-        val room = event.room ?: return
-        if (room.data.name != "Teleport Maze") return
+    fun onRoomEnter(event: DungeonEvents.RoomEnterEvent) = with(event.room) {
+        if (this?.data?.name != "Teleport Maze") return
 
-        tpPads = BlockPos.getAllInBox(room.getRealCoords(BlockPos(0, 69, 0)), room.getRealCoords(BlockPos(30, 69, 30)))
+        tpPads = BlockPos.getAllInBox(getRealCoords(BlockPos(0, 69, 0)), getRealCoords(BlockPos(30, 69, 30)))
             .filter { getBlockAt(it) == Blocks.end_portal_frame }.toSet()
     }
 
