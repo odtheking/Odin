@@ -26,8 +26,8 @@ object TeammatesHighlight : Module(
     private val showHighlight by BooleanSetting("Show highlight", true, description = "Highlights teammates with an outline.")
     private val showName by BooleanSetting("Show name", true, description = "Highlights teammates with a name tag.")
     private val nameStyle by SelectorSetting("Name Style", "Plain Text", arrayListOf("Plain Text", "Oringo Style"), description = "The style of the name tag to render.").withDependency { showName }
-    private val backgroundColor by ColorSetting("Background Color", default = Color.DARK_GRAY.withAlpha(0.5f), description = "The color of the nametag background").withDependency { showName && nameStyle == 1 }
-    private val accentColor by ColorSetting("Accent Color", default = Color.BLUE, description = "The color of the nametag accent").withDependency { showName && nameStyle == 1 }
+    private val backgroundColor by ColorSetting("Background Color", default = Color.DARK_GRAY.withAlpha(0.5f), true, description = "The color of the nametag background").withDependency { showName && nameStyle == 1 }
+    private val accentColor by ColorSetting("Accent Color", default = Color.BLUE, true, description = "The color of the nametag accent").withDependency { showName && nameStyle == 1 }
     private val padding by NumberSetting("Padding", default = 5, min = 0, max = 20, increment = 1, description = "The padding around the text of the nametag.").withDependency { showName && nameStyle == 1 }
     private val scale by NumberSetting("Scale", default = 0.8f, min = 0, max = 2, increment = 0.1, description = "The scale of the nametag").withDependency { showName && nameStyle ==1 }
     private val depthCheck by BooleanSetting("Depth check", false, description = "Highlights teammates only when they are visible.")
