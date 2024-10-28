@@ -1,6 +1,7 @@
 package me.odinmain
 
-import kotlinx.serialization.json.*
+import com.google.gson.Gson
+import com.google.gson.JsonArray
 import me.odinmain.features.impl.render.ClickGUIModule
 import me.odinmain.features.impl.render.ClickGUIModule.updateMessage
 import me.odinmain.font.OdinFont
@@ -21,7 +22,7 @@ import java.io.File
 import java.lang.management.ManagementFactory
 
 
-object OdinUpdater: GuiScreen() {
+object OdinUpdater : GuiScreen() {
 
     private val logoTexture = DynamicTexture(RenderUtils.loadBufferedImage("/assets/odinmain/logo.png"))
     private val javaRuntime = "\"${System.getProperty("java.home")}${File.separatorChar}bin${File.separatorChar}javaw${if (System.getProperty("os.name").contains("win")) ".exe" else ""}\""
@@ -36,22 +37,25 @@ object OdinUpdater: GuiScreen() {
     fun onGuiOpen(event: GuiOpenEvent) {
         if (event.gui !is GuiMainMenu || isNewer) return
 
+        val gson = Gson()
+
         // To prevent this in the future do the TrustManager thing and add a X509 cert to access github in jre 51
         val javaVersion = System.getProperty("java.version")
         if (javaVersion == "1.8.0_51") {
             isOutdatedJava = true
         }
 
-        val tags = try {
-            Json.parseToJsonElement(fetchURLData("https://api.github.com/repos/odtheking/OdinClient/tags"))
+        val tags: JsonArray = try {
+            gson.fromJson(fetchURLData("https://api.github.com/repos/odtheking/OdinClient/tags"), JsonArray::class.java)
         } catch (e: Exception) {
             return
         }
-        tag = tags.jsonArray[0].jsonObject["name"].toString().replace("\"", "")
+
+        tag = tags[0].asJsonObject["name"].asString.replace("\"", "")
 
         isNewer = this.isSecondNewer(tag)
 
-        if (isNewer)
+        if (!isNewer)
             OdinMain.display = this@OdinUpdater
     }
 
@@ -76,7 +80,7 @@ object OdinUpdater: GuiScreen() {
         GlStateManager.scale(1f / scaleFactor, 1f / scaleFactor, 1f)
         this.drawLogo()
         if (isOutdatedJava) {
-            text("You are using an outdated version of java (${System.getProperty("java.version")}) which does not allow the auto updater to work properly", mc.displayWidth / 2f, 500f, Color.RED, 18f, OdinFont.REGULAR, TextAlign.Middle, TextPos.Middle, false)
+            text("You are currently using an outdated version of Java (${System.getProperty("java.version")}), which prevents the auto-updater from functioning correctly. Upgrading to a newer version of Java will not only resolve this issue but also provide enhanced security features and improved performance.", mc.displayWidth / 2f, 500f, Color.RED, 18f, OdinFont.REGULAR, TextAlign.Middle, TextPos.Middle, false)
         } else {
             text("A new version of ${if (OdinMain.isLegitVersion) "Odin" else "OdinClient"} is available!", mc.displayWidth / 2f, 450f, Color.WHITE, 18f, OdinFont.REGULAR, TextAlign.Middle, TextPos.Middle, false)
             text("§fNewest: §r$tag   §fCurrent: §r${OdinMain.VERSION}", mc.displayWidth / 2f - getTextWidth("Newest: $tag   Current: ${OdinMain.VERSION}", 18f) / 2, 500f, ClickGUIModule.color, 18f, OdinFont.REGULAR, TextAlign.Left, TextPos.Middle, false)
@@ -110,7 +114,9 @@ object OdinUpdater: GuiScreen() {
                     if (!relaunchCommandFile.exists()) relaunchCommandFile.createNewFile()
                     relaunchCommandFile.writeText(relaunchCommand, charset("UTF-8"))
 
-                    Runtime.getRuntime().exec("$javaRuntime -jar $updaterPath \"$currentJarPath\" \"${relaunchCommandDir}\"")
+                    val runtime = javaRuntime.trim('"')
+                    ProcessBuilder(runtime, "-jar", updaterPath, currentJarPath, relaunchCommand).start()
+                    //Runtime.getRuntime().exec("$javaRuntime -jar $updaterPath \"$currentJarPath\" \"${relaunchCommandDir}\"")
                 })
                 mc.shutdown()
             }
