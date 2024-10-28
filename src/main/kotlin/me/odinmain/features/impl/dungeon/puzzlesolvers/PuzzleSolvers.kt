@@ -2,7 +2,6 @@ package me.odinmain.features.impl.dungeon.puzzlesolvers
 
 import me.odinmain.events.impl.BlockChangeEvent
 import me.odinmain.events.impl.DungeonEvents.RoomEnterEvent
-import me.odinmain.events.impl.PostEntityMetadata
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.dungeon.puzzlesolvers.WaterSolver.waterInteract
@@ -12,6 +11,8 @@ import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.profile
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
+import me.odinmain.utils.skyblock.dungeon.DungeonUtils.inBoss
+import me.odinmain.utils.skyblock.dungeon.DungeonUtils.inDungeons
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
 import net.minecraftforge.client.event.RenderWorldLastEvent
@@ -100,15 +101,18 @@ object PuzzleSolvers : Module(
 
     init {
         execute(500) {
+            if (!inDungeons || inBoss) return@execute
             if (waterSolver) WaterSolver.scan()
             if (blazeSolver) BlazeSolver.getBlaze()
         }
 
         onPacket(S08PacketPlayerPosLook::class.java) {
+            if (!inDungeons || inBoss) return@onPacket
             if (tpMaze) TPMazeSolver.tpPacket(it)
         }
 
-        onPacket(C08PacketPlayerBlockPlacement::class.java) {
+        onPacket(C08PacketPlayerBlockPlacement::class.java, { enabled && (waterSolver || boulderSolver) }) {
+            if (!inDungeons || inBoss) return@onPacket
             if (waterSolver) waterInteract(it)
             if (boulderSolver) BoulderSolver.playerInteract(it)
         }
@@ -137,36 +141,31 @@ object PuzzleSolvers : Module(
 
     @SubscribeEvent
     fun onWorldRender(event: RenderWorldLastEvent) {
+        if (!inDungeons || inBoss) return
         profile("Puzzle Solvers") {
             if (waterSolver) WaterSolver.waterRender()
             if (tpMaze) TPMazeSolver.tpRender()
-            //TTTSolver.tttRenderWorld()
-            if (iceFillSolver) IceFillSolver.onRenderWorldLast(iceFillColor)
-            if (blazeSolver) BlazeSolver.renderBlazes()
+            if (iceFillSolver) IceFillSolver.onRenderWorld(iceFillColor)
+            if (blazeSolver) BlazeSolver.onRenderWorld()
             if (beamsSolver) BeamsSolver.onRenderWorld()
             if (weirdosSolver) WeirdosSolver.onRenderWorld()
-            if (quizSolver) QuizSolver.renderWorldLastQuiz()
+            if (quizSolver) QuizSolver.onRenderWorld()
             if (boulderSolver) BoulderSolver.onRenderWorld()
         }
     }
 
     @SubscribeEvent
-    fun onMetaData(event: PostEntityMetadata) {
-        //TTTSolver.onMetaData(event)
-    }
-
-    @SubscribeEvent
     fun onRoomEnter(event: RoomEnterEvent) {
-        IceFillSolver.enterDungeonRoom(event)
-        BeamsSolver.enterDungeonRoom(event)
-        //TTTSolver.tttRoomEnter(event)
-        QuizSolver.enterRoomQuiz(event)
+        IceFillSolver.onRoomEnter(event)
+        BeamsSolver.onRoomEnter(event)
+        QuizSolver.onRoomEnter(event)
         BoulderSolver.onRoomEnter(event)
         TPMazeSolver.onRoomEnter(event)
     }
 
     @SubscribeEvent
     fun blockUpdateEvent(event: BlockChangeEvent) {
-        BeamsSolver.onBlockChange(event)
+        if (!inDungeons || inBoss) return
+        if (beamsSolver) BeamsSolver.onBlockChange(event)
     }
 }

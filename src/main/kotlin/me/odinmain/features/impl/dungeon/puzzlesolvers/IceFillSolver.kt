@@ -35,13 +35,13 @@ object IceFillSolver {
         }
     }
 
-    fun onRenderWorldLast(color: Color) {
+    fun onRenderWorld(color: Color) {
         if (currentPatterns.isEmpty() || DungeonUtils.currentRoomName != "Ice Fill") return
 
         Renderer.draw3DLine(currentPatterns, color = color, depth = true)
     }
 
-    fun enterDungeonRoom(event: RoomEnterEvent) {
+    fun onRoomEnter(event: RoomEnterEvent) {
         val room = event.fullRoom?.room ?: return
         if (room.data.name != "Ice Fill" || currentPatterns.isNotEmpty()) return
 

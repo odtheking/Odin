@@ -34,7 +34,6 @@ allprojects {
         forge("net.minecraftforge:forge:1.8.9-11.15.1.2318-1.8.9")
 
         implementation(kotlin("stdlib-jdk8"))
-        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0-RC")
 
         compileOnly("com.github.NotEnoughUpdates:NotEnoughUpdates:2.4.0:all")
         implementation("com.github.Stivais:Commodore:3f4a14b1cf")

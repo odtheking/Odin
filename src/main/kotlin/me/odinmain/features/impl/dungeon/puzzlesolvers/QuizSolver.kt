@@ -7,7 +7,6 @@ import me.odinmain.events.impl.DungeonEvents.RoomEnterEvent
 import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers.quizDepth
 import me.odinmain.utils.*
 import me.odinmain.utils.render.*
-import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.util.Vec3
 import java.io.InputStreamReader
 import java.nio.charset.StandardCharsets
@@ -53,7 +52,7 @@ object QuizSolver {
         }
     }
 
-    fun enterRoomQuiz(event: RoomEnterEvent) {
+    fun onRoomEnter(event: RoomEnterEvent) {
         val room = event.fullRoom?.room ?: return
         if (room.data.name != "Quiz") return
 
@@ -64,8 +63,8 @@ object QuizSolver {
         }
     }
 
-    fun renderWorldLastQuiz() {
-        if (triviaAnswers == null || triviaOptions.isEmpty() || DungeonUtils.inBoss || !DungeonUtils.inDungeons) return
+    fun onRenderWorld() {
+        if (triviaAnswers == null || triviaOptions.isEmpty()) return
         triviaOptions.forEach { answer ->
             if (!answer.isCorrect) return@forEach
             answer.vec3?.addVec(y= -1)?.let {

@@ -34,8 +34,8 @@ object BlazeSolver {
         if (getBlockIdAt(BlockPos(room.x + 1, 118, room.z)) != 4) blazes.reverse()
     }
 
-    fun renderBlazes() {
-        if (!DungeonUtils.inDungeons || DungeonUtils.inBoss) return
+    fun onRenderWorld() {
+        if (!DungeonUtils.currentRoomName.equalsOneOf("Lower Blaze", "Higher Blaze")) return
         if (blazes.isEmpty()) return
         blazes.removeAll {
             mc.theWorld?.getEntityByID(it.entityId) == null
