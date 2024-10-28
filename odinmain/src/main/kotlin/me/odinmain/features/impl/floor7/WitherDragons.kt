@@ -18,6 +18,7 @@ import me.odinmain.features.impl.floor7.KingRelics.relicsOnWorldLast
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.render.*
+import me.odinmain.utils.runIn
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.M7Phases
 import me.odinmain.utils.skyblock.modMessage
@@ -26,7 +27,6 @@ import net.minecraft.network.play.server.*
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.util.*
-import kotlin.concurrent.schedule
 
 object WitherDragons : Module(
     name = "Wither Dragons",
@@ -80,7 +80,7 @@ object WitherDragons : Module(
     val soloDebuffOnAll by BooleanSetting("Solo Debuff on All Splits", true, description = "Same as Purple Solo Debuff but for all dragons (A will only have 1 debuff).").withDependency { dragonPriorityToggle && dragonPriorityDropDown }
     val paulBuff by BooleanSetting("Paul Buff", false, description = "Multiplies the power in your run by 1.25.").withDependency { dragonPriorityToggle && dragonPriorityDropDown }
 
-    val colors = arrayListOf("Green", "Purple", "Blue", "Orange", "Red")
+    private val colors = arrayListOf("Green", "Purple", "Blue", "Orange", "Red")
     private val relicDropDown by DropdownSetting("Relics Dropdown")
     val relicAnnounce by BooleanSetting("Relic Announce", false, description = "Announce your relic to the rest of the party.").withDependency { relicDropDown }
     val selected by SelectorSetting("Color", "Green", colors, description = "The color of your relic.").withDependency { relicAnnounce && relicDropDown}
@@ -162,11 +162,10 @@ object WitherDragons : Module(
     fun arrowSpawn(dragon: WitherDragonsEnum) {
         if (priorityDragon == WitherDragonsEnum.None || dragon != priorityDragon) return
         arrowsHit = 0
-        Timer().schedule(dragon.skipKillTime) {
-            if (dragon.entity?.isEntityAlive == true || arrowsHit > 0) {
-                modMessage("§fYou hit §6${arrowsHit} §farrows on §${dragon.colorCode}${dragon.name}${if (dragon.entity?.isEntityAlive == true) " §fin §c${String.format(Locale.US, "%.2f", dragon.skipKillTime.toFloat()/1000)} §fSeconds." else "."}")
-                arrowsHit = 0
-            }
+        runIn(dragon.skipKillTime) {
+            if (dragon.entity?.isEntityAlive != true && arrowsHit <= 0) return@runIn
+            modMessage("§fYou hit §6${arrowsHit} §farrows on §${dragon.colorCode}${dragon.name}${if (dragon.entity?.isEntityAlive == true) " §fin §c${String.format(Locale.US, "%.2f", dragon.skipKillTime.toFloat()/1000)} §fSeconds." else "."}")
+            arrowsHit = 0
         }
     }
 }
