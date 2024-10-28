@@ -103,15 +103,16 @@ object DianaHelper : Module(
     fun onRenderWorld(event: RenderWorldLastEvent) {
         if (!isDoingDiana || (renderPos == null && burrowsRender.isEmpty())) return
         renderPos?.let { guess ->
-            if (guess.yCoord == 110.0 && mc.thePlayer.positionVector.distanceTo(guess) < 64) {
+            val distance = mc.thePlayer.positionVector.distanceTo(guess)
+            if (guess.yCoord == 110.0 && distance < 64) {
                 renderPos = findNearestGrassBlock(guess)
                 return
             }
             warpLocation = WarpPoint.entries.filter { it.unlocked() }.minBy { warp ->
                 warp.location.distanceTo(guess)
-            }.takeIf { it.location.distanceTo(guess) + 35 < mc.thePlayer.positionVector.distanceTo(guess) }
+            }.takeIf { it.location.distanceTo(guess) + 35 < distance }
 
-            if (tracer)
+            if (tracer && distance > 15)
                 Renderer.drawTracer(guess.addVec(.5, .5, .5), color = tracerColor, lineWidth = tracerWidth, depth = false)
 
             Renderer.drawCustomBeacon("§6Guess${warpLocation?.displayName ?: ""}§r", guess, guessColor, increase = true, style = style)

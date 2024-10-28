@@ -38,7 +38,7 @@ object BeamsSolver {
 
     private var currentLanternPairs = ConcurrentHashMap<BlockPos, Pair<BlockPos, Color>>()
 
-    fun enterDungeonRoom(event: RoomEnterEvent) {
+    fun onRoomEnter(event: RoomEnterEvent) {
         val room = event.fullRoom?.room ?: return // <-- orb = orb.orb
         if (room.data.name != "Creeper Beams") return reset()
 
@@ -68,6 +68,7 @@ object BeamsSolver {
     }
 
     fun onBlockChange(event: BlockChangeEvent) {
+        if (DungeonUtils.currentRoomName != "Creeper Beams" || currentLanternPairs.isEmpty()) return
         currentLanternPairs.forEach { (key, value) ->
             if (event.pos.equalsOneOf(key, value.first) &&
                 event.update.block != Blocks.sea_lantern &&

@@ -1,7 +1,6 @@
 package me.odinmain.features.impl.floor7
 
 import me.odinmain.OdinMain.mc
-import me.odinmain.features.impl.floor7.WitherDragons.colors
 import me.odinmain.features.impl.floor7.WitherDragons.relicAnnounceTime
 import me.odinmain.features.impl.floor7.WitherDragons.selected
 import me.odinmain.utils.equalsOneOf
@@ -35,7 +34,7 @@ object KingRelics {
     var relicTicksToSpawn = 0
 
     fun relicsOnMessage(){
-        if (WitherDragons.relicAnnounce) partyMessage("${colors[selected]} Relic")
+        if (WitherDragons.relicAnnounce) partyMessage("${Relic.entries[selected]} Relic")
         relicPlaceTimer = System.currentTimeMillis()
         relicTicksToSpawn = WitherDragons.relicSpawnTicks
     }
