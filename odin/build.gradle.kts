@@ -1,44 +1,14 @@
+import dev.architectury.pack200.java.Pack200Adapter
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-plugins {
-    id("gg.essential.loom") version "0.10.0.+"
-    id("dev.architectury.architectury-pack200") version "0.1.3"
-}
-
 group = "me.odin"
-
-sourceSets.main {
-    java.srcDir(file("$projectDir/src/main/kotlin"))
-    output.setResourcesDir(sourceSets.main.flatMap { it.java.classesDirectory })
-}
-
 
 val shadowImpl: Configuration by configurations.creating {
     configurations.implementation.get().extendsFrom(this)
 }
 
 dependencies {
-    minecraft("com.mojang:minecraft:1.8.9")
-    mappings("de.oceanlabs.mcp:mcp_stable:22-1.8.9")
-    forge("net.minecraftforge:forge:1.8.9-11.15.1.2318-1.8.9")
-
-    implementation(kotlin("stdlib-jdk8"))
-
-    implementation(project(mapOf("path" to ":odinmain")))
-    shadowImpl(project(":odinmain")) {
-        exclude(module = "kotlin-stdlib-jdk8")
-    }
-
-    shadowImpl("org.spongepowered:mixin:0.7.11-SNAPSHOT") { isTransitive = false }
-    annotationProcessor("org.spongepowered:mixin:0.8.5-SNAPSHOT")
-
-    shadowImpl("gg.essential:loader-launchwrapper:1.1.3")
-    compileOnly("gg.essential:essential-1.8.9-forge:12132+g6e2bf4dc5")
-
-    shadowImpl("com.github.Stivais:Commodore:3f4a14b1cf") {
-        exclude(module = "kotlin-stdlib-jdk8")
-        exclude(module = "kotlin-reflect")
-    }
+    shadowImpl(project(":"))
 }
 
 loom {
@@ -51,7 +21,7 @@ loom {
         }
     }
     forge {
-        pack200Provider.set(dev.architectury.pack200.java.Pack200Adapter())
+        pack200Provider.set(Pack200Adapter())
         mixinConfig("mixins.odin.json")
     }
     @Suppress("UnstableApiUsage")
@@ -82,14 +52,14 @@ tasks {
     }
 
     remapJar {
-        archiveBaseName = "Odin"
-        input = shadowJar.get().archiveFile
+        archiveBaseName.set("Odin")
+        input.set(shadowJar.get().archiveFile)
     }
 
     shadowJar {
         destinationDirectory.set(layout.buildDirectory.dir("archiveJars"))
-        archiveBaseName = "Odin"
-        archiveClassifier = "dev"
+        archiveBaseName.set("Odin")
+        archiveClassifier.set("dev")
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
         configurations = listOf(shadowImpl)
         mergeServiceFiles()
@@ -97,7 +67,7 @@ tasks {
 
     withType<JavaCompile> {
         options.encoding = "UTF-8"
-        mustRunAfter(":odinmain:processResources")
+        mustRunAfter(":processResources")
     }
 
     withType<KotlinCompile> {
@@ -106,6 +76,3 @@ tasks {
         }
     }
 }
-
-java.toolchain.languageVersion.set(JavaLanguageVersion.of(8))
-kotlin.jvmToolchain(8)

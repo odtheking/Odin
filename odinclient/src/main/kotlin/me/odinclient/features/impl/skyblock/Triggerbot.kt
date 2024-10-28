@@ -4,7 +4,6 @@ import me.odinclient.utils.skyblock.PlayerUtils
 import me.odinclient.utils.skyblock.PlayerUtils.leftClick
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.features.impl.floor7.KingRelics.currentRelic
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.*
@@ -87,7 +86,7 @@ object Triggerbot : Module(
                     PlayerUtils.rightClick()
                     tbClock.update()
                 }
-                Vec2(obj.blockPos?.x ?: 0, obj.blockPos?.z ?: 0) == cauldronMap[currentRelic.id] && obj.blockPos?.y.equalsOneOf(6, 7) -> {
+                Vec2(obj.blockPos?.x ?: 0, obj.blockPos?.z ?: 0) == cauldronMap[mc.thePlayer?.heldItem?.skyblockID ?: ""] && obj.blockPos?.y.equalsOneOf(6, 7) -> {
                     PlayerUtils.rightClick()
                     tbClock.update()
                 }
