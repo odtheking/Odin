@@ -74,7 +74,7 @@ object ChatCommands : Module(
             val ign = match.groups[2]?.value ?: match.groups[5]?.value ?: match.groups[9]?.value ?: return@onMessage
             val msg = match.groups[3]?.value ?: match.groups[7]?.value ?: match.groups[10]?.value ?: return@onMessage
 
-            if (whitelistOnly != isInBlacklist(ign)) return@onMessage modMessage("§cPlayer is not in the list!")
+            if (whitelistOnly != isInBlacklist(ign)) return@onMessage
 
             runIn(8) {
                 handleChatCommands(msg, ign, channel)
