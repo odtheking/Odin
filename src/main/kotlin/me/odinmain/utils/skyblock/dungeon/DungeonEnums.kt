@@ -70,12 +70,12 @@ enum class DungeonClass(
     val defaultQuadrant: Int,
     var priority: Int,
 ) {
-    Archer(Color.ORANGE, '6',0, 2),
-    Berserk(Color.DARK_RED, '4',1, 0),
-    Healer(Color.PINK, 'd',2, 2),
-    Mage(Color.BLUE, 'b',3, 2),
-    Tank(Color.DARK_GREEN, '2',3, 1),
-    Unknown(Color.WHITE, 'f',0, 0)
+    Archer(Color.ORANGE, '6', 0, 2),
+    Berserk(Color.DARK_RED, '4', 1, 0),
+    Healer(Color.PINK, 'd', 2, 2),
+    Mage(Color.BLUE, 'b', 3, 2),
+    Tank(Color.DARK_GREEN, '2', 3, 1),
+    Unknown(Color.WHITE, 'f', 0, 0)
 }
 
 enum class Blessing(
@@ -101,7 +101,7 @@ enum class Blessing(
  * Each floor has an associated floor number and an indicator of whether it is a master mode floor.
  *
  * @property floorNumber The numerical representation of the floor, where E represents the entrance floor.
- * @property isInMM Indicates whether the floor is a master mode floor (M1 to M7).
+ * @property isMM Indicates whether the floor is a master mode floor (M1 to M7).
  * @property personalBest The personal best time for the floor.
  * @property secretPercentage The percentage of secrets required.
  */
@@ -148,7 +148,7 @@ enum class Floor(val personalBest: PersonalBest?, val secretPercentage: Float = 
      *
      * @return `true` if the floor is a master mode floor (M1 to M7), otherwise `false`.
      */
-    val isInMM: Boolean
+    val isMM: Boolean
         get() {
             return when (this) {
                 E, F1, F2, F3, F4, F5, F6, F7, None -> false

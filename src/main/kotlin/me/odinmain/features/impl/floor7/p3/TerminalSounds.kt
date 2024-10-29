@@ -85,7 +85,7 @@ object TerminalSounds : Module(
         if (
             (!currentTerm.type.equalsOneOf(TerminalTypes.MELODY, TerminalTypes.ORDER) && slot !in TerminalSolver.currentTerm.solution) ||
             (currentTerm.type == TerminalTypes.ORDER && slot != TerminalSolver.currentTerm.solution.first()) ||
-            (currentTerm.type == TerminalTypes.MELODY && slot !in arrayOf(43, 34, 25, 16))
+            (currentTerm.type == TerminalTypes.MELODY && slot !in intArrayOf(43, 34, 25, 16))
         ) return
         if ((TerminalSolver.currentTerm.solution.size == 1 || (currentTerm.type == TerminalTypes.MELODY && slot == 43)) && completeSounds) {
             if (!cancelLastClick) playTerminalSound()

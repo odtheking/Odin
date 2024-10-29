@@ -25,8 +25,8 @@ object ArrowAlign : Module(
 
     private val frameGridCorner = Vec3(-2.0, 120.0, 75.0)
     private val recentClickTimestamps = mutableMapOf<Int, Long>()
-    private val clicksRemaining = mutableMapOf<Int, Int>()
-    private var currentFrameRotations: List<Int>? = null
+    val clicksRemaining = mutableMapOf<Int, Int>()
+    var currentFrameRotations: List<Int>? = null
     private var targetSolution: List<Int>? = null
 
     init {
