@@ -16,7 +16,8 @@ import net.minecraft.util.ResourceLocation
  */
 data class DungeonPlayer(
     val name: String,
-    var clazz: DungeonClass,
+    val clazz: DungeonClass,
+    val clazzLvl: Int,
     val locationSkin: ResourceLocation = ResourceLocation("textures/entity/steve.png"),
     var entity: EntityPlayer? = null,
     var isDead: Boolean = false

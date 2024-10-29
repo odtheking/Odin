@@ -6,7 +6,6 @@ import me.odinmain.events.impl.PacketReceivedEvent
 import me.odinmain.utils.*
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.clock.Executor.Companion.register
-import net.minecraft.entity.SharedMonsterAttributes
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.entity.monster.EntityGiantZombie
 import net.minecraft.entity.monster.EntityMagmaCube
@@ -84,14 +83,10 @@ object KuudraUtils {
             entities.forEach { entity ->
                 when (entity) {
                     is EntityGiantZombie ->
-                        if (entity.heldItem.unformattedName == "Head") giantZombies.add(entity)
+                        if (entity.heldItem?.unformattedName?.endsWith("Head") == true) giantZombies.add(entity)
 
-                    is EntityMagmaCube -> {
-                        if (
-                            entity.slimeSize == 30 &&
-                            entity.getEntityAttribute(SharedMonsterAttributes.maxHealth).baseValue.toFloat() == 100000f
-                        ) kuudraEntity = entity
-                    }
+                    is EntityMagmaCube ->
+                        if (entity.slimeSize == 30 && entity.getSBMaxHealth().toFloat() == 100000f) kuudraEntity = entity
 
                     is EntityArmorStand -> {
                         if (entity.name.noControlCodes.matches(progressRegex)) buildingPiles.add(entity)

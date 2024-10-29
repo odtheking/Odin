@@ -21,6 +21,7 @@ import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import kotlin.math.ceil
 import kotlin.math.floor
+import kotlin.math.roundToLong
 
 object DungeonUtils {
 
@@ -81,17 +82,17 @@ object DungeonUtils {
     val currentRoomName: String
         get() = currentDungeon?.currentFullRoom?.room?.data?.name ?: "Unknown"
 
-    val dungeonTeammates: List<DungeonPlayer>
-        get() = currentDungeon?.dungeonTeammates.orEmpty()
+    val dungeonTeammates: ArrayList<DungeonPlayer>
+        get() = currentDungeon?.dungeonTeammates ?: ArrayList()
 
-    val dungeonTeammatesNoSelf: List<DungeonPlayer>
-        get() = currentDungeon?.dungeonTeammatesNoSelf.orEmpty()
+    val dungeonTeammatesNoSelf: ArrayList<DungeonPlayer>
+        get() = currentDungeon?.dungeonTeammatesNoSelf ?: ArrayList()
 
-    val leapTeammates: List<DungeonPlayer>
-        get() = currentDungeon?.leapTeammates.orEmpty()
+    val leapTeammates: ArrayList<DungeonPlayer>
+        get() = currentDungeon?.leapTeammates ?: ArrayList()
 
     val currentDungeonPlayer: DungeonPlayer
-        get() = dungeonTeammates.find { it.name == mc.thePlayer?.name } ?: DungeonPlayer(mc.thePlayer?.name ?: "Unknown", DungeonClass.Unknown, entity = mc.thePlayer)
+        get() = dungeonTeammates.find { it.name == mc.thePlayer?.name } ?: DungeonPlayer(mc.thePlayer?.name ?: "Unknown", DungeonClass.Unknown, 0, entity = mc.thePlayer)
 
     val doorOpener: String
         get() = currentDungeon?.dungeonStats?.doorOpener ?: "Unknown"
@@ -163,6 +164,20 @@ object DungeonUtils {
         }
     }
 
+    fun getMageCooldownMultiplier(): Double {
+        return if (currentDungeonPlayer.clazz != DungeonClass.Mage) 1.0
+        else 1 - 0.25 - (floor(currentDungeonPlayer.clazzLvl / 2.0) / 100) * if (dungeonTeammates.count { it.clazz == DungeonClass.Mage } == 1) 2 else 1
+    }
+
+    /**
+     * Gets the new ability cooldown after mage cooldown reductions.
+     * @param baseSeconds The base cooldown of the ability in seconds. Eg 10
+     * @return The new time
+     */
+    fun getAbilityCooldown(baseSeconds: Long): Long {
+        return (baseSeconds * getMageCooldownMultiplier()).roundToLong()
+    }
+
     @SubscribeEvent
     fun onPacket(event: PacketReceivedEvent) {
         if (inDungeons) currentDungeon?.onPacket(event)
@@ -210,10 +225,10 @@ object DungeonUtils {
     fun getDungeonTeammates(previousTeammates: ArrayList<DungeonPlayer>, tabList: List<S38PacketPlayerListItem.AddPlayerData>): ArrayList<DungeonPlayer> {
         for (line in tabList) {
             val displayName = line.displayName?.unformattedText?.noControlCodes ?: continue
-            val (_, name, clazz, _) = tablistRegex.find(displayName)?.destructured ?: continue
+            val (_, name, clazz, clazzLevel) = tablistRegex.find(displayName)?.destructured ?: continue
 
             previousTeammates.find { it.name == name }?.let { player -> player.isDead = clazz == "DEAD" } ?:
-            previousTeammates.add(DungeonPlayer(name, DungeonClass.entries.find { it.name == clazz } ?: continue, mc.netHandler?.getPlayerInfo(name)?.locationSkin ?: continue, mc.theWorld?.getPlayerEntityByName(name), false))
+            previousTeammates.add(DungeonPlayer(name, DungeonClass.entries.find { it.name == clazz } ?: continue, clazzLvl = romanToInt(clazzLevel), mc.netHandler?.getPlayerInfo(name)?.locationSkin ?: continue, mc.theWorld?.getPlayerEntityByName(name), false))
         }
         return previousTeammates
     }

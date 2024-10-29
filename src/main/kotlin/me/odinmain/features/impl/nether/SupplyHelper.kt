@@ -59,7 +59,7 @@ object SupplyHelper : Module(
     private fun renderSupplyWaypoints() {
         KuudraUtils.giantZombies.forEach {
             Renderer.drawCustomBeacon("Supply",
-                Vec3(it.posX + (3.7 * cos((it.rotationYaw + 130) * (Math.PI / 180))), 72.0, it.posZ + (3.7 * sin((it.rotationYaw + 130) * (Math.PI / 180)))), supplyWaypointColor, increase = false)
+                Vec3(it.posX + (3.7 * cos((it.rotationYaw + 130) * (Math.PI / 180))), 73.0, it.posZ + (3.7 * sin((it.rotationYaw + 130) * (Math.PI / 180)))), supplyWaypointColor, increase = false)
         }
     }
 
