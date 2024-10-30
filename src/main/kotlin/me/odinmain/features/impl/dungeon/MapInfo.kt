@@ -92,7 +92,7 @@ object MapInfo : Module(
 
     init {
         execute(250) {
-            if (DungeonUtils.score < 300 || shownTitle || (!scoreTitle && !printWhenScore) || !DungeonUtils.inDungeons) return@execute
+            if (!DungeonUtils.inDungeons || shownTitle || (!scoreTitle && !printWhenScore) || DungeonUtils.score < 300) return@execute
             if (scoreTitle) PlayerUtils.alert(scoreText.replace("&", "§"))
             if (printWhenScore) modMessage("§b${DungeonUtils.score} §ascore reached in §6${DungeonUtils.dungeonTime}.")
             shownTitle = true

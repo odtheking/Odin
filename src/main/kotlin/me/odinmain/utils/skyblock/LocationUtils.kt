@@ -24,7 +24,7 @@ object LocationUtils {
     var kuudraTier: Int = 0
 
     init {
-        Executor(500) {
+        Executor(500, "LocationUtils") {
             if (!inSkyblock)
                 inSkyblock = onHypixel && mc.theWorld?.scoreboard?.getObjectiveInDisplaySlot(1)?.let { cleanSB(it.displayName).contains("SKYBLOCK") } == true
 

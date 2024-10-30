@@ -98,7 +98,7 @@ object RenderOptimizer : Module(
 
     private fun handleHideArcherBones(entity: Entity) {
         val itemEntity = entity as? EntityItem ?: return
-        if (DungeonUtils.inDungeons && itemEntity.entityItem.itemDamage == 15 && itemEntity.entityItem.item === Items.dye)
+        if (itemEntity.entityItem.itemDamage == 15 && itemEntity.entityItem.item === Items.dye)
             entity.setDead()
     }
 
@@ -109,12 +109,12 @@ object RenderOptimizer : Module(
 
     private fun handleHealerFairy(entity: Entity) {
         val armorStand = entity as? EntityArmorStand ?: return
-        if (DungeonUtils.inDungeons && armorStand.heldItem?.item == Items.skull && getHealerFairyTextureValue(armorStand) == HEALER_FAIRY_TEXTURE)
+        if (armorStand.heldItem?.item == Items.skull && getHealerFairyTextureValue(armorStand) == HEALER_FAIRY_TEXTURE)
             armorStand.setDead()
     }
 
     private fun handleSoulWeaver(entity: Entity) {
-        if (DungeonUtils.inDungeons && getSkullValue(entity) == SOUL_WEAVER_TEXTURE) entity.setDead()
+        if (getSkullValue(entity) == SOUL_WEAVER_TEXTURE) entity.setDead()
     }
 
     private fun handleWitherMiner(entity: Entity) {

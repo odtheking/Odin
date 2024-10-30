@@ -7,6 +7,8 @@ import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.utils.*
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
+import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.skyblock.dungeon.M7Phases
 import net.minecraft.entity.item.EntityItemFrame
 import net.minecraft.init.Items
 import net.minecraft.util.Vec3
@@ -31,6 +33,7 @@ object ArrowAlign : Module(
 
     init {
         execute(100) {
+            if (DungeonUtils.getF7Phase() != M7Phases.P3) return@execute
             clicksRemaining.clear()
             if ((mc.thePlayer?.distanceSquaredTo(Vec3(0.0, 120.0, 77.0)) ?: return@execute) > 200) {
                 currentFrameRotations = null
@@ -54,6 +57,7 @@ object ArrowAlign : Module(
 
     @SubscribeEvent
     fun onRightClick(event: ClickEvent.RightClickEvent) {
+        if (DungeonUtils.getF7Phase() != M7Phases.P3) return
         val targetFrame = mc.objectMouseOver?.entityHit as? EntityItemFrame ?: return
         val targetFramePosition = targetFrame.positionVector.flooredVec()
 
@@ -77,7 +81,7 @@ object ArrowAlign : Module(
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-        if (clicksRemaining.isEmpty()) return
+        if (clicksRemaining.isEmpty() || DungeonUtils.getF7Phase() != M7Phases.P3) return
         clicksRemaining.forEach { (index, clickNeeded) ->
             val color = when {
                 clickNeeded == 0 -> return@forEach

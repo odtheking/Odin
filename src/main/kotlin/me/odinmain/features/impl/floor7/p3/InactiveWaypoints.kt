@@ -44,7 +44,7 @@ object InactiveWaypoints : Module(
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-        if (inactiveList.isEmpty()) return
+        if (inactiveList.isEmpty() || DungeonUtils.getF7Phase() != M7Phases.P3) return
         profile("Inactive Waypoints") {
             inactiveList.forEach {
                 var name = it.name.noControlCodes

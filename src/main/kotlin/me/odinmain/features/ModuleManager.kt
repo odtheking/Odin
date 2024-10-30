@@ -19,7 +19,7 @@ import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.profile
 import me.odinmain.utils.render.getTextWidth
 import net.minecraft.network.Packet
-import net.minecraftforge.client.event.RenderWorldLastEvent
+import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
@@ -149,24 +149,12 @@ object ModuleManager {
     }
 
     @SubscribeEvent
-    fun onRenderOverlay(event: RenderOverlayNoCaching) {
-        if ((mc.currentScreen != null && !hudChat) || mc.currentScreen == EditHUDGui) return
+    fun onRenderOverlay(event: RenderGameOverlayEvent.Post) {
+        if ((mc.currentScreen != null && !hudChat) || event.type != RenderGameOverlayEvent.ElementType.ALL || mc.currentScreen == EditHUDGui) return
 
-        mc.mcProfiler.startSection("Odin Hud")
-
-        for (i in 0 until huds.size) {
-            huds[i].draw(false)
-        }
-
-        mc.mcProfiler.endSection()
-    }
-
-    @SubscribeEvent
-    fun onRenderWorld(event: RenderWorldLastEvent) {
-        profile("Executors") {
-            executors.removeAll {
-                if (!it.first.enabled && !it.first.alwaysActive) return@removeAll false // pls test i cba
-                it.second.run()
+        profile("Odin Hud") {
+            for (i in 0 until huds.size) {
+                huds[i].draw(true)
             }
         }
     }
