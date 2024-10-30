@@ -48,6 +48,7 @@ object LocationUtils {
         onHypixel = false
         inSkyblock = false
         currentArea = Island.Unknown
+        kuudraTier = 0
         SkyblockJoinIslandEvent(currentArea).postAndCatch()
         currentDungeon = null
     }
@@ -56,6 +57,7 @@ object LocationUtils {
     fun onWorldChange(event: WorldEvent.Unload) {
         currentDungeon = null
         inSkyblock = false
+        kuudraTier = 0
         currentArea = Island.Unknown
     }
 

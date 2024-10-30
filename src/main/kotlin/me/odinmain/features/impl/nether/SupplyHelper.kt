@@ -10,7 +10,7 @@ import me.odinmain.utils.formatTime
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.KuudraUtils
-import me.odinmain.utils.skyblock.KuudraUtils.PreSpot
+import me.odinmain.utils.skyblock.KuudraUtils.SupplyPickUpSpot
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.ClientChatReceivedEvent
@@ -64,12 +64,12 @@ object SupplyHelper : Module(
     }
 
     private val locations = listOf(
-        Pair(Vec3(-98.0, 78.0, -112.0), PreSpot.Shop),
-        Pair(Vec3(-98.0, 78.0, -99.0), PreSpot.Equals),
-        Pair(Vec3(-110.0, 78.0, -106.0), PreSpot.xCannon),
-        Pair(Vec3(-106.0, 78.0, -112.0), PreSpot.X ),
-        Pair(Vec3(-94.0, 78.0, -106.0), PreSpot.Triangle),
-        Pair(Vec3(-106.0, 78.0, -99.0), PreSpot.Slash),
+        Pair(Vec3(-98.0, 78.0, -112.0), SupplyPickUpSpot.Shop),
+        Pair(Vec3(-98.0, 78.0, -99.0), SupplyPickUpSpot.Equals),
+        Pair(Vec3(-110.0, 78.0, -106.0), SupplyPickUpSpot.xCannon),
+        Pair(Vec3(-106.0, 78.0, -112.0), SupplyPickUpSpot.X ),
+        Pair(Vec3(-94.0, 78.0, -106.0), SupplyPickUpSpot.Triangle),
+        Pair(Vec3(-106.0, 78.0, -99.0), SupplyPickUpSpot.Slash),
     )
 
     private fun renderDropLocations() {

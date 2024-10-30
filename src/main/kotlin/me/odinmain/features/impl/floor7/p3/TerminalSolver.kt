@@ -340,7 +340,7 @@ object TerminalSolver : Module(
     private fun solveMelody(items: List<ItemStack?>): List<Int> {
         val greenPane = items.indexOfLast { it?.metadata == 5 && Item.getIdFromItem(it.item) == 160 }.takeIf { it != -1 } ?: return emptyList()
         val magentaPane = items.indexOfFirst { it?.metadata == 2 && Item.getIdFromItem(it.item) == 160 }.takeIf { it != -1 } ?: return emptyList()
-        val greenClay = items.indexOfFirst { it?.metadata == 5 && Item.getIdFromItem(it.item) == 159 }.takeIf { it != -1 } ?: return emptyList()
+        val greenClay = items.indexOfLast { it?.metadata == 5 && Item.getIdFromItem(it.item) == 159 }.takeIf { it != -1 } ?: return emptyList()
         return items.mapIndexedNotNull { index, item ->
             when {
                 index == greenPane || item?.metadata == 2 && Item.getIdFromItem(item.item) == 160 -> index
