@@ -91,7 +91,7 @@ object SplitsManager {
     }
 }
 
-private val kuudraT5PBs = PersonalBest("KuudraT5", 6)
+private val kuudraT5PBs = PersonalBest("KuudraT5", 7)
 private val kuudraT4PBs = PersonalBest("KuudraT4", 5)
 private val kuudraT3PBs = PersonalBest("KuudraT3", 5)
 private val kuudraT2PBs = PersonalBest("KuudraT2", 5)

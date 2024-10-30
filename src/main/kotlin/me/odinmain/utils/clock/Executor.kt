@@ -8,9 +8,9 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
  * Class that allows repeating execution of code while being dynamic.
  * @author Stivais
  */
-open class Executor(val delay: () -> Long, private val profileName: String = "Unspecified odin executor", val func: Executable) {
+open class Executor(val delay: () -> Long, private val profileName: String = "Unspecified odin executor", val shouldRun: () -> Boolean = { true }, val func: Executable) {
 
-    constructor(delay: Long, profileName: String = "Unspecified odin executor", func: Executable) : this({ delay }, profileName, func)
+    constructor(delay: Long, profileName: String = "Unspecified odin executor", shouldRun: () -> Boolean = { true }, func: Executable) : this({ delay }, profileName, shouldRun, func)
 
     internal val clock = Clock()
     internal var shouldFinish = false
@@ -28,10 +28,9 @@ open class Executor(val delay: () -> Long, private val profileName: String = "Un
     }
 
     /**
-     * Starts an executor that ends after a certain amount of times.
-     * @author Stivais
+     * Starts an executor that ends after a certain number of times.
      */
-    class LimitedExecutor(delay: Long, repeats: Int, profileName: String = "Unspecified odin executor", func: Executable) : Executor(delay, profileName, func) {
+    class LimitedExecutor(delay: Long, repeats: Int, profileName: String = "Unspecified odin executor", shouldRun: () -> Boolean = { true }, func: Executable) : Executor(delay, profileName, shouldRun, func) {
         private val repeats = repeats - 1
         private var totalRepeats = 0
 
@@ -49,7 +48,7 @@ open class Executor(val delay: () -> Long, private val profileName: String = "Un
     }
 
     /**
-     * Allows to stop executing an executor
+     * Allows stopping executing an executor permanently
      *
      * Returning [Nothing] allows for us to stop running the function without specifyinge
      * @author Stivais
@@ -60,7 +59,6 @@ open class Executor(val delay: () -> Long, private val profileName: String = "Un
     }
 
     companion object {
-
         private val executors = ArrayList<Executor>()
 
         fun Executor.register() {
@@ -69,7 +67,12 @@ open class Executor(val delay: () -> Long, private val profileName: String = "Un
 
         @SubscribeEvent
         fun onRender(event: RenderWorldLastEvent) {
-            executors.removeAll { it.run() }
+            profile("Executors") {
+                executors.removeAll {
+                    if (!it.shouldRun()) return@removeAll false
+                    else it.run()
+                }
+            }
         }
     }
 }

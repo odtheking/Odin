@@ -81,7 +81,7 @@ object InvincibilityTimer : Module(
         if (!LocationUtils.inSkyblock || !showCooldown) return
         val durability = when (event.stack.skyblockID) {
             "BONZO_MASK", "STARRED_BONZO_MASK" -> (System.currentTimeMillis() - bonzoMaskProc) / getAbilityCooldown(180_000L).toDouble()
-            "SPIRIT_MASK" -> (System.currentTimeMillis() - spiritMaskProc) / getAbilityCooldown(30_000L).toDouble()
+            "SPIRIT_MASK", "STARRED_SPIRIT_MASK" -> (System.currentTimeMillis() - spiritMaskProc) / getAbilityCooldown(30_000L).toDouble()
             else -> return
         }.takeIf { it < 1.0 } ?: return
         RenderUtils.renderDurabilityBar(event.x ?: return, event.y ?: return, durability)

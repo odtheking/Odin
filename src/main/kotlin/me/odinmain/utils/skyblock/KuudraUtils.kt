@@ -73,7 +73,7 @@ object KuudraUtils {
     }
 
     init {
-        Executor(500) {
+        Executor(500, "KuudraUtils") {
             if (!inKuudra) return@Executor
             val entities = mc.theWorld?.loadedEntityList ?: return@Executor
 

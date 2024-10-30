@@ -9,6 +9,7 @@ import me.odinmain.features.settings.impl.HudSetting
 import me.odinmain.features.settings.impl.Keybinding
 import me.odinmain.utils.clock.Executable
 import me.odinmain.utils.clock.Executor
+import me.odinmain.utils.clock.Executor.Companion.register
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.network.Packet
 import net.minecraftforge.common.MinecraftForge
@@ -163,16 +164,16 @@ abstract class Module(
         ModuleManager.worldLoadFunctions.add(func)
     }
 
-    fun execute(delay: Long, profileName: String = this.name, func: Executable) {
-        executors.add(this to Executor(delay, profileName, func))
+    fun execute(delay: Long, repeats: Int, profileName: String = "${this.name} Executor", shouldRun: () -> Boolean = { this.enabled || this.alwaysActive }, func: Executable) {
+        executors.add(this to Executor.LimitedExecutor(delay, repeats, profileName, shouldRun, func).apply { register() })
     }
 
-    fun execute(delay: Long, repeats: Int, profileName: String = this.name, func: Executable) {
-        executors.add(this to Executor.LimitedExecutor(delay, repeats, profileName, func))
+    fun execute(delay: () -> Long, profileName: String = "${this.name} Executor", shouldRun: () -> Boolean = { this.enabled || this.alwaysActive }, func: Executable) {
+        executors.add(this to Executor(delay, profileName, shouldRun, func).apply { register() })
     }
 
-    fun execute(delay: () -> Long, profileName: String = this.name, func: Executable) {
-        executors.add(this to Executor(delay, profileName, func))
+    fun execute(delay: Long, profileName: String = "${this.name} Executor", shouldRun: () -> Boolean = { this.enabled || this.alwaysActive }, func: Executable) {
+        executors.add(this to Executor(delay, profileName, shouldRun, func).apply { register() })
     }
 
     enum class TagType {
