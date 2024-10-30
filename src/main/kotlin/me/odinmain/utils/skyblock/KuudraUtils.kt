@@ -134,7 +134,7 @@ object KuudraUtils {
         return previousTeammates
     }
 
-    enum class PreSpot(val location: Vec3) {
+    enum class SupplyPickUpSpot(val location: Vec3) {
         Triangle(Vec3(-67.5, 77.0, -122.5)),
         X(Vec3(-142.5, 77.0, -151.0)),
         Equals(Vec3(-65.5, 76.0, -87.5)),
