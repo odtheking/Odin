@@ -94,8 +94,7 @@ object LocationUtils {
     fun getFloor(): Floor? {
         if (currentArea.isArea(Island.SinglePlayer)) return Floor.E
         for (i in sidebarLines) {
-            val floor = Regex("The Catacombs \\((\\w+)\\)\$").find(cleanSB(i))?.groupValues?.get(1) ?: continue
-            return Floor.valueOf(floor)
+            return Floor.valueOf(Regex("The Catacombs \\((\\w+)\\)\$").find(cleanSB(i))?.groupValues?.get(1) ?: continue)
         }
         return null
     }

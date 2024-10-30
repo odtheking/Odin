@@ -15,23 +15,22 @@ object RemovePerks : Module(
     description = "Removes certain perks from the perk menu.",
     category = Category.NETHER
 ) {
-    private val renderStun by BooleanSetting("Render Stun", false, description = "Renders the stun role perks.")
+    private val renderStun by BooleanSetting("Show Stun", false, description = "Shows the stun role perks.")
 
     @SubscribeEvent
     fun renderSlot(event: GuiEvent.DrawSlotEvent) {
-        if ((event.gui.inventorySlots as? ContainerChest)?.name != "Perk Menu") return
-
-        if (slotCheck(event.slot.stack?.unformattedName ?: return)) event.isCanceled = true
+        if ((event.gui.inventorySlots as? ContainerChest)?.name == "Perk Menu" && slotCheck(event.slot.stack?.unformattedName ?: return))
+            event.isCanceled = true
     }
 
     @SubscribeEvent
     fun guiMouseClick(event: GuiEvent.GuiMouseClickEvent) {
-        if (event.gui !is GuiChest || (event.gui.inventorySlots as? ContainerChest)?.name != "Perk Menu") return
-        if (slotCheck(event.gui.slotUnderMouse?.stack?.unformattedName ?: return)) event.isCanceled = true
+        if (event.gui is GuiChest && (event.gui.inventorySlots as? ContainerChest)?.name == "Perk Menu" && slotCheck(event.gui.slotUnderMouse?.stack?.unformattedName ?: return))
+            event.isCanceled = true
     }
 
     private fun slotCheck(slot: String): Boolean {
-        return slot.containsOneOf("Steady Hands", "Bomberman") || slot == "Elle's Lava Rod" || slot == "Elle's Pickaxe" ||
-            slot == "Auto Revive" || (!renderStun && slot.containsOneOf("Mining Frenzy", "Human Cannonball"))
+        return slot.containsOneOf("Steady Hands", "Bomberman") || slot.equalsOneOf("Elle's Lava Rod", "Elle's Pickaxe", "Auto Revive") ||
+                (!renderStun && slot.containsOneOf("Human Cannonball"))
     }
 }

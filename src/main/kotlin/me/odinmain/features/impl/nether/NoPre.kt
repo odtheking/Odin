@@ -24,7 +24,8 @@ object NoPre : Module(
     private val partyChatRegex = Regex("^Party > (\\[[^]]*?])? ?(\\w{1,16}): No ?(Triangle|X|Equals|Slash|xCannon|Square|Shop)!\$")
 
     init {
-        onMessage("[NPC] Elle: Head over to the main platform, I will join you when I get a bite!", false) {
+        onMessage(Regex("\\[NPC] Elle: Head over to the main platform, I will join you when I get a bite!")) {
+            modMessage("Pre-spot: None")
             val playerLocation = mc.thePlayer?.positionVector ?: return@onMessage
             preSpot = when {
                 PreSpot.Triangle.location.distanceTo(playerLocation) < 15 -> PreSpot.Triangle
@@ -33,10 +34,11 @@ object NoPre : Module(
                 PreSpot.Slash.location.distanceTo(playerLocation) < 15 -> PreSpot.Slash
                 else -> PreSpot.None
             }
-            modMessage("Pre-spot: ${if (preSpot == PreSpot.None) "§cDidn't register your pre-spot because you didn't get there in time." else preSpot.name}")
+            modMessage(if (preSpot == PreSpot.None) "§cDidn't register your pre-spot because you didn't get there in time." else "Pre-spot: ${preSpot.name}")
         }
 
-        onMessage("[NPC] Elle: Not again!", false) {
+        onMessage(Regex("\\[NPC] Elle: Not again!")) {
+            if (preSpot == PreSpot.None) return@onMessage
             var pre = false
             var second = false
             var msg = ""
@@ -59,7 +61,7 @@ object NoPre : Module(
                     else -> return@onMessage
                 }
             }
-            if (msg.isEmpty()) return@onMessage modMessage("§cYou didn't get to your pre spot in time")
+            if (msg.isEmpty()) return@onMessage
             partyMessage(msg)
             if (showAlert) PlayerUtils.alert(msg, time = 10)
         }

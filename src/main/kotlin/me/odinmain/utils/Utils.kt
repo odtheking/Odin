@@ -11,6 +11,8 @@ import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.skyblock.*
 import net.minecraft.entity.Entity
+import net.minecraft.entity.EntityLivingBase
+import net.minecraft.entity.SharedMonsterAttributes
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.event.ClickEvent
 import net.minecraft.event.HoverEvent
@@ -353,4 +355,8 @@ fun runOnMCThread(run: () -> Unit) {
 
 fun EntityPlayer?.isOtherPlayer(): Boolean {
     return this != null && this != mc.thePlayer && this.uniqueID.version() != 2
+}
+
+fun EntityLivingBase?.getSBMaxHealth(): Float {
+    return this?.getEntityAttribute(SharedMonsterAttributes.maxHealth)?.baseValue?.toFloat() ?: 0f
 }
