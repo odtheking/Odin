@@ -219,7 +219,7 @@ object DungeonUtils {
     }
 
     const val WITHER_ESSENCE_ID = "e0f3e929-869e-3dca-9504-54c666ee6f23"
-    private const val REDSTONE_KEY = "edb0155f-379c-395a-9c7d-1b6005987ac8"
+    private const val REDSTONE_KEY = "fed95410-aba1-39df-9b95-1d4f361eb66e"
 
     /**
      * Determines whether a given block state and position represent a secret location.
