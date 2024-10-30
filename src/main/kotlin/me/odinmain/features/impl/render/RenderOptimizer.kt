@@ -109,7 +109,7 @@ object RenderOptimizer : Module(
 
     private fun handleHealerFairy(entity: Entity) {
         val armorStand = entity as? EntityArmorStand ?: return
-        if (armorStand.heldItem?.item == Items.skull && getHealerFairyTextureValue(armorStand) == HEALER_FAIRY_TEXTURE)
+        if (armorStand.heldItem?.item == Items.skull && armorStand.heldItem?.skullTexture == HEALER_FAIRY_TEXTURE)
             armorStand.setDead()
     }
 
@@ -138,6 +138,4 @@ object RenderOptimizer : Module(
         if (entity.customNameTag.noControlCodes.startsWith("[Lv15] Blaze "))
             entity.alwaysRenderNameTag = false
     }
-    
-    private fun getHealerFairyTextureValue(armorStand: EntityArmorStand?): String? = armorStand?.heldItem?.skullTexture
 }
