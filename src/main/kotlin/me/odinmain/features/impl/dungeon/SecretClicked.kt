@@ -89,6 +89,6 @@ object SecretClicked : Module(
     init {
         onWorldLoad { clickedSecretsList.clear() }
 
-        onMessage("That chest is locked!", true) { clickedSecretsList.lastOrNull()?.locked = true }
+        onMessage(Regex("That chest is locked!")) { clickedSecretsList.lastOrNull()?.locked = true }
     }
 }

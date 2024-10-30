@@ -63,7 +63,6 @@ object OdinMain {
     fun postInit() = scope.launch(Dispatchers.IO) {
         val config = File(mc.mcDataDir, "config/odin")
         if (!config.exists()) config.mkdirs()
-        launch { WaypointConfig.loadConfig() }
         launch { DungeonWaypointConfig.loadConfig() }
     }
 

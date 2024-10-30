@@ -40,13 +40,13 @@ object AutoSell : Module(
     }
 
     private val defaultItems = arrayOf(
-        "Enchanted Ice", "Health Potion", "Superboom TNT", "Rotten", "Skeleton Master", "Skeleton Grunt", "Cutlass",
-        "Skeleton Lord", "Skeleton Soldier", "Zombie Soldier", "Zombie Knight", "Zombie Commander", "Zombie Lord",
-        "Skeletor", "Super Heavy", "Heavy", "Sniper Helmet", "Dreadlord", "Earth Shard", "Zombie Commander Whip",
-        "Machine Gun", "Sniper Bow", "Soulstealer Bow", "Silent Death", "Training Weight", "Health Potion VIII",
-        "Health Potion 8", "Beating Heart", "Premium Flesh", "Mimic Fragment", "Enchanted Rotten Flesh", "Sign",
-        "Enchanted Bone", "Defuse Kit", "Optical Lens", "Tripwire Hook", "Button", "Carpet", "Lever", "Diamond Atom",
-        "Health Potion VIII Splash Potion", "Healing Potion 8 Splash Potion", "Healing Potion VIII Splash Potion",
-        "Healing VIII Splash Potion", "Healing 8 Splash Potion"
+        "enchanted ice", "health potion", "superboom tnt", "rotten", "skeleton master", "skeleton grunt", "cutlass",
+        "skeleton lord", "skeleton soldier", "zombie soldier", "zombie knight", "zombie commander", "zombie lord",
+        "skeletor", "super heavy", "heavy", "sniper helmet", "dreadlord", "earth shard", "zombie commander whip",
+        "machine gun", "sniper bow", "soulstealer bow", "silent death", "training weight", "health potion viii",
+        "health potion 8", "beating heart", "premium flesh", "mimic fragment", "enchanted rotten flesh", "sign",
+        "enchanted bone", "defuse kit", "optical lens", "tripwire hook", "button", "carpet", "lever", "diamond atom",
+        "health potion viii splash potion", "healing potion 8 splash potion", "healing potion viii splash potion",
+        "healing viii splash potion", "healing 8 splash potion"
     )
 }

@@ -76,9 +76,9 @@ object TerminalSounds : Module(
     }
 
     init {
-        onMessage("The gate has been destroyed!", false, { enabled && shouldReplaceSounds }) { mc.thePlayer.playSound("note.pling", 8f, 4f) }
+        onMessage(Regex("The gate has been destroyed!"), { enabled && shouldReplaceSounds }) { mc.thePlayer.playSound("note.pling", 8f, 4f) }
 
-        onMessage("The Core entrance is opening!", false, { enabled && shouldReplaceSounds }) { mc.thePlayer.playSound("note.pling", 8f, 4f) }
+        onMessage(Regex("The Core entrance is opening!"), { enabled && shouldReplaceSounds }) { mc.thePlayer.playSound("note.pling", 8f, 4f) }
     }
 
     private fun clickSlot(slot: Int) {

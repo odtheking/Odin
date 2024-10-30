@@ -2,6 +2,9 @@ package me.odinmain.features.impl.nether
 
 import me.odinmain.features.Category
 import me.odinmain.features.Module
+import me.odinmain.features.impl.nether.KuudraReminders.buildBallista
+import me.odinmain.features.impl.nether.KuudraReminders.freshTools
+import me.odinmain.features.impl.nether.KuudraReminders.pickUpSupplies
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.utils.isOtherPlayer
 import me.odinmain.utils.skyblock.PlayerUtils
@@ -22,23 +25,23 @@ object KuudraReminders : Module(
     private val manaDrain by BooleanSetting("Mana Drain", true, description = "Notifies your party when you use mana on them.")
 
     init {
-        onMessage("WARNING: You do not have a key for this tier in your inventory, you will not be able to claim rewards.", false, { keyReminder && enabled }) {
+        onMessage(Regex("WARNING: You do not have a key for this tier in your inventory, you will not be able to claim rewards."), { keyReminder && enabled }) {
             PlayerUtils.alert("No key in inventory", displayText = displayText, playSound = playSound)
         }
 
-        onMessage("[NPC] Elle: Okay adventurers, I will go and fish up Kuudra!", false, { buyUpgrades && enabled }) {
+        onMessage(Regex("\\[NPC] Elle: Okay adventurers, I will go and fish up Kuudra!"), { buyUpgrades && enabled }) {
             PlayerUtils.alert("Buy Upgrades", displayText = displayText, playSound = playSound)
         }
 
-        onMessage("[NPC] Elle: Not again!", false, { pickUpSupplies && enabled }) {
+        onMessage(Regex("\\[NPC] Elle: Not again!"), { pickUpSupplies && enabled }) {
             PlayerUtils.alert("Pick up supplies", displayText = displayText, playSound = playSound)
         }
 
-        onMessage("[NPC] Elle: It's time to build the Ballista again! Cover me!", false, { buildBallista && enabled }) {
+        onMessage(Regex("\\[NPC] Elle: It's time to build the Ballista again! Cover me!"), { buildBallista && enabled }) {
             PlayerUtils.alert("Build Ballista", displayText = displayText, playSound = playSound)
         }
 
-        onMessage("Your Fresh Tools Perk bonus doubles your building speed for the next 10 seconds!", false, { freshTools && enabled }) {
+        onMessage(Regex("Your Fresh Tools Perk bonus doubles your building speed for the next 10 seconds!"), { freshTools && enabled }) {
             PlayerUtils.alert("Fresh Tools", displayText = displayText, playSound = playSound)
         }
 

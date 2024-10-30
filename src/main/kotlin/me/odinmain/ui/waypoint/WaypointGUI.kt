@@ -1,12 +1,8 @@
 package me.odinmain.ui.waypoint
 
-import me.odinmain.config.WaypointConfig
-import me.odinmain.features.impl.render.*
-import me.odinmain.features.impl.render.WaypointManager.randomColor
 import me.odinmain.ui.clickgui.animations.impl.*
 import me.odinmain.ui.util.MouseHandler
 import me.odinmain.ui.waypoint.elements.*
-import me.odinmain.utils.floored
 import me.odinmain.utils.skyblock.LocationUtils.currentArea
 import net.minecraft.client.gui.GuiScreen
 import org.lwjgl.input.Mouse
@@ -36,7 +32,7 @@ object WaypointGUI : GuiScreen() {
         displayArea?.let { updateElements(it) }
         scrollTarget = 0f
         scrollOffset = 0f
-        areas = areas.sortedByDescending { WaypointConfig.waypoints[it.area]?.size }
+        //areas = areas.sortedByDescending { WaypointConfig.waypoints[it.area]?.size }
         super.initGui()
     }
 
@@ -116,9 +112,9 @@ object WaypointGUI : GuiScreen() {
             return
         }
         if (mouseHandler.isAreaHovered(10f, 5f, 78.5f, 15f)) {
-            val waypoint = WaypointManager.Waypoint("§fWaypoint", mc.thePlayer.positionVector.floored(), randomColor())
-            WaypointManager.addWaypoint(waypoint, displayArea ?: "")
-            list.add(WaypointElement(waypoint))
+            //val waypoint = WaypointManager.Waypoint("§fWaypoint", mc.thePlayer.positionVector.floored(), randomColor())
+           // WaypointManager.addWaypoint(waypoint, displayArea ?: "")
+           // list.add(WaypointElement(waypoint))
             return
         }
         for (i in list) if (i.mouseClicked(mouseButton)) break
@@ -147,7 +143,7 @@ object WaypointGUI : GuiScreen() {
     }
 
     fun updateElements(area: String = currentArea?.displayName ?: "") {
-        list = WaypointConfig.waypoints[area]?.map { WaypointElement(it) }?.toMutableList() ?: mutableListOf()
+     //   list = WaypointConfig.waypoints[area]?.map { WaypointElement(it) }?.toMutableList() ?: mutableListOf()
     }
 
     override fun doesGuiPauseGame(): Boolean = false

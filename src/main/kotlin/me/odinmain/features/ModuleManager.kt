@@ -154,7 +154,7 @@ object ModuleManager {
 
         profile("Odin Hud") {
             for (i in 0 until huds.size) {
-                huds[i].draw(true)
+                huds[i].draw(false)
             }
         }
     }

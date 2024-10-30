@@ -140,26 +140,6 @@ abstract class Module(
         ModuleManager.messageFunctions.add(ModuleManager.MessageFunction(filter, shouldRun, func))
     }
 
-    /**
-     * Runs the given function when a Chat Packet is sent with the same message as the given text (or contains the given text) (Case Sensitive!)
-     *
-     * @param text The text to look for.
-     * @param contains If the function should run when the message only contains the text but does not necessarily equal it.
-     * @param shouldRun Boolean getter to decide if the function should run at any given time, could check if the option is enabled for instance.
-     * @param func The function to run if the message matches or contains the given text and shouldRun returns true.
-     *
-     * @author Bonsai
-     */
-    fun onMessage(text: String, contains: Boolean, shouldRun: () -> Boolean = { alwaysActive || enabled }, func: (String) -> Unit) {
-        val regex =
-            if (contains)
-                ".*${Regex.escape(text)}.*".toRegex()
-            else
-                Regex.escape(text).toRegex()
-
-        ModuleManager.messageFunctions.add(ModuleManager.MessageFunction(regex, shouldRun, func))
-    }
-
     fun onWorldLoad(func: () -> Unit) {
         ModuleManager.worldLoadFunctions.add(func)
     }

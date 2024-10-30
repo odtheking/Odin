@@ -17,13 +17,13 @@ open class Executor(val delay: () -> Long, private val profileName: String = "Un
 
     open fun run(): Boolean {
         if (shouldFinish) return true
-        profile(profileName) {
             if (clock.hasTimePassed(delay(), true)) {
-                runCatching {
-                    func()
+                profile(profileName) {
+                    runCatching {
+                        func()
+                    }
                 }
             }
-        }
         return false
     }
 
@@ -50,7 +50,7 @@ open class Executor(val delay: () -> Long, private val profileName: String = "Un
     /**
      * Allows stopping executing an executor permanently
      *
-     * Returning [Nothing] allows for us to stop running the function without specifyinge
+     * Returning [Nothing] allows for us to stop running the function without specifying
      * @author Stivais
      */
     fun Executor.destroyExecutor(): Nothing {
