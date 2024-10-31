@@ -29,7 +29,7 @@ object DungeonWaypointConfig {
         try {
             createNewFile()
         } catch (_: Exception) {
-            println("Error initializing module config")
+            println("Error creating dungeon waypoints config file.")
         }
     }
 
