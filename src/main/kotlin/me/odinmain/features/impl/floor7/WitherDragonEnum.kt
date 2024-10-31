@@ -93,7 +93,7 @@ enum class WitherDragonsEnum (
     }
 
     fun updateEntity(entityId: Int) {
-        dragonEntityList.add(mc.theWorld.getEntityByID(entityId) as? EntityDragon ?: return)
+        entity = (mc.theWorld.getEntityByID(entityId) as? EntityDragon)?.also { dragonEntityList.add(it) } ?: return
     }
 
     companion object {
