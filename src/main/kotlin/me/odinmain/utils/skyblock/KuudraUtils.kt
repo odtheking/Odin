@@ -99,7 +99,7 @@ object KuudraUtils {
                         }
                         if (phase != 1 || entity.name.noControlCodes != "✓ SUPPLIES RECEIVED ✓") return@forEach
                         val x = entity.posX.toInt()
-                        val z = entity.posY.toInt()
+                        val z = entity.posZ.toInt()
                         when {
                             x == -98 && z == -112 -> supplies[0] = false
                             x == -98 && z == -99 -> supplies[1] = false
@@ -116,7 +116,7 @@ object KuudraUtils {
 
     @SubscribeEvent
     fun handleTabListPacket(event: PacketReceivedEvent) {
-        if (!inKuudra || event.packet !is S38PacketPlayerListItem || !event.packet.action.equalsOneOf(S38PacketPlayerListItem.Action.UPDATE_DISPLAY_NAME, S38PacketPlayerListItem.Action.ADD_PLAYER)) return
+        if (event.packet !is S38PacketPlayerListItem || !event.packet.action.equalsOneOf(S38PacketPlayerListItem.Action.UPDATE_DISPLAY_NAME, S38PacketPlayerListItem.Action.ADD_PLAYER)) return
         kuudraTeammates = updateKuudraTeammates(kuudraTeammates, event.packet.entries)
     }
 

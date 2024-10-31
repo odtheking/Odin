@@ -66,11 +66,6 @@ val dungeonWaypointsCommand = commodore("dwp", "dungeonwaypoints") {
         modMessage("Next waypoint will be added with through walls: ${DungeonWaypoints.throughWalls}")
     }
 
-    literal("edittext").runs {
-        DungeonWaypoints.editText = !DungeonWaypoints.editText
-        modMessage("Editing text status changed to: ${DungeonWaypoints.editText}")
-    }
-
     literal("color").runs { hex: String ->
         if (hex.length != 8 || hex.any { !it.isHexaDecimal }) return@runs modMessage("Color hex not properly formatted! Use format RRGGBBAA")
         DungeonWaypoints.color = Color(hex)
