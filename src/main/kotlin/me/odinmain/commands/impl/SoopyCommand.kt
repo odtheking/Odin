@@ -2,6 +2,7 @@ package me.odinmain.commands.impl
 
 import kotlinx.coroutines.*
 import me.odinmain.OdinMain.mc
+import me.odinmain.OdinMain.scope
 import me.odinmain.commands.commodore
 import me.odinmain.utils.fetchURLData
 import me.odinmain.utils.skyblock.modMessage
@@ -28,7 +29,7 @@ val soopyCommand = commodore("soopycmd", "spcmd", "spc") {
         val url = "https://soopy.dev/api/soopyv2/botcommand?m=$command&u=$targetUser"
 
         modMessage("Running command...")
-        GlobalScope.launch {
+        scope.launch {
             try {
                 val result = withTimeout(5000) {
                     fetchURLData(url)

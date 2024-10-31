@@ -145,7 +145,7 @@ object DungeonWaypoints : Module(
     init {
         onWorldLoad { resetSecrets() }
 
-        onMessage("That chest is locked!", true) {
+        onMessage(Regex("That chest is locked!")) {
             onLocked()
         }
 

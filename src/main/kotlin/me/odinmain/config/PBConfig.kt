@@ -2,7 +2,7 @@ package me.odinmain.config
 
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.launch
 import me.odinmain.OdinMain.logger
 import me.odinmain.OdinMain.mc
@@ -40,14 +40,15 @@ object PBConfig {
         }
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
     fun saveConfig() {
-        scope.launch(Dispatchers.IO) {
+        scope.launch {
             try {
                 configFile.bufferedWriter().use {
                     it.write(gson.toJson(pbs))
                 }
             } catch (_: Exception) {
-                println("Odin: Error saving Waypoint config.")
+                println("Odin: Error saving PB config.")
             }
         }
     }

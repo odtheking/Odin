@@ -48,11 +48,11 @@ object TerminalTimes : Module(
     }
 
     init {
-        onMessage("The gate has been destroyed!", false, { enabled && terminalSplits }) {
+        onMessage(Regex("The gate has been destroyed!"), { enabled && terminalSplits }) {
             if (completed.first == completed.second) resetSection() else gateBlown = true
         }
 
-        onMessage("[BOSS] Goldor: Who dares trespass into my domain?", false, { enabled && terminalSplits }) {
+        onMessage(Regex("\\[BOSS] Goldor: Who dares trespass into my domain?"), { enabled && terminalSplits }) {
             resetSection(true)
         }
 
@@ -63,7 +63,7 @@ object TerminalTimes : Module(
             else completed = Pair(current.toIntOrNull() ?: return@onMessage, total.toIntOrNull() ?: return@onMessage)
         }
 
-        onMessage("The Core entrance is opening!", false, { enabled && terminalSplits }) {
+        onMessage(Regex("The Core entrance is opening!"), { enabled && terminalSplits }) {
             resetSection()
             modMessage("§bTimes: §a${times.joinToString(" §8| ") { "§a${it}s" }}§8, §bTotal: §a${phaseTimer.seconds}s")
         }

@@ -126,7 +126,7 @@ object WitherDragons : Module(
             dragonUpdate(it)
         }
 
-        onMessage("[BOSS] Necron: All this, for nothing...", false) {
+        onMessage(Regex("\\[BOSS] Necron: All this, for nothing...")) {
             relicsOnMessage()
         }
 
