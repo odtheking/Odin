@@ -14,12 +14,12 @@ import kotlin.math.floor
 
 class StartsWith(private val letter: String) : TermSimGui(
     "What starts with: \'$letter\'?",
-    54
+    45
 ) {
     override fun create() {
         val guaranteed = (10..16).getRandom()
         inventorySlots.inventorySlots.subList(0, size).forEachIndexed { index, it ->
-            if (floor(index / 9.0) in 1.0..4.0 && index % 9 in 1..7) {
+            if (floor(index / 9.0) in 1.0..3.0 && index % 9 in 1..7) {
                 if (index == guaranteed) {
                     it.putStack(ItemStack(
                         GameData.getItemRegistry().filter { it.registryName.replace("minecraft:", "").startsWith(letter, true) }.getRandom()

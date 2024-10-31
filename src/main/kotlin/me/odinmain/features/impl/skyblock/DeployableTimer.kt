@@ -68,11 +68,11 @@ object DeployableTimer : Module(
         val deployable = DeployableTypes.entries.firstOrNull { name.startsWith(it.displayName.noControlCodes) || it.texture == getSkullValue(entity) } ?: return
         val duration =
             if (deployable.texture == "placeholder") {
-                entity = mc.theWorld?.getEntitiesWithinAABBExcludingEntity(entity, entity.entityBoundingBox.offset(0.0, -3.0, 0.0))?.filterIsInstance<EntityArmorStand>()?.firstOrNull() ?: return
+                entity = mc.theWorld?.getEntitiesWithinAABBExcludingEntity(entity, entity.entityBoundingBox.offset(0.0, -2.0, 0.0).expand(0.1, 2.0, 0.1))?.filterIsInstance<EntityArmorStand>()?.firstOrNull() ?: return
                 (orbRegex.find(name)?.groupValues?.get(2)?.toIntOrNull() ?: return) * 1000
             }
             else deployable.duration
-
+        if (activeDeployables.any { it.entity == entity }) return
         activeDeployables.add(Deployable(deployable, entity, duration))
         activeDeployables.sortByDescending { it.deployable.priority }
     }

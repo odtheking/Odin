@@ -12,7 +12,7 @@ dependencies {
 }
 
 loom {
-    log4jConfigs.from(rootProject.file("log4j2.xml"))
+    log4jConfigs.from(file("log4j2.xml"))
     runConfigs {
         getByName("client") {
             programArgs("--tweakClass", "gg.essential.loader.stage0.EssentialSetupTweaker")

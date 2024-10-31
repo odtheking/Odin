@@ -63,9 +63,8 @@ object ChocolateFactory : Module(
         execute(delay = { upgradeDelay }) {
             val container = mc.thePlayer.openContainer as? ContainerChest ?: return@execute
             if (container.name != "Chocolate Factory") return@execute
-            val choco = container.getSlot(13)?.stack ?: return@execute
 
-            chocolate = choco.unformattedName.replace(Regex("\\D"), "").toLongOrNull() ?: 0L
+            chocolate =  container.getSlot(13)?.stack?.unformattedName?.replace(Regex("\\D"), "")?.toLongOrNull() ?: 0L
 
             findWorker(container)
             if (!found) return@execute
@@ -141,15 +140,10 @@ object ChocolateFactory : Module(
 
     private data class Egg(val entity: EntityArmorStand, val renderName: String, val color: Color, var isFound: Boolean = false)
 
-    private fun getEggType(entity: EntityArmorStand): ChocolateEggs? {
-        val texture = getSkullValue(entity)
-        return ChocolateEggs.entries.find { it.texture == texture }
-    }
-
     private fun scanForEggs() {
         mc.theWorld?.loadedEntityList?.forEach { entity ->
             if (entity !is EntityArmorStand) return@forEach
-            val eggType = getEggType(entity) ?: return@forEach
+            val eggType = ChocolateEggs.entries.find { it.texture == getSkullValue(entity) } ?: return@forEach
             currentDetectedEggs[eggType.index] = currentDetectedEggs[eggType.index] ?: Egg(entity, eggType.type, eggType.color)
         }
     }
