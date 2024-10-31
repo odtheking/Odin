@@ -20,17 +20,17 @@ object DungeonAbilities : Module(
     }
 
     init {
-        onMessage("⚠ Maxor is enraged! ⚠", false, { enabled && autoUlt }) {
+        onMessage(Regex("⚠ Maxor is enraged! ⚠"), { enabled && autoUlt }) {
             dropItem()
             modMessage("§aUsing ult!")
         }
 
-        onMessage("[BOSS] Goldor: You have done it, you destroyed the factory…", false, { enabled && autoUlt }) {
+        onMessage(Regex("\\[BOSS] Goldor: You have done it, you destroyed the factory…"), { enabled && autoUlt }) {
             dropItem()
             modMessage("§aUsing ult!")
         }
 
-        onMessage("[BOSS] Sadan: My giants! Unleashed!", false, { enabled && autoUlt }) {
+        onMessage(Regex("\\[BOSS] Sadan: My giants! Unleashed!"), { enabled && autoUlt }) {
             dropItem(delay = 25)
             modMessage("§aUsing ult!")
         }

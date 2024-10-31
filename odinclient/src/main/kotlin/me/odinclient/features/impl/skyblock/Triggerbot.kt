@@ -4,7 +4,8 @@ import me.odinclient.utils.skyblock.PlayerUtils
 import me.odinclient.utils.skyblock.PlayerUtils.leftClick
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.features.impl.floor7.KingRelics.currentRelic
+import me.odinmain.features.impl.floor7.p3.ArrowAlign.clicksRemaining
+import me.odinmain.features.impl.floor7.p3.ArrowAlign.currentFrameRotations
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.*
@@ -15,9 +16,11 @@ import me.odinmain.utils.skyblock.dungeon.M7Phases
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.entity.item.EntityEnderCrystal
+import net.minecraft.entity.item.EntityItemFrame
 import net.minecraft.init.Blocks
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
+import net.minecraft.util.Vec3
 import net.minecraftforge.event.entity.EntityJoinWorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
@@ -27,20 +30,31 @@ object Triggerbot : Module(
     description = "Various Triggerbots. (Blood, Spirit Bear, Crystal Triggerbot, Secret Triggerbot, Relic Triggerbot)",
     category = Category.DUNGEON
 ) {
-    private val blood by BooleanSetting("Blood Mobs", default = false, description = "Automatically clicks blood mobs.")
-    private val bloodClickType by DualSetting("Blood Click Type", "Left", "Right", description = "What button to click for blood mobs.").withDependency { blood }
+    private val bloodDropDown by DropdownSetting("Blood Dropdown", false)
+    private val blood by BooleanSetting("Blood Mobs", default = false, description = "Automatically clicks blood mobs.").withDependency { bloodDropDown }
+    private val bloodClickType by DualSetting("Blood Click Type", "Left", "Right", description = "What button to click for blood mobs.").withDependency { blood && bloodDropDown}
 
-    private val spiritBear by BooleanSetting("Spirit Bear", default = false, description = "Automatically clicks the spirit bear.")
+    private val spiritBearDropDown by DropdownSetting("Spirit Bear Dropdown", false)
+    private val spiritBear by BooleanSetting("Spirit Bear", default = false, description = "Automatically clicks the spirit bear.").withDependency { spiritBearDropDown }
 
-    private val crystal by BooleanSetting("Crystal Triggerbot", default = false, description = "Automatically takes and places crystals.")
-    private val take by BooleanSetting("Take", default = true, description = "Takes crystals.").withDependency { crystal }
-    private val place by BooleanSetting("Place", default = true, description = "Places crystals.").withDependency { crystal }
+    private val crystalDropDown by DropdownSetting("Crystal Dropdown", false)
+    private val crystal by BooleanSetting("Crystal Triggerbot", default = false, description = "Automatically takes and places crystals.").withDependency { crystalDropDown }
+    private val take by BooleanSetting("Take", default = true, description = "Takes crystals.").withDependency { crystal && crystalDropDown }
+    private val place by BooleanSetting("Place", default = true, description = "Places crystals.").withDependency { crystal && crystalDropDown }
 
-    private val secretTriggerbot by BooleanSetting("Secret Triggerbot", default = false, description = "Automatically clicks secret buttons.")
-    private val stbDelay by NumberSetting("Delay", 200L, 0, 1000, unit = "ms", description = "The delay between each click.").withDependency { secretTriggerbot }
+    private val secretTriggerbotDropDown by DropdownSetting("Secret Triggerbot Dropdown", false)
+    private val secretTriggerbot by BooleanSetting("Secret Triggerbot", default = false, description = "Automatically clicks secret buttons.").withDependency { secretTriggerbotDropDown }
+    private val stbDelay by NumberSetting("Delay", 200L, 0, 1000, unit = "ms", description = "The delay between each click.").withDependency { secretTriggerbot && secretTriggerbotDropDown }
 
-    private val stbCH by BooleanSetting("Crystal Hollows Chests", true, description = "Opens chests in crystal hollows when looking at them.").withDependency { secretTriggerbot }
-    private val secretTBInBoss by BooleanSetting("In Boss", true, description = "Makes the triggerbot work in dungeon boss aswell.").withDependency { secretTriggerbot }
+    private val stbCH by BooleanSetting("Crystal Hollows Chests", true, description = "Opens chests in crystal hollows when looking at them.").withDependency { secretTriggerbot && secretTriggerbotDropDown }
+    private val secretTBInBoss by BooleanSetting("In Boss", true, description = "Makes the triggerbot work in dungeon boss aswell.").withDependency { secretTriggerbot && secretTriggerbotDropDown }
+
+    private val alignTriggerBotDropDown by DropdownSetting("Arrow Align Dropdown", false)
+    private val alignTriggerbot: Boolean by BooleanSetting("Align Triggerbot", false, description = "Automatically clicks the correct arrow in the arrow align device.").withDependency { alignTriggerBotDropDown }
+    private val sneakToDisableTriggerbot: Boolean by BooleanSetting("Sneak to disable", false, description = "Disables triggerbot when you are sneaking").withDependency { alignTriggerbot && alignTriggerBotDropDown }
+    private val alignDelay: Long by NumberSetting("Align Delay", 200L, 70, 500, description = "The delay between each click.", unit = "ms").withDependency { alignTriggerbot && alignTriggerBotDropDown }
+
+    private val alignTriggerBotClock = Clock(alignDelay)
 
     private val triggerBotClock = Clock(stbDelay)
     private var clickedPositions = mapOf<BlockPos, Long>()
@@ -64,7 +78,7 @@ object Triggerbot : Module(
     fun onEntityJoin(event: EntityJoinWorldEvent) {
         if (event.entity !is EntityOtherPlayerMP || mc.currentScreen != null || !DungeonUtils.inDungeons) return
         val name = event.entity.name.replace(" ", "")
-        if ((blood && name !in bloodMobs) || (spiritBear && name != "Spirit Bear")) return
+        if (!(blood && name in bloodMobs) && !(spiritBear && name == "Spirit Bear")) return
 
         if (!isFacingAABB(AxisAlignedBB(event.entity.posX - .5, event.entity.posY - 2.0, event.entity.posZ - .5, event.entity.posX + .5, event.entity.posY + 3.0, event.entity.posZ + .5), 30f)) return
 
@@ -87,7 +101,7 @@ object Triggerbot : Module(
                     PlayerUtils.rightClick()
                     tbClock.update()
                 }
-                Vec2(obj.blockPos?.x ?: 0, obj.blockPos?.z ?: 0) == cauldronMap[currentRelic.id] && obj.blockPos?.y.equalsOneOf(6, 7) -> {
+                Vec2(obj.blockPos?.x ?: 0, obj.blockPos?.z ?: 0) == cauldronMap[mc.thePlayer?.heldItem?.skyblockID ?: ""] && obj.blockPos?.y.equalsOneOf(6, 7) -> {
                     PlayerUtils.rightClick()
                     tbClock.update()
                 }
@@ -97,6 +111,7 @@ object Triggerbot : Module(
 
     init {
         execute(0) {
+            if (alignTriggerbot) arrowAlignTriggerbot()
             if (
                 !secretTriggerbot ||
                 !triggerBotClock.hasTimePassed(stbDelay) ||
@@ -124,6 +139,20 @@ object Triggerbot : Module(
                     clickedPositions = clickedPositions.plus(pos to System.currentTimeMillis())
                 }
             }
+        }
+    }
+    val frameGridCorner = Vec3(-2.0, 120.0, 75.0)
+
+    private fun arrowAlignTriggerbot() {
+        if (!alignTriggerBotClock.hasTimePassed(alignDelay) || (sneakToDisableTriggerbot && mc.thePlayer.isSneaking)) return
+        val targetFrame = mc.objectMouseOver?.entityHit as? EntityItemFrame ?: return
+
+        val targetFramePosition = targetFrame.positionVector.flooredVec()
+        val frameIndex = ((targetFramePosition.yCoord - frameGridCorner.yCoord) + (targetFramePosition.zCoord - frameGridCorner.zCoord) * 5).toInt()
+        if (targetFramePosition.xCoord != frameGridCorner.xCoord || currentFrameRotations?.get(frameIndex) == -1 || frameIndex !in 0..24) return
+        clicksRemaining[frameIndex]?.let {
+            PlayerUtils.rightClick()
+            triggerBotClock.update()
         }
     }
 }
