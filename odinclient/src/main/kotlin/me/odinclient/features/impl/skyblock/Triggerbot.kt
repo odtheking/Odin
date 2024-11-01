@@ -54,8 +54,6 @@ object Triggerbot : Module(
     private val sneakToDisableTriggerbot: Boolean by BooleanSetting("Sneak to disable", false, description = "Disables triggerbot when you are sneaking").withDependency { alignTriggerbot && alignTriggerBotDropDown }
     private val alignDelay: Long by NumberSetting("Align Delay", 200L, 70, 500, description = "The delay between each click.", unit = "ms").withDependency { alignTriggerbot && alignTriggerBotDropDown }
 
-    private val alignTriggerBotClock = Clock(alignDelay)
-
     private val triggerBotClock = Clock(stbDelay)
     private var clickedPositions = mapOf<BlockPos, Long>()
     private val clickClock = Clock(500)
@@ -110,8 +108,11 @@ object Triggerbot : Module(
     }
 
     init {
-        execute(0) {
+        execute( {alignDelay} ) {
             if (alignTriggerbot) arrowAlignTriggerbot()
+        }
+
+        execute(0) {
             if (
                 !secretTriggerbot ||
                 !triggerBotClock.hasTimePassed(stbDelay) ||
@@ -144,7 +145,7 @@ object Triggerbot : Module(
     val frameGridCorner = Vec3(-2.0, 120.0, 75.0)
 
     private fun arrowAlignTriggerbot() {
-        if (!alignTriggerBotClock.hasTimePassed(alignDelay) || (sneakToDisableTriggerbot && mc.thePlayer.isSneaking)) return
+        if ((sneakToDisableTriggerbot && mc.thePlayer.isSneaking)) return
         val targetFrame = mc.objectMouseOver?.entityHit as? EntityItemFrame ?: return
 
         val targetFramePosition = targetFrame.positionVector.flooredVec()
