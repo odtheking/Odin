@@ -114,9 +114,7 @@ object OdinUpdater : GuiScreen() {
                     if (!relaunchCommandFile.exists()) relaunchCommandFile.createNewFile()
                     relaunchCommandFile.writeText(relaunchCommand, charset("UTF-8"))
 
-                    val runtime = javaRuntime.trim('"')
-                    ProcessBuilder(runtime, "-jar", updaterPath, currentJarPath, relaunchCommand).start()
-                    //Runtime.getRuntime().exec("$javaRuntime -jar $updaterPath \"$currentJarPath\" \"${relaunchCommandDir}\"")
+                    Runtime.getRuntime().exec("$javaRuntime -jar $updaterPath \"$currentJarPath\" \"${relaunchCommandDir}\"")
                 })
                 mc.shutdown()
             }

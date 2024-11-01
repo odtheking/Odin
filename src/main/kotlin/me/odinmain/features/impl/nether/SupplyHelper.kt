@@ -39,7 +39,7 @@ object SupplyHelper : Module(
 
         onMessage(supplyPickUpRegex, { sendSupplyTime && enabled }) {
             val (name, current, total) = supplyPickUpRegex.find(it)?.destructured ?: return@onMessage
-            modMessage("$name, §a§lrecovered a supply in ${formatTime((System.currentTimeMillis() - startRun))}!, §r§8($current/$total)", "")
+            modMessage("§6$name §a§lrecovered a supply in ${formatTime((System.currentTimeMillis() - startRun))}! §r§8($current/$total)", "")
         }
     }
 

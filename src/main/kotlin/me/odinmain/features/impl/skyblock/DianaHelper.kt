@@ -128,7 +128,10 @@ object DianaHelper : Module(
     fun onRightClick(event: ClickEvent.RightClickEvent) {
         if (!isHolding("ANCESTRAL_SPADE") || !autoWarp || isLegitVersion) return
         runIn(40) {
-            onKeybind()
+            if (!cmdCooldown.hasTimePassed()) return@runIn
+            modMessage("§6Warping to ${warpLocation?.displayName ?: return@runIn}")
+            sendCommand("warp ${warpLocation?.name ?: return@runIn}")
+            warpLocation = null
         }
     }
 

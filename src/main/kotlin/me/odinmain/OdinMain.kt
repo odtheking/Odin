@@ -37,9 +37,7 @@ object OdinMain {
         get() = Loader.instance().activeModList.none { it.modId == "odclient" }
 
     fun init() {
-        scope.launch(Dispatchers.IO) {
-            PBConfig.loadConfig()
-        }
+        PBConfig.loadConfig()
         listOf(
             LocationUtils, ServerUtils, PlayerUtils,
             RenderUtils, Renderer, DungeonUtils, KuudraUtils,
@@ -60,24 +58,24 @@ object OdinMain {
         OdinFont.init()
     }
 
-    fun postInit() = scope.launch(Dispatchers.IO) {
-        val config = File(mc.mcDataDir, "config/odin")
-        if (!config.exists()) config.mkdirs()
-        launch { DungeonWaypointConfig.loadConfig() }
+    fun postInit() {
+        File(mc.mcDataDir, "config/odin").takeIf { !it.exists() }?.mkdirs()
+        scope.launch(Dispatchers.IO) { DungeonWaypointConfig.loadConfig() }
     }
 
-    fun loadComplete() = runBlocking {
-        launch {
-            Config.load()
-            ClickGUIModule.firstTimeOnVersion = ClickGUIModule.lastSeenVersion != VERSION
-            ClickGUIModule.lastSeenVersion = VERSION
-        }.join() // Ensure Config.load() and version checks are complete before proceeding
-
+    fun loadComplete() {
+        runBlocking(Dispatchers.IO) {
+            launch {
+                Config.load()
+                ClickGUIModule.firstTimeOnVersion = ClickGUIModule.lastSeenVersion != VERSION
+                ClickGUIModule.lastSeenVersion = VERSION
+            }.join() // Ensure Config.load() and version checks are complete before proceeding
+        }
         ClickGUI.init()
         RoundedRect.initShaders()
 
-        val name = mc.session?.username?.takeIf { !it.matches(Regex("Player\\d{2,3}")) } ?: return@runBlocking
-        launch {
+        val name = mc.session?.username?.takeIf { !it.matches(Regex("Player\\d{2,3}")) } ?: return
+        scope.launch(Dispatchers.IO) {
             sendDataToServer(body = """{"username": "$name", "version": "${if (isLegitVersion) "legit" else "cheater"} $VERSION"}""")
         }
     }
