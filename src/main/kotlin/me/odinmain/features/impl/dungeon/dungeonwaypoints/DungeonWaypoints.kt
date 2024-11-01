@@ -209,7 +209,7 @@ object DungeonWaypoints : Module(
             val vec = room.getRelativeCoords(it.add(offset).toVec3())
             val waypoint = getWaypoints(room).find { it.toVec3().equal(vec) }
 
-            val text = waypoint?.let {"§fType: §5${waypoint.type?.displayName ?: "None"}${waypoint.timer?.let { "§7, §fTimer: §a${it.displayName}" } ?: ""}" }
+            val text = waypoint?.let {"§fType: §5${waypoint.type?.displayName ?: "None"}${waypoint.timer?.let { "§7, §fTimer: §a${it.displayName}" } ?: ""}, §r#${waypoint.color.hex}§7" }
                 ?: "§fType: §5${WaypointType.getByInt(waypointType)?.displayName ?: "None"}§7, §r#${selectedColor.hex}§7, ${if (filled) "§2Filled" else "§3Outline"}§7, ${if (throughWalls) "§cThrough Walls§7, " else ""}${if (useBlockSize) "§2Block Size" else "§3Size: $size"}${TimerType.getType()?.let { "§7, §fTimer: §a${it.displayName}" } ?: ""}"
 
             text to "§fEditing Waypoints §8|§f ${waypoint?.let { "Viewing" } ?: "Placing"}"

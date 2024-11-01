@@ -59,7 +59,6 @@ class ModCore {
             Trajectories, Ghosts, NoDebuff, ChocolateFactory, AutoExperiments, AutoHarp,
             FarmingHitboxes, NoBlock, AutoClicker, Triggerbot, GhostBlocks, FreezeGame, EtherWarpHelper, ChestEsp,
             EscrowFix, TerminalAura, AutoTerms, Camera, DungeonAbilities, QueueTerms, HidePlayers
-
         )
         OdinMain.loadComplete()
     }
