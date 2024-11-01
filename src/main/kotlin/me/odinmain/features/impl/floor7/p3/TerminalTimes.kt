@@ -52,7 +52,7 @@ object TerminalTimes : Module(
             if (completed.first == completed.second) resetSection() else gateBlown = true
         }
 
-        onMessage(Regex("\\[BOSS] Goldor: Who dares trespass into my domain?"), { enabled && terminalSplits }) {
+        onMessage(Regex("\\[BOSS] Goldor: Who dares trespass into my domain\\?"), { enabled && terminalSplits }) {
             resetSection(true)
         }
 

@@ -1,6 +1,7 @@
 package me.odinmain.features.impl.floor7
 
 import me.odinmain.OdinMain.mc
+import me.odinmain.features.impl.floor7.WitherDragons.currentTick
 import me.odinmain.features.impl.floor7.WitherDragons.sendNotification
 import me.odinmain.features.impl.floor7.WitherDragons.sendSpray
 import me.odinmain.utils.isVecInXZ
@@ -39,7 +40,7 @@ object DragonCheck {
 
         WitherDragonsEnum.entries.forEach { dragon ->
             if (dragon.isSprayed || dragon.state != WitherDragonState.ALIVE || dragon.entity == null || sprayedEntity.getDistanceToEntity(dragon.entity) > 8) return@forEach
-            if (sendSpray) modMessage("§${dragon.colorCode}${dragon.name} §fdragon was sprayed in §c${System.currentTimeMillis() - dragon.spawnedTime}§fms ")
+            if (sendSpray) modMessage("§${dragon.colorCode}${dragon.name} §fdragon was sprayed in §c${(currentTick - dragon.spawnedTime)*50}§fms ")
             dragon.isSprayed = true
         }
     }
@@ -52,8 +53,7 @@ object DragonCheck {
 
     fun updateTime() {
         WitherDragonsEnum.entries.forEach { dragon ->
-            if (dragon.state == WitherDragonState.SPAWNING)
-                dragon.timeToSpawn = (dragon.timeToSpawn - 1).coerceAtLeast(0)
+            if (dragon.state == WitherDragonState.SPAWNING) dragon.timeToSpawn--.coerceAtLeast(0)
         }
     }
 }

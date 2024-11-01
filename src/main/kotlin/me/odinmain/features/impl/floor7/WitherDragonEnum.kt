@@ -7,6 +7,7 @@ import me.odinmain.features.impl.floor7.DragonPriority.displaySpawningDragon
 import me.odinmain.features.impl.floor7.DragonPriority.findPriority
 import me.odinmain.features.impl.floor7.WitherDragons.arrowDeath
 import me.odinmain.features.impl.floor7.WitherDragons.arrowSpawn
+import me.odinmain.features.impl.floor7.WitherDragons.currentTick
 import me.odinmain.features.impl.floor7.WitherDragons.priorityDragon
 import me.odinmain.features.impl.floor7.WitherDragons.sendArrowHit
 import me.odinmain.features.impl.floor7.WitherDragons.sendSpawned
@@ -61,7 +62,7 @@ enum class WitherDragonsEnum (
         timeToSpawn = 100
         timesSpawned += 1
         this.entityId = entityId
-        spawnedTime = System.currentTimeMillis()
+        spawnedTime = currentTick
         isSprayed = false
 
         if (sendArrowHit && WitherDragons.enabled) arrowSpawn(this)
@@ -89,7 +90,7 @@ enum class WitherDragonsEnum (
         }
 
         if (sendTime && WitherDragons.enabled)
-            dragonPBs.time(ordinal, (System.currentTimeMillis() - spawnedTime) / 1000.0, "s§7!", "§${colorCode}${name} §7was alive for §6", addPBString = true, addOldPBString = true)
+            dragonPBs.time(ordinal, (currentTick - spawnedTime) / 20.0, "s§7!", "§${colorCode}${name} §7was alive for §6", addPBString = true, addOldPBString = true)
     }
 
     fun updateEntity(entityId: Int) {
