@@ -95,6 +95,7 @@ object WitherDragons : Module(
     }.withDependency { relicDropDown }
 
     var priorityDragon = WitherDragonsEnum.None
+    var currentTick: Long = 0
 
     init {
         onWorldLoad {
@@ -111,7 +112,7 @@ object WitherDragons : Module(
 
         onPacket(S29PacketSoundEffect::class.java, { DungeonUtils.getF7Phase() == M7Phases.P5 }) {
             if (it.soundName != "random.successful_hit" || !sendArrowHit || priorityDragon == WitherDragonsEnum.None) return@onPacket
-            if (priorityDragon.entity?.isEntityAlive == true && System.currentTimeMillis() - priorityDragon.spawnedTime < priorityDragon.skipKillTime) arrowsHit++
+            if (priorityDragon.entity?.isEntityAlive == true && currentTick - priorityDragon.spawnedTime < priorityDragon.skipKillTime) arrowsHit++
         }
 
         onPacket(S04PacketEntityEquipment::class.java, { DungeonUtils.getF7Phase() == M7Phases.P5 && enabled }) {
@@ -149,12 +150,13 @@ object WitherDragons : Module(
 
     @SubscribeEvent
     fun onServerTick(event: RealServerTick) {
+        currentTick++
         DragonCheck.updateTime()
         KingRelics.onServerTick()
     }
 
     fun arrowDeath(dragon: WitherDragonsEnum) {
-        if (!sendArrowHit || System.currentTimeMillis() - dragon.spawnedTime >= dragon.skipKillTime) return
+        if (!sendArrowHit || currentTick - dragon.spawnedTime >= dragon.skipKillTime) return
         modMessage("§fYou hit §6$arrowsHit §farrows on §${dragon.colorCode}${dragon.name}.")
         arrowsHit = 0
     }
@@ -162,9 +164,9 @@ object WitherDragons : Module(
     fun arrowSpawn(dragon: WitherDragonsEnum) {
         if (priorityDragon == WitherDragonsEnum.None || dragon != priorityDragon) return
         arrowsHit = 0
-        runIn(dragon.skipKillTime) {
+        runIn(dragon.skipKillTime, true) {
             if (dragon.entity?.isEntityAlive != true && arrowsHit <= 0) return@runIn
-            modMessage("§fYou hit §6${arrowsHit} §farrows on §${dragon.colorCode}${dragon.name}${if (dragon.entity?.isEntityAlive == true) " §fin §c${String.format(Locale.US, "%.2f", dragon.skipKillTime.toFloat()/1000)} §fSeconds." else "."}")
+            modMessage("§fYou hit §6${arrowsHit} §farrows on §${dragon.colorCode}${dragon.name}${if (dragon.entity?.isEntityAlive == true) " §fin §c${String.format(Locale.US, "%.2f", dragon.skipKillTime.toFloat()/20)} §fSeconds." else "."}")
             arrowsHit = 0
         }
     }

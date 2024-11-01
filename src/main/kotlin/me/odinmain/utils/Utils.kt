@@ -6,6 +6,7 @@ package me.odinmain.utils
 import me.odinmain.OdinMain
 import me.odinmain.OdinMain.logger
 import me.odinmain.OdinMain.mc
+import me.odinmain.features.Module
 import me.odinmain.features.ModuleManager
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.render.Color
@@ -185,12 +186,12 @@ fun Event.postAndCatch(): Boolean {
  * @param ticks The number of ticks to wait.
  * @param func The function to execute after the specified number of
  */
-fun runIn(ticks: Int, func: () -> Unit) {
+fun runIn(ticks: Int, server: Boolean = false, func: () -> Unit) {
     if (ticks <= 0) {
         func()
         return
     }
-    ModuleManager.tickTasks.add(ModuleManager.TickTask(ticks, func))
+    ModuleManager.tickTasks.add(ModuleManager.TickTask(ticks, server, func))
 }
 
 /**

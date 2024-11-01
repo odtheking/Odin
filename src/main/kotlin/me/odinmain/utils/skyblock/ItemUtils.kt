@@ -166,16 +166,7 @@ fun getRarity(lore: List<String>): ItemRarity? {
     return null
 }
 
-fun getSkullValue(entity: Entity?): String? {
-    return entity?.inventory
-        ?.get(4)
-        ?.tagCompound
-        ?.getCompoundTag("SkullOwner")
-        ?.getCompoundTag("Properties")
-        ?.getTagList("textures", Constants.NBT.TAG_COMPOUND)
-        ?.getCompoundTagAt(0)
-        ?.getString("Value")
-}
+fun getSkullValue(entity: Entity?): String? = entity?.inventory?.get(4)?.skullTexture
 
 fun ItemStack.setLore(lines: List<String>): ItemStack {
     setTagInfo("display", getSubCompound("display", true).apply {
@@ -233,4 +224,13 @@ fun ItemStack.drawItem(x: Float = 0f, y: Float = 0f, scale: Float = 1f, z: Float
     mc.renderItem.renderItemIntoGUI(this, 0, 0)
     RenderHelper.disableStandardItemLighting()
     GlStateManager.popMatrix()
+}
+
+val ItemStack.skullTexture: String? get() {
+    return this.tagCompound
+        ?.getCompoundTag("SkullOwner")
+        ?.getCompoundTag("Properties")
+        ?.getTagList("textures", Constants.NBT.TAG_COMPOUND)
+        ?.getCompoundTagAt(0)
+        ?.getString("Value")
 }

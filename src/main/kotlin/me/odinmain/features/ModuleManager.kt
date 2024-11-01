@@ -18,6 +18,7 @@ import me.odinmain.utils.capitalizeFirst
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.profile
 import me.odinmain.utils.render.getTextWidth
+import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.network.Packet
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.event.world.WorldEvent
@@ -37,7 +38,7 @@ object ModuleManager {
 
     data class MessageFunction(val filter: Regex, val shouldRun: () -> Boolean, val function: (String) -> Unit)
 
-    data class TickTask(var ticksLeft: Int, val function: () -> Unit)
+    data class TickTask(var ticksLeft: Int, val server: Boolean, val function: () -> Unit)
 
     val packetFunctions = mutableListOf<PacketFunction<Packet<*>>>()
     val messageFunctions = mutableListOf<MessageFunction>()
@@ -89,7 +90,17 @@ object ModuleManager {
     @SubscribeEvent
     fun onTick(event: TickEvent.ClientTickEvent) {
         if (event.phase != TickEvent.Phase.START) return
+        tickTaskTick()
+    }
+
+    @SubscribeEvent
+    fun onServerTick(event: RealServerTick) {
+        tickTaskTick(true)
+    }
+
+    private fun tickTaskTick(server: Boolean = false) {
         tickTasks.removeAll {
+            if (it.server != server) return@removeAll false
             if (it.ticksLeft <= 0) {
                 it.function()
                 return@removeAll true
