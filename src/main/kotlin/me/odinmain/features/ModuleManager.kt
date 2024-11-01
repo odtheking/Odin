@@ -90,16 +90,16 @@ object ModuleManager {
     @SubscribeEvent
     fun onTick(event: TickEvent.ClientTickEvent) {
         if (event.phase != TickEvent.Phase.START) return
-        tickTasks.tickTaskTick()
+        tickTaskTick()
     }
 
     @SubscribeEvent
     fun onServerTick(event: RealServerTick) {
-        tickTasks.tickTaskTick(true)
+        tickTaskTick(true)
     }
 
-    private fun MutableList<TickTask>.tickTaskTick(server: Boolean = false) {
-        this.removeAll {
+    private fun tickTaskTick(server: Boolean = false) {
+        tickTasks.removeAll {
             if (it.server != server) return@removeAll false
             if (it.ticksLeft <= 0) {
                 it.function()
