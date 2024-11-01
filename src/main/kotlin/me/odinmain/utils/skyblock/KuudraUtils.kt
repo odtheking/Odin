@@ -41,7 +41,7 @@ object KuudraUtils {
         kuudraTeammates = ArrayList()
         giantZombies = arrayListOf()
         supplies = BooleanArray(6) { true }
-        kuudraEntity = EntityMagmaCube(mc.theWorld)
+        kuudraEntity = null
         playersBuildingAmount = 0
         buildDonePercentage = 0
         phase = 0
