@@ -212,7 +212,7 @@ object TerminalSolver : Module(
         if (cancelToolTip && currentTerm.type != TerminalTypes.NONE && enabled) event.toolTip.clear()
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(receiveCanceled = true)
     fun onGuiClick(event: GuiEvent.GuiMouseClickEvent) {
         val gui = event.gui as? GuiChest ?: return
         if (currentTerm.type == TerminalTypes.NONE || !enabled || (currentTerm.type == TerminalTypes.MELODY && cancelMelodySolver)) return
