@@ -2,9 +2,11 @@ package me.odinmain.utils.skyblock
 
 import me.odinmain.features.impl.skyblock.DianaHelper
 import me.odinmain.utils.*
+import me.odinmain.utils.render.Color
 import net.minecraft.network.play.server.S29PacketSoundEffect
 import net.minecraft.network.play.server.S2APacketParticles
 import net.minecraft.util.*
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.*
 
 object DianaBurrowEstimate {
@@ -21,9 +23,10 @@ object DianaBurrowEstimate {
 
     private var lastSoundPoint: Vec3? = null
     private val particlePositions = mutableListOf<Vec3>()
-    private val burrows = mutableMapOf<Vec3i, Burrow>()
-    private var lastBurrow: Vec3i? = null
-    val recentBurrows = mutableListOf<Vec3i>()
+    private var lastDugBurrow: BlockPos? = null
+    private val recentBurrows = mutableListOf<BlockPos>()
+    private var pendingBurrow: BlockPos? = null
+    val activeBurrows = ConcurrentHashMap<BlockPos, Burrow>()
 
     private val dingPitchSlopes = mutableListOf<Float>()
 
@@ -31,43 +34,42 @@ object DianaBurrowEstimate {
 
     fun handleBurrow(it: S2APacketParticles) {
         val particleType = ParticleType.getParticleType(it) ?: return
-        val location = Vec3i(it.xCoordinate, it.yCoordinate - 1, it.zCoordinate)
-        val burrow = burrows.getOrPut(location) { Burrow(location) }
+        val location = BlockPos(it.xCoordinate, it.yCoordinate - 1, it.zCoordinate).takeIf { it !in recentBurrows } ?: return
+        val burrow = activeBurrows.getOrPut(location) { Burrow(location) }
 
         burrow.apply {
             when (particleType) {
                 ParticleType.FOOTSTEP -> hasFootstep = true
                 ParticleType.ENCHANT -> hasEnchant = true
-                ParticleType.EMPTY -> type = DianaHelper.BurrowType.START
-                ParticleType.MOB -> type = DianaHelper.BurrowType.MOB
-                ParticleType.TREASURE -> type = DianaHelper.BurrowType.TREASURE
+                ParticleType.EMPTY -> type = BurrowType.START
+                ParticleType.MOB -> type = BurrowType.MOB
+                ParticleType.TREASURE -> type = BurrowType.TREASURE
             }
         }
 
-        if (!burrow.hasEnchant || !burrow.hasFootstep || burrow.type == DianaHelper.BurrowType.UNKNOWN || burrow.found || location in recentBurrows) return
-
-        DianaHelper.burrowsRender[burrow.location] = burrow.type
-        burrow.found = true
+        if (burrow.hasEnchant && burrow.hasFootstep && burrow.type != BurrowType.UNKNOWN && !burrow.found) burrow.found = true
     }
 
-    fun blockEvent(pos: Vec3i, isFullyBroken: Boolean = false) {
-        if (isFullyBroken && isHolding("ANCESTRAL_SPADE")) {
-            burrows.remove(pos)
-            DianaHelper.burrowsRender.remove(pos)
-        }
-        if (pos in burrows.keys && isHolding("ANCESTRAL_SPADE"))
-            lastBurrow = pos
+    fun blockEvent(pos: BlockPos) {
+        if (pos !in activeBurrows.keys || !isHolding("ANCESTRAL_SPADE")) return
+        lastDugBurrow = pos
+        if (pos != pendingBurrow) return
+        pendingBurrow = null
+        removeBurrow(pos, force = true)
     }
 
     fun chat(message: String) {
         if (!message.startsWith("You dug out a Griffin Burrow!") && message != "You finished the Griffin burrow chain! (4/4)") return
+        lastDugBurrow?.let { if (!removeBurrow(it)) pendingBurrow = it }
+    }
 
-        lastBurrow?.let {
-            recentBurrows.add(it)
-            burrows.remove(it)
-            DianaHelper.burrowsRender.remove(it)
-            lastBurrow = null
-        }
+    private fun removeBurrow(location: BlockPos, force: Boolean = false): Boolean {
+        return activeBurrows[location]?.takeIf { it.found || force }?.let {
+            activeBurrows.remove(location)
+            recentBurrows.add(location)
+            lastDugBurrow = null
+            true
+        } == true
     }
 
     fun handleSoundPacket(packetSound: S29PacketSoundEffect) {
@@ -204,7 +206,7 @@ object DianaBurrowEstimate {
         }
     }
 
-    fun reset() {
+    private fun reset() {
         lastDingTime = 0L
         lastDingPitch = 0f
         firstPitch = 0f
@@ -216,14 +218,20 @@ object DianaBurrowEstimate {
         estimatedBurrowPosition = null
         numberOfDings = 0
         dingPitchSlopes.clear()
-        burrows.clear()
+    }
+
+    fun onWorldLoad() {
+        activeBurrows.clear()
+        pendingBurrow = null
+        recentBurrows.clear()
+        reset()
     }
 
     private enum class ParticleType(val check: S2APacketParticles.() -> Boolean) {
         EMPTY   ({ particleType == EnumParticleTypes.CRIT_MAGIC && particleCount == 4 && particleSpeed == .01f && xOffset == .5f && yOffset == .1f && zOffset == .5f }),
         MOB     ({ particleType == EnumParticleTypes.CRIT && particleCount == 3 && particleSpeed == .01f && xOffset == .5f && yOffset == .1f && zOffset == .5f }),
         TREASURE({ particleType == EnumParticleTypes.DRIP_LAVA && particleCount == 2 && particleSpeed == .01f && xOffset == .35f && yOffset == .1f && zOffset == .35f }),
-        FOOTSTEP({ particleType == EnumParticleTypes.FOOTSTEP && particleCount == 1 && particleSpeed == .0f && xOffset == .05f && yOffset == .0f && zOffset == .05f }),
+        FOOTSTEP({ particleType == EnumParticleTypes.FOOTSTEP && particleCount == 1 && particleSpeed == 0f && xOffset == .05f && yOffset == 0f && zOffset == .05f }),
         ENCHANT ({ particleType == EnumParticleTypes.ENCHANTMENT_TABLE && particleCount == 5 && particleSpeed == .05f && xOffset == .5f && yOffset == .4f && zOffset == .5f });
 
         companion object {
@@ -234,10 +242,17 @@ object DianaBurrowEstimate {
     }
 
     data class Burrow(
-        var location: Vec3i,
+        var location: BlockPos,
         var hasFootstep: Boolean = false,
         var hasEnchant: Boolean = false,
-        var type: DianaHelper.BurrowType = DianaHelper.BurrowType.UNKNOWN,
+        var type: BurrowType = BurrowType.UNKNOWN,
         var found: Boolean = false,
     )
+
+    enum class BurrowType(val text: String, val color: Color) {
+        START("§aStart", Color.GREEN),
+        MOB("§cMob", Color.RED),
+        TREASURE("§6Treasure", Color.ORANGE),
+        UNKNOWN("§fUnknown?!", Color.WHITE),
+    }
 }

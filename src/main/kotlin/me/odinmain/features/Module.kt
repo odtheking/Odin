@@ -1,7 +1,6 @@
 package me.odinmain.features
 
 import me.odinmain.OdinMain
-import me.odinmain.features.ModuleManager.executors
 import me.odinmain.features.impl.render.ClickGUIModule
 import me.odinmain.features.settings.AlwaysActive
 import me.odinmain.features.settings.Setting
@@ -10,6 +9,7 @@ import me.odinmain.features.settings.impl.Keybinding
 import me.odinmain.utils.clock.Executable
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.clock.Executor.Companion.register
+import me.odinmain.utils.clock.Executor.LimitedExecutor
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.network.Packet
 import net.minecraftforge.common.MinecraftForge
@@ -145,15 +145,15 @@ abstract class Module(
     }
 
     fun execute(delay: Long, repeats: Int, profileName: String = "${this.name} Executor", shouldRun: () -> Boolean = { this.enabled || this.alwaysActive }, func: Executable) {
-        executors.add(this to Executor.LimitedExecutor(delay, repeats, profileName, shouldRun, func).apply { register() })
+        LimitedExecutor(delay, repeats, profileName, shouldRun, func).register()
     }
 
     fun execute(delay: () -> Long, profileName: String = "${this.name} Executor", shouldRun: () -> Boolean = { this.enabled || this.alwaysActive }, func: Executable) {
-        executors.add(this to Executor(delay, profileName, shouldRun, func).apply { register() })
+        Executor(delay, profileName, shouldRun, func).register()
     }
 
     fun execute(delay: Long, profileName: String = "${this.name} Executor", shouldRun: () -> Boolean = { this.enabled || this.alwaysActive }, func: Executable) {
-        executors.add(this to Executor(delay, profileName, shouldRun, func).apply { register() })
+        Executor(delay, profileName, shouldRun, func).register()
     }
 
     enum class TagType {
