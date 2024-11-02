@@ -49,12 +49,13 @@ object AbilityTimers : Module(
 
     init {
         onPacket(S29PacketSoundEffect::class.java) {
-            if (it.soundName == "mob.zombie.remedy" && it.pitch == 0.6984127f && it.volume == 1f && witherImpact) witherImpactTicks = 100
-            if (it.soundName == "fire.ignite" && it.pitch == 0.74603176f && it.volume == 1f && isHolding("TACTICAL_INSERTION") && tacHud.enabled) tacTimer = 60
-            if (it.soundName == "mob.zombie.remedy" && it.pitch == 1.0f && it.volume == 0.5f && mc.thePlayer?.getCurrentArmor(0)?.skyblockID == "REAPER_BOOTS" &&
-                mc.thePlayer?.getCurrentArmor(1)?.skyblockID == "REAPER_LEGGINGS" && mc.thePlayer?.getCurrentArmor(2)?.skyblockID == "REAPER_CHESTPLATE"
-                && enrageHud.enabled)
-                enrageTimer = 120
+            when {
+                it.soundName == "mob.zombie.remedy" && it.pitch == 0.6984127f && it.volume == 1f && witherImpact -> witherImpactTicks = 100
+                it.soundName == "fire.ignite" && it.pitch == 0.74603176f && it.volume == 1f && isHolding("TACTICAL_INSERTION") && tacHud.enabled -> tacTimer = 60
+                it.soundName == "mob.zombie.remedy" && it.pitch == 1.0f && it.volume == 0.5f && mc.thePlayer?.getCurrentArmor(0)?.skyblockID == "REAPER_BOOTS" &&
+                        mc.thePlayer?.getCurrentArmor(1)?.skyblockID == "REAPER_LEGGINGS" && mc.thePlayer?.getCurrentArmor(2)?.skyblockID == "REAPER_CHESTPLATE"
+                        && enrageHud.enabled -> enrageTimer = 120
+            }
         }
 
         onWorldLoad {
