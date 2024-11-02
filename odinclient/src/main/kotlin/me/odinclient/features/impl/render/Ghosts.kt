@@ -48,7 +48,7 @@ object Ghosts : Module(
         val bracketsColor = if (isRunic) "&5" else "&8"
         val lvlColor = if (isRunic) "&d" else "&7"
         val nameColor = if (isRunic) "&5" else "&c"
-        val currentHealthColor = if (isRunic) "&d" else if ( creeper.health < creeper.getSBMaxHealth() / 2) "&e" else "&a"
+        val currentHealthColor = if (isRunic) "&d" else if (creeper.health < creeper.getSBMaxHealth() / 2) "&e" else "&a"
         val maxHealthColor = if (isRunic) "&5" else "&a"
         val name = "${bracketsColor}[${lvlColor}Lv250${bracketsColor}] ${nameColor + if (isRunic) "Runic " else ""}Ghost ${currentHealthColor + transformToSuffixedNumber(creeper.health) + "&f"}/${maxHealthColor + transformToSuffixedNumber(creeper.getSBMaxHealth()) + "&c" + "❤"}".replace("&", "§")
 

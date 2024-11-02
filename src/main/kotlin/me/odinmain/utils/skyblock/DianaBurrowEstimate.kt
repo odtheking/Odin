@@ -24,7 +24,7 @@ object DianaBurrowEstimate {
     private var lastSoundPoint: Vec3? = null
     private val particlePositions = mutableListOf<Vec3>()
     private var lastDugBurrow: BlockPos? = null
-    private val recentBurrows = mutableListOf<BlockPos>()
+    private val recentBurrows = mutableSetOf<BlockPos>()
     private var pendingBurrow: BlockPos? = null
     val activeBurrows = ConcurrentHashMap<BlockPos, Burrow>()
 
@@ -59,8 +59,8 @@ object DianaBurrowEstimate {
     }
 
     fun chat(message: String) {
-        if (!message.startsWith("You dug out a Griffin Burrow!") && message != "You finished the Griffin burrow chain! (4/4)") return
-        lastDugBurrow?.let { if (!removeBurrow(it)) pendingBurrow = it }
+        if (message.startsWith("You dug out a Griffin Burrow!") || message == "You finished the Griffin burrow chain! (4/4)")
+            lastDugBurrow?.let { if (!removeBurrow(it)) pendingBurrow = it }
     }
 
     private fun removeBurrow(location: BlockPos, force: Boolean = false): Boolean {
@@ -68,6 +68,7 @@ object DianaBurrowEstimate {
             activeBurrows.remove(location)
             recentBurrows.add(location)
             lastDugBurrow = null
+            runIn(1200) { recentBurrows.remove(location) }
             true
         } == true
     }
@@ -196,12 +197,9 @@ object DianaBurrowEstimate {
 
         estimatedBurrowPosition?.let {
             DianaHelper.renderPos = findNearestGrassBlock(
-                if (((p1.xCoord - it.xCoord) * (2 + p1.zCoord - it.zCoord)).pow(2) <
-                    ((p2.xCoord - it.xCoord) * (2 + p2.zCoord - it.zCoord)).pow(2)
-                )
+                if (((p1.xCoord - it.xCoord) * (2 + p1.zCoord - it.zCoord)).pow(2) < ((p2.xCoord - it.xCoord) * (2 + p2.zCoord - it.zCoord)).pow(2))
                     Vec3(floor(p1.xCoord), 120.0, floor(p1.zCoord))
-                else
-                    Vec3(floor(p2.xCoord), 120.0, floor(p2.zCoord))
+                else Vec3(floor(p2.xCoord), 120.0, floor(p2.zCoord))
             )
         }
     }
