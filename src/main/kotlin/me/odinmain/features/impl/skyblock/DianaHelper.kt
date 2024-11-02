@@ -6,21 +6,21 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
+import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.*
 import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.*
+import me.odinmain.utils.skyblock.DianaBurrowEstimate.activeBurrows
 import net.minecraft.network.play.client.C07PacketPlayerDigging
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.server.S29PacketSoundEffect
 import net.minecraft.network.play.server.S2APacketParticles
 import net.minecraft.util.Vec3
-import net.minecraft.util.Vec3i
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.input.Keyboard
-import java.util.concurrent.ConcurrentHashMap
 
 object DianaHelper : Module(
     name = "Diana Helper",
@@ -47,22 +47,15 @@ object DianaHelper : Module(
         warpLocation = null
     }
     private val autoWarp by BooleanSetting("Auto Warp", description = "Automatically warps you to the nearest warp location 2 seconds after you activate the spade ability.").withDependency { !isLegitVersion }
+    private val resetBurrows by ActionSetting("Reset Burrows", description = "Removes all the current burrows.") { activeBurrows.clear() }
     private var warpLocation: WarpPoint? = null
 
     private val cmdCooldown = Clock(3_000)
     var renderPos: Vec3? = null
-    val burrowsRender = ConcurrentHashMap<Vec3i, BurrowType>()
     private val hasSpade: Boolean
         get() = mc.thePlayer?.inventory?.mainInventory?.find { it.skyblockID == "ANCESTRAL_SPADE" } != null
     private val isDoingDiana: Boolean
         get() = hasSpade && LocationUtils.currentArea.isArea(Island.Hub) && enabled
-
-    enum class BurrowType(val text: String, val color: Color) {
-        START("§aStart", Color.GREEN),
-        MOB("§cMob", Color.RED),
-        TREASURE("§6Treasure", Color.ORANGE),
-        UNKNOWN("§fUnknown?!", Color.WHITE),
-    }
 
     init {
         onPacket(S29PacketSoundEffect::class.java, { isDoingDiana }) {
@@ -75,18 +68,16 @@ object DianaHelper : Module(
         }
 
         onPacket(C08PacketPlayerBlockPlacement::class.java, { isDoingDiana }) {
-            DianaBurrowEstimate.blockEvent(it.position.toVec3i())
+            DianaBurrowEstimate.blockEvent(it.position)
         }
 
         onPacket(C07PacketPlayerDigging::class.java, { isDoingDiana }) {
-            DianaBurrowEstimate.blockEvent(it.position.toVec3i(), it.status == C07PacketPlayerDigging.Action.STOP_DESTROY_BLOCK)
+            DianaBurrowEstimate.blockEvent(it.position)
         }
 
         onWorldLoad {
-            DianaBurrowEstimate.reset()
-            burrowsRender.clear()
+            DianaBurrowEstimate.onWorldLoad()
             renderPos = null
-            DianaBurrowEstimate.recentBurrows.clear()
         }
 
         onMessage(Regex("^(Uh oh!|Woah!|Yikes!|Oi!|Danger!|Good Grief!|Oh!) You dug out a Minos Inquisitor!\$")) {
@@ -101,12 +92,12 @@ object DianaHelper : Module(
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-        if (!isDoingDiana || (renderPos == null && burrowsRender.isEmpty())) return
+        if (!isDoingDiana || (renderPos == null && activeBurrows.isEmpty())) return
         renderPos?.let { guess ->
             val distance = mc.thePlayer.positionVector.distanceTo(guess)
             if (guess.yCoord == 110.0 && distance < 64) {
                 renderPos = findNearestGrassBlock(guess)
-                return
+                return@let
             }
             warpLocation = WarpPoint.entries.filter { it.unlocked() }.minBy { warp ->
                 warp.location.distanceTo(guess)
@@ -115,18 +106,18 @@ object DianaHelper : Module(
             if (tracer && distance > 15)
                 Renderer.drawTracer(guess.addVec(.5, .5, .5), color = tracerColor, lineWidth = tracerWidth, depth = false)
 
-            Renderer.drawCustomBeacon("§6Guess${warpLocation?.displayName ?: ""}§r", guess, guessColor, increase = true, style = style)
+            Renderer.drawCustomBeacon("§6Guess ${warpLocation?.displayName ?: ""}§r", guess, guessColor, increase = true, style = style)
         }
 
-        burrowsRender.forEach { (location, type) ->
-            if (tracerBurrows) Renderer.drawTracer(Vec3(location).addVec(.5, .5, .5), color = type.color, lineWidth = tracerWidth, depth = false)
-            Renderer.drawCustomBeacon(type.text, Vec3(location), type.color, style = style)
+        activeBurrows.forEach { (location, burrow) ->
+            if (tracerBurrows) Renderer.drawTracer(location.toVec3().addVec(.5, .5, .5), color = burrow.type.color, lineWidth = tracerWidth, depth = false)
+            Renderer.drawCustomBeacon(burrow.type.text, location.toVec3(), burrow.type.color.withAlpha(0.75f), style = style)
         }
     }
 
     @SubscribeEvent
     fun onRightClick(event: ClickEvent.RightClickEvent) {
-        if (!isHolding("ANCESTRAL_SPADE") || !autoWarp || isLegitVersion) return
+        if (!isDoingDiana || !autoWarp || isLegitVersion) return
         runIn(40) {
             if (!cmdCooldown.hasTimePassed()) return@runIn
             modMessage("§6Warping to ${warpLocation?.displayName ?: return@runIn}")
@@ -140,12 +131,12 @@ object DianaHelper : Module(
         val location: Vec3,
         var unlocked: () -> Boolean
     ) {
-        HUB     (displayName = " §8(§fHub§8)",          Vec3(-3.0, 70.0, -70.0),   { true }),
-        CASTLE  (displayName = " §8(§fCastle§8)",       Vec3(-250.0, 130.0, 45.0), { castle }),
-        CRYPT   (displayName = " §8(§fCrypt§8)",        Vec3(-190.0, 74.0, -88.0), { crypt }),
-        STONKS  (displayName = " §8(§fStonks§8)",       Vec3(-52.5, 70.0, -49.5),  { stonks }),
-        DA      (displayName = " §8(§fDark Auction§8)", Vec3(91.0, 75.0, 173.0),   { darkAuction }),
-        MUSEUM  (displayName = " §8(§fMuseum§8)",       Vec3(-75.0, 76.0, 81.0),   { museum }),
-        WIZARD  (displayName = " §8(§fWizard§8)",       Vec3(42.5, 122.0, 69.0),   { wizard })
+        HUB     (displayName = "§8(§fHub§8)",          Vec3(-3.0, 70.0, -70.0),   { true }),
+        CASTLE  (displayName = "§8(§fCastle§8)",       Vec3(-250.0, 130.0, 45.0), { castle }),
+        CRYPT   (displayName = "§8(§fCrypt§8)",        Vec3(-190.0, 74.0, -88.0), { crypt }),
+        STONKS  (displayName = "§8(§fStonks§8)",       Vec3(-52.5, 70.0, -49.5),  { stonks }),
+        DA      (displayName = "§8(§fDark Auction§8)", Vec3(91.0, 75.0, 173.0),   { darkAuction }),
+        MUSEUM  (displayName = "§8(§fMuseum§8)",       Vec3(-75.0, 76.0, 81.0),   { museum }),
+        WIZARD  (displayName = "§8(§fWizard§8)",       Vec3(42.5, 122.0, 69.0),   { wizard })
     }
 }

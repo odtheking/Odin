@@ -104,7 +104,7 @@ val devCommand = commodore("oddev") {
             |currentDungeonPlayer: ${DungeonUtils.currentDungeonPlayer.name}, ${DungeonUtils.currentDungeonPlayer.clazz}, ${DungeonUtils.currentDungeonPlayer.isDead}, ${DungeonUtils.isGhost}
             |doorOpener: ${DungeonUtils.doorOpener}
             |currentRoom: ${DungeonUtils.currentFullRoom?.room?.data?.name}, roomsPassed: ${DungeonUtils.passedRooms.map { it.room.data.name }}
-            |Teammates: ${DungeonUtils.dungeonTeammates.joinToString { "§${it.clazz.colorCode}${it.name} (${it.clazz}[${it.clazzLvl}])" }}
+            |Teammates: ${DungeonUtils.dungeonTeammates.joinToString { "§${it.clazz.colorCode}${it.name} (${it.clazz} [${it.clazzLvl}])" }}
             |TeammatesNoSelf: ${DungeonUtils.dungeonTeammatesNoSelf.map { it.name }}
             |LeapTeammates: ${DungeonUtils.leapTeammates.map { it.name }}
             |Blessings: ${Blessing.entries.joinToString { "${it.name}: ${it.current}" }}

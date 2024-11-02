@@ -15,10 +15,8 @@ import me.odinmain.features.settings.impl.KeybindSetting
 import me.odinmain.ui.hud.EditHUDGui
 import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.capitalizeFirst
-import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.profile
 import me.odinmain.utils.render.getTextWidth
-import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.network.Packet
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.event.world.WorldEvent
@@ -45,7 +43,6 @@ object ModuleManager {
     val worldLoadFunctions = mutableListOf<() -> Unit>()
     val tickTasks = mutableListOf<TickTask>()
     val huds = arrayListOf<HudElement>()
-    val executors = ArrayList<Pair<Module, Executor>>()
 
     val modules: ArrayList<Module> = arrayListOf(
         // dungeon
@@ -87,13 +84,13 @@ object ModuleManager {
         }
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(receiveCanceled = true)
     fun onTick(event: TickEvent.ClientTickEvent) {
         if (event.phase != TickEvent.Phase.START) return
         tickTaskTick()
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(receiveCanceled = true)
     fun onServerTick(event: RealServerTick) {
         tickTaskTick(true)
     }
@@ -110,21 +107,21 @@ object ModuleManager {
         }
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(receiveCanceled = true)
     fun onReceivePacket(event: PacketReceivedEvent) {
         packetFunctions.forEach {
             if (it.type.isInstance(event.packet) && it.shouldRun.invoke()) it.function(event.packet)
         }
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(receiveCanceled = true)
     fun onSendPacket(event: PacketSentEvent) {
         packetFunctions.forEach {
             if (it.type.isInstance(event.packet) && it.shouldRun.invoke()) it.function(event.packet)
         }
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(receiveCanceled = true)
     fun onChatPacket(event: ChatPacketEvent) {
         messageFunctions.forEach {
             if (event.message matches it.filter && it.shouldRun()) it.function(event.message)
