@@ -103,7 +103,7 @@ val devCommand = commodore("oddev") {
             |DungeonTime: ${DungeonUtils.dungeonTime}
             |currentDungeonPlayer: ${DungeonUtils.currentDungeonPlayer.name}, ${DungeonUtils.currentDungeonPlayer.clazz}, ${DungeonUtils.currentDungeonPlayer.isDead}, ${DungeonUtils.isGhost}
             |doorOpener: ${DungeonUtils.doorOpener}
-            |currentRoom: ${DungeonUtils.currentFullRoom?.room?.data?.name}, roomsPassed: ${DungeonUtils.passedRooms.map { it.room.data.name }}
+            |currentRoom: ${DungeonUtils.currentRoom?.data?.name}, roomsPassed: ${DungeonUtils.passedRooms.map { it.data.name }}
             |Teammates: ${DungeonUtils.dungeonTeammates.joinToString { "§${it.clazz.colorCode}${it.name} (${it.clazz} [${it.clazzLvl}])" }}
             |TeammatesNoSelf: ${DungeonUtils.dungeonTeammatesNoSelf.map { it.name }}
             |LeapTeammates: ${DungeonUtils.leapTeammates.map { it.name }}
@@ -138,7 +138,7 @@ val devCommand = commodore("oddev") {
     }
 
 	literal("roomdata").runs {
-        val room = DungeonUtils.currentFullRoom
+        val room = DungeonUtils.currentRoom
         val roomCenter = getRoomCenter(mc.thePlayer.posX.toInt(), mc.thePlayer.posZ.toInt())
         val core = ScanUtils.getCore(roomCenter)
         modMessage(
@@ -147,8 +147,8 @@ val devCommand = commodore("oddev") {
             Middle: ${roomCenter.x}, ${roomCenter.z}
             Room: ${DungeonUtils.currentRoomName}
             Core: $core
-            Rotation: ${room?.room?.rotation ?: "NONE"}
-            Positions: ${room?.components?.joinToString { "(${it.x}, ${it.z})" } ?: "None"}
+            Rotation: ${room?.rotation ?: "NONE"}
+            Positions: ${room?.roomComponents?.joinToString { "(${it.x}, ${it.z})" } ?: "None"}
             ${getChatBreak()}
             """.trimIndent(), "")
         writeToClipboard(core.toString(), "§aCopied $core to clipboard!")
@@ -160,7 +160,7 @@ val devCommand = commodore("oddev") {
             """
             ${getChatBreak()}
             Middle: $block
-            Relative Coords: ${DungeonUtils.currentFullRoom?.getRelativeCoords(block.toVec3())?.toString()}
+            Relative Coords: ${DungeonUtils.currentRoom?.getRelativeCoords(block.toVec3())?.toString()}
             ${getChatBreak()}
             """.trimIndent(), "")
     }

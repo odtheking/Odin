@@ -197,51 +197,6 @@ fun Vec3.rotateToNorth(rotation: Rotations): Vec3 {
 }
 
 /**
- * Rotates a Vec2 to the given rotation.
- * @param rotation The rotation to rotate to
- * @return The rotated Vec2
- */
-fun Vec2.addRotationCoords(rotation: Rotations, dist: Int = 4): Vec2 {
-    return when (rotation) {
-        Rotations.NORTH -> Vec2(x, z + dist)
-        Rotations.WEST -> Vec2(x + dist, z)
-        Rotations.SOUTH -> Vec2(x, z - dist)
-        Rotations.EAST -> Vec2(x - dist, z)
-        Rotations.NONE -> this
-    }
-}
-
-fun Vec3.addRotationCoords(rotations: Rotations, dist: Int = 4): Vec3 {
-    return when (rotations) {
-        Rotations.NORTH -> Vec3(this.xCoord, this.yCoord, this.zCoord + dist)
-        Rotations.WEST -> Vec3(this.xCoord + dist, this.yCoord, this.zCoord)
-        Rotations.SOUTH -> Vec3(this.xCoord, this.yCoord, this.zCoord - dist)
-        Rotations.EAST -> Vec3(this.xCoord - dist, this.yCoord, this.zCoord)
-        Rotations.NONE -> this
-    }
-}
-
-fun Vec2.addRotationCoords(rotation: Rotations, x: Number = 0, z: Number = 0): Vec2 {
-    return when(rotation){
-        Rotations.NORTH -> Vec2(this.x + x.toInt(), this.z + z.toInt())
-        Rotations.WEST -> Vec2(this.x + z.toInt(), this.z - x.toInt())
-        Rotations.SOUTH -> Vec2(this.x - x.toInt(), this.z - z.toInt())
-        Rotations.EAST -> Vec2(this.x - z.toInt(), this.z + x.toInt())
-        Rotations.NONE -> this
-    }
-}
-
-fun Vec3.addRotationCoords(rotation: Rotations, x: Number = 0, z: Number = 0): Vec3 {
-    return when(rotation){
-        Rotations.NORTH -> Vec3(this.xCoord + x.toDouble(), this.yCoord, this.zCoord + z.toDouble())
-        Rotations.WEST -> Vec3(this.xCoord + z.toDouble(), this.yCoord, this.zCoord - x.toDouble())
-        Rotations.SOUTH -> Vec3(this.xCoord - x.toDouble(), this.yCoord, this.zCoord - z.toDouble())
-        Rotations.EAST -> Vec3(this.xCoord - z.toDouble(), this.yCoord, this.zCoord + x.toDouble())
-        Rotations.NONE -> this
-    }
-}
-
-/**
  * Checks if an axis-aligned bounding box (AABB) is interceptable based on the player's position, range, yaw, and pitch.
  *
  * @param aabb The axis-aligned bounding box to check for interceptability.
@@ -648,4 +603,14 @@ fun wrapAngle(angle: Float): Float {
 
 fun bezier(t: Float, initial: Float, p1: Float, p2: Float, final: Float): Float {
     return (1 - t).pow(3) * initial + 3 * (1 - t).pow(2) * t * p1 + 3 * (1 - t) * t.pow(2) * p2 + t.pow(3) * final
+}
+
+fun Vec3.addRotationCoords(rotation: Rotations, x: Int, z: Int): Vec3 {
+    return when (rotation) {
+        Rotations.NORTH -> Vec3(this.xCoord + x, this.yCoord, this.zCoord + z)
+        Rotations.WEST -> Vec3(this.xCoord + z, this.yCoord, this.zCoord - x)
+        Rotations.SOUTH -> Vec3(this.xCoord - x, this.yCoord, this.zCoord - z)
+        Rotations.EAST -> Vec3(this.xCoord - z, this.yCoord, this.zCoord + x)
+        else -> this
+    }
 }

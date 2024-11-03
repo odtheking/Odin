@@ -11,6 +11,7 @@ import me.odinmain.utils.*
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.skyblock.dungeon.DungeonUtils.getRealCoords
 import me.odinmain.utils.skyblock.getBlockIdAt
 import net.minecraft.init.Blocks
 import net.minecraft.util.BlockPos
@@ -38,15 +39,13 @@ object BeamsSolver {
 
     private var currentLanternPairs = ConcurrentHashMap<BlockPos, Pair<BlockPos, Color>>()
 
-    fun onRoomEnter(event: RoomEnterEvent) {
-        val room = event.fullRoom?.room ?: return // <-- orb = orb.orb
-        if (room.data.name != "Creeper Beams") return reset()
+    fun onRoomEnter(event: RoomEnterEvent) = with(event.room) {
+        if (this?.data?.name != "Creeper Beams") return reset()
 
         currentLanternPairs.clear()
         lanternPairs.forEach {
-            val pos = room.vec2.addRotationCoords(room.rotation, x = it[0], z = it[2]).let { vec -> BlockPos(vec.x, it[1], vec.z) }
-
-            val pos2 = room.vec2.addRotationCoords(room.rotation, x = it[3], z = it[5]).let { vec -> BlockPos(vec.x, it[4], vec.z) }
+            val pos = getRealCoords(it[0], it[1], it[2])
+            val pos2 = getRealCoords(it[3], it[4], it[5])
 
             if (getBlockIdAt(pos) == 169 && getBlockIdAt(pos2) == 169)
                 currentLanternPairs[pos] = pos2 to colors[currentLanternPairs.size]

@@ -15,7 +15,7 @@ import me.odinmain.utils.skyblock.PlayerUtils.posX
 import me.odinmain.utils.skyblock.PlayerUtils.posZ
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.getDungeonPuzzles
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.getDungeonTeammates
-import me.odinmain.utils.skyblock.dungeon.tiles.FullRoom
+import me.odinmain.utils.skyblock.dungeon.tiles.Room
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.network.play.server.*
 import net.minecraftforge.event.entity.EntityJoinWorldEvent
@@ -31,8 +31,8 @@ class Dungeon(val floor: Floor) {
     var dungeonTeammatesNoSelf: ArrayList<DungeonPlayer> = ArrayList<DungeonPlayer>(4)
     var leapTeammates: ArrayList<DungeonPlayer> = ArrayList<DungeonPlayer>(4)
     var dungeonStats = DungeonStats()
-    val currentFullRoom: FullRoom? get() = ScanUtils.currentFullRoom
-    val passedRooms: MutableSet<FullRoom> get() = ScanUtils.passedRooms
+    val currentRoom: Room? get() = ScanUtils.currentRoom
+    val passedRooms: MutableSet<Room> get() = ScanUtils.passedRooms
     var puzzles = listOf<Puzzle>()
 
     private fun getBoss(): Boolean {
@@ -54,8 +54,9 @@ class Dungeon(val floor: Floor) {
     }
 
     fun enterDungeonRoom(event: RoomEnterEvent) {
-        val room = event.fullRoom?.takeUnless { room -> passedRooms.any { it.room.data.name == room.room.data.name } } ?: return
-        dungeonStats.knownSecrets = dungeonStats.knownSecrets?.plus(room.room.data.secrets) ?: room.room.data.secrets
+        val room = event.room?.takeUnless { room -> passedRooms.any { it.data.name == room.data.name } } ?: return
+        val roomSecrets = room.data.secrets
+        dungeonStats.knownSecrets = dungeonStats.knownSecrets?.plus(roomSecrets) ?: roomSecrets
     }
 
     fun onPacket(event: PacketReceivedEvent) {

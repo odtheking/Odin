@@ -15,7 +15,7 @@ import me.odinmain.utils.*
 import me.odinmain.utils.skyblock.devMessage
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.getRelativeCoords
-import me.odinmain.utils.skyblock.dungeon.tiles.FullRoom
+import me.odinmain.utils.skyblock.dungeon.tiles.Room
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.block.BlockChest
 import net.minecraft.block.state.IBlockState
@@ -30,7 +30,7 @@ object SecretWaypoints {
     private var lastClicked: BlockPos? = null
 
     fun onLocked() {
-        val room = DungeonUtils.currentFullRoom ?: return
+        val room = DungeonUtils.currentRoom ?: return
         getWaypoints(room).find { wp -> wp.toVec3().equal(room.getRelativeCoords(lastClicked?.toVec3() ?: return)) && wp.secret && wp.clicked }?.let {
             it.clicked = false
             setWaypoints(room)
@@ -53,7 +53,7 @@ object SecretWaypoints {
         val etherpos = lastEtherPos?.pos?.toVec3() ?: return
         if (System.currentTimeMillis() - lastEtherTime > 1000) return
         if (Vec3(packet.x, packet.y, packet.z).distanceTo(etherpos) > 3) return
-        val room = DungeonUtils.currentFullRoom ?: return
+        val room = DungeonUtils.currentRoom ?: return
         val waypoints = getWaypoints(room)
         waypoints.find { wp -> wp.toVec3().equal(room.getRelativeCoords(etherpos)) && wp.type == WaypointType.ETHERWARP }?.let {
             handleTimer(it, waypoints, room)
@@ -66,7 +66,7 @@ object SecretWaypoints {
     }
 
     private fun clickSecret(pos: Vec3, distance: Int, block: IBlockState? = null) {
-        val room = DungeonUtils.currentFullRoom ?: return
+        val room = DungeonUtils.currentRoom ?: return
         val vec = room.getRelativeCoords(pos)
 
         val waypoints = getWaypoints(room)
@@ -94,12 +94,12 @@ object SecretWaypoints {
             room.forEach { it.clicked = false }
         }
 
-        DungeonUtils.currentFullRoom?.let { setWaypoints(it) }
+        DungeonUtils.currentRoom?.let { setWaypoints(it) }
         glList = -1
     }
 
     fun onPosUpdate(pos: Vec3) {
-        val room = DungeonUtils.currentFullRoom ?: return
+        val room = DungeonUtils.currentRoom ?: return
 
         val waypoints = getWaypoints(room)
         waypoints.find { wp -> wp.toVec3().addVec(y = 0.5).distanceTo(room.getRelativeCoords(pos)) <= 2 && wp.type == WaypointType.MOVE && !wp.clicked }?.let { wp ->
@@ -111,7 +111,7 @@ object SecretWaypoints {
         }
     }
 
-    private fun handleTimer(waypoint: DungeonWaypoint, waypoints: MutableList<DungeonWaypoint>, room: FullRoom): Boolean {
+    private fun handleTimer(waypoint: DungeonWaypoint, waypoints: MutableList<DungeonWaypoint>, room: Room): Boolean {
         return when {
             waypoint.timer == TimerType.START && (routeTimer?.let { System.currentTimeMillis() - it >= 2000 } == true || routeTimer == null) -> {
                 modMessage("${routeTimer?.let { "§2Route timer restarted" } ?: "§aRoute timer started"} ")
@@ -121,7 +121,7 @@ object SecretWaypoints {
                 true
             }
             waypoint.timer == TimerType.END && routeTimer != null -> {
-                modMessage("§aRoute took §c${routeTimer?.let { (System.currentTimeMillis() - it)/1000.0 }?.round(2)}§as to complete! §aRoom: §e${room.room.data.name}§a, §aCheckpoints collected: §9${checkpoints}§a${waypoint.title?.let { name -> ", Route: §d$name" } ?: "."}")
+                modMessage("§aRoute took §c${routeTimer?.let { (System.currentTimeMillis() - it)/1000.0 }?.round(2)}§as to complete! §aRoom: §e${room.data.name}§a, §aCheckpoints collected: §9${checkpoints}§a${waypoint.title?.let { name -> ", Route: §d$name" } ?: "."}")
                 routeTimer = null
                 checkpoints = 0
                 true

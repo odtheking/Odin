@@ -22,7 +22,7 @@ import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.getRealCoords
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.getRelativeCoords
-import me.odinmain.utils.skyblock.dungeon.tiles.FullRoom
+import me.odinmain.utils.skyblock.dungeon.tiles.Room
 import net.minecraft.block.BlockSign
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiScreen
@@ -70,9 +70,9 @@ object DungeonWaypoints : Module(
     var timerSetting: Int by SelectorSetting("Timer Type", TimerType.NONE.displayName, TimerType.getArrayList(), description = "Type of route timer you want to place.").withDependency { !waypointType.equalsOneOf(0, 1, 5) && settingsDropDown }
 
     private val resetButton by ActionSetting("Reset Current Room", description = "Resets the waypoints for the current room.") {
-        val room = DungeonUtils.currentFullRoom ?: return@ActionSetting modMessage("§cRoom not found!")
+        val room = DungeonUtils.currentRoom ?: return@ActionSetting modMessage("§cRoom not found!")
 
-        val waypoints = DungeonWaypointConfig.waypoints.getOrPut(room.room.data.name) { mutableListOf() }
+        val waypoints = DungeonWaypointConfig.waypoints.getOrPut(room.data.name) { mutableListOf() }
         if (waypoints.isEmpty()) return@ActionSetting modMessage("§cCurrent room does not have any waypoints!")
         waypoints.clear()
         DungeonWaypointConfig.saveConfig()
@@ -176,7 +176,7 @@ object DungeonWaypoints : Module(
     @SubscribeEvent
     fun onRender(event: RenderWorldLastEvent) {
         if ((DungeonUtils.inBoss || !DungeonUtils.inDungeons) && !LocationUtils.currentArea.isArea(Island.SinglePlayer)) return
-        val room = DungeonUtils.currentFullRoom ?: return
+        val room = DungeonUtils.currentRoom ?: return
         startProfile("Dungeon Waypoints")
         glList = RenderUtils.drawBoxes(room.waypoints, glList, disableDepth)
         if (renderTitle) {
@@ -187,7 +187,7 @@ object DungeonWaypoints : Module(
         }
 
         if (debugWaypoint) {
-            room.components.forEach {
+            room.roomComponents.forEach {
                 Renderer.drawBox(Vec3(it.x.toDouble(), 70.0, it.z.toDouble()).toAABB(), Color.GREEN, fillAlpha = 0)
             }
         }
@@ -205,7 +205,7 @@ object DungeonWaypoints : Module(
         val sr = ScaledResolution(mc)
         val pos = reachPosition
         val (text, editText) = pos?.add(offset)?.let {
-            val room = DungeonUtils.currentFullRoom ?: return
+            val room = DungeonUtils.currentRoom ?: return
             val vec = room.getRelativeCoords(it.add(offset).toVec3())
             val waypoint = getWaypoints(room).find { it.toVec3().equal(vec) }
 
@@ -223,7 +223,7 @@ object DungeonWaypoints : Module(
 
     @SubscribeEvent
     fun onMouseInput(event: MouseEvent) {
-        if (!allowEdits || event.dwheel.sign == 0 || DungeonUtils.currentFullRoom == null) return
+        if (!allowEdits || event.dwheel.sign == 0 || DungeonUtils.currentRoom == null) return
         distance = (distance + event.dwheel.sign).coerceIn(0.0, 100.0)
         event.isCanceled = true
     }
@@ -233,7 +233,7 @@ object DungeonWaypoints : Module(
         if (mc.thePlayer.usingEtherWarp) {
             val pos = EtherWarpHelper.getEtherPos(mc.thePlayer.renderVec, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch)
             if (pos.succeeded && pos.pos != null) {
-                if (DungeonUtils.currentFullRoom?.waypoints?.any { pos.vec?.equal(it.toVec3()) == true && (it.type == WaypointType.BLOCKETHERWARP) } == true) {
+                if (DungeonUtils.currentRoom?.waypoints?.any { pos.vec?.equal(it.toVec3()) == true && (it.type == WaypointType.BLOCKETHERWARP) } == true) {
                     event.isCanceled = true
                     return
                 }
@@ -246,7 +246,7 @@ object DungeonWaypoints : Module(
         val offsetPos = pos.add(offset)
         offset = BlockPos(0.0, 0.0, 0.0)
         if (isAir(offsetPos) && !allowMidair) return
-        val room = DungeonUtils.currentFullRoom ?: return
+        val room = DungeonUtils.currentRoom ?: return
         val vec = room.getRelativeCoords(offsetPos.toVec3())
         val block = getBlockAt(offsetPos)
         val aabb =
@@ -281,7 +281,7 @@ object DungeonWaypoints : Module(
     @SubscribeEvent
     fun onNewRoom(event: DungeonEvents.RoomEnterEvent) {
         glList = -1
-        event.fullRoom?.let { setWaypoints(it) }
+        event.room?.let { setWaypoints(it) }
     }
 
     fun DungeonWaypoint.toVec3() = Vec3(x, y, z)
@@ -299,9 +299,9 @@ object DungeonWaypoints : Module(
     /**
      * Sets the waypoints for the current room.
      */
-    fun setWaypoints(curRoom: FullRoom) {
-        curRoom.waypoints = arrayListOf<DungeonWaypoint>().apply {
-            DungeonWaypointConfig.waypoints[curRoom.room.data.name]?.let { waypoints ->
+    fun setWaypoints(curRoom: Room) {
+        curRoom.waypoints = mutableSetOf<DungeonWaypoint>().apply {
+            DungeonWaypointConfig.waypoints[curRoom.data.name]?.let { waypoints ->
                 addAll(waypoints.map { waypoint ->
                     val vec = curRoom.getRealCoords(waypoint.toVec3())
                     waypoint.copy(x = vec.xCoord, y = vec.yCoord, z = vec.zCoord)
@@ -310,9 +310,8 @@ object DungeonWaypoints : Module(
         }
     }
 
-    fun getWaypoints(room: FullRoom) : MutableList<DungeonWaypoint> {
-        return DungeonWaypointConfig.waypoints.getOrPut(room.room.data.name) { mutableListOf() }
-    }
+    fun getWaypoints(room: Room) : MutableList<DungeonWaypoint> =
+        DungeonWaypointConfig.waypoints.getOrPut(room.data.name) { mutableListOf() }
 }
 
 object GuiSign : GuiScreen() {
