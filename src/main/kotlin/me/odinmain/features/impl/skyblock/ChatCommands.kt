@@ -1,5 +1,6 @@
 package me.odinmain.features.impl.skyblock
 
+import me.odinmain.events.impl.MessageSentEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.dungeon.DungeonRequeue.disableRequeue
@@ -8,6 +9,7 @@ import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.*
 import me.odinmain.utils.skyblock.*
 import net.minecraft.event.ClickEvent
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.math.floor
@@ -18,32 +20,33 @@ object ChatCommands : Module(
     category = Category.SKYBLOCK,
     description = "Type !help in the corresponding channel for cmd list. Use /blacklist.",
 ) {
-    private var party by BooleanSetting(name = "Party commands", default = true, description = "Toggles chat commands in party chat.")
-    private var guild by BooleanSetting(name = "Guild commands", default = true, description = "Toggles chat commands in guild chat.")
-    private var private by BooleanSetting(name = "Private commands", default = true, description = "Toggles chat commands in private chat.")
+    private val chatEmotes by BooleanSetting(name = "Chat Emotes", default = true, description = "Replaces chat emotes with their corresponding emojis.")
+    private val party by BooleanSetting(name = "Party commands", default = true, description = "Toggles chat commands in party chat.")
+    private val guild by BooleanSetting(name = "Guild commands", default = true, description = "Toggles chat commands in guild chat.")
+    private val private by BooleanSetting(name = "Private commands", default = true, description = "Toggles chat commands in private chat.")
     private val whitelistOnly by DualSetting("Whitelist Only", left = "blacklist", right = "Whitelist", default = false, description = "Whether the list should act like a whitelist or a blacklist.")
-    private var showSettings by DropdownSetting(name = "Show Settings", default = false)
+    private val showSettings by DropdownSetting(name = "Show Settings", default = false)
 
-    private var warp by BooleanSetting(name = "Warp", default = true, description = "Executes the /party warp commnad.").withDependency { showSettings }
-    private var warptransfer by BooleanSetting(name = "Warp & pt (warptransfer)", default = true, description = "Executes the /party warp and /party transfer commands.").withDependency { showSettings }
-    private var coords by BooleanSetting(name = "Coords (coords)", default = true, description = "Sends your current coordinates.").withDependency { showSettings }
-    private var allinvite by BooleanSetting(name = "Allinvite", default = true, description = "Executes the /party settings allinvite command.").withDependency { showSettings }
-    private var odin by BooleanSetting(name = "Odin", default = true, description = "Sends the odin discord link.").withDependency { showSettings }
-    private var boop by BooleanSetting(name = "Boop", default = true, description = "Executes the /boop command.").withDependency { showSettings }
-    private var cf by BooleanSetting(name = "Coinflip (cf)", default = true, description = "Sends the result of a coinflip..").withDependency { showSettings }
-    private var eightball by BooleanSetting(name = "Eightball", default = true, description = "Sends a random 8ball response.").withDependency { showSettings }
-    private var dice by BooleanSetting(name = "Dice", default = true, description = "Rolls a dice.").withDependency { showSettings }
-    private var pt by BooleanSetting(name = "Party transfer (pt)", default = false, description = "Executes the /party transfer command.").withDependency { showSettings }
-    private var ping by BooleanSetting(name = "Ping", default = true, description = "Sends your current ping.").withDependency { showSettings }
-    private var tps by BooleanSetting(name = "TPS", default = true, description = "Sends the server's current TPS.").withDependency { showSettings }
-    private var fps by BooleanSetting(name = "FPS", default = true, description = "Sends your current FPS.").withDependency { showSettings }
-    private var dt by BooleanSetting(name = "DT", default = true, description = "Sets a reminder for the end of the run.").withDependency { showSettings }
+    private val warp by BooleanSetting(name = "Warp", default = true, description = "Executes the /party warp commnad.").withDependency { showSettings }
+    private val warptransfer by BooleanSetting(name = "Warp & pt (warptransfer)", default = true, description = "Executes the /party warp and /party transfer commands.").withDependency { showSettings }
+    private val coords by BooleanSetting(name = "Coords (coords)", default = true, description = "Sends your current coordinates.").withDependency { showSettings }
+    private val allinvite by BooleanSetting(name = "Allinvite", default = true, description = "Executes the /party settings allinvite command.").withDependency { showSettings }
+    private val odin by BooleanSetting(name = "Odin", default = true, description = "Sends the odin discord link.").withDependency { showSettings }
+    private val boop by BooleanSetting(name = "Boop", default = true, description = "Executes the /boop command.").withDependency { showSettings }
+    private val cf by BooleanSetting(name = "Coinflip (cf)", default = true, description = "Sends the result of a coinflip..").withDependency { showSettings }
+    private val eightball by BooleanSetting(name = "Eightball", default = true, description = "Sends a random 8ball response.").withDependency { showSettings }
+    private val dice by BooleanSetting(name = "Dice", default = true, description = "Rolls a dice.").withDependency { showSettings }
+    private val pt by BooleanSetting(name = "Party transfer (pt)", default = false, description = "Executes the /party transfer command.").withDependency { showSettings }
+    private val ping by BooleanSetting(name = "Ping", default = true, description = "Sends your current ping.").withDependency { showSettings }
+    private val tps by BooleanSetting(name = "TPS", default = true, description = "Sends the server's current TPS.").withDependency { showSettings }
+    private val fps by BooleanSetting(name = "FPS", default = true, description = "Sends your current FPS.").withDependency { showSettings }
+    private val dt by BooleanSetting(name = "DT", default = true, description = "Sets a reminder for the end of the run.").withDependency { showSettings }
     private val invite by BooleanSetting(name = "invite", default = true, description = "Invites the player to your party.").withDependency { showSettings }
     private val racism by BooleanSetting(name = "Racism", default = true, description = "Sends a random racism percentage.").withDependency { showSettings }
     private val queInstance by BooleanSetting(name = "Queue instance cmds", default = true, description = "Queue dungeons commands.").withDependency { showSettings }
     private val time by BooleanSetting(name = "Time", default = false, description = "Sends the current time.").withDependency { showSettings }
-    private var demote by BooleanSetting(name = "Demote", default = false, description = "Executes the /party demote command.").withDependency { showSettings }
-    private var promote by BooleanSetting(name = "Promote", default = false, description = "Executes the /party promote command.").withDependency { showSettings }
+    private val demote by BooleanSetting(name = "Demote", default = false, description = "Executes the /party demote command.").withDependency { showSettings }
+    private val promote by BooleanSetting(name = "Promote", default = false, description = "Executes the /party promote command.").withDependency { showSettings }
 
     private var dtPlayer: String? = null
     private val dtReason = mutableListOf<Pair<String, String>>()
@@ -74,7 +77,7 @@ object ChatCommands : Module(
             val ign = match.groups[2]?.value ?: match.groups[5]?.value ?: match.groups[9]?.value ?: return@onMessage
             val msg = match.groups[3]?.value ?: match.groups[7]?.value ?: match.groups[10]?.value ?: return@onMessage
 
-            if (whitelistOnly != isInBlacklist(ign)) return@onMessage modMessage("§cPlayer is not in the list!")
+            if (whitelistOnly != isInBlacklist(ign)) return@onMessage
 
             runIn(8) {
                 handleChatCommands(msg, ign, channel)
@@ -145,6 +148,62 @@ object ChatCommands : Module(
             }
         }
     }
+
+    private var replaced = false
+
+    @SubscribeEvent
+    fun onMessageSent(event: MessageSentEvent) {
+        if (!chatEmotes) return
+        if (event.message.startsWith("/") && !listOf("/pc", "/ac", "/gc", "/msg", "/w", "/r").any { event.message.startsWith(it) }) return
+
+        replaced = false
+        val words = event.message.split(" ").toMutableList()
+
+        for (i in words.indices) {
+            replacements[words[i]]?.let {
+                replaced = true
+                words[i] = it
+            }
+        }
+
+        val newMessage = words.joinToString(" ")
+        if (!replaced) return
+
+        event.isCanceled = true
+        sendChatMessage(newMessage)
+    }
+
+    private val replacements = mapOf(
+        "<3" to "❤",
+        "o/" to "( ﾟ◡ﾟ)/",
+        ":star:" to "✮",
+        ":yes:" to "✔",
+        ":no:" to "✖",
+        ":java:" to "☕",
+        ":arrow:" to "➜",
+        ":shrug:" to "¯\\_(\u30c4)_/¯",
+        ":tableflip:" to "(╯°□°）╯︵ ┻━┻",
+        ":totem:" to "☉_☉",
+        ":typing:" to "✎...",
+        ":maths:" to "√(π+x)=L",
+        ":snail:" to "@'-'",
+        ":thinking:" to "(0.o?)",
+        ":gimme:" to "༼つ◕_◕༽つ",
+        ":wizard:" to "('-')⊃━☆ﾟ.*･｡ﾟ",
+        ":pvp:" to "⚔",
+        ":peace:" to "✌",
+        ":puffer:" to "<('O')>",
+        "h/" to "ヽ(^◇^*)/",
+        ":sloth:" to "(・⊝・)",
+        ":dog:" to "(ᵔᴥᵔ)",
+        ":dj:" to "ヽ(⌐■_■)ノ♬",
+        ":yey:" to "ヽ (◕◡◕) ﾉ",
+        ":snow:" to "☃",
+        ":dab:" to "<o/",
+        ":cat:" to "= ＾● ⋏ ●＾ =",
+        ":cute:" to "(✿◠‿◠)",
+        ":skull:" to "☠"
+    )
 
     private fun isInBlacklist(name: String) =
         blacklist.contains(name.lowercase())

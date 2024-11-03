@@ -1,7 +1,6 @@
 package me.odinmain.features
 
 import me.odinmain.OdinMain
-import me.odinmain.features.ModuleManager.executors
 import me.odinmain.features.impl.render.ClickGUIModule
 import me.odinmain.features.settings.AlwaysActive
 import me.odinmain.features.settings.Setting
@@ -9,6 +8,8 @@ import me.odinmain.features.settings.impl.HudSetting
 import me.odinmain.features.settings.impl.Keybinding
 import me.odinmain.utils.clock.Executable
 import me.odinmain.utils.clock.Executor
+import me.odinmain.utils.clock.Executor.Companion.register
+import me.odinmain.utils.clock.Executor.LimitedExecutor
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.network.Packet
 import net.minecraftforge.common.MinecraftForge
@@ -139,40 +140,20 @@ abstract class Module(
         ModuleManager.messageFunctions.add(ModuleManager.MessageFunction(filter, shouldRun, func))
     }
 
-    /**
-     * Runs the given function when a Chat Packet is sent with the same message as the given text (or contains the given text) (Case Sensitive!)
-     *
-     * @param text The text to look for.
-     * @param contains If the function should run when the message only contains the text but does not necessarily equal it.
-     * @param shouldRun Boolean getter to decide if the function should run at any given time, could check if the option is enabled for instance.
-     * @param func The function to run if the message matches or contains the given text and shouldRun returns true.
-     *
-     * @author Bonsai
-     */
-    fun onMessage(text: String, contains: Boolean, shouldRun: () -> Boolean = { alwaysActive || enabled }, func: (String) -> Unit) {
-        val regex =
-            if (contains)
-                ".*${Regex.escape(text)}.*".toRegex()
-            else
-                Regex.escape(text).toRegex()
-
-        ModuleManager.messageFunctions.add(ModuleManager.MessageFunction(regex, shouldRun, func))
-    }
-
     fun onWorldLoad(func: () -> Unit) {
         ModuleManager.worldLoadFunctions.add(func)
     }
 
-    fun execute(delay: Long, profileName: String = this.name, func: Executable) {
-        executors.add(this to Executor(delay, profileName, func))
+    fun execute(delay: Long, repeats: Int, profileName: String = "${this.name} Executor", shouldRun: () -> Boolean = { this.enabled || this.alwaysActive }, func: Executable) {
+        LimitedExecutor(delay, repeats, profileName, shouldRun, func).register()
     }
 
-    fun execute(delay: Long, repeats: Int, profileName: String = this.name, func: Executable) {
-        executors.add(this to Executor.LimitedExecutor(delay, repeats, profileName, func))
+    fun execute(delay: () -> Long, profileName: String = "${this.name} Executor", shouldRun: () -> Boolean = { this.enabled || this.alwaysActive }, func: Executable) {
+        Executor(delay, profileName, shouldRun, func).register()
     }
 
-    fun execute(delay: () -> Long, profileName: String = this.name, func: Executable) {
-        executors.add(this to Executor(delay, profileName, func))
+    fun execute(delay: Long, profileName: String = "${this.name} Executor", shouldRun: () -> Boolean = { this.enabled || this.alwaysActive }, func: Executable) {
+        Executor(delay, profileName, shouldRun, func).register()
     }
 
     enum class TagType {

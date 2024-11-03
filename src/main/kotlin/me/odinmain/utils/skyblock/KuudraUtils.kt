@@ -6,7 +6,6 @@ import me.odinmain.events.impl.PacketReceivedEvent
 import me.odinmain.utils.*
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.clock.Executor.Companion.register
-import net.minecraft.entity.SharedMonsterAttributes
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.entity.monster.EntityGiantZombie
 import net.minecraft.entity.monster.EntityMagmaCube
@@ -42,7 +41,7 @@ object KuudraUtils {
         kuudraTeammates = ArrayList()
         giantZombies = arrayListOf()
         supplies = BooleanArray(6) { true }
-        kuudraEntity = EntityMagmaCube(mc.theWorld)
+        kuudraEntity = null
         playersBuildingAmount = 0
         buildDonePercentage = 0
         phase = 0
@@ -74,7 +73,7 @@ object KuudraUtils {
     }
 
     init {
-        Executor(500) {
+        Executor(500, "KuudraUtils") {
             if (!inKuudra) return@Executor
             val entities = mc.theWorld?.loadedEntityList ?: return@Executor
 
@@ -84,14 +83,10 @@ object KuudraUtils {
             entities.forEach { entity ->
                 when (entity) {
                     is EntityGiantZombie ->
-                        if (entity.heldItem.unformattedName == "Head") giantZombies.add(entity)
+                        if (entity.heldItem?.unformattedName?.endsWith("Head") == true) giantZombies.add(entity)
 
-                    is EntityMagmaCube -> {
-                        if (
-                            entity.slimeSize == 30 &&
-                            entity.getEntityAttribute(SharedMonsterAttributes.maxHealth).baseValue.toFloat() == 100000f
-                        ) kuudraEntity = entity
-                    }
+                    is EntityMagmaCube ->
+                        if (entity.slimeSize == 30 && entity.getSBMaxHealth().toFloat() == 100000f) kuudraEntity = entity
 
                     is EntityArmorStand -> {
                         if (entity.name.noControlCodes.matches(progressRegex)) buildingPiles.add(entity)
@@ -104,7 +99,7 @@ object KuudraUtils {
                         }
                         if (phase != 1 || entity.name.noControlCodes != "✓ SUPPLIES RECEIVED ✓") return@forEach
                         val x = entity.posX.toInt()
-                        val z = entity.posY.toInt()
+                        val z = entity.posZ.toInt()
                         when {
                             x == -98 && z == -112 -> supplies[0] = false
                             x == -98 && z == -99 -> supplies[1] = false
@@ -121,7 +116,7 @@ object KuudraUtils {
 
     @SubscribeEvent
     fun handleTabListPacket(event: PacketReceivedEvent) {
-        if (!inKuudra || event.packet !is S38PacketPlayerListItem || !event.packet.action.equalsOneOf(S38PacketPlayerListItem.Action.UPDATE_DISPLAY_NAME, S38PacketPlayerListItem.Action.ADD_PLAYER)) return
+        if (event.packet !is S38PacketPlayerListItem || !event.packet.action.equalsOneOf(S38PacketPlayerListItem.Action.UPDATE_DISPLAY_NAME, S38PacketPlayerListItem.Action.ADD_PLAYER)) return
         kuudraTeammates = updateKuudraTeammates(kuudraTeammates, event.packet.entries)
     }
 
@@ -139,7 +134,7 @@ object KuudraUtils {
         return previousTeammates
     }
 
-    enum class PreSpot(val location: Vec3) {
+    enum class SupplyPickUpSpot(val location: Vec3) {
         Triangle(Vec3(-67.5, 77.0, -122.5)),
         X(Vec3(-142.5, 77.0, -151.0)),
         Equals(Vec3(-65.5, 76.0, -87.5)),

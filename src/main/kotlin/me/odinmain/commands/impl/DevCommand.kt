@@ -13,6 +13,7 @@ import me.odinmain.features.impl.floor7.DragonPriority.findPriority
 import me.odinmain.features.impl.floor7.WitherDragonState
 import me.odinmain.features.impl.floor7.WitherDragons.priorityDragon
 import me.odinmain.features.impl.floor7.WitherDragonsEnum
+import me.odinmain.features.impl.nether.NoPre
 import me.odinmain.features.impl.render.DevPlayers.updateDevs
 import me.odinmain.utils.*
 import me.odinmain.utils.skyblock.*
@@ -103,7 +104,7 @@ val devCommand = commodore("oddev") {
             |currentDungeonPlayer: ${DungeonUtils.currentDungeonPlayer.name}, ${DungeonUtils.currentDungeonPlayer.clazz}, ${DungeonUtils.currentDungeonPlayer.isDead}, ${DungeonUtils.isGhost}
             |doorOpener: ${DungeonUtils.doorOpener}
             |currentRoom: ${DungeonUtils.currentRoom?.data?.name}, roomsPassed: ${DungeonUtils.passedRooms.map { it.data.name }}
-            |Teammates: ${DungeonUtils.dungeonTeammates.joinToString { "§${it.clazz.colorCode}${it.name} (${it.clazz})" }}
+            |Teammates: ${DungeonUtils.dungeonTeammates.joinToString { "§${it.clazz.colorCode}${it.name} (${it.clazz} [${it.clazzLvl}])" }}
             |TeammatesNoSelf: ${DungeonUtils.dungeonTeammatesNoSelf.map { it.name }}
             |LeapTeammates: ${DungeonUtils.leapTeammates.map { it.name }}
             |Blessings: ${Blessing.entries.joinToString { "${it.name}: ${it.current}" }}
@@ -115,22 +116,21 @@ val devCommand = commodore("oddev") {
         modMessage("currentarea: ${LocationUtils.currentArea}, isDungeon ${DungeonUtils.inDungeons}, inKuudra: ${KuudraUtils.inKuudra} kuudratier: ${LocationUtils.kuudraTier}, dungeonfloor: ${DungeonUtils.floorNumber}")
     }
 
-    literal("kuudrainfo") {
-        runs {
-            modMessage("""
-                ${getChatBreak()}
-                |inKuudra: ${KuudraUtils.inKuudra}
-                |kuudraTeammates: ${KuudraUtils.kuudraTeammates.joinToString { it.playerName }}
-                |giantZombies: ${KuudraUtils.giantZombies.joinToString { it.positionVector.toString() }}
-                |supplies: ${KuudraUtils.supplies.joinToString()}
-                |kuudraEntity: ${KuudraUtils.kuudraEntity}
-                |builders: ${KuudraUtils.playersBuildingAmount}
-                |build: ${KuudraUtils.buildDonePercentage}
-                |phase: ${KuudraUtils.phase}
-                |buildingPiles: ${KuudraUtils.buildingPiles.joinToString { it.positionVector.toString() }}
-                ${getChatBreak()}
-            """.trimIndent(), "")
-        }
+    literal("kuudrainfo").runs {
+        modMessage("""
+            ${getChatBreak()}
+            |inKuudra: ${KuudraUtils.inKuudra}, tier: ${LocationUtils.kuudraTier}, phase: ${KuudraUtils.phase}
+            |kuudraTeammates: ${KuudraUtils.kuudraTeammates.joinToString { it.playerName }}
+            |giantZombies: ${KuudraUtils.giantZombies.joinToString { it.positionVector.toString() }}
+            |supplies: ${KuudraUtils.supplies.joinToString()}
+            |kuudraEntity: ${KuudraUtils.kuudraEntity}
+            |builders: ${KuudraUtils.playersBuildingAmount}
+            |build: ${KuudraUtils.buildDonePercentage}
+            |buildingPiles: ${KuudraUtils.buildingPiles.joinToString { it.positionVector.toString() }}
+            |missing: ${NoPre.missing}
+            ${getChatBreak()}
+        """.trimIndent(), "")
+
     }
     literal("simulate").runs { str: GreedyString ->
         mc.thePlayer.addChatMessage(ChatComponentText(str.string))

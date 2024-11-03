@@ -21,6 +21,7 @@ import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import kotlin.math.ceil
 import kotlin.math.floor
+import kotlin.math.roundToLong
 
 object DungeonUtils {
 
@@ -81,17 +82,17 @@ object DungeonUtils {
     val currentRoomName: String
         get() = currentDungeon?.currentRoom?.data?.name ?: "Unknown"
 
-    val dungeonTeammates: List<DungeonPlayer>
-        get() = currentDungeon?.dungeonTeammates.orEmpty()
+    val dungeonTeammates: ArrayList<DungeonPlayer>
+        get() = currentDungeon?.dungeonTeammates ?: ArrayList()
 
-    val dungeonTeammatesNoSelf: List<DungeonPlayer>
-        get() = currentDungeon?.dungeonTeammatesNoSelf.orEmpty()
+    val dungeonTeammatesNoSelf: ArrayList<DungeonPlayer>
+        get() = currentDungeon?.dungeonTeammatesNoSelf ?: ArrayList()
 
-    val leapTeammates: List<DungeonPlayer>
-        get() = currentDungeon?.leapTeammates.orEmpty()
+    val leapTeammates: ArrayList<DungeonPlayer>
+        get() = currentDungeon?.leapTeammates ?: ArrayList()
 
     val currentDungeonPlayer: DungeonPlayer
-        get() = dungeonTeammates.find { it.name == mc.thePlayer?.name } ?: DungeonPlayer(mc.thePlayer?.name ?: "Unknown", DungeonClass.Unknown, entity = mc.thePlayer)
+        get() = dungeonTeammates.find { it.name == mc.thePlayer?.name } ?: DungeonPlayer(mc.thePlayer?.name ?: "Unknown", DungeonClass.Unknown, 0, entity = mc.thePlayer)
 
     val doorOpener: String
         get() = currentDungeon?.dungeonStats?.doorOpener ?: "Unknown"
@@ -163,6 +164,20 @@ object DungeonUtils {
         }
     }
 
+    fun getMageCooldownMultiplier(): Double {
+        return if (currentDungeonPlayer.clazz != DungeonClass.Mage) 1.0
+        else 1 - 0.25 - (floor(currentDungeonPlayer.clazzLvl / 2.0) / 100) * if (dungeonTeammates.count { it.clazz == DungeonClass.Mage } == 1) 2 else 1
+    }
+
+    /**
+     * Gets the new ability cooldown after mage cooldown reductions.
+     * @param baseSeconds The base cooldown of the ability in seconds. Eg 10
+     * @return The new time
+     */
+    fun getAbilityCooldown(baseSeconds: Long): Long {
+        return (baseSeconds * getMageCooldownMultiplier()).roundToLong()
+    }
+
     @SubscribeEvent
     fun onPacket(event: PacketReceivedEvent) {
         if (inDungeons) currentDungeon?.onPacket(event)
@@ -210,16 +225,16 @@ object DungeonUtils {
     fun getDungeonTeammates(previousTeammates: ArrayList<DungeonPlayer>, tabList: List<S38PacketPlayerListItem.AddPlayerData>): ArrayList<DungeonPlayer> {
         for (line in tabList) {
             val displayName = line.displayName?.unformattedText?.noControlCodes ?: continue
-            val (_, name, clazz, _) = tablistRegex.find(displayName)?.destructured ?: continue
+            val (_, name, clazz, clazzLevel) = tablistRegex.find(displayName)?.destructured ?: continue
 
             previousTeammates.find { it.name == name }?.let { player -> player.isDead = clazz == "DEAD" } ?:
-            previousTeammates.add(DungeonPlayer(name, DungeonClass.entries.find { it.name == clazz } ?: continue, mc.netHandler?.getPlayerInfo(name)?.locationSkin ?: continue, mc.theWorld?.getPlayerEntityByName(name), false))
+            previousTeammates.add(DungeonPlayer(name, DungeonClass.entries.find { it.name == clazz } ?: continue, clazzLvl = romanToInt(clazzLevel), mc.netHandler?.getPlayerInfo(name)?.locationSkin ?: continue, mc.theWorld?.getPlayerEntityByName(name), false))
         }
         return previousTeammates
     }
 
-    const val WITHER_ESSENCE_ID = "26bb1a8d-7c66-31c6-82d5-a9c04c94fb02"
-    private const val REDSTONE_KEY = "edb0155f-379c-395a-9c7d-1b6005987ac8"
+    const val WITHER_ESSENCE_ID = "e0f3e929-869e-3dca-9504-54c666ee6f23"
+    private const val REDSTONE_KEY = "fed95410-aba1-39df-9b95-1d4f361eb66e"
 
     /**
      * Determines whether a given block state and position represent a secret location.

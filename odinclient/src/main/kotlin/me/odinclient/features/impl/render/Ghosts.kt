@@ -4,11 +4,13 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.utils.addVec
+import me.odinmain.utils.getSBMaxHealth
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.RenderUtils.renderVec
 import me.odinmain.utils.render.Renderer
-import net.minecraft.entity.SharedMonsterAttributes
 import net.minecraft.entity.monster.EntityCreeper
+import net.minecraftforge.client.event.RenderWorldLastEvent
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object Ghosts : Module(
     name = "Ghosts",
@@ -19,34 +21,42 @@ object Ghosts : Module(
     private var showGhosts by BooleanSetting(name = "Hide Ghosts", description = "Hide ghosts.")
     private var hideChargedLayer by BooleanSetting(name = "Hide Charged Layer", description = "Hide the charged layer of the ghost.")
 
+    private var creeperList = mutableSetOf<EntityCreeper>()
+
     init {
         execute(500) {
-            mc.theWorld?.loadedEntityList?.forEach { entity ->
-                if (entity !is EntityCreeper || entity.getEntityAttribute(SharedMonsterAttributes.maxHealth).baseValue < 1000000) return@forEach
-                entity.isInvisible = showGhosts
-                entity.dataWatcher.updateObject(17, (if (hideChargedLayer) 0 else 1).toByte())
-
-                if (showGhostNametag) drawGhostNameTag(entity)
+            creeperList.clear()
+             mc.theWorld?.loadedEntityList?.forEach { entity ->
+                 if (entity !is EntityCreeper || entity.getSBMaxHealth() < 1000000) return@forEach
+                 entity.isInvisible = showGhosts
+                 entity.dataWatcher.updateObject(17, (if (hideChargedLayer) 0 else 1).toByte())
+                 creeperList.add(entity)
             }
         }
     }
 
+    @SubscribeEvent
+    fun onRenderWorldLast(event: RenderWorldLastEvent) {
+        creeperList.forEach { entity ->
+            if (entity.isDead) return@forEach
+            if (showGhostNametag) drawGhostNameTag(entity)
+        }
+    }
+
     private fun drawGhostNameTag(creeper: EntityCreeper) {
-        val currentHealth = creeper.health
-        val maxHealth = creeper.getEntityAttribute(SharedMonsterAttributes.maxHealth).baseValue
-        val isRunic = maxHealth == 4000000.0
+        val isRunic = creeper.getSBMaxHealth() == 4000000f
         val bracketsColor = if (isRunic) "&5" else "&8"
         val lvlColor = if (isRunic) "&d" else "&7"
         val nameColor = if (isRunic) "&5" else "&c"
-        val currentHealthColor = if (isRunic) "&d" else if (currentHealth < maxHealth / 2) "&e" else "&a"
+        val currentHealthColor = if (isRunic) "&d" else if (creeper.health < creeper.getSBMaxHealth() / 2) "&e" else "&a"
         val maxHealthColor = if (isRunic) "&5" else "&a"
-        val name = "${bracketsColor}[${lvlColor}Lv250${bracketsColor}] ${nameColor + if (isRunic) "Runic " else ""}Ghost ${currentHealthColor + transformToSuffixedNumber(currentHealth.toDouble()) + "&f"}/${maxHealthColor + transformToSuffixedNumber(maxHealth) + "&c" + "❤"}".replace("&", "§")
+        val name = "${bracketsColor}[${lvlColor}Lv250${bracketsColor}] ${nameColor + if (isRunic) "Runic " else ""}Ghost ${currentHealthColor + transformToSuffixedNumber(creeper.health) + "&f"}/${maxHealthColor + transformToSuffixedNumber(creeper.getSBMaxHealth()) + "&c" + "❤"}".replace("&", "§")
 
         Renderer.drawStringInWorld(name, creeper.renderVec.addVec(y = creeper.height + 0.5), Color.WHITE, depth = false)
     }
 
-    private fun transformToSuffixedNumber(number: Double): String {
-        val result: String = if (number >= 1000000) {
+    private fun transformToSuffixedNumber(number: Float): String {
+        val result = if (number >= 1000000) {
             val short = (number / 1000000).toString()
             val shortSplit = short.split(".")
             if (shortSplit[1] != "0") short else shortSplit[0] + "M"

@@ -24,7 +24,7 @@ object LocationUtils {
     var kuudraTier: Int = 0
 
     init {
-        Executor(500) {
+        Executor(500, "LocationUtils") {
             if (!inSkyblock)
                 inSkyblock = onHypixel && mc.theWorld?.scoreboard?.getObjectiveInDisplaySlot(1)?.let { cleanSB(it.displayName).contains("SKYBLOCK") } == true
 
@@ -48,6 +48,7 @@ object LocationUtils {
         onHypixel = false
         inSkyblock = false
         currentArea = Island.Unknown
+        kuudraTier = 0
         SkyblockJoinIslandEvent(currentArea).postAndCatch()
         currentDungeon = null
     }
@@ -56,6 +57,7 @@ object LocationUtils {
     fun onWorldChange(event: WorldEvent.Unload) {
         currentDungeon = null
         inSkyblock = false
+        kuudraTier = 0
         currentArea = Island.Unknown
     }
 
@@ -94,8 +96,7 @@ object LocationUtils {
     fun getFloor(): Floor? {
         if (currentArea.isArea(Island.SinglePlayer)) return Floor.E
         for (i in sidebarLines) {
-            val floor = Regex("The Catacombs \\((\\w+)\\)\$").find(cleanSB(i))?.groupValues?.get(1) ?: continue
-            return Floor.valueOf(floor)
+            return Floor.valueOf(Regex("The Catacombs \\((\\w+)\\)\$").find(cleanSB(i))?.groupValues?.get(1) ?: continue)
         }
         return null
     }

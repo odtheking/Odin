@@ -56,36 +56,25 @@ inline val heldItem: ItemStack?
  * Returns if an item has an ability
  */
 val ItemStack?.hasAbility: Boolean
-    get() {
-        val lore = this?.lore
-        lore?.forEach{
-            if (it.contains("Ability:") && it.endsWith("RIGHT CLICK")) return true
-        }
-        return false
-    }
+     get() = this?.lore?.any { it.contains("Ability:") && it.endsWith("RIGHT CLICK") } == true
+
  /**
  * Returns if an item is a shortbow
  */
 val ItemStack?.isShortbow: Boolean
-    get() {
-        return this?.lore?.any { it.contains("Shortbow: Instantly shoots!") } == true
-    }
+    get() =this?.lore?.any { it.contains("Shortbow: Instantly shoots!") } == true
 
 /**
  * Returns if an item is a fishing rod
  */
 val ItemStack?.isFishingRod: Boolean
-    get() {
-        return this?.lore?.any { it.contains("FISHING ROD") } == true
-    }
+    get() = this?.lore?.any { it.contains("FISHING ROD") } == true
 
 /**
  * Returns if an item is Spirit leaps or an Infinileap
  */
 val ItemStack?.isLeap: Boolean
-    get() {
-        return this?.skyblockID?.equalsOneOf("INFINITE_SPIRIT_LEAP", "SPIRIT_LEAP") == true
-    }
+    get() = this?.skyblockID?.equalsOneOf("INFINITE_SPIRIT_LEAP", "SPIRIT_LEAP") == true
 
 val EntityPlayerSP.usingEtherWarp: Boolean
     get() {
@@ -100,8 +89,8 @@ val EntityPlayerSP.usingEtherWarp: Boolean
 fun isHolding(id: String): Boolean =
     mc.thePlayer?.heldItem?.skyblockID == id
 
-fun EntityPlayerSP.isHolding(id: String): Boolean =
-    this.heldItem?.skyblockID == id
+fun EntityPlayerSP?.isHolding(id: String): Boolean =
+    this?.heldItem?.skyblockID == id
 
 /**
  * Returns first slot of an Item
@@ -177,16 +166,7 @@ fun getRarity(lore: List<String>): ItemRarity? {
     return null
 }
 
-fun getSkullValue(entity: Entity?): String? {
-    return entity?.inventory
-        ?.get(4)
-        ?.tagCompound
-        ?.getCompoundTag("SkullOwner")
-        ?.getCompoundTag("Properties")
-        ?.getTagList("textures", Constants.NBT.TAG_COMPOUND)
-        ?.getCompoundTagAt(0)
-        ?.getString("Value")
-}
+fun getSkullValue(entity: Entity?): String? = entity?.inventory?.get(4)?.skullTexture
 
 fun ItemStack.setLore(lines: List<String>): ItemStack {
     setTagInfo("display", getSubCompound("display", true).apply {
@@ -205,9 +185,7 @@ val strengthRegex = Regex("Strength: \\+(\\d+)")
 val ItemStack?.getSBStrength: Int
     get() {
         return this?.lore?.firstOrNull { it.noControlCodes.startsWith("Strength:") }
-            ?.let { loreLine ->
-                strengthRegex.find(loreLine.noControlCodes)?.groups?.get(1)?.value?.toIntOrNull()
-            } ?: 0
+            ?.let { loreLine -> strengthRegex.find(loreLine.noControlCodes)?.groups?.get(1)?.value?.toIntOrNull() } ?: 0
     }
 
 fun ItemStack.setLoreWidth(lines: List<String>, width: Int): ItemStack {
@@ -246,4 +224,13 @@ fun ItemStack.drawItem(x: Float = 0f, y: Float = 0f, scale: Float = 1f, z: Float
     mc.renderItem.renderItemIntoGUI(this, 0, 0)
     RenderHelper.disableStandardItemLighting()
     GlStateManager.popMatrix()
+}
+
+val ItemStack.skullTexture: String? get() {
+    return this.tagCompound
+        ?.getCompoundTag("SkullOwner")
+        ?.getCompoundTag("Properties")
+        ?.getTagList("textures", Constants.NBT.TAG_COMPOUND)
+        ?.getCompoundTagAt(0)
+        ?.getString("Value")
 }

@@ -23,7 +23,7 @@ object RagAxe : Module(
     private val announceStrengthGained by BooleanSetting("Send to party", false, description = "Sends party message of strength gained after casting").withDependency { strengthGainedMessage }
 
     init {
-        onMessage(Regex("Ragnarock was cancelled due to (?:being hit|taking damage)!"),) {
+        onMessage(Regex("Ragnarock was cancelled due to (?:being hit|taking damage)!")) {
             if (alertCancelled) PlayerUtils.alert("§cRag Axe Cancelled")
         }
 

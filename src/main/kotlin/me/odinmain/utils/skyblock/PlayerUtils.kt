@@ -88,7 +88,7 @@ object PlayerUtils {
 
     init {
         // Used to clear the click queue every 500ms, to make sure it isn't getting filled up.
-        Executor(delay = 500) { windowClickQueue.clear() }.register()
+        Executor(delay = 500, "Click Dispatcher") { windowClickQueue.clear() }.register()
     }
 
     fun windowClick(slotId: Int, button: Int, mode: Int, instant: Boolean = false) {

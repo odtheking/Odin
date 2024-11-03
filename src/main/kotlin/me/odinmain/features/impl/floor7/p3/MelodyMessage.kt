@@ -9,6 +9,7 @@ import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.StringSetting
 import me.odinmain.utils.name
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.skyblock.dungeon.M7Phases
 import me.odinmain.utils.skyblock.partyMessage
 import net.minecraft.inventory.ContainerChest
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -26,16 +27,17 @@ object MelodyMessage : Module(
 
     @SubscribeEvent
     fun onGuiLoad(event: TerminalOpenedEvent) {
-        if (!DungeonUtils.inBoss || !DungeonUtils.isFloor(7) || event.type != TerminalTypes.MELODY || mc.currentScreen is TermSimGui) return
+        if (DungeonUtils.getF7Phase() != M7Phases.P3 || event.type != TerminalTypes.MELODY || mc.currentScreen is TermSimGui) return
         if (sendMelodyMessage) partyMessage(melodyMessage)
 
         claySlots = hashMapOf(25 to "Melody terminal is at 25%", 34 to "Melody terminal is at 50%", 43 to "Melody terminal is at 75%")
     }
 
     init {
-        execute(50){
+        execute(250) {
+            if (DungeonUtils.getF7Phase() != M7Phases.P3 || TerminalSolver.currentTerm.type != TerminalTypes.MELODY || mc.currentScreen is TermSimGui) return@execute
+
             val containerChest = mc.thePlayer.openContainer as? ContainerChest ?: return@execute
-            if (mc.currentScreen is TermSimGui) return@execute
             if (containerChest.name != "Click the button on time!" || !melodyProgress) return@execute
 
             val greenClayIndices = claySlots.keys.filter { index -> containerChest.getSlot(index)?.stack?.metadata == 5 }.ifEmpty { return@execute }

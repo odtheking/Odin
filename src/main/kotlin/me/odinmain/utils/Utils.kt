@@ -11,6 +11,8 @@ import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.skyblock.*
 import net.minecraft.entity.Entity
+import net.minecraft.entity.EntityLivingBase
+import net.minecraft.entity.SharedMonsterAttributes
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.event.ClickEvent
 import net.minecraft.event.HoverEvent
@@ -183,12 +185,12 @@ fun Event.postAndCatch(): Boolean {
  * @param ticks The number of ticks to wait.
  * @param func The function to execute after the specified number of
  */
-fun runIn(ticks: Int, func: () -> Unit) {
+fun runIn(ticks: Int, server: Boolean = false, func: () -> Unit) {
     if (ticks <= 0) {
         func()
         return
     }
-    ModuleManager.tickTasks.add(ModuleManager.TickTask(ticks, func))
+    ModuleManager.tickTasks.add(ModuleManager.TickTask(ticks, server, func))
 }
 
 /**
@@ -323,13 +325,16 @@ fun writeToClipboard(text: String) {
 
 private val romanMap = mapOf('I' to 1, 'V' to 5, 'X' to 10, 'L' to 50, 'C' to 100, 'D' to 500, 'M' to 1000)
 fun romanToInt(s: String): Int {
-    var result = 0
-    for (i in 0 until s.length - 1) {
-        val current = romanMap[s[i]] ?: 0
-        val next = romanMap[s[i + 1]] ?: 0
-        result += if (current < next) -current else current
+    return if (s.matches(Regex("^[0-9]+$"))) s.toInt()
+    else {
+        var result = 0
+        for (i in 0 until s.length - 1) {
+            val current = romanMap[s[i]] ?: 0
+            val next = romanMap[s[i + 1]] ?: 0
+            result += if (current < next) -current else current
+        }
+        result + (romanMap[s.last()] ?: 0)
     }
-    return result + (romanMap[s.last()] ?: 0)
 }
 
 fun fillItemFromSack(amount: Int, itemId: String, sackName: String, sendMessage: Boolean) {
@@ -353,4 +358,8 @@ fun runOnMCThread(run: () -> Unit) {
 
 fun EntityPlayer?.isOtherPlayer(): Boolean {
     return this != null && this != mc.thePlayer && this.uniqueID.version() != 2
+}
+
+fun EntityLivingBase?.getSBMaxHealth(): Float {
+    return this?.getEntityAttribute(SharedMonsterAttributes.maxHealth)?.baseValue?.toFloat() ?: 0f
 }

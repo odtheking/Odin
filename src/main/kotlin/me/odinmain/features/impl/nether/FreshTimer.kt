@@ -35,7 +35,7 @@ object FreshTimer : Module(
     }
 
     init {
-        onMessage("Your Fresh Tools Perk bonus doubles your building speed for the next 10 seconds!", false) {
+        onMessage(Regex("Your Fresh Tools Perk bonus doubles your building speed for the next 10 seconds!")) {
             val teammate = KuudraUtils.kuudraTeammates.find { it.playerName == mc.thePlayer.name } ?: return@onMessage
             teammate.eatFresh = true
             teammate.eatFreshTime = System.currentTimeMillis()

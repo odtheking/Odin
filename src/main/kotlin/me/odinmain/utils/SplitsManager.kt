@@ -14,7 +14,7 @@ object SplitsManager {
 
     var currentSplits: SplitsGroup = SplitsGroup(emptyList(), null)
 
-    @SubscribeEvent
+    @SubscribeEvent(receiveCanceled = true)
     fun onChatPacket(event: ChatPacketEvent) {
         val currentSplit = currentSplits.splits.find { it.regex.matches(event.message) } ?: return
         if (currentSplit.time != 0L) return
@@ -36,7 +36,7 @@ object SplitsManager {
         } else currentSplits.personalBest?.time(index - 1, currentSplitTime, "s§7!", "§6${currentSplits.splits[index - 1].name} §7took §6", addPBString = true, addOldPBString = true, alwaysSendPB = true, sendOnlyPB = Splits.sendOnlyPB, sendMessage = Splits.enabled)
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(receiveCanceled = true)
     fun onChat(event: ChatPacketEvent) {
         if (event.message != "Starting in 3 seconds.") return
 
@@ -91,7 +91,7 @@ object SplitsManager {
     }
 }
 
-private val kuudraT5PBs = PersonalBest("KuudraT5", 6)
+private val kuudraT5PBs = PersonalBest("KuudraT5", 7)
 private val kuudraT4PBs = PersonalBest("KuudraT4", 5)
 private val kuudraT3PBs = PersonalBest("KuudraT3", 5)
 private val kuudraT2PBs = PersonalBest("KuudraT2", 5)
@@ -102,7 +102,8 @@ val kuudraT5SplitsGroup = mutableListOf(
     Split(Regex("^\\[NPC] Elle: OMG! Great work collecting my supplies!$"), "§bBuild"),
     Split(Regex("^\\[NPC] Elle: Phew! The Ballista is finally ready! It should be strong enough to tank Kuudra's blows now!$"), "§dEaten"),
     Split(Regex("^(?!Elle has been eaten by Kuudra!\$)(.{1,16}) has been eaten by Kuudra!$"), "§cStun"),
-    Split(Regex("^(.{1,16}) destroyed one of Kuudra's pods!\$"), "§4Cleared"),
+    Split(Regex("^(.{1,16}) destroyed one of Kuudra's pods!\$"), "§4DPS"),
+    Split(Regex("^\\[NPC] Elle: POW! SURELY THAT'S IT! I don't think he has any more in him!\$"), "§4Cleared"),
     Split(Regex("^\\[NPC] Elle: Good job everyone. A hard fought battle come to an end. Let's get out of here before we run into any more trouble!$"), "Total"))
 
 val kuudraSplitsGroup = mutableListOf(

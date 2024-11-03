@@ -52,11 +52,10 @@ object DungeonWaypoints : Module(
     tag = TagType.NEW
 ) {
     private var allowEdits by BooleanSetting("Allow Edits", false, description = "Allows you to edit waypoints.")
-    private var allowMidair by BooleanSetting("Allow Midair", default = false, description = "Allows waypoints to be placed midair if they reach the end of distance without hitting a block.").withDependency { allowEdits}
+    private var allowMidair by BooleanSetting("Allow Midair", default = false, description = "Allows waypoints to be placed midair if they reach the end of distance without hitting a block.").withDependency { allowEdits }
     private var reachColor by ColorSetting("Reach Color", default = Color(0, 255, 213, 0.43f), description = "Color of the reach box highlight.", allowAlpha = true).withDependency { allowEdits }
     private val allowTextEdit by BooleanSetting("Allow Text Edit", true, description = "Allows you to set the text of a waypoint while sneaking.")
 
-    var editText by BooleanSetting("Edit Text", false, description = "Displays text under your crosshair telling you when you are editing waypoints.")
     private val renderTitle by BooleanSetting("Render Title", true, description = "Renders the title of the waypoint.")
     private val disableDepth by BooleanSetting("Global Depth", false, description = "Disables depth testing for all waypoints.")
 
@@ -145,7 +144,7 @@ object DungeonWaypoints : Module(
     init {
         onWorldLoad { resetSecrets() }
 
-        onMessage("That chest is locked!", true) {
+        onMessage(Regex("That chest is locked!")) {
             onLocked()
         }
 
@@ -194,7 +193,6 @@ object DungeonWaypoints : Module(
         }
         endProfile()
 
-
         reachPosition?.takeIf { allowEdits }?.let {
             if (useBlockSize) Renderer.drawStyledBlock(it, reachColor, style = if (filled) 0 else 1, 1, !throughWalls)
             else Renderer.drawStyledBox(AxisAlignedBB(it.x + 0.5, it.y + .5, it.z + .5, it.x + .5, it.y + .5, it.z + .5).outlineBounds(), reachColor, style = if (filled) 0 else 1, 1, !throughWalls)
@@ -203,7 +201,7 @@ object DungeonWaypoints : Module(
 
     @SubscribeEvent
     fun onRenderOverlay(event: RenderGameOverlayEvent.Post) {
-        if (mc.currentScreen != null || event.type != RenderGameOverlayEvent.ElementType.ALL || !allowEdits || !editText) return
+        if (mc.currentScreen != null || event.type != RenderGameOverlayEvent.ElementType.ALL || !allowEdits) return
         val sr = ScaledResolution(mc)
         val pos = reachPosition
         val (text, editText) = pos?.add(offset)?.let {
@@ -211,9 +209,8 @@ object DungeonWaypoints : Module(
             val vec = room.getRelativeCoords(it.add(offset).toVec3())
             val waypoint = getWaypoints(room).find { it.toVec3().equal(vec) }
 
-            val text = waypoint?.let {"§fType: §5${waypoint.type?.displayName ?: "None"}${waypoint.timer?.let { "§7, §fTimer: §a${it.displayName}" } ?: ""}" }
+            val text = waypoint?.let {"§fType: §5${waypoint.type?.displayName ?: "None"}${waypoint.timer?.let { "§7, §fTimer: §a${it.displayName}" } ?: ""}, §r#${waypoint.color.hex}§7" }
                 ?: "§fType: §5${WaypointType.getByInt(waypointType)?.displayName ?: "None"}§7, §r#${selectedColor.hex}§7, ${if (filled) "§2Filled" else "§3Outline"}§7, ${if (throughWalls) "§cThrough Walls§7, " else ""}${if (useBlockSize) "§2Block Size" else "§3Size: $size"}${TimerType.getType()?.let { "§7, §fTimer: §a${it.displayName}" } ?: ""}"
-
 
             text to "§fEditing Waypoints §8|§f ${waypoint?.let { "Viewing" } ?: "Placing"}"
         } ?: ("" to "Editing Waypoints")
@@ -226,7 +223,7 @@ object DungeonWaypoints : Module(
 
     @SubscribeEvent
     fun onMouseInput(event: MouseEvent) {
-        if (!allowEdits || event.dwheel.sign == 0) return
+        if (!allowEdits || event.dwheel.sign == 0 || DungeonUtils.currentFullRoom == null) return
         distance = (distance + event.dwheel.sign).coerceIn(0.0, 100.0)
         event.isCanceled = true
     }

@@ -142,7 +142,7 @@ object PuzzleSolvers : Module(
     @SubscribeEvent
     fun onWorldRender(event: RenderWorldLastEvent) {
         if (!inDungeons || inBoss) return
-        profile("Puzzle Solvers") {
+        profile("Puzzle Solvers Render") {
             if (waterSolver) WaterSolver.waterRender()
             if (tpMaze) TPMazeSolver.tpRender()
             if (iceFillSolver) IceFillSolver.onRenderWorld(iceFillColor)

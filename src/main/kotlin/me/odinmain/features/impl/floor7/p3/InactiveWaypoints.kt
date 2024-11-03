@@ -30,23 +30,21 @@ object InactiveWaypoints : Module(
     private val lineWidth by NumberSetting("Line Width", 2f, 0.1f, 10f, 0.1f, description = "The width of the box's lines.")
     private val depthCheck by BooleanSetting("Depth check", false, description = "Boxes show through walls.")
 
-    private var inactiveList = listOf<Entity>()
+    private var inactiveList = setOf<Entity>()
 
     init {
         execute(500) {
             if (DungeonUtils.getF7Phase() != M7Phases.P3) return@execute
             inactiveList = mc.theWorld?.loadedEntityList?.filter {
-                it is EntityArmorStand && it.name.noControlCodes.containsOneOf("Inactive", "Not Activated", "CLICK HERE", ignoreCase = true) }.orEmpty()
+                it is EntityArmorStand && it.name.noControlCodes.containsOneOf("Inactive", "Not Activated", "CLICK HERE", ignoreCase = true) }?.toSet().orEmpty()
         }
 
-        onWorldLoad {
-            inactiveList = emptyList()
-        }
+        onWorldLoad { inactiveList = emptySet() }
     }
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-        if (inactiveList.isEmpty()) return
+        if (inactiveList.isEmpty() || DungeonUtils.getF7Phase() != M7Phases.P3) return
         profile("Inactive Waypoints") {
             inactiveList.forEach {
                 var name = it.name.noControlCodes

@@ -1,6 +1,5 @@
 package me.odinmain.ui.waypoint.elements
 
-import me.odinmain.features.impl.render.WaypointManager
 import me.odinmain.features.impl.render.WaypointManager.Waypoint
 import me.odinmain.font.OdinFont
 import me.odinmain.ui.clickgui.animations.impl.ColorAnimation
@@ -47,7 +46,7 @@ class WaypointElement(val waypoint: Waypoint) {
                 waypoint.shouldShow = !waypoint.shouldShow
                 return true
             } else if (mouseHandler.isAreaHovered(442f, y + 6, 18f, 18f)) {
-                WaypointManager.removeWaypoint(waypoint)
+              //  WaypointManager.removeWaypoint(waypoint)
                 WaypointGUI.list.remove(this)
 
                 return true

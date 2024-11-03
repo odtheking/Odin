@@ -15,11 +15,10 @@ import me.odinmain.features.settings.impl.KeybindSetting
 import me.odinmain.ui.hud.EditHUDGui
 import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.capitalizeFirst
-import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.profile
 import me.odinmain.utils.render.getTextWidth
 import net.minecraft.network.Packet
-import net.minecraftforge.client.event.RenderWorldLastEvent
+import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
@@ -37,14 +36,13 @@ object ModuleManager {
 
     data class MessageFunction(val filter: Regex, val shouldRun: () -> Boolean, val function: (String) -> Unit)
 
-    data class TickTask(var ticksLeft: Int, val function: () -> Unit)
+    data class TickTask(var ticksLeft: Int, val server: Boolean, val function: () -> Unit)
 
     val packetFunctions = mutableListOf<PacketFunction<Packet<*>>>()
     val messageFunctions = mutableListOf<MessageFunction>()
     val worldLoadFunctions = mutableListOf<() -> Unit>()
     val tickTasks = mutableListOf<TickTask>()
     val huds = arrayListOf<HudElement>()
-    val executors = ArrayList<Pair<Module, Executor>>()
 
     val modules: ArrayList<Module> = arrayListOf(
         // dungeon
@@ -63,12 +61,12 @@ object ModuleManager {
 
         //skyblock
         NoCursorReset, AutoSprint, BlazeAttunement, ChatCommands, DeployableTimer, DianaHelper, ArrowHit,
-        RagAxe, MobSpawn, Splits, WardrobeKeybinds, InvincibilityTimer, EnrageDisplay, ItemsHighlight,
-        PlayerDisplay, FarmKeys, PetKeybinds, CommandKeybinds, SpringBoots,
+        RagAxe, MobSpawn, Splits, WardrobeKeybinds, InvincibilityTimer, ItemsHighlight, PlayerDisplay,
+        FarmKeys, PetKeybinds, CommandKeybinds, SpringBoots, AbilityTimers,
 
         // kuudra
         BuildHelper, FreshTimer, KuudraDisplay, NoPre, PearlWaypoints, RemovePerks, SupplyHelper, TeamHighlight,
-        VanqNotifier, KuudraReminders, KuudraRequeue, TacTimer,
+        VanqNotifier, KuudraReminders, KuudraRequeue,
     )
 
     init {
@@ -86,10 +84,20 @@ object ModuleManager {
         }
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(receiveCanceled = true)
     fun onTick(event: TickEvent.ClientTickEvent) {
         if (event.phase != TickEvent.Phase.START) return
+        tickTaskTick()
+    }
+
+    @SubscribeEvent(receiveCanceled = true)
+    fun onServerTick(event: RealServerTick) {
+        tickTaskTick(true)
+    }
+
+    private fun tickTaskTick(server: Boolean = false) {
         tickTasks.removeAll {
+            if (it.server != server) return@removeAll false
             if (it.ticksLeft <= 0) {
                 it.function()
                 return@removeAll true
@@ -99,21 +107,21 @@ object ModuleManager {
         }
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(receiveCanceled = true)
     fun onReceivePacket(event: PacketReceivedEvent) {
         packetFunctions.forEach {
             if (it.type.isInstance(event.packet) && it.shouldRun.invoke()) it.function(event.packet)
         }
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(receiveCanceled = true)
     fun onSendPacket(event: PacketSentEvent) {
         packetFunctions.forEach {
             if (it.type.isInstance(event.packet) && it.shouldRun.invoke()) it.function(event.packet)
         }
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(receiveCanceled = true)
     fun onChatPacket(event: ChatPacketEvent) {
         messageFunctions.forEach {
             if (event.message matches it.filter && it.shouldRun()) it.function(event.message)
@@ -149,24 +157,12 @@ object ModuleManager {
     }
 
     @SubscribeEvent
-    fun onRenderOverlay(event: RenderOverlayNoCaching) {
-        if ((mc.currentScreen != null && !hudChat) || mc.currentScreen == EditHUDGui) return
+    fun onRenderOverlay(event: RenderGameOverlayEvent.Post) {
+        if ((mc.currentScreen != null && !hudChat) || event.type != RenderGameOverlayEvent.ElementType.ALL || mc.currentScreen == EditHUDGui) return
 
-        mc.mcProfiler.startSection("Odin Hud")
-
-        for (i in 0 until huds.size) {
-            huds[i].draw(false)
-        }
-
-        mc.mcProfiler.endSection()
-    }
-
-    @SubscribeEvent
-    fun onRenderWorld(event: RenderWorldLastEvent) {
-        profile("Executors") {
-            executors.removeAll {
-                if (!it.first.enabled && !it.first.alwaysActive) return@removeAll false // pls test i cba
-                it.second.run()
+        profile("Odin Hud") {
+            for (i in 0 until huds.size) {
+                huds[i].draw(false)
             }
         }
     }

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+    <!-- Filter out Hypixel scoreboard and sound errors -->
+    <RegexFilter regex="Error executing task.*|Unable to play unknown soundEvent.*" onMatch="DENY" onMismatch="NEUTRAL"/>
+
+    <!-- Filter out any 'Unable to determine registrant mod' errors related to 'me.odin' -->
+    <RegexFilter regex="Unable to determine registrant mod for me\.odin.*" onMatch="DENY" onMismatch="NEUTRAL"/>
+
+    <Loggers>
+        <!-- Set the logger level for FML to WARN to hide INFO and ERROR messages -->
+        <Logger level="WARN" name="FML"/>
+        <!-- Preserve logging for net.minecraft.util.MessageDeserializer -->
+        <Logger level="INFO" name="net.minecraft.util.MessageDeserializer"/>
+    </Loggers>
+</Configuration>

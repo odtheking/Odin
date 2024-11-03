@@ -2,6 +2,7 @@ package me.odinmain.events
 
 import kotlinx.coroutines.*
 import me.odinmain.OdinMain.mc
+import me.odinmain.OdinMain.scope
 import me.odinmain.events.impl.*
 import me.odinmain.utils.*
 import me.odinmain.utils.clock.Clock
@@ -72,7 +73,7 @@ object EventDispatcher {
      */
     @OptIn(DelicateCoroutinesApi::class)
     @SubscribeEvent
-    fun onGuiOpen(event: GuiOpenEvent) = GlobalScope.launch {
+    fun onGuiOpen(event: GuiOpenEvent) = scope.launch {
         if (event.gui !is GuiChest) return@launch
         val container = (event.gui as GuiChest).inventorySlots
 

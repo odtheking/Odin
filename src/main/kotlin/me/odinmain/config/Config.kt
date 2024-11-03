@@ -28,20 +28,20 @@ object Config {
 
     fun load() {
         try {
-            val json = configFile.bufferedReader().use { it.readText() }
-            if (json == "") return
+            with (configFile.bufferedReader().use { it.readText() }) {
+                if (isEmpty()) return
 
-            val jsonArray = parser.parse(json).asJsonArray ?: return
-            for (modules in jsonArray) {
+                val jsonArray = parser.parse(this).asJsonArray ?: return
+                for (modules in jsonArray) {
+                    val moduleObj = modules?.asJsonObject ?: continue
+                    val module = ModuleManager.getModuleByName(moduleObj.get("name").asString) ?: continue
+                    if (moduleObj.get("enabled").asBoolean != module.enabled) module.toggle()
 
-                val moduleObj = modules?.asJsonObject ?: continue
-                val module = ModuleManager.getModuleByName(moduleObj.get("name").asString) ?: continue
-                if (moduleObj.get("enabled").asBoolean != module.enabled) module.toggle()
-
-                for (j in moduleObj.get("settings").asJsonArray) {
-                    val settingObj = j?.asJsonObject?.entrySet() ?: continue
-                    val setting = module.getSettingByName(settingObj.firstOrNull()?.key) ?: continue
-                    if (setting is Saving) setting.read(settingObj.first().value)
+                    for (j in moduleObj.get("settings").asJsonArray) {
+                        val settingObj = j?.asJsonObject?.entrySet() ?: continue
+                        val setting = module.getSettingByName(settingObj.firstOrNull()?.key) ?: continue
+                        if (setting is Saving) setting.read(settingObj.first().value)
+                    }
                 }
             }
         } catch (e: Exception) {
