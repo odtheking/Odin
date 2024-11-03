@@ -223,7 +223,7 @@ object DungeonWaypoints : Module(
 
     @SubscribeEvent
     fun onMouseInput(event: MouseEvent) {
-        if (!allowEdits || event.dwheel.sign == 0 || DungeonUtils.currentFullRoom == null) return
+        if (!allowEdits || event.dwheel.sign == 0 || DungeonUtils.currentRoom == null) return
         distance = (distance + event.dwheel.sign).coerceIn(0.0, 100.0)
         event.isCanceled = true
     }
