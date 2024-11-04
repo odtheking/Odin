@@ -85,7 +85,7 @@ val dungeonWaypointsCommand = commodore("dwp", "dungeonwaypoints") {
     literal("export").runs {
         scope.launch {
             writeToClipboard(encodeWaypoints() ?: return@launch modMessage("Failed to write waypoint config to clipboard."))
-            modMessage("Wrote waypoint config to clipboard")
+            modMessage("Wrote waypoint config to clipboard.")
         }
     }
 
