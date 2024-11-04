@@ -8,8 +8,8 @@ import java.util.Locale
 object DragonTimer {
 
     fun renderTime() {
-        WitherDragonsEnum.entries.forEachIndexed { index, dragon ->
-            if (dragon.state != WitherDragonState.SPAWNING) return@forEachIndexed
+        WitherDragonsEnum.entries.forEach { dragon ->
+            if (dragon.state != WitherDragonState.SPAWNING) return@forEach
 
             Renderer.drawStringInWorld(
                 "§${dragon.colorCode}${dragon.name.first()}: ${colorDragonTimer(dragon.timeToSpawn)}${String.format(Locale.US, "%.2f", dragon.timeToSpawn / 20.0)}${if (addUselessDecimal) "0" else ""}", dragon.spawnPos,

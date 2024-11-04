@@ -1,11 +1,21 @@
 package me.odinmain.commands.impl
 
+import kotlinx.coroutines.launch
+import me.odinmain.OdinMain.scope
 import me.odinmain.commands.commodore
+import me.odinmain.config.DungeonWaypointConfig
+import me.odinmain.config.DungeonWaypointConfig.decodeWaypoints
+import me.odinmain.config.DungeonWaypointConfig.encodeWaypoints
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints
+import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.glList
+import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.setWaypoints
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.SecretWaypoints.resetSecrets
+import me.odinmain.utils.getFromClipboard
 import me.odinmain.utils.isHexaDecimal
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.modMessage
+import me.odinmain.utils.writeToClipboard
 import net.minecraft.util.BlockPos
 
 val dungeonWaypointsCommand = commodore("dwp", "dungeonwaypoints") {
@@ -70,5 +80,27 @@ val dungeonWaypointsCommand = commodore("dwp", "dungeonwaypoints") {
         if (hex.length != 8 || hex.any { !it.isHexaDecimal }) return@runs modMessage("Color hex not properly formatted! Use format RRGGBBAA")
         DungeonWaypoints.color = Color(hex)
         modMessage("Color changed to: $hex")
+    }
+
+    literal("export").runs {
+        scope.launch {
+            writeToClipboard(encodeWaypoints() ?: return@launch modMessage("Failed to write waypoint config to clipboard."))
+            modMessage("Wrote waypoint config to clipboard")
+        }
+    }
+
+    literal("import").runs {
+        scope.launch {
+            val waypoints = getFromClipboard()?.let { decodeWaypoints(it) } ?: return@launch modMessage("Failed to decode waypoints from clipboard.")
+            DungeonWaypointConfig.waypoints = waypoints
+            DungeonWaypointConfig.saveConfig()
+
+            DungeonUtils.currentRoom?.let {
+                setWaypoints(it)
+                glList = -1
+            }
+
+            modMessage("Imported waypoints from clipboard!")
+        }
     }
 }

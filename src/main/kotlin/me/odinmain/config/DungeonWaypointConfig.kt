@@ -11,10 +11,16 @@ import me.odinmain.OdinMain.scope
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.DungeonWaypoint
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.util.AxisAlignedBB
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException
 import java.lang.reflect.Type
+import java.util.zip.GZIPInputStream
+import java.util.zip.GZIPOutputStream
+import kotlin.io.encoding.Base64
+import kotlin.io.encoding.ExperimentalEncodingApi
 
 object DungeonWaypointConfig {
     private val gson = GsonBuilder()
@@ -62,6 +68,44 @@ object DungeonWaypointConfig {
             } catch (_: IOException) {
                 println("Error saving Waypoint config.")
             }
+        }
+    }
+
+    @OptIn(ExperimentalEncodingApi::class)
+    fun encodeWaypoints(waypointsMap: MutableMap<String, MutableList<DungeonWaypoint>> = waypoints): String? {
+        return try {
+            Base64.encode(compress(gson.toJson(waypointsMap)))
+        } catch (e: Exception) {
+            logger.error("Error encoding waypoints.", e)
+            null
+        }
+    }
+
+    private fun compress(input: String): ByteArray {
+        ByteArrayOutputStream().use { byteArrayOutputStream ->
+            GZIPOutputStream(byteArrayOutputStream).use { gzipOutputStream ->
+                gzipOutputStream.write(input.toByteArray())
+            }
+            return byteArrayOutputStream.toByteArray()
+        }
+    }
+
+    @OptIn(ExperimentalEncodingApi::class)
+    fun decodeWaypoints(base64Data: String): MutableMap<String, MutableList<DungeonWaypoint>>? {
+        return try {
+            gson.fromJson(
+                decompress(Base64.decode(base64Data)),
+                object : TypeToken<MutableMap<String, MutableList<DungeonWaypoint>>>() {}.type
+            )
+        } catch (e: Exception) {
+            logger.error("Error decoding Base64 or parsing JSON.", e)
+            null
+        }
+    }
+
+    private fun decompress(compressed: ByteArray): String {
+        GZIPInputStream(compressed.inputStream()).use { gzipInputStream ->
+            return gzipInputStream.bufferedReader().use { it.readText() }
         }
     }
 
