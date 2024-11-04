@@ -117,7 +117,7 @@ object DianaHelper : Module(
 
     @SubscribeEvent
     fun onRightClick(event: ClickEvent.RightClickEvent) {
-        if (!isDoingDiana || !autoWarp || isLegitVersion) return
+        if (!isDoingDiana || !isHolding("ANCESTRAL_SPADE") || !autoWarp || isLegitVersion) return
         runIn(40) {
             if (!cmdCooldown.hasTimePassed()) return@runIn
             modMessage("§6Warping to ${warpLocation?.displayName ?: return@runIn}")

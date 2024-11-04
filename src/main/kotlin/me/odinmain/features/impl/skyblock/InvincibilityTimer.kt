@@ -9,7 +9,6 @@ import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.HudSetting
 import me.odinmain.utils.render.*
 import me.odinmain.utils.skyblock.LocationUtils
-import me.odinmain.utils.skyblock.dungeon.DungeonUtils.getAbilityCooldown
 import me.odinmain.utils.skyblock.partyMessage
 import me.odinmain.utils.skyblock.skyblockID
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -80,8 +79,8 @@ object InvincibilityTimer : Module(
     fun onRenderSlotOverlay(event: DrawSlotOverlayEvent) {
         if (!LocationUtils.inSkyblock || !showCooldown) return
         val durability = when (event.stack.skyblockID) {
-            "BONZO_MASK", "STARRED_BONZO_MASK" -> (System.currentTimeMillis() - bonzoMaskProc) / getAbilityCooldown(180_000L).toDouble()
-            "SPIRIT_MASK", "STARRED_SPIRIT_MASK" -> (System.currentTimeMillis() - spiritMaskProc) / getAbilityCooldown(30_000L).toDouble()
+            "BONZO_MASK", "STARRED_BONZO_MASK" -> (System.currentTimeMillis() - bonzoMaskProc) / 180_000.0
+            "SPIRIT_MASK", "STARRED_SPIRIT_MASK" -> (System.currentTimeMillis() - spiritMaskProc) / 30_000.0
             else -> return
         }.takeIf { it < 1.0 } ?: return
         RenderUtils.renderDurabilityBar(event.x ?: return, event.y ?: return, durability)
