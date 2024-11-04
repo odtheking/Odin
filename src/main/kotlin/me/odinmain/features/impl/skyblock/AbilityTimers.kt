@@ -15,6 +15,7 @@ import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.PlayerUtils.isHolding
 import me.odinmain.utils.skyblock.isHolding
 import me.odinmain.utils.skyblock.skyblockID
+import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.server.S29PacketSoundEffect
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.util.*
@@ -59,6 +60,11 @@ object AbilityTimers : Module(
             }
         }
 
+        onPacket(C08PacketPlayerBlockPlacement::class.java) {
+            if (mc.thePlayer?.isHolding("ASTRAEA", "HYPERION", "VALKYRIE", "SCYLLA", "NECRON_BLADE") == false || witherImpactTicks != -1) return@onPacket
+            witherImpactTicks = 0
+        }
+
         onWorldLoad {
             witherImpactTicks = -1
             tacTimer = 0
@@ -79,12 +85,6 @@ object AbilityTimers : Module(
     }
 
     private inline val Int.formatTicks get() = String.format(Locale.US, "%.2f", this / 20.0)
-
-    @SubscribeEvent
-    fun onRightClick(event: ClickEvent.RightClickEvent) {
-        if (mc.thePlayer?.isHolding("ASTRAEA", "HYPERION", "VALKYRIE", "SCYLLA", "NECRON_BLADE") == false || witherImpactTicks != -1) return
-        witherImpactTicks = 0
-    }
 
     @SubscribeEvent
     fun onServerTick(event: RealServerTick) {

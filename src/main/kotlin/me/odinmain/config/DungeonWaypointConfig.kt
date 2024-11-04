@@ -77,6 +77,7 @@ object DungeonWaypointConfig {
             Base64.encode(compress(gson.toJson(waypointsMap)))
         } catch (e: Exception) {
             logger.error("Error encoding waypoints.", e)
+            modMessage("Error encoding waypoints. ${e.message}")
             null
         }
     }
@@ -99,6 +100,7 @@ object DungeonWaypointConfig {
             )
         } catch (e: Exception) {
             logger.error("Error decoding Base64 or parsing JSON.", e)
+            modMessage("Error decoding Base64 or parsing json. ${e.message}")
             null
         }
     }
