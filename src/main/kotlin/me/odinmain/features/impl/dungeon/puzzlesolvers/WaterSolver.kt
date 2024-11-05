@@ -39,8 +39,7 @@ object WaterSolver {
     private var openedWater = -1L
 
     fun scan() = with (DungeonUtils.currentRoom) {
-        if (this?.data?.name != "Water Board" || variant != -1) return
-        solve(this)
+        if (this?.data?.name == "Water Board" && variant == -1)  solve(this)
     }
 
     private fun solve(room: Room) {

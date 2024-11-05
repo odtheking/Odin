@@ -44,11 +44,10 @@ object BeamsSolver {
 
         currentLanternPairs.clear()
         lanternPairs.forEach {
-            val pos = getRealCoords(it[0], it[1], it[2])
-            val pos2 = getRealCoords(it[3], it[4], it[5])
+            val pos = getRealCoords(it[0], it[1], it[2]).takeIf { getBlockIdAt(it) == 169 } ?: return@forEach
+            val pos2 = getRealCoords(it[3], it[4], it[5]).takeIf { getBlockIdAt(it) == 169 } ?: return@forEach
 
-            if (getBlockIdAt(pos) == 169 && getBlockIdAt(pos2) == 169)
-                currentLanternPairs[pos] = pos2 to colors[currentLanternPairs.size]
+            currentLanternPairs[pos] = pos2 to colors[currentLanternPairs.size]
         }
     }
 
@@ -58,8 +57,8 @@ object BeamsSolver {
         currentLanternPairs.entries.forEach { positions ->
             val color = positions.value.second
 
-            Renderer.drawBox(positions.key.toAABB(), color, depth = false, outlineAlpha = if (PuzzleSolvers.beamStyle == 0) 0 else color.alpha, fillAlpha = if (PuzzleSolvers.beamStyle == 1) 0 else beamsAlpha)
-            Renderer.drawBox(positions.value.first.toAABB(), color, depth = false, outlineAlpha = if (PuzzleSolvers.beamStyle == 0) 0 else color.alpha, fillAlpha = if (PuzzleSolvers.beamStyle == 1) 0 else beamsAlpha)
+            Renderer.drawStyledBox(positions.key.toAABB(), color, depth = true, style = PuzzleSolvers.beamStyle)
+            Renderer.drawStyledBox(positions.value.first.toAABB(), color, depth = true, style = PuzzleSolvers.beamStyle)
 
             if (PuzzleSolvers.beamsTracer)
                 Renderer.draw3DLine(listOf(positions.key.toVec3().addVec(0.5, 0.5, 0.5), positions.value.first.toVec3().addVec(0.5, 0.5, 0.5)), color = color.withAlpha(beamsAlpha), depth = false, lineWidth = 2f)

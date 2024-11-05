@@ -14,6 +14,8 @@ import me.odinmain.ui.util.MouseUtils
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.postAndCatch
 import me.odinmain.utils.render.*
+import me.odinmain.utils.skyblock.PlayerUtils
+import me.odinmain.utils.skyblock.PlayerUtils.windowClick
 import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.skyblock.unformattedName
 import net.minecraft.client.gui.Gui
@@ -42,8 +44,9 @@ object TerminalSolver : Module(
     val customScale by NumberSetting("Custom Scale", 1f, .8f, 2.5f, .1f, description = "Size of the Custom Terminal Gui.").withDependency { renderType == 3 }
     val textShadow by BooleanSetting("Text Shadow", true, description = "Adds a shadow to the text.")
     private val lockRubixSolution by BooleanSetting("Lock Rubix Solution", true, description = "Locks the 'correct' color of the rubix terminal to the one that was scanned first, should make the solver less 'jumpy'.")
-    private val cancelToolTip by BooleanSetting("Stop Tooltips", true, description = "Stops rendering tooltips in terminals.")
-    private val blockIncorrectClicks by BooleanSetting("Block Incorrect Clicks", true, description = "Blocks incorrect clicks in terminals.")
+    private val cancelToolTip by BooleanSetting("Stop Tooltips", true, description = "Stops rendering tooltips in terminals.").withDependency { renderType != 3 }
+    private val blockIncorrectClicks by BooleanSetting("Block Incorrect Clicks", true, description = "Blocks incorrect clicks in terminals.").withDependency { renderType != 3 }
+    private val middleClickGUI by BooleanSetting("Middle Click GUI", true, description = "Opens the custom gui when middle clicking in the terminal.").withDependency { renderType != 3 }
     private val cancelMelodySolver by BooleanSetting("Stop Melody Solver", false, description = "Stops rendering the melody solver.")
 
     private val showRemoveWrongSettings by DropdownSetting("Render Wrong Settings").withDependency { renderType == 1 }
@@ -215,6 +218,12 @@ object TerminalSolver : Module(
     @SubscribeEvent(receiveCanceled = true)
     fun onGuiClick(event: GuiEvent.GuiMouseClickEvent) {
         val gui = event.gui as? GuiChest ?: return
+        val needed = currentTerm.solution.count { it == gui.slotUnderMouse?.slotIndex }
+
+        if (renderType != 3 && currentTerm.type == TerminalTypes.NONE && middleClickGUI) {
+            event.isCanceled = true
+            windowClick(gui.slotUnderMouse?.slotIndex ?: return, if (needed >= 3) PlayerUtils.ClickType.Right else PlayerUtils.ClickType.Middle)
+        }
         if (currentTerm.type == TerminalTypes.NONE || !enabled || (currentTerm.type == TerminalTypes.MELODY && cancelMelodySolver)) return
         if (renderType == 3) {
             CustomTermGui.mouseClicked(MouseUtils.mouseX.toInt(), MouseUtils.mouseY.toInt(), event.button)
@@ -223,8 +232,7 @@ object TerminalSolver : Module(
         }
 
         if (blockIncorrectClicks && currentTerm.type != TerminalTypes.MELODY) {
-            val needed = currentTerm.solution.count { it == gui.slotUnderMouse?.slotIndex }
-            
+
             event.isCanceled = when {
                 gui.slotUnderMouse?.slotIndex !in currentTerm.solution -> true
                 currentTerm.type == TerminalTypes.RUBIX && ((needed < 3 && event.button != 0) || (needed >= 3 && event.button != 1)) -> true

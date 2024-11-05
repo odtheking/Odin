@@ -4,6 +4,7 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
+import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.KuudraUtils.SupplyPickUpSpot
 import me.odinmain.utils.skyblock.KuudraUtils.giantZombies
@@ -14,8 +15,9 @@ object NoPre : Module(
     description = "Alerts the party about the state of a pre spot.",
     category = Category.NETHER
 ) {
-    private val showAlert by BooleanSetting("Show Alert", false, description = "Shows an alert when you miss a pre spot.")
+
     private val showCratePriority by BooleanSetting("Show Crate Priority", false, description = "Shows the crate priority alert.")
+    private val cratePriorityTitleTime by NumberSetting("Title Time", 30, 1, 60, description = "The time the crate priority alert will be displayed for.").withDependency { showCratePriority }
     private val advanced by BooleanSetting("Advanced Mode", false, description = "Enables pro mode for the crate priority alert.").withDependency { showCratePriority }
 
     private var preSpot = SupplyPickUpSpot.None
@@ -62,14 +64,13 @@ object NoPre : Module(
             }
             if (msg.isEmpty()) return@onMessage
             partyMessage(msg)
-            if (showAlert) PlayerUtils.alert(msg, time = 10)
         }
 
         onMessage(partyChatRegex) {
             missing = SupplyPickUpSpot.valueOf(partyChatRegex.find(it)?.groupValues?.lastOrNull() ?: return@onMessage)
             if (!showCratePriority) return@onMessage
             val cratePriority = cratePriority(missing).ifEmpty { return@onMessage }
-            if (showAlert) PlayerUtils.alert(cratePriority, time = 15)
+            PlayerUtils.alert(cratePriority, time = cratePriorityTitleTime)
             modMessage("Crate Priority: $cratePriority")
         }
 

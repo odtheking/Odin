@@ -52,8 +52,8 @@ object TPMazeSolver {
         val color = if (correctPortals.size == 1) mazeColorOne else mazeColorMultiple
         tpPads.forEach {
             when (it) {
-                in visited -> Renderer.drawBlock(it, mazeColorVisited, outlineAlpha = 0, fillAlpha = mazeColorVisited.alpha, depth = true)
-                in correctPortals -> Renderer.drawBlock(it, color, outlineAlpha = 0, fillAlpha = color.alpha, depth = false)
+                in visited -> Renderer.drawBlock(it, mazeColorVisited, outlineAlpha = 0, depth = true)
+                in correctPortals -> Renderer.drawBlock(it, color, outlineAlpha = 0, depth = false)
                 else -> Renderer.drawBlock(it, Color.WHITE.withAlpha(0.5f), outlineAlpha = 0, fillAlpha = 0.5f, depth = true)
             }
         }
