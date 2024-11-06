@@ -77,7 +77,7 @@ object InvincibilityTimer : Module(
 
     @SubscribeEvent
     fun onRenderSlotOverlay(event: DrawSlotOverlayEvent) {
-        if (!LocationUtils.inSkyblock || !showCooldown) return
+        if (!LocationUtils.isInSkyblock || !showCooldown) return
         val durability = when (event.stack.skyblockID) {
             "BONZO_MASK", "STARRED_BONZO_MASK" -> (System.currentTimeMillis() - bonzoMaskProc) / 180_000.0
             "SPIRIT_MASK", "STARRED_SPIRIT_MASK" -> (System.currentTimeMillis() - spiritMaskProc) / 30_000.0

@@ -66,7 +66,7 @@ object ClickGUIModule: Module(
     init {
         execute(250) {
             if (joined) destroyExecutor()
-            if (!LocationUtils.inSkyblock) return@execute
+            if (!LocationUtils.isInSkyblock) return@execute
             joined = true
             Config.save()
 

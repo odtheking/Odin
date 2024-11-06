@@ -129,13 +129,13 @@ object GhostBlocks : Module(
     private fun BlockData.reset() = mc.theWorld?.setBlockState(pos, state)
 
     fun breakBlock(pos: BlockPos) {
-        if (!stonkDelayToggle || (sdOnlySB && !LocationUtils.inSkyblock)) return
+        if (!stonkDelayToggle || (sdOnlySB && !LocationUtils.isInSkyblock)) return
         sdBlocks.add(BlockData(pos, mc.theWorld.getBlockState(pos), System.currentTimeMillis(), false))
     }
 
     @SubscribeEvent
     fun onBlockChange(event: BlockChangeEvent) {
-        if (event.update == Blocks.air.defaultState || !stonkDelayToggle || (sdOnlySB && !LocationUtils.inSkyblock)) return
+        if (event.update == Blocks.air.defaultState || !stonkDelayToggle || (sdOnlySB && !LocationUtils.isInSkyblock)) return
         sdBlocks.find { event.pos == it.pos }?.let {
             it.state = event.update
             it.serverReplaced = true
@@ -145,13 +145,13 @@ object GhostBlocks : Module(
 
     @SubscribeEvent
     fun onPlayerInteract(event: PlayerInteractEvent) {
-        if (event.action != PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK || !stonkDelayToggle || (sdOnlySB && !LocationUtils.inSkyblock)) return
+        if (event.action != PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK || !stonkDelayToggle || (sdOnlySB && !LocationUtils.isInSkyblock)) return
         sdBlocks.removeIf { it.pos == (event.pos.offset(event.face) ?: return@removeIf false) }
     }
 
     @SubscribeEvent
     fun tick(event: TickEvent.ClientTickEvent) {
-        if (event.phase != TickEvent.Phase.START || !stonkDelayToggle || (sdOnlySB && !LocationUtils.inSkyblock)) return
+        if (event.phase != TickEvent.Phase.START || !stonkDelayToggle || (sdOnlySB && !LocationUtils.isInSkyblock)) return
         val currentMillis = System.currentTimeMillis()
         val blocksToReset = mutableListOf<BlockData>()
         sdBlocks.removeAll {
@@ -164,7 +164,7 @@ object GhostBlocks : Module(
     }
 
     fun postChunkData(packet: S21PacketChunkData) {
-        if (!enabled || !stonkDelayToggle || (sdOnlySB && !LocationUtils.inSkyblock)) return
+        if (!enabled || !stonkDelayToggle || (sdOnlySB && !LocationUtils.isInSkyblock)) return
         sdBlocks.forEach {
             if (it.pos.x in (packet.chunkX shl 4).rangeAdd(15) && it.pos.z in (packet.chunkZ shl 4).rangeAdd(15)) {
                 mc.theWorld?.setBlockState(it.pos, Blocks.air.defaultState)

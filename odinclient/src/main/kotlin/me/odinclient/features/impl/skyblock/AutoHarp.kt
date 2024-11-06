@@ -3,7 +3,7 @@ package me.odinclient.features.impl.skyblock
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.utils.name
-import me.odinmain.utils.skyblock.LocationUtils.inSkyblock
+import me.odinmain.utils.skyblock.LocationUtils.isInSkyblock
 import me.odinmain.utils.skyblock.PlayerUtils
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.init.Blocks
@@ -30,7 +30,7 @@ object AutoHarp : Module(
 
     @SubscribeEvent
     fun onGuiOpen(event: GuiOpenEvent) {
-        if (!inSkyblock) return
+        if (!isInSkyblock) return
         val inventorySlots = (event.gui as? GuiChest)?.inventorySlots ?: return
         inHarp = inventorySlots.name.startsWith("Harp -")
     }
