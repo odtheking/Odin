@@ -220,7 +220,7 @@ object TerminalSolver : Module(
         val gui = event.gui as? GuiChest ?: return
         val needed = currentTerm.solution.count { it == gui.slotUnderMouse?.slotIndex }
 
-        if (renderType != 3 && currentTerm.type == TerminalTypes.NONE && middleClickGUI) {
+        if (renderType != 3 && currentTerm.type != TerminalTypes.NONE && middleClickGUI && enabled) {
             event.isCanceled = true
             windowClick(gui.slotUnderMouse?.slotIndex ?: return, if (needed >= 3) PlayerUtils.ClickType.Right else PlayerUtils.ClickType.Middle)
         }
@@ -232,7 +232,6 @@ object TerminalSolver : Module(
         }
 
         if (blockIncorrectClicks && currentTerm.type != TerminalTypes.MELODY) {
-
             event.isCanceled = when {
                 gui.slotUnderMouse?.slotIndex !in currentTerm.solution -> true
                 currentTerm.type == TerminalTypes.RUBIX && ((needed < 3 && event.button != 0) || (needed >= 3 && event.button != 1)) -> true
@@ -262,8 +261,8 @@ object TerminalSolver : Module(
 
     init {
         onMessage(Regex("(.{1,16}) (?:activated|completed) a (terminal|device|lever)! \\((\\d)/(\\d)\\)")) {
-            Regex("(.{1,16}) (?:activated|completed) a (terminal|device|lever)! \\((\\d)/(\\d)\\)").find(it)?.let {
-                val (playerName, deviceType, completionStatus, total) = it.destructured
+            Regex("(.{1,16}) (?:activated|completed) a (terminal|device|lever)! \\((\\d)/(\\d)\\)").find(it)?.let { message ->
+                val (playerName, deviceType, completionStatus, total) = message.destructured
                 TerminalSolvedEvent(if (deviceType == "terminal") lastTermOpened else TerminalTypes.NONE, playerName, completionStatus.toIntOrNull() ?: return@let, total.toIntOrNull() ?: return@let).postAndCatch()
             }
         }
