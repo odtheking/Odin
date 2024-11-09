@@ -27,7 +27,7 @@ object AbilityTimers : Module(
     category = Category.SKYBLOCK
 ) {
     private val witherHud: HudElement by HudSetting("Wither Impact Hud", 10f, 10f, 1f, true) {
-        if (witherImpactTicks <= 0 && (hideWhenDone || !LocationUtils.inSkyblock) && !it) return@HudSetting 0f to 0f
+        if (witherImpactTicks <= 0 && (hideWhenDone || !LocationUtils.isInSkyblock) && !it) return@HudSetting 0f to 0f
         val width = if (compact) 6f else 65f
         mcText(witherImpactText, width/2f, 0f, 1f, Color.WHITE, shadow = true)
         width to 10f
