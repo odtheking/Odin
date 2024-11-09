@@ -1,4 +1,4 @@
-package me.odinmain.features.impl.skyblock
+package me.odinmain.features.impl.dungeon
 
 import me.odinmain.features.Category
 import me.odinmain.features.Module
@@ -25,7 +25,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 object SpringBoots : Module(
     name = "Spring Boots",
     description = "Shows how many blocks you can jump.",
-    category = Category.SKYBLOCK
+    category = Category.DUNGEON
 ) {
     private val hud by HudSetting("Display", 10f, 10f, 1f, true) {
         if (it) {

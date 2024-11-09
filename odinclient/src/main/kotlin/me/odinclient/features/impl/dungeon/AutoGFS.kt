@@ -1,4 +1,4 @@
-package me.odinclient.features.impl.skyblock
+package me.odinclient.features.impl.dungeon
 
 import me.odinmain.features.Category
 import me.odinmain.features.Module

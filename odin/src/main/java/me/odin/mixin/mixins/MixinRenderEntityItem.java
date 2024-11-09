@@ -30,6 +30,9 @@ public abstract class MixinRenderEntityItem {
     private static final DynamicTexture odinMod$textureBrightness = new DynamicTexture(16, 16);
 
     @Unique
+    private boolean odinMod$isHighlighting = false;
+
+    @Unique
     private HighlightRenderer.HighlightEntity odinMod$getHighlightEntity(Entity entity) {
         return HighlightRenderer.INSTANCE.getEntities().get(HighlightRenderer.HighlightType.Overlay).stream().filter(e -> e.getEntity().equals(entity)).findFirst().orElse(null);
     }
@@ -38,6 +41,8 @@ public abstract class MixinRenderEntityItem {
     private void doRenderInject(EntityItem entity, double x, double y, double z, float entityYaw, float partialTicks, CallbackInfo ci) {
         HighlightRenderer.HighlightEntity highlightEntity = odinMod$getHighlightEntity(entity);
         if (highlightEntity != null) {
+            odinMod$isHighlighting = true;
+
             if (!highlightEntity.getDepth()) {
                 glEnable(GL_POLYGON_OFFSET_FILL);
                 glPolygonOffset(1f, -1000000F);
@@ -93,60 +98,68 @@ public abstract class MixinRenderEntityItem {
 
     @Inject(method = "doRender(Lnet/minecraft/entity/item/EntityItem;DDDFF)V", at = @At("RETURN"))
     private void doRenderInjectPost(EntityItem entity, double x, double y, double z, float entityYaw, float partialTicks, CallbackInfo ci) {
-        HighlightRenderer.HighlightEntity highlightEntity = odinMod$getHighlightEntity(entity);
-        if (highlightEntity != null) {
-            if (!highlightEntity.getDepth()) {
+        // Only reset if we actually applied highlighting
+        if (odinMod$isHighlighting) {
+            HighlightRenderer.HighlightEntity highlightEntity = odinMod$getHighlightEntity(entity);
+            if (highlightEntity != null && !highlightEntity.getDepth()) {
                 glPolygonOffset(1f, 1000000F);
                 glDisable(GL_POLYGON_OFFSET_FILL);
             }
 
-            GlStateManager.setActiveTexture(OpenGlHelper.defaultTexUnit);
-            GlStateManager.enableTexture2D();
-            GL11.glTexEnvi(8960, 8704, OpenGlHelper.GL_COMBINE);
-            GL11.glTexEnvi(8960, OpenGlHelper.GL_COMBINE_RGB, 8448);
-            GL11.glTexEnvi(8960, OpenGlHelper.GL_SOURCE0_RGB, OpenGlHelper.defaultTexUnit);
-            GL11.glTexEnvi(8960, OpenGlHelper.GL_SOURCE1_RGB, OpenGlHelper.GL_PRIMARY_COLOR);
-            GL11.glTexEnvi(8960, OpenGlHelper.GL_OPERAND0_RGB, 768);
-            GL11.glTexEnvi(8960, OpenGlHelper.GL_OPERAND1_RGB, 768);
-            GL11.glTexEnvi(8960, OpenGlHelper.GL_COMBINE_ALPHA, 8448);
-            GL11.glTexEnvi(8960, OpenGlHelper.GL_SOURCE0_ALPHA, OpenGlHelper.defaultTexUnit);
-            GL11.glTexEnvi(8960, OpenGlHelper.GL_SOURCE1_ALPHA, OpenGlHelper.GL_PRIMARY_COLOR);
-            GL11.glTexEnvi(8960, OpenGlHelper.GL_OPERAND0_ALPHA, 770);
-            GL11.glTexEnvi(8960, OpenGlHelper.GL_OPERAND1_ALPHA, 770);
-            GlStateManager.setActiveTexture(OpenGlHelper.lightmapTexUnit);
-            GL11.glTexEnvi(8960, 8704, OpenGlHelper.GL_COMBINE);
-            GL11.glTexEnvi(8960, OpenGlHelper.GL_COMBINE_RGB, 8448);
-            GL11.glTexEnvi(8960, OpenGlHelper.GL_OPERAND0_RGB, 768);
-            GL11.glTexEnvi(8960, OpenGlHelper.GL_OPERAND1_RGB, 768);
-            GL11.glTexEnvi(8960, OpenGlHelper.GL_SOURCE0_RGB, 5890);
-            GL11.glTexEnvi(8960, OpenGlHelper.GL_SOURCE1_RGB, OpenGlHelper.GL_PREVIOUS);
-            GL11.glTexEnvi(8960, OpenGlHelper.GL_COMBINE_ALPHA, 8448);
-            GL11.glTexEnvi(8960, OpenGlHelper.GL_OPERAND0_ALPHA, 770);
-            GL11.glTexEnvi(8960, OpenGlHelper.GL_SOURCE0_ALPHA, 5890);
-            GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-            GlStateManager.setActiveTexture(OpenGlHelper.GL_TEXTURE2);
-            GlStateManager.disableTexture2D();
-            GlStateManager.bindTexture(0);
-            GL11.glTexEnvi(8960, 8704, OpenGlHelper.GL_COMBINE);
-            GL11.glTexEnvi(8960, OpenGlHelper.GL_COMBINE_RGB, 8448);
-            GL11.glTexEnvi(8960, OpenGlHelper.GL_OPERAND0_RGB, 768);
-            GL11.glTexEnvi(8960, OpenGlHelper.GL_OPERAND1_RGB, 768);
-            GL11.glTexEnvi(8960, OpenGlHelper.GL_SOURCE0_RGB, 5890);
-            GL11.glTexEnvi(8960, OpenGlHelper.GL_SOURCE1_RGB, OpenGlHelper.GL_PREVIOUS);
-            GL11.glTexEnvi(8960, OpenGlHelper.GL_COMBINE_ALPHA, 8448);
-            GL11.glTexEnvi(8960, OpenGlHelper.GL_OPERAND0_ALPHA, 770);
-            GL11.glTexEnvi(8960, OpenGlHelper.GL_SOURCE0_ALPHA, 5890);
-            GlStateManager.setActiveTexture(OpenGlHelper.defaultTexUnit);
+            // Reset OpenGL state
+            odinMod$resetOpenGLState();
+
+            // Reset the highlighting flag
+            odinMod$isHighlighting = false;
         }
+    }
+
+    @Unique
+    private void odinMod$resetOpenGLState() {
+        GlStateManager.setActiveTexture(OpenGlHelper.defaultTexUnit);
+        GlStateManager.enableTexture2D();
+        GL11.glTexEnvi(8960, 8704, OpenGlHelper.GL_COMBINE);
+        GL11.glTexEnvi(8960, OpenGlHelper.GL_COMBINE_RGB, 8448);
+        GL11.glTexEnvi(8960, OpenGlHelper.GL_SOURCE0_RGB, OpenGlHelper.defaultTexUnit);
+        GL11.glTexEnvi(8960, OpenGlHelper.GL_SOURCE1_RGB, OpenGlHelper.GL_PRIMARY_COLOR);
+        GL11.glTexEnvi(8960, OpenGlHelper.GL_OPERAND0_RGB, 768);
+        GL11.glTexEnvi(8960, OpenGlHelper.GL_OPERAND1_RGB, 768);
+        GL11.glTexEnvi(8960, OpenGlHelper.GL_COMBINE_ALPHA, 8448);
+        GL11.glTexEnvi(8960, OpenGlHelper.GL_SOURCE0_ALPHA, OpenGlHelper.defaultTexUnit);
+        GL11.glTexEnvi(8960, OpenGlHelper.GL_SOURCE1_ALPHA, OpenGlHelper.GL_PRIMARY_COLOR);
+        GL11.glTexEnvi(8960, OpenGlHelper.GL_OPERAND0_ALPHA, 770);
+        GL11.glTexEnvi(8960, OpenGlHelper.GL_OPERAND1_ALPHA, 770);
+        GlStateManager.setActiveTexture(OpenGlHelper.lightmapTexUnit);
+        GL11.glTexEnvi(8960, 8704, OpenGlHelper.GL_COMBINE);
+        GL11.glTexEnvi(8960, OpenGlHelper.GL_COMBINE_RGB, 8448);
+        GL11.glTexEnvi(8960, OpenGlHelper.GL_OPERAND0_RGB, 768);
+        GL11.glTexEnvi(8960, OpenGlHelper.GL_OPERAND1_RGB, 768);
+        GL11.glTexEnvi(8960, OpenGlHelper.GL_SOURCE0_RGB, 5890);
+        GL11.glTexEnvi(8960, OpenGlHelper.GL_SOURCE1_RGB, OpenGlHelper.GL_PREVIOUS);
+        GL11.glTexEnvi(8960, OpenGlHelper.GL_COMBINE_ALPHA, 8448);
+        GL11.glTexEnvi(8960, OpenGlHelper.GL_OPERAND0_ALPHA, 770);
+        GL11.glTexEnvi(8960, OpenGlHelper.GL_SOURCE0_ALPHA, 5890);
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+        GlStateManager.setActiveTexture(OpenGlHelper.GL_TEXTURE2);
+        GlStateManager.disableTexture2D();
+        GlStateManager.bindTexture(0);
+        GL11.glTexEnvi(8960, 8704, OpenGlHelper.GL_COMBINE);
+        GL11.glTexEnvi(8960, OpenGlHelper.GL_COMBINE_RGB, 8448);
+        GL11.glTexEnvi(8960, OpenGlHelper.GL_OPERAND0_RGB, 768);
+        GL11.glTexEnvi(8960, OpenGlHelper.GL_OPERAND1_RGB, 768);
+        GL11.glTexEnvi(8960, OpenGlHelper.GL_SOURCE0_RGB, 5890);
+        GL11.glTexEnvi(8960, OpenGlHelper.GL_SOURCE1_RGB, OpenGlHelper.GL_PREVIOUS);
+        GL11.glTexEnvi(8960, OpenGlHelper.GL_COMBINE_ALPHA, 8448);
+        GL11.glTexEnvi(8960, OpenGlHelper.GL_OPERAND0_ALPHA, 770);
+        GL11.glTexEnvi(8960, OpenGlHelper.GL_SOURCE0_ALPHA, 5890);
+        GlStateManager.setActiveTexture(OpenGlHelper.defaultTexUnit);
     }
 
     static {
         int[] aint = odinMod$textureBrightness.getTextureData();
-
         for(int i = 0; i < 256; ++i) {
             aint[i] = -1;
         }
-
         odinMod$textureBrightness.updateDynamicTexture();
     }
 }

@@ -67,6 +67,10 @@ object TerminalTimes : Module(
             resetSection()
             modMessage("§bTimes: §a${times.joinToString(" §8| ") { "§a${it}s" }}§8, §bTotal: §a${phaseTimer.seconds}s")
         }
+
+        onWorldLoad {
+            resetSection(true)
+        }
     }
 
     private val Long.seconds
