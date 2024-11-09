@@ -71,7 +71,7 @@ object RenderOptimizer : Module(
 
     @SubscribeEvent
     fun onPacket(event: PacketReceivedEvent) {
-        if (!LocationUtils.inSkyblock) return
+        if (!LocationUtils.isInSkyblock) return
         if (event.packet is S1CPacketEntityMetadata && hide0HealthNames) {
             mc.theWorld?.getEntityByID(event.packet.entityId)?.let { entity ->
                 event.packet.func_149376_c()?.let {

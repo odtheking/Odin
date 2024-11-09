@@ -22,13 +22,13 @@ object NoBlock : Module(
 
     @SubscribeEvent
     fun onTick(event: TickEvent.ClientTickEvent) {
-        if (event.phase != TickEvent.Phase.START || !LocationUtils.inSkyblock) return
+        if (event.phase != TickEvent.Phase.START || !LocationUtils.isInSkyblock) return
         isRightClickKeyDown = mc.gameSettings.keyBindUseItem.isKeyDown
     }
 
     @SubscribeEvent
     fun onInteract(event: PlayerInteractEvent) {
-        if (!LocationUtils.inSkyblock || event.action != PlayerInteractEvent.Action.RIGHT_CLICK_AIR || (onlyBoss && !DungeonUtils.inBoss)) return
+        if (!LocationUtils.isInSkyblock || event.action != PlayerInteractEvent.Action.RIGHT_CLICK_AIR || (onlyBoss && !DungeonUtils.inBoss)) return
 
         if (mc.thePlayer?.heldItem?.hasAbility == false || mc.thePlayer?.heldItem?.item !is ItemSword) return
         event.isCanceled = true

@@ -15,8 +15,6 @@ object FarmKeys: Module(
     private val jumpKey by KeybindSetting("Jump", Keyboard.KEY_NONE, "Changes the keybind for jumping.")
     private val previousSensitivity by NumberSetting("Previous Sensitivity", 100f, 0f, 200f, description = "The sensitivity before enabling the module.")
 
-    private val gameSettings = mc.gameSettings
-
     override fun onEnable() {
         updateKeyBindings(blockBreakKey.key, jumpKey.key, -1 / 3f)
         super.onEnable()
@@ -28,11 +26,11 @@ object FarmKeys: Module(
     }
 
     private fun updateKeyBindings(breakKeyCode: Int, jumpKeyCode: Int, sensitivity: Float) {
-        setKeyBindingState(gameSettings.keyBindAttack, breakKeyCode)
-        setKeyBindingState(gameSettings.keyBindJump, jumpKeyCode)
-        gameSettings.mouseSensitivity = sensitivity
-        gameSettings.saveOptions()
-        gameSettings.loadOptions()
+        setKeyBindingState(mc.gameSettings.keyBindAttack, breakKeyCode)
+        setKeyBindingState(mc.gameSettings.keyBindJump, jumpKeyCode)
+        mc.gameSettings.mouseSensitivity = sensitivity
+        mc.gameSettings.saveOptions()
+        mc.gameSettings.loadOptions()
     }
 
     private fun setKeyBindingState(keyBinding: KeyBinding, keyCode: Int) {

@@ -1,4 +1,4 @@
-package me.odinmain.features.impl.skyblock
+package me.odinmain.features.impl.dungeon
 
 import me.odinmain.features.Category
 import me.odinmain.features.Module
@@ -25,7 +25,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 object SpringBoots : Module(
     name = "Spring Boots",
     description = "Shows how many blocks you can jump.",
-    category = Category.SKYBLOCK
+    category = Category.DUNGEON
 ) {
     private val hud by HudSetting("Display", 10f, 10f, 1f, true) {
         if (it) {
@@ -55,7 +55,7 @@ object SpringBoots : Module(
 
     init {
         onPacket(S29PacketSoundEffect::class.java) {
-            if (!LocationUtils.inSkyblock) return@onPacket
+            if (!LocationUtils.isInSkyblock) return@onPacket
             when (it.soundName) {
                 "random.eat", "fireworks.launch" -> if (it.pitch.equalsOneOf(0.0952381f, 1.6984127f)) pitchCounts.fill(0)
                 "note.pling" -> if (mc.thePlayer?.isSneaking == true && mc.thePlayer?.getCurrentArmor(0)?.skyblockID == "SPRING_BOOTS") {
@@ -70,14 +70,14 @@ object SpringBoots : Module(
 
     @SubscribeEvent
     fun onTick(event: TickEvent.ClientTickEvent) {
-        if (event.phase != TickEvent.Phase.END || !LocationUtils.inSkyblock) return
+        if (event.phase != TickEvent.Phase.END || !LocationUtils.isInSkyblock) return
         if (mc.thePlayer?.getCurrentArmor(0)?.skyblockID != "SPRING_BOOTS" || mc.thePlayer?.isSneaking == false) pitchCounts.fill(0)
         blocksList.getSafe(pitchCounts.sum())?.let { blockPos = if (it != 0.0) mc.thePlayer?.positionVector?.addVec(x = -0.5 + offset, y = it, z = -0.5) else null }
     }
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-        if (!renderGoal || !LocationUtils.inSkyblock) return
+        if (!renderGoal || !LocationUtils.isInSkyblock) return
         blockPos?.let { Renderer.drawBox(it.toAABB(), goalColor, fillAlpha = 0f) }
     }
 }

@@ -11,6 +11,8 @@ import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.profile
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
+import me.odinmain.utils.skyblock.Island
+import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.inBoss
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.inDungeons
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
@@ -101,18 +103,18 @@ object PuzzleSolvers : Module(
 
     init {
         execute(500) {
-            if (!inDungeons || inBoss) return@execute
+            if ((!inDungeons || inBoss) && !LocationUtils.currentArea.isArea(Island.SinglePlayer)) return@execute
             if (waterSolver) WaterSolver.scan()
             if (blazeSolver) BlazeSolver.getBlaze()
         }
 
         onPacket(S08PacketPlayerPosLook::class.java) {
-            if (!inDungeons || inBoss) return@onPacket
+            if ((!inDungeons || inBoss) && !LocationUtils.currentArea.isArea(Island.SinglePlayer)) return@onPacket
             if (tpMaze) TPMazeSolver.tpPacket(it)
         }
 
-        onPacket(C08PacketPlayerBlockPlacement::class.java, { enabled && (waterSolver || boulderSolver) }) {
-            if (!inDungeons || inBoss) return@onPacket
+        onPacket(C08PacketPlayerBlockPlacement::class.java) {
+            if ((!inDungeons || inBoss) && !LocationUtils.currentArea.isArea(Island.SinglePlayer)) return@onPacket
             if (waterSolver) waterInteract(it)
             if (boulderSolver) BoulderSolver.playerInteract(it)
         }
@@ -141,7 +143,7 @@ object PuzzleSolvers : Module(
 
     @SubscribeEvent
     fun onWorldRender(event: RenderWorldLastEvent) {
-        if (!inDungeons || inBoss) return
+        if ((!inDungeons || inBoss) && !LocationUtils.currentArea.isArea(Island.SinglePlayer)) return
         profile("Puzzle Solvers Render") {
             if (waterSolver) WaterSolver.waterRender()
             if (tpMaze) TPMazeSolver.tpRender()
@@ -165,7 +167,7 @@ object PuzzleSolvers : Module(
 
     @SubscribeEvent
     fun blockUpdateEvent(event: BlockChangeEvent) {
-        if (!inDungeons || inBoss) return
+        if ((!inDungeons || inBoss) && !LocationUtils.currentArea.isArea(Island.SinglePlayer)) return
         if (beamsSolver) BeamsSolver.onBlockChange(event)
     }
 }

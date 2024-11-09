@@ -128,8 +128,8 @@ object KuudraUtils {
             val (_, name) = tablistRegex.find(text)?.destructured ?: continue
 
             previousTeammates.find { it.playerName == name }?.let { kuudraPlayer ->
-                kuudraPlayer.entity = mc.theWorld?.getPlayerEntityByName(name)
-            } ?: previousTeammates.add(KuudraPlayer(name, entity = mc.theWorld?.getPlayerEntityByName(name)))
+                kuudraPlayer.entity = mc.theWorld?.getPlayerEntityByName(name) ?: kuudraPlayer.entity
+            } ?: previousTeammates.add(KuudraPlayer(name, entity = mc.theWorld?.getPlayerEntityByName(name) ?: continue))
         }
         return previousTeammates
     }

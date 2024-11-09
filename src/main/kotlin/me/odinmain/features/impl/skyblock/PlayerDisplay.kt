@@ -40,7 +40,7 @@ object PlayerDisplay : Module(
         val text =
             if (example)
                 generateText(5000, 5000, "❤")
-            else if(!LocationUtils.inSkyblock) return@HudSetting 0f to 0f
+            else if(!LocationUtils.isInSkyblock) return@HudSetting 0f to 0f
             else if (SkyblockPlayer.currentHealth != 0 && SkyblockPlayer.maxHealth != 0)
                 generateText(SkyblockPlayer.currentHealth, SkyblockPlayer.maxHealth, "❤")
             else return@HudSetting 0f to 0f
@@ -52,7 +52,7 @@ object PlayerDisplay : Module(
     private val manaHud by HudSetting("Mana Hud", 10f, 10f, 1f, true) { example ->
         val text = if (example)
             generateText(2000, 20000, "✎") + (if(!separateOverflow) " ${generateText(SkyblockPlayer.overflowMana, "ʬ", hideZeroSF)}" else "")
-        else if(!LocationUtils.inSkyblock) return@HudSetting 0f to 0f
+        else if(!LocationUtils.isInSkyblock) return@HudSetting 0f to 0f
         else if (SkyblockPlayer.maxMana != 0)
             if(SkyblockPlayer.currentMana == 0 && separateOverflow) return@HudSetting 0f to 0f
             else generateText(SkyblockPlayer.currentMana, SkyblockPlayer.maxMana, "✎") + (if(!separateOverflow && overflowManaHud.enabled) " ${generateText(SkyblockPlayer.overflowMana, "ʬ", hideZeroSF)}" else "")
@@ -65,7 +65,7 @@ object PlayerDisplay : Module(
     private val overflowManaHud by HudSetting("Overflow Mana Hud", 10f, 10f, 1f, true) { example ->
         val text = if (example)
             generateText(333, "ʬ", hideZeroSF)
-        else if(!LocationUtils.inSkyblock) return@HudSetting 0f to 0f
+        else if(!LocationUtils.isInSkyblock) return@HudSetting 0f to 0f
         else if (separateOverflow)
             generateText(SkyblockPlayer.overflowMana, "ʬ", hideZeroSF)
         else return@HudSetting 0f to 0f
@@ -77,7 +77,7 @@ object PlayerDisplay : Module(
     private val defenseHud by HudSetting("Defense Hud", 10f, 10f, 1f, true) { example ->
         val text = if (example)
             generateText(1000, "❈", true)
-        else if(!LocationUtils.inSkyblock) return@HudSetting 0f to 0f
+        else if(!LocationUtils.isInSkyblock) return@HudSetting 0f to 0f
         else if (SkyblockPlayer.currentDefense != 0)
             generateText(SkyblockPlayer.currentDefense, "❈", true)
         else return@HudSetting 0f to 0f
@@ -90,7 +90,7 @@ object PlayerDisplay : Module(
     private val eHPHud by HudSetting("EffectiveHealth Hud", 10f, 10f, 1f, true) { example ->
         val text = if (example)
             generateText(1000000, "", true)
-        else if(!LocationUtils.inSkyblock) return@HudSetting 0f to 0f
+        else if(!LocationUtils.isInSkyblock) return@HudSetting 0f to 0f
         else if (SkyblockPlayer.effectiveHP != 0) generateText(SkyblockPlayer.effectiveHP, "", true)
         else return@HudSetting 0f to 0f
 
@@ -129,7 +129,7 @@ object PlayerDisplay : Module(
     @SubscribeEvent
     fun onRenderOverlay(event: RenderGameOverlayEvent.Pre) {
         if (event.isCanceled) return // don't override other mods cancelling the event.
-        if(!LocationUtils.inSkyblock) return
+        if(!LocationUtils.isInSkyblock) return
         event.isCanceled = when (event.type) {
             RenderGameOverlayEvent.ElementType.ARMOR -> hideArmor
             RenderGameOverlayEvent.ElementType.HEALTH -> hideHearts

@@ -1,4 +1,4 @@
-package me.odinclient.features.impl.skyblock
+package me.odinclient.features.impl.dungeon
 
 import me.odinmain.features.Category
 import me.odinmain.features.Module
@@ -39,5 +39,7 @@ object AutoGFS : Module(
         inventory.find { it?.skyblockID == "ENDER_PEARL" }?.takeIf { refillPearl }?.also { fillItemFromSack(16, "ENDER_PEARL", "ender_pearl", false) }
 
         inventory.find { it?.skyblockID == "INFLATABLE_JERRY" }?.takeIf { refillJerry }?.also { fillItemFromSack(64, "INFLATABLE_JERRY", "inflatable_jerry", false) }
+
+        inventory.find { it?.skyblockID == "SUPERBOOM_TNT" }.takeIf { it?.stackSize == 1 }?.also { fillItemFromSack(1, "SUPERBOOM_TNT", "superboom_tnt", false) }
     }
 }

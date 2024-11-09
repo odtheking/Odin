@@ -1,6 +1,7 @@
 package me.odinmain.utils.skyblock
 
 import me.odinmain.OdinMain.mc
+import me.odinmain.events.impl.PacketReceivedEvent
 import me.odinmain.events.impl.SkyblockJoinIslandEvent
 import me.odinmain.features.impl.render.ClickGUIModule
 import me.odinmain.utils.*
@@ -10,14 +11,15 @@ import me.odinmain.utils.skyblock.dungeon.Dungeon
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.Floor
 import net.minecraft.client.network.NetHandlerPlayClient
+import net.minecraft.network.play.server.S3FPacketCustomPayload
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.network.FMLNetworkEvent
 
 object LocationUtils {
 
-    private var onHypixel: Boolean = false
-    var inSkyblock: Boolean = false
+    private var isOnHypixel: Boolean = false
+    var isInSkyblock: Boolean = false
 
     var currentDungeon: Dungeon? = null
     var currentArea: Island = Island.Unknown
@@ -25,8 +27,8 @@ object LocationUtils {
 
     init {
         Executor(500, "LocationUtils") {
-            if (!inSkyblock)
-                inSkyblock = onHypixel && mc.theWorld?.scoreboard?.getObjectiveInDisplaySlot(1)?.let { cleanSB(it.displayName).contains("SKYBLOCK") } == true
+            if (!isInSkyblock)
+                isInSkyblock = isOnHypixel && mc.theWorld?.scoreboard?.getObjectiveInDisplaySlot(1)?.let { cleanSB(it.displayName).contains("SKYBLOCK") } == true
 
             if (currentArea.isArea(Island.Kuudra) && kuudraTier == 0)
                 sidebarLines.find { cleanLine(it).contains("Kuudra's Hollow (") }?.let {
@@ -45,8 +47,8 @@ object LocationUtils {
 
     @SubscribeEvent
     fun onDisconnect(event: FMLNetworkEvent.ClientDisconnectionFromServerEvent) {
-        onHypixel = false
-        inSkyblock = false
+        isOnHypixel = false
+        isInSkyblock = false
         currentArea = Island.Unknown
         kuudraTier = 0
         SkyblockJoinIslandEvent(currentArea).postAndCatch()
@@ -56,7 +58,7 @@ object LocationUtils {
     @SubscribeEvent
     fun onWorldChange(event: WorldEvent.Unload) {
         currentDungeon = null
-        inSkyblock = false
+        isInSkyblock = false
         kuudraTier = 0
         currentArea = Island.Unknown
     }
@@ -68,9 +70,15 @@ object LocationUtils {
      */
     @SubscribeEvent
     fun onConnect(event: FMLNetworkEvent.ClientConnectedToServerEvent) {
-        onHypixel = if (ClickGUIModule.forceHypixel) true else mc.runCatching {
+        isOnHypixel = if (ClickGUIModule.forceHypixel) true else mc.runCatching {
             !event.isLocal && ((thePlayer?.clientBrand?.contains("hypixel", true) ?: currentServerData?.serverIP?.contains("hypixel", true)) == true)
         }.getOrDefault(false)
+    }
+
+    @SubscribeEvent
+    fun onPacket(event: PacketReceivedEvent) {
+        if (isOnHypixel || event.packet !is S3FPacketCustomPayload || event.packet.channelName != "MC|Brand") return
+        if (event.packet.bufferData?.readStringFromBuffer(Short.MAX_VALUE.toInt())?.contains("hypixel", true) == true) isOnHypixel = true
     }
 
     /**
@@ -81,7 +89,7 @@ object LocationUtils {
      */
     private fun getArea(): Island {
         if (mc.isSingleplayer) return Island.SinglePlayer
-        if (!inSkyblock) return Island.Unknown
+        if (!isInSkyblock) return Island.Unknown
         val netHandlerPlayClient: NetHandlerPlayClient = mc.thePlayer?.sendQueue ?: return Island.Unknown
         val list = netHandlerPlayClient.playerInfoMap ?: return Island.Unknown
 

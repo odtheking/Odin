@@ -145,7 +145,7 @@ object Triggerbot : Module(
     val frameGridCorner = Vec3(-2.0, 120.0, 75.0)
 
     private fun arrowAlignTriggerbot() {
-        if ((sneakToDisableTriggerbot && mc.thePlayer.isSneaking)) return
+        if ((sneakToDisableTriggerbot && mc.thePlayer.isSneaking) || clicksRemaining.isEmpty()) return
         val targetFrame = mc.objectMouseOver?.entityHit as? EntityItemFrame ?: return
 
         val targetFramePosition = targetFrame.positionVector.flooredVec()

@@ -4,6 +4,7 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import me.odinmain.OdinMain.mc
 import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers.showOrder
+import me.odinmain.utils.equal
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.RenderUtils.renderVec
 import me.odinmain.utils.render.Renderer
@@ -13,6 +14,7 @@ import me.odinmain.utils.skyblock.dungeon.tiles.Room
 import me.odinmain.utils.skyblock.getBlockAt
 import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.toBlockPos
+import me.odinmain.utils.toVec3
 import net.minecraft.init.Blocks
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.util.BlockPos
@@ -39,11 +41,11 @@ object WaterSolver {
     private var openedWater = -1L
 
     fun scan() = with (DungeonUtils.currentRoom) {
-        if (this?.data?.name != "Water Board" || variant != -1) return
-        solve(this)
+        if (this?.data?.name == "Water Board" && variant == -1) solve(this)
     }
 
     private fun solve(room: Room) {
+        modMessage("Solving Water Board")
         val extendedSlots = WoolColor.entries.joinToString("") { if (it.isExtended) it.ordinal.toString() else "" }.takeIf { it.length == 3 } ?: return
 
         val pistonHeadPosition = room.getRealCoords(Vec3(15.0, 82.0, 27.0))
@@ -136,7 +138,7 @@ object WaterSolver {
 
     fun waterInteract(event: C08PacketPlayerBlockPlacement) {
         if (solutions.isEmpty()) return
-        LeverBlock.entries.find { it.leverPos == event.position }?.let {
+        LeverBlock.entries.find { it.leverPos.equal(event.position.toVec3()) }?.let {
             it.i++
             if (it != LeverBlock.WATER || openedWater != -1L) return
             openedWater = System.currentTimeMillis()

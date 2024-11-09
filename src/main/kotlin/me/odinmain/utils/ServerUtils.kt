@@ -7,7 +7,9 @@ import me.odinmain.utils.clock.Executor.Companion.register
 import net.minecraft.entity.Entity
 import net.minecraft.network.Packet
 import net.minecraft.network.play.client.C16PacketClientStatus
-import net.minecraft.network.play.server.*
+import net.minecraft.network.play.server.S01PacketJoinGame
+import net.minecraft.network.play.server.S03PacketTimeUpdate
+import net.minecraft.network.play.server.S37PacketStatistics
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -44,15 +46,14 @@ object ServerUtils {
     @SubscribeEvent
     fun onPacket(event: PacketReceivedEvent) {
         when (event.packet) {
-            is S37PacketStatistics -> averagePing = (System.nanoTime() - pingStartTime) / 1e6 * 0.4 + averagePing * 0.6
+            is S37PacketStatistics -> averagePing = (System.nanoTime() - pingStartTime) / 1e6
 
             is S01PacketJoinGame -> averagePing = 0.0
 
             is S03PacketTimeUpdate -> {
-                if (prevTime != 0L) {
-                    averageTps = (20000 / (System.currentTimeMillis() - prevTime + 1f))
-                        .coerceIn(0f, 20f) * 0.182 + averageTps * 0.818
-                }
+                if (prevTime != 0L)
+                    averageTps = (20_000.0 / (System.currentTimeMillis() - prevTime + 1)).coerceIn(0.0, 20.0)
+
                 prevTime = System.currentTimeMillis()
             }
             else -> return

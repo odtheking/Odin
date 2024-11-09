@@ -29,9 +29,8 @@ object BlazeSolver {
             hpMap[entity] = hp
             blazes.add(entity)
         }
-
-        if (room.data.name == "Lower Blaze") blazes.sortBy { hpMap[it] }
-        else blazes.sortByDescending { hpMap[it] }
+        if (room.data.name == "Lower Blaze") blazes.sortByDescending { hpMap[it] }
+        else blazes.sortBy { hpMap[it] }
     }
 
     fun onRenderWorld() {
