@@ -53,7 +53,7 @@ object DragonCheck {
 
     fun updateTime() {
         WitherDragonsEnum.entries.forEach { dragon ->
-            if (dragon.state == WitherDragonState.SPAWNING) dragon.timeToSpawn--.coerceAtLeast(0)
+            if (dragon.state == WitherDragonState.SPAWNING && dragon.timeToSpawn > 0) dragon.timeToSpawn--
         }
     }
 }

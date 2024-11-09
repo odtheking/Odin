@@ -25,6 +25,7 @@ import net.minecraftforge.fml.common.eventhandler.Event
 import org.lwjgl.opengl.GL11
 import org.lwjgl.util.glu.GLU
 import java.awt.Toolkit
+import java.awt.datatransfer.DataFlavor
 import java.awt.datatransfer.StringSelection
 import java.util.*
 import kotlin.math.*
@@ -318,6 +319,19 @@ fun writeToClipboard(text: String, successMessage: String?) {
         devMessage("Clipboard not available!")
     }
 }
+
+fun getFromClipboard(): String? =
+    try {
+        val clipboard = Toolkit.getDefaultToolkit().systemClipboard
+        if (clipboard.isDataFlavorAvailable(DataFlavor.stringFlavor)) {
+            clipboard.getData(DataFlavor.stringFlavor) as? String
+        } else {
+            null
+        }
+    } catch (e: Exception) {
+        logger.error(e.stackTrace)
+        null
+    }
 
 fun writeToClipboard(text: String) {
     writeToClipboard(text, null)

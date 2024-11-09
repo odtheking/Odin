@@ -47,10 +47,10 @@ object ItemsHighlight : Module(
     private fun getEntityOutlineColor(entity: EntityItem): Color {
         return when (colorStyle){
             0 -> getRarity(entity.entityItem.lore)?.color ?: Color.WHITE
-            1 -> {
-                if (entity.ticksExisted <= 11) Color.YELLOW
-                else if (entity.getDistanceToEntity(mc.thePlayer) <= 3.5) Color.GREEN
-                else Color.RED
+            1 -> when {
+                entity.ticksExisted <= 11 -> Color.YELLOW
+                entity.getDistanceToEntity(mc.thePlayer) <= 3.5 -> Color.GREEN
+                else -> Color.RED
             }
             else -> customColor
         }
