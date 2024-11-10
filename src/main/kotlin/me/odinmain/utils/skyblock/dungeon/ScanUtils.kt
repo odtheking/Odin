@@ -66,7 +66,6 @@ object ScanUtils {
             return
         } // If not in dungeon or in boss room, return and register current room as null
 
-
         val roomCenter = getRoomCenter(mc.thePlayer.posX.toInt(), mc.thePlayer.posZ.toInt())
         if (roomCenter == lastRoomPos && LocationUtils.currentArea.isArea(Island.SinglePlayer)) return // extra SinglePlayer caching for invalid placed rooms
         lastRoomPos = roomCenter
