@@ -2,17 +2,14 @@ package me.odinmain.features.impl.dungeon.puzzlesolvers
 
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
-import me.odinmain.OdinMain.mc
 import me.odinmain.utils.equal
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.RenderUtils.renderVec
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.getRealCoords
 import me.odinmain.utils.skyblock.dungeon.tiles.Room
 import me.odinmain.utils.skyblock.getBlockAt
 import me.odinmain.utils.skyblock.modMessage
-import me.odinmain.utils.toBlockPos
 import me.odinmain.utils.toVec3
 import net.minecraft.init.Blocks
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
@@ -147,12 +144,12 @@ object WaterSolver {
     }
 
     private enum class LeverBlock(val relativePosition: Vec3, var i: Int = 0) {
-        QUARTZ(Vec3(21.0, 61.0, 20.0)),
-        GOLD(Vec3(21.0, 61.0, 15.0)),
-        COAL(Vec3(21.0, 61.0, 10.0)),
-        DIAMOND(Vec3(9.0, 61.0, 20.0)),
-        EMERALD(Vec3(9.0, 61.0, 15.0)),
-        CLAY(Vec3(9.0, 61.0, 10.0)),
+        QUARTZ(Vec3(20.0, 61.0, 20.0)),
+        GOLD(Vec3(20.0, 61.0, 15.0)),
+        COAL(Vec3(20.0, 61.0, 10.0)),
+        DIAMOND(Vec3(10.0, 61.0, 20.0)),
+        EMERALD(Vec3(10.0, 61.0, 15.0)),
+        CLAY(Vec3(10.0, 61.0, 10.0)),
         WATER(Vec3(15.0, 60.0, 5.0)),
         NONE(Vec3(0.0, 0.0, 0.0));
 
