@@ -43,7 +43,8 @@ object BlazeSolver {
         if (blazes.isEmpty() && lastBlazeCount == 1) {
             LocationUtils.currentDungeon?.puzzles?.find { it.name == Puzzle.Blaze.name }?.status = PuzzleStatus.Completed
             if (PuzzleSolvers.blazeSendComplete) partyMessage("Blaze puzzle solved!")
-            puzzleTimersMap["Blaze"]?.hasCompleted = true
+            puzzleTimersMap["Higher Blaze"]?.hasCompleted = true
+            puzzleTimersMap["Lower Blaze"]?.hasCompleted = true
             lastBlazeCount = 0
             return
         }
