@@ -151,8 +151,9 @@ object PuzzleSolvers : Module(
                 "Three Weirdos" -> it.blockPosition.equalsOneOf(room.getRealCoords(18, 69, 24), room.getRealCoords(16, 69, 25), room.getRealCoords(14, 69, 24))
                 "Teleport Maze" -> room.getRealCoords(15, 70, 20) == it.blockPosition
                 "Ice Fill" -> it.blockPosition.equalsOneOf(room.getRealCoords(14, 75, 29), room.getRealCoords(16, 75, 29))
-                else -> return@onPacket
-            }
+                else -> false
+            }.takeIf { it } ?: return@onPacket
+
             puzzleTimersMap[room.data.name]?.hasCompleted = true
         }
 
