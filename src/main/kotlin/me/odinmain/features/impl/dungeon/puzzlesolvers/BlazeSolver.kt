@@ -3,6 +3,7 @@ package me.odinmain.features.impl.dungeon.puzzlesolvers
 import me.odinmain.OdinMain.mc
 import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers.blazeHeight
 import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers.blazeWidth
+import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers.puzzleTimersMap
 import me.odinmain.utils.*
 import me.odinmain.utils.render.RenderUtils.renderBoundingBox
 import me.odinmain.utils.render.RenderUtils.renderVec
@@ -42,6 +43,7 @@ object BlazeSolver {
         if (blazes.isEmpty() && lastBlazeCount == 1) {
             LocationUtils.currentDungeon?.puzzles?.find { it.name == Puzzle.Blaze.name }?.status = PuzzleStatus.Completed
             if (PuzzleSolvers.blazeSendComplete) partyMessage("Blaze puzzle solved!")
+            puzzleTimersMap["Blaze"]?.hasCompleted = true
             lastBlazeCount = 0
             return
         }

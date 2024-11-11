@@ -21,7 +21,7 @@ import java.util.*
 import kotlin.math.ceil
 
 object AbilityTimers : Module(
-    "Ability Timers",
+    name = "Ability Timers",
     description = "Various Timers for various items.",
     category = Category.SKYBLOCK
 ) {

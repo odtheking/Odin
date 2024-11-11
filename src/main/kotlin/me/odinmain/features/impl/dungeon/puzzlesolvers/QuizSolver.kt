@@ -4,6 +4,7 @@ import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import me.odinmain.OdinMain.logger
 import me.odinmain.events.impl.DungeonEvents.RoomEnterEvent
+import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers.puzzleTimersMap
 import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers.quizDepth
 import me.odinmain.utils.*
 import me.odinmain.utils.render.*
@@ -34,7 +35,11 @@ object QuizSolver {
 
     fun onMessage(msg: String) {
         if (msg.startsWith("[STATUE] Oruo the Omniscient: ") && msg.endsWith("correctly!")) {
-            if (msg.contains("answered the final question")) return reset()
+            if (msg.contains("answered the final question")) {
+                puzzleTimersMap["Quiz"]?.hasCompleted = true
+                reset()
+                return
+            }
             if (msg.contains("answered Question #")) triviaOptions.forEach { it.isCorrect = false }
         }
         if (msg.trim().startsWithOneOf("ⓐ", "ⓑ", "ⓒ", ignoreCase = true)) {

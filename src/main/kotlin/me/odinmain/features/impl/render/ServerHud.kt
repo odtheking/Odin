@@ -96,5 +96,4 @@ object ServerHud : Module(
             else -> "§4$fps"
         }
     }
-
 }
