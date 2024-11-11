@@ -116,6 +116,7 @@ object PuzzleSolvers : Module(
             if ((!inDungeons || inBoss) && !LocationUtils.currentArea.isArea(Island.SinglePlayer)) return@onPacket
             if (waterSolver) waterInteract(it)
             if (boulderSolver) BoulderSolver.playerInteract(it)
+            puzzleTimers()
         }
 
         onMessage(Regex("\\[NPC] (.+): (.+).?"), { enabled && weirdosSolver }) { str ->
@@ -168,5 +169,8 @@ object PuzzleSolvers : Module(
     fun blockUpdateEvent(event: BlockChangeEvent) {
         if ((!inDungeons || inBoss) && !LocationUtils.currentArea.isArea(Island.SinglePlayer)) return
         if (beamsSolver) BeamsSolver.onBlockChange(event)
+    }
+
+    fun puzzleTimers() {
     }
 }

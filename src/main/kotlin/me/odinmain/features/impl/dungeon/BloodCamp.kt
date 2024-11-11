@@ -1,7 +1,6 @@
 package me.odinmain.features.impl.dungeon
 
 import me.odinmain.OdinMain.isLegitVersion
-import me.odinmain.OdinMain.logger
 import me.odinmain.events.impl.EntityLeaveWorldEvent
 import me.odinmain.events.impl.PostEntityMetadata
 import me.odinmain.events.impl.RealServerTick
@@ -19,7 +18,6 @@ import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.inBoss
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.inDungeons
 import me.odinmain.utils.skyblock.getSkullValue
-import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.entity.boss.BossStatus
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.entity.monster.EntityZombie
@@ -32,6 +30,7 @@ import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
+import kotlin.math.min
 import kotlin.math.roundToInt
 
 object BloodCamp : Module(
@@ -161,7 +160,7 @@ object BloodCamp : Module(
             val (currVector, endVector, endVecUpdated, speedVectors) = renderData
             val endVectorUpdated = min(currentTickTime - endVecUpdated, 100)
 
-            val endPoint = calcEndVector(endVector, renderData.lastEndVector, endVectorUpdated / 100)
+            val endPoint = calcEndVector(endVector, renderData.lastEndVector, endVectorUpdated / 100f)
 
             val pingPoint = Vec3(
                 entity.posX + speedVectors.xCoord * averagePing,

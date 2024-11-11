@@ -55,7 +55,7 @@ object SecretClicked : Module(
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-        if (!boxes || !DungeonUtils.inDungeons || (DungeonUtils.inBoss && boxInBoss) || clickedSecretsList.isEmpty()) return
+        if (!boxes || !DungeonUtils.inDungeons || (DungeonUtils.inBoss && !boxInBoss) || clickedSecretsList.isEmpty()) return
 
         clickedSecretsList.forEach {
             val currentColor = if (it.locked) lockedColor else color

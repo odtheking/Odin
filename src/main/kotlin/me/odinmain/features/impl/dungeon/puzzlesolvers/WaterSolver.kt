@@ -43,9 +43,9 @@ object WaterSolver {
     private fun solve(room: Room) {
         val extendedSlots = WoolColor.entries.joinToString("") { if (it.isExtended) it.ordinal.toString() else "" }.takeIf { it.length == 3 } ?: return
 
-        val pistonHeadPosition = room.getRealCoords(Vec3(15.0, 82.0, 27.0))
+        val pistonHeadPosition = room.getRealCoords(BlockPos(15, 82, 27))
         val foundBlocks = mutableListOf(false, false, false, false, false)
-        BlockPos.getAllInBox(BlockPos(pistonHeadPosition.xCoord + 1, 78.0, pistonHeadPosition.zCoord + 1), BlockPos(pistonHeadPosition.xCoord - 1, 77.0, pistonHeadPosition.zCoord - 1)).forEach {
+        BlockPos.getAllInBox(BlockPos(pistonHeadPosition.x + 1, 78, pistonHeadPosition.z + 1), BlockPos(pistonHeadPosition.x - 1, 77, pistonHeadPosition.z - 1)).forEach {
             when (getBlockAt(it)) {
                 Blocks.gold_block -> foundBlocks[0] = true
                 Blocks.hardened_clay -> foundBlocks[1] = true
@@ -60,10 +60,10 @@ object WaterSolver {
             foundBlocks[2] && foundBlocks[3] -> 1
             foundBlocks[3] && foundBlocks[4] -> 2
             foundBlocks[0] && foundBlocks[3] -> 3
-            else -> -1
+            else -> return
         }
 
-        modMessage("Variant: $variant:$extendedSlots:${room.rotation.name}")
+        modMessage("variant: $variant, extended: $extendedSlots")
 
         solutions.clear()
         waterSolutions[variant.toString()].asJsonObject[extendedSlots].asJsonObject.entrySet().forEach {
@@ -78,7 +78,7 @@ object WaterSolver {
                     "water" -> LeverBlock.WATER
                     else -> LeverBlock.NONE
                 }
-            ] = it.value.asJsonArray.map { value -> value.asDouble }.toTypedArray()
+            ] = it.value.asJsonArray.map { it.asDouble }.toTypedArray()
         }
     }
 
@@ -95,23 +95,21 @@ object WaterSolver {
 
         if (solutionList.size > 1 && PuzzleSolvers.showTracer && firstSolution.first.leverPos != solutionList[1].first.leverPos) {
             Renderer.draw3DLine(
-                listOf(firstSolution.first.leverPos.addVector(0.5, 0.5, 0.5), solutionList[1].first.leverPos.addVector(0.5, 0.5, 0.5)),
+                listOf(firstSolution.first.leverPos.addVector(.5, .5, .5), solutionList[1].first.leverPos.addVector(.5, .5, .5)),
                 color = PuzzleSolvers.tracerColorSecond, lineWidth = 1.5f, depth = true
             )
         }
 
         solutions.forEach { (lever, times) ->
             times.drop(lever.i).forEachIndexed { index, time ->
-                val displayText = when {
+                Renderer.drawStringInWorld(when {
                     openedWater == -1L && time == 0.0 -> "§a§lCLICK ME!"
                     openedWater == -1L -> "§e${time}s"
                     else -> {
                         val remainingTime = openedWater + time * 1000L - System.currentTimeMillis()
                         if (remainingTime > 0) "§e${String.format(Locale.US, "%.2f", remainingTime / 1000)}s" else "§a§lCLICK ME!"
                     }
-                }
-
-                Renderer.drawStringInWorld(displayText, lever.leverPos.addVector(0.5, (index + lever.i) * 0.5 + 1.5, 0.5), Color.WHITE, scale = 0.04f)
+                }, lever.leverPos.addVector(0.5, (index + lever.i) * 0.5 + 1.5, 0.5), Color.WHITE, scale = 0.04f)
             }
         }
     }
@@ -120,8 +118,7 @@ object WaterSolver {
         if (solutions.isEmpty()) return
         LeverBlock.entries.find { it.leverPos.equal(event.position.toVec3()) }?.let {
             it.i++
-            if (it != LeverBlock.WATER || openedWater != -1L) return
-            openedWater = System.currentTimeMillis()
+            if (it == LeverBlock.WATER && openedWater == -1L) openedWater = System.currentTimeMillis()
         }
     }
 
@@ -133,11 +130,11 @@ object WaterSolver {
     }
 
     private enum class WoolColor(val relativePosition: BlockPos) {
-        RED(BlockPos(15, 56, 15)),
-        GREEN(BlockPos(15, 56, 16)),
-        BLUE(BlockPos(15, 56, 17)),
+        PURPLE(BlockPos(15, 56, 19)),
         ORANGE(BlockPos(15, 56, 18)),
-        PURPLE(BlockPos(15, 56, 19));
+        BLUE(BlockPos(15, 56, 17)),
+        GREEN(BlockPos(15, 56, 16)),
+        RED(BlockPos(15, 56, 15));
 
         val isExtended: Boolean get() =
             getBlockAt(DungeonUtils.currentRoom?.getRealCoords(relativePosition) ?: BlockPos(0, 0, 0)) == Blocks.wool

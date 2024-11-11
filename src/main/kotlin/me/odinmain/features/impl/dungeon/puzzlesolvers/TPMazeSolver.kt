@@ -49,11 +49,10 @@ object TPMazeSolver {
 
     fun tpRender() {
         if (DungeonUtils.currentRoomName != "Teleport Maze") return
-        val color = if (correctPortals.size == 1) mazeColorOne else mazeColorMultiple
         tpPads.forEach {
             when (it) {
+                in correctPortals -> Renderer.drawBlock(it, if (correctPortals.size == 1) mazeColorOne else mazeColorMultiple, outlineAlpha = 0, depth = false)
                 in visited -> Renderer.drawBlock(it, mazeColorVisited, outlineAlpha = 0, depth = true)
-                in correctPortals -> Renderer.drawBlock(it, color, outlineAlpha = 0, depth = false)
                 else -> Renderer.drawBlock(it, Color.WHITE.withAlpha(0.5f), outlineAlpha = 0, fillAlpha = 0.5f, depth = true)
             }
         }

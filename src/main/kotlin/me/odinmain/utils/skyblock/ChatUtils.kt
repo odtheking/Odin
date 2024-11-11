@@ -11,30 +11,6 @@ import net.minecraft.util.*
 import net.minecraftforge.client.ClientCommandHandler
 import kotlin.math.roundToInt
 
-
-/**
- * Generates a random response from an eight-ball simulation.
- *
- * @return A randomly selected response.
- */
-fun eightBall(): String {
-    return responses.random()
-}
-
-/**
- * Simulates the flipping of a coin.
- *
- * @return The result of the coin flip ("heads" or "tails").
- */
-fun flipCoin(): String = if (Math.random() < 0.5) "heads" else "tails"
-
-/**
- * Rolls a six-sided die and returns the result.
- *
- * @return The result of the die roll (1 to 6).
- */
-fun rollDice(): Int = (1..6).random()
-
 /**
  * Executes a given command either client-side or server-side.
  *
@@ -53,9 +29,7 @@ fun sendCommand(text: Any, clientSide: Boolean = false) {
  * @param message Message to be sent.
  */
 fun sendChatMessage(message: Any) {
-    runOnMCThread {
-        mc.thePlayer?.sendChatMessage(message.toString())
-    }
+    runOnMCThread { mc.thePlayer?.sendChatMessage(message.toString()) }
 }
 
 /**
@@ -176,26 +150,3 @@ fun createClickStyle(action: ClickEvent.Action?, value: String): ChatStyle {
     )
     return style
 }
-
-private val responses = arrayOf(
-    "It is certain",
-    "It is decidedly so",
-    "Without a doubt",
-    "Yes definitely",
-    "You may rely on it",
-    "As I see it, yes",
-    "Most likely",
-    "Outlook good",
-    "Yes",
-    "Signs point to yes",
-    "Reply hazy try again",
-    "Ask again later",
-    "Better not tell you now",
-    "Cannot predict now",
-    "Concentrate and ask again",
-    "Don't count on it",
-    "My reply is no",
-    "My sources say no",
-    "Outlook not so good",
-    "Very doubtful"
-)

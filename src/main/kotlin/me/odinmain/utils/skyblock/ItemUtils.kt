@@ -49,9 +49,6 @@ val ItemStack?.skyblockID: String
 val ItemStack?.uuid: String
     get() = this?.extraAttributes?.getString("uuid") ?: ""
 
-inline val heldItem: ItemStack?
-    get() = mc.thePlayer?.heldItem
-
  /**
  * Returns if an item has an ability
  */
@@ -86,11 +83,8 @@ val EntityPlayerSP.usingEtherWarp: Boolean
 /**
  * Returns the ID of held item
  */
-fun isHolding(id: String): Boolean =
-    mc.thePlayer?.heldItem?.skyblockID == id
-
-fun EntityPlayerSP?.isHolding(id: String): Boolean =
-    this?.heldItem?.skyblockID == id
+fun isHolding(vararg id: String): Boolean =
+    mc.thePlayer?.heldItem?.skyblockID in id
 
 /**
  * Returns first slot of an Item

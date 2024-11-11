@@ -1,6 +1,5 @@
 package me.odinmain.features.impl.skyblock
 
-import me.odinmain.events.impl.ClickEvent
 import me.odinmain.events.impl.RealServerTick
 import me.odinmain.features.Category
 import me.odinmain.features.Module
@@ -8,11 +7,11 @@ import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.HudSetting
 import me.odinmain.ui.hud.HudElement
+import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.mcText
 import me.odinmain.utils.render.mcTextAndWidth
 import me.odinmain.utils.skyblock.LocationUtils
-import me.odinmain.utils.skyblock.PlayerUtils.isHolding
 import me.odinmain.utils.skyblock.isHolding
 import me.odinmain.utils.skyblock.skyblockID
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
@@ -61,7 +60,7 @@ object AbilityTimers : Module(
         }
 
         onPacket(C08PacketPlayerBlockPlacement::class.java) {
-            if (mc.thePlayer?.isHolding("ASTRAEA", "HYPERION", "VALKYRIE", "SCYLLA", "NECRON_BLADE") == false || witherImpactTicks != -1) return@onPacket
+            if (mc.thePlayer?.heldItem?.skyblockID?.equalsOneOf("ASTRAEA", "HYPERION", "VALKYRIE", "SCYLLA", "NECRON_BLADE") == false || witherImpactTicks != -1) return@onPacket
             witherImpactTicks = 0
         }
 

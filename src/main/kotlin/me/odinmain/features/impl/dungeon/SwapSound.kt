@@ -6,7 +6,6 @@ import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.skyblock.PlayerUtils
-import me.odinmain.utils.skyblock.heldItem
 import net.minecraft.init.Items
 import net.minecraft.network.play.client.C09PacketHeldItemChange
 import net.minecraft.util.MovingObjectPosition
@@ -42,7 +41,7 @@ object SwapSound : Module(
 
     @SubscribeEvent
     fun onLeftClick(event: ClickEvent.LeftClickEvent) {
-        if (heldItem?.item !in pickaxes || mc.thePlayer?.inventory?.mainInventory?.get(slot ?: return)?.item in pickaxes || playedThisTick || (onlyBlock && mc.objectMouseOver.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK)) return
+        if (mc.thePlayer?.heldItem?.item !in pickaxes || mc.thePlayer?.inventory?.mainInventory?.get(slot ?: return)?.item in pickaxes || playedThisTick || (onlyBlock && mc.objectMouseOver.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK)) return
         PlayerUtils.playLoudSound(if (sound == defaultSounds.size - 1) customSound else defaultSounds[sound], volume, pitch)
         playedThisTick = true
     }

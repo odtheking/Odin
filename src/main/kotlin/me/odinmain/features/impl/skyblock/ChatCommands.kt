@@ -104,9 +104,9 @@ object ChatCommands : Module(
             "coords", "co" -> if (coords) channelMessage(PlayerUtils.getPositionString(), name, channel)
             "odin", "od" -> if (odin) channelMessage("Odin! https://discord.gg/2nCbC9hkxT", name, channel)
             "boop" -> if (boop) sendChatMessage("/boop ${message.substringAfter("boop ")}")
-            "cf" -> if (cf) channelMessage(flipCoin(), name, channel)
-            "8ball" -> if (eightball) channelMessage(eightBall(), name, channel)
-            "dice" -> if (dice) channelMessage(rollDice(), name, channel)
+            "cf" -> if (cf) channelMessage(if (Math.random() < 0.5) "heads" else "tails", name, channel)
+            "8ball" -> if (eightball) channelMessage(responses.random(), name, channel)
+            "dice" -> if (dice) channelMessage((1..6).random(), name, channel)
             "racism" -> if (racism) channelMessage("$name is ${Random.nextInt(1, 101)}% racist. Racism is not allowed!", name, channel)
             "ping" -> if (ping) channelMessage("Current Ping: ${floor(ServerUtils.averagePing).toInt()}ms", name, channel)
             "tps" -> if (tps) channelMessage("Current TPS: ${ServerUtils.averageTps.floor()}", name, channel)
@@ -211,4 +211,27 @@ object ChatCommands : Module(
     enum class ChatChannel {
         PARTY, GUILD, PRIVATE
     }
+
+    private val responses = arrayOf(
+        "It is certain",
+        "It is decidedly so",
+        "Without a doubt",
+        "Yes definitely",
+        "You may rely on it",
+        "As I see it, yes",
+        "Most likely",
+        "Outlook good",
+        "Yes",
+        "Signs point to yes",
+        "Reply hazy try again",
+        "Ask again later",
+        "Better not tell you now",
+        "Cannot predict now",
+        "Concentrate and ask again",
+        "Don't count on it",
+        "My reply is no",
+        "My sources say no",
+        "Outlook not so good",
+        "Very doubtful"
+    )
 }

@@ -9,9 +9,7 @@ import me.odinmain.utils.floored
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.runOnMCThread
-import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.inventory.ContainerChest
-import net.minecraft.item.ItemStack
 import net.minecraft.util.Vec3
 
 
@@ -48,32 +46,14 @@ object PlayerUtils {
         if (displayText) Renderer.displayTitle(title , time, color = color)
     }
 
-    inline val posX get() = mc.thePlayer.posX
-    inline val posY get() = mc.thePlayer.posY
-    inline val posZ get() = mc.thePlayer.posZ
+    inline val posX get() = mc.thePlayer?.posX ?: 0.0
+    inline val posY get() = mc.thePlayer?.posY ?: 0.0
+    inline val posZ get() = mc.thePlayer?.posZ ?: 0.0
 
     fun getPositionString() = "x: ${posX.toInt()}, y: ${posY.toInt()}, z: ${posZ.toInt()}"
 
     val posFloored
         get() = mc.thePlayer.positionVector.floored()
-
-    fun EntityPlayerSP?.isHolding(vararg names: String, ignoreCase: Boolean = false, mode: Int = 0): Boolean {
-        return this.isHolding(Regex("${if (ignoreCase) "(?i)" else ""}${names.joinToString("|")}"), mode)
-    }
-
-    fun EntityPlayerSP?.isHolding(regex: Regex, mode: Int = 0): Boolean {
-        return this.isHolding { it?.run {
-            when (mode) {
-                0 -> displayName.contains(regex) || skyblockID.matches(regex)
-                1 -> displayName.contains(regex)
-                2 -> skyblockID.matches(regex)
-                else -> false
-            } } == true
-        }
-    }
-
-    private fun EntityPlayerSP?.isHolding(predicate: (ItemStack?) -> Boolean) =
-        this?.let { predicate(it.heldItem) } == true
 
     sealed class ClickType {
         data object Left : ClickType()

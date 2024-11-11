@@ -5,6 +5,7 @@ import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.*
 import me.odinmain.utils.render.*
+import org.apache.commons.lang3.math.IEEE754rUtils.max
 
 object ServerHud : Module(
     name = "Server Hud",

@@ -10,6 +10,7 @@ import me.odinmain.features.ModuleManager
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.skyblock.*
+import net.minecraft.client.gui.GuiScreen
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.SharedMonsterAttributes
@@ -24,9 +25,6 @@ import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.eventhandler.Event
 import org.lwjgl.opengl.GL11
 import org.lwjgl.util.glu.GLU
-import java.awt.Toolkit
-import java.awt.datatransfer.DataFlavor
-import java.awt.datatransfer.StringSelection
 import java.util.*
 import kotlin.math.*
 
@@ -76,13 +74,6 @@ fun Any?.equalsOneOf(vararg options: Any?): Boolean {
 
 fun String?.matchesOneOf(vararg options: Regex): Boolean {
     return options.any { it.matches(this ?: "") }
-}
-
-/**
- * Checks if the first value in the pair equals the first argument and the second value in the pair equals the second argument.
- */
-fun Pair<Any?, Any?>?.equal(first: Any?, second: Any?): Boolean {
-    return this?.first == first && this?.second == second
 }
 
 /**
@@ -222,35 +213,11 @@ fun endProfile() {
 }
 
 /**
- * Returns the maximum value of the numbers you give in as a float
- *
- * @param numbers All the numbers you want to compare
- *
- * @returns The maximum value of the numbers, as a float
- */
-fun max(vararg numbers: Number): Float {
-    return numbers.maxBy { it.toFloat() }.toFloat()
-}
-
-/**
- * Returns the minimum value of the numbers you give in as a float
- *
- * @param numbers All the numbers you want to compare
- *
- * @returns The minimum value of the numbers, as a float
- */
-fun min(vararg numbers: Number): Float {
-    return numbers.minBy { it.toFloat() }.toFloat()
-}
-
-/**
  * Returns the String with the first letter capitalized
  *
  * @return The String with the first letter capitalized
  */
-fun String.capitalizeFirst(): String {
-    return substring(0, 1).uppercase(Locale.getDefault()) + substring(1, length).lowercase()
-}
+fun String.capitalizeFirst(): String = replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
 
 fun Color.coerceAlpha(min: Float, max: Float): Color {
     return if (this.alpha < min) this.withAlpha(min)
@@ -308,33 +275,9 @@ fun checkGLError(message: String) {
 /**
  * Writes the given text to the clipboard.
  */
-fun writeToClipboard(text: String, successMessage: String?) {
-    try {
-        val clipboard = Toolkit.getDefaultToolkit().systemClipboard
-        val stringSelection = StringSelection(text)
-        clipboard.setContents(stringSelection, null)
-        if (successMessage != null)
-            modMessage(successMessage)
-    } catch (_: Exception) {
-        devMessage("Clipboard not available!")
-    }
-}
-
-fun getFromClipboard(): String? =
-    try {
-        val clipboard = Toolkit.getDefaultToolkit().systemClipboard
-        if (clipboard.isDataFlavorAvailable(DataFlavor.stringFlavor)) {
-            clipboard.getData(DataFlavor.stringFlavor) as? String
-        } else {
-            null
-        }
-    } catch (e: Exception) {
-        logger.error(e.stackTrace)
-        null
-    }
-
-fun writeToClipboard(text: String) {
-    writeToClipboard(text, null)
+fun writeToClipboard(text: String, successMessage: String = "§aCopied to clipboard.") {
+    GuiScreen.setClipboardString(text)
+    if (successMessage.isNotEmpty()) modMessage(successMessage)
 }
 
 private val romanMap = mapOf('I' to 1, 'V' to 5, 'X' to 10, 'L' to 50, 'C' to 100, 'D' to 500, 'M' to 1000)

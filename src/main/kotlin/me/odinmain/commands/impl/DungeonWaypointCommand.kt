@@ -10,12 +10,12 @@ import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.glList
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.setWaypoints
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.SecretWaypoints.resetSecrets
-import me.odinmain.utils.getFromClipboard
 import me.odinmain.utils.isHexaDecimal
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.writeToClipboard
+import net.minecraft.client.gui.GuiScreen
 import net.minecraft.util.BlockPos
 
 val dungeonWaypointsCommand = commodore("dwp", "dungeonwaypoints") {
@@ -91,7 +91,7 @@ val dungeonWaypointsCommand = commodore("dwp", "dungeonwaypoints") {
 
     literal("import").runs {
         scope.launch {
-            val waypoints = getFromClipboard()?.let { decodeWaypoints(it) } ?: return@launch modMessage("Failed to decode waypoints from clipboard.")
+            val waypoints = GuiScreen.getClipboardString()?.let { decodeWaypoints(it) } ?: return@launch modMessage("Failed to decode waypoints from clipboard.")
             DungeonWaypointConfig.waypoints = waypoints
             DungeonWaypointConfig.saveConfig()
 
