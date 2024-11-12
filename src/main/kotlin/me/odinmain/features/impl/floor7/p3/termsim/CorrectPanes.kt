@@ -17,14 +17,9 @@ object CorrectPanes : TermSimGui(
 
     override fun create() {
         this.inventorySlots.inventorySlots.subList(0, 45).forEachIndexed { index, it ->
-            if (floor(index / 9.0) in 1.0..3.0 && index % 9 in 2..6) it.putStack(getPane())
+            if (floor(index / 9.0) in 1.0..3.0 && index % 9 in 2..6) it.putStack(if (Math.random() > 0.75) greenPane else redPane)
             else it.putStack(blackPane)
         }
-    }
-
-    private fun getPane(): ItemStack {
-        val a = Math.random()
-        return if (a > 0.75) greenPane else redPane
     }
 
     override fun slotClick(slot: Slot, button: Int) {

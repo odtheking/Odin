@@ -42,6 +42,7 @@ object QuizSolver {
             }
             if (msg.contains("answered Question #")) triviaOptions.forEach { it.isCorrect = false }
         }
+
         if (msg.trim().startsWithOneOf("ⓐ", "ⓑ", "ⓒ", ignoreCase = true) && triviaAnswers?.any { msg.endsWith(it) } == true) {
             when (msg.trim()[0]) {
                 'ⓐ' -> triviaOptions[0].isCorrect = true
