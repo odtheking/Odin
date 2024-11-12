@@ -82,7 +82,7 @@ object WaterSolver {
         }
     }
 
-    fun waterRender() {
+    fun onRenderWorld() {
         if (variant == -1 || DungeonUtils.currentRoomName != "Water Board") return
 
         val solutionList = solutions

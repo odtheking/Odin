@@ -109,8 +109,7 @@ object PuzzleSolvers : Module(
 
     private val puzzleTimers by BooleanSetting("Puzzle Timers", true, description = "Shows the time it took to solve each puzzle.").withDependency { enabled }
     private val puzzleToIntMap = mapOf("Creeper Beams" to 0, "Blaze Lower" to 1, "Blaze Higher" to 2, "Boulder" to 3, "Ice FIll" to 4, "Quiz" to 5, "Teleport Maze" to 6, "Water Board" to 7, "Three Weirdos" to 8)
-    data class PuzzleTimer(val timeEntered: Long = System.currentTimeMillis(), var hasCompleted: Boolean = false, var sentMessage: Boolean = false)
-    val puzzleTimersMap = hashMapOf<String, PuzzleTimer>()
+    val puzzleTimersMap = hashMapOf<String, Long>()
 
     init {
         execute(500) {
@@ -145,29 +144,27 @@ object PuzzleSolvers : Module(
             val room = DungeonUtils.currentRoom ?: return@onPacket
 
             when (room.data.name) {
-                "Water Board" -> room.getRealCoords(15, 56, 22) == it.blockPosition
-                "Creeper Beams" -> room.getRealCoords(15, 69, 15) == it.blockPosition
-                "Boulder" -> room.getRealCoords(15, 66, 29) == it.blockPosition
                 "Three Weirdos" -> it.blockPosition.equalsOneOf(room.getRealCoords(18, 69, 24), room.getRealCoords(16, 69, 25), room.getRealCoords(14, 69, 24))
-                "Teleport Maze" -> room.getRealCoords(15, 70, 20) == it.blockPosition
-                "Ice Fill" -> it.blockPosition.equalsOneOf(room.getRealCoords(14, 75, 29), room.getRealCoords(16, 75, 29))
-                else -> false
-            }.takeIf { it } ?: return@onPacket
-
-            puzzleTimersMap[room.data.name]?.hasCompleted = true
+                "Ice Fill"      -> it.blockPosition.equalsOneOf(room.getRealCoords(14, 75, 29), room.getRealCoords(16, 75, 29))
+                "Creeper Beams" -> it.blockPosition == room.getRealCoords(15, 69, 15)
+                "Teleport Maze" -> it.blockPosition == room.getRealCoords(15, 70, 20)
+                "Water Board"   -> it.blockPosition == room.getRealCoords(15, 56, 22)
+                "Boulder"       -> it.blockPosition == room.getRealCoords(15, 66, 29)
+                else            -> false
+            }.takeIf { !it } ?: onPuzzleComplete(room.data.name)
         }
 
         onWorldLoad {
-            WaterSolver.reset()
-            TPMazeSolver.reset()
+            puzzleTimersMap.clear()
             IceFillSolver.reset()
+            WeirdosSolver.reset()
+            BoulderSolver.reset()
+            TPMazeSolver.reset()
+            WaterSolver.reset()
             BlazeSolver.reset()
             BeamsSolver.reset()
-            WeirdosSolver.reset()
             QuizSolver.reset()
-            BoulderSolver.reset()
             TTTSolver.reset()
-            puzzleTimersMap.clear()
         }
     }
 
@@ -175,8 +172,8 @@ object PuzzleSolvers : Module(
     fun onWorldRender(event: RenderWorldLastEvent) {
         if ((!inDungeons || inBoss) && !LocationUtils.currentArea.isArea(Island.SinglePlayer)) return
         profile("Puzzle Solvers Render") {
-            if (waterSolver) WaterSolver.waterRender()
-            if (tpMaze) TPMazeSolver.tpRender()
+            if (waterSolver) WaterSolver.onRenderWorld()
+            if (tpMaze) TPMazeSolver.onRenderWorld()
             if (iceFillSolver) IceFillSolver.onRenderWorld(iceFillColor)
             if (blazeSolver) BlazeSolver.onRenderWorld()
             if (beamsSolver) BeamsSolver.onRenderWorld()
@@ -196,17 +193,18 @@ object PuzzleSolvers : Module(
         BoulderSolver.onRoomEnter(event)
         TPMazeSolver.onRoomEnter(event)
         if (!puzzleTimers) return
-        if (event.room?.data?.type == RoomType.PUZZLE && puzzleTimersMap.none { it.key == event.room.data.name }) puzzleTimersMap[event.room.data.name] = PuzzleTimer()
-        puzzleTimersMap.forEach {
-            if (!it.value.hasCompleted || it.value.sentMessage) return@forEach
-            puzzlePBs.time(puzzleToIntMap[it.key] ?: return@forEach, (System.currentTimeMillis() - it.value.timeEntered) / 1000.0, "s§7!", "§a${it.key} §7solved in §6", addPBString = true, addOldPBString = true, sendOnlyPB = true)
-            it.value.sentMessage = true
-        }
+        if (event.room?.data?.type == RoomType.PUZZLE && puzzleTimersMap.none { it.key == event.room.data.name }) puzzleTimersMap[event.room.data.name] = System.currentTimeMillis()
     }
 
     @SubscribeEvent
     fun blockUpdateEvent(event: BlockChangeEvent) {
         if ((!inDungeons || inBoss) && !LocationUtils.currentArea.isArea(Island.SinglePlayer)) return
         if (beamsSolver) BeamsSolver.onBlockChange(event)
+    }
+
+    fun onPuzzleComplete(puzzleName: String) {
+        puzzleTimersMap[puzzleName]?.let {
+            puzzlePBs.time(puzzleToIntMap[puzzleName] ?: return@let, (System.currentTimeMillis() - it) / 1000.0, "s§7!", "§a${puzzleName} §7solved in §6", addPBString = true, addOldPBString = true, sendOnlyPB = false)
+        }
     }
 }

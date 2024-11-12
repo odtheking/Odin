@@ -66,11 +66,12 @@ object Renderer {
         outlineAlpha: Number = 1,
         fillAlpha: Number = 1,
         depth: Boolean = false,
-        lineSmoothing: Boolean = true
+        lineSmoothing: Boolean = true,
+        expand: Double = 0.0
     ) {
         val block = getBlockAt(pos)
         block.setBlockBoundsBasedOnState(mc.theWorld, pos)
-        drawBox(block.getSelectedBoundingBox(mc.theWorld, pos).outlineBounds(), color, outlineWidth, outlineAlpha, fillAlpha, depth, lineSmoothing)
+        drawBox(block.getSelectedBoundingBox(mc.theWorld, pos).outlineBounds().expand(expand, expand, expand), color, outlineWidth, outlineAlpha, fillAlpha, depth, lineSmoothing)
     }
 
     fun drawStyledBlock(
@@ -79,12 +80,13 @@ object Renderer {
         style: Int,
         width: Number = 3,
         depth: Boolean = false,
-        lineSmoothing: Boolean = true
+        lineSmoothing: Boolean = true,
+        expand: Double = 0.0
     ) {
         when (style) {
-            0 -> drawBlock(pos, color, width, 0, color.alpha, depth, lineSmoothing)
-            1 -> drawBlock(pos, color, width, color.alpha, 0, depth, lineSmoothing)
-            2 -> drawBlock(pos, color, width, color.alpha, color.multiplyAlpha(.75f).alpha, depth, lineSmoothing)
+            0 -> drawBlock(pos, color, width, 0, color.alpha, depth, lineSmoothing, expand)
+            1 -> drawBlock(pos, color, width, color.alpha, 0, depth, lineSmoothing, expand)
+            2 -> drawBlock(pos, color, width, color.alpha, color.multiplyAlpha(.75f).alpha, depth, lineSmoothing, expand)
         }
     }
 

@@ -3,7 +3,7 @@ package me.odinmain.features.impl.dungeon.puzzlesolvers
 import me.odinmain.OdinMain.mc
 import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers.blazeHeight
 import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers.blazeWidth
-import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers.puzzleTimersMap
+import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers.onPuzzleComplete
 import me.odinmain.utils.*
 import me.odinmain.utils.render.RenderUtils.renderBoundingBox
 import me.odinmain.utils.render.RenderUtils.renderVec
@@ -18,6 +18,7 @@ object BlazeSolver {
     private var blazes = mutableListOf<EntityArmorStand>()
     private var roomType = 0
     private var lastBlazeCount = 10
+    private val blazeHealthRegex = Regex("^\\[Lv15] Blaze [\\d,]+/([\\d,]+)❤$")
 
     fun getBlaze() {
         val room = DungeonUtils.currentRoom ?: return
@@ -26,7 +27,7 @@ object BlazeSolver {
         blazes.clear()
         mc.theWorld?.loadedEntityList?.forEach { entity ->
             if (entity !is EntityArmorStand || entity in blazes) return@forEach
-            val hp = Regex("^\\[Lv15] Blaze [\\d,]+/([\\d,]+)❤$").find(entity.name.noControlCodes)?.groups?.get(1)?.value?.replace(",", "")?.toIntOrNull() ?: return@forEach
+            val hp = blazeHealthRegex.find(entity.name.noControlCodes)?.groups?.get(1)?.value?.replace(",", "")?.toIntOrNull() ?: return@forEach
             hpMap[entity] = hp
             blazes.add(entity)
         }
@@ -43,8 +44,8 @@ object BlazeSolver {
         if (blazes.isEmpty() && lastBlazeCount == 1) {
             LocationUtils.currentDungeon?.puzzles?.find { it.name == Puzzle.Blaze.name }?.status = PuzzleStatus.Completed
             if (PuzzleSolvers.blazeSendComplete) partyMessage("Blaze puzzle solved!")
-            puzzleTimersMap["Higher Blaze"]?.hasCompleted = true
-            puzzleTimersMap["Lower Blaze"]?.hasCompleted = true
+            onPuzzleComplete("Higher Blaze")
+            onPuzzleComplete("Lower Blaze")
             lastBlazeCount = 0
             return
         }

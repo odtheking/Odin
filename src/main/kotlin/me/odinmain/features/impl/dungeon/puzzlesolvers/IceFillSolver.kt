@@ -80,10 +80,8 @@ object IceFillSolver {
         }
     }
 
-    fun transformTo(vec: Vec3i, rotation: Rotations): Vec3 {
-        return with(transform(vec.x, vec.z, rotation)) {
-            Vec3(x.toDouble(), vec.y.toDouble(), z.toDouble())
-        }
+    fun transformTo(vec: Vec3i, rotation: Rotations): Vec3 = with(transform(vec.x, vec.z, rotation)) {
+        Vec3(x.toDouble(), vec.y.toDouble(), z.toDouble())
     }
 
     fun reset() {

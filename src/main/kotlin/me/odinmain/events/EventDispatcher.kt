@@ -26,21 +26,18 @@ object EventDispatcher {
      * Dispatches [SecretPickupEvent.Item]
      */
     @SubscribeEvent
-    fun onRemoveEntity(event: EntityLeaveWorldEvent) {
-        if (!inDungeons || event.entity !is EntityItem || event.entity.entityItem?.unformattedName?.containsOneOf(dungeonItemDrops, true) == false || mc.thePlayer.getDistanceToEntity(event.entity) > 6) return
-        SecretPickupEvent.Item(event.entity).postAndCatch()
+    fun onRemoveEntity(event: EntityLeaveWorldEvent) = with(event.entity) {
+        if (inDungeons && this is EntityItem && this.entityItem?.unformattedName?.containsOneOf(dungeonItemDrops, true) != false && mc.thePlayer.getDistanceToEntity(this) <= 6)
+            SecretPickupEvent.Item(this).postAndCatch()
     }
 
     /**
      * Dispatches [SecretPickupEvent.Interact]
      */
     @SubscribeEvent
-    fun onPacket(event: PacketSentEvent) {
-        with(event.packet) {
-            if (inDungeons && this is C08PacketPlayerBlockPlacement && position != null &&
-                isSecret(mc.theWorld?.getBlockState(position) ?: return, position))
-                    SecretPickupEvent.Interact(position, mc.theWorld?.getBlockState(position) ?: return).postAndCatch()
-        }
+    fun onPacket(event: PacketSentEvent) = with(event.packet) {
+        if (inDungeons && this is C08PacketPlayerBlockPlacement && position != null)
+            SecretPickupEvent.Interact(position, mc.theWorld?.getBlockState(position)?.takeIf { isSecret(it, position) } ?: return).postAndCatch()
     }
 
     /**

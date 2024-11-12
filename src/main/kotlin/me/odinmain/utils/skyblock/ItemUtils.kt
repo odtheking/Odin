@@ -144,7 +144,7 @@ enum class ItemRarity(
     VERY_SPECIAL("VERY SPECIAL", "§c", Color.RED);
 }
 
-private val rarityRegex: Regex = Regex("§l(?<rarity>${ItemRarity.entries.joinToString("|") { it.loreName }}) ?(?<type>[A-Z ]+)?(?:§[0-9a-f]§l§ka)?$")
+private val rarityRegex = Regex("§l(?<rarity>${ItemRarity.entries.joinToString("|") { it.loreName }}) ?(?<type>[A-Z ]+)?(?:§[0-9a-f]§l§ka)?$")
 
 /**
  * Gets the rarity of an item

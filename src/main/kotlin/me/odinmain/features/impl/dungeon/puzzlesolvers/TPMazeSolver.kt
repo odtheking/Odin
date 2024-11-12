@@ -47,7 +47,7 @@ object TPMazeSolver {
         }
     }
 
-    fun tpRender() {
+    fun onRenderWorld() {
         if (DungeonUtils.currentRoomName != "Teleport Maze") return
         tpPads.forEach {
             when (it) {

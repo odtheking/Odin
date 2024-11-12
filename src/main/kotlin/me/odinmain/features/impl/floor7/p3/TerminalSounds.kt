@@ -44,29 +44,20 @@ object TerminalSounds : Module(
     private var lastPlayed = System.currentTimeMillis()
 
     @SubscribeEvent
-    fun onPacket(event: PacketReceivedEvent){
-        with(event.packet) {
-            if (
-                this is S29PacketSoundEffect &&
-                soundName == "note.pling" &&
-                volume == 8f &&
-                pitch == 4.047619f &&
-                shouldReplaceSounds
-            ) event.isCanceled = true
-        }
+    fun onPacket(event: PacketReceivedEvent) = with(event.packet) {
+        if (this is S29PacketSoundEffect && soundName == "note.pling" && volume == 8f && pitch == 4.047619f && shouldReplaceSounds)
+            event.isCanceled = true
     }
 
     @SubscribeEvent
     fun onSlotClick(event: GuiEvent.GuiMouseClickEvent) {
         if (!shouldReplaceSounds) return
-        val slot = (event.gui as? GuiChest)?.slotUnderMouse?.slotIndex ?: return
-        clickSlot(slot)
+        clickSlot((event.gui as? GuiChest)?.slotUnderMouse?.slotIndex ?: return)
     }
 
     @SubscribeEvent
     fun onCustomSlotClick(event: GuiEvent.CustomTermGuiClick) {
-        if (!shouldReplaceSounds) return
-        clickSlot(event.slot)
+        if (shouldReplaceSounds) clickSlot(event.slot)
     }
 
     @SubscribeEvent
@@ -94,14 +85,12 @@ object TerminalSounds : Module(
     }
 
     fun playCompleteSound() {
-        val sound = if (completedSound == defaultSounds.size - 1) customCompleteSound else defaultSounds[completedSound]
-        PlayerUtils.playLoudSound(sound, completeVolume, completePitch)
+        PlayerUtils.playLoudSound( if (completedSound == defaultSounds.size - 1) customCompleteSound else defaultSounds[completedSound], completeVolume, completePitch)
     }
 
     private fun playTerminalSound() {
         if (System.currentTimeMillis() - lastPlayed <= 2) return
-        val sound = if (sound == defaultSounds.size - 1) customSound else defaultSounds[sound]
-        PlayerUtils.playLoudSound(sound, clickVolume, clickPitch)
+        PlayerUtils.playLoudSound(if (sound == defaultSounds.size - 1) customSound else defaultSounds[sound], clickVolume, clickPitch)
         lastPlayed = System.currentTimeMillis()
     }
 
