@@ -23,7 +23,7 @@ object Splits : Module(
 
         val (times, current) = getAndUpdateSplitsTimes(currentSplits)
         if (currentSplits.splits.isEmpty()) return@HudSetting 0f to 0f
-        val x = getMCTextWidth("Professor: 0h 00m 00s")
+        val x = getMCTextWidth("Professor: 00m 00s")
         currentSplits.splits.dropLast(1).forEachIndexed { index, split ->
             val time = formatTime(if (index >= times.size) 0 else times[index], numbersAfterDecimal)
             mcText(split.name, 1f, 9f + index * getMCTextHeight(), 1f, Color.WHITE, shadow = true, center = false)

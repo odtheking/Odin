@@ -108,7 +108,7 @@ object PuzzleSolvers : Module(
     val boulderLineWidth by NumberSetting("Boulder Line Width", 2f, 0.1f, 10f, 0.1f, description = "The width of the box's lines.").withDependency { boulderDropDown && boulderSolver }
 
     private val puzzleTimers by BooleanSetting("Puzzle Timers", true, description = "Shows the time it took to solve each puzzle.")
-    private val puzzleToIntMap = mapOf("Creeper Beams" to 0, "Lower Blaze" to 1, "Higher Blaze" to 2, "Boulder" to 3, "Ice FIll" to 4, "Quiz" to 5, "Teleport Maze" to 6, "Water Board" to 7, "Three Weirdos" to 8)
+    private val puzzleToIntMap = mapOf("Creeper Beams" to 0, "Lower Blaze" to 1, "Higher Blaze" to 2, "Boulder" to 3, "Ice Fill" to 4, "Quiz" to 5, "Teleport Maze" to 6, "Water Board" to 7, "Three Weirdos" to 8)
     val puzzleTimersMap = hashMapOf<String, Long>()
 
     init {
@@ -141,7 +141,7 @@ object PuzzleSolvers : Module(
         onPacket(S24PacketBlockAction::class.java) {
             if ((!inDungeons || inBoss) && !LocationUtils.currentArea.isArea(Island.SinglePlayer)) return@onPacket
             if (it.blockType !is BlockChest) return@onPacket
-            val room = DungeonUtils.currentRoom ?: return@onPacket
+            val room = DungeonUtils.currentRoom?.takeIf { it.data.type == RoomType.PUZZLE } ?: return@onPacket
 
             when (room.data.name) {
                 "Three Weirdos" -> it.blockPosition.equalsOneOf(room.getRealCoords(18, 69, 24), room.getRealCoords(16, 69, 25), room.getRealCoords(14, 69, 24))
