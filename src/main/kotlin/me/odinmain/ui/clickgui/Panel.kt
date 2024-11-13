@@ -28,7 +28,7 @@ import kotlin.math.floor
 class Panel(
     var category: Category,
 ) {
-    val displayName = category.name.capitalizeFirst()
+    val displayName = category.name.lowercase().capitalizeFirst()
 
     private var dragging = false
     val moduleButtons: ArrayList<ModuleButton> = ArrayList()

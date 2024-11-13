@@ -30,7 +30,7 @@ object RemovePerks : Module(
     }
 
     private fun slotCheck(slot: String): Boolean {
-        return slot.containsOneOf("Steady Hands", "Bomberman") || slot.equalsOneOf("Elle's Lava Rod", "Elle's Pickaxe", "Auto Revive") ||
+        return slot.containsOneOf("Steady Hands", "Bomberman", "Mining Frenzy") || slot.equalsOneOf("Elle's Lava Rod", "Elle's Pickaxe", "Auto Revive") ||
                 (!renderStun && slot.containsOneOf("Human Cannonball"))
     }
 }

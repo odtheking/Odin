@@ -107,7 +107,7 @@ object BloodCamp : Module(
     }
 
     private fun onPacketLookMove(packet: S17PacketEntityLookMove) {
-        val entity = packet.getEntity(mc.theWorld) as? EntityArmorStand ?: return
+        val entity = packet.getEntity(mc.theWorld ?: return) as? EntityArmorStand ?: return
         if (currentWatcherEntity?.let { it.getDistanceToEntity(entity) <= 20 } != true ||
             entity.getEquipmentInSlot(4)?.item != Items.skull || getSkullValue(entity) !in allowedMobSkulls) return
 

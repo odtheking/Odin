@@ -176,7 +176,7 @@ object ModuleManager {
         val featureList = StringBuilder()
 
         for ((category, modulesInCategory) in sortedCategories) {
-            val displayName = category.name.capitalizeFirst()
+            val displayName = category.name.lowercase().capitalizeFirst()
             featureList.appendLine("Category: ${if (displayName == "Floor7") "Floor 7" else displayName}")
             for (module in modulesInCategory) {
                 featureList.appendLine("- ${module.name}: ${module.description}")

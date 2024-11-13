@@ -107,8 +107,8 @@ object PuzzleSolvers : Module(
     val boulderColor by ColorSetting("Boulder Color", Color.GREEN.withAlpha(.5f), allowAlpha = true, description = "The color of the box.").withDependency { boulderDropDown && boulderSolver }
     val boulderLineWidth by NumberSetting("Boulder Line Width", 2f, 0.1f, 10f, 0.1f, description = "The width of the box's lines.").withDependency { boulderDropDown && boulderSolver }
 
-    private val puzzleTimers by BooleanSetting("Puzzle Timers", true, description = "Shows the time it took to solve each puzzle.").withDependency { enabled }
-    private val puzzleToIntMap = mapOf("Creeper Beams" to 0, "Blaze Lower" to 1, "Blaze Higher" to 2, "Boulder" to 3, "Ice FIll" to 4, "Quiz" to 5, "Teleport Maze" to 6, "Water Board" to 7, "Three Weirdos" to 8)
+    private val puzzleTimers by BooleanSetting("Puzzle Timers", true, description = "Shows the time it took to solve each puzzle.")
+    private val puzzleToIntMap = mapOf("Creeper Beams" to 0, "Lower Blaze" to 1, "Higher Blaze" to 2, "Boulder" to 3, "Ice FIll" to 4, "Quiz" to 5, "Teleport Maze" to 6, "Water Board" to 7, "Three Weirdos" to 8)
     val puzzleTimersMap = hashMapOf<String, Long>()
 
     init {
