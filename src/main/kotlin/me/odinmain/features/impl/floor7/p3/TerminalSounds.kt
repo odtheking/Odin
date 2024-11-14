@@ -51,8 +51,7 @@ object TerminalSounds : Module(
 
     @SubscribeEvent
     fun onSlotClick(event: GuiEvent.GuiMouseClickEvent) {
-        if (!shouldReplaceSounds) return
-        clickSlot((event.gui as? GuiChest)?.slotUnderMouse?.slotIndex ?: return)
+        if (shouldReplaceSounds) clickSlot((event.gui as? GuiChest)?.slotUnderMouse?.slotIndex ?: return)
     }
 
     @SubscribeEvent
