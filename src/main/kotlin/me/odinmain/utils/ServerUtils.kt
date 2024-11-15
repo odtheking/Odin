@@ -69,10 +69,6 @@ object ServerUtils {
         sendPacketNoEvent(C16PacketClientStatus(C16PacketClientStatus.EnumState.REQUEST_STATS))
     }
 
-    fun Entity.getPing(): Int {
-        return mc.netHandler.getPlayerInfo(this.uniqueID)?.responseTime ?: -1
-    }
-
     private fun reset() {
         prevTime = 0L
         averageTps = 20.0

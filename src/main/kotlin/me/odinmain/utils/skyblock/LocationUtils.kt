@@ -22,6 +22,7 @@ object LocationUtils {
     var isInSkyblock: Boolean = false
 
     var currentDungeon: Dungeon? = null
+        private set
     var currentArea: Island = Island.Unknown
     var kuudraTier: Int = 0
 

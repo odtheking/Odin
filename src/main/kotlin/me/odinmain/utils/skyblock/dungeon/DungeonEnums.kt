@@ -20,7 +20,8 @@ data class DungeonPlayer(
     val clazzLvl: Int,
     val locationSkin: ResourceLocation = ResourceLocation("textures/entity/steve.png"),
     var entity: EntityPlayer? = null,
-    var isDead: Boolean = false
+    var isDead: Boolean = false,
+    var deaths: Int = 0
 )
 
 data class Puzzle(

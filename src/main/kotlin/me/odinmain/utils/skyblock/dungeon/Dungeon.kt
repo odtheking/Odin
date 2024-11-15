@@ -85,7 +85,7 @@ class Dungeon(val floor: Floor) {
         val message = packet.chatComponent.unformattedText.noControlCodes
         if (expectingBloodRegex.matches(message)) expectingBloodUpdate = true
         doorOpenRegex.find(message)?.let { dungeonStats.doorOpener = it.groupValues[1] }
-
+        deathRegex.find(message)?.let { match -> dungeonTeammates.find { it.name == match.groupValues[1] }?.deaths?.inc() }
         val partyMessage = partyMessageRegex.find(message)?.groupValues?.get(1)?.lowercase() ?: return
         if (partyMessage.equalsOneOf("mimic killed", "mimic slain", "mimic killed!", "mimic dead", "mimic dead!", "\$skytils-dungeon-score-mimic\$", Mimic.mimicMessage))
             dungeonStats.mimicKilled = true
@@ -123,6 +123,7 @@ class Dungeon(val floor: Floor) {
     private val partyMessageRegex = Regex("Party > .*?: (.+)\$")
     private val doorOpenRegex = Regex("(?:\\[\\w+] )?(\\w+) opened a (?:WITHER|Blood) door!")
     private val expectingBloodRegex = Regex("\\[BOSS] The Watcher: You have proven yourself. You may pass.")
+    private val deathRegex = Regex("☠ (\\w{1,16}) .* and became a ghost\\.")
     private val timeRegex = Regex("§r Time: §r§6((?:\\d+h ?)?(?:\\d+m ?)?\\d+s)§r")
     private val clearedRegex = Regex("^Cleared: §[c6a](\\d+)% §8(?:§8)?\\(\\d+\\)$")
     private val secretCountRegex = Regex("^§r Secrets Found: §r§b(\\d+)§r$")
