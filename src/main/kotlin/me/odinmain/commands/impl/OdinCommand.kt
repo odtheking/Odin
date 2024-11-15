@@ -78,6 +78,7 @@ val mainCommand = commodore("od", "odin") {
              §3- /od ep §7» §8Refills ender pearls up to 16.
              §3- /od ij §7» §8Refills inflatable Jerry's up to 64.
              §3- /od sl §7» §8Refills spirit leaps up to 16.
+             §3- /od sb §7» §8Refills super booms up to 64.
              §3- /od sc <user> §7» §8Tries to open SkyCrypt for the specified user in default browser.
              §3- /spcmd §7» §8Use /spcmd cmds for command list.
              §3- /visualwords §7» §8Command to replace words in the game.

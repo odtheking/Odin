@@ -85,7 +85,11 @@ class Dungeon(val floor: Floor) {
         val message = packet.chatComponent.unformattedText.noControlCodes
         if (expectingBloodRegex.matches(message)) expectingBloodUpdate = true
         doorOpenRegex.find(message)?.let { dungeonStats.doorOpener = it.groupValues[1] }
-        deathRegex.find(message)?.let { match -> dungeonTeammates.find { it.name == match.groupValues[1] }?.deaths?.inc() }
+        deathRegex.find(message)?.let { match ->
+            dungeonTeammates.find {
+                it.name == (match.groupValues[1].takeUnless { it == "You" } ?: mc.thePlayer?.name)
+            }?.deaths?.inc()
+        }
         val partyMessage = partyMessageRegex.find(message)?.groupValues?.get(1)?.lowercase() ?: return
         if (partyMessage.equalsOneOf("mimic killed", "mimic slain", "mimic killed!", "mimic dead", "mimic dead!", "\$skytils-dungeon-score-mimic\$", Mimic.mimicMessage))
             dungeonStats.mimicKilled = true
