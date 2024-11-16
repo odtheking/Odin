@@ -35,6 +35,7 @@ object LeapMenu : Module(
     category = Category.DUNGEON
 ) {
     val type by SelectorSetting("Sorting", "Odin Sorting", arrayListOf("Odin Sorting", "A-Z Class (BetterMap)", "A-Z Name", "Custom sorting", "No Sorting"), description = "How to sort the leap menu.")
+    private val onlyClass by BooleanSetting("Only Classes", false, description = "Renders classes instead of names.")
     private val colorStyle by DualSetting("Color Style", "Gray", "Color", default = false, description = "Which color style to use.")
     private val backgroundColor by ColorSetting("Background Color", default = Color.DARK_GRAY.withAlpha(0.9f), allowAlpha = true, description = "Color of the background of the leap menu.")
     private val roundedRect by BooleanSetting("Rounded Rect", true, description = "Toggles the rounded rect for the gui.")
@@ -98,8 +99,8 @@ object LeapMenu : Module(
 
             drawTexturedModalRect(x + 30, y + 30, 240, 240,8f, 8f, 8, 8, 64f, 64f)
 
-            text(it.name, x + 265f, y + 155f, if (!colorStyle) it.clazz.color else backgroundColor, 48f)
-            text(if (it.isDead) "§cDEAD" else it.clazz.name, x + 270f, y + 210f, Color.WHITE, 30f, shadow = true)
+            text(if (!onlyClass) it.name else it.clazz.name, x + 265f, y + 155f, if (!colorStyle) it.clazz.color else backgroundColor, 48f)
+            if (!onlyClass || it.isDead) text(if (it.isDead) "§cDEAD" else it.clazz.name, x + 270f, y + 210f, Color.WHITE, 30f, shadow = true)
             rectangleOutline(x + 30, y + 30, 240, 240, color, 25f, 15f, 100f)
             GlStateManager.disableAlpha()
             GlStateManager.popMatrix()
