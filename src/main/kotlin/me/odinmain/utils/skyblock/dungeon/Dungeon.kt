@@ -27,9 +27,9 @@ class Dungeon(val floor: Floor) {
 
     var paul = false
     val inBoss: Boolean get() = getBoss()
-    var dungeonTeammates: ArrayList<DungeonPlayer> = ArrayList<DungeonPlayer>(5)
-    var dungeonTeammatesNoSelf: ArrayList<DungeonPlayer> = ArrayList<DungeonPlayer>(4)
-    var leapTeammates: ArrayList<DungeonPlayer> = ArrayList<DungeonPlayer>(4)
+    var dungeonTeammates: ArrayList<DungeonPlayer> = ArrayList(5)
+    var dungeonTeammatesNoSelf: ArrayList<DungeonPlayer> = ArrayList(4)
+    var leapTeammates: ArrayList<DungeonPlayer> = ArrayList(4)
     var dungeonStats = DungeonStats()
     val currentRoom: Room? get() = ScanUtils.currentRoom
     val passedRooms: MutableSet<Room> get() = ScanUtils.passedRooms
@@ -102,7 +102,7 @@ class Dungeon(val floor: Floor) {
     private fun handleScoreboardPacket(packet: S3EPacketTeams) {
         if (packet.action != 2) return
 
-        clearedRegex.find(packet.prefix.plus(packet.suffix))?.groupValues[1]?.toIntOrNull()?.let {
+        clearedRegex.find(packet.prefix.plus(packet.suffix))?.groupValues?.get(1)?.toIntOrNull()?.let {
             if (dungeonStats.percentCleared != it && expectingBloodUpdate) dungeonStats.bloodDone = true
             dungeonStats.percentCleared = it
         }
