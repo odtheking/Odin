@@ -11,8 +11,6 @@ import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.getRealCoords
-import me.odinmain.utils.skyblock.getBlockAt
-import net.minecraft.init.Blocks
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
 import net.minecraft.util.*
 import java.util.concurrent.CopyOnWriteArraySet
@@ -23,10 +21,7 @@ object TPMazeSolver {
     private var visited = CopyOnWriteArraySet<BlockPos>()
 
     fun onRoomEnter(event: DungeonEvents.RoomEnterEvent) = with(event.room) {
-        if (this?.data?.name != "Teleport Maze") return
-
-        tpPads = BlockPos.getAllInBox(getRealCoords(BlockPos(0, 69, 0)), getRealCoords(BlockPos(30, 69, 30)))
-            .filter { getBlockAt(it) == Blocks.end_portal_frame }.toSet()
+        if (this?.data?.name == "Teleport Maze") tpPads = endPortalFrameLocations.map { getRealCoords(it.x, it.y, it.z) }.toSet()
     }
 
     fun tpPacket(event: S08PacketPlayerPosLook) {
@@ -62,4 +57,17 @@ object TPMazeSolver {
         correctPortals = listOf()
         visited = CopyOnWriteArraySet<BlockPos>()
     }
+
+    private val endPortalFrameLocations = setOf(
+        BlockPos(-135, 0, -197), BlockPos(-129, 0, -197), BlockPos(-127, 0, -197),
+        BlockPos(-121, 0, -197), BlockPos(-119, 0, -197), BlockPos(-113, 0, -197),
+        BlockPos(-135, 0, -191), BlockPos(-129, 0, -191), BlockPos(-127, 0, -191),
+        BlockPos(-121, 0, -191), BlockPos(-119, 0, -191), BlockPos(-113, 0, -191),
+        BlockPos(-135, 0, -189), BlockPos(-129, 0, -189), BlockPos(-121, 0, -186),
+        BlockPos(-119, 0, -186), BlockPos(-135, 0, -183), BlockPos(-129, 0, -183),
+        BlockPos(-135, 0, -181), BlockPos(-129, 0, -181), BlockPos(-127, 0, -181),
+        BlockPos(-121, 0, -181), BlockPos(-119, 0, -181), BlockPos(-113, 0, -181),
+        BlockPos(-135, 0, -175), BlockPos(-129, 0, -175), BlockPos(-127, 0, -175),
+        BlockPos(-121, 0, -175), BlockPos(-119, 0, -175), BlockPos(-113, 0, -175)
+    )
 }

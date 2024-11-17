@@ -7,7 +7,6 @@ import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.getRealCoords
-import me.odinmain.utils.skyblock.dungeon.tiles.Room
 import me.odinmain.utils.skyblock.getBlockAt
 import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.toVec3
@@ -37,33 +36,20 @@ object WaterSolver {
     private var openedWater = -1L
 
     fun scan() = with (DungeonUtils.currentRoom) {
-        if (this?.data?.name == "Water Board" && variant == -1) solve(this)
-    }
-
-    private fun solve(room: Room) {
+        if (this?.data?.name != "Water Board" || variant != -1) return@with
         val extendedSlots = WoolColor.entries.joinToString("") { if (it.isExtended) it.ordinal.toString() else "" }.takeIf { it.length == 3 } ?: return
 
-        val pistonHeadPosition = room.getRealCoords(BlockPos(15, 82, 27))
-        val foundBlocks = mutableListOf(false, false, false, false, false)
-        BlockPos.getAllInBox(BlockPos(pistonHeadPosition.x + 1, 78, pistonHeadPosition.z + 1), BlockPos(pistonHeadPosition.x - 1, 77, pistonHeadPosition.z - 1)).forEach {
-            when (getBlockAt(it)) {
-                Blocks.gold_block -> foundBlocks[0] = true
-                Blocks.hardened_clay -> foundBlocks[1] = true
-                Blocks.emerald_block -> foundBlocks[2] = true
-                Blocks.quartz_block -> foundBlocks[3] = true
-                Blocks.diamond_block -> foundBlocks[4] = true
+        setOf(this.getRealCoords(BlockPos(16, 78, 27)), this.getRealCoords(BlockPos(14, 78, 27))).forEach {
+            variant = when (getBlockAt(it)) {
+                Blocks.hardened_clay -> 0
+                Blocks.emerald_block -> 1
+                Blocks.diamond_block -> 2
+                Blocks.quartz_block -> 3
+                else -> return@forEach
             }
         }
 
-        variant = when {
-            foundBlocks[0] && foundBlocks[1] -> 0
-            foundBlocks[2] && foundBlocks[3] -> 1
-            foundBlocks[3] && foundBlocks[4] -> 2
-            foundBlocks[0] && foundBlocks[3] -> 3
-            else -> return
-        }
-
-        modMessage("variant: $variant, extended: $extendedSlots")
+        modMessage("variant: $variant, extended: ${WoolColor.entries.filter { it.isExtended }.joinToString(", ") { it.name }}")
 
         solutions.clear()
         waterSolutions[variant.toString()].asJsonObject[extendedSlots].asJsonObject.entrySet().forEach {

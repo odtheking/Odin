@@ -109,7 +109,8 @@ object PuzzleSolvers : Module(
 
     private val puzzleTimers by BooleanSetting("Puzzle Timers", true, description = "Shows the time it took to solve each puzzle.")
     private val puzzleToIntMap = mapOf("Creeper Beams" to 0, "Lower Blaze" to 1, "Higher Blaze" to 2, "Boulder" to 3, "Ice Fill" to 4, "Quiz" to 5, "Teleport Maze" to 6, "Water Board" to 7, "Three Weirdos" to 8)
-    val puzzleTimersMap = hashMapOf<String, Long>()
+    private val puzzleTimersMap = hashMapOf<String, PuzzleTimer>()
+    private data class PuzzleTimer(val timeEntered: Long = System.currentTimeMillis(), var sentMessage: Boolean = false)
 
     init {
         execute(500) {
@@ -146,7 +147,6 @@ object PuzzleSolvers : Module(
             when (room.data.name) {
                 "Three Weirdos" -> it.blockPosition.equalsOneOf(room.getRealCoords(18, 69, 24), room.getRealCoords(16, 69, 25), room.getRealCoords(14, 69, 24))
                 "Ice Fill"      -> it.blockPosition.equalsOneOf(room.getRealCoords(14, 75, 29), room.getRealCoords(16, 75, 29))
-                "Creeper Beams" -> it.blockPosition == room.getRealCoords(15, 69, 15)
                 "Teleport Maze" -> it.blockPosition == room.getRealCoords(15, 70, 20)
                 "Water Board"   -> it.blockPosition == room.getRealCoords(15, 56, 22)
                 "Boulder"       -> it.blockPosition == room.getRealCoords(15, 66, 29)
@@ -193,7 +193,7 @@ object PuzzleSolvers : Module(
         BoulderSolver.onRoomEnter(event)
         TPMazeSolver.onRoomEnter(event)
         if (!puzzleTimers) return
-        if (event.room?.data?.type == RoomType.PUZZLE && puzzleTimersMap.none { it.key == event.room.data.name }) puzzleTimersMap[event.room.data.name] = System.currentTimeMillis()
+        if (event.room?.data?.type == RoomType.PUZZLE && puzzleTimersMap.none { it.key == event.room.data.name }) puzzleTimersMap[event.room.data.name] = PuzzleTimer()
     }
 
     @SubscribeEvent
@@ -204,7 +204,9 @@ object PuzzleSolvers : Module(
 
     fun onPuzzleComplete(puzzleName: String) {
         puzzleTimersMap[puzzleName]?.let {
-            puzzlePBs.time(puzzleToIntMap[puzzleName] ?: return@let, (System.currentTimeMillis() - it) / 1000.0, "s§7!", "§a${puzzleName} §7solved in §6", addPBString = true, addOldPBString = true, sendOnlyPB = false)
+            if (!it.sentMessage) return
+            puzzlePBs.time(puzzleToIntMap[puzzleName] ?: return@let, (System.currentTimeMillis() - it.timeEntered) / 1000.0, "s§7!", "§a${puzzleName} §7solved in §6", addPBString = true, addOldPBString = true, sendOnlyPB = false)
+            it.sentMessage = true
         }
     }
 }
