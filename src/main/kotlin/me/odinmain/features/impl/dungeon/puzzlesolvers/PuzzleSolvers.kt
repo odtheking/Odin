@@ -204,7 +204,7 @@ object PuzzleSolvers : Module(
 
     fun onPuzzleComplete(puzzleName: String) {
         puzzleTimersMap[puzzleName]?.let {
-            if (!it.sentMessage) return
+            if (it.sentMessage) return
             puzzlePBs.time(puzzleToIntMap[puzzleName] ?: return@let, (System.currentTimeMillis() - it.timeEntered) / 1000.0, "s§7!", "§a${puzzleName} §7solved in §6", addPBString = true, addOldPBString = true, sendOnlyPB = false)
             it.sentMessage = true
         }

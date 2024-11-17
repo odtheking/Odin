@@ -17,7 +17,6 @@ import net.minecraft.util.Vec3
 import java.io.InputStreamReader
 import java.nio.charset.StandardCharsets
 import java.util.Locale
-import java.util.concurrent.ConcurrentHashMap
 import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.set
@@ -32,14 +31,14 @@ object WaterSolver {
     }
 
     private var variant = -1
-    private var solutions = ConcurrentHashMap<LeverBlock, Array<Double>>()
+    private var solutions = HashMap<LeverBlock, Array<Double>>()
     private var openedWater = -1L
 
     fun scan() = with (DungeonUtils.currentRoom) {
         if (this?.data?.name != "Water Board" || variant != -1) return@with
         val extendedSlots = WoolColor.entries.joinToString("") { if (it.isExtended) it.ordinal.toString() else "" }.takeIf { it.length == 3 } ?: return
 
-        setOf(this.getRealCoords(BlockPos(16, 78, 27)), this.getRealCoords(BlockPos(14, 78, 27))).forEach {
+        setOf(getRealCoords(BlockPos(16, 78, 27)), getRealCoords(BlockPos(14, 78, 27))).forEach {
             variant = when (getBlockAt(it)) {
                 Blocks.hardened_clay -> 0
                 Blocks.emerald_block -> 1
@@ -49,7 +48,7 @@ object WaterSolver {
             }
         }
 
-        modMessage("variant: $variant, extended: ${WoolColor.entries.filter { it.isExtended }.joinToString(", ") { it.name }}")
+        modMessage("$variant || ${WoolColor.entries.filter { it.isExtended }.joinToString(", ") { it.name.lowercase() }}")
 
         solutions.clear()
         waterSolutions[variant.toString()].asJsonObject[extendedSlots].asJsonObject.entrySet().forEach {
@@ -69,7 +68,7 @@ object WaterSolver {
     }
 
     fun onRenderWorld() {
-        if (variant == -1 || DungeonUtils.currentRoomName != "Water Board") return
+        if (variant == -1 || solutions.isEmpty() || DungeonUtils.currentRoomName != "Water Board") return
 
         val solutionList = solutions
             .flatMap { (lever, times) -> times.drop(lever.i).map { Pair(lever, it) } }
@@ -123,7 +122,7 @@ object WaterSolver {
         RED(BlockPos(15, 56, 15));
 
         val isExtended: Boolean get() =
-            getBlockAt(DungeonUtils.currentRoom?.getRealCoords(relativePosition) ?: BlockPos(0, 0, 0)) == Blocks.wool
+            DungeonUtils.currentRoom?.let { getBlockAt(it.getRealCoords(relativePosition)) == Blocks.wool } == true
     }
 
     private enum class LeverBlock(val relativePosition: Vec3, var i: Int = 0) {
