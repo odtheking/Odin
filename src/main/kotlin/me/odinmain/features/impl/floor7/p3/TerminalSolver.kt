@@ -222,7 +222,6 @@ object TerminalSolver : Module(
 
         if (renderType != 3 && currentTerm.type != TerminalTypes.NONE && middleClickGUI && enabled) {
             event.isCanceled = true
-            GuiEvent.GuiMouseClickEvent(event.gui, event.button, event.x, event.y).postAndCatch()
             windowClick(gui.slotUnderMouse?.slotIndex ?: return, if (needed >= 3) PlayerUtils.ClickType.Right else PlayerUtils.ClickType.Middle)
         }
         if (currentTerm.type == TerminalTypes.NONE || !enabled || (currentTerm.type == TerminalTypes.MELODY && cancelMelodySolver)) return

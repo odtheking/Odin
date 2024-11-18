@@ -59,15 +59,15 @@ object TPMazeSolver {
     }
 
     private val endPortalFrameLocations = setOf(
-        BlockPos(-135, 0, -197), BlockPos(-129, 0, -197), BlockPos(-127, 0, -197),
-        BlockPos(-121, 0, -197), BlockPos(-119, 0, -197), BlockPos(-113, 0, -197),
-        BlockPos(-135, 0, -191), BlockPos(-129, 0, -191), BlockPos(-127, 0, -191),
-        BlockPos(-121, 0, -191), BlockPos(-119, 0, -191), BlockPos(-113, 0, -191),
-        BlockPos(-135, 0, -189), BlockPos(-129, 0, -189), BlockPos(-121, 0, -186),
-        BlockPos(-119, 0, -186), BlockPos(-135, 0, -183), BlockPos(-129, 0, -183),
-        BlockPos(-135, 0, -181), BlockPos(-129, 0, -181), BlockPos(-127, 0, -181),
-        BlockPos(-121, 0, -181), BlockPos(-119, 0, -181), BlockPos(-113, 0, -181),
-        BlockPos(-135, 0, -175), BlockPos(-129, 0, -175), BlockPos(-127, 0, -175),
-        BlockPos(-121, 0, -175), BlockPos(-119, 0, -175), BlockPos(-113, 0, -175)
+        BlockPos(4, 69, 28), BlockPos(4, 69, 22), BlockPos(4, 69, 20),
+        BlockPos(4, 69, 14), BlockPos(4, 69, 12), BlockPos(4, 69, 6),
+        BlockPos(10, 69, 28), BlockPos(10, 69, 22), BlockPos(10, 69, 20),
+        BlockPos(10, 69, 14), BlockPos(10, 69, 12), BlockPos(10, 69, 6),
+        BlockPos(12, 69, 28), BlockPos(12, 69, 22), BlockPos(15, 69, 14),
+        BlockPos(15, 69, 12), BlockPos(18, 69, 28), BlockPos(18, 69, 22),
+        BlockPos(20, 69, 28), BlockPos(20, 69, 22), BlockPos(20, 69, 20),
+        BlockPos(20, 69, 14), BlockPos(20, 69, 12), BlockPos(20, 69, 6),
+        BlockPos(26, 69, 28), BlockPos(26, 69, 22), BlockPos(26, 69, 20),
+        BlockPos(26, 69, 14), BlockPos(26, 69, 12), BlockPos(26, 69, 6)
     )
 }
