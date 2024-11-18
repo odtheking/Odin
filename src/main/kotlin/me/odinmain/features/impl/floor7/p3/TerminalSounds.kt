@@ -10,6 +10,7 @@ import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.skyblock.PlayerUtils
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.network.play.server.S29PacketSoundEffect
+import net.minecraftforge.fml.common.eventhandler.EventPriority
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object TerminalSounds : Module(
@@ -49,7 +50,7 @@ object TerminalSounds : Module(
             event.isCanceled = true
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
     fun onSlotClick(event: GuiEvent.GuiMouseClickEvent) {
         if (shouldReplaceSounds) clickSlot((event.gui as? GuiChest)?.slotUnderMouse?.slotIndex ?: return)
     }
@@ -74,7 +75,7 @@ object TerminalSounds : Module(
     private fun clickSlot(slot: Int) {
         if (
             (!currentTerm.type.equalsOneOf(TerminalTypes.MELODY, TerminalTypes.ORDER) && slot !in TerminalSolver.currentTerm.solution) ||
-            (currentTerm.type == TerminalTypes.ORDER && slot != TerminalSolver.currentTerm.solution.first()) ||
+            (currentTerm.type == TerminalTypes.ORDER && slot != (TerminalSolver.currentTerm.solution.firstOrNull() ?: return)) ||
             (currentTerm.type == TerminalTypes.MELODY && slot !in intArrayOf(43, 34, 25, 16))
         ) return
         if ((TerminalSolver.currentTerm.solution.size == 1 || (currentTerm.type == TerminalTypes.MELODY && slot == 43)) && completeSounds) {

@@ -79,14 +79,15 @@ object ScanUtils {
     }
 
     private fun updateRotation(room: Room) {
+        val roomHeight = getTopLayerOfRoom(room.roomComponents.first().vec2)
         if (room.data.name == "Fairy") {
+            room.clayPos = room.roomComponents.firstOrNull()?.let { BlockPos(it.x - 15, roomHeight, it.z - 15) } ?: return
             room.rotation = Rotations.SOUTH
-            room.clayPos = room.roomComponents.firstOrNull()?.let { BlockPos(it.x - 15, getTopLayerOfRoom(it.vec2), it.z - 15) } ?: return
             return
         }
         room.rotation = Rotations.entries.dropLast(1).find { rotation ->
             room.roomComponents.any { component ->
-                BlockPos(component.x + rotation.x, getTopLayerOfRoom(component.vec2), component.z + rotation.z).let { blockPos ->
+                BlockPos(component.x + rotation.x, roomHeight, component.z + rotation.z).let { blockPos ->
                     getBlockIdAt(blockPos) == 159 && (room.roomComponents.size == 1 || EnumFacing.HORIZONTALS.all { facing ->
                         getBlockIdAt(blockPos.add(facing.frontOffsetX, 0, facing.frontOffsetZ)).equalsOneOf(159, 0)
                     }).also { isCorrectClay -> if (isCorrectClay) room.clayPos = blockPos }
@@ -140,8 +141,8 @@ object ScanUtils {
     }
 
     private fun getTopLayerOfRoom(vec2: Vec2): Int {
-        val height = mc.theWorld?.getChunkFromChunkCoords(vec2.x shr 4, vec2.z shr 4)?.getHeightValue(vec2.x and 15, vec2.z and 15) ?: 0
-        return if (isGold(BlockPos(vec2.x, height, vec2.z))) height else height - 1
+        val height = (mc.theWorld?.getChunkFromChunkCoords(vec2.x shr 4, vec2.z shr 4)?.getHeightValue(vec2.x and 15, vec2.z and 15) ?: 0) - 1
+        return if (isGold(BlockPos(vec2.x, height, vec2.z))) height - 1 else height
     }
 
     @SubscribeEvent
