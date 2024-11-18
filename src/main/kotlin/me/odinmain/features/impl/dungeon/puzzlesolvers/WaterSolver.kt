@@ -90,10 +90,8 @@ object WaterSolver {
                 Renderer.drawStringInWorld(when {
                     openedWater == -1L && time == 0.0 -> "§a§lCLICK ME!"
                     openedWater == -1L -> "§e${time}s"
-                    else -> {
-                        val remainingTime = openedWater + time * 1000L - System.currentTimeMillis()
-                        if (remainingTime > 0) "§e${String.format(Locale.US, "%.2f", remainingTime / 1000)}s" else "§a§lCLICK ME!"
-                    }
+                    else ->
+                        (openedWater + time * 1000L - System.currentTimeMillis()).takeIf { it > 0 }?.let { "§e${String.format(Locale.US, "%.2f", it / 1000)}s" } ?: "§a§lCLICK ME!"
                 }, lever.leverPos.addVector(0.5, (index + lever.i) * 0.5 + 1.5, 0.5), Color.WHITE, scale = 0.04f)
             }
         }

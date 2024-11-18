@@ -81,8 +81,6 @@ object BeamsSolver {
         currentLanternPairs.clear()
     }
 
-    private val colors = listOf(
-        Color.ORANGE, Color.GREEN, Color.PINK, Color.CYAN, Color.YELLOW, Color.DARK_RED, Color.WHITE, Color.PURPLE
-    )
+    private val colors = listOf(Color.ORANGE, Color.GREEN, Color.PINK, Color.CYAN, Color.YELLOW, Color.DARK_RED, Color.WHITE, Color.PURPLE)
 }
 
