@@ -24,6 +24,10 @@ object NoDebuff : Module(
     private val antiWaterFOV by BooleanSetting("No Water FOV", false, description = "Disable FOV change in water.")
     private val noFire by BooleanSetting("No Fire Overlay", false, description = "Disable Fire overlay on screen.")
     private val seeThroughBlocks by BooleanSetting("See Through Blocks", false, description = "Makes blocks transparent.")
+    private val noNausea by BooleanSetting("No Nausea", false, description = "Disables nausea effect.")
+
+    @JvmStatic
+    val shouldIgnoreNausea get() = noNausea && enabled
 
     @SubscribeEvent
     fun onRenderFog(event: EntityViewRenderEvent.FogDensity) {

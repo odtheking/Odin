@@ -9,6 +9,7 @@
     "mixins.MixinNetworkManager",
     "mixins.MixinRendererLivingEntity",
     "mixins.MixinS1CPacketEntityMetadata",
+    "mixins.MixinSkytilsFunny",
     "mixins.MixinWorld"
   ],
   "client": [
