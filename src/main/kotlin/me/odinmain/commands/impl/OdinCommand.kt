@@ -10,9 +10,12 @@ import me.odinmain.features.impl.render.ServerHud.colorizePing
 import me.odinmain.features.impl.render.ServerHud.colorizeTps
 import me.odinmain.ui.clickgui.ClickGUI
 import me.odinmain.ui.hud.EditHUDGui
-import me.odinmain.utils.*
+import me.odinmain.utils.ServerUtils
+import me.odinmain.utils.equalsOneOf
+import me.odinmain.utils.fillItemFromSack
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.writeToClipboard
 import java.awt.Desktop
 import java.net.URI
 import kotlin.math.round
@@ -81,6 +84,7 @@ val mainCommand = commodore("od", "odin") {
              §3- /od sc <user> §7» §8Tries to open SkyCrypt for the specified user in default browser.
              §3- /spcmd §7» §8Use /spcmd cmds for command list.
              §3- /visualwords §7» §8Command to replace words in the game.
+             §3- /od leap §7» §8Sets custom leap order.
              """.trimIndent()
         )
     }
