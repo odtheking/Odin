@@ -4,6 +4,7 @@ import me.odinclient.utils.skyblock.PlayerUtils.leftClick
 import me.odinclient.utils.skyblock.PlayerUtils.rightClick
 import me.odinmain.features.Category
 import me.odinmain.features.Module
+import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.KeybindSetting
 import me.odinmain.features.settings.impl.NumberSetting
@@ -17,13 +18,15 @@ object AutoClicker : Module(
     description = "Auto clicker with options for left-click, right-click, or both.",
     category = Category.SKYBLOCK
 ) {
-    private val enableLeftClick by BooleanSetting("Enable Left Click", true, description = "Enable auto-clicking for left-click.")
-    private val enableRightClick by BooleanSetting("Enable Right Click", true, description = "Enable auto-clicking for right-click.")
-    private val leftCps by NumberSetting("Left Clicks Per Second", 5.0, 3.0, 15.0, .5, false, description = "The amount of left clicks per second to perform.")
-    private val rightCps by NumberSetting("Right Clicks Per Second", 5.0, 3.0, 15.0, .5, false, description = "The amount of right clicks per second to perform.")
-    private val terminatorOnly by BooleanSetting("Terminator Only", false, description = "Only click when the terminator is enabled.")
-    private val leftClickKeybind by KeybindSetting("Left Click", Keyboard.KEY_NONE, description = "The keybind to hold for the auto clicker to click left click.")
-    private val rightClickKeybind by KeybindSetting("Right Click", Keyboard.KEY_NONE, description = "The keybind to hold for the auto clicker to click right click.")
+    private val terminatorOnly by BooleanSetting("Terminator Only", true, description = "Only click when the terminator and right click are held.")
+    private val cps by NumberSetting("Clicks Per Second", 5.0, 3.0, 15.0, .5, false, description = "The amount of clicks per second to perform.").withDependency { terminatorOnly }
+
+    private val enableLeftClick by BooleanSetting("Enable Left Click", true, description = "Enable auto-clicking for left-click.").withDependency { !terminatorOnly }
+    private val enableRightClick by BooleanSetting("Enable Right Click", true, description = "Enable auto-clicking for right-click.").withDependency { !terminatorOnly }
+    private val leftCps by NumberSetting("Left Clicks Per Second", 5.0, 3.0, 15.0, .5, false, description = "The amount of left clicks per second to perform.").withDependency { !terminatorOnly }
+    private val rightCps by NumberSetting("Right Clicks Per Second", 5.0, 3.0, 15.0, .5, false, description = "The amount of right clicks per second to perform.").withDependency { !terminatorOnly }
+    private val leftClickKeybind by KeybindSetting("Left Click", Keyboard.KEY_NONE, description = "The keybind to hold for the auto clicker to click left click.").withDependency { !terminatorOnly }
+    private val rightClickKeybind by KeybindSetting("Right Click", Keyboard.KEY_NONE, description = "The keybind to hold for the auto clicker to click right click.").withDependency { !terminatorOnly }
 
     private var nextLeftClick = .0
     private var nextRightClick = .0
@@ -31,16 +34,22 @@ object AutoClicker : Module(
     @SubscribeEvent
     fun onRenderWorldLast(event: RenderWorldLastEvent) {
         val nowMillis = System.currentTimeMillis()
-        if (terminatorOnly && !isHolding("TERMINATOR")) return
-
-        if (enableLeftClick && leftClickKeybind.isDown() && nowMillis >= nextLeftClick) {
-            nextLeftClick = nowMillis + ((1000 / leftCps) + ((Math.random() - .5) * 60.0))
+        if (terminatorOnly) {
+            if (!isHolding("TERMINATOR") || !mc.gameSettings.keyBindUseItem.isKeyDown) return
+            val nowMillis = System.currentTimeMillis()
+            if (nowMillis < nextRightClick) return
+            nextRightClick = nowMillis + ((1000 / cps) + ((Math.random() - .5) * 60.0))
             leftClick()
-        }
+        } else {
+            if (enableLeftClick && leftClickKeybind.isDown() && nowMillis >= nextLeftClick) {
+                nextLeftClick = nowMillis + ((1000 / leftCps) + ((Math.random() - .5) * 60.0))
+                leftClick()
+            }
 
-        if (enableRightClick && rightClickKeybind.isDown() && nowMillis >= nextRightClick) {
-            nextRightClick = nowMillis + ((1000 / rightCps) + ((Math.random() - .5) * 60.0))
-            rightClick()
+            if (enableRightClick && rightClickKeybind.isDown() && nowMillis >= nextRightClick) {
+                nextRightClick = nowMillis + ((1000 / rightCps) + ((Math.random() - .5) * 60.0))
+                rightClick()
+            }
         }
     }
 }

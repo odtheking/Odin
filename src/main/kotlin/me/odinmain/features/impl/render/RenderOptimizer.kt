@@ -6,7 +6,9 @@ import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.DropdownSetting
-import me.odinmain.utils.*
+import me.odinmain.utils.containsOneOf
+import me.odinmain.utils.equalsOneOf
+import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.M7Phases
@@ -17,7 +19,9 @@ import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.entity.item.EntityItem
 import net.minecraft.entity.monster.EntityBlaze
 import net.minecraft.init.Items
-import net.minecraft.network.play.server.*
+import net.minecraft.network.play.server.S0EPacketSpawnObject
+import net.minecraft.network.play.server.S1CPacketEntityMetadata
+import net.minecraft.network.play.server.S2APacketParticles
 import net.minecraft.util.EnumParticleTypes
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -74,10 +78,8 @@ object RenderOptimizer : Module(
         if (!LocationUtils.isInSkyblock) return
         if (event.packet is S1CPacketEntityMetadata && hide0HealthNames) {
             mc.theWorld?.getEntityByID(event.packet.entityId)?.let { entity ->
-                event.packet.func_149376_c()?.let {
-                    it.filterIsInstance<String>()
-                        .takeUnless { strings -> strings.any { healthMatches.any { regex -> regex.matches(it) } } }
-                        ?.forEach { entity.setDead() }
+                event.packet.func_149376_c()?.find { it.objectType == 4 }?.toString()?.let { name ->
+                    if (healthMatches.any { regex -> regex.matches(name) }) entity.setDead()
                 }
             }
         }
