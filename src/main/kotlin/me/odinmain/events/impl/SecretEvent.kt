@@ -6,8 +6,8 @@ import net.minecraft.network.play.server.S29PacketSoundEffect
 import net.minecraft.util.BlockPos
 import net.minecraftforge.fml.common.eventhandler.Event
 
-open class SecretPickupEvent : Event() {
-    class Interact(val blockPos: BlockPos, val blockState: IBlockState) : SecretPickupEvent()
-    class Item(val entity: EntityItem) : SecretPickupEvent()
-    class Bat(val packet: S29PacketSoundEffect) : SecretPickupEvent()
+abstract class SecretPickupEvent : Event() {
+    data class Interact(val blockPos: BlockPos, val blockState: IBlockState) : SecretPickupEvent()
+    data class Item(val entity: EntityItem) : SecretPickupEvent()
+    data class Bat(val packet: S29PacketSoundEffect) : SecretPickupEvent()
 }

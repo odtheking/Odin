@@ -9,6 +9,7 @@
     "mixins.MixinNetworkManager",
     "mixins.MixinRendererLivingEntity",
     "mixins.MixinS1CPacketEntityMetadata",
+    "mixins.MixinSkytilsFunny",
     "mixins.MixinWorld",
     "mixins.block.MixinBlock",
     "mixins.block.MixinBlockChest",
@@ -22,7 +23,6 @@
   ],
   "client": [
     "accessors.IEntityPlayerSPAccessor",
-    "accessors.IEntityRendererAccessor",
     "accessors.IMinecraftAccessor",
     "mixins.MixinFontRenderer",
     "mixins.MixinGuiContainer",

@@ -5,14 +5,19 @@ import me.odinmain.events.impl.RealServerTick
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.*
-import me.odinmain.utils.*
+import me.odinmain.features.settings.impl.ActionSetting
+import me.odinmain.features.settings.impl.BooleanSetting
+import me.odinmain.features.settings.impl.ColorSetting
+import me.odinmain.features.settings.impl.KeybindSetting
+import me.odinmain.utils.distanceSquaredTo
+import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.M7Phases
 import me.odinmain.utils.skyblock.modMessage
+import me.odinmain.utils.toVec3
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.init.Blocks
 import net.minecraft.util.AxisAlignedBB
@@ -31,7 +36,7 @@ object ArrowsDevice : Module(
     private val markedPositionColor by ColorSetting("Marked Position", Color.RED, description = "Color of the marked position.").withDependency { solver }
     private val targetPositionColor by ColorSetting("Target Position", Color.GREEN, description = "Color of the target position.").withDependency { solver }
     private val resetKey by KeybindSetting("Reset", Keyboard.KEY_NONE, description = "Resets the solver.").onPress {
-        reset()
+        markedPositions.clear()
     }.withDependency { solver }
     private val depthCheck by BooleanSetting("Depth check", true, description = "Marked positions show through walls.").withDependency { solver }
     private val reset by ActionSetting("Reset", description = "Resets the solver.") {
@@ -72,7 +77,7 @@ object ArrowsDevice : Module(
         }
 
         onWorldLoad {
-            reset()
+            markedPositions.clear()
             // Reset is called when leaving the device room, but device remains complete across an entire run, so this doesn't belong in reset
             isDeviceComplete = false
         }
@@ -105,7 +110,7 @@ object ArrowsDevice : Module(
 
     @SubscribeEvent
     fun onTick(tickEvent: ClientTickEvent) {
-        if (!isPlayerInRoom) return reset()
+        if (!isPlayerInRoom) return markedPositions.clear()
 
         if (!isDeviceComplete && activeArmorStand?.name == ACTIVE_DEVICE_STRING) onComplete()
     }

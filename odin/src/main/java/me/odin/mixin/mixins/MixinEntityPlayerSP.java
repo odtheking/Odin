@@ -14,7 +14,6 @@ public abstract class MixinEntityPlayerSP {
 
     @Inject(method = "sendChatMessage", at = @At("HEAD"), cancellable = true)
     private void onSendChatMessage(String message, CallbackInfo ci) {
-        if (postAndCatch(new MessageSentEvent(message)))
-            ci.cancel();
+        if (postAndCatch(new MessageSentEvent(message))) ci.cancel();
     }
 }

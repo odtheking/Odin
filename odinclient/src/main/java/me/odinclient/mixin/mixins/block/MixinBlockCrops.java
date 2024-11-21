@@ -15,15 +15,11 @@ public abstract class MixinBlockCrops extends MixinBlock {
 
     @Override
     public void getSelectedBoundingBox(World worldIn, BlockPos pos, CallbackInfoReturnable<AxisAlignedBB> cir) {
-        if (FarmingHitboxes.INSTANCE.getEnabled()) {
-            FarmingHitboxes.INSTANCE.setFullBlock(worldIn.getBlockState(pos).getBlock());
-        }
+        if (FarmingHitboxes.INSTANCE.getEnabled()) FarmingHitboxes.INSTANCE.setFullBlock(worldIn.getBlockState(pos).getBlock());
     }
 
     @Override
     public void collisionRayTrace(World worldIn, BlockPos pos, Vec3 start, Vec3 end, CallbackInfoReturnable<MovingObjectPosition> cir) {
-        if (FarmingHitboxes.INSTANCE.getEnabled()) {
-            FarmingHitboxes.INSTANCE.setFullBlock(worldIn.getBlockState(pos).getBlock());
-        }
+        if (FarmingHitboxes.INSTANCE.getEnabled()) FarmingHitboxes.INSTANCE.setFullBlock(worldIn.getBlockState(pos).getBlock());
     }
 }

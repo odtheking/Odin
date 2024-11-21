@@ -5,7 +5,8 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.NumberSetting
-import me.odinmain.utils.*
+import me.odinmain.utils.name
+import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.*
@@ -118,7 +119,7 @@ object ChocolateFactory : Module(
     }
 
     @SubscribeEvent
-    fun guiLoad(event: GuiEvent.GuiLoadedEvent) {
+    fun guiLoad(event: GuiEvent.Loaded) {
         if (isInChocolateFactory()) findWorker(event.gui)
     }
 

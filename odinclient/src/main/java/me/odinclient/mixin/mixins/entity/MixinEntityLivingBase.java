@@ -1,5 +1,6 @@
 package me.odinclient.mixin.mixins.entity;
 
+import me.odinclient.features.impl.render.NoDebuff;
 import me.odinmain.features.impl.render.Animations;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.potion.Potion;
@@ -27,5 +28,10 @@ public abstract class MixinEntityLivingBase {
                         6 + (1 + this.getActivePotionEffect(Potion.digSlowdown).getAmplifier()) * 2 :
                         6);
         cir.setReturnValue(Math.max((int)(length* Math.exp(-Animations.INSTANCE.getSpeed())), 1));
+    }
+
+    @Inject(method = "isPotionActive(Lnet/minecraft/potion/Potion;)Z", at = @At("HEAD"), cancellable = true)
+    private void isPotionActive(Potion potion, CallbackInfoReturnable<Boolean> cir) {
+        if (NoDebuff.getShouldIgnoreNausea() && potion == Potion.confusion) cir.setReturnValue(false);
     }
 }

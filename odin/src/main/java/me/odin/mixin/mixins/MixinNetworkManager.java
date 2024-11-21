@@ -18,15 +18,12 @@ public class MixinNetworkManager {
 
     @Inject(method = "channelRead0*", at = @At("HEAD"), cancellable = true)
     private void onReceivePacket(ChannelHandlerContext context, Packet<?> packet, CallbackInfo ci) {
-        if (postAndCatch(new PacketReceivedEvent(packet)) && !ci.isCancelled())
-            ci.cancel();
+        if (postAndCatch(new PacketReceivedEvent(packet)) && !ci.isCancelled()) ci.cancel();
     }
 
     @Inject(method = {"sendPacket(Lnet/minecraft/network/Packet;)V"}, at = {@At("HEAD")}, cancellable = true)
     private void onSendPacket(Packet<?> packet, CallbackInfo ci) {
-        if (!ServerUtils.INSTANCE.handleSendPacket(packet)) {
-            if (postAndCatch(new PacketSentEvent(packet)) && !ci.isCancelled())
-                ci.cancel();
-        }
+        if (!ServerUtils.INSTANCE.handleSendPacket(packet))
+            if (postAndCatch(new PacketSentEvent(packet)) && !ci.isCancelled()) ci.cancel();
     }
 }

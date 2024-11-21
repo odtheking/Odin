@@ -2,8 +2,10 @@ package me.odinmain.features.impl.dungeon.puzzlesolvers
 
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
-import me.odinmain.events.impl.DungeonEvents
-import me.odinmain.utils.*
+import me.odinmain.events.impl.RoomEnterEvent
+import me.odinmain.utils.addRotationCoords
+import me.odinmain.utils.equalsOneOf
+import me.odinmain.utils.removeFirstOrNull
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.getBlockIdAt
@@ -30,7 +32,7 @@ object BoulderSolver {
         }
     }
 
-    fun onRoomEnter(event: DungeonEvents.RoomEnterEvent) {
+    fun onRoomEnter(event: RoomEnterEvent) {
         val room = event.room ?: return reset()
         if (room.data.name != "Boulder") return reset()
         val roomComponent = room.roomComponents.firstOrNull() ?: return reset()

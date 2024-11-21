@@ -28,8 +28,7 @@ public class MixinMinecraft {
 
     @Inject(method = {"runTick"}, at = {@At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;dispatchKeypresses()V")})
     public void keyPresses(CallbackInfo ci) {
-        int k = (Keyboard.getEventKey() == 0) ? (Keyboard.getEventCharacter() + 256) : Keyboard.getEventKey();
-        if (Keyboard.getEventKeyState()) postAndCatch(new PreKeyInputEvent(k));
+        if (Keyboard.getEventKeyState()) postAndCatch(new PreKeyInputEvent((Keyboard.getEventKey() == 0) ? (Keyboard.getEventCharacter() + 256) : Keyboard.getEventKey()));
     }
 
     @Inject(method = {"runTick"}, at = {@At(value = "INVOKE", target = "Lorg/lwjgl/input/Mouse;getEventButton()I", remap = false)})
@@ -44,18 +43,14 @@ public class MixinMinecraft {
 
     @Inject(method = "rightClickMouse", at = @At("HEAD"), cancellable = true)
     private void rightClickMouse(CallbackInfo ci) {
-        CPSDisplay.INSTANCE.onRightClick();
-        if (postAndCatch(new ClickEvent.RightClickEvent())) {
-            ci.cancel();
-            return;
-        }
+        if (postAndCatch(new ClickEvent.Right())) ci.cancel();
+        CPSDisplay.onRightClick();
     }
 
     @Inject(method = "clickMouse", at = @At("HEAD"), cancellable = true)
-    private void clickMouse(CallbackInfo ci)
-    {
-        CPSDisplay.INSTANCE.onLeftClick();
-        if (postAndCatch(new ClickEvent.LeftClickEvent())) ci.cancel();
+    private void clickMouse(CallbackInfo ci) {
+        if (postAndCatch(new ClickEvent.Left())) ci.cancel();
+        CPSDisplay.onLeftClick();
     }
 
     @Redirect(method = {"rightClickMouse"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/WorldClient;isAirBlock(Lnet/minecraft/util/BlockPos;)Z"))

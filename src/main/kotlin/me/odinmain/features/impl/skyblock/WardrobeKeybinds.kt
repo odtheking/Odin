@@ -40,7 +40,7 @@ object WardrobeKeybinds : Module(
     private val clickCoolDown = Clock(delay)
 
     @SubscribeEvent
-    fun onGuiKeyPress(event: GuiEvent.GuiKeyPressEvent) {
+    fun onGuiKeyPress(event: GuiEvent.KeyPress) {
         if (event.keyCode !in listOf(unequipKeybind.key, nextPageKeybind.key, previousPageKeybind.key) && wardrobes.none { it.key == event.keyCode }) return
         val chest = (event.gui as? GuiChest)?.inventorySlots ?: return
         if (chest !is ContainerChest) return

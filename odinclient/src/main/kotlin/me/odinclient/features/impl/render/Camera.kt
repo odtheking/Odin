@@ -3,7 +3,10 @@ package me.odinclient.features.impl.render
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.*
+import me.odinmain.features.settings.impl.BooleanSetting
+import me.odinmain.features.settings.impl.DropdownSetting
+import me.odinmain.features.settings.impl.KeybindSetting
+import me.odinmain.features.settings.impl.NumberSetting
 import net.minecraft.util.MathHelper
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.EntityViewRenderEvent
@@ -23,7 +26,7 @@ object Camera : Module(
     private val cameraDist by NumberSetting("Distance", 4f, 3.0, 12.0, 0.1, description = "The distance of the camera from the player.")
     private val fov by NumberSetting("FOV", mc.gameSettings.fovSetting, 1f, 180f, 1f, description = "The field of view of the camera.")
     private val freelookDropdown by DropdownSetting("Freelook")
-    private val toggle by DualSetting("Type", "Hold", "Toggle", false, description = "The type of freelook.").withDependency { freelookDropdown }
+    private val toggle by BooleanSetting("Type", false, description = "The type of freelook (Hold/Toggle).").withDependency { freelookDropdown }
     private val freelookKeybind by KeybindSetting("Freelook Key", Keyboard.KEY_NONE, description = "Keybind to toggle/ hold for freelook.")
         .withDependency { freelookDropdown }
         .onPress {

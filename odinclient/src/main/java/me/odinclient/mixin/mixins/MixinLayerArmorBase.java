@@ -15,8 +15,7 @@ public abstract class MixinLayerArmorBase<T extends ModelBase> implements LayerR
 
     @Inject(method = "renderLayer", at = @At("HEAD"), cancellable = true)
     private void onRenderLayer(EntityLivingBase entitylivingbaseIn, float p_177182_2_, float p_177182_3_, float partialTicks, float p_177182_5_, float p_177182_6_, float p_177182_7_, float scale, int armorSlot, CallbackInfo ci) {
-        if (HideArmor.shouldHideArmor(entitylivingbaseIn, armorSlot))
-            ci.cancel();
+        if (HideArmor.shouldHideArmor(entitylivingbaseIn, armorSlot)) ci.cancel();
     }
 }
 

@@ -1,7 +1,7 @@
 package me.odinmain.features.impl.dungeon.puzzlesolvers
 
 import me.odinmain.events.impl.BlockChangeEvent
-import me.odinmain.events.impl.DungeonEvents.RoomEnterEvent
+import me.odinmain.events.impl.RoomEnterEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.dungeon.puzzlesolvers.WaterSolver.waterInteract
@@ -102,7 +102,7 @@ object PuzzleSolvers : Module(
 
     private val boulderDropDown by DropdownSetting("Boulder")
     private val boulderSolver by BooleanSetting("Boulder Solver", false, description = "Solver for the boulder puzzle.").withDependency { boulderDropDown }
-    val showAllBoulderClicks by DualSetting("Boulder clicks", "Only First", "All Clicks", true, description = "Shows all the clicks or only the first.").withDependency { boulderDropDown && boulderSolver }
+    val showAllBoulderClicks by BooleanSetting("Show All Boulder Clicks", true, description = "Shows all the clicks or only the first.").withDependency { boulderDropDown && boulderSolver }
     val boulderStyle by SelectorSetting("Boulder Style", Renderer.DEFAULT_STYLE, Renderer.styles, description = Renderer.STYLE_DESCRIPTION).withDependency { boulderDropDown && boulderSolver }
     val boulderColor by ColorSetting("Boulder Color", Color.GREEN.withAlpha(.5f), allowAlpha = true, description = "The color of the box.").withDependency { boulderDropDown && boulderSolver }
     val boulderLineWidth by NumberSetting("Boulder Line Width", 2f, 0.1f, 10f, 0.1f, description = "The width of the box's lines.").withDependency { boulderDropDown && boulderSolver }

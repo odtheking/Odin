@@ -55,7 +55,7 @@ object Melody : TermSimGui(
             }
         }
 
-        GuiEvent.GuiLoadedEvent(name, inventorySlots as ContainerChest).postAndCatch()
+        GuiEvent.Loaded(name, inventorySlots as ContainerChest).postAndCatch()
     }
 
     override fun slotClick(slot: Slot, button: Int) {

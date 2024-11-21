@@ -1,6 +1,7 @@
 package me.odinmain.events
 
-import kotlinx.coroutines.*
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.launch
 import me.odinmain.OdinMain.mc
 import me.odinmain.OdinMain.scope
 import me.odinmain.events.impl.*
@@ -15,7 +16,9 @@ import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.entity.item.EntityItem
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
-import net.minecraft.network.play.server.*
+import net.minecraft.network.play.server.S02PacketChat
+import net.minecraft.network.play.server.S29PacketSoundEffect
+import net.minecraft.network.play.server.S32PacketConfirmTransaction
 import net.minecraftforge.client.event.GuiOpenEvent
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -66,7 +69,7 @@ object EventDispatcher {
     }
 
     /**
-     * Dispatches [GuiEvent.GuiLoadedEvent]
+     * Dispatches [GuiEvent.Loaded]
      */
     @OptIn(DelicateCoroutinesApi::class)
     @SubscribeEvent
@@ -79,6 +82,6 @@ object EventDispatcher {
         val deferred = waitUntilLastItem(container)
         try { deferred.await() } catch (_: Exception) { return@launch } // Wait until the last item in the chest isn't null
 
-        GuiEvent.GuiLoadedEvent(container.name, container).postAndCatch()
+        GuiEvent.Loaded(container.name, container).postAndCatch()
     }
 }

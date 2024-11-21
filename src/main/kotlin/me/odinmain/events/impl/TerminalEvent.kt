@@ -3,8 +3,8 @@ package me.odinmain.events.impl
 import me.odinmain.features.impl.floor7.p3.TerminalTypes
 import net.minecraftforge.fml.common.eventhandler.Event
 
-class TerminalOpenedEvent(val type: TerminalTypes) : Event()
-
-class TerminalClosedEvent(val type: TerminalTypes) : Event()
-
-class TerminalSolvedEvent(val type: TerminalTypes, val playerName: String, val completionStatus: Int, val total: Int) : Event()
+abstract class TerminalEvent(val type: TerminalTypes) : Event() {
+    class Opened(type: TerminalTypes) : TerminalEvent(type)
+    class Closed(type: TerminalTypes) : TerminalEvent(type)
+    class Solved(type: TerminalTypes, val playerName: String, val completionStatus: Int, val total: Int) : TerminalEvent(type)
+}

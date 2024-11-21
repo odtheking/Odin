@@ -23,7 +23,6 @@ public abstract class MixinChunk {
 
     @Inject(method = "setBlockState", at = @At("HEAD"), cancellable = true)
     private void onBlockChange(BlockPos pos, IBlockState state, CallbackInfoReturnable<IBlockState> cir) {
-        if (postAndCatch(new BlockChangeEvent(pos, this.getBlockState(pos), state, this.worldObj)))
-            cir.setReturnValue(this.getBlockState(pos));
+        if (postAndCatch(new BlockChangeEvent(pos, this.getBlockState(pos), state, this.worldObj))) cir.setReturnValue(this.getBlockState(pos));
     }
 }

@@ -15,7 +15,9 @@ import me.odinmain.utils.render.RenderUtils.renderY
 import me.odinmain.utils.render.RenderUtils.renderZ
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.*
-import me.odinmain.utils.skyblock.dungeon.*
+import me.odinmain.utils.skyblock.dungeon.DungeonClass
+import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.skyblock.dungeon.M7Phases
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.client.settings.KeyBinding
 import net.minecraft.entity.item.EntityArmorStand
@@ -40,7 +42,9 @@ object ArrowsDevice : Module(
     private val markedPositionColor by ColorSetting("Marked Position", Color.RED, description = "Color of the marked position.").withDependency { solver && solverDropdown }
     private val targetPositionColor by ColorSetting("Target Position", Color.GREEN, description = "Color of the target position.").withDependency { solver && solverDropdown }
     private val resetKey by KeybindSetting("Reset", Keyboard.KEY_NONE, description = "Resets the solver.").onPress {
-        reset()
+        markedPositions.clear()
+        autoState = AutoState.Stopped
+        actionQueue.clear()
     }.withDependency { solver && solverDropdown }
     private val depthCheck by BooleanSetting("Depth check", true, description = "Marked positions show through walls.").withDependency { solver && solverDropdown }
     private val reset by ActionSetting("Reset", description = "Resets the solver.") {
@@ -112,7 +116,9 @@ object ArrowsDevice : Module(
         }
 
         onWorldLoad {
-            reset()
+            markedPositions.clear()
+            autoState = AutoState.Stopped
+            actionQueue.clear()
             // Reset is called when leaving the device room, but device remains complete across an entire run, so this doesn't belong in reset
             isDeviceComplete = false
         }
@@ -327,7 +333,12 @@ object ArrowsDevice : Module(
 
     @SubscribeEvent
     fun onTick(tickEvent: ClientTickEvent) {
-        if (!isPlayerInRoom) return reset()
+        if (!isPlayerInRoom) {
+            markedPositions.clear()
+            autoState = AutoState.Stopped
+            actionQueue.clear()
+            return
+        }
 
         if (!isDeviceComplete && activeArmorStand?.name == ACTIVE_DEVICE_STRING) onComplete()
 

@@ -40,7 +40,7 @@ object SwapSound : Module(
     }
 
     @SubscribeEvent
-    fun onLeftClick(event: ClickEvent.LeftClickEvent) {
+    fun onLeftClick(event: ClickEvent.Left) {
         if (mc.thePlayer?.heldItem?.item !in pickaxes || mc.thePlayer?.inventory?.mainInventory?.get(slot ?: return)?.item in pickaxes || playedThisTick || (onlyBlock && mc.objectMouseOver.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK)) return
         PlayerUtils.playLoudSound(if (sound == defaultSounds.size - 1) customSound else defaultSounds[sound], volume, pitch)
         playedThisTick = true

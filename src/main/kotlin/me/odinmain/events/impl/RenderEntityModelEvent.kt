@@ -9,7 +9,7 @@ import net.minecraftforge.fml.common.eventhandler.Event
  * @see MixinRendererLivingEntity
  */
 @Cancelable
-class RenderEntityModelEvent(
+data class RenderEntityModelEvent(
     var entity: EntityLivingBase,
     var limbSwing: Float,
     var limbSwingAmount: Float,

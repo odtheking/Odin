@@ -30,9 +30,7 @@ abstract public class MixinEntityRenderer implements IResourceManagerReloadListe
 
     @Redirect(method = "updateCameraAndRender", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/EntityPlayerSP;setAngles(FF)V"))
     private void lockPlayerLooking(EntityPlayerSP instance, float x, float y) {
-        if (!Camera.INSTANCE.getFreelookToggled()) {
-            instance.setAngles(x, y);
-        }
+        if (!Camera.INSTANCE.getFreelookToggled()) instance.setAngles(x, y);
     }
 
     @Inject(method = "updateCameraAndRender", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/EntityPlayerSP;setAngles(FF)V", ordinal = 1), locals = LocalCapture.CAPTURE_FAILSOFT)

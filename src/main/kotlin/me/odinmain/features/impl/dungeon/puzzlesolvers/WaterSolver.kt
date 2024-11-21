@@ -30,37 +30,35 @@ object WaterSolver {
         waterSolutions = JsonParser().parse(isr).asJsonObject
     }
 
-    private var variant = -1
     private var solutions = HashMap<LeverBlock, Array<Double>>()
+    private var patternIdentifier = -1
     private var openedWater = -1L
 
     fun scan() = with (DungeonUtils.currentRoom) {
-        if (this?.data?.name != "Water Board" || variant != -1) return@with
+        if (this?.data?.name != "Water Board" || patternIdentifier != -1) return@with
         val extendedSlots = WoolColor.entries.joinToString("") { if (it.isExtended) it.ordinal.toString() else "" }.takeIf { it.length == 3 } ?: return
 
-        setOf(getRealCoords(BlockPos(16, 78, 27)), getRealCoords(BlockPos(14, 78, 27))).forEach {
-            variant = when (getBlockAt(it)) {
-                Blocks.hardened_clay -> 0
-                Blocks.emerald_block -> 1
-                Blocks.diamond_block -> 2
-                Blocks.quartz_block -> 3
-                else -> return@forEach
-            }
+        patternIdentifier = when {
+            getBlockAt(getRealCoords(14, 77, 27)) == Blocks.hardened_clay -> 0 // right block == clay
+            getBlockAt(getRealCoords(16, 78, 27)) == Blocks.emerald_block -> 1 // left block == emerald
+            getBlockAt(getRealCoords(14, 78, 27)) == Blocks.diamond_block -> 2 // right block == diamond
+            getBlockAt(getRealCoords(14, 78, 27)) == Blocks.quartz_block  -> 3 // right block == quartz
+            else -> return@with modMessage("§cFailed to get Water Board pattern.")
         }
 
-        modMessage("$variant || ${WoolColor.entries.filter { it.isExtended }.joinToString(", ") { it.name.lowercase() }}")
+        modMessage("$patternIdentifier || ${WoolColor.entries.filter { it.isExtended }.joinToString(", ") { it.name.lowercase() }}")
 
         solutions.clear()
-        waterSolutions[variant.toString()].asJsonObject[extendedSlots].asJsonObject.entrySet().forEach {
+        waterSolutions[patternIdentifier.toString()].asJsonObject[extendedSlots].asJsonObject.entrySet().forEach {
             solutions[
                 when (it.key) {
-                    "quartz_block" -> LeverBlock.QUARTZ
-                    "gold_block" -> LeverBlock.GOLD
-                    "coal_block" -> LeverBlock.COAL
                     "diamond_block" -> LeverBlock.DIAMOND
                     "emerald_block" -> LeverBlock.EMERALD
                     "hardened_clay" -> LeverBlock.CLAY
-                    "water" -> LeverBlock.WATER
+                    "quartz_block"  -> LeverBlock.QUARTZ
+                    "gold_block"    -> LeverBlock.GOLD
+                    "coal_block"    -> LeverBlock.COAL
+                    "water"         -> LeverBlock.WATER
                     else -> LeverBlock.NONE
                 }
             ] = it.value.asJsonArray.map { it.asDouble }.toTypedArray()
@@ -68,7 +66,7 @@ object WaterSolver {
     }
 
     fun onRenderWorld() {
-        if (variant == -1 || solutions.isEmpty() || DungeonUtils.currentRoomName != "Water Board") return
+        if (patternIdentifier == -1 || solutions.isEmpty() || DungeonUtils.currentRoomName != "Water Board") return
 
         val solutionList = solutions
             .flatMap { (lever, times) -> times.drop(lever.i).map { Pair(lever, it) } }
@@ -100,16 +98,16 @@ object WaterSolver {
     fun waterInteract(event: C08PacketPlayerBlockPlacement) {
         if (solutions.isEmpty()) return
         LeverBlock.entries.find { it.leverPos.equal(event.position.toVec3()) }?.let {
-            it.i++
             if (it == LeverBlock.WATER && openedWater == -1L) openedWater = System.currentTimeMillis()
+            it.i++
         }
     }
 
     fun reset() {
-        variant = -1
+        LeverBlock.entries.forEach { it.i = 0 }
+        patternIdentifier = -1
         solutions.clear()
         openedWater = -1
-        LeverBlock.entries.forEach { it.i = 0 }
     }
 
     private enum class WoolColor(val relativePosition: BlockPos) {

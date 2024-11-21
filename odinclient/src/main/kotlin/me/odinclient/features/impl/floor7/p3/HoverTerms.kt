@@ -1,14 +1,14 @@
 package me.odinclient.features.impl.floor7.p3
 
 import me.odinmain.events.impl.GuiEvent
-import me.odinmain.events.impl.TerminalClosedEvent
+import me.odinmain.events.impl.TerminalEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.p3.TerminalSolver
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.currentTerm
 import me.odinmain.features.impl.floor7.p3.TerminalTypes
 import me.odinmain.features.impl.floor7.p3.termGUI.TermGui
-import me.odinmain.features.settings.impl.DualSetting
+import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.ui.util.MouseUtils.mouseX
 import me.odinmain.ui.util.MouseUtils.mouseY
@@ -25,7 +25,7 @@ object HoverTerms : Module(
 ) {
     private val triggerDelay by NumberSetting("Delay", 200L, 50, 800, unit = "ms", description = "Delay between clicks.")
     private val firstClickDelay by NumberSetting("First Click Delay", 200L, 50, 500, unit = "ms", description = "Delay before first click.")
-    private val middleClick by DualSetting("Click Type", "Left", "Middle", default = true, description = "What Click type to use.")
+    private val middleClick by BooleanSetting("Middle Click", false, description = "Use middle click instead of left click.")
     private val previouslyClicked = mutableSetOf<Int>()
     private val triggerBotClock = Clock(triggerDelay)
     private var clickedThisWindow = false
@@ -87,13 +87,13 @@ object HoverTerms : Module(
     }
 
     @SubscribeEvent
-    fun onTerminalLeft(event: TerminalClosedEvent) {
+    fun onTerminalLeft(event: TerminalEvent.Closed) {
         clickedThisWindow = false
         previouslyClicked.clear()
     }
 
     @SubscribeEvent
-    fun onGuiOpen(event: GuiEvent.GuiLoadedEvent) {
+    fun onGuiOpen(event: GuiEvent.Loaded) {
         clickedThisWindow = false
     }
 }
