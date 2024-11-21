@@ -17,11 +17,13 @@ import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.RenderUtils.renderVec
 import me.odinmain.utils.render.Renderer
-import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.EtherWarpHelper
 import me.odinmain.utils.skyblock.EtherWarpHelper.etherPos
+import me.odinmain.utils.skyblock.Island
+import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.PlayerUtils.playLoudSound
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.skyblock.usingEtherWarp
 import net.minecraft.network.play.server.S29PacketSoundEffect
 import net.minecraft.util.MathHelper
 import net.minecraft.util.Vec3
@@ -44,7 +46,7 @@ object EtherWarpHelper : Module(
     private val lineWidth by NumberSetting("Line Width", 2f, 0.1f, 10f, 0.1f, description = "The width of the box's lines.").withDependency { render }
     private val depthCheck by BooleanSetting("Depth check", false, description = "Boxes show through walls.").withDependency { render }
     private val expand by NumberSetting("Expand", 0.0, -1, 1, 0.01, description = "Expands the box by this amount.").withDependency { render }
-    private val useServerPosition by DualSetting("Positioning", "Server Pos", "Player Pos", description = "If etherwarp guess should use your server position or real position.").withDependency { render }
+    private val useServerPosition by BooleanSetting("Use Server Position", true, description = "If etherwarp guess should use your server position or real position.").withDependency { render }
 
     private val etherwarpTBDropDown by DropdownSetting("Trigger Bot")
     private val etherWarpTriggerBot by BooleanSetting("Trigger Bot", false, description = "Uses Dungeon Waypoints to trigger bot to the closest waypoint.").withDependency { etherwarpTBDropDown }
@@ -92,7 +94,7 @@ object EtherWarpHelper : Module(
     }
 
     @SubscribeEvent
-    fun onClick(event: ClickEvent.RightClickEvent) {
+    fun onClick(event: ClickEvent.Right) {
         if (
             zeroPing &&
             mc.thePlayer.usingEtherWarp &&
@@ -106,7 +108,7 @@ object EtherWarpHelper : Module(
     }
 
     @SubscribeEvent
-    fun onLeftClick(event: ClickEvent.LeftClickEvent) {
+    fun onLeftClick(event: ClickEvent.Left) {
         if (
             etherWarpHelper &&
             mc.thePlayer.usingEtherWarp

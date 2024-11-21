@@ -7,7 +7,10 @@ import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
 import me.odinmain.ui.clickgui.animations.impl.EaseInOut
 import me.odinmain.ui.clickgui.util.ColorUtil.brighter
-import me.odinmain.utils.render.*
+import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.dropShadow
+import me.odinmain.utils.render.mcText
+import me.odinmain.utils.render.roundedRectangle
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -69,11 +72,13 @@ object CPSDisplay : Module(
     private val leftClicks = mutableListOf<Long>()
     private val rightClicks = mutableListOf<Long>()
 
+    @JvmStatic
     fun onLeftClick() {
         leftClicks.add(System.currentTimeMillis())
         leftAnim.start(true)
     }
 
+    @JvmStatic
     fun onRightClick() {
         rightClicks.add(System.currentTimeMillis())
         rightAnim.start(true)

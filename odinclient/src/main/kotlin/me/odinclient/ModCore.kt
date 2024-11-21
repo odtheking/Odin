@@ -3,25 +3,24 @@ package me.odinclient
 import me.odinclient.commands.impl.OdinClientCommand
 import me.odinclient.commands.impl.autoSellCommand
 import me.odinclient.features.impl.dungeon.*
-import me.odinclient.features.impl.floor7.*
+import me.odinclient.features.impl.floor7.FreezeGame
+import me.odinclient.features.impl.floor7.FuckDiorite
+import me.odinclient.features.impl.floor7.RelicAura
 import me.odinclient.features.impl.floor7.p3.*
 import me.odinclient.features.impl.render.*
 import me.odinclient.features.impl.skyblock.*
-import me.odinclient.mixin.accessors.IEntityRendererAccessor
 import me.odinmain.OdinMain
-import me.odinmain.OdinMain.mc
 import me.odinmain.commands.registerCommands
 import me.odinmain.features.ModuleManager
-import me.odinmain.ui.util.shader.FramebufferShader
-import me.odinmain.utils.render.RenderUtils
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.Mod.EventHandler
-import net.minecraftforge.fml.common.event.*
+import net.minecraftforge.fml.common.event.FMLInitializationEvent
+import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent
+import net.minecraftforge.fml.common.event.FMLPostInitializationEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
-@Suppress("UNUSED_PARAMETER")
 @Mod(
     modid = ModCore.MOD_ID,
     name = ModCore.NAME,
@@ -33,17 +32,12 @@ class ModCore {
     @EventHandler
     fun init(event: FMLInitializationEvent) {
         OdinMain.init()
-        listOf(
-            this
-        ).forEach { MinecraftForge.EVENT_BUS.register(it) }
+        MinecraftForge.EVENT_BUS.register(this)
 
         registerCommands(
             autoSellCommand,
             OdinClientCommand
         )
-
-        FramebufferShader.setupCameraTransform =
-            { (mc.entityRenderer as? IEntityRendererAccessor)?.invokeSetupCameraTransform(RenderUtils.partialTicks, 0) }
     }
 
     @EventHandler

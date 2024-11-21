@@ -94,12 +94,12 @@ object TerminalSolver : Module(
     private var lastTermOpened = TerminalTypes.NONE
 
     @SubscribeEvent
-    fun onGuiLoad(event: GuiEvent.GuiLoadedEvent) {
+    fun onGuiLoad(event: GuiEvent.Loaded) {
         val newTerm = TerminalTypes.entries.find { event.name.startsWith(it.guiName) } ?: TerminalTypes.NONE
         val items = event.gui.inventory.subList(0, event.gui.inventory.size - 37)
         if (newTerm != currentTerm.type) {
             currentTerm = Terminal(type = newTerm, items = items, timeOpened = System.currentTimeMillis())
-            TerminalOpenedEvent(currentTerm.type).postAndCatch()
+            TerminalEvent.Opened(currentTerm.type).postAndCatch()
             lastTermOpened = currentTerm.type
             lastRubixSolution = null
         }
@@ -216,7 +216,7 @@ object TerminalSolver : Module(
     }
 
     @SubscribeEvent(receiveCanceled = true)
-    fun onGuiClick(event: GuiEvent.GuiMouseClickEvent) {
+    fun onGuiClick(event: GuiEvent.MouseClick) {
         val gui = event.gui as? GuiChest ?: return
         val needed = currentTerm.solution.count { it == gui.slotUnderMouse?.slotIndex }
 
@@ -241,7 +241,7 @@ object TerminalSolver : Module(
     }
 
     @SubscribeEvent
-    fun onGuiKeyPress(event: GuiEvent.GuiKeyPressEvent) {
+    fun onGuiKeyPress(event: GuiEvent.KeyPress) {
         if (currentTerm.type == TerminalTypes.NONE || !enabled || (currentTerm.type == TerminalTypes.MELODY && cancelMelodySolver)) return
         if (renderType == 3 && (event.keyCode == mc.gameSettings.keyBindDrop.keyCode || event.keyCode in 2..10)) {
             CustomTermGui.mouseClicked(MouseUtils.mouseX.toInt(), MouseUtils.mouseY.toInt(), if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) && event.keyCode == mc.gameSettings.keyBindDrop.keyCode) 1 else 0)
@@ -263,7 +263,7 @@ object TerminalSolver : Module(
         onMessage(Regex("(.{1,16}) (?:activated|completed) a (terminal|device|lever)! \\((\\d)/(\\d)\\)")) {
             Regex("(.{1,16}) (?:activated|completed) a (terminal|device|lever)! \\((\\d)/(\\d)\\)").find(it)?.let { message ->
                 val (playerName, deviceType, completionStatus, total) = message.destructured
-                TerminalSolvedEvent(if (deviceType == "terminal") lastTermOpened else TerminalTypes.NONE, playerName, completionStatus.toIntOrNull() ?: return@let, total.toIntOrNull() ?: return@let).postAndCatch()
+                TerminalEvent.Solved(if (deviceType == "terminal") lastTermOpened else TerminalTypes.NONE, playerName, completionStatus.toIntOrNull() ?: return@let, total.toIntOrNull() ?: return@let).postAndCatch()
             }
         }
 
@@ -279,7 +279,7 @@ object TerminalSolver : Module(
 
     private fun leftTerm() {
         if (currentTerm.type == TerminalTypes.NONE && currentTerm.solution.isEmpty()) return
-        TerminalClosedEvent(currentTerm.type).postAndCatch()
+        TerminalEvent.Closed(currentTerm.type).postAndCatch()
         currentTerm.type = TerminalTypes.NONE
         currentTerm.solution = emptyList()
     }

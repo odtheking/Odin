@@ -43,7 +43,7 @@ open class TermSimGui(val name: String, val size: Int, private val inv: Inventor
         this.consecutive = const - 1
         display = this
         startTime = System.currentTimeMillis()
-        GuiEvent.GuiLoadedEvent(name, inventorySlots as ContainerChest).postAndCatch()
+        GuiEvent.Loaded(name, inventorySlots as ContainerChest).postAndCatch()
     }
 
     fun solved(name: String, pbIndex: Int) {
@@ -95,14 +95,14 @@ open class TermSimGui(val name: String, val size: Int, private val inv: Inventor
     final override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
         val slot = slotUnderMouse ?: return
         if (slot.stack?.item == pane && slot.stack?.metadata == 15) return
-        if (!GuiEvent.GuiWindowClickEvent(mc.thePlayer.openContainer.windowId, slot.slotIndex, mouseButton, 0, mc.thePlayer).postAndCatch())
+        if (!GuiEvent.WindowClick(mc.thePlayer.openContainer.windowId, slot.slotIndex, mouseButton, 0, mc.thePlayer).postAndCatch())
         delaySlotClick(slot, mouseButton)
     }
 
     final override fun handleMouseClick(slotIn: Slot?, slotId: Int, clickedButton: Int, clickType: Int) {
         val slot = slotIn ?: return
         if (slot.stack?.item == pane && slot.stack?.metadata == 15) return
-        if (!GuiEvent.GuiWindowClickEvent(mc.thePlayer.openContainer.windowId, slot.slotIndex, clickedButton, clickType, mc.thePlayer).postAndCatch())
+        if (!GuiEvent.WindowClick(mc.thePlayer.openContainer.windowId, slot.slotIndex, clickedButton, clickType, mc.thePlayer).postAndCatch())
         delaySlotClick(slot, 0)
     }
 }

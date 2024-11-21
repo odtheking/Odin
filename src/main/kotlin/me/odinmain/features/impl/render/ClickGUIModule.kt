@@ -13,7 +13,10 @@ import me.odinmain.ui.clickgui.ClickGUI
 import me.odinmain.ui.hud.EditHUDGui
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.sendDataToServer
-import me.odinmain.utils.skyblock.*
+import me.odinmain.utils.skyblock.LocationUtils
+import me.odinmain.utils.skyblock.createClickStyle
+import me.odinmain.utils.skyblock.getChatBreak
+import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.event.ClickEvent
 import net.minecraft.util.ChatComponentText
 import org.lwjgl.input.Keyboard
@@ -28,7 +31,7 @@ object ClickGUIModule: Module(
     val blur by BooleanSetting("Blur", false, description = "Toggles the background blur for the gui.")
     val enableNotification by BooleanSetting("Enable notifications", true, description = "Shows you a notification in chat when you toggle an option with a keybind.")
     val color by ColorSetting("Gui Color", Color(50, 150, 220), allowAlpha = false, description = "Color theme in the gui.")
-    val switchType by DualSetting("Switch Type", "Checkbox", "Switch", default = true, description = "Switches the type of the settings in the gui.")
+    val switchType by BooleanSetting("Switch Type", true, description = "Switches the type of the settings in the gui.")
     val hudChat by BooleanSetting("Shows HUDs in GUIs", true, description = "Shows HUDs in GUIs.")
     val forceHypixel by BooleanSetting("Force Hypixel", false, description = "Forces the hypixel check to be on (not recommended).")
     val updateMessage by SelectorSetting("Update Message", "Beta", arrayListOf("Beta", "Full", "None"), description = "Shows the update message in chat.")

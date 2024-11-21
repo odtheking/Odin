@@ -41,7 +41,7 @@ object AutoExperiments : Module(
     }
 
     @SubscribeEvent
-    fun onGuiOpen(event: GuiEvent.GuiLoadedEvent) {
+    fun onGuiOpen(event: GuiEvent.Loaded) {
         reset()
         if (!LocationUtils.currentArea.isArea(Island.PrivateIsland)) return
         val chestName = event.name

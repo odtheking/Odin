@@ -15,10 +15,12 @@ import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.name
 import me.odinmain.utils.render.*
 import me.odinmain.utils.render.RenderUtils.drawTexturedModalRect
-import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonClass
 import me.odinmain.utils.skyblock.dungeon.DungeonPlayer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.leapTeammates
+import me.odinmain.utils.skyblock.getItemIndexInContainerChest
+import me.odinmain.utils.skyblock.modMessage
+import me.odinmain.utils.skyblock.partyMessage
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.inventory.ContainerChest
@@ -35,7 +37,7 @@ object LeapMenu : Module(
     category = Category.DUNGEON
 ) {
     val type by SelectorSetting("Sorting", "Odin Sorting", arrayListOf("Odin Sorting", "A-Z Class (BetterMap)", "A-Z Name", "Custom sorting", "No Sorting"), description = "How to sort the leap menu.")
-    private val colorStyle by DualSetting("Color Style", "Gray", "Color", default = false, description = "Which color style to use.")
+    private val colorStyle by BooleanSetting("Color Style", default = false, description = "Which color style to use.")
     private val backgroundColor by ColorSetting("Background Color", default = Color.DARK_GRAY.withAlpha(0.9f), allowAlpha = true, description = "Color of the background of the leap menu.")
     private val roundedRect by BooleanSetting("Rounded Rect", true, description = "Toggles the rounded rect for the gui.")
     private val useNumberKeys by BooleanSetting("Use Number Keys", false, description = "Use keyboard keys to leap to the player you want, going from left to right, top to bottom.")
@@ -115,7 +117,7 @@ object LeapMenu : Module(
     }
 
     @SubscribeEvent
-    fun mouseClicked(event: GuiEvent.GuiMouseClickEvent) {
+    fun mouseClicked(event: GuiEvent.MouseClick) {
         val gui = event.gui as? GuiChest ?: return
         if (event.gui.inventorySlots !is ContainerChest || gui.inventorySlots.name != "Spirit Leap" || leapTeammates.isEmpty())  return
 
@@ -132,7 +134,7 @@ object LeapMenu : Module(
     }
 
     @SubscribeEvent
-    fun keyTyped(event: GuiEvent.GuiKeyPressEvent) {
+    fun keyTyped(event: GuiEvent.KeyPress) {
         val gui = event.gui as? GuiChest ?: return
         if (
             gui.inventorySlots !is ContainerChest ||

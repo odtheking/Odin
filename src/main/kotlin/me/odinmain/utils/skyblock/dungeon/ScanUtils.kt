@@ -6,7 +6,7 @@ import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
 import me.odinmain.OdinMain.logger
 import me.odinmain.OdinMain.mc
-import me.odinmain.events.impl.DungeonEvents.RoomEnterEvent
+import me.odinmain.events.impl.RoomEnterEvent
 import me.odinmain.utils.Vec2
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.postAndCatch

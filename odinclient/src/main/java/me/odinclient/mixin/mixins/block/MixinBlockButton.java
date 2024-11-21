@@ -20,10 +20,8 @@ public class MixinBlockButton extends Block {
     }
 
     @Inject(method = "updateBlockBounds", at = @At("HEAD"), cancellable = true)
-    private void onUpdateBlockBounds(IBlockState state, CallbackInfo ci)
-    {
-        if (SecretHitboxes.INSTANCE.getEnabled() && SecretHitboxes.INSTANCE.getButton())
-        {
+    private void onUpdateBlockBounds(IBlockState state, CallbackInfo ci) {
+        if (SecretHitboxes.INSTANCE.getEnabled() && SecretHitboxes.INSTANCE.getButton()) {
             EnumFacing enumfacing = state.getValue(BlockButton.FACING);
             boolean flag = state.getValue(BlockButton.POWERED);
             float f2 = (flag ? 1 : 2) / 16.0f;

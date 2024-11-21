@@ -2,7 +2,8 @@ package me.odinmain.features.impl.dungeon
 
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.features.settings.impl.*
+import me.odinmain.features.settings.impl.BooleanSetting
+import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.runIn
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.sendCommand
@@ -13,7 +14,7 @@ object DungeonRequeue : Module(
     category = Category.DUNGEON
 ) {
     private val delay by NumberSetting("Delay", 2, 0, 30, 1, description = "The delay in seconds before requeuing.", unit = "s")
-    private val type by DualSetting("Type", "Normal", "Requeue", default = true, description = "The type of command to execute to fulfill the requeue request.")
+    private val type by BooleanSetting("Type", true, description = "The type of command to execute to fulfill the requeue request. (true for Normal, false for Requeue)")
     private val disablePartyLeave by BooleanSetting("Disable on leave/kick", true, description = "Disables the requeue on party leave message.")
 
     var disableRequeue = false

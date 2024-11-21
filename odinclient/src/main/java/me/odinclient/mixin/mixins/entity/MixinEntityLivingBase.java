@@ -32,8 +32,6 @@ public abstract class MixinEntityLivingBase {
 
     @Inject(method = "isPotionActive(Lnet/minecraft/potion/Potion;)Z", at = @At("HEAD"), cancellable = true)
     private void isPotionActive(Potion potion, CallbackInfoReturnable<Boolean> cir) {
-        if (NoDebuff.getShouldIgnoreNausea() && potion == Potion.confusion) {
-            cir.setReturnValue(false);
-        }
+        if (NoDebuff.getShouldIgnoreNausea() && potion == Potion.confusion) cir.setReturnValue(false);
     }
 }

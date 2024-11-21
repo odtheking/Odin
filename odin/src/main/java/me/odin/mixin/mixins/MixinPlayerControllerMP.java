@@ -18,7 +18,6 @@ public class MixinPlayerControllerMP {
 
     @Inject(method = "windowClick", at = @At(value = "HEAD"), cancellable = true)
     private void onWindowClick(int windowId, int slotId, int mouseButtonClicked, int mode, EntityPlayer playerIn, CallbackInfoReturnable<ItemStack> cir) {
-        if (postAndCatch(new GuiEvent.GuiWindowClickEvent(windowId, slotId, mouseButtonClicked, mode, playerIn)))
-            cir.setReturnValue(null);
+        if (postAndCatch(new GuiEvent.WindowClick(windowId, slotId, mouseButtonClicked, mode, playerIn))) cir.setReturnValue(null);
     }
 }

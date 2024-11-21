@@ -23,7 +23,6 @@
   ],
   "client": [
     "accessors.IEntityPlayerSPAccessor",
-    "accessors.IEntityRendererAccessor",
     "accessors.IMinecraftAccessor",
     "mixins.MixinFontRenderer",
     "mixins.MixinGuiContainer",

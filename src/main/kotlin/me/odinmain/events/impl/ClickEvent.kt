@@ -3,10 +3,10 @@ package me.odinmain.events.impl
 import net.minecraftforge.fml.common.eventhandler.Cancelable
 import net.minecraftforge.fml.common.eventhandler.Event
 
-open class ClickEvent : Event() {
+abstract class ClickEvent : Event() {
     @Cancelable
-    class LeftClickEvent : ClickEvent()
+    class Left : ClickEvent()
 
     @Cancelable
-    class RightClickEvent : ClickEvent()
+    class Right : ClickEvent()
 }

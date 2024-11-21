@@ -21,6 +21,6 @@ public class MixinGuiIngame {
 
     @Inject(method = "renderScoreboard", at = @At("HEAD"), cancellable = true)
     private void renderScoreboard(ScoreObjective objective, ScaledResolution scaledRes, CallbackInfo ci) {
-        if (Sidebar.INSTANCE.renderSidebar(objective, scaledRes)) ci.cancel();
+        if (Sidebar.renderSidebar(objective, scaledRes)) ci.cancel();
     }
 }

@@ -51,7 +51,7 @@ object TerminalSounds : Module(
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
-    fun onSlotClick(event: GuiEvent.GuiMouseClickEvent) {
+    fun onSlotClick(event: GuiEvent.MouseClick) {
         if (shouldReplaceSounds) clickSlot((event.gui as? GuiChest)?.slotUnderMouse?.slotIndex ?: return)
     }
 
@@ -61,7 +61,7 @@ object TerminalSounds : Module(
     }
 
     @SubscribeEvent
-    fun onTermComplete(event: TerminalSolvedEvent) {
+    fun onTermComplete(event: TerminalEvent.Solved) {
         if (shouldReplaceSounds && event.playerName != mc.thePlayer?.name || (!completeSounds && !clickSounds)) mc.thePlayer.playSound("note.pling", 8f, 4f)
         else if (shouldReplaceSounds && completeSounds && !clickSounds) playCompleteSound()
     }

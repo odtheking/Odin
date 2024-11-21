@@ -16,7 +16,7 @@ object TerminalTimes : Module(
     description = "Records the time taken to complete terminals in floor 7.",
     category = Category.FLOOR7
 ) {
-    private val sendMessage by DualSetting("Send Message", "Always", "Only PB", false, description = "Send a message when a terminal is completed.")
+    private val sendMessage by BooleanSetting("Send Message", false, description = "Send a message when a terminal is completed.")
     private val reset by ActionSetting("Reset pbs", description = "Resets the terminal PBs.") {
         repeat(6) { i -> termPBs.set(i, 999.0) }
         modMessage("§6Terminal PBs §fhave been reset.")
@@ -28,7 +28,7 @@ object TerminalTimes : Module(
     private val termPBs = PersonalBest("Terminals", 7)
 
     @SubscribeEvent
-    fun onTerminalClose(event: TerminalSolvedEvent) {
+    fun onTerminalClose(event: TerminalEvent.Solved) {
         if (event.type == TerminalTypes.NONE || mc.currentScreen is TermSimGui || event.playerName != mc.thePlayer?.name) return
         termPBs.time(event.type.ordinal, (System.currentTimeMillis() - TerminalSolver.currentTerm.timeOpened) / 1000.0, "s§7!", "§a${event.type.guiName} §7solved in §6", addPBString = true, addOldPBString = true, sendOnlyPB = sendMessage)
     }

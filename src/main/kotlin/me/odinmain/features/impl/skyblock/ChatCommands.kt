@@ -5,8 +5,13 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.dungeon.DungeonRequeue.disableRequeue
 import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.*
-import me.odinmain.utils.*
+import me.odinmain.features.settings.impl.BooleanSetting
+import me.odinmain.features.settings.impl.DropdownSetting
+import me.odinmain.features.settings.impl.ListSetting
+import me.odinmain.utils.ServerUtils
+import me.odinmain.utils.capitalizeFirst
+import me.odinmain.utils.floor
+import me.odinmain.utils.runIn
 import me.odinmain.utils.skyblock.*
 import net.minecraft.event.ClickEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -24,7 +29,7 @@ object ChatCommands : Module(
     private val party by BooleanSetting(name = "Party commands", default = true, description = "Toggles chat commands in party chat.")
     private val guild by BooleanSetting(name = "Guild commands", default = true, description = "Toggles chat commands in guild chat.")
     private val private by BooleanSetting(name = "Private commands", default = true, description = "Toggles chat commands in private chat.")
-    private val whitelistOnly by DualSetting("Whitelist Only", left = "blacklist", right = "Whitelist", default = false, description = "Whether the list should act like a whitelist or a blacklist.")
+    private val whitelistOnly by BooleanSetting(name = "Whitelist Only", default = false, description = "Whether the list should act like a whitelist or a blacklist.")
     private val showSettings by DropdownSetting(name = "Show Settings", default = false)
 
     private val warp by BooleanSetting(name = "Warp", default = true, description = "Executes the /party warp commnad.").withDependency { showSettings }

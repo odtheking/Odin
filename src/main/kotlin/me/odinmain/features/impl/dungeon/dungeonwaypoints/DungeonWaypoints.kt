@@ -2,10 +2,11 @@ package me.odinmain.features.impl.dungeon.dungeonwaypoints
 
 import me.odinmain.config.DungeonWaypointConfig
 import me.odinmain.events.impl.ClickEvent
-import me.odinmain.events.impl.DungeonEvents
+import me.odinmain.events.impl.RoomEnterEvent
 import me.odinmain.events.impl.SecretPickupEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
+import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.WaypointType.entries
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.SecretWaypoints.onEtherwarp
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.SecretWaypoints.onLocked
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.SecretWaypoints.onPosUpdate
@@ -229,7 +230,7 @@ object DungeonWaypoints : Module(
     }
 
     @SubscribeEvent
-    fun onInteract(event: ClickEvent.RightClickEvent) {
+    fun onInteract(event: ClickEvent.Right) {
         if (mc.thePlayer.usingEtherWarp) {
             val pos = EtherWarpHelper.getEtherPos(mc.thePlayer.renderVec, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch)
             if (pos.succeeded && pos.pos != null) {
@@ -279,7 +280,7 @@ object DungeonWaypoints : Module(
     }
 
     @SubscribeEvent
-    fun onNewRoom(event: DungeonEvents.RoomEnterEvent) {
+    fun onNewRoom(event: RoomEnterEvent) {
         glList = -1
         event.room?.let { setWaypoints(it) }
     }

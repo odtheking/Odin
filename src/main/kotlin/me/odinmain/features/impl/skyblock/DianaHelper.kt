@@ -7,12 +7,15 @@ import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
-import me.odinmain.utils.*
+import me.odinmain.utils.addVec
 import me.odinmain.utils.clock.Clock
+import me.odinmain.utils.findNearestGrassBlock
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
+import me.odinmain.utils.runIn
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.DianaBurrowEstimate.activeBurrows
+import me.odinmain.utils.toVec3
 import net.minecraft.network.play.client.C07PacketPlayerDigging
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.server.S29PacketSoundEffect
@@ -116,7 +119,7 @@ object DianaHelper : Module(
     }
 
     @SubscribeEvent
-    fun onRightClick(event: ClickEvent.RightClickEvent) {
+    fun onRightClick(event: ClickEvent.Right) {
         if (!isDoingDiana || !isHolding("ANCESTRAL_SPADE") || !autoWarp || isLegitVersion) return
         runIn(40) {
             if (!cmdCooldown.hasTimePassed()) return@runIn

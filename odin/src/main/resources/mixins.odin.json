@@ -13,7 +13,6 @@
     "mixins.MixinWorld"
   ],
   "client": [
-    "accessors.EntityRendererAccessor",
     "accessors.IEntityPlayerSPAccessor",
     "accessors.IMinecraftAccessor",
     "mixins.MixinEntityPlayerSP",

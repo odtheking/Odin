@@ -28,9 +28,9 @@ object MapInfo : Module(
         val scoreText = "§7Score: ${colorizeScore(DungeonUtils.score)}"
         val secretText = "§7Secrets: §b${DungeonUtils.secretCount}" +
                 (if (fullAddRemaining && alternate) "§7-§d${(DungeonUtils.neededSecretsAmount - DungeonUtils.secretCount).coerceAtLeast(0)}" else "") +
-                "§7-§e${if (!fullRemaining || (fullAddRemaining && alternate)) DungeonUtils.neededSecretsAmount else (DungeonUtils.neededSecretsAmount - DungeonUtils.secretCount).coerceAtLeast(0)}"+
+                "§7-§e${if (fullRemaining != 0 || (fullAddRemaining && alternate)) DungeonUtils.neededSecretsAmount else (DungeonUtils.neededSecretsAmount - DungeonUtils.secretCount).coerceAtLeast(0)}"+
                 "§7-§c${DungeonUtils.totalSecrets}"
-        val unknownSecretsText = if (!unknown) "§7Deaths: §c${colorizeDeaths(DungeonUtils.deathCount)}" else "§7Unfound: §e${(DungeonUtils.totalSecrets - DungeonUtils.knownSecrets).coerceAtLeast(0)}"
+        val unknownSecretsText = if (unknown == 0) "§7Deaths: §c${colorizeDeaths(DungeonUtils.deathCount)}" else "§7Unfound: §e${(DungeonUtils.totalSecrets - DungeonUtils.knownSecrets).coerceAtLeast(0)}"
         val mimicText = "§7Mimic: ${if (DungeonUtils.mimicKilled) "§a✔" else "§c✘"}"
         val cryptText = "§7Crypts: ${colorizeCrypts(DungeonUtils.cryptCount.coerceAtMost(5))}"
 
@@ -50,9 +50,9 @@ object MapInfo : Module(
 
     private val alternate by  BooleanSetting("Flip Crypts and Score", default = false, description = "Flips crypts and score.").withDependency { fullHud.enabled }
     private val fullAddRemaining by BooleanSetting("Include Remaining", default = false, description = "Adds remaining to the secrets display.").withDependency { alternate && fullHud.enabled }
-    private val fullRemaining by DualSetting("Remaining Secrets", "Minimum", "Remaining", default = false, description = "Display minimum secrets or secrets until s+.").withDependency { !(fullAddRemaining && alternate) && fullHud.enabled }
+    private val fullRemaining by SelectorSetting("Remaining Secrets", "Minimum", options = arrayListOf("Minimum", "Remaining"), description = "Display minimum secrets or secrets until s+.").withDependency { !(fullAddRemaining && alternate) && fullHud.enabled }
     private val fullWidth by NumberSetting("Width", default = 160f, min = 160f, max = 200f, increment = 1f, description = "The width of the hud.").withDependency { fullHud.enabled }
-    private val unknown by DualSetting("Deaths", "Deaths", "Unfound", default = false, description = "Display deaths or unfound secrets. (Unknown secrets are secrets in rooms that haven't been discovered yet. May not be helpful in full party runs.)").withDependency { fullHud.enabled }
+    private val unknown by SelectorSetting("Deaths", "Deaths", options = arrayListOf("Deaths", "Unfound"), description = "Display deaths or unfound secrets. (Unknown secrets are secrets in rooms that haven't been discovered yet. May not be helpful in full party runs.)").withDependency { fullHud.enabled }
     private val fullBackground by BooleanSetting("Hud Background", default = false, description = "Render a background behind the score info.").withDependency { fullHud.enabled }
     private val fullMargin by NumberSetting("Hud Margin", default = 0f, min = 0f, max = 5f, increment = 1f, description = "The margin around the hud.").withDependency { fullBackground && fullHud.enabled }
     private val fullColor by ColorSetting("Hud Background Color", default = Color.DARK_GRAY.withAlpha(0.5f), true, description = "The color of the background.").withDependency { fullBackground && fullHud.enabled }
@@ -61,7 +61,7 @@ object MapInfo : Module(
         if ((!DungeonUtils.inDungeons || (disableInBoss && DungeonUtils.inBoss)) && !it) return@HudSetting 0f to 0f
         val secretText = "§7Secrets: §b${DungeonUtils.secretCount}" +
                 (if (compactAddRemaining) "§7-§d${(DungeonUtils.neededSecretsAmount - DungeonUtils.secretCount).coerceAtLeast(0)}" else "") +
-                "§7-§e${if (!compactRemaining || fullAddRemaining) DungeonUtils.neededSecretsAmount else (DungeonUtils.neededSecretsAmount - DungeonUtils.secretCount).coerceAtLeast(0)}"+
+                "§7-§e${if (compactRemaining == 0 || fullAddRemaining) DungeonUtils.neededSecretsAmount else (DungeonUtils.neededSecretsAmount - DungeonUtils.secretCount).coerceAtLeast(0)}"+
                 "§7-§c${DungeonUtils.totalSecrets}"
         val width = getMCTextWidth(secretText)
         if (compactSecretBackground) roundedRectangle(-compactSecretMargin, 0, width + 2 + (compactSecretMargin * 2), 9, compactSecretColor, 0, 0)
@@ -70,7 +70,7 @@ object MapInfo : Module(
     }
 
     private val compactAddRemaining: Boolean by BooleanSetting("Compact Include remaining", default = false, description = "Adds remaining to the secrets display.").withDependency { compactSecrets.enabled }
-    private val compactRemaining: Boolean by DualSetting("Min Secrets", "Minimum", "Remaining", default = false, description = "Display minimum secrets or secrets until s+.").withDependency { !compactAddRemaining && compactSecrets.enabled }
+    private val compactRemaining: Int by SelectorSetting("Min Secrets", "Minimum", options = arrayListOf("Minimum", "Remaining"), description = "Display minimum secrets or secrets until s+.").withDependency { !compactAddRemaining && compactSecrets.enabled }
     private val compactSecretBackground: Boolean by BooleanSetting("Secret Background", default = false, description = "Render a background behind the score info.").withDependency { compactSecrets.enabled }
     private val compactSecretMargin: Float by NumberSetting("Secret Margin", default = 0f, min = 0f, max = 5f, increment = 1f, description = "The margin around the hud.").withDependency { compactSecretBackground && compactSecrets.enabled }
     private val compactSecretColor: Color by ColorSetting("Secret Background Color", default = Color.DARK_GRAY.withAlpha(0.5f), true, description = "The color of the background.").withDependency { compactSecretBackground && compactSecrets.enabled }

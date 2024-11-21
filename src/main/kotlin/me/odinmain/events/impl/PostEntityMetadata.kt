@@ -6,4 +6,4 @@ import net.minecraftforge.fml.common.eventhandler.Event
 /**
  * see MixinS1CPacketEntityMetadata.redirectProcessPacket
  */
-class PostEntityMetadata(val packet: S1CPacketEntityMetadata) : Event()
+data class PostEntityMetadata(val packet: S1CPacketEntityMetadata) : Event()

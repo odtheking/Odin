@@ -1,6 +1,6 @@
 package me.odinmain.features.impl.floor7.p3
 
-import me.odinmain.events.impl.TerminalOpenedEvent
+import me.odinmain.events.impl.TerminalEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.p3.termsim.TermSimGui
@@ -26,7 +26,7 @@ object MelodyMessage : Module(
     private var claySlots = hashMapOf(25 to "Melody terminal is at 25%", 34 to "Melody terminal is at 50%", 43 to "Melody terminal is at 75%")
 
     @SubscribeEvent
-    fun onGuiLoad(event: TerminalOpenedEvent) {
+    fun onGuiLoad(event: TerminalEvent.Opened) {
         if (DungeonUtils.getF7Phase() != M7Phases.P3 || event.type != TerminalTypes.MELODY || mc.currentScreen is TermSimGui) return
         if (sendMelodyMessage) partyMessage(melodyMessage)
 

@@ -2,14 +2,22 @@ package me.odinmain.features.impl.render
 
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.features.settings.impl.*
+import me.odinmain.features.settings.impl.BooleanSetting
+import me.odinmain.features.settings.impl.ColorSetting
+import me.odinmain.features.settings.impl.HudSetting
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
-import me.odinmain.utils.render.*
+import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.RenderUtils.bind
+import me.odinmain.utils.render.getTextWidth
+import me.odinmain.utils.render.mcText
+import me.odinmain.utils.render.text
 import net.minecraft.client.gui.Gui.drawRect
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
-import net.minecraft.scoreboard.*
+import net.minecraft.scoreboard.Score
+import net.minecraft.scoreboard.ScoreObjective
+import net.minecraft.scoreboard.ScorePlayerTeam
+import net.minecraft.scoreboard.Scoreboard
 import net.minecraft.util.EnumChatFormatting
 import kotlin.math.max
 
@@ -54,11 +62,12 @@ object Sidebar : Module(
         Color.WHITE.bind()
         width.toFloat() to (scoreList.size + 1) * mc.fontRendererObj.FONT_HEIGHT.toFloat()
     }
-    private val customFont: Boolean by DualSetting("Font", "Minecraft", "Custom", description = "The font to use for the sidebar.")
+    private val customFont by BooleanSetting("Custom Font", false, description = "Whether to use a custom font for the sidebar.")
     private val textShadow by BooleanSetting("Text Shadow", true, description = "Whether to render a shadow behind the text.")
     private val redNumbers by BooleanSetting("Show Red Numbers", true, description = "Whether to show the numbers in red.")
     private val backgroundColor by ColorSetting("Background Color", Color.GRAY.withAlpha(.5f), allowAlpha = true, description = "The color of the sidebar background.")
 
+    @JvmStatic
     fun renderSidebar(scoreObjective: ScoreObjective, scaledResolution: ScaledResolution): Boolean {
         variableScoreObjective = scoreObjective
         return this.enabled

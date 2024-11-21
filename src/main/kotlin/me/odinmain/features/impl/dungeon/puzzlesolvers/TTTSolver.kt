@@ -1,8 +1,8 @@
 package me.odinmain.features.impl.dungeon.puzzlesolvers
 
 import me.odinmain.OdinMain.mc
-import me.odinmain.events.impl.DungeonEvents
 import me.odinmain.events.impl.PostEntityMetadata
+import me.odinmain.events.impl.RoomEnterEvent
 import me.odinmain.utils.Vec2
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
@@ -33,7 +33,7 @@ object TTTSolver {
 
     private var toRender: BlockPos? = null
 
-    fun tttRoomEnter(event: DungeonEvents.RoomEnterEvent) {
+    fun tttRoomEnter(event: RoomEnterEvent) {
         val room = event.room ?: return
         if (room.data.name != "Tic Tac Toe") return
 

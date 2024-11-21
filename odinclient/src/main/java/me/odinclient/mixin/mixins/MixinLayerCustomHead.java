@@ -14,7 +14,6 @@ public abstract class MixinLayerCustomHead implements LayerRenderer<EntityLiving
 
     @Inject(method = "doRenderLayer", at = @At(value = "HEAD"), cancellable = true)
     private void renderCustomHeadLayer(EntityLivingBase entitylivingbaseIn, float f, float g, float partialTicks, float h, float i, float j, float scale, CallbackInfo ci) {
-        if (HideArmor.shouldHideSkull(entitylivingbaseIn))
-            ci.cancel();
+        if (HideArmor.shouldHideSkull(entitylivingbaseIn)) ci.cancel();
     }
 }
