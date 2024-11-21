@@ -91,7 +91,7 @@ val dungeonWaypointsCommand = commodore("dwp", "dungeonwaypoints") {
 
     literal("import").runs {
         scope.launch {
-            val waypoints = GuiScreen.getClipboardString()?.let { decodeWaypoints(it) } ?: return@launch modMessage("Failed to decode waypoints from clipboard.")
+            val waypoints = GuiScreen.getClipboardString()?.let { decodeWaypoints(it) } ?: return@launch modMessage("Failed to read a string from clipboard. Did you copy it correctly?")
             DungeonWaypointConfig.waypoints = waypoints
             DungeonWaypointConfig.saveConfig()
 
