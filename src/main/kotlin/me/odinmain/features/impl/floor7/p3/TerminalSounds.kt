@@ -10,6 +10,7 @@ import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.skyblock.PlayerUtils
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.network.play.server.S29PacketSoundEffect
+import net.minecraftforge.client.event.GuiScreenEvent
 import net.minecraftforge.fml.common.eventhandler.EventPriority
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -51,7 +52,7 @@ object TerminalSounds : Module(
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
-    fun onSlotClick(event: GuiEvent.MouseClick) {
+    fun onSlotClick(event: GuiScreenEvent.MouseInputEvent.Pre) {
         if (shouldReplaceSounds) clickSlot((event.gui as? GuiChest)?.slotUnderMouse?.slotIndex ?: return)
     }
 

@@ -2,7 +2,6 @@ package me.odinmain.utils.skyblock
 
 import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.PacketReceivedEvent
-import me.odinmain.events.impl.SkyblockJoinIslandEvent
 import me.odinmain.features.impl.render.ClickGUIModule
 import me.odinmain.utils.*
 import me.odinmain.utils.clock.Executor
@@ -35,11 +34,7 @@ object LocationUtils {
                 sidebarLines.find { cleanLine(it).contains("Kuudra's Hollow (") }?.let {
                     kuudraTier = it.substringBefore(")").lastOrNull()?.digitToIntOrNull() ?: 0 }
 
-            if (currentArea.isArea(Island.Unknown)) {
-                val previousArea = currentArea
-                currentArea = getArea()
-                if (!currentArea.isArea(Island.Unknown) && previousArea != currentArea) SkyblockJoinIslandEvent(currentArea).postAndCatch()
-            }
+            if (currentArea.isArea(Island.Unknown)) currentArea = getArea()
 
             if ((DungeonUtils.inDungeons || currentArea.isArea(Island.SinglePlayer)) && currentDungeon == null) currentDungeon = Dungeon(getFloor() ?: return@Executor)
 
@@ -52,7 +47,6 @@ object LocationUtils {
         isInSkyblock = false
         currentArea = Island.Unknown
         kuudraTier = 0
-        SkyblockJoinIslandEvent(currentArea).postAndCatch()
         currentDungeon = null
     }
 

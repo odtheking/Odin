@@ -13,6 +13,7 @@ import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.network.play.client.C0DPacketCloseWindow
 import net.minecraft.network.play.server.S2DPacketOpenWindow
+import net.minecraftforge.client.event.GuiScreenEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object CloseChest : Module(
@@ -31,7 +32,7 @@ object CloseChest : Module(
     }
 
     @SubscribeEvent
-    fun onInput(event: GuiEvent.KeyPress) {
+    fun onInput(event: GuiScreenEvent.KeyboardInputEvent.Pre) {
         val gui = event.gui as? GuiChest ?: return
         if (!inDungeons || mode != 1) return
         if ((gui.inventorySlots as? ContainerChest)?.name?.noControlCodes?.equalsOneOf("Chest", "Large Chest") == true)
@@ -39,7 +40,7 @@ object CloseChest : Module(
     }
 
     @SubscribeEvent
-    fun onMouse(event: GuiEvent.MouseClick) {
+    fun onMouse(event: GuiScreenEvent.MouseInputEvent.Pre) {
         val gui = event.gui as? GuiChest ?: return
         if (!inDungeons || mode != 1) return
         if ((gui.inventorySlots as? ContainerChest)?.name?.noControlCodes?.equalsOneOf("Chest", "Large Chest") == true)

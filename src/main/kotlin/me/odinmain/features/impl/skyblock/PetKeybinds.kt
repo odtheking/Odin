@@ -12,6 +12,7 @@ import me.odinmain.utils.skyblock.getItemIndexInContainerChestByUUID
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.inventory.ContainerChest
+import net.minecraftforge.client.event.GuiScreenEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.input.Keyboard
 
@@ -43,7 +44,7 @@ object PetKeybinds : Module(
     val petList: MutableList<String> by ListSetting("List", mutableListOf())
 
     @SubscribeEvent
-    fun checkKeybinds(event: GuiEvent.KeyPress) {
+    fun checkKeybinds(event: GuiScreenEvent.KeyboardInputEvent.Pre) {
         val chest = (event.gui as? GuiChest)?.inventorySlots ?: return
         if (chest !is ContainerChest) return
 

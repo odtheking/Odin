@@ -11,6 +11,7 @@ import me.odinmain.utils.skyblock.getItemIndexInContainerChest
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.inventory.ContainerChest
+import net.minecraftforge.client.event.GuiScreenEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.input.Keyboard
 
@@ -22,7 +23,7 @@ object WardrobeKeybinds : Module(
     private val unequipKeybind by KeybindSetting("Unequip Keybind", Keyboard.KEY_NONE, "Unequips the current armor.")
     private val nextPageKeybind by KeybindSetting("Next Page Keybind", Keyboard.KEY_NONE, "Goes to the next page.")
     private val previousPageKeybind by KeybindSetting("Previous Page Keybind", Keyboard.KEY_NONE, "Goes to the previous page.")
-    private val delay by NumberSetting("Delay", 0L, 0L, 10000L, 10L, description = "The delay between each click.", unit = "ms")
+    private val delay by NumberSetting("Delay", 300L, 0L, 10000L, 10L, description = "The delay between each click.", unit = "ms")
     private val disallowUnequippingEquipped by BooleanSetting("Disable Unequip", false, description = "Prevents unequipping equipped armor.")
 
     private val advanced by DropdownSetting("Show Settings", false)
@@ -40,8 +41,8 @@ object WardrobeKeybinds : Module(
     private val clickCoolDown = Clock(delay)
 
     @SubscribeEvent
-    fun onGuiKeyPress(event: GuiEvent.KeyPress) {
-        if (event.keyCode !in listOf(unequipKeybind.key, nextPageKeybind.key, previousPageKeybind.key) && wardrobes.none { it.key == event.keyCode }) return
+    fun onGuiKeyPress(event: GuiScreenEvent.KeyboardInputEvent.Pre) {
+        if (!unequipKeybind.isDown() || !nextPageKeybind.isDown() || !previousPageKeybind.isDown() || wardrobes.none { it.isDown() }) event.isCanceled = true
         val chest = (event.gui as? GuiChest)?.inventorySlots ?: return
         if (chest !is ContainerChest) return
 

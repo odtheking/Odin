@@ -1,12 +1,10 @@
 package me.odinmain.events
 
-import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.launch
 import me.odinmain.OdinMain.mc
 import me.odinmain.OdinMain.scope
 import me.odinmain.events.impl.*
 import me.odinmain.utils.*
-import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.dungeonItemDrops
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.inBoss
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.inDungeons
@@ -20,7 +18,6 @@ import net.minecraft.network.play.server.S02PacketChat
 import net.minecraft.network.play.server.S29PacketSoundEffect
 import net.minecraft.network.play.server.S32PacketConfirmTransaction
 import net.minecraftforge.client.event.GuiOpenEvent
-import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object EventDispatcher {
@@ -44,34 +41,21 @@ object EventDispatcher {
     }
 
     /**
-     * Dispatches [ChatPacketEvent], [RealServerTick], and [SecretPickupEvent.Bat]
+     * Dispatches [ChatPacketEvent], [ServerTickEvent], and [SecretPickupEvent.Bat]
      */
     @SubscribeEvent
     fun onPacket(event: PacketReceivedEvent) {
         if (event.packet is S29PacketSoundEffect && inDungeons && !inBoss && (event.packet.soundName.equalsOneOf("mob.bat.hurt", "mob.bat.death") && event.packet.volume == 0.1f)) SecretPickupEvent.Bat(event.packet).postAndCatch()
 
-        if (event.packet is S32PacketConfirmTransaction) RealServerTick().postAndCatch()
+        if (event.packet is S32PacketConfirmTransaction) ServerTickEvent().postAndCatch()
 
         if (event.packet !is S02PacketChat || !ChatPacketEvent(event.packet.chatComponent.unformattedText.noControlCodes).postAndCatch()) return
         event.isCanceled = true
     }
 
-    private val nextTime = Clock()
-
-    /**
-     * Dispatches [ServerTickEvent]
-     */
-    @SubscribeEvent
-    fun onRenderWorld(event: RenderWorldLastEvent) {
-        if (nextTime.hasTimePassed((1000L / ServerUtils.averageTps).toLong(), setTime = true)) {
-            ServerTickEvent().postAndCatch()
-        }
-    }
-
     /**
      * Dispatches [GuiEvent.Loaded]
      */
-    @OptIn(DelicateCoroutinesApi::class)
     @SubscribeEvent
     fun onGuiOpen(event: GuiOpenEvent) = scope.launch {
         if (event.gui !is GuiChest) return@launch

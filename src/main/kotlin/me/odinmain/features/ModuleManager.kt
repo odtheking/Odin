@@ -91,7 +91,7 @@ object ModuleManager {
     }
 
     @SubscribeEvent(receiveCanceled = true)
-    fun onServerTick(event: RealServerTick) {
+    fun onServerTick(event: ServerTickEvent) {
         tickTaskTick(true)
     }
 

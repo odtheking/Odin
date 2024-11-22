@@ -87,7 +87,7 @@ object TerminalTimes : Module(
     }
 
     @SubscribeEvent
-    fun onServerTick(event: RealServerTick) {
+    fun onServerTick(event: ServerTickEvent) {
         if (!terminalSplits || useRealTime) return
         currentTick += 50
     }

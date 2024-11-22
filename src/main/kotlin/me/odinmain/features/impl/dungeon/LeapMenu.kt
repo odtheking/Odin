@@ -26,6 +26,7 @@ import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.client.event.GuiOpenEvent
+import net.minecraftforge.client.event.GuiScreenEvent
 import net.minecraftforge.fml.common.Loader
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.input.Keyboard
@@ -56,6 +57,7 @@ object LeapMenu : Module(
     private var previouslyHoveredQuadrant = -1
 
     private val EMPTY = DungeonPlayer("Empty", DungeonClass.Unknown, 0, ResourceLocation("textures/entity/steve.png"))
+    private val keybindList = listOf(topLeftKeybind, topRightKeybind, bottomLeftKeybind, bottomRightKeybind)
 
     @SubscribeEvent
     fun onDrawScreen(event: GuiEvent.DrawGuiContainerScreenEvent) {
@@ -118,9 +120,9 @@ object LeapMenu : Module(
     }
 
     @SubscribeEvent
-    fun mouseClicked(event: GuiEvent.MouseClick) {
+    fun mouseClicked(event: GuiScreenEvent.MouseInputEvent.Pre) {
         val gui = event.gui as? GuiChest ?: return
-        if (event.gui.inventorySlots !is ContainerChest || gui.inventorySlots.name != "Spirit Leap" || leapTeammates.isEmpty())  return
+        if (gui.inventorySlots !is ContainerChest || gui.inventorySlots.name != "Spirit Leap" || leapTeammates.isEmpty())  return
 
         val quadrant = getQuadrant()
         if ((type.equalsOneOf(1,2,3)) && leapTeammates.size < quadrant) return
@@ -135,23 +137,18 @@ object LeapMenu : Module(
     }
 
     @SubscribeEvent
-    fun keyTyped(event: GuiEvent.KeyPress) {
+    fun keyTyped(event: GuiScreenEvent.KeyboardInputEvent.Pre) {
         val gui = event.gui as? GuiChest ?: return
         if (
             gui.inventorySlots !is ContainerChest ||
             gui.inventorySlots.name != "Spirit Leap" ||
-            !event.keyCode.equalsOneOf(topLeftKeybind.key, topRightKeybind.key, bottomLeftKeybind.key, bottomRightKeybind.key) ||
+            keybindList.none { it.isDown() } ||
             leapTeammates.isEmpty() ||
             !useNumberKeys
         ) return
-        val keyCodeNumber = when (event.keyCode) {
-            topLeftKeybind.key -> 1
-            topRightKeybind.key -> 2
-            bottomLeftKeybind.key -> 3
-            bottomRightKeybind.key -> 4
-            else -> return
-        }
-        val playerToLeap = if (keyCodeNumber > leapTeammates.size) return else leapTeammates[keyCodeNumber - 1]
+
+        val index = keybindList.indexOfFirst { it.isDown() }
+        val playerToLeap = if (index + 1 > leapTeammates.size) return else leapTeammates[index]
         if (playerToLeap == EMPTY) return
         if (playerToLeap.isDead) return modMessage("This player is dead, can't leap.")
 
