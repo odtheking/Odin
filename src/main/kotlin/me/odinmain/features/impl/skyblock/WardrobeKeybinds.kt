@@ -38,15 +38,16 @@ object WardrobeKeybinds : Module(
     private val wardrobe9 by KeybindSetting("Wardrobe 9", Keyboard.KEY_9, "Wardrobe 9").withDependency { advanced }
 
     private val wardrobes = arrayOf(wardrobe1, wardrobe2, wardrobe3, wardrobe4, wardrobe5, wardrobe6, wardrobe7, wardrobe8, wardrobe9)
+    private val wardrobeRegex = Regex("Wardrobe \\((\\d)/(\\d)\\)")
     private val clickCoolDown = Clock(delay)
 
     @SubscribeEvent
     fun onGuiKeyPress(event: GuiScreenEvent.KeyboardInputEvent.Pre) {
-        if (!unequipKeybind.isDown() || !nextPageKeybind.isDown() || !previousPageKeybind.isDown() || wardrobes.none { it.isDown() }) event.isCanceled = true
+        if (!unequipKeybind.isDown() || !nextPageKeybind.isDown() || !previousPageKeybind.isDown() || wardrobes.none { it.isDown() }) return
         val chest = (event.gui as? GuiChest)?.inventorySlots ?: return
         if (chest !is ContainerChest) return
 
-        val (current, total) = Regex("Wardrobe \\((\\d)/(\\d)\\)").find(chest.name)?.destructured ?: return
+        val (current, total) = wardrobeRegex.find(chest.name)?.destructured ?: return
         val equippedIndex = getItemIndexInContainerChest(chest, "equipped", 36..44, true)
 
         val index = when {
