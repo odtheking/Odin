@@ -1,6 +1,6 @@
 package me.odinmain.features.impl.floor7.p3
 
-import me.odinmain.events.impl.PacketSentEvent
+import me.odinmain.events.impl.PacketEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
@@ -57,7 +57,7 @@ object ArrowAlign : Module(
     }
 
     @SubscribeEvent
-    fun onPacket(event: PacketSentEvent) {
+    fun onPacket(event: PacketEvent.Send) {
         val packet = event.packet as? C02PacketUseEntity ?: return
         if (DungeonUtils.getF7Phase() != M7Phases.P3 || clicksRemaining.isEmpty() || packet.action != C02PacketUseEntity.Action.INTERACT) return
         val entity = packet.getEntityFromWorld(mc.theWorld) ?: return

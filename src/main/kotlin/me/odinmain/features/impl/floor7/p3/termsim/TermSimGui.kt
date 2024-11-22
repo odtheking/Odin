@@ -3,8 +3,7 @@ package me.odinmain.features.impl.floor7.p3.termsim
 
 import me.odinmain.OdinMain.display
 import me.odinmain.events.impl.GuiEvent
-import me.odinmain.events.impl.PacketReceivedEvent
-import me.odinmain.events.impl.PacketSentEvent
+import me.odinmain.events.impl.PacketEvent
 import me.odinmain.features.impl.floor7.TerminalSimulator
 import me.odinmain.features.impl.floor7.TerminalSimulator.openRandomTerminal
 import me.odinmain.features.impl.floor7.TerminalSimulator.sendMessage
@@ -64,7 +63,7 @@ open class TermSimGui(val name: String, val size: Int, private val inv: Inventor
     }
 
     @SubscribeEvent
-    fun onPacketSend(event: PacketSentEvent) {
+    fun onPacketSend(event: PacketEvent.Send) {
         val packet = event.packet as? C0EPacketClickWindow ?: return
         if (mc.currentScreen != this) return
         delaySlotClick(this.inventorySlots.inventorySlots[packet.slotId], packet.usedButton)
@@ -72,7 +71,7 @@ open class TermSimGui(val name: String, val size: Int, private val inv: Inventor
     }
 
     @SubscribeEvent
-    fun onPacketReceived(event: PacketReceivedEvent) {
+    fun onPacketReceived(event: PacketEvent.Receive) {
         val packet = event.packet as? S2FPacketSetSlot ?: return
         if (mc.currentScreen !== this) return
         packet.func_149174_e()?.let {

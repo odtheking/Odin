@@ -1,7 +1,7 @@
 package me.odinmain.utils.skyblock
 
 import me.odinmain.OdinMain.mc
-import me.odinmain.events.impl.PacketReceivedEvent
+import me.odinmain.events.impl.PacketEvent
 import me.odinmain.features.impl.render.ClickGUIModule
 import me.odinmain.utils.*
 import me.odinmain.utils.clock.Executor
@@ -71,7 +71,7 @@ object LocationUtils {
     }
 
     @SubscribeEvent
-    fun onPacket(event: PacketReceivedEvent) {
+    fun onPacket(event: PacketEvent.Receive) {
         if (isOnHypixel || event.packet !is S3FPacketCustomPayload || event.packet.channelName != "MC|Brand") return
         if (event.packet.bufferData?.readStringFromBuffer(Short.MAX_VALUE.toInt())?.contains("hypixel", true) == true) isOnHypixel = true
     }

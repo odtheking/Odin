@@ -219,6 +219,7 @@ object TerminalSolver : Module(
 
     @SubscribeEvent(receiveCanceled = true)
     fun onGuiClick(event: GuiScreenEvent.MouseInputEvent.Pre) {
+        if (!Mouse.getEventButtonState()) return
         val gui = event.gui as? GuiChest ?: return
         val needed = currentTerm.solution.count { it == gui.slotUnderMouse?.slotIndex }
 

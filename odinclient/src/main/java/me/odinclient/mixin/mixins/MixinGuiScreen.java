@@ -2,7 +2,6 @@ package me.odinclient.mixin.mixins;
 
 import me.odinmain.events.impl.GuiEvent;
 import net.minecraft.client.gui.GuiScreen;
-import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;

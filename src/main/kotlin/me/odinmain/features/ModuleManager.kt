@@ -108,14 +108,14 @@ object ModuleManager {
     }
 
     @SubscribeEvent(receiveCanceled = true)
-    fun onReceivePacket(event: PacketReceivedEvent) {
+    fun onReceivePacket(event: PacketEvent.Receive) {
         packetFunctions.forEach {
             if (it.type.isInstance(event.packet) && it.shouldRun.invoke()) it.function(event.packet)
         }
     }
 
     @SubscribeEvent(receiveCanceled = true)
-    fun onSendPacket(event: PacketSentEvent) {
+    fun onSendPacket(event: PacketEvent.Send) {
         packetFunctions.forEach {
             if (it.type.isInstance(event.packet) && it.shouldRun.invoke()) it.function(event.packet)
         }
@@ -135,7 +135,7 @@ object ModuleManager {
     }
 
     @SubscribeEvent
-    fun activateModuleKeyBinds(event: PreKeyInputEvent) {
+    fun activateModuleKeyBinds(event: InputEvent.Keyboard) {
         for (module in modules) {
             for (setting in module.settings) {
                 if (setting is KeybindSetting && setting.value.key == event.keycode) {
@@ -146,10 +146,10 @@ object ModuleManager {
     }
 
     @SubscribeEvent
-    fun activateModuleMouseBinds(event: PreMouseInputEvent) {
+    fun activateModuleMouseBinds(event: InputEvent.Mouse) {
         for (module in modules) {
             for (setting in module.settings) {
-                if (setting is KeybindSetting && setting.value.key + 100 == event.button) {
+                if (setting is KeybindSetting && setting.value.key + 100 == event.keycode) {
                     setting.value.onPress?.invoke()
                 }
             }

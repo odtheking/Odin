@@ -12,6 +12,7 @@ import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.inventory.ContainerChest
 import net.minecraftforge.client.event.GuiScreenEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import org.lwjgl.input.Mouse
 
 object RemovePerks : Module(
     name = "Remove Perks",
@@ -28,7 +29,7 @@ object RemovePerks : Module(
 
     @SubscribeEvent
     fun guiMouseClick(event: GuiScreenEvent.MouseInputEvent.Pre) = with(event.gui) {
-        if (this is GuiChest && inventorySlots?.name == "Perk Menu" && slotCheck(slotUnderMouse?.stack?.unformattedName ?: return))
+        if (Mouse.getEventButtonState() && this is GuiChest && inventorySlots?.name == "Perk Menu" && slotCheck(slotUnderMouse?.stack?.unformattedName ?: return))
             event.isCanceled = true
     }
 

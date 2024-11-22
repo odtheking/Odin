@@ -9,6 +9,7 @@ import me.odinmain.utils.skyblock.dungeon.DungeonUtils.dungeonItemDrops
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.inBoss
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.inDungeons
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.isSecret
+import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.skyblock.unformattedName
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.entity.item.EntityItem
@@ -35,7 +36,7 @@ object EventDispatcher {
      * Dispatches [SecretPickupEvent.Interact]
      */
     @SubscribeEvent
-    fun onPacket(event: PacketSentEvent) = with(event.packet) {
+    fun onPacket(event: PacketEvent.Send) = with(event.packet) {
         if (inDungeons && this is C08PacketPlayerBlockPlacement && position != null)
             SecretPickupEvent.Interact(position, mc.theWorld?.getBlockState(position)?.takeIf { isSecret(it, position) } ?: return).postAndCatch()
     }
@@ -44,7 +45,7 @@ object EventDispatcher {
      * Dispatches [ChatPacketEvent], [ServerTickEvent], and [SecretPickupEvent.Bat]
      */
     @SubscribeEvent
-    fun onPacket(event: PacketReceivedEvent) {
+    fun onPacket(event: PacketEvent.Receive) {
         if (event.packet is S29PacketSoundEffect && inDungeons && !inBoss && (event.packet.soundName.equalsOneOf("mob.bat.hurt", "mob.bat.death") && event.packet.volume == 0.1f)) SecretPickupEvent.Bat(event.packet).postAndCatch()
 
         if (event.packet is S32PacketConfirmTransaction) ServerTickEvent().postAndCatch()

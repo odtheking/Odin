@@ -30,6 +30,7 @@ import net.minecraftforge.client.event.GuiScreenEvent
 import net.minecraftforge.fml.common.Loader
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.input.Keyboard
+import org.lwjgl.input.Mouse
 import org.lwjgl.opengl.Display
 
 object LeapMenu : Module(
@@ -122,7 +123,7 @@ object LeapMenu : Module(
     @SubscribeEvent
     fun mouseClicked(event: GuiScreenEvent.MouseInputEvent.Pre) {
         val gui = event.gui as? GuiChest ?: return
-        if (gui.inventorySlots !is ContainerChest || gui.inventorySlots.name != "Spirit Leap" || leapTeammates.isEmpty())  return
+        if (!Mouse.getEventButtonState() || gui.inventorySlots !is ContainerChest || gui.inventorySlots.name != "Spirit Leap" || leapTeammates.isEmpty())  return
 
         val quadrant = getQuadrant()
         if ((type.equalsOneOf(1,2,3)) && leapTeammates.size < quadrant) return

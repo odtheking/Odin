@@ -1,6 +1,6 @@
 package me.odinclient.features.impl.floor7.p3
 
-import me.odinmain.events.impl.PacketSentEvent
+import me.odinmain.events.impl.PacketEvent
 import me.odinmain.events.impl.PostEntityMetadata
 import me.odinmain.features.Category
 import me.odinmain.features.Module
@@ -49,7 +49,7 @@ object TerminalAura : Module(
     }
 
     @SubscribeEvent
-    fun onPacketSent(event: PacketSentEvent) {
+    fun onPacketSent(event: PacketEvent.Send) {
         (event.packet as? C02PacketUseEntity)?.getEntityFromWorld(mc.theWorld)?.let {
             if (it.name.noControlCodes != "Inactive Terminal") return
             if (!interactClock.hasTimePassed() || TerminalSolver.currentTerm.type != TerminalTypes.NONE) event.isCanceled = true else interactClock.update()

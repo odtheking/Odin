@@ -25,10 +25,7 @@ import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL13
 import org.lwjgl.util.glu.Cylinder
 import java.awt.image.BufferedImage
-import kotlin.math.cos
-import kotlin.math.floor
-import kotlin.math.roundToInt
-import kotlin.math.sin
+import kotlin.math.*
 
 object RenderUtils {
 
