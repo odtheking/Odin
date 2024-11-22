@@ -29,7 +29,7 @@ object BlazeAttunement : Module(
     private var currentBlazes = hashMapOf<Entity, Color>()
 
     init {
-        execute(1000) {
+        execute(250) {
             if (!overlay) return@execute
             currentBlazes.clear()
             mc.theWorld?.loadedEntityList?.forEach { entity ->
