@@ -10,7 +10,9 @@ import me.odinmain.utils.name
 import me.odinmain.utils.skyblock.unformattedName
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.inventory.ContainerChest
+import net.minecraftforge.client.event.GuiScreenEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import org.lwjgl.input.Mouse
 
 object RemovePerks : Module(
     name = "Remove Perks",
@@ -21,13 +23,13 @@ object RemovePerks : Module(
 
     @SubscribeEvent
     fun renderSlot(event: GuiEvent.DrawSlotEvent) {
-        if ((event.gui.inventorySlots as? ContainerChest)?.name == "Perk Menu" && slotCheck(event.slot.stack?.unformattedName ?: return))
+        if (event.gui.inventorySlots?.name == "Perk Menu" && slotCheck(event.slot.stack?.unformattedName ?: return))
             event.isCanceled = true
     }
 
     @SubscribeEvent
-    fun guiMouseClick(event: GuiEvent.MouseClick) {
-        if (event.gui is GuiChest && (event.gui.inventorySlots as? ContainerChest)?.name == "Perk Menu" && slotCheck(event.gui.slotUnderMouse?.stack?.unformattedName ?: return))
+    fun guiMouseClick(event: GuiScreenEvent.MouseInputEvent.Pre) = with(event.gui) {
+        if (Mouse.getEventButtonState() && this is GuiChest && inventorySlots?.name == "Perk Menu" && slotCheck(slotUnderMouse?.stack?.unformattedName ?: return))
             event.isCanceled = true
     }
 

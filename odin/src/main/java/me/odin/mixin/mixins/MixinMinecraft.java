@@ -1,8 +1,7 @@
 package me.odin.mixin.mixins;
 
 import me.odinmain.events.impl.ClickEvent;
-import me.odinmain.events.impl.PreKeyInputEvent;
-import me.odinmain.events.impl.PreMouseInputEvent;
+import me.odinmain.events.impl.InputEvent;
 import me.odinmain.features.impl.render.CPSDisplay;
 import me.odinmain.utils.skyblock.PlayerUtils;
 import net.minecraft.client.Minecraft;
@@ -20,12 +19,12 @@ public class MixinMinecraft {
 
     @Inject(method = {"runTick"}, at = {@At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;dispatchKeypresses()V")})
     public void keyPresses(CallbackInfo ci) {
-        if (Keyboard.getEventKeyState()) postAndCatch(new PreKeyInputEvent((Keyboard.getEventKey() == 0) ? (Keyboard.getEventCharacter() + 256) : Keyboard.getEventKey()));
+        if (Keyboard.getEventKeyState()) postAndCatch(new InputEvent.Keyboard((Keyboard.getEventKey() == 0) ? (Keyboard.getEventCharacter() + 256) : Keyboard.getEventKey()));
     }
 
     @Inject(method = {"runTick"}, at = {@At(value = "INVOKE", target = "Lorg/lwjgl/input/Mouse;getEventButton()I", remap = false)})
     public void mouseKeyPresses(CallbackInfo ci) {
-        if (Mouse.getEventButtonState()) postAndCatch(new PreMouseInputEvent(Mouse.getEventButton()));
+        if (Mouse.getEventButtonState()) postAndCatch(new InputEvent.Mouse(Mouse.getEventButton()));
     }
 
     @Inject(method = {"runTick"}, at = {@At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiScreen;handleInput()V")})

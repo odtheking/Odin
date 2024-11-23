@@ -1,7 +1,7 @@
 package me.odinmain.utils.skyblock
 
 import me.odinmain.OdinMain.mc
-import me.odinmain.events.impl.PacketReceivedEvent
+import me.odinmain.events.impl.PacketEvent
 import me.odinmain.utils.noControlCodes
 import net.minecraft.network.play.server.S02PacketChat
 import net.minecraftforge.fml.common.eventhandler.EventPriority
@@ -31,7 +31,7 @@ object SkyblockPlayer {
     var effectiveHP: Int = 0
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
-    fun onPacket(event: PacketReceivedEvent) {
+    fun onPacket(event: PacketEvent.Receive) {
         if (event.packet !is S02PacketChat || event.packet.type != 2.toByte()) return
         val msg = event.packet.chatComponent.unformattedText.noControlCodes
         // https://regex101.com/r/3IFer3/1

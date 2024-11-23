@@ -1,6 +1,6 @@
 package me.odinmain.features.impl.render
 
-import me.odinmain.events.impl.PacketSentEvent
+import me.odinmain.events.impl.PacketEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
@@ -64,8 +64,6 @@ object CPSDisplay : Module(
         if (button == 2) 100f to 38f else 50f to 38f
     }
 
-
-
     private val leftAnim = EaseInOut(300)
     private val rightAnim = EaseInOut(300)
 
@@ -85,7 +83,7 @@ object CPSDisplay : Module(
     }
 
     @SubscribeEvent
-    fun onSendPacket(event: PacketSentEvent) { // This is for any block placement packet that gets sent outside the rightclickmouse method :eyes:
+    fun onSendPacket(event: PacketEvent.Send) { // This is for any block placement packet that gets sent outside the rightclickmouse method :eyes:
         if (event.packet !is C08PacketPlayerBlockPlacement || !countPackets) return
         if (rightClicks.any { System.currentTimeMillis() - it < 5 }) return
         onRightClick()

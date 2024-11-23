@@ -2,7 +2,7 @@ package me.odinmain.utils.skyblock
 
 import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.ChatPacketEvent
-import me.odinmain.events.impl.PacketReceivedEvent
+import me.odinmain.events.impl.PacketEvent
 import me.odinmain.utils.*
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.clock.Executor.Companion.register
@@ -115,7 +115,7 @@ object KuudraUtils {
     }
 
     @SubscribeEvent
-    fun handleTabListPacket(event: PacketReceivedEvent) {
+    fun handleTabListPacket(event: PacketEvent.Receive) {
         if (event.packet !is S38PacketPlayerListItem || !event.packet.action.equalsOneOf(S38PacketPlayerListItem.Action.UPDATE_DISPLAY_NAME, S38PacketPlayerListItem.Action.ADD_PLAYER)) return
         kuudraTeammates = updateKuudraTeammates(kuudraTeammates, event.packet.entries)
     }

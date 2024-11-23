@@ -16,7 +16,7 @@ abstract class GuiEvent : Event() {
     data class Loaded(val name: String, val gui: ContainerChest) : GuiEvent()
 
     @Cancelable
-    data class DrawGuiContainerScreenEvent(val container: Container, val gui: GuiContainer, val xSize: Int, val ySize: Int, val guiLeft: Int, val guiTop: Int) : GuiEvent()
+    class DrawGuiContainerScreenEvent(val container: Container, val gui: GuiContainer, val xSize: Int, val ySize: Int, val guiLeft: Int, val guiTop: Int) : GuiEvent()
 
     @Cancelable
     class DrawSlotEvent(val container: Container, val gui: GuiContainer, var slot: Slot, val x: Int, val y: Int) : GuiEvent()
@@ -25,15 +25,7 @@ abstract class GuiEvent : Event() {
     class DrawSlotOverlayEvent(val stack: ItemStack?, val x: Int?, val y: Int?, val text: String?) : GuiEvent()
 
     @Cancelable
-    data class MouseClick(val gui: GuiScreen, val button: Int, val x: Int, val y: Int) : GuiEvent()
-
-    @Cancelable
-    data class GuiMouseReleaseEvent(val gui: GuiScreen, val button: Int, val x: Int, val y: Int) : GuiEvent()
-
-    @Cancelable
-    class KeyPress(val gui: GuiScreen, val keyCode: Int, val char: Char) : Event()
-
-    class Closed(val gui: GuiContainer) : GuiEvent()
+    class GuiMouseReleaseEvent(val gui: GuiScreen, val button: Int, val x: Int, val y: Int) : GuiEvent()
 
     @Cancelable
     class WindowClick(val windowId: Int, val slotId: Int, val mouseButtonClicked: Int, val mode: Int, val playerIn: EntityPlayer) : GuiEvent()

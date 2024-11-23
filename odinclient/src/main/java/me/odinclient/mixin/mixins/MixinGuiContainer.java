@@ -52,9 +52,4 @@ public abstract class MixinGuiContainer {
             }
         }
     }
-
-    @Inject(method = "onGuiClosed", at = @At("HEAD"))
-    private void onGuiClosed(CallbackInfo ci) {
-        postAndCatch(new GuiEvent.Closed(odinMod$gui));
-    }
 }

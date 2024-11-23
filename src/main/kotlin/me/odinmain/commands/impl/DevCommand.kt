@@ -5,7 +5,7 @@ import kotlinx.coroutines.launch
 import me.odinmain.OdinMain.mc
 import me.odinmain.OdinMain.scope
 import me.odinmain.commands.commodore
-import me.odinmain.events.impl.PacketReceivedEvent
+import me.odinmain.events.impl.PacketEvent
 import me.odinmain.features.ModuleManager.generateFeatureList
 import me.odinmain.features.impl.dungeon.MapInfo
 import me.odinmain.features.impl.floor7.DragonPriority.displaySpawningDragon
@@ -134,7 +134,7 @@ val devCommand = commodore("oddev") {
     }
     literal("simulate").runs { str: GreedyString ->
         mc.thePlayer.addChatMessage(ChatComponentText(str.string))
-        PacketReceivedEvent(S02PacketChat(ChatComponentText(str.string))).postAndCatch()
+        PacketEvent.Receive(S02PacketChat(ChatComponentText(str.string))).postAndCatch()
     }
 
 	literal("roomdata").runs {

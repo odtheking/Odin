@@ -2,7 +2,7 @@ package me.odinmain.features.impl.skyblock
 
 import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.events.impl.GuiEvent.DrawSlotOverlayEvent
-import me.odinmain.events.impl.RealServerTick
+import me.odinmain.events.impl.ServerTickEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
@@ -71,7 +71,7 @@ object InvincibilityTimer : Module(
     }
 
     @SubscribeEvent
-    fun onServerTick(event: RealServerTick) {
+    fun onServerTick(event: ServerTickEvent) {
         invincibilityTime.time--
     }
 

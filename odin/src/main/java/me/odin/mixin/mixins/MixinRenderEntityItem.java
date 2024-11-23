@@ -18,8 +18,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.nio.FloatBuffer;
 
-import static org.lwjgl.opengl.GL11.*;
-
 @Mixin(RenderEntityItem.class)
 public abstract class MixinRenderEntityItem {
 

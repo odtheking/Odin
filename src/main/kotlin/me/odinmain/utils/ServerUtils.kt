@@ -1,7 +1,7 @@
 package me.odinmain.utils
 
 import me.odinmain.OdinMain.mc
-import me.odinmain.events.impl.PacketReceivedEvent
+import me.odinmain.events.impl.PacketEvent
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.clock.Executor.Companion.register
 import net.minecraft.entity.Entity
@@ -16,6 +16,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 object ServerUtils {
     private val packets = ArrayList<Packet<*>>()
 
+    @JvmStatic
     fun handleSendPacket(packet: Packet<*>): Boolean {
         return packets.remove(packet)
     }
@@ -44,7 +45,7 @@ object ServerUtils {
     }
 
     @SubscribeEvent
-    fun onPacket(event: PacketReceivedEvent) {
+    fun onPacket(event: PacketEvent.Receive) {
         when (event.packet) {
             is S37PacketStatistics -> averagePing = (System.nanoTime() - pingStartTime) / 1e6
 
