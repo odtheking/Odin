@@ -26,7 +26,7 @@ object HidePlayers : Module(
     fun onRenderEntity(event: RenderPlayerEvent.Pre) {
         if (LocationUtils.currentArea.isArea(Island.SinglePlayer)) return
         val atDevs = (mc.thePlayer.getDistance(108.63, 120.0, 94.0) <= 1.8 || mc.thePlayer.getDistance(63.5, 127.0, 35.5) <= 1.8) && DungeonUtils.getF7Phase() == M7Phases.P3
-        if (event.entity.uniqueID.version() == 2 || event.entity == mc.thePlayer || (!atDevs && onlyDevs) || event.entity !is EntityPlayer) return
+        if (event.entity.uniqueID.version() == 2 || event.entity == mc.thePlayer || (!atDevs && onlyDevs)) return
         if (event.entity.getDistanceToEntity(mc.thePlayer) <= distance || hideAll) event.isCanceled = true
     }
 }
