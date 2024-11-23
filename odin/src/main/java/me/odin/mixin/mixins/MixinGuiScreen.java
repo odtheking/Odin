@@ -18,22 +18,11 @@ public class MixinGuiScreen {
     @Unique
     private final GuiScreen odin$gui = (GuiScreen) (Object) this;
 
-    @Inject(method = "handleMouseInput", at = @At(value = "INVOKE", target = "net/minecraft/client/gui/GuiScreen.mouseClicked(III)V"), cancellable = true)
-    private void onMouseInput(CallbackInfo ci){
-        if (Mouse.getEventButtonState())
-            if (postAndCatch(new GuiEvent.MouseClick(odin$gui, Mouse.getEventButton(), Mouse.getEventX(), Mouse.getEventY()))) ci.cancel();
-    }
-
     @Inject(method = "handleMouseInput", at = @At(value = "INVOKE", target = "net/minecraft/client/gui/GuiScreen.mouseReleased(III)V"), cancellable = true)
-    private void onReleaseMouseInput(CallbackInfo ci){
+    private void onReleaseMouseInput(CallbackInfo ci) {
         if (!Mouse.getEventButtonState())
-            if (postAndCatch(new GuiEvent.GuiMouseReleaseEvent(odin$gui, Mouse.getEventButton(), Mouse.getEventX(), Mouse.getEventY()))) ci.cancel();
-    }
-
-    @Inject(method = "handleKeyboardInput", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiScreen;keyTyped(CI)V"), cancellable = true)
-    private void onHandleKeyboardInput(CallbackInfo ci) {
-        if (Keyboard.getEventKeyState())
-            if (postAndCatch(new GuiEvent.KeyPress(odin$gui, Keyboard.getEventKey(), Keyboard.getEventCharacter()))) ci.cancel();
+            if (postAndCatch(new GuiEvent.GuiMouseReleaseEvent(odin$gui, Mouse.getEventButton(), Mouse.getEventX(), Mouse.getEventY())))
+                ci.cancel();
     }
 }
 

@@ -1,6 +1,6 @@
 package me.odinmain.features.impl.skyblock
 
-import me.odinmain.events.impl.RealServerTick
+import me.odinmain.events.impl.ServerTickEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
@@ -86,7 +86,7 @@ object AbilityTimers : Module(
     private inline val Int.formatTicks get() = String.format(Locale.US, "%.2f", this / 20.0)
 
     @SubscribeEvent
-    fun onServerTick(event: RealServerTick) {
+    fun onServerTick(event: ServerTickEvent) {
         if (witherImpactTicks > 0 && witherHud.enabled) witherImpactTicks--
         if (tacTimer > 0 && tacHud.enabled) tacTimer--
         if (enrageTimer > 0  && enrageHud.enabled) enrageTimer--

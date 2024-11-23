@@ -1,6 +1,6 @@
 package me.odinmain.features.impl.render
 
-import me.odinmain.events.impl.PacketReceivedEvent
+import me.odinmain.events.impl.PacketEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
@@ -74,7 +74,7 @@ object RenderOptimizer : Module(
     )
 
     @SubscribeEvent
-    fun onPacket(event: PacketReceivedEvent) {
+    fun onPacket(event: PacketEvent.Receive) {
         if (!LocationUtils.isInSkyblock) return
         if (event.packet is S1CPacketEntityMetadata && hide0HealthNames) {
             mc.theWorld?.getEntityByID(event.packet.entityId)?.let { entity ->

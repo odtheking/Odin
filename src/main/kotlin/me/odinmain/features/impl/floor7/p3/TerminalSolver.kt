@@ -26,12 +26,14 @@ import net.minecraft.inventory.ContainerChest
 import net.minecraft.inventory.ContainerPlayer
 import net.minecraft.item.*
 import net.minecraft.network.play.server.S2FPacketSetSlot
+import net.minecraftforge.client.event.GuiScreenEvent
 import net.minecraftforge.event.entity.player.ItemTooltipEvent
 import net.minecraftforge.fml.common.Loader
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 import org.lwjgl.input.Keyboard
+import org.lwjgl.input.Mouse
 
 @AlwaysActive // So it can be used in other modules
 object TerminalSolver : Module(
@@ -216,35 +218,39 @@ object TerminalSolver : Module(
     }
 
     @SubscribeEvent(receiveCanceled = true)
-    fun onGuiClick(event: GuiEvent.MouseClick) {
+    fun onGuiClick(event: GuiScreenEvent.MouseInputEvent.Pre) {
+        if (!Mouse.getEventButtonState() || currentTerm.type == TerminalTypes.NONE || !enabled) return
         val gui = event.gui as? GuiChest ?: return
         val needed = currentTerm.solution.count { it == gui.slotUnderMouse?.slotIndex }
 
-        if (renderType != 3 && currentTerm.type != TerminalTypes.NONE && middleClickGUI && enabled) {
-            event.isCanceled = true
-            windowClick(gui.slotUnderMouse?.slotIndex ?: return, if (needed >= 3) PlayerUtils.ClickType.Right else PlayerUtils.ClickType.Middle)
-        }
-        if (currentTerm.type == TerminalTypes.NONE || !enabled || (currentTerm.type == TerminalTypes.MELODY && cancelMelodySolver)) return
-        if (renderType == 3) {
-            CustomTermGui.mouseClicked(MouseUtils.mouseX.toInt(), MouseUtils.mouseY.toInt(), event.button)
+        if (renderType == 3 && !(currentTerm.type == TerminalTypes.MELODY && cancelMelodySolver)) {
+            CustomTermGui.mouseClicked(MouseUtils.mouseX.toInt(), MouseUtils.mouseY.toInt(), Mouse.getEventButton())
             event.isCanceled = true
             return
         }
 
         if (blockIncorrectClicks && currentTerm.type != TerminalTypes.MELODY) {
-            event.isCanceled = when {
+            when {
                 gui.slotUnderMouse?.slotIndex !in currentTerm.solution -> true
-                currentTerm.type == TerminalTypes.RUBIX && ((needed < 3 && event.button != 0) || (needed >= 3 && event.button != 1)) -> true
+                currentTerm.type == TerminalTypes.RUBIX && ((needed < 3 && Mouse.getEventButton() != 0) || (needed >= 3 && Mouse.getEventButton() != 1)) -> true
                 else -> false
+            }.takeIf { it }?.let {
+                event.isCanceled = true
+                return
             }
+        }
+
+        if (middleClickGUI) {
+            windowClick(gui.slotUnderMouse?.slotIndex ?: return, if (Mouse.getEventButton() == 0) PlayerUtils.ClickType.Middle else PlayerUtils.ClickType.Right)
+            event.isCanceled = true
         }
     }
 
     @SubscribeEvent
-    fun onGuiKeyPress(event: GuiEvent.KeyPress) {
+    fun onGuiKeyPress(event: GuiScreenEvent.KeyboardInputEvent.Pre) {
         if (currentTerm.type == TerminalTypes.NONE || !enabled || (currentTerm.type == TerminalTypes.MELODY && cancelMelodySolver)) return
-        if (renderType == 3 && (event.keyCode == mc.gameSettings.keyBindDrop.keyCode || event.keyCode in 2..10)) {
-            CustomTermGui.mouseClicked(MouseUtils.mouseX.toInt(), MouseUtils.mouseY.toInt(), if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) && event.keyCode == mc.gameSettings.keyBindDrop.keyCode) 1 else 0)
+        if (renderType == 3 && (Keyboard.isKeyDown(mc.gameSettings.keyBindDrop.keyCode) || Keyboard.getEventKey() in 2..10)) {
+            CustomTermGui.mouseClicked(MouseUtils.mouseX.toInt(), MouseUtils.mouseY.toInt(), if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) && Keyboard.isKeyDown(mc.gameSettings.keyBindDrop.keyCode)) 1 else 0)
             event.isCanceled = true
         }
     }

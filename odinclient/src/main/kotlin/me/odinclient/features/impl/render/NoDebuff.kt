@@ -1,6 +1,6 @@
 package me.odinclient.features.impl.render
 
-import me.odinmain.events.impl.PacketReceivedEvent
+import me.odinmain.events.impl.PacketEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
@@ -24,7 +24,7 @@ object NoDebuff : Module(
     private val antiWaterFOV by BooleanSetting("No Water FOV", false, description = "Disable FOV change in water.")
     private val noFire by BooleanSetting("No Fire Overlay", false, description = "Disable Fire overlay on screen.")
     private val seeThroughBlocks by BooleanSetting("See Through Blocks", false, description = "Makes blocks transparent.")
-    private val noNausea by BooleanSetting("No Nausea", false, description = "Disables nausea effect.")
+    private val noNausea by BooleanSetting("No Nausea", false, description = "Disables the nausea effect.")
 
     @JvmStatic
     val shouldIgnoreNausea get() = noNausea && enabled
@@ -46,7 +46,7 @@ object NoDebuff : Module(
     }
 
     @SubscribeEvent
-    fun onPacket(event: PacketReceivedEvent) {
+    fun onPacket(event: PacketEvent.Receive) {
         val packet = event.packet as? S2APacketParticles ?: return
         if (noShieldParticles && packet.particleType.equalsOneOf(EnumParticleTypes.SPELL_WITCH, EnumParticleTypes.HEART))
             event.isCanceled = true

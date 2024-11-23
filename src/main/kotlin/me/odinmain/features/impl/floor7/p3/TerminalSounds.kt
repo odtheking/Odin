@@ -10,8 +10,10 @@ import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.skyblock.PlayerUtils
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.network.play.server.S29PacketSoundEffect
+import net.minecraftforge.client.event.GuiScreenEvent
 import net.minecraftforge.fml.common.eventhandler.EventPriority
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import org.lwjgl.input.Mouse
 
 object TerminalSounds : Module(
     name = "Terminal Sounds",
@@ -45,14 +47,14 @@ object TerminalSounds : Module(
     private var lastPlayed = System.currentTimeMillis()
 
     @SubscribeEvent
-    fun onPacket(event: PacketReceivedEvent) = with(event.packet) {
+    fun onPacket(event: PacketEvent.Receive) = with(event.packet) {
         if (this is S29PacketSoundEffect && soundName == "note.pling" && volume == 8f && pitch == 4.047619f && shouldReplaceSounds)
             event.isCanceled = true
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
-    fun onSlotClick(event: GuiEvent.MouseClick) {
-        if (shouldReplaceSounds) clickSlot((event.gui as? GuiChest)?.slotUnderMouse?.slotIndex ?: return)
+    fun onSlotClick(event: GuiScreenEvent.MouseInputEvent.Pre) {
+        if (shouldReplaceSounds && Mouse.getEventButtonState()) clickSlot((event.gui as? GuiChest)?.slotUnderMouse?.slotIndex ?: return)
     }
 
     @SubscribeEvent

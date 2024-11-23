@@ -1,7 +1,7 @@
 package me.odin.features.impl.render
 
 import me.odin.mixin.accessors.IEntityPlayerSPAccessor
-import me.odinmain.events.impl.PacketReceivedEvent
+import me.odinmain.events.impl.PacketEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
@@ -64,7 +64,7 @@ object EtherWarpHelper : Module(
     }
 
     @SubscribeEvent
-    fun onSoundPacket(event: PacketReceivedEvent) = with(event.packet) {
+    fun onSoundPacket(event: PacketEvent.Receive) = with(event.packet) {
         if (this !is S29PacketSoundEffect || soundName != "mob.enderdragon.hit" || !sounds || volume != 1f || pitch != 0.53968257f || customSound == "mob.enderdragon.hit") return
         playLoudSound(if (sound == defaultSounds.size - 1) customSound else defaultSounds[sound], soundVolume, soundPitch, positionVector)
         event.isCanceled = true
