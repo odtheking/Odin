@@ -219,27 +219,30 @@ object TerminalSolver : Module(
 
     @SubscribeEvent(receiveCanceled = true)
     fun onGuiClick(event: GuiScreenEvent.MouseInputEvent.Pre) {
-        if (!Mouse.getEventButtonState()) return
+        if (!Mouse.getEventButtonState() || currentTerm.type == TerminalTypes.NONE || !enabled) return
         val gui = event.gui as? GuiChest ?: return
         val needed = currentTerm.solution.count { it == gui.slotUnderMouse?.slotIndex }
 
-        if (renderType != 3 && currentTerm.type != TerminalTypes.NONE && middleClickGUI && enabled) {
-            event.isCanceled = true
-            windowClick(gui.slotUnderMouse?.slotIndex ?: return, if (needed >= 3) PlayerUtils.ClickType.Right else PlayerUtils.ClickType.Middle)
-        }
-        if (currentTerm.type == TerminalTypes.NONE || !enabled || (currentTerm.type == TerminalTypes.MELODY && cancelMelodySolver)) return
-        if (renderType == 3) {
+        if (renderType == 3 && !(currentTerm.type == TerminalTypes.MELODY && cancelMelodySolver)) {
             CustomTermGui.mouseClicked(MouseUtils.mouseX.toInt(), MouseUtils.mouseY.toInt(), Mouse.getEventButton())
             event.isCanceled = true
             return
         }
 
         if (blockIncorrectClicks && currentTerm.type != TerminalTypes.MELODY) {
-            event.isCanceled = when {
+            when {
                 gui.slotUnderMouse?.slotIndex !in currentTerm.solution -> true
                 currentTerm.type == TerminalTypes.RUBIX && ((needed < 3 && Mouse.getEventButton() != 0) || (needed >= 3 && Mouse.getEventButton() != 1)) -> true
                 else -> false
+            }.takeIf { it }?.let {
+                event.isCanceled = true
+                return
             }
+        }
+
+        if (middleClickGUI) {
+            windowClick(gui.slotUnderMouse?.slotIndex ?: return, if (Mouse.getEventButton() == 0) PlayerUtils.ClickType.Middle else PlayerUtils.ClickType.Right)
+            event.isCanceled = true
         }
     }
 
