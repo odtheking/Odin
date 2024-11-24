@@ -26,7 +26,7 @@ object CloseChest : Module(
     @SubscribeEvent
     fun onOpenWindow(event: PacketEvent.Receive) {
         val packet = event.packet as? S2DPacketOpenWindow ?: return
-        if (!inDungeons || !packet.windowTitle.unformattedText.noControlCodes.equalsOneOf("Chest", "Large Chest") || mode == 0) return
+        if (!inDungeons || !packet.windowTitle.unformattedText.noControlCodes.equalsOneOf("Chest", "Large Chest") || mode != 0) return
         mc.netHandler.networkManager.sendPacket(C0DPacketCloseWindow(packet.windowId))
         event.isCanceled = true
     }

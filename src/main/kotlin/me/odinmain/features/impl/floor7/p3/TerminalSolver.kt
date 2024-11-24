@@ -126,7 +126,7 @@ object TerminalSolver : Module(
 
     @SubscribeEvent
     fun onGuiRender(event: GuiEvent.DrawGuiContainerScreenEvent) {
-        if (currentTerm.type == TerminalTypes.NONE || !enabled || !renderType.equalsOneOf(0,3) || event.container !is ContainerChest || (currentTerm.type == TerminalTypes.MELODY && cancelMelodySolver)) return
+        if (!enabled || currentTerm.type == TerminalTypes.NONE || !renderType.equalsOneOf(0,3) || event.container !is ContainerChest || (currentTerm.type == TerminalTypes.MELODY && cancelMelodySolver)) return
         if (renderType == 3) {
             CustomTermGui.render()
             event.isCanceled = true
@@ -153,9 +153,9 @@ object TerminalSolver : Module(
 
     @SubscribeEvent
     fun drawSlot(event: GuiEvent.DrawSlotEvent) {
-        if (currentTerm.type == TerminalTypes.NONE || (currentTerm.type == TerminalTypes.MELODY && cancelMelodySolver) || renderType == 3) return
-        if (event.slot.slotIndex !in currentTerm.solution && event.slot.slotIndex <= event.container.inventorySlots.size - 37 && enabled && getShouldBlockWrong() && event.slot.inventory !is InventoryPlayer) event.isCanceled = true
-        if (event.slot.slotIndex !in currentTerm.solution || event.slot.slotIndex > event.container.inventorySlots.size - 37 || !enabled || event.slot.inventory is InventoryPlayer) return
+        if (!enabled || renderType == 3 || currentTerm.type == TerminalTypes.NONE || (currentTerm.type == TerminalTypes.MELODY && cancelMelodySolver)) return
+        if (event.slot.slotIndex !in currentTerm.solution && event.slot.slotIndex <= event.container.inventorySlots.size - 37 && getShouldBlockWrong() && event.slot.inventory !is InventoryPlayer) event.isCanceled = true
+        if (event.slot.slotIndex !in currentTerm.solution || event.slot.slotIndex > event.container.inventorySlots.size - 37 || event.slot.inventory is InventoryPlayer) return
 
         translate(0f, 0f, zLevel)
         GlStateManager.disableLighting()
@@ -214,12 +214,12 @@ object TerminalSolver : Module(
 
     @SubscribeEvent
     fun onTooltip(event: ItemTooltipEvent) {
-        if (cancelToolTip && currentTerm.type != TerminalTypes.NONE && enabled) event.toolTip.clear()
+        if (cancelToolTip && enabled && currentTerm.type != TerminalTypes.NONE) event.toolTip.clear()
     }
 
     @SubscribeEvent(receiveCanceled = true)
     fun onGuiClick(event: GuiScreenEvent.MouseInputEvent.Pre) {
-        if (!Mouse.getEventButtonState() || currentTerm.type == TerminalTypes.NONE || !enabled) return
+        if (!enabled || !Mouse.getEventButtonState() || currentTerm.type == TerminalTypes.NONE) return
         val gui = event.gui as? GuiChest ?: return
         val needed = currentTerm.solution.count { it == gui.slotUnderMouse?.slotIndex }
 
@@ -248,7 +248,7 @@ object TerminalSolver : Module(
 
     @SubscribeEvent
     fun onGuiKeyPress(event: GuiScreenEvent.KeyboardInputEvent.Pre) {
-        if (currentTerm.type == TerminalTypes.NONE || !enabled || (currentTerm.type == TerminalTypes.MELODY && cancelMelodySolver)) return
+        if (!enabled || currentTerm.type == TerminalTypes.NONE || (currentTerm.type == TerminalTypes.MELODY && cancelMelodySolver)) return
         if (renderType == 3 && (Keyboard.isKeyDown(mc.gameSettings.keyBindDrop.keyCode) || Keyboard.getEventKey() in 2..10)) {
             CustomTermGui.mouseClicked(MouseUtils.mouseX.toInt(), MouseUtils.mouseY.toInt(), if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) && Keyboard.isKeyDown(mc.gameSettings.keyBindDrop.keyCode)) 1 else 0)
             event.isCanceled = true
@@ -257,7 +257,7 @@ object TerminalSolver : Module(
 
     @SubscribeEvent
     fun itemStack(event: GuiEvent.DrawSlotOverlayEvent) {
-        if (currentTerm.type == TerminalTypes.ORDER && enabled && (event.stack?.item?.registryName ?: return) == "minecraft:stained_glass_pane") event.isCanceled = true
+        if (enabled && currentTerm.type == TerminalTypes.ORDER && (event.stack?.item?.registryName ?: return) == "minecraft:stained_glass_pane") event.isCanceled = true
     }
 
     @SubscribeEvent
