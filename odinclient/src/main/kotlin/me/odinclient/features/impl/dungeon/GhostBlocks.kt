@@ -9,11 +9,14 @@ import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.rangeAdd
 import me.odinmain.utils.runIn
-import me.odinmain.utils.skyblock.*
+import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.WITHER_ESSENCE_ID
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.getF7Phase
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.inDungeons
+import me.odinmain.utils.skyblock.getBlockAt
+import me.odinmain.utils.skyblock.getItemSlot
+import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.block.state.IBlockState
 import net.minecraft.enchantment.Enchantment
 import net.minecraft.init.Blocks
@@ -178,9 +181,9 @@ object GhostBlocks : Module(
     // TODO: MAKE THIS JSON PLS ITS SO BAD
     private val enderChests = mapOf(
         1 to arrayOf(
-            BlockPos(77, 221, 35),
-            BlockPos(77, 221, 34),
-            BlockPos(77, 221, 33)
+            BlockPos(69, 221, 36),
+            BlockPos(69, 221, 35),
+            BlockPos(69, 221, 34)
         ),
         2 to arrayOf(
             BlockPos(101, 169, 46),
@@ -194,8 +197,8 @@ object GhostBlocks : Module(
 
     private val glass = mapOf(
         1 to arrayOf(
-            BlockPos(77, 221, 36),
-            BlockPos(78, 221, 36)
+            BlockPos(68, 221, 38),
+            BlockPos(69, 221, 38)
         ),
         2 to arrayOf(
             BlockPos(102, 169, 47)
@@ -219,13 +222,12 @@ object GhostBlocks : Module(
             BlockPos(88, 212, 61),
             BlockPos(88, 211, 61),
             BlockPos(88, 210, 61),
-            BlockPos(77, 220, 35),
-            BlockPos(78, 220, 35)
+            BlockPos(69, 220, 37),
+            BlockPos(68, 220, 37)
         ),
         2 to arrayOf(
             BlockPos(88, 167, 41),
             BlockPos(89, 167, 41),
-            BlockPos(90, 167, 41),
             BlockPos(91, 167, 41),
             BlockPos(92, 167, 41),
             BlockPos(93, 167, 41),

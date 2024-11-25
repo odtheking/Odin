@@ -39,19 +39,18 @@ object PetKeybinds : Module(
     private val pet9 by KeybindSetting("Pet 9", Keyboard.KEY_9, "Pet 9 on the list.").withDependency { advanced }
 
     private val pets = arrayOf(pet1, pet2, pet3, pet4, pet5, pet6, pet7, pet8, pet9)
+    private val keybinds = arrayOf(nextPageKeybind, previousPageKeybind, unequipKeybind)
     private val clickCoolDown = Clock(delay)
 
     val petList: MutableList<String> by ListSetting("List", mutableListOf())
 
     @SubscribeEvent
     fun checkKeybinds(event: GuiScreenEvent.KeyboardInputEvent.Pre) {
-        val chest = (event.gui as? GuiChest)?.inventorySlots ?: return
-        if (chest !is ContainerChest) return
+        if (pets.none { it.isDown() } && keybinds.none { it.isDown() }) return
+        val chest = (event.gui as? GuiChest)?.inventorySlots as? ContainerChest ?: return
 
         val matchResult = Regex("Pets(?: \\((\\d)/(\\d)\\))?").find(chest.name) ?: return
         val (current, total) = listOf(matchResult.groups[1]?.value?.toIntOrNull() ?: 1, matchResult.groups[2]?.value?.toIntOrNull() ?: 1)
-
-        if (pets.any { it.isDown() } || arrayOf(nextPageKeybind, previousPageKeybind, unequipKeybind).any { it.isDown() }) event.isCanceled = true
 
         val index = when {
             nextPageKeybind.isDown() -> if (current < total) 53 else return modMessage("You are already on the last page.")
