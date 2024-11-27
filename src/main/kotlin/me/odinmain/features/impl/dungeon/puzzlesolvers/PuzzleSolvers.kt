@@ -20,6 +20,7 @@ import me.odinmain.utils.skyblock.dungeon.DungeonUtils.getRealCoords
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.inBoss
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.inDungeons
 import me.odinmain.utils.skyblock.dungeon.tiles.RoomType
+import me.odinmain.utils.skyblock.partyMessage
 import net.minecraft.block.BlockChest
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
@@ -108,6 +109,7 @@ object PuzzleSolvers : Module(
     val boulderLineWidth by NumberSetting("Boulder Line Width", 2f, 0.1f, 10f, 0.1f, description = "The width of the box's lines.").withDependency { boulderDropDown && boulderSolver }
 
     private val puzzleTimers by BooleanSetting("Puzzle Timers", true, description = "Shows the time it took to solve each puzzle.")
+    private val sendPuzzleTime by BooleanSetting("Send Puzzle Time", false, description = "Sends the time it took to solve each puzzle in party chat.").withDependency { puzzleTimers }
     private val puzzleToIntMap = mapOf("Creeper Beams" to 0, "Lower Blaze" to 1, "Higher Blaze" to 2, "Boulder" to 3, "Ice Fill" to 4, "Quiz" to 5, "Teleport Maze" to 6, "Water Board" to 7, "Three Weirdos" to 8)
     private val puzzleTimersMap = hashMapOf<String, PuzzleTimer>()
     private data class PuzzleTimer(val timeEntered: Long = System.currentTimeMillis(), var sentMessage: Boolean = false)
@@ -192,8 +194,7 @@ object PuzzleSolvers : Module(
         QuizSolver.onRoomEnter(event)
         BoulderSolver.onRoomEnter(event)
         TPMazeSolver.onRoomEnter(event)
-        if (!puzzleTimers) return
-        if (event.room?.data?.type == RoomType.PUZZLE && puzzleTimersMap.none { it.key == event.room.data.name }) puzzleTimersMap[event.room.data.name] = PuzzleTimer()
+        if (puzzleTimers && event.room?.data?.type == RoomType.PUZZLE && puzzleTimersMap.none { it.key == event.room.data.name }) puzzleTimersMap[event.room.data.name] = PuzzleTimer()
     }
 
     @SubscribeEvent
@@ -206,6 +207,7 @@ object PuzzleSolvers : Module(
         puzzleTimersMap[puzzleName]?.let {
             if (it.sentMessage) return
             puzzlePBs.time(puzzleToIntMap[puzzleName] ?: return@let, (System.currentTimeMillis() - it.timeEntered) / 1000.0, "s§7!", "§a${puzzleName} §7solved in §6", addPBString = true, addOldPBString = true, sendOnlyPB = false)
+            if (sendPuzzleTime) partyMessage("It took me ${(System.currentTimeMillis() - it.timeEntered) / 1000.0} seconds to solve the $puzzleName puzzle. ${if ((System.currentTimeMillis() - it.timeEntered) / 1000.0 > 30) ":(" else ":)"}")
             it.sentMessage = true
         }
     }

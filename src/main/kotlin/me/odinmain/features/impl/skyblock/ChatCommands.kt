@@ -8,10 +8,7 @@ import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.DropdownSetting
 import me.odinmain.features.settings.impl.ListSetting
-import me.odinmain.utils.ServerUtils
-import me.odinmain.utils.capitalizeFirst
-import me.odinmain.utils.floor
-import me.odinmain.utils.runIn
+import me.odinmain.utils.*
 import me.odinmain.utils.skyblock.*
 import net.minecraft.event.ClickEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -52,6 +49,8 @@ object ChatCommands : Module(
     private val time by BooleanSetting(name = "Time", default = false, description = "Sends the current time.").withDependency { showSettings }
     private val demote by BooleanSetting(name = "Demote", default = false, description = "Executes the /party demote command.").withDependency { showSettings }
     private val promote by BooleanSetting(name = "Promote", default = false, description = "Executes the /party promote command.").withDependency { showSettings }
+    private val location by BooleanSetting(name = "Location", default = true, description = "Sends your current location.").withDependency { showSettings }
+    private val holding by BooleanSetting(name = "Holding", default = true, description = "Sends the item you are holding.").withDependency { showSettings }
 
     private var dtPlayer: String? = null
     private val dtReason = mutableListOf<Pair<String, String>>()
@@ -84,9 +83,7 @@ object ChatCommands : Module(
 
             if (whitelistOnly != isInBlacklist(ign)) return@onMessage
 
-            runIn(8) {
-                handleChatCommands(msg, ign, channel)
-            }
+            runIn(8) { handleChatCommands(msg, ign, channel) }
 
             onWorldLoad { dtReason.clear() }
         }
@@ -117,6 +114,8 @@ object ChatCommands : Module(
             "tps" -> if (tps) channelMessage("Current TPS: ${ServerUtils.averageTps.floor()}", name, channel)
             "fps" -> if (fps) channelMessage("Current FPS: ${ServerUtils.fps}", name, channel)
             "time" -> if (time) channelMessage("Current Time: ${ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss z"))}", name, channel)
+            "location" -> if (location) channelMessage("Current Location: ${LocationUtils.currentArea.displayName}", name, channel)
+            "holding" -> if (holding) channelMessage("Holding: ${mc.thePlayer?.heldItem?.displayName?.noControlCodes ?: "Nothing :("}", name, channel)
 
             // Party cmds only
             "warp", "w" -> if (warp && channel == ChatChannel.PARTY) sendCommand("p warp")

@@ -28,7 +28,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 import java.io.FileNotFoundException
 
 object ScanUtils {
-    private const val ROOM_SIZE_SHIFT = 5  // Since ROOM_SIZE = 32 (2^5)
+    private const val ROOM_SIZE_SHIFT = 5  // Since ROOM_SIZE = 32 (2^5) so we can perform bitwise operations
     private const val START = -185
 
     private var lastRoomPos: Vec2 = Vec2(0, 0)
@@ -72,7 +72,7 @@ object ScanUtils {
         if ((!inDungeons && !LocationUtils.currentArea.isArea(Island.SinglePlayer)) || inBoss) {
             currentRoom?.let { RoomEnterEvent(null).postAndCatch() }
             return
-        } // If not in dungeon or in boss room, return and register current room as null
+        } // We want the current room to register as null if we are not in a dungeon
 
         val roomCenter = getRoomCenter(mc.thePlayer.posX.toInt(), mc.thePlayer.posZ.toInt())
         if (roomCenter == lastRoomPos && LocationUtils.currentArea.isArea(Island.SinglePlayer)) return // extra SinglePlayer caching for invalid placed rooms
@@ -81,14 +81,14 @@ object ScanUtils {
         passedRooms.find { previousRoom -> previousRoom.roomComponents.any { it.vec2 == roomCenter } }?.let { room ->
             if (currentRoom?.roomComponents?.none { it.vec2 == roomCenter } == true) RoomEnterEvent(room).postAndCatch()
             return
-        } // If room is in passedRooms, post RoomEnterEvent and return only posts Event if room is not in currentFullRoom
+        } // We want to use cached rooms instead of scanning it again if we have already passed through it and if we are already in it we don't want to trigger the event
 
         scanRoom(roomCenter)?.let { room -> if (room.rotation != Rotations.NONE) RoomEnterEvent(room).postAndCatch() }
     }
 
     private fun updateRotation(room: Room) {
         val roomHeight = getTopLayerOfRoom(room.roomComponents.first().vec2)
-        if (room.data.name == "Fairy") {
+        if (room.data.name == "Fairy") { // Fairy room doesn't have a clay block so we need to set it manually
             room.clayPos = room.roomComponents.firstOrNull()?.let { BlockPos(it.x - 15, roomHeight, it.z - 15) } ?: return
             room.rotation = Rotations.SOUTH
             return
@@ -101,7 +101,7 @@ object ScanUtils {
                     }).also { isCorrectClay -> if (isCorrectClay) room.clayPos = blockPos }
                 }
             }
-        } ?: Rotations.NONE
+        } ?: Rotations.NONE // Rotation isn't found if we can't find the clay block
     }
 
     private fun scanRoom(vec2: Vec2): Room? =
