@@ -2,9 +2,14 @@ package me.odinmain.features.impl.render
 
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.features.settings.impl.*
-import me.odinmain.utils.render.*
+import me.odinmain.features.settings.impl.BooleanSetting
+import me.odinmain.features.settings.impl.NumberSetting
+import me.odinmain.features.settings.impl.StringSetting
+import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.RenderUtils.bind
+import me.odinmain.utils.render.getMCTextHeight
+import me.odinmain.utils.render.mcText
+import me.odinmain.utils.render.roundedRectangle
 import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.client.gui.ScaledResolution
@@ -22,6 +27,7 @@ object DVD : Module(
     private val boxHeight by NumberSetting("Box Height", 50, 0, 150, 1, description = "Height of the DVD box.")
     private val roundedCorners by BooleanSetting("Rounded Corners", true, description = "Whether the DVD box should have rounded corners.")
 
+    private val speed by NumberSetting("Speed", 1, .1, 2, .1, description = "Speed of the DVD box.")
     private val text by StringSetting("Text", "ODVD", description = "Text to display on the DVD box.")
     private val textScale by NumberSetting("Text Scale", 1.5f, 0.1f, 2f, 0.1f, description = "Scale of the text.")
 
@@ -31,8 +37,8 @@ object DVD : Module(
         super.onEnable()
     }
 
-    private var dx = 1
-    private var dy = 1
+    private var dx = speed
+    private var dy = speed
     
     private var x = Display.getWidth() / 2
     private var y = Display.getHeight() / 2

@@ -26,7 +26,7 @@ object ChocolateFactory : Module(
 ) {
     private val clickFactory by BooleanSetting("Click Factory", false, description = "Click the cookie in the Chocolate Factory menu.")
     private val autoUpgrade by BooleanSetting("Auto Upgrade", false, description = "Automatically upgrade the worker.")
-    private val delay by NumberSetting("Delay", 150L, 50, 300, 5, unit = "ms", description = "Delay between actions.")
+    private val delay by NumberSetting("Delay", 150L, 50, 1500, 5, unit = "ms", description = "Delay between actions.")
     private val upgradeDelay by NumberSetting("Upgrade delay", 500L, 300, 2000, 100, unit = "ms", description = "Delay between upgrades.")
     private val claimStray by BooleanSetting("Claim Strays", false, description = "Claim stray rabbits in the Chocolate Factory menu.")
     private val cancelSound by BooleanSetting("Cancel Sound", false, description = "Cancels the eating sound in the Chocolate Factory.")
