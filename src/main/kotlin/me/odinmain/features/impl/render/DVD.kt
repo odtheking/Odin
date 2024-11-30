@@ -37,8 +37,14 @@ object DVD : Module(
         super.onEnable()
     }
 
-    private var dx = speed
-    private var dy = speed
+    init {
+        execute( { speed * -10L } ) {
+            updateDVD()
+        }
+    }
+
+    private var dx = 1
+    private var dy = 1
     
     private var x = Display.getWidth() / 2
     private var y = Display.getHeight() / 2
@@ -54,7 +60,6 @@ object DVD : Module(
     @SubscribeEvent
     fun onRenderOverlay(event: RenderGameOverlayEvent.Post) {
         if (event.type != RenderGameOverlayEvent.ElementType.ALL) return
-        updateDVD()
         roundedRectangle(x, y, boxWidth, boxHeight, color, if (roundedCorners) 12f else 0f)
         mcText(text, x + boxWidth / 2, y + boxHeight / 2 - getMCTextHeight() * textScale / 2 , textScale, color, true)
         Color.WHITE.bind()

@@ -306,7 +306,7 @@ object GhostBlocks : Module(
     )
 
 
-    private val toggleKeybind: Keybinding by KeybindSetting("Toggle Module", Keyboard.KEY_NONE, description = "Keybind to toggle the module on/ off.").onPress {
+    private val toggleKeybind: Keybinding by KeybindSetting("Toggle Module", Keyboard.KEY_NONE, description = "Keybind to toggle the module on/off.").onPress {
         this.onKeybind()
     }
 }
