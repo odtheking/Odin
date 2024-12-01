@@ -14,11 +14,11 @@ public abstract class MixinModelBiped extends ModelBase {
 
     @Inject(method = "render", at = @At(value = "HEAD"))
     private void changeBlazeColor(Entity entity, float p_78088_2_, float p_78088_3_, float p_78088_4_, float p_78088_5_, float p_78088_6_, float scale, CallbackInfo ci) {
-        BlazeAttunement.changeBipedColor(entity);
+        BlazeAttunement.changeModelColor(entity);
     }
 
     @Inject(method = "render", at = @At("RETURN"))
     private void renderPost(Entity entityIn, float p_78088_2_, float p_78088_3_, float p_78088_4_, float p_78088_5_, float p_78088_6_, float scale, CallbackInfo ci) {
-        BlazeAttunement.renderModelBipedPost();
+        BlazeAttunement.renderModelPost();
     }
 }

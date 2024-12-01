@@ -33,40 +33,34 @@ object TeammatesHighlight : Module(
     private val depthCheck by BooleanSetting("Depth check", false, description = "Highlights teammates only when they are visible.")
     private val inBoss by BooleanSetting("In boss", true, description = "Highlights teammates in boss rooms.")
 
+    private val shouldRender get() = (inBoss || !DungeonUtils.inBoss) && DungeonUtils.inDungeons
+
     init {
         HighlightRenderer.addEntityGetter({ HighlightRenderer.HighlightType.entries[mode] }) {
-            if (!enabled || !shouldRender() || !showHighlight) emptyList()
-            else {
-                dungeonTeammatesNoSelf.mapNotNull {
-                    it.entity?.let { entity -> HighlightRenderer.HighlightEntity(entity, it.clazz.color, thickness, depthCheck, style) }
-                }
-            }
+            if (!enabled || !shouldRender || !showHighlight) emptyList()
+            else dungeonTeammatesNoSelf.mapNotNull { it.entity?.let { entity -> HighlightRenderer.HighlightEntity(entity, it.clazz.color, thickness, depthCheck, style) } }
         }
     }
 
     @SubscribeEvent
     fun onRenderEntity(event: RenderLivingEvent.Specials.Pre<EntityOtherPlayerMP>) {
-        if (!showName || !shouldRender()) return
+        if (!showName || !shouldRender || nameStyle == 1) return
         val teammate = dungeonTeammatesNoSelf.find { it.entity == event.entity } ?: return
         event.isCanceled = true
-        if (nameStyle != 0) return
-        val text = if (showClass) "§${teammate.clazz.colorCode}${teammate.name} §e[${teammate.clazz.name[0]}]" else "§${teammate.clazz.colorCode}${teammate.name}"
-        RenderUtils.drawMinecraftLabel(text, Vec3(event.x, event.y + 0.5, event.z), 0.05, false)
+        RenderUtils.drawMinecraftLabel(
+            if (showClass) "§${teammate.clazz.colorCode}${teammate.name} §e[${teammate.clazz.name[0]}]" else "§${teammate.clazz.colorCode}${teammate.name}",
+            Vec3(event.x, event.y + 0.5, event.z), 0.05, false
+        )
     }
 
     @SubscribeEvent
     fun onRenderOverlay(event: RenderOverlayNoCaching) {
-        if (!showName || !shouldRender() || nameStyle == 0) return
-        dungeonTeammatesNoSelf.forEach { teammate ->
-            teammate.entity?.let { entity ->
-                val text = if (showClass) "§${teammate.clazz.colorCode}${teammate.name} §e[${teammate.clazz.name[0]}]" else "§${teammate.clazz.colorCode}${teammate.name}"
-                RenderUtils2D.drawBackgroundNameTag(text, entity, padding, backgroundColor, accentColor, scale = scale)
-            }
-        }
-    }
-
-    private fun shouldRender(): Boolean {
-        return (inBoss || !DungeonUtils.inBoss) // boss
-                && DungeonUtils.inDungeons
+        if (!showName || !shouldRender || nameStyle == 0) return
+        dungeonTeammatesNoSelf.forEach { teammate -> teammate.entity?.let { entity ->
+            RenderUtils2D.drawBackgroundNameTag(
+                if (showClass) "§${teammate.clazz.colorCode}${teammate.name} §e[${teammate.clazz.name[0]}]" else "§${teammate.clazz.colorCode}${teammate.name}",
+                entity, padding, backgroundColor, accentColor, scale = scale
+            )
+        } }
     }
 }

@@ -48,7 +48,7 @@ object PuzzleSolvers : Module(
     val mazeColorOne by ColorSetting("Color for one", Color.GREEN.withAlpha(.5f), true, description = "Color for when there is a single solution.").withDependency { tpMaze && mazeDropDown }
     val mazeColorMultiple by ColorSetting("Color for multiple", Color.ORANGE.withAlpha(.5f), true, description = "Color for when there are multiple solutions.").withDependency { tpMaze && mazeDropDown }
     val mazeColorVisited by ColorSetting("Color for visited", Color.RED.withAlpha(.5f), true, description = "Color for the already used TP pads.").withDependency { tpMaze && mazeDropDown }
-    private val click by ActionSetting("Reset", description = "Resets the solver.") {
+    private val mazeReset by ActionSetting("Reset", description = "Resets the solver.") {
         TPMazeSolver.reset()
     }.withDependency { tpMaze && mazeDropDown }
 
@@ -56,7 +56,7 @@ object PuzzleSolvers : Module(
     private val iceFillSolver by BooleanSetting("Ice Fill Solver", false, description = "Solver for the ice fill puzzle.").withDependency { iceFillDropDown }
     private val iceFillColor by ColorSetting("Ice Fill Color", Color.PINK, true, description = "Color for the ice fill solver.").withDependency { iceFillSolver && iceFillDropDown }
     val useOptimizedPatterns by BooleanSetting("Use Optimized Patterns", false, description = "Use optimized patterns for the ice fill solver.").withDependency { iceFillSolver && iceFillDropDown }
-    private val action by ActionSetting("Reset", description = "Resets the solver.") {
+    private val iceFillReset by ActionSetting("Reset", description = "Resets the solver.") {
         IceFillSolver.reset()
     }.withDependency { iceFillSolver && iceFillDropDown }
 
@@ -97,7 +97,7 @@ object PuzzleSolvers : Module(
     private val quizSolver by BooleanSetting("Quiz Solver", false, description = "Solver for the trivia puzzle.").withDependency { quizDropdown }
     val quizColor by ColorSetting("Quiz Color", Color.GREEN.withAlpha(.75f), true, description = "Color for the quiz solver.").withDependency { quizDropdown && quizSolver }
     val quizDepth by BooleanSetting("Quiz Depth", false, description = "Depth check for the trivia puzzle.").withDependency { quizDropdown && quizSolver }
-    val quizReset by ActionSetting("Reset", description = "Resets the solver.") {
+    private val quizReset by ActionSetting("Reset", description = "Resets the solver.") {
         QuizSolver.reset()
     }.withDependency { quizDropdown && quizSolver }
 

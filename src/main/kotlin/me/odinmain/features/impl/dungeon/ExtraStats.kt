@@ -21,16 +21,20 @@ object ExtraStats : Module(
         val defeatedText = if (extraStats.bossKilled == null) "§c§lFAILED §a- §e${DungeonUtils.dungeonTime}" else
             "§aDefeated §c${extraStats.bossKilled} §ain §e${DungeonUtils.dungeonTime}${if (extraStats.timePB) " §d§l(NEW RECORD!)" else ""}"
 
-        modMessage(getChatBreak(), prefix = "")
-        modMessage("", prefix = "")
-        modMessage(getCenteredText((if (DungeonUtils.floor.isMM) "§cMaster Mode" else "§cThe Catacombs") + " §r- §e${DungeonUtils.floor.name}"), prefix = "")
-        modMessage("", prefix = "")
-        modMessage(getCenteredText(defeatedText), prefix = "")
-        modMessage(getCenteredText("§aScore: §6${extraStats.score} §a(§b${extraStats.scoreLetter}§a${if (extraStats.scorePB) " §d§l(NEW RECORD!)" else ""})"), prefix = "")
+        modMessage(
+         """${getChatBreak()}
+            
+            ${getCenteredText((if (DungeonUtils.floor.isMM) "§cMaster Mode" else "§cThe Catacombs") + " §r- §e${DungeonUtils.floor.name}")}
+            
+            ${getCenteredText(defeatedText)}
+            ${getCenteredText("§aScore: §6${extraStats.score} §a(§b${extraStats.scoreLetter}§a${if (extraStats.scorePB) " §d§l(NEW RECORD!)" else ""})")}
+        """.trimMargin(), prefix = "")
         modMessage(getCenteredText("${extraStats.xp.firstOrNull()}"), prefix = "", chatStyle = createClickStyle(ClickEvent.Action.SUGGEST_COMMAND, extraStats.xp.joinToString("\n")))
-        modMessage(getCenteredText("§b${extraStats.secretsFound}§r-§6${DungeonUtils.cryptCount}§r-§c${DungeonUtils.deathCount}"), prefix = "")
-        modMessage(getCenteredText(if (DungeonUtils.dungeonTeammatesNoSelf.isNotEmpty()) DungeonUtils.dungeonTeammatesNoSelf.joinToString(separator = "§r, ") { "§${it.clazz.colorCode}${it.name}" } else "§3Solo"), prefix = "")
-        modMessage("", prefix = "")
+        modMessage(
+         """${getCenteredText("§b${extraStats.secretsFound}§r-§6${DungeonUtils.cryptCount}§r-§c${DungeonUtils.deathCount}")}
+            ${getCenteredText(if (DungeonUtils.dungeonTeammatesNoSelf.isNotEmpty()) DungeonUtils.dungeonTeammatesNoSelf.joinToString(separator = "§r, ") { "§${it.clazz.colorCode}${it.name}" } else "§3Solo")}
+            
+        """.trimIndent(), prefix = "")
         modMessage(getChatBreak(), prefix = "", chatStyle = createClickStyle(ClickEvent.Action.SUGGEST_COMMAND, "Passed rooms: \n${DungeonUtils.passedRooms.joinToString("\n") { "§a${it.data.name}" }}"))
     }
 

@@ -29,18 +29,21 @@ object SpringBoots : Module(
 ) {
     private val hud by HudSetting("Display", 10f, 10f, 1f, true) {
         if (it) {
-            mcText("Jump: 6.5", 1f, 1f, 1, Color.WHITE)
+            val color = if (6.5 >= threshold) Color.PURPLE else Color.WHITE
+            mcText("Jump: 6.5", 1f, 1f, 1, color)
             getTextWidth("Jump: 6.5", 12f) to 12f
         } else {
-            val blockAmount = blocksList.getSafe(pitchCounts.sum())
+            val blockAmount = blocksList.getSafe(pitchCounts.sum()) ?: return@HudSetting 0f to 0f
             if (blockAmount == 0.0) return@HudSetting 0f to 0f
-            mcText("Jump: ${blockAmount ?: "61 (MAX)"}", 1f, 1f, 1, Color.WHITE)
+            val color = if (blockAmount >= threshold) Color.PURPLE else Color.WHITE
+            mcText("Jump: ${blockAmount ?: "61 (MAX)"}", 1f, 1f, 1, color)
             getTextWidth("Jump: ${blockAmount ?: "61 (MAX)"}", 12f) to 12f
         }
     }
     private val renderGoal by BooleanSetting("Render Goal", true, description = "Render the goal block.")
     private val goalColor by ColorSetting("Goal Color", Color.GREEN, description = "Color of the goal block.")
     private val offset by NumberSetting("Offset", 0.0, -10.0, 10.0, 0.1, description = "The offset of the goal block.")
+    private val threshold by NumberSetting("Threshold", 18.5, 5.0, 61.0, description = "If your spring boots will take you higher than this number, the text becomes purple.")
 
     private val blocksList: List<Double> = listOf(
         0.0, 3.0, 6.5, 9.0, 11.5, 13.5, 16.0, 18.0, 19.0,

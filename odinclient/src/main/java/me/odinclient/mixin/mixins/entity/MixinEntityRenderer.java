@@ -1,11 +1,15 @@
 package me.odinclient.mixin.mixins.entity;
 
 import me.odinclient.features.impl.render.Camera;
+import me.odinclient.features.impl.render.NoDebuff;
 import me.odinmain.events.impl.RenderOverlayNoCaching;
+import me.odinmain.utils.VecUtilsKt;
+import me.odinmain.utils.render.RenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.resources.IResourceManagerReloadListener;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -42,14 +46,15 @@ abstract public class MixinEntityRenderer implements IResourceManagerReloadListe
 
     @Redirect(method = "orientCamera", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GlStateManager;translate(FFF)V", ordinal = 2))
     public void orientCamera(float x, float y, float z, float partialTicks){
-        double double0 = mc.thePlayer.prevPosX + (mc.thePlayer.posX - mc.thePlayer.prevPosX) * (double) partialTicks;
-        double double1 = mc.thePlayer.prevPosY + (mc.thePlayer.posY - mc.thePlayer.prevPosY) * (double) partialTicks + (double) mc.thePlayer.getEyeHeight();
-        double double2 = mc.thePlayer.prevPosZ + (mc.thePlayer.posZ - mc.thePlayer.prevPosZ) * (double) partialTicks;
-        if (Camera.INSTANCE.getFreelookToggled()){
-            GlStateManager.translate(0.0F, 0.0F, -Camera.INSTANCE.calculateCameraDistance(double0, double1, double2, Camera.INSTANCE.getCameraDistance()));
-        } else {
-            GlStateManager.translate(x, y, z);
-        }
+        if (Camera.INSTANCE.getFreelookToggled()) {
+            GlStateManager.translate(
+                    0.0F, 0.0F, -Camera.INSTANCE.calculateCameraDistance(
+                    RenderUtils.INSTANCE.getRenderX(mc.thePlayer),
+                    RenderUtils.INSTANCE.getRenderY(mc.thePlayer) + VecUtilsKt.fastEyeHeight(),
+                    RenderUtils.INSTANCE.getRenderZ(mc.thePlayer),
+                    Camera.INSTANCE.getCameraDistance())
+            );
+        } else GlStateManager.translate(x, y, z);
     }
 
     @Redirect(method = {"orientCamera"}, at = @At(value = "FIELD", target = "Lnet/minecraft/client/renderer/EntityRenderer;thirdPersonDistance:F"))
@@ -65,5 +70,10 @@ abstract public class MixinEntityRenderer implements IResourceManagerReloadListe
     @ModifyConstant(method = "orientCamera", constant = @Constant(intValue = 8))
     public int cameraClip(int constant) {
         return Camera.INSTANCE.getCameraClipEnabled() ? 0: constant;
+    }
+
+    @Inject(method = "hurtCameraEffect", at = @At("HEAD"), cancellable = true)
+    private void onHurtCam(float partialTicks, CallbackInfo ci) {
+        if (NoDebuff.INSTANCE.getNoHurtCam()) ci.cancel();
     }
 }

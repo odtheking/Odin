@@ -49,7 +49,7 @@ object StartGui : TermSimGui(
     fun onTooltip(event: ItemTooltipEvent) {
         if (event.itemStack.item != dye || event.toolTip.isEmpty()) return
         val index = termItems.indexOfFirst { it.displayName == event.itemStack?.displayName }.takeIf { it != -1 } ?: return
-        event.toolTip.add(1, "§7Personal Best: §d${TerminalSimulator.simPBs.pb?.get(index)?.round(2) ?: 999.0}")
+        event.toolTip.add(1, "§7Personal Best: §d${TerminalSimulator.termSimPBs.pb?.get(index)?.round(2) ?: 999.0}")
     }
 
     private var areYouSure = false
@@ -66,7 +66,7 @@ object StartGui : TermSimGui(
                     }
                     return
                 }
-                repeat(6) { i -> TerminalSimulator.simPBs.set(i, 999.0) }
+                repeat(6) { i -> TerminalSimulator.termSimPBs.set(i, 999.0) }
                 modMessage("§cPBs reset!")
                 StartGui.open(ping)
             }

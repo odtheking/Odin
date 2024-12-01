@@ -21,7 +21,7 @@ object TerminalSimulator : Module(
     private val repetitiveTerminals by NumberSetting("Random Terminals", 1, 1, 100, description = "Amount of random terminals.")
     val openStart by BooleanSetting("Open Start", false, description = "Open the start menu after you finish a terminal.")
 
-    val simPBs = PersonalBest("Termsim", 6)
+    val termSimPBs = PersonalBest("Termsim", 6)
 
     override fun onKeybind() {
         sendCommand(if (repetitiveTerminals == 1) "termsim $ping" else "termsim $ping $repetitiveTerminals", clientSide = true)
@@ -36,13 +36,13 @@ object TerminalSimulator : Module(
 
     fun openRandomTerminal(ping: Long = 0L, cons: Long = 0L) {
         when (listOf(TerminalTypes.PANES, TerminalTypes.RUBIX, TerminalTypes.ORDER, TerminalTypes.STARTS_WITH, TerminalTypes.SELECT).random()) {
-            TerminalTypes.PANES -> CorrectPanes.open(ping, cons)
-            TerminalTypes.RUBIX -> Rubix.open(ping, cons)
-            TerminalTypes.ORDER -> InOrder.open(ping, cons)
+            TerminalTypes.PANES       -> CorrectPanes.open(ping, cons)
+            TerminalTypes.RUBIX       -> Rubix.open(ping, cons)
+            TerminalTypes.ORDER       -> InOrder.open(ping, cons)
             TerminalTypes.STARTS_WITH -> StartsWith(StartsWith.letters.shuffled().first()).open(ping, cons)
-            TerminalTypes.SELECT -> SelectAll(EnumDyeColor.entries.getRandom().name.replace("_", " ").uppercase()).open(ping, cons)
-            TerminalTypes.MELODY -> Melody.open(ping, cons)
-            TerminalTypes.NONE -> {}
+            TerminalTypes.SELECT      -> SelectAll(EnumDyeColor.entries.getRandom().name.replace("_", " ").uppercase()).open(ping, cons)
+            TerminalTypes.MELODY      -> Melody.open(ping, cons)
+            TerminalTypes.NONE        -> {}
         }
     }
 }
