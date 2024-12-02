@@ -4,11 +4,12 @@ import me.odinmain.events.impl.ServerTickEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.*
+import me.odinmain.features.settings.impl.BooleanSetting
+import me.odinmain.features.settings.impl.HudSetting
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.mcTextAndWidth
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import java.util.Locale
+import java.util.*
 
 object TickTimers : Module(
     name = "Tick Timers",
@@ -73,14 +74,12 @@ object TickTimers : Module(
 
     @SubscribeEvent
     fun onServerTick(event: ServerTickEvent) {
-        when {
-            necronTime >= 0 && necronHud.enabled -> necronTime--
-            padTickTime >= 0 && stormHud.enabled -> padTickTime--
-            padTickTime == 0 && stormHud.enabled -> padTickTime = 20
-            goldorTickTime >= 0 && goldorHud.enabled -> goldorTickTime--
-            goldorStartTime >= 0 && goldorHud.enabled -> goldorStartTime--
-            goldorTickTime == 0 && goldorStartTime <= 0 && goldorHud.enabled -> goldorTickTime = 60
-        }
+        if (necronTime >= 0 && necronHud.enabled) necronTime--
+        if (padTickTime >= 0 && stormHud.enabled) padTickTime--
+        if (padTickTime == 0 && stormHud.enabled) padTickTime = 20
+        if (goldorTickTime >= 0 && goldorHud.enabled) goldorTickTime--
+        if (goldorStartTime >= 0 && goldorHud.enabled) goldorStartTime--
+        if (goldorTickTime == 0 && goldorStartTime <= 0 && goldorHud.enabled) { goldorTickTime = 60 }
     }
 
     private fun formatTimer(time: Int, max: Int, prefix: String): String {

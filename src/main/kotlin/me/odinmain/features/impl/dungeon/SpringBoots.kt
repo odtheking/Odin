@@ -29,21 +29,17 @@ object SpringBoots : Module(
 ) {
     private val hud by HudSetting("Display", 10f, 10f, 1f, true) {
         if (it) {
-            val color = if (6.5 >= threshold) Color.PURPLE else Color.WHITE
-            mcText("Jump: 6.5", 1f, 1f, 1, color)
+            mcText("Jump: 6.5", 1f, 1f, 1, Color.WHITE)
             getTextWidth("Jump: 6.5", 12f) to 12f
         } else {
-            val blockAmount = blocksList.getSafe(pitchCounts.sum()) ?: return@HudSetting 0f to 0f
-            if (blockAmount == 0.0) return@HudSetting 0f to 0f
-            val color = if (blockAmount >= threshold) Color.PURPLE else Color.WHITE
-            mcText("Jump: ${blockAmount ?: "61 (MAX)"}", 1f, 1f, 1, color)
-            getTextWidth("Jump: ${blockAmount ?: "61 (MAX)"}", 12f) to 12f
+            val blockAmount = blocksList.getSafe(pitchCounts.sum()).takeIf { it != 0.0 } ?: return@HudSetting 0f to 0f
+            mcText("Jump: ${colorHud(blockAmount)}", 1f, 1f, 1, Color.WHITE)
+            getTextWidth("Jump: ${colorHud(blockAmount)}", 12f) to 12f
         }
     }
     private val renderGoal by BooleanSetting("Render Goal", true, description = "Render the goal block.")
     private val goalColor by ColorSetting("Goal Color", Color.GREEN, description = "Color of the goal block.")
     private val offset by NumberSetting("Offset", 0.0, -10.0, 10.0, 0.1, description = "The offset of the goal block.")
-    private val threshold by NumberSetting("Threshold", 18.5, 5.0, 61.0, description = "If your spring boots will take you higher than this number, the text becomes purple.")
 
     private val blocksList: List<Double> = listOf(
         0.0, 3.0, 6.5, 9.0, 11.5, 13.5, 16.0, 18.0, 19.0,
@@ -82,5 +78,15 @@ object SpringBoots : Module(
     fun onRenderWorld(event: RenderWorldLastEvent) {
         if (!renderGoal || !LocationUtils.isInSkyblock) return
         blockPos?.let { Renderer.drawBox(it.toAABB(), goalColor, fillAlpha = 0f) }
+    }
+
+    private fun colorHud(blocks: Double): String {
+        return when {
+            blocks <= 13.5 -> "§c"
+            blocks <= 22.5 -> "§e"
+            blocks <= 33.0 -> "§6"
+            blocks <= 43.5 -> "§a"
+            else -> "§b"
+        } + blocks
     }
 }
