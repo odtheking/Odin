@@ -54,7 +54,7 @@ object DungeonWaypoints : Module(
 ) {
     private var allowEdits by BooleanSetting("Allow Edits", false, description = "Allows you to edit waypoints.")
     private var allowMidair by BooleanSetting("Allow Midair", default = false, description = "Allows waypoints to be placed midair if they reach the end of distance without hitting a block.").withDependency { allowEdits }
-    private var reachColor by ColorSetting("Reach Color", default = Color(0, 255, 213, 0.43f), description = "Color of the reach box highlight.", allowAlpha = true).withDependency { allowEdits }
+    private var reachColor by ColorSetting("Reach Color", Color(0, 255, 213, 0.43f), description = "Color of the reach box highlight.", allowAlpha = true).withDependency { allowEdits }
     private val allowTextEdit by BooleanSetting("Allow Text Edit", true, description = "Allows you to set the text of a waypoint while sneaking.")
 
     private val renderTitle by BooleanSetting("Render Title", true, description = "Renders the title of the waypoint.")
@@ -63,7 +63,7 @@ object DungeonWaypoints : Module(
     private val settingsDropDown by DropdownSetting("Next Waypoint Settings")
     var waypointType: Int by SelectorSetting("Waypoint Type", WaypointType.NONE.displayName, WaypointType.getArrayList(), description = "The type of waypoint you want to place.").withDependency { settingsDropDown }
     private val colorPallet by SelectorSetting("Color pallet", "None", arrayListOf("None", "Aqua", "Magenta", "Yellow", "Lime", "Red"), description = "The color pallet of the next waypoint you place.").withDependency { settingsDropDown }
-    var color by ColorSetting("Color", default = Color.GREEN, description = "The color of the next waypoint you place.", allowAlpha = true).withDependency { colorPallet == 0 && settingsDropDown }
+    var color by ColorSetting("Color", Color.GREEN, description = "The color of the next waypoint you place.", allowAlpha = true).withDependency { colorPallet == 0 && settingsDropDown }
     var filled by BooleanSetting("Filled", false, description = "If the next waypoint you place should be 'filled'.").withDependency { settingsDropDown }
     var throughWalls by BooleanSetting("Through walls", false, description = "If the next waypoint you place should be visible through walls.").withDependency { settingsDropDown }
     var useBlockSize by BooleanSetting("Use block size", true, description = "Use the size of the block you click for waypoint size.").withDependency { settingsDropDown }

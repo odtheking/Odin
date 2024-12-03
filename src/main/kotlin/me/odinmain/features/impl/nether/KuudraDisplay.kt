@@ -61,7 +61,6 @@ object KuudraDisplay : Module(
         }
     }
 
-
     @SubscribeEvent
     fun onTick(event: TickEvent.ClientTickEvent) {
         if (event.phase != TickEvent.Phase.START || !KuudraUtils.inKuudra) return

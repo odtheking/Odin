@@ -30,10 +30,10 @@ object DianaHelper : Module(
     description = "Displays the location of the Diana guess and burrows.",
     category = Category.SKYBLOCK
 ) {
-    private val guessColor by ColorSetting("Guess Color", default = Color.WHITE, allowAlpha = true, description = "Color of the guess text.")
+    private val guessColor by ColorSetting("Guess Color", Color.WHITE, allowAlpha = true, description = "Color of the guess text.")
     private val tracer by BooleanSetting("Tracer", default = true, description = "Draws a line from your position to the guess.")
     private val tracerWidth by NumberSetting("Tracer Width", default = 5f, min = 1f, max = 20f, description = "Width of the tracer line.").withDependency { tracer }
-    private val tracerColor by ColorSetting("Tracer Line Color", default = Color.WHITE, allowAlpha = true, description = "Color of the tracer line.").withDependency { tracer }
+    private val tracerColor by ColorSetting("Tracer Line Color", Color.WHITE, allowAlpha = true, description = "Color of the tracer line.").withDependency { tracer }
     private val tracerBurrows by BooleanSetting("Tracer Burrows", default = true, description = "Draws a line from your position to the burrows.")
     private val style by SelectorSetting("Style", "Filled", arrayListOf("Filled", "Outline", "Filled Outline"), description = "Whether or not the box should be filled.")
     private val sendInqMsg by BooleanSetting("Send Inq Msg", default = true, description = "Sends your coordinates to the party chat when you dig out an inquisitor.")

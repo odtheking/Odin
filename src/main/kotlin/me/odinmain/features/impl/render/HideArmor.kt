@@ -14,7 +14,7 @@ object HideArmor : Module(
     description = "Hide armor pieces.",
     category = Category.SKYBLOCK
 ) {
-    private val hideArmor by SelectorSetting(name = "Hide Armor", defaultSelected = "Self", options = arrayListOf("Self", "Others", "Both"), description = "Hide the armor of yourself, others, or both.")
+    private val hideArmor by SelectorSetting(name = "Hide Armor", "Self", options = arrayListOf("Self", "Others", "Both"), description = "Hide the armor of yourself, others, or both.")
     private val selfDropdown by DropdownSetting("Self").withDependency { hideArmor == 0 || hideArmor == 2 }
     private val selfHelmet by BooleanSetting("Helmet", true, description = "Hide your helmet.").withDependency { selfDropdown }
     private val selfChestplate by BooleanSetting("Self Chestplate", true, description = "Hide your chestplate.").withDependency { selfDropdown && hideArmor != 1 }

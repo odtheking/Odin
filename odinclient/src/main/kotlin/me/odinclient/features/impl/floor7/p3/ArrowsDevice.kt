@@ -59,7 +59,7 @@ object ArrowsDevice : Module(
     private val autoShoot by BooleanSetting("Auto Shoot", description = "Automatically aim and shoot at targets.").withDependency { auto && autoDropdown }
     private val autoPhoenix by BooleanSetting("Auto Phoenix", default = true, description = "Automatically swap to phoenix pet using cast rod pet rules, must be set up correctly.").withDependency { auto && autoDropdown }
     private val autoLeap by BooleanSetting("Auto Leap", default = true, description = "Automatically leap once device is done.").withDependency { auto && autoDropdown }
-    private val autoLeapClass by SelectorSetting("Leap to", defaultSelected = "Mage", arrayListOf("Archer", "Berserk", "Healer", "Mage", "Tank"), description = "Who to leap to.").withDependency { autoLeap && auto && autoDropdown }
+    private val autoLeapClass by SelectorSetting("Leap to", "Mage", arrayListOf("Archer", "Berserk", "Healer", "Mage", "Tank"), description = "Who to leap to.").withDependency { autoLeap && auto && autoDropdown }
     private val autoLeapOnlyPre by BooleanSetting("Only leap on pre", default = true, description = "Only auto leap when doing i4.").withDependency { autoLeap && auto && autoDropdown }
     private val delay by NumberSetting("Auto Delay", 150L, 80, 300, description = "Delay between actions.").withDependency { auto && autoDropdown }
     private val aimingTime by NumberSetting("Aiming Duration", 100L, 80, 200, description = "Time taken to aim at a target.").withDependency { auto && autoDropdown }

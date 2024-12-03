@@ -40,8 +40,8 @@ object LeapMenu : Module(
 ) {
     val type by SelectorSetting("Sorting", "Odin Sorting", arrayListOf("Odin Sorting", "A-Z Class (BetterMap)", "A-Z Name", "Custom sorting", "No Sorting"), description = "How to sort the leap menu.")
     private val onlyClass by BooleanSetting("Only Classes", false, description = "Renders classes instead of names.")
-    private val colorStyle by BooleanSetting("Color Style", default = false, description = "Which color style to use.")
-    private val backgroundColor by ColorSetting("Background Color", default = Color.DARK_GRAY.withAlpha(0.9f), allowAlpha = true, description = "Color of the background of the leap menu.")
+    private val colorStyle by BooleanSetting("Color Style", false, description = "Which color style to use.")
+    private val backgroundColor by ColorSetting("Background Color", Color.DARK_GRAY.withAlpha(0.9f), allowAlpha = true, description = "Color of the background of the leap menu.")
     private val roundedRect by BooleanSetting("Rounded Rect", true, description = "Toggles the rounded rect for the gui.")
     private val useNumberKeys by BooleanSetting("Use Number Keys", false, description = "Use keyboard keys to leap to the player you want, going from left to right, top to bottom.")
     private val topLeftKeybind by KeybindSetting("Top Left", Keyboard.KEY_1, "Used to click on the first person in the leap menu.").withDependency { useNumberKeys }
@@ -50,7 +50,7 @@ object LeapMenu : Module(
     private val bottomRightKeybind by KeybindSetting("Bottom right", Keyboard.KEY_4, "Used to click on the fourth person in the leap menu.").withDependency { useNumberKeys }
     private val size by NumberSetting("Scale Factor", 1.0f, 0.5f, 2.0f, 0.1f, description = "Scale factor for the leap menu.")
     private val leapHelperToggle by BooleanSetting("Leap Helper", false, description = "Highlights the leap helper player in the leap menu.")
-    private val leapHelperColor by ColorSetting("Leap Helper Color", default = Color.WHITE, description = "Color of the Leap Helper highlight.").withDependency { leapHelperToggle }
+    private val leapHelperColor by ColorSetting("Leap Helper Color", Color.WHITE, description = "Color of the Leap Helper highlight.").withDependency { leapHelperToggle }
     val delay by NumberSetting("Reset Leap Helper Delay", 30, 10.0, 120.0, 1.0, description = "Delay for clearing the leap helper highlight.").withDependency { leapHelperToggle }
     private val leapAnnounce by BooleanSetting("Leap Announce", false, description = "Announces when you leap to a player.")
     private val hoveredAnims = List(4) { EaseInOut(200L) }
