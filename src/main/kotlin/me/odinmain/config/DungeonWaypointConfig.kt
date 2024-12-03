@@ -187,7 +187,7 @@ object DungeonWaypointConfig {
         }
 
         override fun deserialize(p0: JsonElement?, p1: Type?, p2: JsonDeserializationContext?): Color {
-            val hexValue = p0?.asString?.replace("#", "") ?: "000000FF"
+            val hexValue = p0?.asString ?: "#000000FF"
             return Color.RGB(hexToRGBA(hexValue))
         }
     }

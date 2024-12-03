@@ -16,8 +16,8 @@ object EnrageDisplay : Module(
     name = "Enrage Display",
     description = "Displays the Reaper armor's ability duration."
 ) {
-    private val unit by SelectorSetting("Unit", arrayListOf("Seconds", "Ticks"))
-    private val showUnit by BooleanSetting("Show unit", default = false)
+    private val unit by SelectorSetting("Unit", arrayListOf("Seconds", "Ticks"), description = "The unit of time to display.")
+    private val showUnit by BooleanSetting("Show unit", default = false, description = "Displays the unit of time for the enrage duration.")
 
     // test
     private val animation = Alpha.Animated(from = 0f, to = 1f)

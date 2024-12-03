@@ -19,10 +19,10 @@ object CPSDisplay : Module(
     // make it depend on right clicks to be shown
     private val countPackets by BooleanSetting("Count Packets", false, description = "Counts packets sent outside of the rightclickmouse method, this will be better at detecting other mods' auto clickers, but might show inaccurate values.")
     private val advanced by DropdownSetting("Show Settings", false)
-    private val button by SelectorSetting("Button", "Both", arrayListOf("Left", "Right", "Both")).withDependency { advanced }
-    private val mouseText by BooleanSetting("Show Button", true).withDependency { advanced }
-    private val textColor by ColorSetting("Text Color", Color.RGB(239, 239, 239, 1f), allowAlpha = true).withDependency { advanced }
-    private val outline by BooleanSetting("Outline", true).withDependency { advanced }
+    private val button by SelectorSetting("Button", "Both", arrayListOf("Left", "Right", "Both"), description = "Which button to show the CPS for.").withDependency { advanced }
+    private val mouseText by BooleanSetting("Show Button", true, description = "Show the button that the CPS is for.").withDependency { advanced }
+    private val textColor by ColorSetting("Text Color", Color.RGB(239, 239, 239, 1f), allowAlpha = true, description = "The color of the CPS text.").withDependency { advanced }
+    private val outline by BooleanSetting("Outline", true, description = "Outline the text.").withDependency { advanced }
 
     private val leftClicks = mutableListOf<Long>()
     private val rightClicks = mutableListOf<Long>()

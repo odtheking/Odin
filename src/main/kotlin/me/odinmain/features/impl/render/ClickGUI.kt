@@ -58,7 +58,7 @@ object ClickGUI : Module(
     val forceHypixel by BooleanSetting("Force Hypixel", false, description = "Forces the Hypixel check to be on (Mainly used for development. Only use if you know what you're doing)")
 
     // make useful someday
-    val updateMessage by SelectorSetting("Update Message", arrayListOf("Full", "Beta", "None")).hide()
+    val updateMessage by SelectorSetting("Update Message", arrayListOf("Full", "Beta", "None"), description = "").hide()
 
     // needs own module
     val devMessages by BooleanSetting("Dev Messages", true, description = "Enables dev messages in chat.").withDependency { DevPlayers.isDev } // make dev-specific modules and put this there
@@ -95,8 +95,8 @@ object ClickGUI : Module(
         }
     }
 
-    private var joined by BooleanSetting("first.join", false).hide()
-    var lastSeenVersion by StringSetting("last.seen.version", "1.0.0").hide()
+    private var joined by BooleanSetting("first.join", false, description = "").hide()
+    var lastSeenVersion by StringSetting("last.seen.version", "1.0.0", description = "").hide()
 
     /**
      * Used in [ColorSetting].

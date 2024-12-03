@@ -18,9 +18,9 @@ class HUD(
     val module: Module,
     val builder: ElementScope<HUD.Representation>.() -> Unit
 ) {
-    val x = NumberSetting("x", 2.5f, 0f, 100f).hide()
-    val y = NumberSetting("y", 2.5f, 0f, 100f).hide()
-    val scale = NumberSetting("Scale", 1f, 0.2f, 5f, increment = 0.1f)
+    val x = NumberSetting("x", 2.5f, 0f, 100f, description = "").hide()
+    val y = NumberSetting("y", 2.5f, 0f, 100f, description = "").hide()
+    val scale = NumberSetting("Scale", 1f, 0.2f, 5f, increment = 0.1f, description = "")
 
     /**
      * Settings tied to this HUD, these get saved inside the [setting][me.odinmain.features.settings.impl.HUDSetting]

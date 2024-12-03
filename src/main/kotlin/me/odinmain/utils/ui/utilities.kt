@@ -73,9 +73,9 @@ inline fun Module.TextHUD(
     color: Color = Color.RGB(50, 150, 220),
     crossinline block: ElementScope<HUD.Representation>.(Color, Font, shadow: Boolean) -> Unit
 ): HUD {
-    val colorSetting = ColorSetting("Color", color, allowAlpha = false)
-    val fontSetting = SelectorSetting("Font", arrayListOf("Regular", "Minecraft"))
-    val shadowSetting = BooleanSetting("Shadow", true)
+    val colorSetting = ColorSetting("Color", color, allowAlpha = false, description = "The color of the text.")
+    val fontSetting = SelectorSetting("Font", arrayListOf("Regular", "Minecraft"), description = "The font of the text.")
+    val shadowSetting = BooleanSetting("Shadow", true, description = "Whether to display a shadow behind the text.")
 
     val hud = HUD(name) {
         val font = when (fontSetting.value) {
