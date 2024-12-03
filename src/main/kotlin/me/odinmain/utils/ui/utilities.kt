@@ -22,7 +22,14 @@ import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.features.settings.impl.SelectorSetting
 import me.odinmain.utils.ui.screens.UIHandler
 
+/**
+ * Default font used in Odin.
+ */
 val regularFont = Font("Regular", "/assets/odinmain/fonts/Regular.otf")
+
+/**
+ * Minecraft's font.
+ */
 val mcFont = Font("Minecraft", "/assets/odinmain/fonts/Minecraft-Regular.otf")
 
 /**
@@ -30,12 +37,14 @@ val mcFont = Font("Minecraft", "/assets/odinmain/fonts/Minecraft-Regular.otf")
  */
 fun String.image() = Image("/assets/odinmain/$this")
 
-//// todo: better solution
-//infix fun TextScope.and(other: TextScope) {
-//    other.element.constraints.x = Linked(element)
-//    other.size = size
-//}
 
+/**
+ * Creates a row of texts (intended for HUDs),
+ * where the first text is a static string, and second is supplied from a function.
+ *
+ * @param color1 Color for the static string.
+ * @param color2 Color for the supplied string.
+ */
 inline fun ElementScope<*>.buildText(
     string: String,
     crossinline supplier: () -> Any?,
@@ -45,21 +54,19 @@ inline fun ElementScope<*>.buildText(
     shadow: Boolean,
     pos: Positions = at(),
     size: Constraint.Size = 30.px
-) {
-    row(pos) {
-        text(
-            string = "$string ",
-            font,
-            color1,
-            size = size
-        ).shadow = shadow
-        textSupplied(
-            supplier,
-            font,
-            color2,
-            size = size
-        ).shadow = shadow
-    }
+) = row(pos) {
+    text(
+        string = "$string ",
+        font,
+        color1,
+        size = size
+    ).shadow = shadow
+    textSupplied(
+        supplier,
+        font,
+        color2,
+        size = size
+    ).shadow = shadow
 }
 
 /**
@@ -71,7 +78,7 @@ inline fun ElementScope<*>.buildText(
 inline fun Module.TextHUD(
     name: String,
     color: Color = Color.RGB(50, 150, 220),
-    crossinline block: ElementScope<HUD.Representation>.(Color, Font, shadow: Boolean) -> Unit
+    crossinline block: HUD.Scope.(Color, Font, shadow: Boolean) -> Unit
 ): HUD {
     val colorSetting = ColorSetting("Color", color, allowAlpha = false, description = "The color of the text.")
     val fontSetting = SelectorSetting("Font", arrayListOf("Regular", "Minecraft"), description = "The font of the text.")
@@ -138,3 +145,21 @@ fun ElementScope<*>.lifetimeAnimations(
         }
     }
 }
+
+/**
+ * Creates a commonly used selector setting, which represents fonts used in Odin.
+ *
+ * It is intended to be used with [getFont].
+ *
+ * When this setting's value is 0, the font is [regularFont], otherwise it is [mcFont]
+ */
+fun makeFontSetting(name: String = "Font", description: String = "The font of the text.") = SelectorSetting(
+    name,
+    options = arrayListOf("Regular", "Minecraft"),
+    description = description,
+)
+
+/**
+ * Gets font based on [makeFontSetting].
+ */
+fun getFont(fromIndex: Int) = if (fromIndex == 0) regularFont else mcFont

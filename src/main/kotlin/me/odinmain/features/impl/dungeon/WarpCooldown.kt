@@ -2,8 +2,6 @@ package me.odinmain.features.impl.dungeon
 
 import com.github.stivais.aurora.color.Color
 import me.odinmain.features.Module
-import me.odinmain.features.huds.HUD.Companion.needs
-import me.odinmain.features.huds.HUD.Companion.preview
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.StringSetting

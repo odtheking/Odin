@@ -3,6 +3,7 @@ package me.odinmain.features.huds
 import com.github.stivais.aurora.color.Color
 import com.github.stivais.aurora.constraints.impl.measurements.Pixel
 import com.github.stivais.aurora.dsl.*
+import com.github.stivais.aurora.elements.Element
 import com.github.stivais.aurora.elements.ElementScope
 import com.github.stivais.aurora.elements.Layout.Companion.section
 import com.github.stivais.aurora.elements.impl.Block.Companion.outline
@@ -11,7 +12,6 @@ import com.github.stivais.aurora.elements.impl.popup
 import com.github.stivais.aurora.utils.loop
 import com.github.stivais.aurora.utils.withAlpha
 import me.odinmain.config.Config
-import me.odinmain.features.huds.HUD.Companion.refreshHUDs
 import me.odinmain.features.impl.render.ClickGUI
 import me.odinmain.features.impl.render.ClickGUI.`gray 26`
 import me.odinmain.features.impl.render.ClickGUI.`gray 38`
@@ -36,7 +36,9 @@ object HUDManager {
     fun setupHUDs() {
         UI = UIHandler(Aurora(renderer = NVGRenderer) {
             HUDs.loop { hud ->
-                hud.Representation(preview = false).scope(hud.builder)
+                val representation = hud.Representation()
+                representation.add()
+                HUD.Scope(representation, preview = false).apply { hud.builder(this) }
             }
         })
         UI!!.open()
@@ -46,9 +48,17 @@ object HUDManager {
 
         var hudOptions: Popup? = null
 
+        object : Element(copies()) {
+            override fun draw() {
+                renderer.line(snapLineX, 0f, snapLineX, ui.main.height, 1f, Color.WHITE.rgba)
+                renderer.line(0f, snapLineY, ui.main.width, snapLineY, 1f, Color.WHITE.rgba)
+            }
+        }.add()
+
         HUDs.loop { hud ->
-            val representation = hud.Representation(preview = true)
-            representation.scope {
+            val representation = hud.Representation()
+            representation.add()
+            HUD.Scope(representation, preview = true).apply {
                 hud.builder(this)
 
                 onRemove {
@@ -56,7 +66,7 @@ object HUDManager {
                     hud.y.value = (element.y / ui.main.height) * 100f
                 }
                 onScroll { (amount) ->
-                    hud.scale.value += 0.1f * amount
+                    hud.scale.set(hud.scale.value + hud.scale.increment * amount)
                     representation.scaleTransformation = hud.scale.value
                 }
 

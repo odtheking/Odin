@@ -46,7 +46,7 @@ class NumberSetting<E>(
     override var value: E = default
 
     /** The amount a setting should increment. */
-    private val increment = increment.toDouble()
+    val increment = increment.toDouble()
 
     /** The minimum a setting can be */
     private val min = min.toDouble()

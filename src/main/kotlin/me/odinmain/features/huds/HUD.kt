@@ -16,11 +16,11 @@ import kotlin.reflect.jvm.isAccessible
 class HUD(
     val name: String,
     val module: Module,
-    val builder: ElementScope<HUD.Representation>.() -> Unit
+    val builder: Scope.() -> Unit
 ) {
     val x = NumberSetting("x", 2.5f, 0f, 100f, description = "").hide()
     val y = NumberSetting("y", 2.5f, 0f, 100f, description = "").hide()
-    val scale = NumberSetting("Scale", 1f, 0.2f, 5f, increment = 0.1f, description = "")
+    val scale = NumberSetting("Scale", 1f, 0.2f, 5f, increment = 0.1f, description = "Size of this HUD.")
 
     /**
      * Settings tied to this HUD, these get saved inside the [setting][me.odinmain.features.settings.impl.HUDSetting]
@@ -50,14 +50,11 @@ class HUD(
                 module.settings.remove(delegate)
             }
             this.settings.add(delegate)
-            delegate.hide()
         }
         return this
     }
 
-    inner class Representation(
-        val preview: Boolean
-    ) : BlankElement(Constraints(x.value.percent, y.value.percent, Bounding, Bounding)) {
+    inner class Representation : BlankElement(Constraints(x.value.percent, y.value.percent, Bounding, Bounding)) {
 
         override var enabled: Boolean = true
             get() = field && this@HUD.module.enabled
@@ -68,7 +65,7 @@ class HUD(
 
         override fun getDefaultPositions() = Pair(Undefined, Undefined)
 
-        fun refresh(scope: ElementScope<Representation>) {
+        fun refresh(scope: Scope) {
             removeAll()
             builder.invoke(scope)
             scaleTransformation = this@HUD.scale.value
@@ -86,10 +83,9 @@ class HUD(
         return null
     }
 
-    companion object {
-        inline val ElementScope<HUD.Representation>.preview get() = element.preview
+    class Scope(element: HUD.Representation,val preview: Boolean) : ElementScope<HUD.Representation>(element) {
 
-        inline fun ElementScope<HUD.Representation>.needs(crossinline block: () -> Boolean) {
+        inline fun ElementScope<*>.needs(crossinline block: () -> Boolean) {
             if (!preview) {
                 operation {
                     element.enabled = block()
@@ -98,7 +94,7 @@ class HUD(
             }
         }
 
-        fun ElementScope<HUD.Representation>.refreshHUDs() {
+        fun refreshHUDs() {
             element.refresh(this)
         }
     }

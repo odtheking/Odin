@@ -48,7 +48,7 @@ allprojects {
 
         implementation("com.github.stivais:AuroraUI:0.9.1-beta")
         // todo: create releases for aurora
-//        implementation("com.github.stivais:AuroraUI:e8cff5402b")
+//        implementation("com.github.stivais:AuroraUI:4cbd8bc343")
 
         implementation("com.github.odtheking:odin-lwjgl:faeaa48b39")
 

@@ -171,7 +171,7 @@ object ClickGUI : Module(
 
         for (panel in Category.entries) {
             val data = panelSettings[panel] ?: throw NullPointerException("This should never happen")
-            column(constrain(x = data.x.px, y = data.y.px, Bounding, Bounding)) {
+            column(at(x = data.x.px, y = data.y.px)) {
                 onRemove {
                     data.x = element.x
                     data.y = element.y

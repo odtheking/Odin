@@ -1,6 +1,5 @@
 package me.odinmain.features
 
-import com.github.stivais.aurora.elements.ElementScope
 import me.odinmain.OdinMain
 import me.odinmain.features.huds.HUD
 import me.odinmain.features.impl.render.ClickGUI
@@ -166,7 +165,7 @@ abstract class Module(
 
     fun HUD(
         name: String,
-        block: ElementScope<HUD.Representation>.() -> Unit
+        block: HUD.Scope.() -> Unit
     ): HUD {
         return HUD(
             name,
