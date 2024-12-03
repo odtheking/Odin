@@ -16,7 +16,7 @@ public class MixinGuiIngame {
 
     @ModifyVariable(method = "setRecordPlaying(Ljava/lang/String;Z)V", at = @At("HEAD"), argsOnly = true)
     private String modifyActionBar(String text) {
-        return PlayerDisplay.INSTANCE.modifyText(text);
+        return PlayerDisplay.modifyText(text);
     }
 
     @Inject(method = "renderScoreboard", at = @At("HEAD"), cancellable = true)
