@@ -12,7 +12,7 @@ import me.odinmain.features.settings.Setting.Renders.Companion.setting
 // doesn't save
 class UISetting(
     height: Constraint.Size,
-    description: String = "",
+    description: String,
     val scope: ElementScope<*>.() -> Unit
 ) : Setting<Any?>("", false, description), Setting.Renders {
     override val default: Any? = null

@@ -30,7 +30,7 @@ class SelectorSetting(
     default: String,
     var options: ArrayList<String>,
     hidden: Boolean = false,
-    description: String = "",
+    description: String,
 ) : Setting<Int>(name, hidden, description), Saving, Setting.Renders {
 
     constructor(
@@ -38,7 +38,7 @@ class SelectorSetting(
         options: ArrayList<String>,
         default: String = options[0],
         hidden: Boolean = false,
-        description: String = "",
+        description: String,
     ) : this(name, default, options, hidden, description)
 
     override val default: Int = optionIndex(default)

@@ -162,13 +162,9 @@ object PuzzleSolvers : Module(
             BoulderSolver.reset()
             TPMazeSolver.reset()
             WaterSolver.reset()
-            TPMazeSolver.reset()
-            IceFillSolver.reset()
             BlazeSolver.reset()
             BeamsSolver.reset()
-            WeirdosSolver.reset()
             QuizSolver.reset()
-            BoulderSolver.reset()
             TTTSolver.reset()
         }
     }

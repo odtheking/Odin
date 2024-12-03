@@ -11,6 +11,7 @@ import me.odinmain.features.settings.impl.Keybinding
 import me.odinmain.utils.clock.Executable
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.clock.Executor.Companion.register
+import me.odinmain.utils.clock.Executor.LimitedExecutor
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.network.Packet
 import net.minecraftforge.common.MinecraftForge
@@ -24,7 +25,7 @@ import kotlin.reflect.full.hasAnnotation
 abstract class Module(
     val name: String,
     key: Int? = Keyboard.KEY_NONE,
-    @Transient var description: String = "",
+    @Transient var description: String,
     @Transient val tag: TagType = TagType.NONE,
     toggled: Boolean = false,
 ) {
@@ -152,7 +153,7 @@ abstract class Module(
     }
 
     fun execute(delay: Long, repeats: Int, profileName: String = "${this.name} Executor", shouldRun: () -> Boolean = { this.enabled || this.alwaysActive }, func: Executable) {
-        Executor.LimitedExecutor(delay, repeats, profileName, shouldRun, func).register()
+        LimitedExecutor(delay, repeats, profileName, shouldRun, func).register()
     }
 
     fun execute(delay: () -> Long, profileName: String = "${this.name} Executor", shouldRun: () -> Boolean = { this.enabled || this.alwaysActive }, func: Executable) {

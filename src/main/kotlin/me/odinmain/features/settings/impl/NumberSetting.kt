@@ -39,7 +39,7 @@ class NumberSetting<E>(
     max: Number = 10000,
     increment: Number = 1,
     hidden: Boolean = false,
-    description: String = "",
+    description: String,
     val unit: String = "",
 ) : Setting<E>(name, hidden, description), Saving, Setting.Renders where E : Number, E : Comparable<E> {
 

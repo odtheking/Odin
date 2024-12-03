@@ -37,8 +37,8 @@ object ArrowsDevice : Module(
 ) {
     private val solverDropdown by DropdownSetting("Solver")
     private val solver by BooleanSetting("Solver Enabled", default = true, description = "Automatically solve the puzzle.").withDependency { solverDropdown }
-    private val markedPositionColor by ColorSetting("Marked Position", color = Color.RED, description = "Color of the marked position.").withDependency { solver && solverDropdown }
-    private val targetPositionColor by ColorSetting("Target Position", color = Color.GREEN, description = "Color of the target position.").withDependency { solver && solverDropdown }
+    private val markedPositionColor by ColorSetting("Marked Position", Color.RED, description = "Color of the marked position.").withDependency { solver && solverDropdown }
+    private val targetPositionColor by ColorSetting("Target Position", Color.GREEN, description = "Color of the target position.").withDependency { solver && solverDropdown }
     private val resetKey by KeybindSetting("Reset", Keyboard.KEY_NONE, description = "Resets the solver.").onPress {
         markedPositions.clear()
         autoState = AutoState.Stopped

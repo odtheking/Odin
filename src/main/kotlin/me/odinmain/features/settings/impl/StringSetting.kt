@@ -34,7 +34,7 @@ class StringSetting(
     var length: Int = 20,
     private val placeholder: String = "",
     hidden: Boolean = false,
-    description: String = "",
+    description: String,
 ) : Setting<String>(name, hidden, description), Saving, Setting.Renders {
 
     override var value: String = default

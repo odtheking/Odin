@@ -6,7 +6,10 @@ import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import me.odinmain.OdinMain.logger
 import me.odinmain.features.impl.render.DevPlayers
-import java.io.*
+import java.io.BufferedReader
+import java.io.FileOutputStream
+import java.io.InputStreamReader
+import java.io.OutputStreamWriter
 import java.net.HttpURLConnection
 import java.net.URL
 
@@ -140,14 +143,3 @@ suspend fun hasBonusPaulScore(): Boolean = withTimeoutOrNull(5000) {
         mayor.getAsJsonArray("perks")?.any { it.asJsonObject.get("name")?.asString == "EZPZ" } == true
     } else false
 } == true
-
-fun setupConnection(url: String, userAgent: String, timeout: Int, useCaches: Boolean): InputStream {
-    val connection = URL(url).openConnection() as HttpURLConnection
-    connection.setRequestMethod("GET");
-    connection.setUseCaches(useCaches);
-    connection.addRequestProperty("User-Agent", userAgent);
-    connection.setReadTimeout(timeout);
-    connection.setConnectTimeout(timeout);
-    connection.setDoOutput(true);
-    return connection.inputStream
-}

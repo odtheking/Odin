@@ -33,7 +33,7 @@ class ColorSetting(
     name: String,
     color: Color,
     val allowAlpha: Boolean = true,
-    description: String = "",
+    description: String,
     hidden: Boolean = false
 ) : Setting<Color.HSB>(name, hidden, description), Saving, Setting.Renders {
 
