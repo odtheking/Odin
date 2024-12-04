@@ -154,7 +154,6 @@ object NVGRenderer : Renderer, Lwjgl3Wrapper by wrapper {
         nvgRGBA(0, 0, 0, 125, nvgColor)
         nvgRGBA(0, 0, 0, 0, nvgColor2)
 
-        //  TODO: fix gradient bug i have no clue why its doing that
         nvgBoxGradient(vg, x - spread, y - spread, width + 2 * spread, height + 2 * spread, tl + spread, blur, nvgColor, nvgColor2, nvgPaint)
         nvgBeginPath(vg)
         nvgRoundedRect(vg, x - spread - blur, y - spread - blur, width + 2 * spread + 2 * blur, height + 2 * spread + 2 * blur, tl + spread)

@@ -48,4 +48,7 @@ object Colors {
 
     @JvmField
     val MINECRAFT_YELLOW: Color = RGB(255, 255, 85)
+
+    @JvmField
+    val WHITE: Color = RGB(255, 255, 255)
 }

@@ -14,6 +14,7 @@ import me.odinmain.utils.skyblock.KuudraUtils
 import me.odinmain.utils.skyblock.KuudraUtils.kuudraEntity
 import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.PlayerUtils
+import me.odinmain.utils.ui.Colors
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
@@ -30,6 +31,24 @@ object KuudraDisplay : Module(
     private val healthSize by NumberSetting("Health Size", 0.3f, 0.1f, 1.0f, 0.1, description = "Size of the health display.").withDependency { kuudraHPDisplay }
     private val healthFormat by BooleanSetting("Health Format", true, description = "Format of the health display (true for Absolute, false for Percentage).").withDependency { kuudraHPDisplay }
     private val scaledHealth by BooleanSetting("Use Scaled", true, description = "Use scaled health display.").withDependency { kuudraHPDisplay }
+
+//    private val HUD by TextHUD("Kuudra Display") { color, font, shadow ->
+//        row {
+//            if (preview) text("4.35s", font, Color.RED).shadow = shadow
+//
+//            textSupplied(
+//                supplier = { getCurrentHealthDisplay().noControlCodes },
+//                color = getCurrentHealthColor(), font = font
+//            ).shadow = shadow
+//            text(when {
+//                kuudraHP <= 25000 && scaledHealth && LocationUtils.kuudraTier == 5 -> "300M "
+//                healthFormat -> "%"
+//                else -> "100k "
+//            } , font, Colors.MINECRAFT_GREEN).shadow = shadow
+//            text("❤", font, Colors.MINECRAFT_RED).shadow = shadow
+//        }
+//    }.setting(description = "Displays the kuudra's health.")
+
     /*private val hud by HudSetting("Health Display", 10f, 10f, 1f, true) {
         if (it) {
             mcText("§a99.975M/300M", 1f, 1f, 1, Color.WHITE, center = false)
@@ -75,6 +94,17 @@ object KuudraDisplay : Module(
         }
     }
 
+    private fun getCurrentHealthColor(): Color {
+        return when {
+            kuudraHP > 99000 -> Colors.MINECRAFT_DARK_GREEN
+            kuudraHP > 75000 -> Colors.MINECRAFT_GREEN
+            kuudraHP > 50000 -> Colors.MINECRAFT_YELLOW
+            kuudraHP > 25000 -> Colors.MINECRAFT_GOLD
+            kuudraHP > 10000 -> Colors.MINECRAFT_RED
+            else -> Colors.MINECRAFT_RED
+        }
+    }
+
     private fun getCurrentHealthDisplay(): String {
         val color = when {
             kuudraHP > 99000 -> "§a"
@@ -84,12 +114,11 @@ object KuudraDisplay : Module(
             kuudraHP > 10000 -> "§c"
             else -> "§4"
         }
-        val health = kuudraHP / 1000
-        val useScaled = kuudraHP <= 25000 && scaledHealth && LocationUtils.kuudraTier == 5
+        val health = kuudraHP / 1000f
 
         return when {
             // Scaled
-            useScaled -> "$color${(health * 12).round(2)}M§7/§a300M §c❤"
+            kuudraHP <= 25000 && scaledHealth && LocationUtils.kuudraTier == 5 -> "$color${(health * 12).round(2)}M§7/§a300M §c❤"
             // Percentage
             healthFormat -> "$color${health}§a% §c❤"
             // Exact

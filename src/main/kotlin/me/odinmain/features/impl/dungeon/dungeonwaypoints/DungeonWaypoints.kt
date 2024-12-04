@@ -1,6 +1,9 @@
 package me.odinmain.features.impl.dungeon.dungeonwaypoints
 
 import com.github.stivais.aurora.color.Color
+import com.github.stivais.aurora.utils.blue
+import com.github.stivais.aurora.utils.green
+import com.github.stivais.aurora.utils.red
 import com.github.stivais.aurora.utils.toHexString
 import me.odinmain.config.DungeonWaypointConfig
 import me.odinmain.events.impl.ClickEvent
@@ -263,7 +266,7 @@ object DungeonWaypoints : Module(
         if (allowTextEdit && mc.thePlayer?.isSneaking == true) {
             GuiSign.setCallback { enteredText ->
                 waypoints.removeIf { it.toVec3().equal(vec) }
-                waypoints.add(DungeonWaypoint(vec.xCoord, vec.yCoord, vec.zCoord, selectedColor.copy(), filled, !throughWalls, aabb, enteredText, type, timer))
+                waypoints.add(DungeonWaypoint(vec.xCoord, vec.yCoord, vec.zCoord, Color.RGB(selectedColor.red, selectedColor.green, selectedColor.blue), filled, !throughWalls, aabb, enteredText, type, timer))
                 DungeonWaypointConfig.saveConfig()
                 setWaypoints(room)
                 glList = -1
@@ -272,7 +275,7 @@ object DungeonWaypoints : Module(
         } else if (waypoints.removeIf { it.toVec3().equal(vec) }) {
             devMessage("Removed waypoint at $vec")
         } else {
-            waypoints.add(DungeonWaypoint(vec.xCoord, vec.yCoord, vec.zCoord, selectedColor.copy(), filled, !throughWalls, aabb, type = type, timer = timer))
+            waypoints.add(DungeonWaypoint(vec.xCoord, vec.yCoord, vec.zCoord, Color.RGB(selectedColor.red, selectedColor.green, selectedColor.blue), filled, !throughWalls, aabb, type = type, timer = timer))
             devMessage("Added waypoint at $vec")
         }
         DungeonWaypointConfig.saveConfig()

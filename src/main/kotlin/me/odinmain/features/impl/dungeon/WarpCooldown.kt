@@ -22,8 +22,8 @@ object WarpCooldown : Module (
     private val HUD by TextHUD("Warp HUD") { color, font, shadow ->
         needs { lastUpdate - System.currentTimeMillis() >= 0 }
         buildText(
-            string = "Warp",
-            supplier = { getString(preview) },
+            string = "Warp:",
+            supplier = { "${if (preview) "30" else (lastUpdate - System.currentTimeMillis()) / 1000}${if (showUnit) "s" else ""}" },
             font, color, Color.WHITE, shadow
         )
     }.registerSettings(::showUnit).setting(description = "Displays the cooldown.")
@@ -38,9 +38,5 @@ object WarpCooldown : Module (
         onMessage(Regex("^-*\\n\\[[^]]+] (\\w+) entered (?:MM )?\\w+ Catacombs, Floor (\\w+)!\\n-*$")) {
             warpTimer.updateCD()
         }
-    }
-
-    private fun getString(isPreview: Boolean): String {
-        return "${if (isPreview) "30" else (lastUpdate - System.currentTimeMillis()) / 1000}${if (showUnit) "s" else ""}"
     }
 }

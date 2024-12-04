@@ -23,6 +23,9 @@ import me.odinmain.utils.runIn
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.M7Phases
 import me.odinmain.utils.skyblock.modMessage
+import me.odinmain.utils.ui.Colors
+import me.odinmain.utils.ui.TextHUD
+import me.odinmain.utils.ui.buildText
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.server.*
 import net.minecraftforge.client.event.RenderWorldLastEvent
@@ -36,21 +39,14 @@ object WitherDragons : Module(
     private val dragonTimerDropDown by DropdownSetting("Dragon Timer Dropdown")
     private val dragonTimer by BooleanSetting("Dragon Timer", true, description = "Displays a timer for when M7 dragons spawn.").withDependency { dragonTimerDropDown }
     val addUselessDecimal by BooleanSetting("Add Useless Decimal", false, description = "Adds a decimal to the timer.").withDependency { dragonTimer && dragonTimerDropDown }
-    /*private val hud by HudSetting("Dragon Timer HUD", 10f, 10f, 1f, true) {
-        if (it) {
-            mcText("§5P §a4.5s", 2f, 5f, 1, Color.WHITE, center = false)
-            mcText("§cR §e1.2s", 2f, 20f, 1, Color.WHITE, center = false)
-
-            getMCTextWidth("§5P §a4.5s")+ 2f to 33f
-        } else {
-            if (!dragonTimer) return@HudSetting 0f to 0f
-            WitherDragonsEnum.entries.forEachIndexed { index, dragon ->
-                if (dragon.state != WitherDragonState.SPAWNING) return@forEachIndexed
-                mcText("§${dragon.colorCode}${dragon.name.first()}: ${colorDragonTimer(dragon.timeToSpawn)}${String.format(Locale.US, "%.2f", dragon.timeToSpawn / 20.0)}${if (addUselessDecimal) "0" else ""}", 2, 5f + (index - 1) * 15f, 1, Color.WHITE, center = false)
-            }
-            getMCTextWidth("§5P §a4.5s")+ 2f to 33f
-        }
-    }.withDependency { dragonTimer && dragonTimerDropDown }*/
+    private val HUD by TextHUD("Dragon Timer HUD") { color, font, shadow ->
+        needs { DungeonUtils.getF7Phase() == M7Phases.P5 }
+        buildText(
+            string = "${priorityDragon.name.first()}:",
+            supplier = { String.format(Locale.US, "%.2f", priorityDragon.timeToSpawn / 20.0) },
+            font = font, color1 = priorityDragon.color, color2 = getDragonTimerColor(priorityDragon.timeToSpawn), shadow = shadow
+        ).needs { priorityDragon != WitherDragonsEnum.None }
+    }.setting(description = "Displays the time until the next dragon spawns.")
 
     private val dragonBoxesDropDown by DropdownSetting("Dragon Boxes Dropdown")
     private val dragonBoxes by BooleanSetting("Dragon Boxes", true, description = "Displays boxes for where M7 dragons spawn.").withDependency { dragonBoxesDropDown }
@@ -88,11 +84,14 @@ object WitherDragons : Module(
     val relicSpawnTicks by NumberSetting("Relic Spawn Ticks", 42, 0, 100, description = "The amount of ticks for the relic to spawn.").withDependency {  relicDropDown }
     val cauldronHighlight by BooleanSetting("Cauldron Highlight", true, description = "Highlights the cauldron for held relic.").withDependency { relicDropDown }
 
-    /*private val relicHud by HudSetting("Relic Hud", 10f, 10f, 1f, true) {
-        if (it) return@HudSetting mcTextAndWidth("§3Relics: 4.30s", 2, 5f, 1, Color.WHITE, center = false) + 2f to 16f
-        if (DungeonUtils.getF7Phase() != M7Phases.P5 || KingRelics.relicTicksToSpawn <= 0) return@HudSetting 0f to 0f
-        mcTextAndWidth("§3Relics: ${String.format(Locale.US, "%.2f", KingRelics.relicTicksToSpawn / 20.0)}s", 2, 5f, 1, Color.WHITE, center = false) + 2f to 16f
-    }.withDependency { relicDropDown }*/
+    private val relicHud by TextHUD("Relic HUD") { color, font, shadow ->
+        needs { DungeonUtils.getF7Phase() == M7Phases.P5 }
+        buildText(
+            string = "Relic:",
+            supplier = { String.format(Locale.US, "%.2f", KingRelics.relicTicksToSpawn / 20.0) },
+            font = font, color1 = color, color2 = Colors.WHITE, shadow = shadow
+        ).needs { KingRelics.relicTicksToSpawn > 0 }
+    }.setting(description = "Displays the time until the next relic spawns.").withDependency { relicDropDown }
 
     var priorityDragon = WitherDragonsEnum.None
     var currentTick: Long = 0
@@ -194,6 +193,14 @@ object WitherDragons : Module(
             spawnTime <= 20 -> "§c"
             spawnTime <= 60 -> "§e"
             else -> "§a"
+        }
+    }
+
+    private fun getDragonTimerColor(spawnTime: Int): Color {
+        return when {
+            spawnTime <= 20 -> Color.GREEN
+            spawnTime <= 60 -> Colors.MINECRAFT_GOLD
+            else -> Color.RED
         }
     }
 

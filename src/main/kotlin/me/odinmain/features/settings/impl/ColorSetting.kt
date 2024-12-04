@@ -13,6 +13,7 @@ import com.github.stivais.aurora.elements.ElementScope
 import com.github.stivais.aurora.elements.Layout.Companion.section
 import com.github.stivais.aurora.elements.impl.Block.Companion.outline
 import com.github.stivais.aurora.elements.impl.Popup
+import com.github.stivais.aurora.elements.impl.Shadow
 import com.github.stivais.aurora.elements.impl.layout.Column.Companion.sectionRow
 import com.github.stivais.aurora.elements.impl.popup
 import com.github.stivais.aurora.renderer.data.Gradient
@@ -108,15 +109,12 @@ class ColorSetting(
             // when hovering of any part of the color picker.
             onClick { true }
 
-            // TODO: FIX in nanovg,
-            //  it wil be really funny if i come back here in half a year and it doesn't even work,
-            //  since i doubt ill be doing more stuff
-//        Shadow(
-//            copies(),
-//            blur = 5f,
-//            spread = 5f,
-//            radii = 10.radius(),
-//        ).add()
+            Shadow(
+                copies(),
+                blur = 5f,
+                spread = 5f,
+                radii = 10.radius(),
+            ).add()
 
             outline(
                 colorMaxBrightness,

@@ -1,31 +1,32 @@
 package me.odinmain.features.impl.render
 
+import com.github.stivais.aurora.color.Color
 import me.odinmain.events.impl.PacketEvent
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.utils.round
+import me.odinmain.utils.ui.Colors
+import me.odinmain.utils.ui.TextHUD
+import me.odinmain.utils.ui.buildText
 import net.minecraft.network.play.client.C07PacketPlayerDigging.Action.START_DESTROY_BLOCK
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
+import kotlin.math.roundToInt
 import net.minecraft.network.play.client.C07PacketPlayerDigging as PacketPlayerDigging
 
-// todo: Fix number going to infinity somehow
 object BPSDisplay : Module(
     name = "BPS Display",
     description = "Displays how many blocks you're breaking per second."
 ) {
     private val roundNumber by BooleanSetting("Round number", true, description = "If the number should be rounded.")
 
-//    private val hud by TextHUD("HUD") { color, font ->
-//        text(
-//            text = "BPS ",
-//            font = font,
-//            color = color,
-//            size = 30.px
-//        ) and text({ if (roundNumber) bps.roundToInt() else bps.round(1) }, font = font)
-//    }.registerSettings(
-//        ::roundNumber
-//    ).setting("Displays the BPS on screen.")
+    private val hud by TextHUD("HUD") { color, font, shadow ->
+        buildText(
+            string = "BPS:",
+            supplier = { if (roundNumber) bps.roundToInt() else bps.round(1) },
+            font, color, getBPSColor(), shadow
+        )
+    }.registerSettings(::roundNumber).setting("Displays the BPS on screen.")
 
     private var bps = 0.0
         get() = field.coerceIn(0.0, 20.0)
@@ -58,4 +59,13 @@ object BPSDisplay : Module(
             lastBrokenBlock = 0
         }
     }
+
+    val getBPSColor: () -> Color = {
+        when {
+            bps >= 20 -> Colors.MINECRAFT_GREEN
+            bps >= 15 -> Colors.MINECRAFT_YELLOW
+            bps >= 10 -> Colors.MINECRAFT_GOLD
+            bps >= 5 -> Colors.MINECRAFT_RED
+            else -> Colors.MINECRAFT_DARK_RED
+        } }
 }

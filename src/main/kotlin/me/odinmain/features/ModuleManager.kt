@@ -64,7 +64,7 @@ object ModuleManager {
 
         // kuudra
         BuildHelper, FreshTimer, KuudraDisplay, NoPre, PearlWaypoints, RemovePerks, SupplyHelper, TeamHighlight,
-        VanqNotifier, KuudraReminders, KuudraRequeue,
+        VanqNotifier, KuudraReminders, KuudraRequeue, EnrageDisplay
     )
 
     init {

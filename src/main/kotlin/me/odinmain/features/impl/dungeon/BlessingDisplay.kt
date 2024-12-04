@@ -50,7 +50,7 @@ object BlessingDisplay : Module(
                     string = blessing.displayString,
                     supplier = { if (preview) 19 else blessing.current },
                     font = getFont(font),
-                    color1  = color(), color2 = textColor,
+                    color1 = color(), color2 = textColor,
                     shadow
                 ).needs { blessing.current != 0 }
             }
