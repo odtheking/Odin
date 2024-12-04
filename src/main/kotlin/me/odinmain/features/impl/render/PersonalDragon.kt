@@ -31,7 +31,7 @@ object PersonalDragon : Module(
     private val vertical by NumberSetting(name = "Vertical", 0f, -10f, 10f, 0.1f, description = "The vertical offset of the dragon.")
     private val degrees by NumberSetting(name = "Degrees", 0f, -180f, 180f, 1f, description = "The degrees of the dragon.")
     private val animationSpeed by NumberSetting(name = "Animation Speed", 0.5f, 0.0f, 1f, 0.01f, description = "The speed of the dragon's animation.")
-    private val color by ColorSetting(name = "Color", color = Color.WHITE, description = "The color of the dragon.")
+    private val color by ColorSetting(name = "Color", Color.WHITE, description = "The color of the dragon.")
 
     var dragon: EntityDragon? = null
 
