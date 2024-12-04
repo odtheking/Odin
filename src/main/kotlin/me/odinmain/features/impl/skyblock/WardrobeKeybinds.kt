@@ -42,8 +42,8 @@ object WardrobeKeybinds : Module(
     private val clickCoolDown = Clock(delay)
 
     @SubscribeEvent
-    fun onGuiKeyPress(event: GuiScreenEvent.KeyboardInputEvent.Pre) {
-        if (!unequipKeybind.isDown() && !nextPageKeybind.isDown() && !previousPageKeybind.isDown() && wardrobes.none { it.isDown() }) return
+    fun onGuiScreenPress(event: GuiScreenEvent) {
+        if (event !is GuiScreenEvent.KeyboardInputEvent.Pre && event !is GuiScreenEvent.MouseInputEvent.Pre || !unequipKeybind.isDown() && !nextPageKeybind.isDown() && !previousPageKeybind.isDown() && wardrobes.none { it.isDown() }) return
         val chest = (event.gui as? GuiChest)?.inventorySlots as? ContainerChest ?: return
 
         val (current, total) = wardrobeRegex.find(chest.name)?.destructured ?: return

@@ -30,8 +30,8 @@ object DragonCheck {
 
     fun dragonSpawn(packet: S0FPacketSpawnMob) {
         WitherDragonsEnum.entries.find {
-            isVecInXZ(Vec3(packet.x / 32.0, packet.y / 32.0, packet.z / 32.0), it.boxesDimensions) && it.state == WitherDragonState.SPAWNING }
-            ?.setAlive(packet.entityID)
+            isVecInXZ(Vec3(packet.x / 32.0, packet.y / 32.0, packet.z / 32.0), it.boxesDimensions) && it.state == WitherDragonState.SPAWNING
+        }?.setAlive(packet.entityID)
     }
 
     fun dragonSprayed(packet: S04PacketEntityEquipment) {
@@ -42,18 +42,6 @@ object DragonCheck {
             if (dragon.isSprayed || dragon.state != WitherDragonState.ALIVE || dragon.entity == null || sprayedEntity.getDistanceToEntity(dragon.entity) > 8) return@forEach
             if (sendSpray) modMessage("§${dragon.colorCode}${dragon.name} §fdragon was sprayed in §c${(currentTick - dragon.spawnedTime)} §fticks.")
             dragon.isSprayed = true
-        }
-    }
-
-    fun onChatPacket() {
-        WitherDragonsEnum.entries.find { lastDragonDeath == it && lastDragonDeath != WitherDragonsEnum.None }?.let {
-            if (sendNotification && WitherDragons.enabled) modMessage("§${it.colorCode}${it.name} dragon counts.")
-        }
-    }
-
-    fun updateTime() {
-        WitherDragonsEnum.entries.forEach { dragon ->
-            if (dragon.state == WitherDragonState.SPAWNING && dragon.timeToSpawn > 0) dragon.timeToSpawn--
         }
     }
 }

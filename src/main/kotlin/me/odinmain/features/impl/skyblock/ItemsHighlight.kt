@@ -3,10 +3,15 @@ package me.odinmain.features.impl.skyblock
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.*
+import me.odinmain.features.settings.impl.BooleanSetting
+import me.odinmain.features.settings.impl.ColorSetting
+import me.odinmain.features.settings.impl.NumberSetting
+import me.odinmain.features.settings.impl.SelectorSetting
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.containsOneOf
-import me.odinmain.utils.render.*
+import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.HighlightRenderer
+import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.dungeonItemDrops
 import me.odinmain.utils.skyblock.getRarity
 import me.odinmain.utils.skyblock.lore
@@ -25,6 +30,7 @@ object ItemsHighlight : Module(
     private val depthCheck by BooleanSetting("Depth check", false, description = "Boxes show through walls.")
     private val colorList = arrayListOf("Rarity", "Distance", "Custom")
     private val colorStyle by SelectorSetting("Color Style", "Rarity", colorList, false, description = "Which color style to use.")
+    private val rarityAlpha by NumberSetting("Rarity Alpha", 1f, 0f, 1f, .1f, description = "The alpha of the rarity color.").withDependency { colorStyle == 0 }
     private val customColor by ColorSetting("Custom Color", Color.WHITE.withAlpha(1f), true, description = "The custom color to use.").withDependency { colorStyle == 2 }
 
     private var currentEntityItems = mutableSetOf<EntityItem>()
@@ -46,7 +52,7 @@ object ItemsHighlight : Module(
 
     private fun getEntityOutlineColor(entity: EntityItem): Color {
         return when (colorStyle){
-            0 -> getRarity(entity.entityItem.lore)?.color ?: Color.WHITE
+            0 -> getRarity(entity.entityItem.lore)?.color?.withAlpha(rarityAlpha) ?: Color.WHITE
             1 -> when {
                 entity.ticksExisted <= 11 -> Color.YELLOW
                 entity.getDistanceToEntity(mc.thePlayer) <= 3.5 -> Color.GREEN

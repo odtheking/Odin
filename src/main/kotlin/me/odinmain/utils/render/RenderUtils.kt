@@ -228,12 +228,10 @@ object RenderUtils {
         if (text.isBlank()) return
         GlStateManager.pushMatrix()
 
-        val xMultiplier = if (mc.gameSettings.thirdPersonView == 2) -1 else 1
-
         preDraw(false)
         GlStateManager.translate(vec3.xCoord, vec3.yCoord, vec3.zCoord)
         GlStateManager.rotate(-renderManager.playerViewY, 0.0f, 1.0f, 0.0f)
-        GlStateManager.rotate(renderManager.playerViewX * xMultiplier, 1.0f, 0.0f, 0.0f)
+        GlStateManager.rotate(renderManager.playerViewX * if (mc.gameSettings.thirdPersonView == 2) -1 else 1, 1.0f, 0.0f, 0.0f)
         GlStateManager.scale(-scale, -scale, scale)
 
         depth(depthTest)

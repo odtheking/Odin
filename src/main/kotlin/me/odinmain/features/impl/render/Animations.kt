@@ -2,13 +2,17 @@ package me.odinmain.features.impl.render
 
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.features.settings.impl.*
+import me.odinmain.features.settings.impl.ActionSetting
+import me.odinmain.features.settings.impl.BooleanSetting
+import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.skyblock.isHolding
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
-import kotlin.math.*
+import kotlin.math.exp
+import kotlin.math.sin
+import kotlin.math.sqrt
 
 /**
  * Parts taken from [Floppa Client](https://github.com/FloppaCoding/FloppaClient)
@@ -33,7 +37,7 @@ object Animations : Module(
     private val noTermSwing by BooleanSetting("No Terminator Swing", false, description = "Prevents your Terminator from swinging.")
 
     val reset by ActionSetting("Reset", description = "Resets the settings to their default values.") {
-        this.settings.forEach { it.reset() }
+        settings.forEach { it.reset() }
     }
 
     @JvmStatic

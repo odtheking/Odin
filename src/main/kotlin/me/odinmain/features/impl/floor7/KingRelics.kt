@@ -12,7 +12,7 @@ import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.util.Vec3
 
 object KingRelics {
-    var currentRelic = Relic.None
+    private var currentRelic = Relic.None
 
     enum class Relic (
         val id: String,

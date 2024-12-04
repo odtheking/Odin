@@ -30,7 +30,7 @@ object WarpCooldown : Module(
         }
     }
 
-    private var warpTimer = Clock(30000)
+    private var warpTimer = Clock(30_000L)
 
     init {
         onMessage(Regex("You were kicked while joining that server!"), { enabled && announceKick }) {

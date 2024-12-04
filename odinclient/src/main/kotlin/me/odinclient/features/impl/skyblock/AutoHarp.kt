@@ -30,9 +30,7 @@ object AutoHarp : Module(
 
     @SubscribeEvent
     fun onGuiOpen(event: GuiOpenEvent) {
-        if (!isInSkyblock) return
-        val inventorySlots = (event.gui as? GuiChest)?.inventorySlots ?: return
-        inHarp = inventorySlots.name.startsWith("Harp -")
+        if (isInSkyblock) inHarp = (event.gui as? GuiChest)?.inventorySlots?.name?.startsWith("Harp -") == true
     }
 
     @SubscribeEvent

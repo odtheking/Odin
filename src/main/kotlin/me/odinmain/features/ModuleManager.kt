@@ -1,11 +1,16 @@
 package me.odinmain.features
 
 import me.odinmain.OdinMain.mc
-import me.odinmain.events.impl.*
+import me.odinmain.events.impl.ChatPacketEvent
+import me.odinmain.events.impl.InputEvent
+import me.odinmain.events.impl.PacketEvent
+import me.odinmain.events.impl.ServerTickEvent
 import me.odinmain.features.impl.dungeon.*
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints
 import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers
-import me.odinmain.features.impl.floor7.*
+import me.odinmain.features.impl.floor7.TerminalSimulator
+import me.odinmain.features.impl.floor7.TickTimers
+import me.odinmain.features.impl.floor7.WitherDragons
 import me.odinmain.features.impl.floor7.p3.*
 import me.odinmain.features.impl.nether.*
 import me.odinmain.features.impl.render.*
@@ -61,7 +66,7 @@ object ModuleManager {
 
         //skyblock
         NoCursorReset, AutoSprint, BlazeAttunement, ChatCommands, DeployableTimer, DianaHelper, ArrowHit,
-        RagAxe, MobSpawn, Splits, WardrobeKeybinds, InvincibilityTimer, ItemsHighlight, PlayerDisplay,
+        RagnarokAxe, MobSpawn, Splits, WardrobeKeybinds, InvincibilityTimer, ItemsHighlight, PlayerDisplay,
         FarmKeys, PetKeybinds, CommandKeybinds, SpringBoots, AbilityTimers,
 
         // kuudra

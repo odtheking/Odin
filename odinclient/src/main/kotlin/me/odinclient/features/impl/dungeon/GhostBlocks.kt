@@ -9,14 +9,11 @@ import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.rangeAdd
 import me.odinmain.utils.runIn
-import me.odinmain.utils.skyblock.LocationUtils
+import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.WITHER_ESSENCE_ID
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.getF7Phase
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.inDungeons
-import me.odinmain.utils.skyblock.getBlockAt
-import me.odinmain.utils.skyblock.getItemSlot
-import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.block.state.IBlockState
 import net.minecraft.enchantment.Enchantment
 import net.minecraft.init.Blocks
@@ -181,9 +178,8 @@ object GhostBlocks : Module(
     // TODO: MAKE THIS JSON PLS ITS SO BAD
     private val enderChests = mapOf(
         1 to arrayOf(
+            BlockPos(69, 221, 37),
             BlockPos(69, 221, 36),
-            BlockPos(69, 221, 35),
-            BlockPos(69, 221, 34)
         ),
         2 to arrayOf(
             BlockPos(101, 169, 46),
@@ -310,7 +306,7 @@ object GhostBlocks : Module(
     )
 
 
-    private val toggleKeybind: Keybinding by KeybindSetting("Toggle Module", Keyboard.KEY_NONE, description = "Keybind to toggle the module on/ off.").onPress {
+    private val toggleKeybind: Keybinding by KeybindSetting("Toggle Module", Keyboard.KEY_NONE, description = "Keybind to toggle the module on/off.").onPress {
         this.onKeybind()
     }
 }

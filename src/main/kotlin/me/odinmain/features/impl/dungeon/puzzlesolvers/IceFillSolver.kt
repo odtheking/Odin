@@ -77,10 +77,10 @@ object IceFillSolver {
 
     private fun transform(x: Int, z: Int, rotation: Rotations): Vec2 {
         return when (rotation) {
-            Rotations.NORTH -> Vec2(z, -x)
-            Rotations.WEST -> Vec2(-x, -z)
-            Rotations.SOUTH -> Vec2(-z, x)
-            Rotations.EAST -> Vec2(x, z)
+            Rotations.NORTH -> Vec2(z, -x) // east
+            Rotations.WEST -> Vec2(-x, -z) // north
+            Rotations.SOUTH -> Vec2(-z, x) // west
+            Rotations.EAST -> Vec2(x, z) // south
             else -> Vec2(x, z)
         }
     }

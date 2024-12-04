@@ -1,22 +1,29 @@
 package me.odinmain.features.impl.render
 
 
-import com.google.gson.*
-import kotlinx.coroutines.*
+import com.google.gson.GsonBuilder
+import com.google.gson.JsonDeserializationContext
+import com.google.gson.JsonDeserializer
+import com.google.gson.JsonElement
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.runBlocking
 import me.odinmain.OdinMain.mc
 import me.odinmain.OdinMain.scope
 import me.odinmain.features.impl.render.ClickGUIModule.devSize
 import me.odinmain.utils.getDataFromServer
-import me.odinmain.utils.render.*
+import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.translate
 import net.minecraft.client.entity.AbstractClientPlayer
-import net.minecraft.client.model.*
+import net.minecraft.client.model.ModelBase
+import net.minecraft.client.model.ModelRenderer
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.client.event.RenderPlayerEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.lang.reflect.Type
-import kotlin.math.*
+import kotlin.math.cos
+import kotlin.math.sin
 
 object DevPlayers {
     private var devs: HashMap<String, DevPlayer> = HashMap()
@@ -79,8 +86,8 @@ object DevPlayers {
         if (!devs.containsKey(entityLivingBaseIn.name)) return
         if (!devSize && entityLivingBaseIn.name == mc.thePlayer.name) return
         val dev = devs[entityLivingBaseIn.name] ?: return
-        scale(dev.xScale, dev.yScale, dev.zScale)
-        if (dev.yScale < 0) translate(0f, dev.yScale * -2, 0f)
+        GlStateManager.scale(dev.xScale, dev.yScale, dev.zScale)
+        if (dev.yScale < 0) GlStateManager.translate(0f, dev.yScale * -2, 0f)
     }
 
     @SubscribeEvent

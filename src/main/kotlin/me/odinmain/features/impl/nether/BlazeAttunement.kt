@@ -44,11 +44,10 @@ object BlazeAttunement : Module(
                     else -> return@forEach
                 }.withAlpha(.4f)
 
-                val entities =
-                    mc.theWorld?.getEntitiesWithinAABBExcludingEntity(entity, entity.entityBoundingBox.offset(0.0, -1.0, 0.0))
+                val entities = mc.theWorld?.getEntitiesWithinAABBExcludingEntity(entity, entity.entityBoundingBox.offset(0.0, -1.0, 0.0))
                         ?.filter { it is EntityBlaze || it is EntitySkeleton || it is EntityPigZombie }
-                        ?.sortedByDescending { xzDistance(it, entity) } ?: return@execute
-                if (entities.isEmpty()) return@forEach
+                        ?.sortedByDescending { xzDistance(it, entity) }
+                        ?.takeIf { it.isNotEmpty() } ?: return@execute
                 currentBlazes[entities.first()] = color
             }
         }
@@ -57,12 +56,11 @@ object BlazeAttunement : Module(
     @SubscribeEvent
     fun onRenderEntityModel(event: RenderEntityModelEvent) {
         val color = currentBlazes[event.entity] ?: return
-
         OutlineUtils.outlineEntity(event, color, thickness)
     }
 
     @JvmStatic
-    fun changeBlazeColor(entity: Entity) {
+    fun changeModelColor(entity: Entity) {
         if (!enabled || currentBlazes.isEmpty() || !overlay) return
         val color = currentBlazes[entity] ?: return
         GlStateManager.disableTexture2D()
@@ -72,24 +70,7 @@ object BlazeAttunement : Module(
     }
 
     @JvmStatic
-    fun renderModelBlazePost() {
-        if (!enabled || currentBlazes.isEmpty() || !overlay) return
-        GlStateManager.disableBlend()
-        GlStateManager.enableTexture2D()
-    }
-
-    @JvmStatic
-    fun changeBipedColor(entity: Entity) {
-        if (!enabled || currentBlazes.isEmpty() || !overlay) return
-        val color = currentBlazes[entity] ?: return
-        GlStateManager.disableTexture2D()
-        GlStateManager.enableBlend()
-        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
-        color.bind()
-    }
-
-    @JvmStatic
-    fun renderModelBipedPost() {
+    fun renderModelPost() {
         if (!enabled || currentBlazes.isEmpty() || !overlay) return
         GlStateManager.disableBlend()
         GlStateManager.enableTexture2D()

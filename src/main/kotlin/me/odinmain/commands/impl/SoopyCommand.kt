@@ -1,6 +1,9 @@
 package me.odinmain.commands.impl
 
-import kotlinx.coroutines.*
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeout
 import me.odinmain.OdinMain.mc
 import me.odinmain.OdinMain.scope
 import me.odinmain.commands.commodore
@@ -25,16 +28,11 @@ val soopyCommand = commodore("soopycmd", "spcmd", "spc") {
 
     runs { command: String, user: String? ->
         if (!commands.contains(command)) return@runs modMessage("Invalid Usage. Usage:\n /spcmd <command> <player>\n /spcmd help")
-        val targetUser = user ?: mc.thePlayer.name
-        val url = "https://soopy.dev/api/soopyv2/botcommand?m=$command&u=$targetUser"
 
         modMessage("Running command...")
         scope.launch {
             try {
-                val result = withTimeout(5000) {
-                    fetchURLData(url)
-                }
-                modMessage(result)
+                modMessage(withTimeout(5000) { fetchURLData("https://soopy.dev/api/soopyv2/botcommand?m=$command&u=${user ?: mc.thePlayer.name}") })
             } catch (_: TimeoutCancellationException) {
                 modMessage("Request timed out")
             } catch (e: Exception) {
