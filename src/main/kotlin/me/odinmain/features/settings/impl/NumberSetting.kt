@@ -64,10 +64,11 @@ class NumberSetting<E>(
     override fun ElementScope<*>.create() = setting(45.px) {
 
         var shouldAnimate = false
+        var init = false
         val sliderWidth = Animatable.Raw(0f)
 
         onAdd {
-            this@create.element.size()
+            this@create.element.parent?.size()
             val to = getPercent() * element.width
             sliderWidth.to(to)
         }

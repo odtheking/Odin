@@ -108,7 +108,9 @@ class ColorSetting(
             // when hovering of any part of the color picker.
             onClick { true }
 
-            // TODO: FIX
+            // TODO: FIX in nanovg,
+            //  it wil be really funny if i come back here in half a year and it doesn't even work,
+            //  since i doubt ill be doing more stuff
 //        Shadow(
 //            copies(),
 //            blur = 5f,
