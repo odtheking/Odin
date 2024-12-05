@@ -3,12 +3,18 @@ package me.odinmain.features.impl.nether
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.*
+import me.odinmain.features.settings.impl.BooleanSetting
+import me.odinmain.features.settings.impl.ColorSetting
+import me.odinmain.features.settings.impl.HudSetting
 import me.odinmain.font.OdinFont
-import me.odinmain.utils.render.*
+import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.getTextWidth
+import me.odinmain.utils.render.text
 import me.odinmain.utils.round
 import me.odinmain.utils.runIn
-import me.odinmain.utils.skyblock.*
+import me.odinmain.utils.skyblock.KuudraUtils
+import me.odinmain.utils.skyblock.modMessage
+import me.odinmain.utils.skyblock.partyMessage
 
 object FreshTimer : Module(
     name = "Fresh Timer",
@@ -25,8 +31,7 @@ object FreshTimer : Module(
             getTextWidth("Fresh: 10s", 12f) + 2f to 16f
         } else {
             val player = KuudraUtils.kuudraTeammates.find { teammate -> teammate.playerName == mc.thePlayer.name } ?: return@HudSetting 0f to 0f
-            val timeLeft = 10000L - (System.currentTimeMillis() - player.eatFreshTime)
-            if (timeLeft <= 0) return@HudSetting 0f to 0f
+            val timeLeft = (10000L - (System.currentTimeMillis() - player.eatFreshTime)).takeIf { it > 0 } ?: return@HudSetting 0f to 0f
             if (player.eatFresh && KuudraUtils.phase == 2)
                 text("Fresh§f: ${(timeLeft / 1000.0).round(2)}s", 1f, 9f, freshTimerHUDColor,12f, OdinFont.REGULAR, shadow = true)
 
@@ -37,14 +42,14 @@ object FreshTimer : Module(
     init {
         onMessage(Regex("Your Fresh Tools Perk bonus doubles your building speed for the next 10 seconds!")) {
             val teammate = KuudraUtils.kuudraTeammates.find { it.playerName == mc.thePlayer.name } ?: return@onMessage
-            teammate.eatFresh = true
             teammate.eatFreshTime = System.currentTimeMillis()
+            teammate.eatFresh = true
             if (notifyFresh) modMessage("Fresh tools has been activated")
+            if (notifyFresh) partyMessage("FRESH")
             runIn(200) {
                 if (notifyFresh) modMessage("Fresh tools has expired")
                 teammate.eatFresh = false
             }
-            if (notifyFresh) partyMessage("FRESH")
         }
     }
 }

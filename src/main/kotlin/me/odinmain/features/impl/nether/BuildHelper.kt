@@ -3,7 +3,10 @@ package me.odinmain.features.impl.nether
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.*
+import me.odinmain.features.settings.impl.BooleanSetting
+import me.odinmain.features.settings.impl.ColorSetting
+import me.odinmain.features.settings.impl.HudSetting
+import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.font.OdinFont
 import me.odinmain.utils.addVec
 import me.odinmain.utils.render.Color
@@ -42,7 +45,7 @@ object BuildHelper : Module(
         }
     }
     private val stunNotification by BooleanSetting("Stun Notification", true, description = "Notifies you when to go to stun.")
-    private val stunNotificationNumber: Int by NumberSetting("Stun Percent", 93, 0.0, 100.0, description = "The build % to notify at.", unit = "%").withDependency { stunNotification }
+    private val stunNotificationNumber by NumberSetting("Stun Percent", 93, 0.0, 100.0, description = "The build % to notify at.", unit = "%").withDependency { stunNotification }
 
     @SubscribeEvent
     fun renderWorldEvent(event: RenderWorldLastEvent) {
@@ -55,13 +58,9 @@ object BuildHelper : Module(
             Renderer.drawStringInWorld("Builders ${colorBuilders(KuudraUtils.playersBuildingAmount)}", Vec3(-101.5, 81.0, -105.5), buildHelperColor, depth = false, scale = 0.15f)
 
         if (unfinishedWaypoints)
-            renderUnfinishedWaypoints()
-    }
-
-    private fun renderUnfinishedWaypoints() {
-        KuudraUtils.buildingPiles.forEach {
-            Renderer.drawCustomBeacon(it.name, it.positionVector.addVec(0.5), Color.DARK_RED, true, increase = false, noFade = !fadeWaypoints, distance = false)
-        }
+            KuudraUtils.buildingPiles.forEach {
+                Renderer.drawCustomBeacon(it.name, it.positionVector.addVec(0.5), Color.DARK_RED, true, increase = false, noFade = !fadeWaypoints, distance = false)
+            }
     }
 
     private fun colorBuild(build: Int): String {

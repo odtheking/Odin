@@ -147,7 +147,7 @@ object WitherDragons : Module(
         }
         if (dragonTimer) {
             WitherDragonsEnum.entries.forEach { dragon ->
-                if (dragon.state == WitherDragonState.SPAWNING)  Renderer.drawStringInWorld(
+                if (dragon.state == WitherDragonState.SPAWNING) Renderer.drawStringInWorld(
                     "§${dragon.colorCode}${dragon.name.first()}: ${colorDragonTimer(dragon.timeToSpawn)}${String.format(Locale.US, "%.2f", dragon.timeToSpawn / 20.0)}${if (addUselessDecimal) "0" else ""}", dragon.spawnPos,
                     color = Color.WHITE, depth = false, scale = 0.16f
                 )

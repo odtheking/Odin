@@ -9,7 +9,6 @@ import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.name
 import me.odinmain.utils.skyblock.unformattedName
 import net.minecraft.client.gui.inventory.GuiChest
-import net.minecraft.inventory.ContainerChest
 import net.minecraftforge.client.event.GuiScreenEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.input.Mouse
@@ -23,8 +22,7 @@ object RemovePerks : Module(
 
     @SubscribeEvent
     fun renderSlot(event: GuiEvent.DrawSlotEvent) {
-        if (event.gui.inventorySlots?.name == "Perk Menu" && slotCheck(event.slot.stack?.unformattedName ?: return))
-            event.isCanceled = true
+        if (event.gui.inventorySlots?.name == "Perk Menu" && slotCheck(event.slot.stack?.unformattedName ?: return)) event.isCanceled = true
     }
 
     @SubscribeEvent
