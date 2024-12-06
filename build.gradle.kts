@@ -1,3 +1,5 @@
+import dev.architectury.pack200.java.Pack200Adapter
+
 plugins {
     idea
     java
@@ -51,5 +53,9 @@ allprojects {
 
         java.toolchain.languageVersion.set(JavaLanguageVersion.of(8))
         kotlin.jvmToolchain(8)
+    }
+
+    loom {
+        forge.pack200Provider.set(Pack200Adapter())
     }
 }

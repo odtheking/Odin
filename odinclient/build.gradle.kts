@@ -1,4 +1,3 @@
-import dev.architectury.pack200.java.Pack200Adapter
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group = "me.odinclient"
@@ -21,7 +20,6 @@ loom {
         }
     }
     forge {
-        pack200Provider.set(Pack200Adapter())
         mixinConfig("mixins.odinclient.json")
     }
     @Suppress("UnstableApiUsage")
