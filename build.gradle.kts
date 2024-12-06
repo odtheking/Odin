@@ -45,17 +45,17 @@ allprojects {
 
         implementation("gg.essential:loader-launchwrapper:1.1.3")
         compileOnly("gg.essential:essential-1.8.9-forge:12132+g6e2bf4dc5")
-
-        sourceSets.main {
-            java.srcDir(file("$projectDir/src/main/kotlin"))
-            output.setResourcesDir(sourceSets.main.flatMap { it.java.classesDirectory })
-        }
-
-        java.toolchain.languageVersion.set(JavaLanguageVersion.of(8))
-        kotlin.jvmToolchain(8)
     }
 
     loom {
         forge.pack200Provider.set(Pack200Adapter())
     }
+
+    sourceSets.main {
+        java.srcDir(file("$projectDir/src/main/kotlin"))
+        output.setResourcesDir(sourceSets.main.flatMap { it.java.classesDirectory })
+    }
+
+    java.toolchain.languageVersion.set(JavaLanguageVersion.of(8))
+    kotlin.jvmToolchain(8)
 }

@@ -31,7 +31,7 @@ tasks {
         inputs.property("version", version)
 
         filesMatching("mcmod.info") {
-            expand(mapOf("version" to version))
+            expand(inputs.properties)
         }
         dependsOn(compileJava)
     }
@@ -50,14 +50,14 @@ tasks {
     }
 
     remapJar {
-        archiveBaseName = "OdinClient"
-        input = shadowJar.get().archiveFile
+        archiveBaseName.set("OdinClient")
+        input.set(shadowJar.get().archiveFile)
     }
 
     shadowJar {
         destinationDirectory.set(layout.buildDirectory.dir("archiveJars"))
-        archiveBaseName = "OdinClient"
-        archiveClassifier = "dev"
+        archiveBaseName.set("Odin")
+        archiveClassifier.set("dev")
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
         configurations = listOf(shadowImpl)
         mergeServiceFiles()

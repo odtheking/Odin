@@ -31,7 +31,7 @@ tasks {
         inputs.property("version", version)
 
         filesMatching("mcmod.info") {
-            expand(mapOf("version" to version))
+            expand(inputs.properties)
         }
         dependsOn(compileJava)
     }
