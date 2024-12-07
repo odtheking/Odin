@@ -43,7 +43,7 @@ object WardrobeKeybinds : Module(
 
     @SubscribeEvent
     fun onGuiScreenPress(event: GuiScreenEvent) {
-        if (event !is GuiScreenEvent.KeyboardInputEvent.Pre && event !is GuiScreenEvent.MouseInputEvent.Pre || !unequipKeybind.isDown() && !nextPageKeybind.isDown() && !previousPageKeybind.isDown() && wardrobes.none { it.isDown() }) return
+        if ((event !is GuiScreenEvent.KeyboardInputEvent.Pre && event !is GuiScreenEvent.MouseInputEvent.Pre) || !unequipKeybind.isDown() && !nextPageKeybind.isDown() && !previousPageKeybind.isDown() && wardrobes.none { it.isDown() }) return
         val chest = (event.gui as? GuiChest)?.inventorySlots as? ContainerChest ?: return
 
         val (current, total) = wardrobeRegex.find(chest.name)?.destructured ?: return

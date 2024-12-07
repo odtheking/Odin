@@ -88,9 +88,7 @@ object KuudraDisplay : Module(
                 kuudraPos.zCoord > -84 -> "§a§lFRONT"
                 kuudraPos.zCoord < -132 -> "§4§lBACK"
                 else -> null
-            }?.let {
-                PlayerUtils.alert(it, playSound = false)
-            }
+            }?.let { PlayerUtils.alert(it, playSound = false) }
         }
     }
 

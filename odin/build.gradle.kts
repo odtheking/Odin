@@ -1,4 +1,3 @@
-import dev.architectury.pack200.java.Pack200Adapter
 import org.apache.commons.lang3.SystemUtils
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
@@ -28,7 +27,6 @@ loom {
         remove(getByName("server"))
     }
     forge {
-        pack200Provider.set(Pack200Adapter())
         mixinConfig("mixins.odin.json")
     }
     @Suppress("UnstableApiUsage")
@@ -40,7 +38,7 @@ tasks {
         inputs.property("version", version)
 
         filesMatching("mcmod.info") {
-            expand(mapOf("version" to version))
+            expand(inputs.properties)
         }
         dependsOn(compileJava)
     }

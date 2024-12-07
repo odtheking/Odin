@@ -1,3 +1,5 @@
+import dev.architectury.pack200.java.Pack200Adapter
+
 plugins {
     idea
     java
@@ -39,9 +41,7 @@ allprojects {
         implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0-RC")
 
         compileOnly("com.github.NotEnoughUpdates:NotEnoughUpdates:2.4.0:all")
-        implementation("com.github.Stivais:Commodore:3f4a14b1cf") {
-            exclude(module = "kotlin-stdlib-jdk8")
-        }
+        implementation("com.github.Stivais:Commodore:3f4a14b1cf")
 
         annotationProcessor("org.spongepowered:mixin:0.8.5-SNAPSHOT")
         implementation("org.spongepowered:mixin:0.7.11-SNAPSHOT") { isTransitive = false }
@@ -51,13 +51,17 @@ allprojects {
         implementation("com.github.stivais:AuroraUI:f41a1e07c2")
 
         implementation("com.github.odtheking:odin-lwjgl:e50f062233")
-
-        sourceSets.main {
-            java.srcDir(file("$projectDir/src/main/kotlin"))
-            output.setResourcesDir(sourceSets.main.flatMap { it.java.classesDirectory })
-        }
-
-        java.toolchain.languageVersion.set(JavaLanguageVersion.of(8))
-        kotlin.jvmToolchain(8)
     }
+
+    loom {
+        forge.pack200Provider.set(Pack200Adapter())
+    }
+
+    sourceSets.main {
+        java.srcDir(file("$projectDir/src/main/kotlin"))
+        output.setResourcesDir(sourceSets.main.flatMap { it.java.classesDirectory })
+    }
+
+    java.toolchain.languageVersion.set(JavaLanguageVersion.of(8))
+    kotlin.jvmToolchain(8)
 }

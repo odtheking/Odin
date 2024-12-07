@@ -20,8 +20,7 @@ object RemovePerks : Module(
 
     @SubscribeEvent
     fun renderSlot(event: GuiEvent.DrawSlotEvent) {
-        if (event.gui.inventorySlots?.name == "Perk Menu" && slotCheck(event.slot.stack?.unformattedName ?: return))
-            event.isCanceled = true
+        if (event.gui.inventorySlots?.name == "Perk Menu" && slotCheck(event.slot.stack?.unformattedName ?: return)) event.isCanceled = true
     }
 
     @SubscribeEvent
