@@ -109,7 +109,7 @@ object RenderUtils2D {
 
     fun drawNameTag(vec3: Vec3, name: String, color: Color) {
         worldToScreenPosition(vec3)?.let { pos ->
-            NVGRenderer.text(name, pos.xCoord.toFloat(), pos.yCoord.toFloat(), 1f, color.rgba, mcFont)
+            //NVGRenderer.text(name, pos.xCoord.toFloat(), pos.yCoord.toFloat(), 1f, color.rgba, mcFont)
         }
     }
 

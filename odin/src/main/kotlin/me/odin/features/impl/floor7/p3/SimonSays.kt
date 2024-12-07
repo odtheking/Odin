@@ -1,7 +1,7 @@
 package me.odin.features.impl.floor7.p3
 
-import com.github.stivais.ui.color.Color
-import com.github.stivais.ui.color.withAlpha
+import com.github.stivais.aurora.color.Color
+import com.github.stivais.aurora.utils.withAlpha
 import me.odinmain.events.impl.BlockChangeEvent
 import me.odinmain.events.impl.PostEntityMetadata
 import me.odinmain.features.Module
