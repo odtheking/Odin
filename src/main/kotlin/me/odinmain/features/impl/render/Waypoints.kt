@@ -28,7 +28,7 @@ object Waypoints : Module(
         if (!pingLocationToggle) return@onPress
         EtherWarpHelper.getEtherPos(PositionLook(mc.thePlayer.renderVec, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch), pingDistance).pos?.let { pos ->
             val position = pos.addVec(0.5, 0.5, 0.5)
-            WaypointManager.addTempWaypoint(x = position.x.toInt(), y = position.y.toInt(), z = position.z.toInt(), time = pingWaypointTime)
+            WaypointManager.addTempWaypoint(x = position.x, y = position.y, z = position.z, time = pingWaypointTime)
             if (sendPingedLocation) sendCommand("odinwaypoint share ${position.x} ${position.y} ${position.z}", true)
         }
     }.withDependency { pingLocationToggle && pingLocationDropDown }

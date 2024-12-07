@@ -52,17 +52,20 @@ object SupplyHelper : Module(
     @SubscribeEvent
     fun onWorldRender(event: RenderWorldLastEvent) {
         if (!KuudraUtils.inKuudra || KuudraUtils.phase != 1) return
-        if (supplyDropWaypoints) renderDropLocations()
-        if (suppliesWaypoints) renderSupplyWaypoints()
-    }
+        if (supplyDropWaypoints) {
+            locations.forEachIndexed { index, (position, name) ->
+                if (!KuudraUtils.supplies[index]) return@forEachIndexed
+                Renderer.drawCustomBeacon("", position, if (missing == name) Color.GREEN else Color.RED, increase = false)
+            }
+        }
 
-    private fun renderSupplyWaypoints() {
-        KuudraUtils.giantZombies.forEach {
-            Renderer.drawCustomBeacon("Supply",
-                Vec3(it.posX + (3.7 * cos((it.rotationYaw + 130) * (Math.PI / 180))), 73.0, it.posZ + (3.7 * sin((it.rotationYaw + 130) * (Math.PI / 180)))), supplyWaypointColor, increase = false)
+        if (suppliesWaypoints) {
+            KuudraUtils.giantZombies.forEach {
+                Renderer.drawCustomBeacon("Supply",
+                    Vec3(it.posX + (3.7 * cos((it.rotationYaw + 130) * (Math.PI / 180))), 73.0, it.posZ + (3.7 * sin((it.rotationYaw + 130) * (Math.PI / 180)))), supplyWaypointColor, increase = false)
+            }
         }
     }
-
     private val locations = listOf(
         Pair(Vec3(-98.0, 78.0, -112.0), SupplyPickUpSpot.Shop),
         Pair(Vec3(-98.0, 78.0, -99.0), SupplyPickUpSpot.Equals),
@@ -71,11 +74,4 @@ object SupplyHelper : Module(
         Pair(Vec3(-94.0, 78.0, -106.0), SupplyPickUpSpot.Triangle),
         Pair(Vec3(-106.0, 78.0, -99.0), SupplyPickUpSpot.Slash),
     )
-
-    private fun renderDropLocations() {
-        locations.forEachIndexed { index, (position, name) ->
-            if (!KuudraUtils.supplies[index]) return@forEachIndexed
-            Renderer.drawCustomBeacon("", position, if (missing == name) Color.GREEN else Color.RED, increase = false)
-        }
-    }
 }

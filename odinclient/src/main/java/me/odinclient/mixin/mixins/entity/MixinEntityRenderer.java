@@ -34,42 +34,33 @@ abstract public class MixinEntityRenderer implements IResourceManagerReloadListe
 
     @Redirect(method = "updateCameraAndRender", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/EntityPlayerSP;setAngles(FF)V"))
     private void lockPlayerLooking(EntityPlayerSP instance, float x, float y) {
-        if (!Camera.INSTANCE.getFreelookToggled()) instance.setAngles(x, y);
+        if (!Camera.getFreelookToggled()) instance.setAngles(x, y);
     }
 
     @Inject(method = "updateCameraAndRender", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/EntityPlayerSP;setAngles(FF)V", ordinal = 1), locals = LocalCapture.CAPTURE_FAILSOFT)
     private void updateCameraAndRender(float partialTicks, long nanoTime, CallbackInfo ci, boolean flag, float f, float f1, float f2, float f3) {
-        if (Camera.INSTANCE.getEnabled()) Camera.INSTANCE.updateCameraAndRender(f2, f3);
+        if (Camera.INSTANCE.getEnabled()) Camera.updateCameraAndRender(f2, f3);
     }
-
-    @Shadow private Minecraft mc;
 
     @Redirect(method = "orientCamera", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GlStateManager;translate(FFF)V", ordinal = 2))
     public void orientCamera(float x, float y, float z, float partialTicks){
-        if (Camera.INSTANCE.getFreelookToggled()) {
-            GlStateManager.translate(
-                    0.0F, 0.0F, -Camera.INSTANCE.calculateCameraDistance(
-                    RenderUtils.INSTANCE.getRenderX(mc.thePlayer),
-                    RenderUtils.INSTANCE.getRenderY(mc.thePlayer) + VecUtilsKt.fastEyeHeight(),
-                    RenderUtils.INSTANCE.getRenderZ(mc.thePlayer),
-                    Camera.INSTANCE.getCameraDistance())
-            );
-        } else GlStateManager.translate(x, y, z);
+        if (Camera.getFreelookToggled()) GlStateManager.translate(0.0F, 0.0F, -Camera.calculateCameraDistance());
+        else GlStateManager.translate(x, y, z);
     }
 
     @Redirect(method = {"orientCamera"}, at = @At(value = "FIELD", target = "Lnet/minecraft/client/renderer/EntityRenderer;thirdPersonDistance:F"))
     public float tweakThirdPersonDistance(EntityRenderer instance) {
-        return Camera.INSTANCE.getCameraDistance();
+        return Camera.getCameraDistance();
     }
 
     @Redirect(method = {"orientCamera"}, at = @At(value = "FIELD", target = "Lnet/minecraft/client/renderer/EntityRenderer;thirdPersonDistanceTemp:F"))
     public float tweakThirdPersonDistanceTemp(EntityRenderer instance) {
-        return Camera.INSTANCE.getCameraDistance();
+        return Camera.getCameraDistance();
     }
 
     @ModifyConstant(method = "orientCamera", constant = @Constant(intValue = 8))
     public int cameraClip(int constant) {
-        return Camera.INSTANCE.getCameraClipEnabled() ? 0: constant;
+        return Camera.getCameraClipEnabled() ? 0: constant;
     }
 
     @Inject(method = "hurtCameraEffect", at = @At("HEAD"), cancellable = true)

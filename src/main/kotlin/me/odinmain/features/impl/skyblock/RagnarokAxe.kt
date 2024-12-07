@@ -26,8 +26,8 @@ object RagnarokAxe : Module(
             if (it.soundName != "mob.wolf.howl" || it.pitch != 1.4920635f || !isHolding("RAGNAROCK_AXE")) return@onPacket
             if (alert) PlayerUtils.alert("§aCasted Rag Axe")
             val strengthGain = ((mc.thePlayer?.heldItem?.getSBStrength ?: return@onPacket) * 1.5).toInt()
-            if (strengthGainedMessage) modMessage("Gained strength: $strengthGain")
-            if (announceStrengthGained) partyMessage("Gained strength from rag axe: $strengthGain")
+            if (strengthGainedMessage) modMessage("§7Gained strength: §4$strengthGain")
+            if (announceStrengthGained) partyMessage("Gained strength from RagnarokAxe: $strengthGain")
         }
     }
 }

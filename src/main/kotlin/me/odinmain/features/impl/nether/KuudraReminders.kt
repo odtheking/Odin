@@ -28,10 +28,10 @@ object KuudraReminders : Module(
     private data class Reminder(val regex: Regex, val shouldRun: Boolean, val alert: String)
     private val reminders = listOf(
         Reminder(Regex("WARNING: You do not have a key for this tier in your inventory, you will not be able to claim rewards."), keyReminder, "No key in inventory"),
-        Reminder(Regex("\\[NPC] Elle: Okay adventurers, I will go and fish up Kuudra!"), buyUpgrades, "No key in inventory"),
-        Reminder(Regex("\\[NPC] Elle: Not again!"), pickUpSupplies, "No key in inventory"),
+        Reminder(Regex("Your Fresh Tools Perk bonus doubles your building speed for the next 10 seconds!"), freshTools, "No key in inventory"),
         Reminder(Regex("\\[NPC] Elle: It's time to build the Ballista again! Cover me!"), buildBallista, "No key in inventory"),
-        Reminder(Regex("Your Fresh Tools Perk bonus doubles your building speed for the next 10 seconds!"), freshTools, "No key in inventory")
+        Reminder(Regex("\\[NPC] Elle: Okay adventurers, I will go and fish up Kuudra!"), buyUpgrades, "No key in inventory"),
+        Reminder(Regex("\\[NPC] Elle: Not again!"), pickUpSupplies, "No key in inventory")
     )
 
     init {
@@ -44,7 +44,7 @@ object KuudraReminders : Module(
         onMessage(Regex("Used Extreme Focus! \\((\\d+) Mana\\)"), { enabled && manaDrain && (onlyKuudra && KuudraUtils.inKuudra)}) {
             val mana = Regex("Used Extreme Focus! \\((\\d+) Mana\\)").find(it)?.groupValues?.get(1)?.toIntOrNull() ?: return@onMessage
             val players = mc.theWorld?.playerEntities?.filter { entity -> entity.isOtherPlayer() && entity.getDistanceSqToEntity(mc.thePlayer) < 49 }?.takeIf { it.isNotEmpty() } ?: return@onMessage
-            partyMessage("Used $mana mana on ${players.joinToString(", ") { it.name }}.")
+            partyMessage("Used $mana mana on ${players.joinToString(", ") { player -> player.name }}.")
         }
     }
 }

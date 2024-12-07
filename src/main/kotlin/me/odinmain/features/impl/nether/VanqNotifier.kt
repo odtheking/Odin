@@ -17,10 +17,10 @@ object VanqNotifier: Module(
 
    init {
        onMessage(Regex("A Vanquisher is spawning nearby!")) {
-           modMessage("Vanquisher has spawned!")
            PlayerUtils.alert("§5Vanquisher", playSound = playSound, displayText = showText)
-           if (ac) allMessage(PlayerUtils.getPositionString())
            if (pc) partyMessage(PlayerUtils.getPositionString())
+           if (ac) allMessage(PlayerUtils.getPositionString())
+           modMessage("§2Vanquisher has spawned!")
        }
    }
 }

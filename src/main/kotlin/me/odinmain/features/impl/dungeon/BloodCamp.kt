@@ -74,8 +74,7 @@ object BloodCamp : Module(
 
     @SubscribeEvent
     fun onRenderBossHealth(event: RenderGameOverlayEvent.Pre) {
-        if (!inDungeons || inBoss || event.type != RenderGameOverlayEvent.ElementType.BOSSHEALTH
-            || !watcherBar || BossStatus.bossName.noControlCodes != "The Watcher") return
+        if (!watcherBar || !inDungeons || inBoss || event.type != RenderGameOverlayEvent.ElementType.BOSSHEALTH || BossStatus.bossName.noControlCodes != "The Watcher") return
         val amount = 12 + DungeonUtils.floor.floorNumber
         BossStatus.bossName += BossStatus.healthScale.takeIf { it >= 0.05 }?.let { " ${(amount * it).roundToInt()}/$amount" } ?: ""
     }
@@ -108,8 +107,7 @@ object BloodCamp : Module(
 
     private fun onPacketLookMove(packet: S17PacketEntityLookMove) {
         val entity = packet.getEntity(mc.theWorld ?: return) as? EntityArmorStand ?: return
-        if (currentWatcherEntity?.let { it.getDistanceToEntity(entity) <= 20 } != true ||
-            entity.getEquipmentInSlot(4)?.item != Items.skull || getSkullValue(entity) !in allowedMobSkulls) return
+        if (currentWatcherEntity?.let { it.getDistanceToEntity(entity) <= 20 } != true || entity.getEquipmentInSlot(4)?.item != Items.skull || getSkullValue(entity) !in allowedMobSkulls) return
 
         val packetVector = Vec3(
             (entity.serverPosX + packet.func_149062_c()) / 32.0,
@@ -121,15 +119,13 @@ object BloodCamp : Module(
         val data = entityDataMap[entity] ?: return
 
         val timeTook = currentTickTime - data.started
-        val startVector = data.startVector
+        val time = getTime(data.firstSpawns, timeTook)
 
         val speedVectors = Vec3(
-            (packetVector.xCoord - startVector.xCoord) / timeTook,
-            (packetVector.yCoord - startVector.yCoord) / timeTook,
-            (packetVector.zCoord - startVector.zCoord) / timeTook,
+            (packetVector.xCoord - data.startVector.xCoord) / timeTook,
+            (packetVector.yCoord - data.startVector.yCoord) / timeTook,
+            (packetVector.zCoord - data.startVector.zCoord) / timeTook,
         )
-
-        val time = getTime(data.firstSpawns, timeTook)
 
         val endpoint = Vec3(
             packetVector.xCoord + speedVectors.xCoord * time,
@@ -158,9 +154,7 @@ object BloodCamp : Module(
             val (_, started, firstSpawn) = entityDataMap[entity]?.takeUnless { entity.isDead } ?: return@forEach
 
             val (currVector, endVector, endVecUpdated, speedVectors) = renderData
-            val endVectorUpdated = min(currentTickTime - endVecUpdated, 100)
-
-            val endPoint = calcEndVector(endVector, renderData.lastEndVector, endVectorUpdated / 100f)
+            val endPoint = calcEndVector(endVector, renderData.lastEndVector, min(currentTickTime - endVecUpdated, 100) / 100f)
 
             val pingPoint = Vec3(
                 entity.posX + speedVectors.xCoord * averagePing,
@@ -199,13 +193,14 @@ object BloodCamp : Module(
     private fun getTime(firstSpawn: Boolean, timeTook: Long) = (if (firstSpawn) 2000 else 0) + (tick * 50) - timeTook + offset
 
     private fun calcEndVector(currVector: Vec3, lastVector: Vec3?, multiplier: Float, skip: Boolean = false): Vec3 {
-        return if (lastVector != null && !skip) {
+        return if (lastVector == null || skip) currVector
+        else {
             Vec3(
                 lastVector.xCoord + (currVector.xCoord - lastVector.xCoord) * multiplier,
                 lastVector.yCoord + (currVector.yCoord - lastVector.yCoord) * multiplier,
                 lastVector.zCoord + (currVector.zCoord - lastVector.zCoord) * multiplier
             )
-        } else currVector
+        }
     }
 
     @SubscribeEvent

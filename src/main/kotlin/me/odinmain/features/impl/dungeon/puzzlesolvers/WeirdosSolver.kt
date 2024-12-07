@@ -2,22 +2,24 @@ package me.odinmain.features.impl.dungeon.puzzlesolvers
 
 import me.odinmain.OdinMain.mc
 import me.odinmain.utils.*
+import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.entity.item.EntityArmorStand
+import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
 import java.util.concurrent.CopyOnWriteArraySet
 
 object WeirdosSolver {
-    private var correctPos: Vec3? = null
-    private var wrongPositions = CopyOnWriteArraySet<Vec3>()
+    private var correctPos: BlockPos? = null
+    private var wrongPositions = CopyOnWriteArraySet<BlockPos>()
 
     fun onNPCMessage(npc: String, msg: String) {
         if (solutions.none { it.matches(msg) } && wrong.none { it.matches(msg) }) return
         val correctNPC = mc.theWorld?.loadedEntityList?.find { it is EntityArmorStand && it.name.noControlCodes == npc } ?: return
         val room = DungeonUtils.currentRoom ?: return
-        val pos = Vec3(correctNPC.posX - 0.5, 69.0, correctNPC.posZ - 0.5).addRotationCoords(room.rotation, -1, 0)
+        val pos = BlockPos(correctNPC.posX - 0.5, 69.0, correctNPC.posZ - 0.5).addRotationCoords(room.rotation, -1, 0)
 
         if (solutions.any { it.matches(msg) }) {
             correctPos = pos
@@ -25,15 +27,11 @@ object WeirdosSolver {
         } else wrongPositions.add(pos)
     }
 
-    fun onRenderWorld() {
+    fun onRenderWorld(weirdosColor: Color, weirdosWrongColor: Color, weirdosStyle: Int) {
         if (DungeonUtils.currentRoomName != "Three Weirdos") return
-        correctPos?.let {
-            Renderer.drawBox(it.toAABB(), PuzzleSolvers.weirdosColor, outlineAlpha = if (PuzzleSolvers.weirdosStyle == 0) 0 else PuzzleSolvers.weirdosColor.alpha,
-                fillAlpha = if (PuzzleSolvers.weirdosStyle == 1) 0 else PuzzleSolvers.weirdosColor.alpha)
-        }
+        correctPos?.let { Renderer.drawStyledBlock(it, weirdosColor, weirdosStyle) }
         wrongPositions.forEach {
-            Renderer.drawBox(it.toAABB(), PuzzleSolvers.weirdosWrongColor, outlineAlpha = if (PuzzleSolvers.weirdosStyle == 0) 0 else PuzzleSolvers.weirdosWrongColor.alpha,
-                fillAlpha = if (PuzzleSolvers.weirdosStyle == 1) 0 else PuzzleSolvers.weirdosWrongColor.alpha)
+            Renderer.drawStyledBlock(it, weirdosWrongColor, weirdosStyle)
         }
     }
 

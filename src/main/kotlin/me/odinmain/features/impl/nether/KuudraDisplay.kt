@@ -74,9 +74,7 @@ object KuudraDisplay : Module(
                 kuudraPos.zCoord > -84 -> "§a§lFRONT"
                 kuudraPos.zCoord < -132 -> "§4§lBACK"
                 else -> null
-            }?.let {
-                PlayerUtils.alert(it, playSound = false)
-            }
+            }?.let { PlayerUtils.alert(it, playSound = false) }
         }
     }
 
@@ -90,11 +88,10 @@ object KuudraDisplay : Module(
             else -> "§4"
         }
         val health = kuudraHP / 1000
-        val useScaled = kuudraHP <= 25000 && scaledHealth && LocationUtils.kuudraTier == 5
 
         return when {
             // Scaled
-            useScaled -> "$color${(health * 12).round(2)}M§7/§a300M §c❤"
+            kuudraHP <= 25000 && scaledHealth && LocationUtils.kuudraTier == 5 -> "$color${(health * 12).round(2)}M§7/§a300M §c❤"
             // Percentage
             healthFormat -> "$color${health}§a% §c❤"
             // Exact

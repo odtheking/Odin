@@ -1,10 +1,9 @@
 package me.odinmain.features.impl.dungeon.puzzlesolvers
 
 import me.odinmain.OdinMain.mc
-import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers.blazeHeight
-import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers.blazeWidth
 import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers.onPuzzleComplete
 import me.odinmain.utils.*
+import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.RenderUtils.renderBoundingBox
 import me.odinmain.utils.render.RenderUtils.renderVec
 import me.odinmain.utils.render.Renderer
@@ -35,33 +34,29 @@ object BlazeSolver {
         else blazes.sortBy { hpMap[it] }
     }
 
-    fun onRenderWorld() {
+    fun onRenderWorld(blazeLineNext: Boolean, blazeLineAmount: Int, blazeStyle: Int, blazeFirstColor: Color, blazeSecondColor: Color, blazeAllColor: Color, blazeWidth: Float, blazeHeight: Float, blazeSendComplete: Boolean) {
         if (!DungeonUtils.currentRoomName.equalsOneOf("Lower Blaze", "Higher Blaze")) return
         if (blazes.isEmpty()) return
-        blazes.removeAll {
-            mc.theWorld?.getEntityByID(it.entityId) == null
-        }
+        blazes.removeAll { mc.theWorld?.getEntityByID(it.entityId) == null }
         if (blazes.isEmpty() && lastBlazeCount == 1) {
             LocationUtils.currentDungeon?.puzzles?.find { it.name == Puzzle.Blaze.name }?.status = PuzzleStatus.Completed
-            if (PuzzleSolvers.blazeSendComplete) partyMessage("Blaze puzzle solved!")
-            onPuzzleComplete("Higher Blaze")
-            onPuzzleComplete("Lower Blaze")
+            if (blazeSendComplete) partyMessage("Blaze puzzle solved!")
+            onPuzzleComplete(if (DungeonUtils.currentRoomName == "Higher Blaze") "Higher Blaze" else "Lower Blaze")
             lastBlazeCount = 0
             return
         }
         lastBlazeCount = blazes.size
         blazes.forEachIndexed { index, entity ->
             val color = when (index) {
-                0 -> PuzzleSolvers.blazeFirstColor
-                1 -> PuzzleSolvers.blazeSecondColor
-                else -> PuzzleSolvers.blazeAllColor
+                0 -> blazeFirstColor
+                1 -> blazeSecondColor
+                else -> blazeAllColor
             }
-            val aabb = AxisAlignedBB(-blazeWidth / 2, -1 - (blazeHeight / 2), -blazeWidth / 2, blazeWidth / 2, (blazeHeight / 2) - 1, blazeWidth / 2).offset(entity.positionVector)
+            val aabb = AxisAlignedBB(-blazeWidth / 2.0, -1 - (blazeHeight / 2.0), -blazeWidth / 2.0, blazeWidth / 2.0, (blazeHeight / 2.0) - 1, blazeWidth / 2.0).offset(entity.positionVector)
 
-            Renderer.drawBox(aabb, color,
-                outlineAlpha = if (PuzzleSolvers.blazeStyle == 0) 0 else color.alpha, fillAlpha = if (PuzzleSolvers.blazeStyle == 1) 0 else color.alpha, depth = true)
+            Renderer.drawStyledBox(aabb, color, blazeStyle, depth = true)
 
-            if (PuzzleSolvers.blazeLineNext && index > 0 && index <= PuzzleSolvers.blazeLineAmount)
+            if (blazeLineNext && index > 0 && index <= blazeLineAmount)
                 Renderer.draw3DLine(listOf(blazes[index - 1].renderVec, entity.renderBoundingBox.middle), color = color, lineWidth = 1f, depth = true)
         }
     }
