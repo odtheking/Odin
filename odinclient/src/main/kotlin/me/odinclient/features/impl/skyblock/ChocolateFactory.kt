@@ -92,14 +92,14 @@ object ChocolateFactory : Module(
         }
         found = false
         var maxValue = 0
-        for (i in 0 until 7) {
-            val worker = workers[i]
-            if (worker.contains("climbed as far")) continue
-            val index = worker.indexOfFirst { it?.contains("Cost") == true }.takeIf { it != -1 } ?: continue
-            val cost = worker[index + 1]?.noControlCodes?.replace(Regex("\\D"), "")?.toIntOrNull() ?: continue
-            val value = cost / (i + 1).toFloat()
+        repeat (7) {
+            val worker = workers[it]
+            if (worker.contains("climbed as far")) return
+            val index = worker.indexOfFirst { it?.contains("Cost") == true } ?: return
+            val cost = worker[index + 1]?.noControlCodes?.replace(Regex("\\D"), "")?.toIntOrNull() ?: return
+            val value = cost / (it + 1).toFloat()
             if (value < maxValue || !found) {
-                bestWorker = 28 + i
+                bestWorker = 28 + it
                 maxValue = value.toInt()
                 bestCost = cost
                 found = true

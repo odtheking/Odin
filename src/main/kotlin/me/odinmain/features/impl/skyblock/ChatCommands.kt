@@ -61,19 +61,19 @@ object ChatCommands : Module(
 
     init {
         onMessage(Regex(" {29}> EXTRA STATS <|^\\[NPC] Elle: Good job everyone. A hard fought battle come to an end. Let's get out of here before we run into any more trouble!$")) {
-            if (dtReason.isEmpty() || !dt) return@onMessage
+            if (!dt || dtReason.isEmpty()) return@onMessage
             runIn(30) {
-                PlayerUtils.alert("§cPlayers need DT")
                 partyMessage("Players need DT: ${dtReason.groupBy({ it.second }, { it.first }).entries.joinToString(separator = ", ") { (reason, names) -> "${names.joinToString(", ")}: $reason" }}")
+                PlayerUtils.alert("§cPlayers need DT")
                 dtReason.clear()
             }
         }
 
         onMessage(messageRegex) {
             val channel = when(it.split(" ")[0]) {
-                "Party" -> if (!party) return@onMessage else ChatChannel.PARTY
-                "Guild" -> if (!guild) return@onMessage else ChatChannel.GUILD
                 "From" -> if (!private) return@onMessage else ChatChannel.PRIVATE
+                "Party" -> if (!party)  return@onMessage else ChatChannel.PARTY
+                "Guild" -> if (!guild)  return@onMessage else ChatChannel.GUILD
                 else -> return@onMessage
             }
 
@@ -130,15 +130,15 @@ object ChatCommands : Module(
             "downtime", "dt" -> {
                 if (!dt || channel != ChatChannel.PARTY) return
                 val reason = message.substringAfter("dt ").takeIf { it != message && !it.contains("!dt") } ?: "No reason given"
-                if (dtReason.any { it.first == name }) return modMessage("§cThat player already has a reminder!")
-                dtReason.add(name to reason)
+                if (dtReason.any { it.first == name }) return modMessage("§6${name} §calready has a reminder!")
                 modMessage("§aReminder set for the end of the run! §7(disabled auto requeue for this run)")
-                dtPlayer = name
+                dtReason.add(name to reason)
                 disableRequeue = true
+                dtPlayer = name
             }
             "f1", "f2", "f3", "f4", "f5", "f6", "f7", "m1", "m2", "m3", "m4", "m5", "m6", "m7", "t1", "t2", "t3", "t4", "t5" -> {
                 if (!queInstance || channel != ChatChannel.PARTY) return
-                modMessage("§aEntering -> ${message.substring(1).capitalizeFirst()}")
+                modMessage("§8Entering -> §e${message.substring(1).capitalizeFirst()}")
                 sendCommand("od ${message.substring(1)}", true)
             }
             "demote" -> if (demote && channel == ChatChannel.PARTY) sendCommand("p demote $name")
@@ -146,21 +146,17 @@ object ChatCommands : Module(
 
             // Private cmds only
             "invite", "inv" -> if (invite && channel == ChatChannel.PRIVATE) {
+                modMessage("§aClick on this message to invite $name to your party!", chatStyle = createClickStyle(ClickEvent.Action.RUN_COMMAND, "/party invite $name"))
                 PlayerUtils.playLoudSound("note.pling", 100f, 1f)
-                modMessage("§aClick on this message to invite $name to your party!",
-                    chatStyle = createClickStyle(ClickEvent.Action.RUN_COMMAND, "/party invite $name"))
             }
         }
     }
 
-    private var replaced = false
-
     @SubscribeEvent
     fun onMessageSent(event: MessageSentEvent) {
-        if (!chatEmotes) return
-        if (event.message.startsWith("/") && !listOf("/pc", "/ac", "/gc", "/msg", "/w", "/r").any { event.message.startsWith(it) }) return
+        if (!chatEmotes ||( event.message.startsWith("/") && !listOf("/pc", "/ac", "/gc", "/msg", "/w", "/r").any { event.message.startsWith(it) })) return
 
-        replaced = false
+        var replaced = false
         val words = event.message.split(" ").toMutableList()
 
         for (i in words.indices) {
@@ -170,11 +166,10 @@ object ChatCommands : Module(
             }
         }
 
-        val newMessage = words.joinToString(" ")
         if (!replaced) return
 
         event.isCanceled = true
-        sendChatMessage(newMessage)
+        sendChatMessage(words.joinToString(" "))
     }
 
     private val replacements = mapOf(

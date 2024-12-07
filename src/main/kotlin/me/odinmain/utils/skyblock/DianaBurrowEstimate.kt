@@ -58,9 +58,8 @@ object DianaBurrowEstimate {
         removeBurrow(pos, force = true)
     }
 
-    fun chat(message: String) {
-        if (message.startsWith("You dug out a Griffin Burrow!") || message == "You finished the Griffin burrow chain! (4/4)")
-            lastDugBurrow?.let { if (!removeBurrow(it)) pendingBurrow = it }
+    fun onBurrowDug() {
+        lastDugBurrow?.let { if (!removeBurrow(it)) pendingBurrow = it }
     }
 
     private fun removeBurrow(location: BlockPos, force: Boolean = false): Boolean {

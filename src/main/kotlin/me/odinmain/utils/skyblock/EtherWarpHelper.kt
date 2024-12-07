@@ -43,25 +43,26 @@ object EtherWarpHelper {
      */
     private fun traverseVoxels(start: Vec3, end: Vec3): EtherPos {
         val direction = end.subtract(start)
-        val step = DoubleArray(3) { sign(direction.get(it)) }
-        val invDirection = DoubleArray(3) { 1.0 / direction.get(it) }
+        val step = IntArray(3) { sign(direction[it]).toInt() }
+        val invDirection = DoubleArray(3) { if (direction[it] != 0.0) 1.0 / direction[it] else Double.MAX_VALUE }
         val tDelta = DoubleArray(3) { invDirection[it] * step[it] }
+        val currentPos = IntArray(3) { floor(start[it]).toInt() }
+        val endPos = IntArray(3) { floor(end[it]).toInt() }
         val tMax = DoubleArray(3) {
-            val startCoord = start.get(it)
-            abs((floor(startCoord) + max(step[it], 0.0) - startCoord) * invDirection[it])
+            val startCoord = start[it]
+            abs((floor(startCoord) + max(step[it], 0) - startCoord) * invDirection[it])
         }
 
-        val currentPos = DoubleArray(3) { floor(start.get(it)) }
-        val endPos = DoubleArray(3) { floor(end.get(it)) }
-        var iterations = 0
-
-        while (iterations++ < 1000) {
-            val pos = BlockPos(currentPos[0].toInt(), currentPos[1].toInt(), currentPos[2].toInt())
+        repeat(1000) {
+            val pos = BlockPos(currentPos[0], currentPos[1], currentPos[2])
             if (getBlockIdAt(pos) != 0) return EtherPos(isValidEtherWarpBlock(pos), pos)
+            if (currentPos.contentEquals(endPos)) return EtherPos.NONE
 
-            if (currentPos.contentEquals(endPos)) break // reached end
+            val minIndex = if (tMax[0] <= tMax[1])
+                if (tMax[0] <= tMax[2]) 0 else 2
+            else
+                if (tMax[1] <= tMax[2]) 1 else 2
 
-            val minIndex = tMax.indices.minByOrNull { tMax[it] } ?: 0
             tMax[minIndex] += tDelta[minIndex]
             currentPos[minIndex] += step[minIndex]
         }

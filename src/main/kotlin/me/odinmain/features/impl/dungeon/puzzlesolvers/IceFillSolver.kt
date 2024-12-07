@@ -47,13 +47,13 @@ object IceFillSolver {
         Renderer.draw3DLine(currentPatterns, color = color, depth = true)
     }
 
-    fun onRoomEnter(event: RoomEnterEvent) = with (event.room) {
+    fun onRoomEnter(event: RoomEnterEvent, optimizePatterns: Boolean) = with (event.room) {
         if (this?.data?.name != "Ice Fill" || currentPatterns.isNotEmpty()) return
 
-        scanAllFloors(getRealCoords(15, 70, 7).toVec3(), rotation)
+        scanAllFloors(getRealCoords(15, 70, 7).toVec3(), rotation, optimizePatterns)
     }
 
-    private fun scanAllFloors(pos: Vec3, rotation: Rotations) {
+    private fun scanAllFloors(pos: Vec3, rotation: Rotations, optimizePatterns: Boolean) {
         listOf(pos, pos.add(transformTo(Vec3i(5, 1, 0), rotation)), pos.add(transformTo(Vec3i(12, 2, 0), rotation))).forEachIndexed { floorIndex, startPosition ->
             val floorHeight = representativeFloors[floorIndex]
             val startTime = System.nanoTime()
@@ -65,7 +65,7 @@ object IceFillSolver {
                 ) {
                     modMessage("Section $floorIndex scan took ${(System.nanoTime() - startTime) / 1000000.0}ms pattern: $patternIndex")
 
-                    (if (PuzzleSolvers.useOptimizedPatterns) IceFillFloors.advanced[floorIndex][patternIndex] else IceFillFloors.IceFillFloors[floorIndex][patternIndex]).toMutableList().let {
+                    (if (optimizePatterns) IceFillFloors.advanced[floorIndex][patternIndex] else IceFillFloors.IceFillFloors[floorIndex][patternIndex]).toMutableList().let {
                         currentPatterns.addAll(it.map { startPosition.addVec(x = 0.5, y = 0.1, z = 0.5).add(transformTo(it, rotation)) })
                     }
                     return@forEachIndexed

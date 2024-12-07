@@ -48,7 +48,7 @@ enum class WitherDragonsEnum (
 
     Purple(Vec3(56.0, 14.0, 125.0), AxisAlignedBB(45.5, 13.0, 113.5,68.5, 23.0, 136.5), '5', Color.PURPLE,53.0..59.0, 122.0..128.0, skipKillTime = 38),
 
-    None(  Vec3(0.0, 0.0, 0.0),     AxisAlignedBB(0.0, 0.0, 0.0, 0.0, 0.0, 0.0),         'f', Color.WHITE, 0.0..0.0, 0.0..0.0);
+    None(  Vec3(0.0, 0.0, 0.0),     AxisAlignedBB(0.0, 0.0, 0.0, 0.0, 0.0, 0.0),        'f', Color.WHITE, 0.0..0.0, 0.0..0.0);
 
     fun setAlive(entityId: Int) {
         state = WitherDragonState.ALIVE

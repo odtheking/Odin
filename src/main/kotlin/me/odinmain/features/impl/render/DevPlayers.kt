@@ -66,7 +66,6 @@ object DevPlayers {
         return s.replace(pattern) { match -> match.groupValues[1] }
     }
 
-    @OptIn(DelicateCoroutinesApi::class)
     fun updateDevs(): HashMap<String, DevPlayer> {
         runBlocking(scope.coroutineContext) {
             val data = convertDecimalToNumber(getDataFromServer("https://tj4yzotqjuanubvfcrfo7h5qlq0opcyk.lambda-url.eu-north-1.on.aws/")).ifEmpty { return@runBlocking }

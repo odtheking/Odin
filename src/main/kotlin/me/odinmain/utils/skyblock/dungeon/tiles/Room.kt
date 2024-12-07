@@ -7,7 +7,6 @@ import com.google.gson.reflect.TypeToken
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.DungeonWaypoint
 import me.odinmain.utils.Vec2
 import net.minecraft.util.BlockPos
-import net.minecraft.util.Vec3
 import java.lang.reflect.Type
 import kotlin.collections.orEmpty
 
@@ -21,16 +20,12 @@ data class Room(
 
 data class RoomComponent(val x: Int, val z: Int, val core: Int = 0) {
     val vec2 = Vec2(x, z)
-    val vec3 = Vec3(x.toDouble(), 70.0, z.toDouble())
+    val blockPos = BlockPos(x, 70, z)
 }
 
 data class RoomData(
-    val name: String,
-    val type: RoomType,
-    val cores: List<Int>,
-    val crypts: Int,
-    val secrets: Int,
-    val trappedChests: Int,
+    val name: String, val type: RoomType, val cores: List<Int>,
+    val crypts: Int, val secrets: Int, val trappedChests: Int,
 )
 
 class RoomDataDeserializer : JsonDeserializer<RoomData> {

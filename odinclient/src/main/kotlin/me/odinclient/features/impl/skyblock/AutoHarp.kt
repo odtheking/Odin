@@ -44,11 +44,11 @@ object AutoHarp : Module(
         val newHash = container.inventorySlots.subList(0,36).joinToString("") { it?.stack?.displayName ?: "" }.hashCode()
         if (lastInv == newHash) return
         lastInv = newHash
-        for (i in 0..6) {
-            val slot = container.inventorySlots[37 + i]
+        repeat(7) {
+            val slot = container.inventorySlots[37 + it]
             if ((slot.stack?.item as? ItemBlock)?.block === Blocks.quartz_block) {
                 PlayerUtils.windowClick(slot.slotNumber, PlayerUtils.ClickType.Middle)
-                break
+                return
             }
         }
     }

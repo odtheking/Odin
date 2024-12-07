@@ -65,22 +65,24 @@ object WaterSolver {
         }
     }
 
-    fun onRenderWorld() {
+    fun onRenderWorld(showTracer: Boolean, tracerColorFirst: Color, tracerColorSecond: Color) {
         if (patternIdentifier == -1 || solutions.isEmpty() || DungeonUtils.currentRoomName != "Water Board") return
 
         val solutionList = solutions
             .flatMap { (lever, times) -> times.drop(lever.i).map { Pair(lever, it) } }
             .sortedBy { (lever, time) -> time + if (lever == LeverBlock.WATER) 0.01 else 0.0 }
 
-        val firstSolution = solutionList.firstOrNull() ?: return
 
-        if (PuzzleSolvers.showTracer) Renderer.drawTracer(firstSolution.first.leverPos.addVector(.5, .5, .5), color = PuzzleSolvers.tracerColorFirst, depth = true)
+        if (showTracer) {
+            val firstSolution = solutionList.firstOrNull()?.first ?: return
+            Renderer.drawTracer(firstSolution.leverPos.addVector(.5, .5, .5), color = tracerColorFirst, depth = true)
 
-        if (solutionList.size > 1 && PuzzleSolvers.showTracer && firstSolution.first.leverPos != solutionList[1].first.leverPos) {
-            Renderer.draw3DLine(
-                listOf(firstSolution.first.leverPos.addVector(.5, .5, .5), solutionList[1].first.leverPos.addVector(.5, .5, .5)),
-                color = PuzzleSolvers.tracerColorSecond, lineWidth = 1.5f, depth = true
-            )
+            if (solutionList.size > 1 && firstSolution.leverPos != solutionList[1].first.leverPos) {
+                Renderer.draw3DLine(
+                    listOf(firstSolution.leverPos.addVector(.5, .5, .5), solutionList[1].first.leverPos.addVector(.5, .5, .5)),
+                    color = tracerColorSecond, lineWidth = 1.5f, depth = true
+                )
+            }
         }
 
         solutions.forEach { (lever, times) ->

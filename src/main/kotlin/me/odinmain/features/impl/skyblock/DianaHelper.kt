@@ -87,9 +87,8 @@ object DianaHelper : Module(
             if (sendInqMsg) partyMessage("${PlayerUtils.getPositionString()} I dug up an inquisitor come over here!")
             PlayerUtils.alert("§6§lInquisitor!")
         }
-
-        onMessage(Regex(".*")) {
-            DianaBurrowEstimate.chat(it)
+        onMessage(Regex("^(You dug out a Griffin Burrow! .+|You finished the Griffin burrow chain! \\(4\\/4\\))\$")) {
+            DianaBurrowEstimate.onBurrowDug()
         }
     }
 

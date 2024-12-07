@@ -7,6 +7,7 @@ import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.DropdownSetting
 import me.odinmain.features.settings.impl.KeybindSetting
 import me.odinmain.features.settings.impl.NumberSetting
+import me.odinmain.utils.getPositionEyes
 import net.minecraft.util.MathHelper
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.EntityViewRenderEvent
@@ -33,6 +34,7 @@ object Camera : Module(
             if (!freelookToggled && enabled) enable()
             else if ((toggle || !enabled) && freelookToggled) disable()
     }
+    @JvmStatic
     var freelookToggled = false
     private var cameraYaw = 0f
     private var cameraPitch = 0f
@@ -50,10 +52,12 @@ object Camera : Module(
         super.onDisable()
     }
 
+    @JvmStatic
     fun getCameraDistance(): Float {
         return if (enabled) cameraDist else 4f
     }
 
+    @JvmStatic
     fun getCameraClipEnabled(): Boolean {
         return if (enabled) cameraClip else false
     }
@@ -90,14 +94,17 @@ object Camera : Module(
         e.pitch = cameraPitch
     }
 
+    @JvmStatic
     fun updateCameraAndRender(f2: Float, f3: Float) {
         if (!freelookToggled) return
         cameraYaw += f2 / 7
         cameraPitch = MathHelper.clamp_float((cameraPitch + f3 / 7), -90f, 90f)
     }
 
-    fun calculateCameraDistance(d0: Double, d1: Double, d2: Double, d3: Double): Float {
-        var dist = d3
+    @JvmStatic
+    fun calculateCameraDistance(): Float {
+        val eyes = getPositionEyes()
+        var dist = getCameraDistance()
         var f2 = cameraPitch
 
         if (mc.gameSettings.thirdPersonView == 2) f2 += 180.0f
@@ -106,26 +113,23 @@ object Camera : Module(
         val d5 = (-cos(cameraYaw / 180.0f * Math.PI.toFloat()) * cos(f2 / 180.0f * Math.PI.toFloat())).toDouble() * dist
         val d6 = (-sin(f2 / 180.0f * Math.PI.toFloat())).toDouble() * dist
 
-        for (i in 0..7) {
-            var f3 = ((i and 1) * 2 - 1).toFloat()
-            var f4 = ((i shr 1 and 1) * 2 - 1).toFloat()
-            var f5 = ((i shr 2 and 1) * 2 - 1).toFloat()
+        repeat(8) {
+            var f3 = ((it and 1) * 2 - 1).toFloat()
+            var f4 = ((it shr 1 and 1) * 2 - 1).toFloat()
+            var f5 = ((it shr 2 and 1) * 2 - 1).toFloat()
             f3 *= .1f
             f4 *= .1f
             f5 *= .1f
             val movingObjectPosition = mc.theWorld?.rayTraceBlocks(
-                Vec3(d0 + f3.toDouble(), d1 + f4.toDouble(), d2 + f5.toDouble()),
-                Vec3(d0 - d4 + f3.toDouble() + f5.toDouble(), d1 - d6 + f4.toDouble(), d2 - d5 + f5.toDouble())
+                Vec3(eyes.xCoord + f3.toDouble(), eyes.yCoord + f4.toDouble(), eyes.zCoord + f5.toDouble()),
+                Vec3(eyes.xCoord - d4 + f3.toDouble() + f5.toDouble(), eyes.yCoord - d6 + f4.toDouble(), eyes.zCoord - d5 + f5.toDouble())
             )
 
             if (movingObjectPosition != null) {
-                val d7 = movingObjectPosition.hitVec.distanceTo(Vec3(d0, d1, d2))
-
-                if (d7 < dist) {
-                    dist = d7
-                }
+                val d7 = movingObjectPosition.hitVec.distanceTo(Vec3(eyes.xCoord, eyes.yCoord, eyes.zCoord))
+                if (d7 < dist) dist = d7.toFloat()
             }
         }
-        return dist.toFloat()
+        return dist
     }
 }

@@ -33,31 +33,26 @@ object WitherDragons : Module(
 ) {
     private val dragonTimerDropDown by DropdownSetting("Dragon Timer Dropdown")
     private val dragonTimer by BooleanSetting("Dragon Timer", true, description = "Displays a timer for when M7 dragons spawn.").withDependency { dragonTimerDropDown }
-    val addUselessDecimal by BooleanSetting("Add Useless Decimal", false, description = "Adds a decimal to the timer.").withDependency { dragonTimer && dragonTimerDropDown }
     private val hud by HudSetting("Dragon Timer HUD", 10f, 10f, 1f, true) {
         if (it) {
             mcText("§5P §a4.5s", 2f, 5f, 1, Color.WHITE, center = false)
-            mcText("§cR §e1.2s", 2f, 20f, 1, Color.WHITE, center = false)
-
             getMCTextWidth("§5P §a4.5s")+ 2f to 33f
         } else {
-            if (!dragonTimer) return@HudSetting 0f to 0f
-            WitherDragonsEnum.entries.forEachIndexed { index, dragon ->
-                if (dragon.state != WitherDragonState.SPAWNING) return@forEachIndexed
-                mcText("§${dragon.colorCode}${dragon.name.first()}: ${colorDragonTimer(dragon.timeToSpawn)}${String.format(Locale.US, "%.2f", dragon.timeToSpawn / 20.0)}${if (addUselessDecimal) "0" else ""}", 2, 5f + (index - 1) * 15f, 1, Color.WHITE, center = false)
+            priorityDragon.takeIf { drag -> drag != WitherDragonsEnum.None }?.let { dragon ->
+                mcText("§${dragon.colorCode}${dragon.name.first()}: ${colorDragonTimer(dragon.timeToSpawn)}${String.format(Locale.US, "%.2f", dragon.timeToSpawn / 20.0)}", 2, 5f, 1, Color.WHITE, center = false)
             }
             getMCTextWidth("§5P §a4.5s")+ 2f to 33f
         }
-    }.withDependency { dragonTimer && dragonTimerDropDown }
+    }.withDependency { dragonTimerDropDown }
 
     private val dragonBoxesDropDown by DropdownSetting("Dragon Boxes Dropdown")
     private val dragonBoxes by BooleanSetting("Dragon Boxes", true, description = "Displays boxes for where M7 dragons spawn.").withDependency { dragonBoxesDropDown }
-    val lineThickness by NumberSetting("Line Width", 2f, 1.0, 5.0, 0.5, description = "The thickness of the lines for the boxes.").withDependency { dragonBoxes && dragonBoxesDropDown }
+    private val lineThickness by NumberSetting("Line Width", 2f, 1.0, 5.0, 0.5, description = "The thickness of the lines for the boxes.").withDependency { dragonBoxes && dragonBoxesDropDown }
 
     private val dragonTitleDropDown by DropdownSetting("Dragon Spawn Dropdown")
     val dragonTitle by BooleanSetting("Dragon Title", true, description = "Displays a title for spawning dragons.").withDependency { dragonTitleDropDown }
     private val dragonTracers by BooleanSetting("Dragon Tracer", false, description = "Draws a line to spawning dragons.").withDependency { dragonTitleDropDown }
-    val tracerThickness by NumberSetting("Tracer Width", 5f, 1f, 20f, 0.5, description = "The thickness of the tracers.").withDependency { dragonTracers && dragonTitleDropDown }
+    private val tracerThickness by NumberSetting("Tracer Width", 5f, 1f, 20f, 0.5, description = "The thickness of the tracers.").withDependency { dragonTracers && dragonTitleDropDown }
 
     private val dragonAlerts by DropdownSetting("Dragon Alerts Dropdown")
     val sendNotification by BooleanSetting("Send Dragon Confirmation", true, description = "Sends a confirmation message when a dragon dies.").withDependency { dragonAlerts }
@@ -84,7 +79,7 @@ object WitherDragons : Module(
     val selected by SelectorSetting("Color", "Green", colors, description = "The color of your relic.").withDependency { relicAnnounce && relicDropDown}
     val relicAnnounceTime by BooleanSetting("Relic Time", true, description = "Sends how long it took you to get that relic.").withDependency { relicDropDown }
     val relicSpawnTicks by NumberSetting("Relic Spawn Ticks", 42, 0, 100, description = "The amount of ticks for the relic to spawn.").withDependency {  relicDropDown }
-    val cauldronHighlight by BooleanSetting("Cauldron Highlight", true, description = "Highlights the cauldron for held relic.").withDependency { relicDropDown }
+    private val cauldronHighlight by BooleanSetting("Cauldron Highlight", true, description = "Highlights the cauldron for held relic.").withDependency { relicDropDown }
 
     private val relicHud by HudSetting("Relic Hud", 10f, 10f, 1f, true) {
         if (it) return@HudSetting mcTextAndWidth("§3Relics: 4.30s", 2, 5f, 1, Color.WHITE, center = false) + 2f to 16f
@@ -148,7 +143,7 @@ object WitherDragons : Module(
         if (dragonTimer) {
             WitherDragonsEnum.entries.forEach { dragon ->
                 if (dragon.state == WitherDragonState.SPAWNING) Renderer.drawStringInWorld(
-                    "§${dragon.colorCode}${dragon.name.first()}: ${colorDragonTimer(dragon.timeToSpawn)}${String.format(Locale.US, "%.2f", dragon.timeToSpawn / 20.0)}${if (addUselessDecimal) "0" else ""}", dragon.spawnPos,
+                    "§${dragon.colorCode}${dragon.name.first()}: ${colorDragonTimer(dragon.timeToSpawn)}${String.format(Locale.US, "%.2f", dragon.timeToSpawn / 20.0)}", dragon.spawnPos,
                     color = Color.WHITE, depth = false, scale = 0.16f
                 )
             }
@@ -161,7 +156,6 @@ object WitherDragons : Module(
         if (cauldronHighlight) relicsOnWorldLast()
         if (priorityDragon != WitherDragonsEnum.None && dragonTracers && priorityDragon.state == WitherDragonState.SPAWNING)
             Renderer.drawTracer(priorityDragon.spawnPos.addVec(0.5, 3.5, 0.5), color = priorityDragon.color, lineWidth = tracerThickness)
-
     }
 
     @SubscribeEvent

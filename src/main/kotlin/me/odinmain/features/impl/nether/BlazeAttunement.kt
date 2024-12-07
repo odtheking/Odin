@@ -46,7 +46,7 @@ object BlazeAttunement : Module(
 
                 val entities = mc.theWorld?.getEntitiesWithinAABBExcludingEntity(entity, entity.entityBoundingBox.offset(0.0, -1.0, 0.0))
                         ?.filter { it is EntityBlaze || it is EntitySkeleton || it is EntityPigZombie }
-                        ?.sortedByDescending { xzDistance(it, entity) }
+                        ?.sortedByDescending { it.xzDistance(entity) }
                         ?.takeIf { it.isNotEmpty() } ?: return@execute
                 currentBlazes[entities.first()] = color
             }
@@ -55,8 +55,7 @@ object BlazeAttunement : Module(
 
     @SubscribeEvent
     fun onRenderEntityModel(event: RenderEntityModelEvent) {
-        val color = currentBlazes[event.entity] ?: return
-        OutlineUtils.outlineEntity(event, color, thickness)
+        OutlineUtils.outlineEntity(event, currentBlazes[event.entity] ?: return, thickness)
     }
 
     @JvmStatic

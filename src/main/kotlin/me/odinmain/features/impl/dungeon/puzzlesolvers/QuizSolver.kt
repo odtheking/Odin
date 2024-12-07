@@ -5,9 +5,7 @@ import com.google.gson.reflect.TypeToken
 import me.odinmain.OdinMain.logger
 import me.odinmain.events.impl.RoomEnterEvent
 import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers.onPuzzleComplete
-import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers.quizDepth
-import me.odinmain.utils.render.RenderUtils
-import me.odinmain.utils.render.Renderer
+import me.odinmain.utils.render.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.getRealCoords
 import me.odinmain.utils.startsWithOneOf
 import me.odinmain.utils.toAABB
@@ -68,13 +66,13 @@ object QuizSolver {
         triviaOptions[2].blockPos = getRealCoords(BlockPos(10.0, 70.0, 6.0))
     }
 
-    fun onRenderWorld() {
+    fun onRenderWorld(quizColor: Color, quizDepth: Boolean) {
         if (triviaAnswers == null || triviaOptions.isEmpty()) return
         triviaOptions.forEach { answer ->
             if (!answer.isCorrect) return@forEach
             answer.blockPos?.add(0.0, -1.0, 0.0)?.let {
-                Renderer.drawBox(it.toAABB(), PuzzleSolvers.quizColor, depth = quizDepth)
-                RenderUtils.drawBeaconBeam(it.toVec3(), PuzzleSolvers.quizColor, depth = quizDepth)
+                Renderer.drawBlock(it, quizColor, depth = quizDepth)
+                RenderUtils.drawBeaconBeam(it.toVec3(), quizColor, depth = quizDepth)
             }
         }
     }

@@ -5,7 +5,6 @@ import com.google.gson.reflect.TypeToken
 import me.odinmain.OdinMain.logger
 import me.odinmain.events.impl.BlockChangeEvent
 import me.odinmain.events.impl.RoomEnterEvent
-import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers.beamsAlpha
 import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers.onPuzzleComplete
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.addVec
@@ -55,16 +54,16 @@ object BeamsSolver {
         }
     }
 
-    fun onRenderWorld() {
+    fun onRenderWorld(beamStyle: Int, beamsTracer: Boolean, beamsAlpha: Float) {
         if (DungeonUtils.currentRoomName != "Creeper Beams" || currentLanternPairs.isEmpty()) return
 
         currentLanternPairs.entries.forEach { positions ->
             val color = positions.value.second
 
-            Renderer.drawStyledBox(positions.key.toAABB(), color, depth = true, style = PuzzleSolvers.beamStyle)
-            Renderer.drawStyledBox(positions.value.first.toAABB(), color, depth = true, style = PuzzleSolvers.beamStyle)
+            Renderer.drawStyledBlock(positions.key, color, depth = true, style = beamStyle)
+            Renderer.drawStyledBlock(positions.value.first, color, depth = true, style = beamStyle)
 
-            if (PuzzleSolvers.beamsTracer)
+            if (beamsTracer)
                 Renderer.draw3DLine(listOf(positions.key.toVec3().addVec(0.5, 0.5, 0.5), positions.value.first.toVec3().addVec(0.5, 0.5, 0.5)), color = color.withAlpha(beamsAlpha), depth = false, lineWidth = 2f)
         }
     }

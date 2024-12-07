@@ -38,8 +38,7 @@ object PlayerDisplay : Module(
 
     private val healthHud by HudSetting("Health Hud", 10f, 10f, 1f, true) { example ->
         val text =
-            if (example)
-                generateText(5000, 5000, "❤")
+            if (example) generateText(5000, 5000, "❤")
             else if(!LocationUtils.isInSkyblock) return@HudSetting 0f to 0f
             else if (SkyblockPlayer.currentHealth != 0 && SkyblockPlayer.maxHealth != 0)
                 generateText(SkyblockPlayer.currentHealth, SkyblockPlayer.maxHealth, "❤")
@@ -63,8 +62,7 @@ object PlayerDisplay : Module(
     private val manaColor by ColorSetting("Mana Color", Color.BLUE, true, description = "The color of the mana text.")
 
     private val overflowManaHud by HudSetting("Overflow Mana Hud", 10f, 10f, 1f, true) { example ->
-        val text = if (example)
-            generateText(333, "ʬ", hideZeroSF)
+        val text = if (example) generateText(333, "ʬ", hideZeroSF)
         else if(!LocationUtils.isInSkyblock) return@HudSetting 0f to 0f
         else if (separateOverflow)
             generateText(SkyblockPlayer.overflowMana, "ʬ", hideZeroSF)
@@ -75,8 +73,7 @@ object PlayerDisplay : Module(
     private val overflowManaColor by ColorSetting("Overflow Mana Color", Color.CYAN, true, description = "The color of the overflow mana text.")
 
     private val defenseHud by HudSetting("Defense Hud", 10f, 10f, 1f, true) { example ->
-        val text = if (example)
-            generateText(1000, "❈", true)
+        val text = if (example) generateText(1000, "❈", true)
         else if(!LocationUtils.isInSkyblock) return@HudSetting 0f to 0f
         else if (SkyblockPlayer.currentDefense != 0)
             generateText(SkyblockPlayer.currentDefense, "❈", true)
@@ -88,8 +85,7 @@ object PlayerDisplay : Module(
     private val defenseColor by ColorSetting("Defense Color", Color.GREEN, true, description = "The color of the defense text.")
 
     private val eHPHud by HudSetting("EffectiveHealth Hud", 10f, 10f, 1f, true) { example ->
-        val text = if (example)
-            generateText(1000000, "", true)
+        val text = if (example) generateText(1000000, "", true)
         else if(!LocationUtils.isInSkyblock) return@HudSetting 0f to 0f
         else if (SkyblockPlayer.effectiveHP != 0) generateText(SkyblockPlayer.effectiveHP, "", true)
         else return@HudSetting 0f to 0f
@@ -114,7 +110,7 @@ object PlayerDisplay : Module(
     }
 
     private fun generateText(current: Int, icon: String, hideZero: Boolean): String{
-        if(hideZero && current == 0) return ""
+        if (hideZero && current == 0) return ""
         return "${formatNumberWithCustomSeparator(current)}${if (showIcons) icon else ""}"
     }
 
