@@ -56,7 +56,7 @@ tasks {
 
     shadowJar {
         destinationDirectory.set(layout.buildDirectory.dir("archiveJars"))
-        archiveBaseName.set("Odin")
+        archiveBaseName.set("OdinClient")
         archiveClassifier.set("dev")
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
         configurations = listOf(shadowImpl)
