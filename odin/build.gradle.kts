@@ -1,4 +1,3 @@
-import dev.architectury.pack200.java.Pack200Adapter
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group = "me.odin"
@@ -21,7 +20,6 @@ loom {
         }
     }
     forge {
-        pack200Provider.set(Pack200Adapter())
         mixinConfig("mixins.odin.json")
     }
     @Suppress("UnstableApiUsage")
@@ -33,7 +31,7 @@ tasks {
         inputs.property("version", version)
 
         filesMatching("mcmod.info") {
-            expand(mapOf("version" to version))
+            expand(inputs.properties)
         }
         dependsOn(compileJava)
     }
