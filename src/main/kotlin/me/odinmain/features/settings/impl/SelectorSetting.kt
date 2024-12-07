@@ -106,6 +106,11 @@ class SelectorSetting(
                         this@setting.redraw()
                         true
                     }
+
+                    onClick(button = 1) {
+                        value = (value + 1) % options.size
+                        true
+                    }
                 }
             }
             column(size(w = Copying, h = height)) {

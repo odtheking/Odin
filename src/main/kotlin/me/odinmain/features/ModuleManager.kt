@@ -15,6 +15,10 @@ import me.odinmain.features.impl.nether.*
 import me.odinmain.features.impl.render.*
 import me.odinmain.features.impl.skyblock.*
 import me.odinmain.features.settings.impl.KeybindSetting
+import me.odinmain.utils.capitalizeFirst
+import me.odinmain.utils.ui.regularFont
+import me.odinmain.utils.ui.renderer.NVGRenderer
+import me.odinmain.utils.ui.renderer.NVGRenderer.textWidth
 import net.minecraft.network.Packet
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -157,20 +161,17 @@ object ModuleManager {
     fun getModuleByName(name: String?): Module? = modules.firstOrNull { it.name.equals(name, true) }
 
     fun generateFeatureList(): String {
-       /* val sortedCategories = modules.sortedByDescending { getTextWidth(it.name, 18f) }.groupBy { it.category }.entries
-            .sortedBy{ Category.entries.associateWith { it.ordinal }[it.key] }
+        val sortedCategories = modules.sortedByDescending { textWidth(it.name, 18f, font = regularFont) }.groupBy { it.category }.entries
+            .sortedBy { Category.entries.associateWith { it.ordinal }[it.key] }
 
         val featureList = StringBuilder()
-        return featureList.toString()
          for ((category, modulesInCategory) in sortedCategories) {
-             val displayName = category.name.capitalizeFirst()
-             featureList.appendLine("Category: ${if (displayName == "Floor7") "Floor 7" else displayName}")
+             featureList.appendLine("Category: ${category.displayName}")
              for (module in modulesInCategory) {
                  featureList.appendLine("- ${module.name}: ${module.description}")
              }
              featureList.appendLine()
          }
-         return featureList.toString()*/
-        return ""
+         return featureList.toString()
     }
 }

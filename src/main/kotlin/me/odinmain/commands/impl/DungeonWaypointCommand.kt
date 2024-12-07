@@ -1,5 +1,6 @@
 package me.odinmain.commands.impl
 
+import com.github.stivais.aurora.color.Color
 import kotlinx.coroutines.launch
 import me.odinmain.OdinMain.scope
 import me.odinmain.commands.commodore
@@ -16,6 +17,8 @@ import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.writeToClipboard
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.util.BlockPos
+import com.github.stivais.aurora.utils.hexToRGBA
+import com.github.stivais.aurora.utils.toHSB
 
 val dungeonWaypointsCommand = commodore("dwp", "dungeonwaypoints") {
     runs {
@@ -77,7 +80,7 @@ val dungeonWaypointsCommand = commodore("dwp", "dungeonwaypoints") {
 
     literal("color").runs { hex: String ->
         if (hex.length != 8 || hex.any { !it.isHexaDecimal }) return@runs modMessage("Color hex not properly formatted! Use format RRGGBBAA")
-      //  DungeonWaypoints.color = colorFrom(hex)
+        DungeonWaypoints.color = Color.RGB(hexToRGBA(hex)).toHSB()
         modMessage("Color changed to: $hex")
     }
 

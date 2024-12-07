@@ -9,6 +9,8 @@ import me.odinmain.utils.render.RenderUtils.renderVec
 import me.odinmain.utils.render.RenderUtils.tessellator
 import me.odinmain.utils.render.RenderUtils.worldRenderer
 import me.odinmain.utils.ui.Colors
+import me.odinmain.utils.ui.mcFont
+import me.odinmain.utils.ui.renderer.NVGRenderer
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
@@ -105,9 +107,9 @@ object RenderUtils2D {
     }
 
 
-    fun drawNameTag(vec3: Vec3, name: String) {
+    fun drawNameTag(vec3: Vec3, name: String, color: Color) {
         worldToScreenPosition(vec3)?.let { pos ->
-            mc.fontRendererObj.drawString(name, pos.xCoord.toFloat(), pos.yCoord.toFloat(), -1, true) // can use nvg
+            NVGRenderer.text(name, pos.xCoord.toFloat(), pos.yCoord.toFloat(), 1f, color.rgba, mcFont)
         }
     }
 

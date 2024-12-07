@@ -12,6 +12,7 @@ import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.postAndCatch
+import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.PlayerUtils.windowClick
 import me.odinmain.utils.skyblock.modMessage
@@ -175,7 +176,7 @@ object TerminalSolver : Module(
                 }
 
                 Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, color.rgba)
-               // mcText(text.toString(), event.x + 8f - getMCTextWidth(text.toString()) / 2, event.y + 4.5, 1, textColor, shadow = textShadow, false)
+                RenderUtils.drawText(text.toString(), event.x + 8f - mc.fontRendererObj.getStringWidth(text.toString()) / 2, event.y + 4.5f, 1.0, textColor, shadow = textShadow, false)
             }
             TerminalTypes.ORDER -> {
                 val index = currentTerm.solution.indexOf(event.slot.slotIndex)
@@ -189,7 +190,7 @@ object TerminalSolver : Module(
                     event.isCanceled = true
                 }
                 val amount = event.slot.stack?.stackSize ?: 0
-               // mcText(amount.toString(), event.x + 8.5f - getMCTextWidth(amount.toString()) / 2, event.y + 4.5f, 1, textColor, shadow = textShadow, false)
+                RenderUtils.drawText(amount.toString(), event.x + 8.5f - mc.fontRendererObj.getStringWidth(amount.toString()) / 2, event.y + 4.5f, 1.0, textColor, shadow = textShadow, false)
             }
             TerminalTypes.STARTS_WITH ->
                 if (renderType != 1 || (renderType == 1 && !removeWrong)) Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, startsWithColor.rgba)

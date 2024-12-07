@@ -14,6 +14,8 @@ import com.github.stivais.aurora.elements.Layout.Companion.section
 import com.github.stivais.aurora.elements.impl.Block.Companion.outline
 import com.github.stivais.aurora.elements.impl.Popup
 import com.github.stivais.aurora.elements.impl.Shadow
+import com.github.stivais.aurora.elements.impl.Text.Companion.string
+import com.github.stivais.aurora.elements.impl.TextInput.Companion.onTextChanged
 import com.github.stivais.aurora.elements.impl.layout.Column.Companion.sectionRow
 import com.github.stivais.aurora.elements.impl.popup
 import com.github.stivais.aurora.renderer.data.Gradient
@@ -27,6 +29,7 @@ import me.odinmain.features.settings.Saving
 import me.odinmain.features.settings.Setting
 import me.odinmain.features.settings.Setting.Renders.Companion.onValueChanged
 import me.odinmain.features.settings.Setting.Renders.Companion.setting
+import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.ui.image
 import java.awt.Color.HSBtoRGB
 
@@ -56,7 +59,7 @@ class ColorSetting(
     }
 
     override fun write(): JsonElement {
-        return JsonPrimitive(value.toHexString())
+        return JsonPrimitive(value.toHexString(allowAlpha))
     }
 
     override fun ElementScope<*>.create() = setting(40.px) {
@@ -89,12 +92,24 @@ class ColorSetting(
         }
     }
 
+    fun Color.toHexString(returnAlpha: Boolean = false): String {
+        val r = (rgba shr 16) and 0xFF
+        val g = (rgba shr 8) and 0xFF
+        val b = rgba and 0xFF
+        return if (returnAlpha) {
+            val a = (rgba shr 24) and 0xFF
+            String.format("#%02X%02X%02X%02X", r, g, b, a)
+        } else {
+            String.format("#%02X%02X%02X", r, g, b)
+        }
+    }
+
     private fun ElementScope<*>.colorPicker() = popup(constraints = copies(), smooth = true) {
         val colorMaxBrightness = color { HSBtoRGB(value.hue, value.saturation, 1f) }
         val colorOnlyHue = color { HSBtoRGB(value.hue, 1f, 1f) }
 
         onClick {
-            closePopup( )
+            closePopup()
             popup = null
         }
 
@@ -243,6 +258,44 @@ class ColorSetting(
                             colorMaxBrightness,
                             thickness = 1.px,
                         )
+                        val textInput = textInput(
+                            string = value.toHexString(allowAlpha),
+                            placeholder = if (allowAlpha) "#FFFFFFFF" else "#FFFFFF",
+                            pos = at(x = 5.percent),
+                            size = 55.percent
+                        ) {
+                            onTextChanged { event ->
+                                val str = event.string
+                                val hexLength = if (allowAlpha) 9 else 7
+                                // Validate hex input
+                                if (str.length > hexLength || (str.isNotEmpty() && !str.startsWith("#")) || (str.length > 1 && !str.substring(1).all { it.isDigit() || it.lowercaseChar() in 'a'..'f' })) {
+                                    event.cancel()
+                                } else if (str.length == hexLength) {
+                                    try {
+                                        // Parse and update color from hex immediately
+                                        val newColor = Color.RGB(hexToRGBA(str)).toHSB()
+                                        value.hue = newColor.hue
+                                        value.saturation = newColor.saturation
+                                        value.brightness = newColor.brightness
+                                        if (allowAlpha) value.alpha = newColor.alpha
+                                    } catch (_: Exception) { }
+                                }
+                            }
+                        }
+                        onValueChanged {
+                            // change hex if value changed externally
+                            textInput.string = value.toHexString(allowAlpha)
+                        }
+                        onFocusLost {
+                            // reset hex if invalid
+                            val hexLength = if (allowAlpha) 9 else 7
+                            if (textInput.string.length != hexLength) {
+                                textInput.string = value.toHexString(allowAlpha)
+                            }
+                        }
+                        onClick {
+                            ui.focus(textInput.element)
+                        }
                     }
                 }
 

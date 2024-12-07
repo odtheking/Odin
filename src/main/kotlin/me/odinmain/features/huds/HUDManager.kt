@@ -44,6 +44,14 @@ object HUDManager {
         UI!!.open()
     }
 
+    fun resetHUDs() {
+        HUDs.loop { hud ->
+            hud.settings.loop {
+                it.reset()
+            }
+        }
+    }
+
     fun makeHUDEditor() = Aurora(renderer = NVGRenderer) {
 
         var hudOptions: Popup? = null

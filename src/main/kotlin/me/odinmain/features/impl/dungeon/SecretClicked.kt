@@ -26,10 +26,10 @@ object SecretClicked : Module(
     private val boxesDropdown by DropdownSetting("Secret Boxes Dropdown")
     private val boxes by BooleanSetting("Secret Boxes", true, description = "Whether or not to render boxes around clicked secrets.").withDependency { boxesDropdown }
     private val style by SelectorSetting("Style", Renderer.DEFAULT_STYLE, Renderer.styles, description = Renderer.STYLE_DESCRIPTION).withDependency { boxesDropdown && boxes }
-    private val color by ColorSetting("Color", color = Colors.MINECRAFT_GOLD.withAlpha(.4f), allowAlpha = true, description = "The color of the box.").withDependency { boxesDropdown && boxes }
+    private val color by ColorSetting("Color", Colors.MINECRAFT_GOLD.withAlpha(.4f), allowAlpha = true, description = "The color of the box.").withDependency { boxesDropdown && boxes }
     private val lineWidth by NumberSetting("Line Width", 2f, 0.1f, 10f, 0.1f, description = "The width of the box's lines.").withDependency { boxesDropdown && boxes }
     private val depthCheck by BooleanSetting("Depth check", false, description = "Boxes show through walls.").withDependency { boxesDropdown && boxes }
-    private val lockedColor by ColorSetting("Locked Color", color = Color.RED.withAlpha(.4f), allowAlpha = true, description = "The color of the box when the chest is locked.").withDependency { boxesDropdown && boxes }
+    private val lockedColor by ColorSetting("Locked Color", Color.RED.withAlpha(.4f), allowAlpha = true, description = "The color of the box when the chest is locked.").withDependency { boxesDropdown && boxes }
     private val timeToStay by NumberSetting("Time To Stay (seconds)", 7, 1, 60, 1, description = "The time the chests should remain highlighted.").withDependency { boxesDropdown && boxes }
     private val useRealSize by BooleanSetting("Use Real Size", true, description = "Whether or not to use the real size of the block.").withDependency { boxesDropdown && boxes }
     private val boxInBoss by BooleanSetting("Box In Boss", false, description = "Highlight clicks in boss.").withDependency { boxesDropdown && boxes }

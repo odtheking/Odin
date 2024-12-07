@@ -1,6 +1,10 @@
 package me.odinmain.features.impl.dungeon
 
 import com.github.stivais.aurora.color.Color
+import com.github.stivais.aurora.dsl.*
+import com.github.stivais.aurora.elements.Layout.Companion.divider
+import com.github.stivais.aurora.elements.impl.Block.Companion.outline
+import com.github.stivais.aurora.elements.impl.layout.Grid
 import com.github.stivais.aurora.utils.withAlpha
 import io.github.moulberry.notenoughupdates.NEUApi
 import me.odinmain.features.Module
@@ -17,13 +21,14 @@ import me.odinmain.utils.skyblock.getItemIndexInContainerChest
 import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.skyblock.partyMessage
 import me.odinmain.utils.ui.Colors
+import me.odinmain.utils.ui.renderer.NVGRenderer
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.inventory.ContainerChest
 import net.minecraftforge.client.event.GuiOpenEvent
-import net.minecraftforge.client.event.GuiScreenEvent
 import net.minecraftforge.fml.common.Loader
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.input.Keyboard
+import me.odinmain.features.impl.render.ClickGUI.`gray 38`
 
 object LeapMenu : Module(
     name = "Leap Menu",
@@ -46,31 +51,17 @@ object LeapMenu : Module(
     private val leapAnnounce by BooleanSetting("Leap Announce", false, description = "Announces when you leap to a player.")
 
     private val EMPTY = DungeonPlayer("Empty", DungeonClass.Unknown)
-    private val keybindList = listOf(topLeftKeybind, topRightKeybind, bottomLeftKeybind, bottomRightKeybind)
 
-
-//    fun leapMenu() = UI {
+//    fun leapMenu() = Aurora(renderer = NVGRenderer) {
 //        Grid(copies()).scope {
 //            leapTeammates.forEachIndexed { index, it ->
 //                if (it == EMPTY) return@forEachIndexed
-//                val x = when (index) {
-//                    0, 2 -> 16.percent
-//                    else -> 6.percent
-//                }
-//
-//                val y = when (index) {
-//                    0, 1 -> 38.percent
-//                    else -> 10.percent
-//                }
-//                val sizeX = Animatable(from = 80.percent, to = 83.percent) // this keeps the starting x and y while enlarging the width and height which isnt what we want
-//                val sizeY = Animatable(from = 50.percent, to = 53.percent)
-//                group(size(50.percent, 50.percent)) {
+//                group {
 //                    val block = block(
-//                        constraints = constrain(x, y, sizeX, sizeY),
+//                        constraints = constrain(0.px, 0.px, 50.percent, 50.percent),
 //                        color = `gray 38`,
 //                        radius = 12.radius()
 //                    ) {
-//
 //                        image(
 //                            it.skinImage,
 //                            constraints = constrain(5.percent, 10.percent, 30.percent, 80.percent),
@@ -82,20 +73,37 @@ object LeapMenu : Module(
 //                            text(if (it.isDead) "§cDEAD" else it.clazz.name, size = 10.percent, color = Color.WHITE)
 //                        }
 //                    }
-//                    onClick { // make it possible to click any mouse button
-//                        handleMouseClick(index)
+//                    onClick(nonSpecific = true) {
+//                        if (type != 0 && leapTeammates.size < index) return@onClick
+//
+//                        val playerToLeap = leapTeammates[index - 1]
+//                        if (playerToLeap == EMPTY) return@onClick
+//                        if (playerToLeap.isDead) return@onClick modMessage("This player is dead, can't leap.")
+//                        modMessage("Teleporting to ${playerToLeap.name}.")
+//                        leapTo(playerToLeap.name)
+//                        true
+//                    }
+//                    onKeycodePressed { (code) ->
+//                        if (!useNumberKeys || leapTeammates.isEmpty()) return@onKeycodePressed false
+//
+//                        val keybindIndex = listOf(topLeftKeybind, topRightKeybind, bottomLeftKeybind, bottomRightKeybind).indexOfFirst { it.key == code }.takeIf { it != -1 } ?: return@onKeycodePressed false
+//                        if (keybindIndex >= leapTeammates.size) return@onKeycodePressed false
+//
+//                        val playerToLeap = leapTeammates[keybindIndex]
+//                        if (playerToLeap == EMPTY || playerToLeap.isDead) {
+//                            modMessage("This player is dead, can't leap.")
+//                            return@onKeycodePressed false
+//                        }
+//
+//                        leapTo(playerToLeap.name)
 //                        true
 //                    }
 //                    onMouseEnter {
-//                        sizeX.animate(0.25.seconds, Animations.EaseInOutQuint)
-//                        sizeY.animate(0.25.seconds, Animations.EaseInOutQuint)
-//                        block.outline(color = Color.WHITE)
+//                        block.outline(color = Color.WHITE, thickness = 2.px)
 //                        redraw()
 //                    }
 //                    onMouseExit {
-//                        sizeX.animate(0.25.seconds, Animations.EaseInOutQuint)
-//                        sizeY.animate(0.25.seconds, Animations.EaseInOutQuint)
-//                        block.outline(color = Color.TRANSPARENT)
+//                        block.outline(color = Color.TRANSPARENT, thickness = 0.px)
 //                        redraw()
 //                    }
 //                }
@@ -110,39 +118,9 @@ object LeapMenu : Module(
         if (Loader.instance().activeModList.any { it.modId == "notenoughupdates" }) NEUApi.setInventoryButtonsToDisabled()
     }
 
-    private fun handleMouseClick(quadrant: Int) {
-        if ((type.equalsOneOf(1,2,3)) && leapTeammates.size < quadrant) return
-
-        val playerToLeap = leapTeammates[quadrant - 1]
-        if (playerToLeap == EMPTY) return
-        if (playerToLeap.isDead) return modMessage("This player is dead, can't leap.")
-        modMessage("Teleporting to ${playerToLeap.name}.")
-        //leapTo(playerToLeap.name, containerChest)
-    }
-
-    @SubscribeEvent
-    fun keyTyped(event: GuiScreenEvent.KeyboardInputEvent.Pre) {
-        val gui = event.gui as? GuiChest ?: return
-        if (
-            gui.inventorySlots !is ContainerChest ||
-            gui.inventorySlots.name != "Spirit Leap" ||
-            keybindList.none { it.isDown() } ||
-            leapTeammates.isEmpty() ||
-            !useNumberKeys
-        ) return
-
-        val index = keybindList.indexOfFirst { it.isDown() }
-        val playerToLeap = if (index + 1 > leapTeammates.size) return else leapTeammates[index]
-        if (playerToLeap == EMPTY) return
-        if (playerToLeap.isDead) return modMessage("This player is dead, can't leap.")
-
-        leapTo(playerToLeap.name, gui.inventorySlots as ContainerChest)
-
-        event.isCanceled = true
-    }
-
-    private fun leapTo(name: String, containerChest: ContainerChest) {
-        val index = getItemIndexInContainerChest(containerChest, name, 11..16) ?: return modMessage("Cant find player $name. This shouldn't be possible! are you nicked?")
+    private fun leapTo(name: String) {
+        val containerChest = mc.thePlayer?.openContainer as? ContainerChest ?: return modMessage("You need to be in the leap menu to leap.")
+        val index = getItemIndexInContainerChest(containerChest, name, 11..16) ?: return modMessage("Can't find player $name. This shouldn't be possible! are you nicked?")
         modMessage("Teleporting to $name.")
         if (leapAnnounce) partyMessage("Leaped to $name!")
         mc.playerController.windowClick(containerChest.windowId, index, 2, 3, mc.thePlayer)
@@ -154,12 +132,12 @@ object LeapMenu : Module(
         onWorldLoad { worldLoad() }
     }
 
-   /*private val leapTeammates: MutableList<DungeonPlayer> = mutableListOf(
+   private val leapTeammates: MutableList<DungeonPlayer> = mutableListOf(
         DungeonPlayer("Stivais", DungeonClass.Healer),
         DungeonPlayer("Odtheking", DungeonClass.Archer),
         DungeonPlayer("freebonsai", DungeonClass.Mage),
         DungeonPlayer("Cezar", DungeonClass.Tank)
-    )*/
+    )
 
     /**
      * Sorts the list of players based on their default quadrant and class priority.

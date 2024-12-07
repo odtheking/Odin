@@ -20,13 +20,13 @@ object BPSDisplay : Module(
 ) {
     private val roundNumber by BooleanSetting("Round number", true, description = "If the number should be rounded.")
 
-    private val hud by TextHUD("HUD") { color, font, shadow ->
-        buildText(
-            string = "BPS:",
-            supplier = { if (roundNumber) bps.roundToInt() else bps.round(1) },
-            font, color, getBPSColor(), shadow
-        )
-    }.registerSettings(::roundNumber).setting("Displays the BPS on screen.")
+//    private val hud by TextHUD("HUD") { color, font, shadow ->
+//        buildText(
+//            string = "BPS:",
+//            supplier = { if (roundNumber) bps.roundToInt() else bps.round(1) },
+//            font, color, getBPSColor(), shadow
+//        )
+//    }.registerSettings(::roundNumber).setting("Displays the BPS on screen.")
 
     private var bps = 0.0
         get() = field.coerceIn(0.0, 20.0)

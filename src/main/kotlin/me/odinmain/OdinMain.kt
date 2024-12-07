@@ -31,6 +31,8 @@ import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.SkyblockPlayer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.ScanUtils
+import me.odinmain.utils.ui.regularFont
+import me.odinmain.utils.ui.renderer.NVGRenderer.textWidth
 import me.odinmain.utils.ui.screens.UIScreen
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen

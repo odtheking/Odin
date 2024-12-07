@@ -1,8 +1,10 @@
 package me.odinmain.commands.impl
 
+import com.github.stivais.aurora.utils.loop
 import com.github.stivais.commodore.utils.GreedyString
 import me.odinmain.commands.commodore
 import me.odinmain.features.huds.HUDManager
+import me.odinmain.features.huds.HUDManager.HUDs
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints
 import me.odinmain.features.impl.render.ClickGUI
 import me.odinmain.features.impl.render.ClickGUI.clickGUI
@@ -47,11 +49,11 @@ val mainCommand = commodore("od", "odin") {
                 value.y = value.defaultY
                 value.extended = true // default is always true
             }
-            modMessage("Reset ClickGUI panel positions")
+            modMessage("§aReset ClickGUI panel positions")
         }
         literal("hud").runs {
-            // EditHUDGui.resetHUDs() TODO: Implement this
-            modMessage("Reset HUD positions.")
+            HUDManager.resetHUDs()
+            modMessage("§aReset HUD positions.")
         }
     }
 

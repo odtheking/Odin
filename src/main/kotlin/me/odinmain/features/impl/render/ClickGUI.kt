@@ -12,10 +12,7 @@ import com.github.stivais.aurora.elements.impl.Popup
 import com.github.stivais.aurora.elements.impl.Scrollable.Companion.scroll
 import com.github.stivais.aurora.elements.impl.TextInput.Companion.onTextChanged
 import com.github.stivais.aurora.elements.impl.popup
-import com.github.stivais.aurora.utils.blue
-import com.github.stivais.aurora.utils.green
-import com.github.stivais.aurora.utils.loop
-import com.github.stivais.aurora.utils.red
+import com.github.stivais.aurora.utils.*
 import kotlinx.coroutines.launch
 import me.odinmain.OdinMain
 import me.odinmain.OdinMain.scope
@@ -34,9 +31,9 @@ import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.createClickStyle
 import me.odinmain.utils.skyblock.getChatBreak
 import me.odinmain.utils.skyblock.modMessage
-import me.odinmain.utils.ui.lifetimeAnimations
-import me.odinmain.utils.ui.onHover
+import me.odinmain.utils.ui.*
 import me.odinmain.utils.ui.renderer.NVGRenderer
+import me.odinmain.utils.ui.renderer.NVGRenderer.textWidth
 import me.odinmain.utils.ui.screens.UIScreen.Companion.open
 import net.minecraft.event.ClickEvent
 import net.minecraft.util.ChatComponentText
@@ -186,7 +183,7 @@ object ClickGUI : Module(
                     radius = radius(tl = 5, tr = 5)
                 ) {
                     text(
-                        string = panel.name.capitalizeFirst(),
+                        string = panel.displayName,
                         size = 20.px
                     )
                     onClick(1) {
@@ -205,12 +202,11 @@ object ClickGUI : Module(
                         // bg
                         block(
                             copies(),
-                            color = Color.RGB(38, 38, 38, 0.7f)
+                            color = `gray 38`.withAlpha(0.7f)
                         )
-                        for (module in ModuleManager.modules) {
+                        for (module in ModuleManager.modules.sortedByDescending { textWidth(it.name, 18f, font = regularFont) }) {
                             if (module.category != panel) continue
-                            val it = module(module)
-                            moduleElements.add(module to it)
+                            moduleElements.add(module to module(module))
                         }
                     }
                 }
@@ -229,7 +225,7 @@ object ClickGUI : Module(
 //                )
 
                 onScroll { (amount) ->
-                    scrollable.scroll(amount * 75f, style = Animation.Style.EaseOutQuint)
+                    scrollable.scroll(amount * -75f, style = Animation.Style.EaseOutQuint)
                     true
                 }
             }

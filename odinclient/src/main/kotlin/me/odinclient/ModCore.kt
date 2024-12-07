@@ -42,18 +42,18 @@ class ModCore {
 
     @EventHandler
     fun postInit(event: FMLPostInitializationEvent) {
-        OdinMain.postInit()
-    }
-
-    @EventHandler
-    fun loadComplete(event: FMLLoadCompleteEvent) {
         ModuleManager.addModules(
-            AutoGFS, /*AutoIceFill,*/ AutoSell, CancelInteract, CloseChest, SecretHitboxes,
+            AutoGFS, AutoSell, CancelInteract, CloseChest, SecretHitboxes,
             HoverTerms, LightsDevice, SimonSays, ArrowsDevice, FuckDiorite, RelicAura,
             Trajectories, Ghosts, NoDebuff, ChocolateFactory, AutoExperiments, AutoHarp,
             FarmingHitboxes, NoBlock, AutoClicker, Triggerbot, GhostBlocks, FreezeGame, EtherWarpHelper, ChestEsp,
             EscrowFix, TerminalAura, AutoTerms, Camera, DungeonAbilities, QueueTerms, HidePlayers
         )
+        OdinMain.postInit()
+    }
+
+    @EventHandler
+    fun loadComplete(event: FMLLoadCompleteEvent) {
         OdinMain.loadComplete()
     }
 
