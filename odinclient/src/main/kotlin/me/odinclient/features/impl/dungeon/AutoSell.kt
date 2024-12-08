@@ -29,7 +29,7 @@ object AutoSell : Module(
             if (!enabled || sellList.isEmpty()) return@execute
             val container = mc.thePlayer?.openContainer as? ContainerChest ?: return@execute
 
-            if (!container.name.equalsOneOf("Trades", "Booster Cookie", "Farm Merchant")) return@execute
+            if (!container.name.equalsOneOf("Trades", "Booster Cookie", "Farm Merchant", "Ophelia")) return@execute
             val index = container.inventorySlots?.subList(54, 90)?.firstOrNull { it.stack?.displayName?.containsOneOf(sellList, true) == true }?.slotNumber ?: return@execute
             when (clickType) {
                 0 -> windowClick(index, PlayerUtils.ClickType.Shift)
