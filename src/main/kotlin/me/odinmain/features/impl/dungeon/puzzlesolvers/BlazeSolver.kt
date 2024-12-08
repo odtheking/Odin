@@ -57,7 +57,7 @@ object BlazeSolver {
             Renderer.drawStyledBox(aabb, color, blazeStyle, depth = true)
 
             if (blazeLineNext && index > 0 && index <= blazeLineAmount)
-                Renderer.draw3DLine(listOf(blazes[index - 1].renderVec, entity.renderBoundingBox.middle), color = color, lineWidth = 1f, depth = true)
+                Renderer.draw3DLine(listOf(blazes[index - 1].renderVec, entity.renderBoundingBox.middle), color = color, lineWidth = 3f, depth = true)
         }
     }
 
