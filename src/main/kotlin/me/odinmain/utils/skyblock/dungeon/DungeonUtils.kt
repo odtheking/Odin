@@ -250,10 +250,7 @@ object DungeonUtils {
     fun isSecret(state: IBlockState, pos: BlockPos): Boolean {
         return when {
             state.block.equalsOneOf(Blocks.chest, Blocks.trapped_chest, Blocks.lever) -> true
-            state.block is BlockSkull -> {
-                val tile = mc.theWorld?.getTileEntity(pos) as? TileEntitySkull ?: return false
-                tile.playerProfile?.id.toString().equalsOneOf(WITHER_ESSENCE_ID, REDSTONE_KEY)
-            }
+            state.block is BlockSkull -> (mc.theWorld?.getTileEntity(pos) as? TileEntitySkull)?.playerProfile?.id.toString().equalsOneOf(WITHER_ESSENCE_ID, REDSTONE_KEY)
             else -> false
         }
     }
@@ -262,8 +259,8 @@ object DungeonUtils {
     fun Room.getRealCoords(pos: Vec3) = pos.rotateAroundNorth(rotation).addVec(x = clayPos.x, z = clayPos.z)
     fun Room.getRelativeCoords(pos: BlockPos) = getRelativeCoords(Vec3(pos.x.toDouble(), pos.y.toDouble(), pos.z.toDouble())).toBlockPos()
     fun Room.getRealCoords(pos: BlockPos) = getRealCoords(Vec3(pos.x.toDouble(), pos.y.toDouble(), pos.z.toDouble())).toBlockPos()
-    fun Room.getRelativeCoords(x: Int, y: Int, z: Int) = getRelativeCoords(BlockPos(x.toDouble(), y.toDouble(), z.toDouble()))
-    fun Room.getRealCoords(x: Int, y: Int, z: Int) = getRealCoords(BlockPos(x.toDouble(), y.toDouble(), z.toDouble()))
+    fun Room.getRelativeCoords(x: Int, y: Int, z: Int) = getRelativeCoords(Vec3(x.toDouble(), y.toDouble(), z.toDouble())).toBlockPos()
+    fun Room.getRealCoords(x: Int, y: Int, z: Int) = getRealCoords(Vec3(x.toDouble(), y.toDouble(), z.toDouble())).toBlockPos()
 
     val dungeonItemDrops = listOf(
         "Health Potion VIII Splash Potion", "Healing Potion 8 Splash Potion", "Healing Potion VIII Splash Potion", "Healing VIII Splash Potion", "Healing 8 Splash Potion",

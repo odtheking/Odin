@@ -160,7 +160,7 @@ val devCommand = commodore("oddev") {
             """
             ${getChatBreak()}
             Middle: $block
-            Relative Coords: ${DungeonUtils.currentRoom?.getRelativeCoords(block.toVec3())?.toString()}
+            Relative Coords: ${DungeonUtils.currentRoom?.getRelativeCoords(block)?.toString()}
             ${getChatBreak()}
             """.trimIndent(), "")
     }
