@@ -1,5 +1,6 @@
 package me.odinmain.features.impl.dungeon.puzzlesolvers
 
+import com.github.stivais.aurora.color.Color
 import me.odinmain.OdinMain.mc
 import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers.onPuzzleComplete
 import me.odinmain.utils.equalsOneOf

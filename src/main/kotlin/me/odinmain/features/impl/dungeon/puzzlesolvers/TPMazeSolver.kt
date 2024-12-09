@@ -4,9 +4,6 @@ import com.github.stivais.aurora.color.Color
 import com.github.stivais.aurora.utils.withAlpha
 import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.RoomEnterEvent
-import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers.mazeColorMultiple
-import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers.mazeColorOne
-import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers.mazeColorVisited
 import me.odinmain.utils.isXZInterceptable
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
