@@ -178,7 +178,7 @@ object PuzzleSolvers : Module(
             if (iceFillSolver) IceFillSolver.onRenderWorld(iceFillColor)
             if (weirdosSolver) WeirdosSolver.onRenderWorld(weirdosColor, weirdosWrongColor, weirdosStyle)
             if (boulderSolver) BoulderSolver.onRenderWorld(showAllBoulderClicks, boulderStyle, boulderColor, boulderLineWidth)
-            if (blazeSolver)   BlazeSolver.onRenderWorld(blazeLineNext, blazeLineAmount, blazeStyle, blazeFirstColor, blazeSecondColor, blazeAllColor, blazeWidth, blazeHeight, blazeSendComplete)
+            if (blazeSolver)   BlazeSolver.onRenderWorld(blazeLineNext, blazeLineAmount, blazeStyle, blazeFirstColor, blazeSecondColor, blazeAllColor, blazeWidth, blazeHeight, blazeSendComplete, blazeLineWidth)
             if (beamsSolver)   BeamsSolver.onRenderWorld(beamStyle, beamsTracer, beamsAlpha)
             if (waterSolver)   WaterSolver.onRenderWorld(showTracer, tracerColorFirst, tracerColorSecond)
             if (quizSolver)    QuizSolver.onRenderWorld(quizColor, quizDepth)
