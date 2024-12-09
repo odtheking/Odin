@@ -1,6 +1,7 @@
 package me.odinmain.features.impl.render
 
 import com.github.stivais.aurora.color.Color
+import com.github.stivais.aurora.utils.color
 import me.odinmain.events.impl.PacketEvent
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
@@ -20,13 +21,13 @@ object BPSDisplay : Module(
 ) {
     private val roundNumber by BooleanSetting("Round number", true, description = "If the number should be rounded.")
 
-//    private val hud by TextHUD("HUD") { color, font, shadow ->
-//        buildText(
-//            string = "BPS:",
-//            supplier = { if (roundNumber) bps.roundToInt() else bps.round(1) },
-//            font, color, getBPSColor(), shadow
-//        )
-//    }.registerSettings(::roundNumber).setting("Displays the BPS on screen.")
+    private val hud by TextHUD("HUD") { color, font, shadow ->
+        buildText(
+            string = "BPS:",
+            supplier = { if (roundNumber) bps.roundToInt() else bps.round(1) },
+            font, color, color { getBPSColor().rgba }, shadow
+        )
+    }.registerSettings(::roundNumber).setting("Displays the BPS on screen.")
 
     private var bps = 0.0
         get() = field.coerceIn(0.0, 20.0)

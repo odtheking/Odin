@@ -1,34 +1,36 @@
 package me.odinmain.features.impl.dungeon
 
 import com.github.stivais.aurora.color.Color
+import com.github.stivais.aurora.constraints.impl.positions.Center
+import com.github.stivais.aurora.constraints.impl.size.AspectRatio
+import com.github.stivais.aurora.constraints.impl.size.Copying
 import com.github.stivais.aurora.dsl.*
 import com.github.stivais.aurora.elements.Layout.Companion.divider
-import com.github.stivais.aurora.elements.impl.Block.Companion.outline
 import com.github.stivais.aurora.elements.impl.layout.Grid
+import com.github.stivais.aurora.renderer.data.Image
 import com.github.stivais.aurora.utils.withAlpha
 import io.github.moulberry.notenoughupdates.NEUApi
 import me.odinmain.features.Module
 import me.odinmain.features.impl.dungeon.LeapHelper.leapHelperBossChatEvent
 import me.odinmain.features.impl.dungeon.LeapHelper.worldLoad
+import me.odinmain.features.impl.render.ClickGUI.`gray 38`
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
-import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.name
 import me.odinmain.utils.skyblock.dungeon.DungeonClass
 import me.odinmain.utils.skyblock.dungeon.DungeonPlayer
-import me.odinmain.utils.skyblock.dungeon.DungeonUtils.leapTeammates
 import me.odinmain.utils.skyblock.getItemIndexInContainerChest
 import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.skyblock.partyMessage
 import me.odinmain.utils.ui.Colors
 import me.odinmain.utils.ui.renderer.NVGRenderer
+import me.odinmain.utils.ui.screens.UIScreen.Companion.open
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.inventory.ContainerChest
 import net.minecraftforge.client.event.GuiOpenEvent
 import net.minecraftforge.fml.common.Loader
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.input.Keyboard
-import me.odinmain.features.impl.render.ClickGUI.`gray 38`
 
 object LeapMenu : Module(
     name = "Leap Menu",
@@ -52,78 +54,66 @@ object LeapMenu : Module(
 
     private val EMPTY = DungeonPlayer("Empty", DungeonClass.Unknown)
 
-//    fun leapMenu() = Aurora(renderer = NVGRenderer) {
-//        Grid(copies()).scope {
-//            leapTeammates.forEachIndexed { index, it ->
-//                if (it == EMPTY) return@forEachIndexed
-//                group {
-//                    val block = block(
-//                        constraints = constrain(0.px, 0.px, 50.percent, 50.percent),
-//                        color = `gray 38`,
-//                        radius = 12.radius()
-//                    ) {
-//                        image(
-//                            it.skinImage,
-//                            constraints = constrain(5.percent, 10.percent, 30.percent, 80.percent),
-//                            12f.radius()
-//                        )
-//                        column(constraints = constrain(38.percent, 40.percent)) {
-//                            text(it.name, size = 20.percent, color = it.clazz.color)
-//                            divider(5.percent)
-//                            text(if (it.isDead) "§cDEAD" else it.clazz.name, size = 10.percent, color = Color.WHITE)
-//                        }
-//                    }
-//                    onClick(nonSpecific = true) {
-//                        if (type != 0 && leapTeammates.size < index) return@onClick
-//
-//                        val playerToLeap = leapTeammates[index - 1]
-//                        if (playerToLeap == EMPTY) return@onClick
-//                        if (playerToLeap.isDead) return@onClick modMessage("This player is dead, can't leap.")
-//                        modMessage("Teleporting to ${playerToLeap.name}.")
-//                        leapTo(playerToLeap.name)
-//                        true
-//                    }
-//                    onKeycodePressed { (code) ->
-//                        if (!useNumberKeys || leapTeammates.isEmpty()) return@onKeycodePressed false
-//
-//                        val keybindIndex = listOf(topLeftKeybind, topRightKeybind, bottomLeftKeybind, bottomRightKeybind).indexOfFirst { it.key == code }.takeIf { it != -1 } ?: return@onKeycodePressed false
-//                        if (keybindIndex >= leapTeammates.size) return@onKeycodePressed false
-//
-//                        val playerToLeap = leapTeammates[keybindIndex]
-//                        if (playerToLeap == EMPTY || playerToLeap.isDead) {
-//                            modMessage("This player is dead, can't leap.")
-//                            return@onKeycodePressed false
-//                        }
-//
-//                        leapTo(playerToLeap.name)
-//                        true
-//                    }
-//                    onMouseEnter {
-//                        block.outline(color = Color.WHITE, thickness = 2.px)
-//                        redraw()
-//                    }
-//                    onMouseExit {
-//                        block.outline(color = Color.TRANSPARENT, thickness = 0.px)
-//                        redraw()
-//                    }
-//                }
-//            }
-//        }
-//    }
+    fun leapMenu() = Aurora(renderer = NVGRenderer) {
+        Grid(copies()).scope {
+            leapTeammates.forEachIndexed { index, teammate ->
+                if (teammate == EMPTY) return@forEachIndexed
+                group(size(50.percent, 50.percent)) {
+                    block(
+                        constraints = constrain(Center, Center, AspectRatio(2.5f), 60.percent),
+                        color = `gray 38`,
+                        radius = 12.radius()
+                    ) {
+                        row(size(Copying, Copying), padding = 5.percent) {
+                            divider(5.percent)
+                            image(
+                                teammate.skinImage,
+                                constraints = constrain(y = Center, w = 30.percent, h = AspectRatio(1f)),
+                                12f.radius()
+                            )
+                            column(size(Copying, Copying), padding = 5.percent) {
+                                divider(40.percent)
+                                text(teammate.name, color = teammate.clazz.color, size = 15.percent)
+                                text(if (teammate.isDead) "DEAD" else teammate.clazz.name, color = if (teammate.isDead) Colors.MINECRAFT_RED else Colors.WHITE, size = 12.percent)
+                            }
+                        }
+                    }
+                    onClick(nonSpecific = true) {
+                        if (teammate.isDead) return@onClick modMessage("§cThis player is dead, can't leap.").let { false }
+                        leapTo(teammate.name)
+                        true
+                    }
+                }
+            }
+        }
+        onKeycodePressed { (code) ->
+            if (!useNumberKeys || leapTeammates.isEmpty()) return@onKeycodePressed false
+
+            val keybindIndex = listOf(topLeftKeybind, topRightKeybind, bottomLeftKeybind, bottomRightKeybind).indexOfFirst { it.key == code }.takeIf { it != -1 } ?: return@onKeycodePressed false
+            if (keybindIndex >= leapTeammates.size) return@onKeycodePressed false
+
+            val playerToLeap = leapTeammates[keybindIndex]
+            if (playerToLeap == EMPTY || playerToLeap.isDead) return@onKeycodePressed modMessage("§cThis player is dead, can't leap.").let { false }
+
+            leapTo(playerToLeap.name)
+            true
+        }
+    }
 
     @SubscribeEvent
     fun guiOpen(event: GuiOpenEvent) {
         val chest = (event.gui as? GuiChest)?.inventorySlots ?: return
         if (chest !is ContainerChest || chest.name != "Spirit Leap" || leapTeammates.isEmpty() || leapTeammates.all { it == EMPTY }) return
         if (Loader.instance().activeModList.any { it.modId == "notenoughupdates" }) NEUApi.setInventoryButtonsToDisabled()
+        open(leapMenu())
     }
 
     private fun leapTo(name: String) {
-        val containerChest = mc.thePlayer?.openContainer as? ContainerChest ?: return modMessage("You need to be in the leap menu to leap.")
-        val index = getItemIndexInContainerChest(containerChest, name, 11..16) ?: return modMessage("Can't find player $name. This shouldn't be possible! are you nicked?")
-        modMessage("Teleporting to $name.")
+        val containerChest = mc.thePlayer?.openContainer as? ContainerChest ?: return modMessage("§cYou need to be in the leap menu to leap.")
+        val index = getItemIndexInContainerChest(containerChest, name, 11..16) ?: return modMessage("§cCan't find player $name. This shouldn't be possible! are you nicked?")
+        mc.playerController?.windowClick(containerChest.windowId, index, 2, 3, mc.thePlayer) ?: return
         if (leapAnnounce) partyMessage("Leaped to $name!")
-        mc.playerController.windowClick(containerChest.windowId, index, 2, 3, mc.thePlayer)
+        modMessage("Teleporting to $name.")
     }
 
     init {
@@ -133,10 +123,10 @@ object LeapMenu : Module(
     }
 
    private val leapTeammates: MutableList<DungeonPlayer> = mutableListOf(
-        DungeonPlayer("Stivais", DungeonClass.Healer),
-        DungeonPlayer("Odtheking", DungeonClass.Archer),
-        DungeonPlayer("freebonsai", DungeonClass.Mage),
-        DungeonPlayer("Cezar", DungeonClass.Tank)
+        DungeonPlayer("Stivais", DungeonClass.Healer, skinImage = Image("https://mc-heads.net/avatar/Stivais/128")),
+        DungeonPlayer("Odtheking", DungeonClass.Archer, skinImage = Image("https://mc-heads.net/avatar/Odtheking/128")),
+        DungeonPlayer("freebonsai", DungeonClass.Mage, skinImage = Image("https://mc-heads.net/avatar/freebonsai/128")),
+        DungeonPlayer("Cezar", DungeonClass.Tank, skinImage = Image("https://mc-heads.net/avatar/Cezar/128"))
     )
 
     /**

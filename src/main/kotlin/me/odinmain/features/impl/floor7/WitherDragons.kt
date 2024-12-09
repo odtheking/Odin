@@ -1,6 +1,7 @@
 package me.odinmain.features.impl.floor7
 
 import com.github.stivais.aurora.color.Color
+import com.github.stivais.aurora.utils.color
 import com.github.stivais.aurora.utils.withAlpha
 import me.odinmain.events.impl.ServerTickEvent
 import me.odinmain.features.Module
@@ -44,7 +45,7 @@ object WitherDragons : Module(
         buildText(
             string = "${priorityDragon.name.first()}:",
             supplier = { String.format(Locale.US, "%.2f", priorityDragon.timeToSpawn / 20.0) },
-            font = font, color1 = priorityDragon.color, color2 = getDragonTimerColor(priorityDragon.timeToSpawn), shadow = shadow
+            font = font, color1 = color { priorityDragon.color.rgba }, color2 = color { getDragonTimerColor(priorityDragon.timeToSpawn).rgba }, shadow = shadow
         ).needs { priorityDragon != WitherDragonsEnum.None }
     }.setting(description = "Displays the time until the next dragon spawns.")
 

@@ -1,6 +1,7 @@
 package me.odinmain.features.impl.nether
 
 import com.github.stivais.aurora.color.Color
+import com.github.stivais.aurora.utils.color
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
@@ -29,7 +30,7 @@ object BuildHelper : Module(
         buildText(
             string = "Build:",
             supplier = { if (preview) "72%" else "${ KuudraUtils.buildDonePercentage }%" },
-            font, color, colorBuild(KuudraUtils.buildDonePercentage), shadow
+            font, color, color { colorBuild(KuudraUtils.buildDonePercentage).rgba }, shadow
         )
     }.setting(description = "Displays the build percentage.")
 
@@ -38,7 +39,7 @@ object BuildHelper : Module(
         buildText(
             string = "Builders:",
             supplier = { if (preview) "2" else "${ KuudraUtils.playersBuildingAmount }%" },
-            font, color, colorBuilders(KuudraUtils.playersBuildingAmount), shadow
+            font, color, color { colorBuilders(KuudraUtils.playersBuildingAmount).rgba }, shadow
         )
     }.setting(description = "Displays the amount of builders.")
 
@@ -48,7 +49,7 @@ object BuildHelper : Module(
         buildText(
             string = "Freshers:",
             supplier = { if (preview) "1" else buildersAmount },
-            font, color, colorBuilders(buildersAmount), shadow
+            font, color, color { colorBuilders(buildersAmount).rgba }, shadow
         )
     }.setting(description = "Displays the amount of freshers.")
 
