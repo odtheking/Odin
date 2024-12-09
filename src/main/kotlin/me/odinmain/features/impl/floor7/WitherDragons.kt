@@ -50,12 +50,12 @@ object WitherDragons : Module(
 
     private val dragonBoxesDropDown by DropdownSetting("Dragon Boxes Dropdown")
     private val dragonBoxes by BooleanSetting("Dragon Boxes", true, description = "Displays boxes for where M7 dragons spawn.").withDependency { dragonBoxesDropDown }
-    val lineThickness by NumberSetting("Line Width", 2f, 1.0, 5.0, 0.5, description = "The thickness of the lines for the boxes.").withDependency { dragonBoxes && dragonBoxesDropDown }
+    private val lineThickness by NumberSetting("Line Width", 2f, 1.0, 5.0, 0.5, description = "The thickness of the lines for the boxes.").withDependency { dragonBoxes && dragonBoxesDropDown }
 
     private val dragonTitleDropDown by DropdownSetting("Dragon Spawn Dropdown")
     val dragonTitle by BooleanSetting("Dragon Title", true, description = "Displays a title for spawning dragons.").withDependency { dragonTitleDropDown }
     private val dragonTracers by BooleanSetting("Dragon Tracer", false, description = "Draws a line to spawning dragons.").withDependency { dragonTitleDropDown }
-    val tracerThickness by NumberSetting("Tracer Width", 5f, 1f, 20f, 0.5, description = "The thickness of the tracers.").withDependency { dragonTracers && dragonTitleDropDown }
+    private val tracerThickness by NumberSetting("Tracer Width", 5f, 1f, 20f, 0.5, description = "The thickness of the tracers.").withDependency { dragonTracers && dragonTitleDropDown }
 
     private val dragonAlerts by DropdownSetting("Dragon Alerts Dropdown")
     val sendNotification by BooleanSetting("Send Dragon Confirmation", true, description = "Sends a confirmation message when a dragon dies.").withDependency { dragonAlerts }
@@ -82,7 +82,7 @@ object WitherDragons : Module(
     val selected by SelectorSetting("Color", "Green", colors, description = "The color of your relic.").withDependency { relicAnnounce && relicDropDown}
     val relicAnnounceTime by BooleanSetting("Relic Time", true, description = "Sends how long it took you to get that relic.").withDependency { relicDropDown }
     val relicSpawnTicks by NumberSetting("Relic Spawn Ticks", 42, 0, 100, description = "The amount of ticks for the relic to spawn.").withDependency {  relicDropDown }
-    val cauldronHighlight by BooleanSetting("Cauldron Highlight", true, description = "Highlights the cauldron for held relic.").withDependency { relicDropDown }
+    private val cauldronHighlight by BooleanSetting("Cauldron Highlight", true, description = "Highlights the cauldron for held relic.").withDependency { relicDropDown }
 
     private val relicHud by TextHUD("Relic HUD") { color, font, shadow ->
         needs { DungeonUtils.getF7Phase() == M7Phases.P5 }
@@ -162,7 +162,6 @@ object WitherDragons : Module(
         if (cauldronHighlight) relicsOnWorldLast()
         if (priorityDragon != WitherDragonsEnum.None && dragonTracers && priorityDragon.state == WitherDragonState.SPAWNING)
             Renderer.drawTracer(priorityDragon.spawnPos.addVec(0.5, 3.5, 0.5), color = priorityDragon.color, lineWidth = tracerThickness)
-
     }
 
     @SubscribeEvent

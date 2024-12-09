@@ -79,7 +79,7 @@ object NoPre : Module(
         }
     }
     
-    fun cratePriority(missing: SupplyPickUpSpot): String {
+    private fun cratePriority(missing: SupplyPickUpSpot): String {
         return when (missing) {
             // Shop Missing
             SupplyPickUpSpot.Shop -> when (preSpot) {

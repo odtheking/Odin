@@ -45,7 +45,7 @@ object TPMazeSolver {
         }
     }
 
-    fun onRenderWorld() {
+    fun onRenderWorld(mazeColorOne: Color, mazeColorMultiple: Color, mazeColorVisited: Color) {
         if (DungeonUtils.currentRoomName != "Teleport Maze") return
         tpPads.forEach {
             when (it) {

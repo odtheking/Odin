@@ -6,6 +6,7 @@ import me.odinmain.events.impl.RoomEnterEvent
 import me.odinmain.utils.addRotationCoords
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.removeFirstOrNull
+import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.getBlockIdAt
@@ -39,23 +40,22 @@ object BoulderSolver {
         var str = ""
         for (z in -3..2) {
             for (x in -3..3) {
-                roomComponent.vec3.addRotationCoords(room.rotation, x * 3, z * 3).let { str += if (getBlockIdAt(it.xCoord, 66.0, it.zCoord) == 0) "0" else "1" }
+                roomComponent.blockPos.addRotationCoords(room.rotation, x * 3, z * 3).let { str += if (getBlockIdAt(it.down(4)) == 0) "0" else "1" }
             }
         }
         currentPositions = solutions[str]?.map { sol ->
-            val render = roomComponent.vec3.addRotationCoords(room.rotation, sol[0], sol[1]).let { BlockPos(it.xCoord, 65.0, it.zCoord) }
-            val click = roomComponent.vec3.addRotationCoords(room.rotation, sol[2], sol[3]).let { BlockPos(it.xCoord, 65.0, it.zCoord) }
+            val render = roomComponent.blockPos.addRotationCoords(room.rotation, sol[0], sol[1]).down(5)
+            val click = roomComponent.blockPos.addRotationCoords(room.rotation, sol[2], sol[3]).down(5)
             BoxPosition(render, click)
         }?.toMutableList() ?: return
     }
 
-    fun onRenderWorld() {
+    fun onRenderWorld(showAllBoulderClicks: Boolean, boulderStyle: Int, boulderColor: Color, boulderLineWidth: Float) {
         if (DungeonUtils.currentRoomName != "Boulder" || currentPositions.isEmpty()) return
-        if (PuzzleSolvers.showAllBoulderClicks) currentPositions.forEach {
-            Renderer.drawStyledBlock(it.render, PuzzleSolvers.boulderColor, PuzzleSolvers.boulderStyle, PuzzleSolvers.boulderLineWidth)
-        }
-        else currentPositions.firstOrNull()?.let {
-            Renderer.drawStyledBlock(it.render, PuzzleSolvers.boulderColor, PuzzleSolvers.boulderStyle, PuzzleSolvers.boulderLineWidth)
+        if (showAllBoulderClicks) currentPositions.forEach {
+            Renderer.drawStyledBlock(it.render, boulderColor, boulderStyle, boulderLineWidth)
+        } else currentPositions.firstOrNull()?.let {
+            Renderer.drawStyledBlock(it.render, boulderColor, boulderStyle, boulderLineWidth)
         }
     }
 
