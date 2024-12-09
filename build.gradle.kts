@@ -48,6 +48,7 @@ allprojects {
     }
 
     loom {
+        log4jConfigs.from(file("log4j2.xml"))
         forge.pack200Provider.set(Pack200Adapter())
     }
 
