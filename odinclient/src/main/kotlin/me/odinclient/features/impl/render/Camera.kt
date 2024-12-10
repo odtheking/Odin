@@ -25,7 +25,8 @@ object Camera : Module(
     private val frontCamera by BooleanSetting("No Front Camera", false, description = "Disables front camera.")
     private val cameraClip by BooleanSetting("Camera Clip", false, description = "Allows the camera to clip through blocks.")
     private val cameraDist by NumberSetting("Distance", 4f, 3.0, 12.0, 0.1, description = "The distance of the camera from the player.")
-    private val fov by NumberSetting("FOV", mc.gameSettings.fovSetting, 1f, 180f, 1f, description = "The field of view of the camera.")
+    private val customFOV by BooleanSetting("Custom FOV", description = "Allows you to change the FOV.")
+    private val fov by NumberSetting("FOV", mc.gameSettings.fovSetting, 1f, 180f, 1f, description = "The field of view of the camera.").withDependency { customFOV }
     private val freelookDropdown by DropdownSetting("Freelook")
     private val toggle by BooleanSetting("Type", false, description = "The type of freelook (Hold/Toggle).").withDependency { freelookDropdown }
     private val freelookKeybind by KeybindSetting("Freelook Key", Keyboard.KEY_NONE, description = "Keybind to toggle/ hold for freelook.")
@@ -64,7 +65,8 @@ object Camera : Module(
 
     @SubscribeEvent
     fun onTick(event: TickEvent.ClientTickEvent) {
-        if (mc.gameSettings.fovSetting != fov)
+        if (event.phase != TickEvent.Phase.END) return
+        if (customFOV && mc.gameSettings.fovSetting != fov)
             mc.gameSettings.fovSetting = fov
 
         if (frontCamera && mc.gameSettings.thirdPersonView == 2)

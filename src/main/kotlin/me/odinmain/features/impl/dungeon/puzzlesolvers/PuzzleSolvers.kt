@@ -66,8 +66,8 @@ object PuzzleSolvers : Module(
     private val blazeLineAmount by NumberSetting("Blaze Solver Lines", 1, 1, 10, 1, description = "Amount of lines to show.").withDependency { blazeSolver && blazeDropDown }
     private val blazeLineWidth by NumberSetting("Blaze Solver Lines Width", 2f, 0.5, 5, 0.1, description = "Width for blaze lines.").withDependency { blazeSolver && blazeDropDown }
     private val blazeStyle by SelectorSetting("Blaze Style", "Outline", arrayListOf("Filled", "Outline", "Filled Outline"), description = "Whether or not the box should be filled.").withDependency { blazeSolver && blazeDropDown }
-    private val blazeFirstColor by ColorSetting("First Color", Color.GREEN, true, description = "Color for the first blaze.").withDependency { blazeSolver && blazeDropDown }
-    private val blazeSecondColor by ColorSetting("Second Color", Color.ORANGE, true, description = "Color for the second blaze.").withDependency { blazeSolver && blazeDropDown }
+    private val blazeFirstColor by ColorSetting("First Color", Color.GREEN.withAlpha(.75f), true, description = "Color for the first blaze.").withDependency { blazeSolver && blazeDropDown }
+    private val blazeSecondColor by ColorSetting("Second Color", Color.ORANGE.withAlpha(.75f), true, description = "Color for the second blaze.").withDependency { blazeSolver && blazeDropDown }
     private val blazeAllColor by ColorSetting("Other Color", Color.WHITE.withAlpha(.3f), true, description = "Color for the other blazes.").withDependency { blazeSolver && blazeDropDown }
     private val blazeWidth by NumberSetting("Box Width", 1f, 0.5, 2.0, 0.1, description = "Width of the box.").withDependency { blazeSolver && blazeDropDown }
     private val blazeHeight by NumberSetting("Box Height", 2f, 1.0, 3.0, 0.1, description = "Height of the box.").withDependency { blazeSolver && blazeDropDown }
