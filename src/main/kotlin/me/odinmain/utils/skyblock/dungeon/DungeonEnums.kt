@@ -19,7 +19,7 @@ data class DungeonPlayer(
     val name: String,
     val clazz: DungeonClass,
     val clazzLvl: Int = 0,
-    val skinImage: Image = Image("https://mc-heads.net/avatar/Stivais/32"),
+    val skinImage: Image = Image("https://mc-heads.net/avatar/Stivais/256"),
     var entity: EntityPlayer? = null,
     var isDead: Boolean = false,
     var deaths: Int = 0

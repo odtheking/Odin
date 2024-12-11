@@ -1,10 +1,9 @@
 package me.odinmain.commands.impl
 
-import com.github.stivais.aurora.utils.loop
 import com.github.stivais.commodore.utils.GreedyString
 import me.odinmain.commands.commodore
 import me.odinmain.features.huds.HUDManager
-import me.odinmain.features.huds.HUDManager.HUDs
+import me.odinmain.features.impl.dungeon.LeapMenu
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints
 import me.odinmain.features.impl.render.ClickGUI
 import me.odinmain.features.impl.render.ClickGUI.clickGUI
@@ -12,7 +11,6 @@ import me.odinmain.utils.ServerUtils
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.fillItemFromSack
 import me.odinmain.utils.skyblock.*
-import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.ui.screens.UIScreen.Companion.open
 import me.odinmain.utils.writeToClipboard
 import kotlin.math.round
@@ -146,7 +144,7 @@ val mainCommand = commodore("od", "odin") {
 
     literal("leap").runs { player1: String?, player2: String?, player3: String?, player4: String? ->
         val players = listOfNotNull(player1, player2, player3, player4)
-        DungeonUtils.customLeapOrder = players
+        LeapMenu.customLeapOrder = players
         modMessage("§aCustom leap order set to: §f${players.joinToString(", ")}")
     }
 

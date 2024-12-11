@@ -6,8 +6,6 @@ import me.odinmain.OdinMain.mc
 import me.odinmain.OdinMain.scope
 import me.odinmain.events.impl.PacketEvent
 import me.odinmain.events.impl.RoomEnterEvent
-import me.odinmain.features.impl.dungeon.LeapMenu
-import me.odinmain.features.impl.dungeon.LeapMenu.odinSorting
 import me.odinmain.features.impl.dungeon.Mimic
 import me.odinmain.utils.*
 import me.odinmain.utils.skyblock.PlayerUtils.posX
@@ -31,7 +29,6 @@ class Dungeon(val floor: Floor) {
     val inBoss: Boolean get() = getBoss()
     var dungeonTeammates: ArrayList<DungeonPlayer> = ArrayList(5)
     var dungeonTeammatesNoSelf: ArrayList<DungeonPlayer> = ArrayList(4)
-    var leapTeammates: ArrayList<DungeonPlayer> = ArrayList(4)
     var dungeonStats = DungeonStats()
     val currentRoom: Room? get() = ScanUtils.currentRoom
     val passedRooms: MutableSet<Room> get() = ScanUtils.passedRooms
@@ -73,7 +70,6 @@ class Dungeon(val floor: Floor) {
     fun onWorldLoad() {
         dungeonTeammates = ArrayList()
         dungeonTeammatesNoSelf = ArrayList()
-        leapTeammates = ArrayList()
         puzzles = emptyList()
         Blessing.entries.forEach { it.current = 0 }
     }
@@ -177,14 +173,5 @@ class Dungeon(val floor: Floor) {
     private fun updateDungeonTeammates(tabList: List<S38PacketPlayerListItem.AddPlayerData>) {
         dungeonTeammates = getDungeonTeammates(dungeonTeammates, tabList)
         dungeonTeammatesNoSelf = ArrayList(dungeonTeammates.filter { it.entity != mc.thePlayer })
-
-        leapTeammates =
-            when (LeapMenu.type) {
-                0 -> ArrayList(odinSorting(dungeonTeammatesNoSelf.sortedBy { it.clazz.priority }).toList())
-                1 -> ArrayList(dungeonTeammatesNoSelf.sortedWith(compareBy({ it.clazz.ordinal }, { it.name })))
-                2 -> ArrayList(dungeonTeammatesNoSelf.sortedBy { it.name })
-                3 -> ArrayList(dungeonTeammatesNoSelf.sortedBy { DungeonUtils.customLeapOrder.indexOf(it.name.lowercase()).takeIf { it != -1 } ?: Int.MAX_VALUE })
-                else -> dungeonTeammatesNoSelf
-            }
     }
 }

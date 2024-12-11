@@ -29,7 +29,6 @@ import me.odinmain.features.settings.Saving
 import me.odinmain.features.settings.Setting
 import me.odinmain.features.settings.Setting.Renders.Companion.onValueChanged
 import me.odinmain.features.settings.Setting.Renders.Companion.setting
-import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.ui.image
 import java.awt.Color.HSBtoRGB
 
@@ -68,7 +67,7 @@ class ColorSetting(
             pos = at(x = Pixel.ZERO),
             size = 40.percent
         )
-        outline(
+        outlineBlock(
             constrain(x = Pixel.ZERO.alignOpposite, w = 30.px, h = 50.percent),
             color { value.withAlpha(255).rgba },
             thickness = 1.px,
@@ -89,18 +88,6 @@ class ColorSetting(
                     passEvent(event, it)
                 }
             }
-        }
-    }
-
-    fun Color.toHexString(returnAlpha: Boolean = false): String {
-        val r = (rgba shr 16) and 0xFF
-        val g = (rgba shr 8) and 0xFF
-        val b = rgba and 0xFF
-        return if (returnAlpha) {
-            val a = (rgba shr 24) and 0xFF
-            String.format("#%02X%02X%02X%02X", r, g, b, a)
-        } else {
-            String.format("#%02X%02X%02X", r, g, b)
         }
     }
 
@@ -160,7 +147,7 @@ class ColorSetting(
                     /**
                      * Saturation and brightness slider
                      */
-                    outline(
+                    outlineBlock(
                         size(w = 200.px, h = 200.px),
                         colorMaxBrightness,
                         thickness = 1.px,
@@ -192,7 +179,7 @@ class ColorSetting(
                     /**
                      * Hue slider
                      */
-                    outline(
+                    outlineBlock(
                         size(w = 15.px, h = 200.px),
                         colorMaxBrightness,
                         thickness = 1.px,
@@ -216,7 +203,7 @@ class ColorSetting(
                      * Alpha slider
                      */
                     if (allowAlpha) {
-                        outline(
+                        outlineBlock(
                             size(w = 15.px, h = 200.px),
                             colorMaxBrightness,
                             thickness = 1.px,

@@ -306,10 +306,10 @@ object ArrowsDevice : Module(
     fun guiOpen(event: GuiOpenEvent) {
         if (autoState != AutoState.WaitingOnLeapingGui) return
         val chest = (event.gui as? GuiChest)?.inventorySlots ?: return
-        if (chest !is ContainerChest || chest.name != "Spirit Leap" || DungeonUtils.leapTeammates.isEmpty()) return
+        if (chest !is ContainerChest || chest.name != "Spirit Leap" || DungeonUtils.dungeonTeammatesNoSelf.isEmpty()) return
 
-        val leapTo = DungeonUtils.leapTeammates.firstOrNull { it.clazz == DungeonClass.entries[autoLeapClass] }
-            ?: DungeonUtils.leapTeammates.first()
+        val leapTo = DungeonUtils.dungeonTeammatesNoSelf.firstOrNull { it.clazz == DungeonClass.entries[autoLeapClass] }
+            ?: DungeonUtils.dungeonTeammatesNoSelf.first()
 
         clock.update()
 

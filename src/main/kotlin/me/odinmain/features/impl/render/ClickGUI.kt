@@ -25,13 +25,14 @@ import me.odinmain.features.settings.AlwaysActive
 import me.odinmain.features.settings.Setting
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
-import me.odinmain.utils.capitalizeFirst
 import me.odinmain.utils.sendDataToServer
 import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.createClickStyle
 import me.odinmain.utils.skyblock.getChatBreak
 import me.odinmain.utils.skyblock.modMessage
-import me.odinmain.utils.ui.*
+import me.odinmain.utils.ui.lifetimeAnimations
+import me.odinmain.utils.ui.onHover
+import me.odinmain.utils.ui.regularFont
 import me.odinmain.utils.ui.renderer.NVGRenderer
 import me.odinmain.utils.ui.renderer.NVGRenderer.textWidth
 import me.odinmain.utils.ui.screens.UIScreen.Companion.open
@@ -286,10 +287,8 @@ object ClickGUI : Module(
                         loaded = true
                         module.settings.loop { setting ->
                             if (!setting.hidden && setting is Setting.Renders) {
-                                this@column.scope(setting.Drawable()) {
-                                    hoverInformation(
-                                        description = setting.description
-                                    )
+                                this@column.createScope(setting.Drawable()) {
+                                    hoverInformation(description = setting.description)
                                     setting.apply { create() }
                                 }
                             }

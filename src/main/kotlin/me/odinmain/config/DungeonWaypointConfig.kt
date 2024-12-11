@@ -178,12 +178,11 @@ object DungeonWaypointConfig {
 
             return jsonObject
         }
-
     }
 
     class ColorSerializer : JsonSerializer<Color>, JsonDeserializer<Color> {
         override fun serialize(p0: Color?, p1: Type?, p2: JsonSerializationContext?): JsonElement {
-            return JsonPrimitive(p0?.toHexString() ?: "#000000FF")
+            return JsonPrimitive(p0?.toHexString(true) ?: "#000000FF")
         }
 
         override fun deserialize(p0: JsonElement?, p1: Type?, p2: JsonDeserializationContext?): Color {

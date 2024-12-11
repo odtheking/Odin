@@ -92,9 +92,6 @@ object DungeonUtils {
     val dungeonTeammatesNoSelf: ArrayList<DungeonPlayer>
         get() = currentDungeon?.dungeonTeammatesNoSelf ?: ArrayList()
 
-    val leapTeammates: ArrayList<DungeonPlayer>
-        get() = currentDungeon?.leapTeammates ?: ArrayList()
-
     val currentDungeonPlayer: DungeonPlayer
         get() = dungeonTeammates.find { it.name == mc.thePlayer?.name } ?: DungeonPlayer(mc.thePlayer?.name ?: "Unknown", DungeonClass.Unknown, 0, entity = mc.thePlayer)
 
@@ -224,7 +221,6 @@ object DungeonUtils {
     }
 
     private val tablistRegex = Regex("^\\[(\\d+)] (?:\\[\\w+] )*(\\w+) .*?\\((\\w+)(?: (\\w+))*\\)$")
-    var customLeapOrder: List<String> = emptyList()
 
     fun getDungeonTeammates(previousTeammates: ArrayList<DungeonPlayer>, tabList: List<S38PacketPlayerListItem.AddPlayerData>): ArrayList<DungeonPlayer> {
         for (line in tabList) {

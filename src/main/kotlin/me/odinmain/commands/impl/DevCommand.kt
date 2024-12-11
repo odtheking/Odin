@@ -1,10 +1,6 @@
 package me.odinmain.commands.impl
 
-import com.github.stivais.aurora.color.Color
-import com.github.stivais.aurora.utils.hexToRGBA
-import com.github.stivais.aurora.utils.toHexString
 import com.github.stivais.commodore.utils.GreedyString
-import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.launch
 import me.odinmain.OdinMain.mc
 import me.odinmain.OdinMain.scope
@@ -19,14 +15,16 @@ import me.odinmain.features.impl.floor7.WitherDragons.priorityDragon
 import me.odinmain.features.impl.floor7.WitherDragonsEnum
 import me.odinmain.features.impl.nether.NoPre
 import me.odinmain.features.impl.render.DevPlayers.updateDevs
-import me.odinmain.utils.*
+import me.odinmain.utils.isOtherPlayer
+import me.odinmain.utils.postAndCatch
+import me.odinmain.utils.sendDataToServer
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.Blessing
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.getRelativeCoords
 import me.odinmain.utils.skyblock.dungeon.ScanUtils
 import me.odinmain.utils.skyblock.dungeon.ScanUtils.getRoomCenter
-import me.odinmain.utils.ui.screens.UIScreen.Companion.open
+import me.odinmain.utils.writeToClipboard
 import net.minecraft.network.play.server.S02PacketChat
 import net.minecraft.util.ChatComponentText
 
@@ -112,7 +110,6 @@ val devCommand = commodore("oddev") {
             |currentRoom: ${DungeonUtils.currentRoom?.data?.name}, roomsPassed: ${DungeonUtils.passedRooms.map { it.data.name }}
             |Teammates: ${DungeonUtils.dungeonTeammates.joinToString { "§${it.clazz.colorCode}${it.name} (${it.clazz} [${it.clazzLvl}])" }}
             |TeammatesNoSelf: ${DungeonUtils.dungeonTeammatesNoSelf.map { it.name }}
-            |LeapTeammates: ${DungeonUtils.leapTeammates.map { it.name }}
             |Blessings: ${Blessing.entries.joinToString { "${it.name}: ${it.current}" }}
             ${getChatBreak()}
         """.trimIndent(), "")

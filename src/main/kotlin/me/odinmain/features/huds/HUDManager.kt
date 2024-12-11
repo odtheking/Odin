@@ -119,7 +119,7 @@ object HUDManager {
                                 )
                                 hud.settings.loop {
                                     if (it is Setting.Renders && !it.hidden) {
-                                        scope(it.Drawable()) {
+                                        createScope(it.Drawable()) {
                                             hoverInformation(description = it.description)
                                             onValueChanged { refreshHUDs() }
                                             it.apply { create() }
@@ -207,7 +207,7 @@ object HUDManager {
         val py = minY.px
 
         return popup(constraints = constrain(px, py, (maxX - minX).px, (maxY - minY).px), smooth = true) {
-            outline(
+            outlineBlock(
                 constraints = copies(),
                 color = Color.WHITE,
                 thickness = 1.px
