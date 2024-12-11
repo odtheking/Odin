@@ -40,8 +40,8 @@ object BlazeSolver {
         blazes.removeAll { mc.theWorld?.getEntityByID(it.entityId) == null }
         if (blazes.isEmpty() && lastBlazeCount == 1) {
             LocationUtils.currentDungeon?.puzzles?.find { it.name == Puzzle.Blaze.name }?.status = PuzzleStatus.Completed
-            if (blazeSendComplete) partyMessage("Blaze puzzle solved!")
             onPuzzleComplete(if (DungeonUtils.currentRoomName == "Higher Blaze") "Higher Blaze" else "Lower Blaze")
+            if (blazeSendComplete) partyMessage("Blaze puzzle solved!")
             lastBlazeCount = 0
             return
         }

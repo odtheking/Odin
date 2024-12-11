@@ -94,9 +94,9 @@ object ChocolateFactory : Module(
         var maxValue = 0
         repeat (7) {
             val worker = workers[it]
-            if (worker.contains("climbed as far")) return
-            val index = worker.indexOfFirst { it?.contains("Cost") == true } ?: return
-            val cost = worker[index + 1]?.noControlCodes?.replace(Regex("\\D"), "")?.toIntOrNull() ?: return
+            if (worker.contains("climbed as far")) return@repeat
+            val index = worker.indexOfFirst { it?.contains("Cost") == true }.takeIf { workerIndex -> workerIndex != -1 } ?: return@repeat
+            val cost = worker[index + 1]?.noControlCodes?.replace(Regex("\\D"), "")?.toIntOrNull() ?: return@repeat
             val value = cost / (it + 1).toFloat()
             if (value < maxValue || !found) {
                 bestWorker = 28 + it

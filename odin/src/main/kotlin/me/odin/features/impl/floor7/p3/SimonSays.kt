@@ -4,7 +4,10 @@ import me.odinmain.events.impl.BlockChangeEvent
 import me.odinmain.events.impl.PostEntityMetadata
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.features.settings.impl.*
+import me.odinmain.features.settings.impl.BooleanSetting
+import me.odinmain.features.settings.impl.ColorSetting
+import me.odinmain.features.settings.impl.NumberSetting
+import me.odinmain.features.settings.impl.SelectorSetting
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.floor
@@ -27,6 +30,9 @@ object SimonSays : Module(
     description = "Shows a solution for the Simon Says device.",
     category = Category.FLOOR7,
 ) {
+    private val firstColor by ColorSetting("First Color", Color.GREEN.withAlpha(0.5f), allowAlpha = true, description = "The color of the first button.")
+    private val secondColor by ColorSetting("Second Color", Color.ORANGE.withAlpha(0.5f), allowAlpha = true, description = "The color of the second button.")
+    private val thirdColor by ColorSetting("Third Color", Color.RED.withAlpha(0.5f), allowAlpha = true, description = "The color of the buttons after the second.")
     private val style by SelectorSetting("Style", Renderer.DEFAULT_STYLE, Renderer.styles, description = Renderer.STYLE_DESCRIPTION)
     private val lineWidth by NumberSetting("Line Width", 2f, 0.1f, 10f, 0.1f, description = "The width of the box's lines.")
     private val depthCheck by BooleanSetting("Depth check", false, description = "Boxes show through walls.")
@@ -34,29 +40,29 @@ object SimonSays : Module(
 
     private val firstButton = BlockPos(110, 121, 91)
     private val clickInOrder = ArrayList<BlockPos>()
-    private var clickNeeded = 0
-    private var currentPhase = 0
     private val phaseClock = Clock(500)
+    private var currentPhase = 0
+    private var clickNeeded = 0
 
     init {
         onWorldLoad {
             clickInOrder.clear()
-            clickNeeded = 0
             currentPhase = 0
+            clickNeeded = 0
         }
     }
 
     @SubscribeEvent
     fun onBlockChange(event: BlockChangeEvent) {
         if (DungeonUtils.getF7Phase() != M7Phases.P3) return
+        val state = event.update
         val pos = event.pos
         val old = event.old
-        val state = event.update
 
         if (pos == firstButton && state.block == Blocks.stone_button && state.getValue(BlockButtonStone.POWERED)) {
             clickInOrder.clear()
-            clickNeeded = 0
             currentPhase = 0
+            clickNeeded = 0
             return
         }
 
@@ -83,10 +89,8 @@ object SimonSays : Module(
 
     @SubscribeEvent
     fun onPostMetadata(event: PostEntityMetadata) {
-        val entity = mc.theWorld?.getEntityByID(event.packet.entityId) as? EntityItem ?: return
-        if (Item.getIdFromItem(entity.entityItem.item) != 77) return
-        val pos = BlockPos(entity.posX.floor().toDouble(), entity.posY.floor().toDouble(), entity.posZ.floor().toDouble()).east()
-        val index = clickInOrder.indexOf(pos)
+        val entity = (mc.theWorld?.getEntityByID(event.packet.entityId) as? EntityItem)?.takeIf { Item.getIdFromItem(it.entityItem?.item) == 77 } ?: return
+        val index = clickInOrder.indexOf(BlockPos(entity.posX.floor(), entity.posY.floor(), entity.posZ.floor()).east())
         if (index == 2 && clickInOrder.size == 3) clickInOrder.removeFirst()
         else if (index == 0 && clickInOrder.size == 2) clickInOrder.reverse()
     }
@@ -96,16 +100,13 @@ object SimonSays : Module(
         if (clickNeeded >= clickInOrder.size) return
 
         for (index in clickNeeded until clickInOrder.size) {
-            val position = clickInOrder[index]
-            val x = position.x - .125
-            val y = position.y + .3125
-            val z = position.z + .25
-            val color = when (index) {
-                clickNeeded -> Color(0, 170, 0)
-                clickNeeded + 1 -> Color(255, 170, 0)
-                else -> Color(170, 0, 0)
-            }.withAlpha(.5f)
-            Renderer.drawStyledBox(AxisAlignedBB(x, y, z, x + .25, y + .375, z + .5), color, style, lineWidth, depthCheck)
+            with(clickInOrder[index]) {
+                Renderer.drawStyledBox(AxisAlignedBB(x + 0.05, y + 0.37, z + 0.3, x - 0.15, y + 0.63, z + 0.7), when (index) {
+                    clickNeeded -> firstColor
+                    clickNeeded + 1 -> secondColor
+                    else -> thirdColor
+                }, style, lineWidth, depthCheck)
+            }
         }
     }
 }
