@@ -44,7 +44,7 @@ object DragonPriority {
 
         if (totalPower >= easyPower) {
             if (soloDebuff == 1 && playerClass == DungeonClass.Tank && (spawningDragon.any { it == WitherDragonsEnum.Purple } || soloDebuffOnAll)) spawningDragon.sortByDescending { priorityList.indexOf(it) }
-            else if (playerClass == DungeonClass.Healer && spawningDragon.any { it == WitherDragonsEnum.Purple } || soloDebuffOnAll) spawningDragon.sortByDescending { priorityList.indexOf(it) }
+            else if (playerClass == DungeonClass.Healer && (spawningDragon.any { it == WitherDragonsEnum.Purple } || soloDebuffOnAll)) spawningDragon.sortByDescending { priorityList.indexOf(it) }
         }
         devMessage("§7Priority: §6$totalPower §7Class: §${playerClass.colorCode}${playerClass.name} §7Dragons: §a${spawningDragon.joinToString(", ") { it.name }} §7-> §c${priorityList.joinToString(", ") { it.name.first().toString() }}")
         return spawningDragon[0]
