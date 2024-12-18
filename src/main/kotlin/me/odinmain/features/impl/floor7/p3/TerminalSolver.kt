@@ -284,7 +284,7 @@ object TerminalSolver : Module(
         }
 
         if (middleClickGUI) {
-            windowClick(slotIndex, if (Mouse.getEventButton() == 0) ClickType.Middle else ClickType.Right)
+            windowClick(slotIndex, if (Mouse.getEventButton() == 0) ClickType.Middle else ClickType.Right, instant = true)
             event.isCanceled = true
         }
     }
