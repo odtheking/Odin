@@ -8,7 +8,7 @@ import me.odinmain.features.impl.floor7.p3.TerminalTypes
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.features.settings.impl.SelectorSetting
-import me.odinmain.utils.skyblock.PlayerUtils
+import me.odinmain.utils.skyblock.ClickType
 import me.odinmain.utils.skyblock.PlayerUtils.windowClick
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -54,15 +54,15 @@ object AutoTerms : Module(
 
         when (TerminalSolver.currentTerm.type) {
             TerminalTypes.RUBIX ->
-                windowClick(item, if (TerminalSolver.currentTerm.solution.count { it == item } >= 3) PlayerUtils.ClickType.Right else if (middleClick) PlayerUtils.ClickType.Middle else PlayerUtils.ClickType.Left)
+                windowClick(item, if (TerminalSolver.currentTerm.solution.count { it == item } >= 3) ClickType.Right else if (middleClick) ClickType.Middle else ClickType.Left)
 
             TerminalTypes.ORDER ->
-                windowClick(TerminalSolver.currentTerm.solution.first(), if (middleClick) PlayerUtils.ClickType.Middle else PlayerUtils.ClickType.Left)
+                windowClick(TerminalSolver.currentTerm.solution.first(), if (middleClick) ClickType.Middle else ClickType.Left)
 
             TerminalTypes.MELODY ->
-                windowClick(TerminalSolver.currentTerm.solution.find { it % 9 == 7 } ?: return, if (middleClick) PlayerUtils.ClickType.Middle else PlayerUtils.ClickType.Left)
+                windowClick(TerminalSolver.currentTerm.solution.find { it % 9 == 7 } ?: return, if (middleClick) ClickType.Middle else ClickType.Left)
 
-            else -> windowClick(item, if (middleClick) PlayerUtils.ClickType.Middle else PlayerUtils.ClickType.Left)
+            else -> windowClick(item, if (middleClick) ClickType.Middle else ClickType.Left, instant = true)
         }
 
         val currentTime = System.currentTimeMillis()

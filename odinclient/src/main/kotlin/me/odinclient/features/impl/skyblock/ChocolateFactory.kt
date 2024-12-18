@@ -46,11 +46,11 @@ object ChocolateFactory : Module(
         execute(delay = { delay }) {
             if (!isInChocolateFactory()) return@execute
 
-            if (clickFactory) windowClick(13, PlayerUtils.ClickType.Right)
+            if (clickFactory) windowClick(13, ClickType.Right)
             
             if (!claimStray) return@execute
             val found = (mc.thePlayer?.openContainer as? ContainerChest)?.inventorySlots?.find { it.stack?.displayName?.contains("CLICK ME!") == true } ?: return@execute
-            windowClick(found.slotNumber, PlayerUtils.ClickType.Left)
+            windowClick(found.slotNumber, ClickType.Left)
         }
 
         execute(delay = { upgradeDelay }) {
@@ -62,7 +62,7 @@ object ChocolateFactory : Module(
             findWorker(container)
             if (!found) return@execute
             if (chocolate > bestCost && autoUpgrade) {
-                windowClick(bestWorker, PlayerUtils.ClickType.Middle)
+                windowClick(bestWorker, ClickType.Middle)
                 if (upgradeMessage) modMessage("Trying to upgrade: Rabbit " + indexToName[bestWorker] + " with " + bestCost + " chocolate.")
             }
         }

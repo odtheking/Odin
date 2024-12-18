@@ -9,7 +9,9 @@ import me.odinmain.OdinMain.mc
 import me.odinmain.features.ModuleManager
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.skyblock.*
+import me.odinmain.utils.skyblock.modMessage
+import me.odinmain.utils.skyblock.sendCommand
+import me.odinmain.utils.skyblock.skyblockID
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
@@ -26,14 +28,16 @@ import net.minecraftforge.fml.common.eventhandler.Event
 import org.lwjgl.opengl.GL11
 import org.lwjgl.util.glu.GLU
 import java.util.*
-import kotlin.math.*
+import kotlin.math.floor
+import kotlin.math.pow
+import kotlin.math.round
 
-private val FORMATTING_CODE_PATTERN = Regex("§[0-9a-fk-or]", RegexOption.IGNORE_CASE)
+val FORMATTING_CODE_PATTERN = Regex("§[0-9a-fk-or]", RegexOption.IGNORE_CASE)
 
 /**
  * Returns the string without any minecraft formatting codes.
  */
-val String?.noControlCodes: String
+inline val String?.noControlCodes: String
     get() = this?.let { FORMATTING_CODE_PATTERN.replace(it, "") } ?: ""
 
 /**
@@ -139,20 +143,6 @@ operator fun Number.minus(number: Number): Number {
 
 operator fun Number.plus(number: Number): Number {
     return this.toDouble() + number.toDouble()
-}
-
-/**
- * Returns a random number between the specified range.
- */
-fun IntRange.getRandom(): Int {
-    return this.toList().getRandom()
-}
-
-/**
- * Returns a random element from the specified collection.
- */
-fun <T> Collection<T>.getRandom(): T {
-    return this.elementAt((Math.random() * this.size).floor().toInt())
 }
 
 /**

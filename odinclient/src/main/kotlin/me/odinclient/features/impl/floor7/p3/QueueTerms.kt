@@ -8,6 +8,7 @@ import me.odinmain.features.impl.floor7.p3.TerminalSolver
 import me.odinmain.features.impl.floor7.p3.TerminalTypes
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.equalsOneOf
+import me.odinmain.utils.skyblock.ClickType
 import me.odinmain.utils.skyblock.PlayerUtils.windowClick
 import me.odinmain.utils.skyblock.devMessage
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -41,7 +42,6 @@ object QueueTerms : Module(
     @SubscribeEvent
     fun onTick(event: TickEvent.ClientTickEvent) {
         if (TerminalSolver.currentTerm.type.equalsOneOf(TerminalTypes.NONE, TerminalTypes.MELODY) || TerminalSolver.renderType != 3) return
-        TerminalSolver.currentTerm.solution = TerminalSolver.currentTerm.solution.filter { it !in previouslyClicked }
         if (
             event.phase != TickEvent.Phase.START ||
             System.currentTimeMillis() - lastClickTime < dispatchDelay ||
@@ -50,7 +50,7 @@ object QueueTerms : Module(
         ) return
         val click = queue.removeFirst()
         clickedThisWindow = true
-        windowClick(slotId = click.slot, button = click.button, mode = click.mode)
+        windowClick(slotId = click.slot, if (click.mode == 0) ClickType.Middle else ClickType.Right)
         lastClickTime = System.currentTimeMillis()
     }
 
@@ -61,7 +61,7 @@ object QueueTerms : Module(
         handleWindowClick(event.slot, event.mode, event.button)
     }
 
-    fun handleWindowClick(slot: Int, mode: Int, button: Int) {
+    private fun handleWindowClick(slot: Int, mode: Int, button: Int) {
         if ((TerminalSolver.currentTerm.type == TerminalTypes.ORDER && slot != TerminalSolver.currentTerm.solution.first()) || TerminalSolver.renderType != 3) return
         if (slot in previouslyClicked) return
         if (TerminalSolver.currentTerm.type == TerminalTypes.RUBIX) {

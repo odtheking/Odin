@@ -1,43 +1,38 @@
 package me.odinmain.features.impl.floor7.p3.termsim
 
-import me.odinmain.events.impl.GuiEvent
-import me.odinmain.features.impl.floor7.p3.TerminalSounds
-import me.odinmain.features.impl.floor7.p3.TerminalSounds.clickSounds
+import me.odinmain.events.impl.TerminalEvent
+import me.odinmain.features.impl.floor7.p3.TerminalSolver
+import me.odinmain.features.impl.floor7.p3.TerminalTypes
 import me.odinmain.utils.postAndCatch
-import net.minecraft.inventory.ContainerChest
 import net.minecraft.inventory.Slot
 import net.minecraft.item.ItemStack
 import kotlin.math.floor
 
 object Rubix : TermSimGui(
-    "Change all to same color!",
-    45
+    TerminalTypes.RUBIX.guiName, TerminalTypes.RUBIX.size
 ) {
     private val indices = listOf(12, 13, 14, 21, 22, 23, 30, 31, 32)
     private val order = listOf(1, 4, 13, 11, 14)
-    private val grid get() = indices.mapNotNull { inventorySlots.inventorySlots[it]?.takeIf { it.stack?.metadata != 15 } }
 
     override fun create() {
-        this.inventorySlots.inventorySlots.subList(0, 45).forEachIndexed { index, it ->
-            if (floor(index / 9.0) in 1.0..3.0 && index % 9 in 3..5) it.putStack(getPane())
-            else it.putStack(blackPane)
+        createNewGui {
+            if (floor(it.slotIndex / 9.0) in 1.0..3.0 && it.slotIndex % 9 in 3..5) getPane()
+            else blackPane
         }
     }
 
     override fun slotClick(slot: Slot, button: Int) {
-        if (slot.stack?.metadata !in order) return
         val current = order.find { it == slot.stack.metadata } ?: return
-        when (button) {
-            0, 2 -> slot.putStack(genStack(order[(order.indexOf(current) + 1) % order.size]))
-            1 -> {
-                val nextIndex = order.indexOf(current) - 1
-                slot.putStack(if (nextIndex < 0) genStack(order.last()) else genStack(order[nextIndex]))
-            }
-            else -> return
+        createNewGui {
+            if (it == slot) {
+                if (button == 1) genStack(order.getOrElse(order.indexOf(current) - 1) { order.last() })
+                else (genStack(order[(order.indexOf(current) + 1) % order.size]))
+            } else it.stack
         }
-        if (!TerminalSounds.enabled || !clickSounds) mc.thePlayer?.playSound("random.orb", 1f, 1f)
-        GuiEvent.Loaded(name, inventorySlots as ContainerChest).postAndCatch()
-        if (grid.all { it.stack?.metadata == grid.firstOrNull()?.stack?.metadata }) solved(this.name, 1)
+
+        playTermSimSound()
+        if (indices.all { guiInventorySlots?.get(it)?.stack?.metadata == guiInventorySlots?.get(12)?.stack?.metadata })
+            TerminalEvent.Solved(TerminalSolver.currentTerm).postAndCatch()
     }
 
     private fun getPane(): ItemStack {

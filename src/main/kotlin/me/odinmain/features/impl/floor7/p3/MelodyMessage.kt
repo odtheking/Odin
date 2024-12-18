@@ -27,7 +27,7 @@ object MelodyMessage : Module(
 
     @SubscribeEvent
     fun onGuiLoad(event: TerminalEvent.Opened) {
-        if (DungeonUtils.getF7Phase() != M7Phases.P3 || event.type != TerminalTypes.MELODY || mc.currentScreen is TermSimGui) return
+        if (DungeonUtils.getF7Phase() != M7Phases.P3 || event.terminal.type != TerminalTypes.MELODY || mc.currentScreen is TermSimGui) return
         if (sendMelodyMessage) partyMessage(melodyMessage)
 
         claySlots = hashMapOf(25 to "Melody terminal is at 25%", 34 to "Melody terminal is at 50%", 43 to "Melody terminal is at 75%")

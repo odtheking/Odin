@@ -1,54 +1,52 @@
 package me.odinmain.features.impl.floor7.p3.termsim
 
-
+import me.odinmain.OdinMain
 import me.odinmain.OdinMain.display
-import me.odinmain.events.impl.GuiEvent
+import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.PacketEvent
-import me.odinmain.features.impl.floor7.TerminalSimulator
-import me.odinmain.features.impl.floor7.TerminalSimulator.openRandomTerminal
-import me.odinmain.features.impl.floor7.TerminalSimulator.sendMessage
+import me.odinmain.events.impl.TerminalEvent
 import me.odinmain.features.impl.floor7.p3.TerminalSounds
-import me.odinmain.features.impl.floor7.p3.TerminalSounds.completeSounds
-import me.odinmain.features.impl.floor7.p3.TerminalSounds.playCompleteSound
-import me.odinmain.utils.*
-import net.minecraft.client.Minecraft
+import me.odinmain.features.impl.floor7.p3.TerminalSounds.clickSounds
+import me.odinmain.utils.postAndCatch
+import me.odinmain.utils.runIn
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.entity.player.InventoryPlayer
-import net.minecraft.inventory.*
-import net.minecraft.item.*
+import net.minecraft.inventory.InventoryBasic
+import net.minecraft.inventory.Slot
+import net.minecraft.item.Item
+import net.minecraft.item.ItemStack
 import net.minecraft.network.play.client.C0EPacketClickWindow
+import net.minecraft.network.play.server.S2DPacketOpenWindow
 import net.minecraft.network.play.server.S2FPacketSetSlot
+import net.minecraft.util.ChatComponentText
 import net.minecraftforge.common.MinecraftForge
+import net.minecraftforge.fml.common.eventhandler.EventPriority
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 open class TermSimGui(val name: String, val size: Int, private val inv: InventoryBasic = InventoryBasic(name, true, size)) : GuiChest(
-    InventoryPlayer(Minecraft.getMinecraft().thePlayer),
-    inv
+    InventoryPlayer(mc.thePlayer), inv
 ) {
     val pane: Item = Item.getItemById(160)
     val blackPane = ItemStack(pane, 1, 15).apply { setStackDisplayName("") }
-    private var startTime = 0L
-    protected var ping = 0L
-    private var consecutive = 0L
+    val guiInventorySlots get() = inventorySlots?.inventorySlots?.subList(0, size)
     private var doesAcceptClick = true
+    protected var ping = 0L
 
     open fun create() {
-        this.inventorySlots.inventorySlots.subList(0, size).forEach { it.putStack(blackPane) } // override
+        guiInventorySlots?.forEach { it.setSlot(blackPane) } // override
     }
 
-    fun open(ping: Long = 0L, const: Long = 0L) {
-        create()
-        this.ping = ping
-        this.consecutive = const - 1
+    fun open(terminalPing: Long = 0L) {
         display = this
-        startTime = System.currentTimeMillis()
-        GuiEvent.Loaded(name, inventorySlots as ContainerChest).postAndCatch()
+        create()
+
+        ping = terminalPing
     }
 
-    fun solved(name: String, pbIndex: Int) {
-        TerminalSimulator.termSimPBs.time(pbIndex, (System.currentTimeMillis() - startTime) / 1000.0, "s§7!", "§a$name §7(termsim) §7solved in §6", addPBString = true, addOldPBString = true, sendOnlyPB = sendMessage)
-        if (TerminalSounds.enabled && completeSounds) playCompleteSound()
-        if (this.consecutive > 0) openRandomTerminal(ping, consecutive) else if (TerminalSimulator.openStart) StartGui.open(ping) else mc.thePlayer.closeScreen()
+    @SubscribeEvent
+    fun onTerminalSolved(event: TerminalEvent.Solved) {
+        if (OdinMain.mc.currentScreen !== this) return
+        StartGui.open(ping)
     }
 
     open fun slotClick(slot: Slot, button: Int) {}
@@ -62,18 +60,18 @@ open class TermSimGui(val name: String, val size: Int, private val inv: Inventor
         MinecraftForge.EVENT_BUS.register(this)
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.LOWEST)
     fun onPacketSend(event: PacketEvent.Send) {
         val packet = event.packet as? C0EPacketClickWindow ?: return
-        if (mc.currentScreen != this) return
-        delaySlotClick(this.inventorySlots.inventorySlots[packet.slotId], packet.usedButton)
+        if (OdinMain.mc.currentScreen != this) return
+        delaySlotClick(guiInventorySlots?.get(packet.slotId - 37) ?: return, packet.usedButton)
         event.isCanceled = true
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.LOWEST)
     fun onPacketReceived(event: PacketEvent.Receive) {
         val packet = event.packet as? S2FPacketSetSlot ?: return
-        if (mc.currentScreen !== this) return
+        if (OdinMain.mc.currentScreen !== this || packet.func_149175_c() == -2) return
         packet.func_149174_e()?.let {
             if (event.packet.func_149173_d() !in 0 until size) return@let
             mc.thePlayer?.inventoryContainer?.putStackInSlot(packet.func_149173_d(), it)
@@ -82,26 +80,34 @@ open class TermSimGui(val name: String, val size: Int, private val inv: Inventor
     }
 
     fun delaySlotClick(slot: Slot, button: Int) {
-        if (mc.currentScreen == StartGui) return slotClick(slot, button)
-        if (!doesAcceptClick || slot.inventory != this.inv) return
+        if (OdinMain.mc.currentScreen == StartGui) return slotClick(slot, button)
+        if (!doesAcceptClick || slot.inventory != inv || (slot.stack?.item == pane && slot.stack?.metadata == 15)) return
         doesAcceptClick = false
         runIn((ping / 50).toInt()) {
-            doesAcceptClick = true
             slotClick(slot, button)
+            doesAcceptClick = true
         }
     }
 
     final override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
-        val slot = slotUnderMouse ?: return
-        if (slot.stack?.item == pane && slot.stack?.metadata == 15) return
-        if (!GuiEvent.WindowClick(mc.thePlayer.openContainer.windowId, slot.slotIndex, mouseButton, 0, mc.thePlayer).postAndCatch())
-        delaySlotClick(slot, mouseButton)
+        delaySlotClick(slotUnderMouse ?: return, mouseButton)
     }
 
     final override fun handleMouseClick(slotIn: Slot?, slotId: Int, clickedButton: Int, clickType: Int) {
-        val slot = slotIn ?: return
-        if (slot.stack?.item == pane && slot.stack?.metadata == 15) return
-        if (!GuiEvent.WindowClick(mc.thePlayer.openContainer.windowId, slot.slotIndex, clickedButton, clickType, mc.thePlayer).postAndCatch())
-        delaySlotClick(slot, 0)
+        delaySlotClick(slotIn ?: return, clickedButton)
+    }
+
+    fun createNewGui(block: (Slot) -> ItemStack) {
+        PacketEvent.Receive(S2DPacketOpenWindow(0, "minecraft:chest", ChatComponentText(name), size)).postAndCatch()
+        guiInventorySlots?.forEach { it.setSlot(block(it)) }
+    }
+
+    fun Slot.setSlot(stack: ItemStack) {
+        PacketEvent.Receive(S2FPacketSetSlot(-2, slotNumber, stack)).postAndCatch()
+        putStack(stack)
+    }
+
+    fun playTermSimSound() {
+        if (!TerminalSounds.enabled || !clickSounds) mc.thePlayer?.playSound("random.orb", 1f, 1f)
     }
 }

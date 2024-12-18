@@ -1,6 +1,5 @@
 package me.odinmain.commands.impl
 
-import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
@@ -16,7 +15,6 @@ val commands = listOf(
     "pet", "nucleus"
 )
 
-@OptIn(DelicateCoroutinesApi::class)
 val soopyCommand = commodore("soopycmd", "spcmd", "spc") {
     literal("help").runs {
         modMessage("Available commands for /spcmd:\n ${commands.joinToString()}")

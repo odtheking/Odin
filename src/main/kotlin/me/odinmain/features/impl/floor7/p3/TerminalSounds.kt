@@ -1,6 +1,8 @@
 package me.odinmain.features.impl.floor7.p3
 
-import me.odinmain.events.impl.*
+import me.odinmain.events.impl.GuiEvent
+import me.odinmain.events.impl.PacketEvent
+import me.odinmain.events.impl.TerminalEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.currentTerm
@@ -64,7 +66,7 @@ object TerminalSounds : Module(
 
     @SubscribeEvent
     fun onTermComplete(event: TerminalEvent.Solved) {
-        if (shouldReplaceSounds && event.playerName != mc.thePlayer?.name || (!completeSounds && !clickSounds)) mc.thePlayer.playSound("note.pling", 8f, 4f)
+        if (shouldReplaceSounds && (!completeSounds && !clickSounds)) mc.thePlayer.playSound("note.pling", 8f, 4f)
         else if (shouldReplaceSounds && completeSounds && !clickSounds) playCompleteSound()
     }
 
