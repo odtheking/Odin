@@ -10,7 +10,9 @@ import me.odinmain.features.impl.floor7.WitherDragons.soloDebuffOnAll
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.devMessage
-import me.odinmain.utils.skyblock.dungeon.*
+import me.odinmain.utils.skyblock.dungeon.Blessing
+import me.odinmain.utils.skyblock.dungeon.DungeonClass
+import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.modMessage
 
 object DragonPriority {
@@ -40,12 +42,12 @@ object DragonPriority {
                 if (playerClass.equalsOneOf(DungeonClass.Berserk, DungeonClass.Mage)) dragonList else dragonList.reversed()
             else listOf(WitherDragonsEnum.Red, WitherDragonsEnum.Orange, WitherDragonsEnum.Blue, WitherDragonsEnum.Purple, WitherDragonsEnum.Green)
 
-        spawningDragon.sortBy { priorityList.indexOf(it) }
+        if (totalPower >= easyPower &&
+            ((soloDebuff == 1 && playerClass == DungeonClass.Tank && (spawningDragon.any { it == WitherDragonsEnum.Purple } || soloDebuffOnAll)) ||
+                    (playerClass == DungeonClass.Healer && (spawningDragon.any { it == WitherDragonsEnum.Purple } || soloDebuffOnAll)))) {
+                        spawningDragon.sortByDescending { priorityList.indexOf(it) }
+        } else spawningDragon.sortBy { priorityList.indexOf(it) }
 
-        if (totalPower >= easyPower) {
-            if (soloDebuff == 1 && playerClass == DungeonClass.Tank && (spawningDragon.any { it == WitherDragonsEnum.Purple } || soloDebuffOnAll)) spawningDragon.sortByDescending { priorityList.indexOf(it) }
-            else if (playerClass == DungeonClass.Healer && (spawningDragon.any { it == WitherDragonsEnum.Purple } || soloDebuffOnAll)) spawningDragon.sortByDescending { priorityList.indexOf(it) }
-        }
         devMessage("§7Priority: §6$totalPower §7Class: §${playerClass.colorCode}${playerClass.name} §7Dragons: §a${spawningDragon.joinToString(", ") { it.name }} §7-> §c${priorityList.joinToString(", ") { it.name.first().toString() }}")
         return spawningDragon[0]
     }
