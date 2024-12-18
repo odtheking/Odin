@@ -62,7 +62,7 @@ object AutoTerms : Module(
             TerminalTypes.MELODY ->
                 windowClick(TerminalSolver.currentTerm.solution.find { it % 9 == 7 } ?: return, if (middleClick) ClickType.Middle else ClickType.Left)
 
-            else -> windowClick(item, if (middleClick) ClickType.Middle else ClickType.Left, instant = true)
+            else -> windowClick(item, if (middleClick) ClickType.Middle else ClickType.Left)
         }
 
         val currentTime = System.currentTimeMillis()
