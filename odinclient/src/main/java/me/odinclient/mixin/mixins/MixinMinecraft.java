@@ -37,7 +37,7 @@ public class MixinMinecraft {
 
     @Inject(method = {"runTick"}, at = {@At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiScreen;handleInput()V")})
     private void handleInput(CallbackInfo ci) {
-        PlayerUtils.INSTANCE.handleWindowClickQueue();
+        PlayerUtils.handleWindowClickQueue();
     }
 
     @Inject(method = "rightClickMouse", at = @At("HEAD"), cancellable = true)
@@ -54,6 +54,6 @@ public class MixinMinecraft {
 
     @Redirect(method = {"rightClickMouse"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/WorldClient;isAirBlock(Lnet/minecraft/util/BlockPos;)Z"))
     public boolean shouldCancelInteract(WorldClient instance, BlockPos blockPos) {
-        return CancelInteract.INSTANCE.cancelInteractHook(instance, blockPos);
+        return CancelInteract.cancelInteractHook(instance, blockPos);
     }
 }

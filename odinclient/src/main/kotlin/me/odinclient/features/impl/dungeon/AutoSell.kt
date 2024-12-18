@@ -3,9 +3,14 @@ package me.odinclient.features.impl.dungeon
 import me.odinmain.config.Config
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.features.settings.impl.*
-import me.odinmain.utils.*
-import me.odinmain.utils.skyblock.PlayerUtils
+import me.odinmain.features.settings.impl.ActionSetting
+import me.odinmain.features.settings.impl.ListSetting
+import me.odinmain.features.settings.impl.NumberSetting
+import me.odinmain.features.settings.impl.SelectorSetting
+import me.odinmain.utils.containsOneOf
+import me.odinmain.utils.equalsOneOf
+import me.odinmain.utils.name
+import me.odinmain.utils.skyblock.ClickType
 import me.odinmain.utils.skyblock.PlayerUtils.windowClick
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.inventory.ContainerChest
@@ -32,9 +37,9 @@ object AutoSell : Module(
             if (!container.name.equalsOneOf("Trades", "Booster Cookie", "Farm Merchant", "Ophelia")) return@execute
             val index = container.inventorySlots?.subList(54, 90)?.firstOrNull { it.stack?.displayName?.containsOneOf(sellList, true) == true }?.slotNumber ?: return@execute
             when (clickType) {
-                0 -> windowClick(index, PlayerUtils.ClickType.Shift)
-                1 -> windowClick(index, PlayerUtils.ClickType.Middle)
-                2 -> windowClick(index, PlayerUtils.ClickType.Left)
+                0 -> windowClick(index, ClickType.Shift)
+                1 -> windowClick(index, ClickType.Middle)
+                2 -> windowClick(index, ClickType.Left)
             }
         }
     }

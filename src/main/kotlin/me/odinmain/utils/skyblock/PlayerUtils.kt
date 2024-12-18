@@ -12,7 +12,6 @@ import me.odinmain.utils.runOnMCThread
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.util.Vec3
 
-
 object PlayerUtils {
     var shouldBypassVolume = false
 
@@ -55,12 +54,6 @@ object PlayerUtils {
     val posFloored
         get() = mc.thePlayer.positionVector.floored()
 
-    sealed class ClickType {
-        data object Left : ClickType()
-        data object Right : ClickType()
-        data object Middle : ClickType()
-        data object Shift : ClickType()
-    }
 
     private data class WindowClick(val slotId: Int, val button: Int, val mode: Int)
 
@@ -79,6 +72,7 @@ object PlayerUtils {
         else windowClickQueue.add(WindowClick(slotId, button, mode))
     }
 
+    @JvmStatic
     fun handleWindowClickQueue() {
         if (mc.thePlayer?.openContainer == null) return windowClickQueue.clear()
         if (windowClickQueue.isEmpty()) return
@@ -108,4 +102,11 @@ object PlayerUtils {
             is ClickType.Shift -> windowClick(slotId, 0, 1, instant)
         }
     }
+}
+
+sealed class ClickType {
+    data object Left   : ClickType()
+    data object Right  : ClickType()
+    data object Middle : ClickType()
+    data object Shift  : ClickType()
 }

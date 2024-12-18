@@ -1,11 +1,11 @@
 package me.odinmain.features.impl.floor7.p3
 
-enum class TerminalTypes(val guiName: String) {
-    PANES("Correct all the panes!"),
-    RUBIX("Change all to same color!"),
-    ORDER("Click in order!"),
-    STARTS_WITH("What starts with:"),
-    SELECT("Select all the"),
-    MELODY("Click the button on time!"),
-    NONE("None")
+enum class TerminalTypes(val guiName: String, val size: Int) {
+    MELODY("Click the button on time!", 54),
+    RUBIX("Change all to same color!",  45),
+    PANES("Correct all the panes!",     45),
+    STARTS_WITH("What starts with:",    45),
+    ORDER("Click in order!",            36),
+    SELECT("Select all the",            54),
+    NONE("None",                         0)
 }
