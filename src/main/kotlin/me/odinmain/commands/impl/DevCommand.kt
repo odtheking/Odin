@@ -32,7 +32,7 @@ val devCommand = commodore("oddev") {
 
     literal("drags") {
         runs { text: GreedyString ->
-            WitherDragonsEnum.entries.forEach {
+            val drags = WitherDragonsEnum.entries.mapNotNull {
                 if (text.string.lowercase().contains(it.name.lowercase())) {
                     when (it.name) {
                         "Red" -> sendChatMessage("/particle flame 27 18 60 1 1 1 1 100 force")
@@ -41,8 +41,10 @@ val devCommand = commodore("oddev") {
                         "Blue" -> sendChatMessage("/particle flame 84 18 95 1 1 1 1 100 force")
                         "Purple" -> sendChatMessage("/particle flame 57 18 125 1 1 1 1 100 force")
                     }
-                }
-            }
+                    it
+                } else null
+            }.toMutableList()
+            modMessage("Expected priority for dragons [${drags.joinToString(", ")}], with class ${DungeonUtils.currentDungeonPlayer.clazz}, with result of ${findPriority(drags)}")
         }
 
         literal("reset").runs { soft: Boolean? ->
