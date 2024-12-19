@@ -107,15 +107,15 @@ object TerminalSolver : Module(
     init {
         onPacket(S2DPacketOpenWindow::class.java) { packet ->
             val windowName = packet.windowTitle?.formattedText?.noControlCodes ?: return@onPacket
-            val newTermType = TerminalTypes.entries.find { terminal -> windowName.startsWith(terminal.guiName) } ?: TerminalTypes.NONE
+            val newTermType = TerminalTypes.entries.find { terminal -> windowName.startsWith(terminal.guiName) }?.takeIf { it != TerminalTypes.NONE } ?: return@onPacket leftTerm()
+
             if (newTermType != currentTerm.type) {
                 currentTerm = Terminal(type = newTermType, guiName = windowName, items = arrayOfNulls(newTermType.size))
-                devMessage("Registered new terminal: ${currentTerm.type.name}")
+                devMessage("§aNew terminal: §6${currentTerm.type.name}")
                 TerminalEvent.Opened(currentTerm).postAndCatch()
                 lastTermOpened = currentTerm
                 lastRubixSolution = null
             }
-            if (newTermType == TerminalTypes.NONE) return@onPacket leftTerm()
             if (renderType == 3 && Loader.instance().activeModList.any { it.modId == "notenoughupdates" }) NEUApi.setInventoryButtonsToDisabled()
         }
 
@@ -161,14 +161,6 @@ object TerminalSolver : Module(
                     }
                     else -> return@onPacket modMessage("This shouldn't be impossible, please report this!")
                 }
-            }
-
-            onPacket(C0DPacketCloseWindow::class.java) {
-                leftTerm()
-            }
-
-            onPacket(S2EPacketCloseWindow::class.java) {
-                leftTerm()
             }
         }
     }
@@ -333,7 +325,7 @@ object TerminalSolver : Module(
 
     private fun leftTerm() {
         if (currentTerm.type == TerminalTypes.NONE) return
-        devMessage("Registered left terminal: ${currentTerm.type.name}")
+        devMessage("§cLeft terminal: §6${currentTerm.type.name}")
         TerminalEvent.Closed(currentTerm).postAndCatch()
         currentTerm = Terminal(TerminalTypes.NONE)
     }
@@ -376,9 +368,9 @@ object TerminalSolver : Module(
 
     private fun isCorrectItem(item: ItemStack?, color: String): Boolean {
         return item?.isItemEnchanted == false &&
+                Item.getIdFromItem(item.item) != 160 &&
                 item.unlocalizedName?.contains(color, true) == true &&
-                (color == "lightblue" || item.unlocalizedName?.contains("lightBlue", true) == false) && // color BLUE should not accept light blue items.
-                Item.getIdFromItem(item.item) != 160
+                (color == "lightBlue" || item.unlocalizedName?.contains("lightBlue", true) == false) // color BLUE should not accept light blue items.
     }
 
     private fun solveMelody(items: Array<ItemStack?>): List<Int> {

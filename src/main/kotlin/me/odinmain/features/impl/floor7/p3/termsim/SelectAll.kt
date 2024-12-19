@@ -12,7 +12,7 @@ import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
 import kotlin.math.floor
 
-class SelectAll(private val color: String = EnumDyeColor.entries.filterNot { it.name == "LIGHT_BLUE" }.random().name.replace("_", " ").uppercase()) : TermSimGui(
+class SelectAll(private val color: String = EnumDyeColor.entries.random().name.replace("_", " ").uppercase()) : TermSimGui(
     "Select all the $color items!",
     TerminalTypes.SELECT.size
 ) {
