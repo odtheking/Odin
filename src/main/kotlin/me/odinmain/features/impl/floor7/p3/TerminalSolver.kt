@@ -21,6 +21,7 @@ import me.odinmain.utils.render.mcText
 import me.odinmain.utils.render.translate
 import me.odinmain.utils.skyblock.ClickType
 import me.odinmain.utils.skyblock.PlayerUtils.windowClick
+import me.odinmain.utils.skyblock.devMessage
 import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.skyblock.unformattedName
 import net.minecraft.client.gui.Gui
@@ -32,7 +33,9 @@ import net.minecraft.inventory.ContainerPlayer
 import net.minecraft.item.EnumDyeColor
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
+import net.minecraft.network.play.client.C0DPacketCloseWindow
 import net.minecraft.network.play.server.S2DPacketOpenWindow
+import net.minecraft.network.play.server.S2EPacketCloseWindow
 import net.minecraft.network.play.server.S2FPacketSetSlot
 import net.minecraftforge.client.event.GuiScreenEvent
 import net.minecraftforge.event.entity.player.ItemTooltipEvent
@@ -107,6 +110,7 @@ object TerminalSolver : Module(
             val newTermType = TerminalTypes.entries.find { terminal -> windowName.startsWith(terminal.guiName) } ?: TerminalTypes.NONE
             if (newTermType != currentTerm.type) {
                 currentTerm = Terminal(type = newTermType, guiName = windowName, items = arrayOfNulls(newTermType.size))
+                devMessage("Registered new terminal: ${currentTerm.type.name}")
                 TerminalEvent.Opened(currentTerm).postAndCatch()
                 lastTermOpened = currentTerm
                 lastRubixSolution = null
@@ -116,7 +120,7 @@ object TerminalSolver : Module(
         }
 
         onPacket(S2FPacketSetSlot::class.java) { event ->
-            if (currentTerm.type == TerminalTypes.NONE || event.func_149173_d() < 0 || event.func_149173_d() > currentTerm.type.size || event.func_149174_e() == null) return@onPacket
+            if (currentTerm.type == TerminalTypes.NONE || event.func_149173_d() < 0 || event.func_149173_d() >= currentTerm.type.size || event.func_149174_e() == null) return@onPacket
             currentTerm.apply {
                 items[event.func_149173_d()] = event.func_149174_e()
                 when (type) {
@@ -157,6 +161,14 @@ object TerminalSolver : Module(
                     }
                     else -> return@onPacket modMessage("This shouldn't be impossible, please report this!")
                 }
+            }
+
+            onPacket(C0DPacketCloseWindow::class.java) {
+                leftTerm()
+            }
+
+            onPacket(S2EPacketCloseWindow::class.java) {
+                leftTerm()
             }
         }
     }
@@ -312,12 +324,16 @@ object TerminalSolver : Module(
 
     init {
         onMessage(terminalActivatedRegex) { message ->
-            terminalActivatedRegex.find(message)?.groupValues?.get(1).takeIf { it != mc.thePlayer?.name } ?: TerminalEvent.Solved(lastTermOpened).postAndCatch()
+            terminalActivatedRegex.find(message)?.groupValues?.get(1).takeIf { it != mc.thePlayer?.name } ?: {
+                TerminalEvent.Solved(lastTermOpened).postAndCatch()
+                leftTerm()
+            }
         }
     }
 
     private fun leftTerm() {
         if (currentTerm.type == TerminalTypes.NONE) return
+        devMessage("Registered left terminal: ${currentTerm.type.name}")
         TerminalEvent.Closed(currentTerm).postAndCatch()
         currentTerm = Terminal(TerminalTypes.NONE)
     }
