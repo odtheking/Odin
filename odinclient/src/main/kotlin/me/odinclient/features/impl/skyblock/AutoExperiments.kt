@@ -5,8 +5,8 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.NumberSetting
-import me.odinmain.utils.skyblock.Island
-import me.odinmain.utils.skyblock.LocationUtils
+import me.odinmain.utils.skyblock.*
+import me.odinmain.utils.skyblock.PlayerUtils.windowClick
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.init.Blocks
 import net.minecraft.init.Items
@@ -59,7 +59,7 @@ object AutoExperiments : Module(
      * @author Harry282
      */
     @SubscribeEvent
-    fun onGuiDraw(event: GuiEvent.DrawGuiContainerScreenEvent) {
+    fun onGuiDraw(event: GuiEvent.DrawGuiBackground) {
         if (!LocationUtils.currentArea.isArea(Island.PrivateIsland)) return
         ((event.gui as? GuiChest)?.inventorySlots as? ContainerChest)?.inventorySlots?.takeIf { it.size >= 54 }?.let {
             when (currentExperiment) {
@@ -84,7 +84,7 @@ object AutoExperiments : Module(
             }
         }
         if (hasAdded && invSlots[49].stack?.item == Items.clock && chronomatronOrder.size > clicks && System.currentTimeMillis() - lastClickTime > delay) {
-            mc.playerController.windowClick(mc.thePlayer.openContainer.windowId, chronomatronOrder[clicks], 2, 3, mc.thePlayer)
+            windowClick(chronomatronOrder[clicks], ClickType.Middle, true)
             lastClickTime = System.currentTimeMillis()
             clicks++
         }
@@ -104,9 +104,7 @@ object AutoExperiments : Module(
             if (ultrasequencerOrder.size > 9 - serumCount && autoClose) mc.thePlayer?.closeScreen()
         }
         if (invSlots[49].stack?.item == Items.clock && ultrasequencerOrder.contains(clicks) && System.currentTimeMillis() - lastClickTime > delay) {
-            ultrasequencerOrder[clicks]?.let {
-                mc.playerController.windowClick(mc.thePlayer.openContainer.windowId, it, 2, 3, mc.thePlayer)
-            }
+            ultrasequencerOrder[clicks]?.let { windowClick(it, ClickType.Middle, true) }
             lastClickTime = System.currentTimeMillis()
             clicks++
         }

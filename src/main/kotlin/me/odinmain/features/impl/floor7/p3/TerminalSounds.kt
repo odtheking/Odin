@@ -12,7 +12,6 @@ import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.skyblock.PlayerUtils
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.network.play.server.S29PacketSoundEffect
-import net.minecraftforge.client.event.GuiScreenEvent
 import net.minecraftforge.fml.common.eventhandler.EventPriority
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.input.Mouse
@@ -55,8 +54,8 @@ object TerminalSounds : Module(
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
-    fun onSlotClick(event: GuiScreenEvent.MouseInputEvent.Pre) {
-        if (shouldReplaceSounds && Mouse.getEventButtonState()) clickSlot((event.gui as? GuiChest)?.slotUnderMouse?.slotIndex ?: return)
+    fun onSlotClick(event: GuiEvent.MouseClick) {
+        if (shouldReplaceSounds) clickSlot((event.gui as? GuiChest)?.slotUnderMouse?.slotIndex ?: return)
     }
 
     @SubscribeEvent
@@ -88,8 +87,8 @@ object TerminalSounds : Module(
         } else playTerminalSound()
     }
 
-    fun playCompleteSound() {
-        PlayerUtils.playLoudSound( if (completedSound == defaultSounds.size - 1) customCompleteSound else defaultSounds[completedSound], completeVolume, completePitch)
+    private fun playCompleteSound() {
+        PlayerUtils.playLoudSound(if (completedSound == defaultSounds.size - 1) customCompleteSound else defaultSounds[completedSound], completeVolume, completePitch)
     }
 
     private fun playTerminalSound() {

@@ -1,5 +1,6 @@
 package me.odinclient.features.impl.dungeon
 
+import me.odinmain.events.impl.GuiEvent
 import me.odinmain.events.impl.PacketEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
@@ -12,7 +13,6 @@ import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.network.play.client.C0DPacketCloseWindow
 import net.minecraft.network.play.server.S2DPacketOpenWindow
-import net.minecraftforge.client.event.GuiScreenEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.input.Mouse
 
@@ -32,18 +32,16 @@ object CloseChest : Module(
     }
 
     @SubscribeEvent
-    fun onInput(event: GuiScreenEvent.KeyboardInputEvent.Pre) {
-        val gui = event.gui as? GuiChest ?: return
+    fun onInput(event: GuiEvent.KeyPress) {
         if (!inDungeons || mode != 1) return
-        if ((gui.inventorySlots as? ContainerChest)?.name?.noControlCodes?.equalsOneOf("Chest", "Large Chest") == true)
-            mc.thePlayer?.closeScreen()
+        val gui = (event.gui as? GuiChest)?.inventorySlots as? ContainerChest ?: return
+        if (gui.name.noControlCodes.equalsOneOf("Chest", "Large Chest")) mc.thePlayer?.closeScreen()
     }
 
     @SubscribeEvent
-    fun onMouse(event: GuiScreenEvent.MouseInputEvent.Pre) {
-        val gui = event.gui as? GuiChest ?: return
-        if (!inDungeons || mode != 1 || !Mouse.getEventButtonState()) return
-        if ((gui.inventorySlots as? ContainerChest)?.name?.noControlCodes?.equalsOneOf("Chest", "Large Chest") == true)
-            mc.thePlayer?.closeScreen()
+    fun onMouse(event: GuiEvent.MouseClick) {
+        if (!inDungeons || mode != 1) return
+        val gui = (event.gui as? GuiChest)?.inventorySlots as? ContainerChest ?: return
+        if (gui.name.noControlCodes.equalsOneOf("Chest", "Large Chest")) mc.thePlayer?.closeScreen()
     }
 }

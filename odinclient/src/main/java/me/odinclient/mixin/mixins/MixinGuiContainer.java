@@ -36,12 +36,12 @@ public abstract class MixinGuiContainer {
 
     @Inject(method = "drawSlot", at = @At("HEAD"), cancellable = true)
     private void onDrawSlot(Slot slotIn, CallbackInfo ci) {
-        if (postAndCatch(new GuiEvent.DrawSlotEvent(inventorySlots, odinMod$gui, slotIn, slotIn.xDisplayPosition, slotIn.yDisplayPosition))) ci.cancel();
+        if (postAndCatch(new GuiEvent.DrawSlot(odinMod$gui, slotIn, slotIn.xDisplayPosition, slotIn.yDisplayPosition))) ci.cancel();
     }
 
     @Inject(method = "drawScreen", at = @At(value = "HEAD"), cancellable = true)
     private void startDrawScreen(int mouseX, int mouseY, float partialTicks, CallbackInfo ci) {
-        if (postAndCatch(new GuiEvent.DrawGuiContainerScreenEvent(odinMod$gui.inventorySlots, odinMod$gui, this.xSize, this.ySize, guiLeft, guiTop))) {
+        if (postAndCatch(new GuiEvent.DrawGuiBackground(odinMod$gui, this.xSize, this.ySize, guiLeft, guiTop))) {
             ci.cancel();
 
             this.theSlot = null;

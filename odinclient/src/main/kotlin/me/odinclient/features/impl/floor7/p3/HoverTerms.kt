@@ -31,7 +31,7 @@ object HoverTerms : Module(
     private var clickedThisWindow = false
 
     @SubscribeEvent(receiveCanceled = true)
-    fun onDrawGuiContainer(event: GuiEvent.DrawGuiContainerScreenEvent) {
+    fun onDrawGuiContainer(event: GuiEvent.DrawGuiBackground) {
         if (
             TerminalSolver.currentTerm.type == TerminalTypes.NONE ||
             TerminalSolver.currentTerm.solution.isEmpty() ||
