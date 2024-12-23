@@ -17,6 +17,7 @@ import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
 import net.minecraft.network.play.client.C0EPacketClickWindow
 import net.minecraft.network.play.server.S2DPacketOpenWindow
+import net.minecraft.network.play.server.S2EPacketCloseWindow
 import net.minecraft.network.play.server.S2FPacketSetSlot
 import net.minecraft.util.ChatComponentText
 import net.minecraftforge.common.MinecraftForge
@@ -46,6 +47,7 @@ open class TermSimGui(val name: String, val size: Int, private val inv: Inventor
     @SubscribeEvent
     fun onTerminalSolved(event: TerminalEvent.Solved) {
         if (OdinMain.mc.currentScreen !== this) return
+        PacketEvent.Receive(S2EPacketCloseWindow(-2)).postAndCatch()
         StartGui.open(ping)
     }
 

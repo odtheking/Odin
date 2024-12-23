@@ -45,7 +45,7 @@ class SelectAll(private val color: String = EnumDyeColor.entries.random().name.r
     override fun slotClick(slot: Slot, button: Int) = with(slot.stack) {
         if (isItemEnchanted || item !in items || item == dye && metadata != correctDye || item != dye && metadata != correctMeta) {
             mc.thePlayer?.closeScreen()
-            return modMessage("§cThat item does not start with: $color!")
+            return modMessage("§cThat item is not: $color!")
         }
 
         createNewGui { if (it == slot) ItemStack(item, stackSize, metadata).apply { addEnchantment(Enchantment.infinity, 1) } else it.stack }

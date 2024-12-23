@@ -28,20 +28,17 @@ import net.minecraft.client.gui.Gui
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.player.InventoryPlayer
-import net.minecraft.inventory.ContainerChest
-import net.minecraft.inventory.ContainerPlayer
 import net.minecraft.item.EnumDyeColor
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
+import net.minecraft.network.play.client.C0DPacketCloseWindow
 import net.minecraft.network.play.server.S2DPacketOpenWindow
+import net.minecraft.network.play.server.S2EPacketCloseWindow
 import net.minecraft.network.play.server.S2FPacketSetSlot
 import net.minecraftforge.event.entity.player.ItemTooltipEvent
 import net.minecraftforge.fml.common.Loader
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import net.minecraftforge.fml.common.gameevent.TickEvent
-import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 import org.lwjgl.input.Keyboard
-import org.lwjgl.input.Mouse
 
 @AlwaysActive // So it can be used in other modules
 object TerminalSolver : Module(
@@ -104,7 +101,7 @@ object TerminalSolver : Module(
     init {
         onPacket(S2DPacketOpenWindow::class.java) { packet ->
             val windowName = packet.windowTitle?.formattedText?.noControlCodes ?: return@onPacket
-            val newTermType = TerminalTypes.entries.find { terminal -> windowName.startsWith(terminal.guiName) }?.takeIf { it != TerminalTypes.NONE } ?: return@onPacket leftTerm()
+            val newTermType = TerminalTypes.entries.find { terminal -> windowName.startsWith(terminal.guiName) }?.takeIf { it != TerminalTypes.NONE } ?: return@onPacket
 
             if (newTermType != currentTerm.type) {
                 currentTerm = Terminal(type = newTermType, guiName = windowName, items = arrayOfNulls(newTermType.size))
@@ -159,6 +156,14 @@ object TerminalSolver : Module(
                     else -> return@onPacket modMessage("This shouldn't be impossible, please report this!")
                 }
             }
+        }
+
+        onPacket(C0DPacketCloseWindow::class.java) {
+            leftTerm()
+        }
+
+        onPacket(S2EPacketCloseWindow::class.java) {
+            leftTerm()
         }
     }
 
@@ -264,7 +269,7 @@ object TerminalSolver : Module(
         if (!enabled || currentTerm.type == TerminalTypes.NONE) return
 
         if (renderType == 3 && !(currentTerm.type == TerminalTypes.MELODY && cancelMelodySolver)) {
-            CustomTermGui.mouseClicked(MouseUtils.mouseX.toInt(), MouseUtils.mouseY.toInt(), Mouse.getEventButton())
+            CustomTermGui.mouseClicked(MouseUtils.mouseX.toInt(), MouseUtils.mouseY.toInt(), event.button)
             event.isCanceled = true
             return
         }
@@ -276,7 +281,7 @@ object TerminalSolver : Module(
             when {
                 slotIndex !in currentTerm.solution -> true
                 currentTerm.type == TerminalTypes.ORDER && slotIndex != currentTerm.solution.firstOrNull() -> true
-                currentTerm.type == TerminalTypes.RUBIX && ((needed < 3 && Mouse.getEventButton() != 0) || (needed >= 3 && Mouse.getEventButton() != 1)) -> true
+                currentTerm.type == TerminalTypes.RUBIX && ((needed < 3 && event.button != 0) || (needed >= 3 && event.button != 1)) -> true
                 else -> false
             }.takeIf { it }?.let {
                 event.isCanceled = true
@@ -285,7 +290,7 @@ object TerminalSolver : Module(
         }
 
         if (middleClickGUI) {
-            windowClick(slotIndex, if (Mouse.getEventButton() == 0) ClickType.Middle else ClickType.Right, instant = true)
+            windowClick(slotIndex, if (event.button == 0) ClickType.Middle else ClickType.Right, instant = true)
             event.isCanceled = true
         }
     }
@@ -304,19 +309,12 @@ object TerminalSolver : Module(
         if (enabled && currentTerm.type == TerminalTypes.ORDER && (event.stack?.item?.registryName ?: return) == "minecraft:stained_glass_pane") event.isCanceled = true
     }
 
-    @SubscribeEvent
-    fun onTick(event: ClientTickEvent) {
-        if (event.phase == TickEvent.Phase.END && mc.thePlayer?.openContainer is ContainerPlayer) leftTerm()
-    }
-
     private val terminalActivatedRegex = Regex("(.{1,16}) activated a terminal! \\((\\d)/(\\d)\\)")
 
     init {
         onMessage(terminalActivatedRegex) { message ->
-            terminalActivatedRegex.find(message)?.groupValues?.get(1).takeIf { it != mc.thePlayer?.name } ?: {
+            if (terminalActivatedRegex.find(message)?.groupValues?.get(1) == mc.thePlayer.name)
                 TerminalEvent.Solved(lastTermOpened).postAndCatch()
-                leftTerm()
-            }
         }
     }
 
