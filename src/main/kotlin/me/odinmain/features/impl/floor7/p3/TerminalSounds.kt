@@ -1,6 +1,8 @@
 package me.odinmain.features.impl.floor7.p3
 
-import me.odinmain.events.impl.*
+import me.odinmain.events.impl.GuiEvent
+import me.odinmain.events.impl.PacketEvent
+import me.odinmain.events.impl.TerminalEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.currentTerm
@@ -10,7 +12,6 @@ import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.skyblock.PlayerUtils
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.network.play.server.S29PacketSoundEffect
-import net.minecraftforge.client.event.GuiScreenEvent
 import net.minecraftforge.fml.common.eventhandler.EventPriority
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.input.Mouse
@@ -53,8 +54,8 @@ object TerminalSounds : Module(
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
-    fun onSlotClick(event: GuiScreenEvent.MouseInputEvent.Pre) {
-        if (shouldReplaceSounds && Mouse.getEventButtonState()) clickSlot((event.gui as? GuiChest)?.slotUnderMouse?.slotIndex ?: return)
+    fun onSlotClick(event: GuiEvent.MouseClick) {
+        if (shouldReplaceSounds) clickSlot((event.gui as? GuiChest)?.slotUnderMouse?.slotIndex ?: return)
     }
 
     @SubscribeEvent
@@ -64,7 +65,7 @@ object TerminalSounds : Module(
 
     @SubscribeEvent
     fun onTermComplete(event: TerminalEvent.Solved) {
-        if (shouldReplaceSounds && event.playerName != mc.thePlayer?.name || (!completeSounds && !clickSounds)) mc.thePlayer.playSound("note.pling", 8f, 4f)
+        if (shouldReplaceSounds && (!completeSounds && !clickSounds)) mc.thePlayer.playSound("note.pling", 8f, 4f)
         else if (shouldReplaceSounds && completeSounds && !clickSounds) playCompleteSound()
     }
 
@@ -86,8 +87,8 @@ object TerminalSounds : Module(
         } else playTerminalSound()
     }
 
-    fun playCompleteSound() {
-        PlayerUtils.playLoudSound( if (completedSound == defaultSounds.size - 1) customCompleteSound else defaultSounds[completedSound], completeVolume, completePitch)
+    private fun playCompleteSound() {
+        PlayerUtils.playLoudSound(if (completedSound == defaultSounds.size - 1) customCompleteSound else defaultSounds[completedSound], completeVolume, completePitch)
     }
 
     private fun playTerminalSound() {

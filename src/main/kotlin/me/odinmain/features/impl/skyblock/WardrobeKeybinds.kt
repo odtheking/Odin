@@ -1,5 +1,6 @@
 package me.odinmain.features.impl.skyblock
 
+import me.odinmain.events.impl.GuiEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
@@ -9,11 +10,12 @@ import me.odinmain.features.settings.impl.KeybindSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.name
+import me.odinmain.utils.skyblock.ClickType
+import me.odinmain.utils.skyblock.PlayerUtils.windowClick
 import me.odinmain.utils.skyblock.getItemIndexInContainerChest
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.inventory.ContainerChest
-import net.minecraftforge.client.event.GuiScreenEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.input.Keyboard
 
@@ -39,33 +41,39 @@ object WardrobeKeybinds : Module(
     private val wardrobe8 by KeybindSetting("Wardrobe 8", Keyboard.KEY_8, "Wardrobe 8").withDependency { advanced }
     private val wardrobe9 by KeybindSetting("Wardrobe 9", Keyboard.KEY_9, "Wardrobe 9").withDependency { advanced }
 
-    private val wardrobes = arrayOf(wardrobe1, wardrobe2, wardrobe3, wardrobe4, wardrobe5, wardrobe6, wardrobe7, wardrobe8, wardrobe9)
     private val wardrobeRegex = Regex("Wardrobe \\((\\d)/(\\d)\\)")
     private val clickCoolDown = Clock(delay)
 
     @SubscribeEvent
-    fun onGuiScreenPress(event: GuiScreenEvent) {
-        if ((event !is GuiScreenEvent.KeyboardInputEvent.Pre && event !is GuiScreenEvent.MouseInputEvent.Pre) || !unequipKeybind.isDown() && !nextPageKeybind.isDown() && !previousPageKeybind.isDown() && wardrobes.none { it.isDown() }) return
-        val chest = (event.gui as? GuiChest)?.inventorySlots as? ContainerChest ?: return
+    fun onGuiMouseClick(event: GuiEvent.MouseClick) {
+        if (onClick(event.gui as? GuiChest ?: return, event.button)) event.isCanceled = true
+    }
 
-        val (current, total) = wardrobeRegex.find(chest.name)?.destructured ?: return
+    @SubscribeEvent
+    fun onGuiKeyPress(event: GuiEvent.KeyPress) {
+        if (onClick(event.gui as? GuiChest ?: return, event.key)) event.isCanceled = true
+    }
+
+    private fun onClick(gui: GuiChest, key: Int): Boolean {
+        val chest = gui.inventorySlots as? ContainerChest ?: return false
+        val (current, total) = wardrobeRegex.find(chest.name)?.destructured ?: return false
         val equippedIndex = getItemIndexInContainerChest(chest, "equipped", 36..44, true)
 
         val index = when {
-            nextPageKeybind.isDown() -> if (current.toInt() < total.toInt()) 53 else return modMessage("§cYou are already on the last page.")
-            previousPageKeybind.isDown() -> if (current.toInt() > 1) 45 else return modMessage("§cYou are already on the first page.")
-            unequipKeybind.isDown() -> equippedIndex ?: return modMessage("§cCouldn't find equipped armor.")
+            nextPageKeybind.isDown() -> if (current.toInt() < total.toInt()) 53 else return modMessage("§cYou are already on the last page.").let { false }
+            previousPageKeybind.isDown() -> if (current.toInt() > 1) 45 else return modMessage("§cYou are already on the first page.").let { false }
+            unequipKeybind.isDown() -> equippedIndex ?: return modMessage("§cCouldn't find equipped armor.").let { false }
             else -> {
-                val keyIndex = wardrobes.indexOfFirst { it.isDown() }.takeIf { it != -1 } ?: return
-                if (equippedIndex == keyIndex + 36 && disallowUnequippingEquipped) return modMessage("§cArmor already equipped.")
+                val keyIndex = arrayOf(wardrobe1, wardrobe2, wardrobe3, wardrobe4, wardrobe5, wardrobe6, wardrobe7, wardrobe8, wardrobe9).indexOfFirst { it.isDown() }.takeIf { it != -1 } ?: return false
+                if (equippedIndex == keyIndex + 36 && disallowUnequippingEquipped) return modMessage("§cArmor already equipped.").let { false }
                 keyIndex + 36
             }
         }
-        if (!clickCoolDown.hasTimePassed(delay)) return
-        if (index > chest.lowerChestInventory.sizeInventory - 1 || index < 1) return modMessage("§cInvalid index. $index, ${chest.name}")
-        mc.playerController.windowClick(chest.windowId, index, 0, 0, mc.thePlayer)
-        clickCoolDown.update()
 
-        event.isCanceled = true
+        if (!clickCoolDown.hasTimePassed(delay)) return false
+        if (index > chest.lowerChestInventory.sizeInventory - 1 || index < 1) return modMessage("§cInvalid index. $index, ${chest.name}").let { false }
+        windowClick(index, ClickType.Left, true)
+        clickCoolDown.update()
+        return true
     }
 }

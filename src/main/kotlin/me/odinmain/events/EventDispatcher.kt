@@ -9,7 +9,6 @@ import me.odinmain.utils.skyblock.dungeon.DungeonUtils.dungeonItemDrops
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.inBoss
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.inDungeons
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.isSecret
-import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.skyblock.unformattedName
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.entity.item.EntityItem
@@ -67,6 +66,6 @@ object EventDispatcher {
         val deferred = waitUntilLastItem(container)
         try { deferred.await() } catch (_: Exception) { return@launch } // Wait until the last item in the chest isn't null
 
-        GuiEvent.Loaded(container.name, container).postAndCatch()
+        GuiEvent.Loaded(container, container.name).postAndCatch()
     }
 }

@@ -29,7 +29,7 @@ public class MixinMinecraft {
 
     @Inject(method = {"runTick"}, at = {@At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiScreen;handleInput()V")})
     private void handleInput(CallbackInfo ci) {
-        PlayerUtils.INSTANCE.handleWindowClickQueue();
+        PlayerUtils.handleWindowClickQueue();
     }
 
     @Inject(method = "rightClickMouse", at = @At("HEAD"), cancellable = true)

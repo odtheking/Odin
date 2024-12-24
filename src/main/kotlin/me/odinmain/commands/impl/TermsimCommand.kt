@@ -1,32 +1,26 @@
 package me.odinmain.commands.impl
 
 import me.odinmain.commands.commodore
-import me.odinmain.features.impl.floor7.TerminalSimulator.openRandomTerminal
 import me.odinmain.features.impl.floor7.p3.termsim.*
-import me.odinmain.utils.ServerUtils
-import me.odinmain.utils.getRandom
-import net.minecraft.item.EnumDyeColor
-import kotlin.math.round
+import me.odinmain.utils.skyblock.modMessage
 
 val termSimCommand = commodore("termsim") {
-    runs { ping: Long?, amount: Long? ->
-        if (amount == null) StartGui.open(ping ?: 0)
-        else openRandomTerminal(ping ?: 0, amount)
-
-    } suggests {
-        listOf(round(ServerUtils.averagePing).toLong().toString())
+    runs { ping: Long? ->
+        StartGui.open(ping ?: 0)
     }
 
-    runs { string: String, ping: Long? ->
+    literal("type").runs { string: String, ping: Long? ->
+        val ping = ping ?: 0
         when (string) {
-            "pains" -> CorrectPanes.open(ping ?: 0, 1)
-            "rubix" -> Rubix.open(ping ?: 0, 1)
-            "order" -> InOrder.open(ping ?: 0, 1)
-            "start" -> StartsWith(StartsWith.letters.shuffled().first()).open(ping ?: 0, 1)
-            "select" -> SelectAll(EnumDyeColor.entries.getRandom().name.replace("_", " ").uppercase()).open(ping ?: 0, 1)
-            "melody" -> Melody.open(ping ?: 0, 1)
+            "start", "startwith", "startswith" -> StartsWith().open(ping)
+            "order", "numbers", "n", "o"       -> InOrder.open(ping)
+            "panes", "pane", "p"               -> CorrectPanes.open(ping)
+            "select", "selectall"              -> SelectAll().open(ping)
+            "melody", "harp", "m"              -> Melody.open(ping)
+            "rubix", "r"                       -> Rubix.open(ping)
+            else -> modMessage("§cInvalid terminal name: $string §5(valid: pane, rubix, order, start, select, melody)")
         }
     } suggests {
-        listOf("pains", "rubix", "order", "start", "select", "melody")
+        listOf("pane", "rubix", "order", "start", "select", "melody")
     }
 }

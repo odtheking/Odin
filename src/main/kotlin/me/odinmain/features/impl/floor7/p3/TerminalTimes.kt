@@ -1,10 +1,13 @@
 package me.odinmain.features.impl.floor7.p3
 
-import me.odinmain.events.impl.*
+import me.odinmain.events.impl.ServerTickEvent
+import me.odinmain.events.impl.TerminalEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
+import me.odinmain.features.impl.floor7.TerminalSimulator
 import me.odinmain.features.impl.floor7.p3.termsim.TermSimGui
-import me.odinmain.features.settings.impl.*
+import me.odinmain.features.settings.impl.ActionSetting
+import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.skyblock.PersonalBest
 import me.odinmain.utils.skyblock.modMessage
@@ -18,29 +21,30 @@ object TerminalTimes : Module(
 ) {
     private val sendMessage by BooleanSetting("Send Message", false, description = "Send a message when a terminal is completed.")
     private val reset by ActionSetting("Reset pbs", description = "Resets the terminal PBs.") {
-        repeat(6) { i -> termPBs.set(i, 999.0) }
+        repeat(6) { i -> terminalPBs.set(i, 999.0) }
         modMessage("§6Terminal PBs §fhave been reset.")
     }
 
     private val terminalSplits by BooleanSetting("Terminal Splits", default = true, description = "Adds the time when a term was completed to its message, and sends the total term time after terms are done.")
     private val useRealTime by BooleanSetting("Use Real Time", default = true, description = "Use real time rather than server ticks.")
 
-    private val termPBs = PersonalBest("Terminals", 7)
+    private val terminalPBs = PersonalBest("Terminals", 7)
 
     @SubscribeEvent
     fun onTerminalClose(event: TerminalEvent.Solved) {
-        if (event.type == TerminalTypes.NONE || mc.currentScreen is TermSimGui || event.playerName != mc.thePlayer?.name) return
-        termPBs.time(event.type.ordinal, (System.currentTimeMillis() - TerminalSolver.currentTerm.timeOpened) / 1000.0, "s§7!", "§a${event.type.guiName} §7solved in §6", addPBString = true, addOldPBString = true, sendOnlyPB = sendMessage)
+        if (event.terminal.type == TerminalTypes.NONE) return
+        val pbs = if (mc.currentScreen is TermSimGui) TerminalSimulator.termSimPBs else terminalPBs
+        pbs.time(event.terminal.type.ordinal, (System.currentTimeMillis() - TerminalSolver.currentTerm.timeOpened) / 1000.0, "s§7!", "§a${event.terminal.guiName} ${if (mc.currentScreen is TermSimGui) "§7(termsim)" else ""} §7solved in §6", addPBString = true, addOldPBString = true, sendOnlyPB = sendMessage)
     }
 
     private val terminalCompleteRegex = Regex("(.{1,16}) (activated|completed) a (terminal|lever|device)! \\((\\d)/(\\d)\\)")
 
-    private var gateBlown = false
     private var completed: Pair<Int, Int> = Pair(0, 7)
+    private val times = mutableListOf<Double>()
+    private var gateBlown = false
+    private var sectionTimer = 0L
     private var currentTick = 0L
     private var phaseTimer = 0L
-    private var sectionTimer = 0L
-    private val times = mutableListOf<Double>()
 
     @SubscribeEvent
     fun onMessage(event: ClientChatReceivedEvent) {

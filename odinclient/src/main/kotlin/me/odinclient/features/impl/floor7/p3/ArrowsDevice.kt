@@ -320,7 +320,7 @@ object ArrowsDevice : Module(
         fun tryClick () {
             if (attempts > 2) return
             getItemIndexInContainerChest(chest, leapTo.name, 11..16)?.also {
-                PlayerUtils.windowClick(it, PlayerUtils.ClickType.Middle, instant = false)
+                PlayerUtils.windowClick(it, ClickType.Middle, instant = false)
                 autoState = AutoState.Stopped
             } ?: run {
                 attempts += 1

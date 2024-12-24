@@ -7,19 +7,22 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
+import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.features.settings.impl.NumberSetting
+import me.odinmain.features.settings.impl.SelectorSetting
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.*
 import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
-import me.odinmain.utils.skyblock.*
+import me.odinmain.utils.skyblock.devMessage
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.M7Phases
+import me.odinmain.utils.skyblock.getBlockIdAt
+import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.block.BlockButtonStone
 import net.minecraft.entity.item.EntityItem
 import net.minecraft.init.Blocks
-import net.minecraft.item.Item
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
@@ -33,6 +36,12 @@ object SimonSays : Module(
     category = Category.FLOOR7,
     tag = TagType.RISKY
 ) {
+    private val firstColor by ColorSetting("First Color", Color.GREEN.withAlpha(0.5f), allowAlpha = true, description = "The color of the first button.")
+    private val secondColor by ColorSetting("Second Color", Color.ORANGE.withAlpha(0.5f), allowAlpha = true, description = "The color of the second button.")
+    private val thirdColor by ColorSetting("Third Color", Color.RED.withAlpha(0.5f), allowAlpha = true, description = "The color of the buttons after the second.")
+    private val style by SelectorSetting("Style", Renderer.DEFAULT_STYLE, Renderer.styles, description = Renderer.STYLE_DESCRIPTION)
+    private val lineWidth by NumberSetting("Line Width", 2f, 0.1f, 10f, 0.1f, description = "The width of the box's lines.")
+    private val depthCheck by BooleanSetting("Depth check", false, description = "Boxes show through walls.")
     private val start by BooleanSetting("Start", default = true, description = "Automatically starts the device when it can be started.")
     private val startClicks by NumberSetting("Start Clicks", 3, 1, 10, description = "Amount of clicks to start the device.").withDependency { start }
     private val startClickDelay by NumberSetting("Start Click Delay", 3, 1, 5, description = "Delay between each start click.").withDependency { start }
@@ -83,9 +92,9 @@ object SimonSays : Module(
     @SubscribeEvent
     fun onBlockChange(event: BlockChangeEvent) {
         if (DungeonUtils.getF7Phase() != M7Phases.P3) return
+        val state = event.update
         val pos = event.pos
         val old = event.old
-        val state = event.update
 
         if (pos == firstButton && state.block == Blocks.stone_button && state.getValue(BlockButtonStone.POWERED)) {
             clickInOrder.clear()
@@ -118,8 +127,7 @@ object SimonSays : Module(
     @SubscribeEvent
     fun onPostMetadata(event: PostEntityMetadata) {
         val entity = mc.theWorld?.getEntityByID(event.packet.entityId) as? EntityItem ?: return
-        if (Item.getIdFromItem(entity.entityItem.item) != 77) return
-        val index = clickInOrder.indexOf(BlockPos(entity.posX.floor().toDouble(), entity.posY.floor().toDouble(), entity.posZ.floor().toDouble()).east())
+        val index = clickInOrder.indexOf(BlockPos(entity.posX.floor(), entity.posY.floor(), entity.posZ.floor()).east())
         if (index == 2 && clickInOrder.size == 3) clickInOrder.removeFirst()
         else if (index == 0 && clickInOrder.size == 2) clickInOrder.reverse()
     }
@@ -130,12 +138,12 @@ object SimonSays : Module(
         if (clickInOrder[clickNeeded] != pos.east()) return
         if (clickNeeded == 0) { // Stops spamming the first button and breaking the puzzle.
             if (!firstClickClock.hasTimePassed()) return
-            rightClick()
             firstClickClock.update()
+            rightClick()
             return
         }
-        rightClick()
         triggerBotClock.update()
+        rightClick()
     }
 
     private fun autoSS() {
@@ -155,15 +163,14 @@ object SimonSays : Module(
             !autoSSLastClickClock.hasTimePassed()
         ) return
 
-        val buttonToClick = clickInOrder[clickNeeded]
-        if (getBlockIdAt(buttonToClick.west()) != 77) return
+        val buttonToClick = clickInOrder[clickNeeded].takeIf { getBlockIdAt(it.west()) == 77 } ?: return
         val (_, yaw, pitch) = getDirectionToVec3(buttonToClick.toVec3().addVec(x = -0.1, y = .5, z = .5))
         autoSSClickInQueue = true
         smoothRotateTo(yaw, pitch, autoSSRotateTime) {
             if (clickNeeded == 4) autoSSLastClickClock.update()
-            rightClick()
-            autoSSClock.update()
             autoSSClickInQueue = false
+            autoSSClock.update()
+            rightClick()
         }
     }
 
@@ -189,16 +196,13 @@ object SimonSays : Module(
         if (triggerBot) triggerBot()
 
         for (index in clickNeeded until clickInOrder.size) {
-            val pos = clickInOrder[index]
-            val x = pos.x - .125
-            val y = pos.y + .3125
-            val z = pos.z + .25
-            val color = when (index) {
-                clickNeeded -> Color(0, 170, 0)
-                clickNeeded + 1 -> Color(255, 170, 0)
-                else -> Color(170, 0, 0)
-            }.withAlpha(.5f)
-            Renderer.drawBox(AxisAlignedBB(x, y, z, x + .25, y + .375, z + .5), color, outlineAlpha = 1f, fillAlpha = 0.6f)
+            with(clickInOrder[index]) {
+                Renderer.drawStyledBox(AxisAlignedBB(x + 0.05, y + 0.37, z + 0.3, x - 0.15, y + 0.63, z + 0.7), when (index) {
+                    clickNeeded -> firstColor
+                    clickNeeded + 1 -> secondColor
+                    else -> thirdColor
+                }, style, lineWidth, depthCheck)
+            }
         }
     }
 }

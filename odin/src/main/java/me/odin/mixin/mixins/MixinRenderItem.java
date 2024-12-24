@@ -16,6 +16,6 @@ public abstract class MixinRenderItem {
 
     @Inject(method = "renderItemOverlayIntoGUI", at = @At("HEAD"), cancellable = true)
     private void renderItemOverlayPost(FontRenderer fr, ItemStack stack, int xPosition, int yPosition, String text, CallbackInfo ci) {
-        if (postAndCatch(new GuiEvent.DrawSlotOverlayEvent(stack, xPosition, yPosition, text))) ci.cancel();
+        if (postAndCatch(new GuiEvent.DrawSlotOverlay(stack, xPosition, yPosition, text))) ci.cancel();
     }
 }

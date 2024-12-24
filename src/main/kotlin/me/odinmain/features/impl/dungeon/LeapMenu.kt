@@ -15,18 +15,16 @@ import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.name
 import me.odinmain.utils.render.*
 import me.odinmain.utils.render.RenderUtils.drawTexturedModalRect
+import me.odinmain.utils.skyblock.*
+import me.odinmain.utils.skyblock.PlayerUtils.windowClick
 import me.odinmain.utils.skyblock.dungeon.DungeonClass
 import me.odinmain.utils.skyblock.dungeon.DungeonPlayer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.leapTeammates
-import me.odinmain.utils.skyblock.getItemIndexInContainerChest
-import me.odinmain.utils.skyblock.modMessage
-import me.odinmain.utils.skyblock.partyMessage
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.client.event.GuiOpenEvent
-import net.minecraftforge.client.event.GuiScreenEvent
 import net.minecraftforge.fml.common.Loader
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.input.Keyboard
@@ -61,7 +59,7 @@ object LeapMenu : Module(
     private val keybindList = listOf(topLeftKeybind, topRightKeybind, bottomLeftKeybind, bottomRightKeybind)
 
     @SubscribeEvent
-    fun onDrawScreen(event: GuiEvent.DrawGuiContainerScreenEvent) {
+    fun onDrawScreen(event: GuiEvent.DrawGuiBackground) {
         val chest = (event.gui as? GuiChest)?.inventorySlots ?: return
         if (chest !is ContainerChest || chest.name != "Spirit Leap" || leapTeammates.isEmpty() || leapTeammates.all { it == EMPTY }) return
         hoveredQuadrant = getQuadrant()
@@ -98,7 +96,7 @@ object LeapMenu : Module(
             if (it.name == LeapHelper.leapHelperName && leapHelperToggle)
                 roundedRectangle(x - 25, y - 25, boxWidth + 50, boxHeight + 50, leapHelperColor, if (roundedRect) 12f else 0f)
 
-            val box = Box(x, y, boxWidth, boxHeight).expand(hoveredAnims[index].get(0f, 15f, hoveredQuadrant - 1 != index))
+            val box = Box(x, y, boxWidth, boxHeight).expand(hoveredAnims.getOrNull(index)?.get(0f, 15f, hoveredQuadrant - 1 != index) ?: 0f)
             dropShadow(box, 10f, 15f, if (getQuadrant() - 1 != index) backgroundColor else Color.WHITE)
             roundedRectangle(box, color, if (roundedRect) 12f else 0f)
 
@@ -121,9 +119,9 @@ object LeapMenu : Module(
     }
 
     @SubscribeEvent
-    fun mouseClicked(event: GuiScreenEvent.MouseInputEvent.Pre) {
-        val gui = event.gui as? GuiChest ?: return
-        if (!Mouse.getEventButtonState() || gui.inventorySlots !is ContainerChest || gui.inventorySlots.name != "Spirit Leap" || leapTeammates.isEmpty())  return
+    fun mouseClicked(event: GuiEvent.MouseClick) {
+        val gui = (event.gui as? GuiChest)?.inventorySlots as? ContainerChest ?: return
+        if (gui.name != "Spirit Leap" || leapTeammates.isEmpty())  return
 
         val quadrant = getQuadrant()
         if ((type.equalsOneOf(1,2,3)) && leapTeammates.size < quadrant) return
@@ -132,23 +130,17 @@ object LeapMenu : Module(
         if (playerToLeap == EMPTY) return
         if (playerToLeap.isDead) return modMessage("This player is dead, can't leap.")
 
-        leapTo(playerToLeap.name, gui.inventorySlots as? ContainerChest ?: return)
+        leapTo(playerToLeap.name, gui)
 
         event.isCanceled = true
     }
 
     @SubscribeEvent
-    fun keyTyped(event: GuiScreenEvent.KeyboardInputEvent.Pre) {
-        val gui = event.gui as? GuiChest ?: return
-        if (
-            gui.inventorySlots !is ContainerChest ||
-            gui.inventorySlots.name != "Spirit Leap" ||
-            keybindList.none { it.isDown() } ||
-            leapTeammates.isEmpty() ||
-            !useNumberKeys
-        ) return
+    fun keyTyped(event: GuiEvent.KeyPress) {
+        val gui = (event.gui as? GuiChest)?.inventorySlots as? ContainerChest ?: return
+        if (!useNumberKeys || gui.name != "Spirit Leap" || keybindList.none { it.key == event.key } || leapTeammates.isEmpty()) return
 
-        val index = keybindList.indexOfFirst { it.isDown() }
+        val index = keybindList.indexOfFirst { it.key == event.key }
         val playerToLeap = if (index + 1 > leapTeammates.size) return else leapTeammates[index]
         if (playerToLeap == EMPTY) return
         if (playerToLeap.isDead) return modMessage("This player is dead, can't leap.")
@@ -162,7 +154,7 @@ object LeapMenu : Module(
         val index = getItemIndexInContainerChest(containerChest, name, 11..16) ?: return modMessage("Cant find player $name. This shouldn't be possible! are you nicked?")
         modMessage("Teleporting to $name.")
         if (leapAnnounce) partyMessage("Leaped to $name!")
-        mc.playerController.windowClick(containerChest.windowId, index, 2, 3, mc.thePlayer)
+        windowClick(index, ClickType.Middle, true)
     }
 
     init {

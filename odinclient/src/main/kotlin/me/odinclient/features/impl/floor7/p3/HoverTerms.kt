@@ -13,7 +13,7 @@ import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.ui.util.MouseUtils.mouseX
 import me.odinmain.ui.util.MouseUtils.mouseY
 import me.odinmain.utils.clock.Clock
-import me.odinmain.utils.skyblock.PlayerUtils
+import me.odinmain.utils.skyblock.ClickType
 import me.odinmain.utils.skyblock.PlayerUtils.windowClick
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -31,7 +31,7 @@ object HoverTerms : Module(
     private var clickedThisWindow = false
 
     @SubscribeEvent(receiveCanceled = true)
-    fun onDrawGuiContainer(event: GuiEvent.DrawGuiContainerScreenEvent) {
+    fun onDrawGuiContainer(event: GuiEvent.DrawGuiBackground) {
         if (
             TerminalSolver.currentTerm.type == TerminalTypes.NONE ||
             TerminalSolver.currentTerm.solution.isEmpty() ||
@@ -54,7 +54,7 @@ object HoverTerms : Module(
         when (currentTerm.type) {
             TerminalTypes.RUBIX -> {
                 clickedThisWindow = true
-                windowClick(hoveredItem, if (TerminalSolver.currentTerm.solution.count { it == hoveredItem } >= 3) PlayerUtils.ClickType.Right else if (middleClick) PlayerUtils.ClickType.Middle else PlayerUtils.ClickType.Left)
+                windowClick(hoveredItem, if (TerminalSolver.currentTerm.solution.count { it == hoveredItem } >= 3) ClickType.Right else if (middleClick) ClickType.Middle else ClickType.Left)
                 triggerBotClock.update()
                 if (TerminalSolver.currentTerm.solution.count { it == hoveredItem } < 1) previouslyClicked += hoveredItem
             }
@@ -62,7 +62,7 @@ object HoverTerms : Module(
             TerminalTypes.ORDER -> {
                 if (TerminalSolver.currentTerm.solution.first() == hoveredItem) {
                     clickedThisWindow = true
-                    windowClick(hoveredItem, if (middleClick) PlayerUtils.ClickType.Middle else PlayerUtils.ClickType.Left)
+                    windowClick(hoveredItem, if (middleClick) ClickType.Middle else ClickType.Left)
                     triggerBotClock.update()
                     previouslyClicked += hoveredItem
                 }
@@ -71,14 +71,14 @@ object HoverTerms : Module(
             TerminalTypes.MELODY ->
                 if (hoveredItem % 9 == 7) {
                     clickedThisWindow = true
-                    windowClick(hoveredItem, if (middleClick) PlayerUtils.ClickType.Middle else PlayerUtils.ClickType.Left)
+                    windowClick(hoveredItem, if (middleClick) ClickType.Middle else ClickType.Left)
                     triggerBotClock.update()
                     previouslyClicked += hoveredItem
                 }
 
             TerminalTypes.PANES, TerminalTypes.STARTS_WITH, TerminalTypes.SELECT -> {
                 clickedThisWindow = true
-                windowClick(hoveredItem, if (middleClick) PlayerUtils.ClickType.Middle else PlayerUtils.ClickType.Left)
+                windowClick(hoveredItem, if (middleClick) ClickType.Middle else ClickType.Left)
                 triggerBotClock.update()
                 previouslyClicked += hoveredItem
             }

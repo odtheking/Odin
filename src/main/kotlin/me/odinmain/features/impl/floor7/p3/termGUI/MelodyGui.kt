@@ -43,7 +43,7 @@ object MelodyGui : TermGui() {
         }
 
         TerminalSolver.currentTerm.items.forEachIndexed { index, item ->
-            if (Item.getIdFromItem(item.item) != 159) return@forEachIndexed
+            if (Item.getIdFromItem(item?.item) != 159) return@forEachIndexed
             val row = index / 9 - 1
             val col = index % 9 - 2
             val box = BoxWithClass(ceil(-163 + ((gap-20).unaryPlus() * 0.5)) + col * 70, -115 + row * 70, 70 - gap, 70 - gap)

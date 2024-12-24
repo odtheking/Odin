@@ -6,8 +6,11 @@ import me.odinmain.features.impl.floor7.p3.TerminalSolver
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.currentTerm
 import me.odinmain.features.impl.floor7.p3.TerminalTypes
 import me.odinmain.utils.postAndCatch
-import me.odinmain.utils.render.*
-import me.odinmain.utils.skyblock.PlayerUtils
+import me.odinmain.utils.render.Box
+import me.odinmain.utils.render.isPointWithin
+import me.odinmain.utils.render.scale
+import me.odinmain.utils.render.translate
+import me.odinmain.utils.skyblock.ClickType
 import me.odinmain.utils.skyblock.PlayerUtils.windowClick
 import net.minecraft.client.gui.ScaledResolution
 
@@ -53,7 +56,7 @@ abstract class TermGui {
             val needed = currentTerm.solution.count { slot -> slot == it.key }
             if (currentTerm.type == TerminalTypes.RUBIX && ((needed < 3 && button != 0) || (needed >= 3 && button != 1))) return
             if (GuiEvent.CustomTermGuiClick(it.key, if (button == 0) 3 else 0, button).postAndCatch()) return
-            windowClick(it.key, if (button == 1) PlayerUtils.ClickType.Right else PlayerUtils.ClickType.Middle, true)
+            windowClick(it.key, if (button == 1) ClickType.Right else ClickType.Middle, true)
         }
     }
 

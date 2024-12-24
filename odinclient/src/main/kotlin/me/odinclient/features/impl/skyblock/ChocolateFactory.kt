@@ -5,8 +5,7 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.NumberSetting
-import me.odinmain.utils.name
-import me.odinmain.utils.noControlCodes
+import me.odinmain.utils.*
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.*
@@ -46,11 +45,11 @@ object ChocolateFactory : Module(
         execute(delay = { delay }) {
             if (!isInChocolateFactory()) return@execute
 
-            if (clickFactory) windowClick(13, PlayerUtils.ClickType.Right)
+            if (clickFactory) windowClick(13, ClickType.Right)
             
             if (!claimStray) return@execute
             val found = (mc.thePlayer?.openContainer as? ContainerChest)?.inventorySlots?.find { it.stack?.displayName?.contains("CLICK ME!") == true } ?: return@execute
-            windowClick(found.slotNumber, PlayerUtils.ClickType.Left)
+            windowClick(found.slotNumber, ClickType.Left)
         }
 
         execute(delay = { upgradeDelay }) {
@@ -62,7 +61,7 @@ object ChocolateFactory : Module(
             findWorker(container)
             if (!found) return@execute
             if (chocolate > bestCost && autoUpgrade) {
-                windowClick(bestWorker, PlayerUtils.ClickType.Middle)
+                windowClick(bestWorker, ClickType.Middle)
                 if (upgradeMessage) modMessage("Trying to upgrade: Rabbit " + indexToName[bestWorker] + " with " + bestCost + " chocolate.")
             }
         }
@@ -71,12 +70,9 @@ object ChocolateFactory : Module(
             if (eggEsp && LocationUtils.currentArea in possibleLocations && currentDetectedEggs.size < 6) scanForEggs()
         }
 
-        onMessage(eggFoundRegex){ it ->
-            val match = eggFoundRegex.find(it) ?: return@onMessage
-            val egg = ChocolateEggs.entries.find { it.type.contains(match.groupValues[2]) } ?: return@onMessage
-            when (match.groupValues[1]) {
-                "found", "collected" -> currentDetectedEggs.minByOrNull { it.entity.getDistanceToEntity(mc.thePlayer) }?.isFound = true
-            }
+        onMessage(eggFoundRegex) {
+            if (eggFoundRegex.find(it)?.groupValues?.getOrNull(1).equalsOneOf("found", "collected"))
+                currentDetectedEggs.minByOrNull { egg -> egg.entity.getDistanceToEntity(mc.thePlayer) }?.isFound = true
         }
     }
 
@@ -87,16 +83,14 @@ object ChocolateFactory : Module(
     private fun findWorker(container: Container) {
         val items = container.inventory ?: return
         val workers = mutableListOf<List<String?>>()
-        for (i in 28 until 35) {
-            workers.add(items[i]?.lore ?: return)
-        }
+        repeat(7) { workers.add(items[it + 28]?.lore ?: return) }
         found = false
         var maxValue = 0
-        repeat (7) {
+        repeat(7) {
             val worker = workers[it]
-            if (worker.contains("climbed as far")) return
-            val index = worker.indexOfFirst { it?.contains("Cost") == true } ?: return
-            val cost = worker[index + 1]?.noControlCodes?.replace(Regex("\\D"), "")?.toIntOrNull() ?: return
+            if (worker.contains("climbed as far")) return@repeat
+            val index = worker.indexOfFirst { it?.contains("Cost") == true }.takeIf { workerIndex -> workerIndex != -1 } ?: return@repeat
+            val cost = worker[index + 1]?.noControlCodes?.replace(Regex("\\D"), "")?.toIntOrNull() ?: return@repeat
             val value = cost / (it + 1).toFloat()
             if (value < maxValue || !found) {
                 bestWorker = 28 + it

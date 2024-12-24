@@ -9,7 +9,6 @@ import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.name
 import me.odinmain.utils.skyblock.unformattedName
 import net.minecraft.client.gui.inventory.GuiChest
-import net.minecraftforge.client.event.GuiScreenEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.input.Mouse
 
@@ -21,13 +20,13 @@ object RemovePerks : Module(
     private val renderStun by BooleanSetting("Show Stun", false, description = "Shows the stun role perks.")
 
     @SubscribeEvent
-    fun renderSlot(event: GuiEvent.DrawSlotEvent) {
+    fun renderSlot(event: GuiEvent.DrawSlot) {
         if (event.gui.inventorySlots?.name == "Perk Menu" && slotCheck(event.slot.stack?.unformattedName ?: return)) event.isCanceled = true
     }
 
     @SubscribeEvent
-    fun guiMouseClick(event: GuiScreenEvent.MouseInputEvent.Pre) = with(event.gui) {
-        if (Mouse.getEventButtonState() && this is GuiChest && inventorySlots?.name == "Perk Menu" && slotCheck(slotUnderMouse?.stack?.unformattedName ?: return))
+    fun guiMouseClick(event: GuiEvent.MouseClick) = with(event.gui) {
+        if (this is GuiChest && inventorySlots?.name == "Perk Menu" && slotCheck(slotUnderMouse?.stack?.unformattedName ?: return))
             event.isCanceled = true
     }
 

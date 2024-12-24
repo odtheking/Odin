@@ -3,6 +3,7 @@ package me.odinclient.features.impl.skyblock
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.utils.name
+import me.odinmain.utils.skyblock.ClickType
 import me.odinmain.utils.skyblock.LocationUtils.isInSkyblock
 import me.odinmain.utils.skyblock.PlayerUtils
 import net.minecraft.client.gui.inventory.GuiChest
@@ -47,7 +48,7 @@ object AutoHarp : Module(
         repeat(7) {
             val slot = container.inventorySlots[37 + it]
             if ((slot.stack?.item as? ItemBlock)?.block === Blocks.quartz_block) {
-                PlayerUtils.windowClick(slot.slotNumber, PlayerUtils.ClickType.Middle)
+                PlayerUtils.windowClick(slot.slotNumber, ClickType.Middle)
                 return
             }
         }

@@ -1,7 +1,7 @@
 package me.odinmain.features.impl.skyblock
 
 import me.odinmain.events.impl.ChatPacketEvent
-import me.odinmain.events.impl.GuiEvent.DrawSlotOverlayEvent
+import me.odinmain.events.impl.GuiEvent.DrawSlotOverlay
 import me.odinmain.events.impl.ServerTickEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
@@ -76,7 +76,7 @@ object InvincibilityTimer : Module(
     }
 
     @SubscribeEvent
-    fun onRenderSlotOverlay(event: DrawSlotOverlayEvent) {
+    fun onRenderSlotOverlay(event: DrawSlotOverlay) {
         if (!LocationUtils.isInSkyblock || !showCooldown) return
         val durability = when (event.stack.skyblockID) {
             "BONZO_MASK", "STARRED_BONZO_MASK" -> (System.currentTimeMillis() - bonzoMaskProc) / 180_000.0

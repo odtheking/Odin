@@ -52,6 +52,7 @@ object CancelInteract : Module(
      * Redirected to by the MinecraftMixin. Replaces the check for whether the targeted block is air.
      * @return true when the item's ability should be used.
      */
+    @JvmStatic
     fun cancelInteractHook(instance: WorldClient, blockPos: BlockPos): Boolean {
         // When the module is not enabled preform the vanilla action.
         if (cancelInteract && enabled) {

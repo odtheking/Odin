@@ -41,7 +41,7 @@ object RenderUtils {
      * @return The rendered x-coordinate.
      */
     val Entity.renderX: Double
-        get() = lastTickPosX + (posX - lastTickPosX) * partialTicks
+        get() = prevPosX + (posX - prevPosX ) * partialTicks
 
     /**
      * Gets the rendered y-coordinate of an entity based on its last tick and current tick positions.
@@ -50,7 +50,7 @@ object RenderUtils {
      * @return The rendered y-coordinate.
      */
     val Entity.renderY: Double
-        get() = lastTickPosY + (posY - lastTickPosY) * partialTicks
+        get() = prevPosY + (posY - prevPosY) * partialTicks
 
     /**
      * Gets the rendered z-coordinate of an entity based on its last tick and current tick positions.
@@ -59,7 +59,7 @@ object RenderUtils {
      * @return The rendered z-coordinate.
      */
     val Entity.renderZ: Double
-        get() = lastTickPosZ + (posZ - lastTickPosZ) * partialTicks
+        get() = prevPosZ + (posZ - prevPosZ) * partialTicks
 
     /**
      * Gets the rendered position of an entity as a `Vec3`.
