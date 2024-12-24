@@ -10,8 +10,10 @@ import me.odinmain.features.settings.impl.KeybindSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.name
-import me.odinmain.utils.skyblock.*
+import me.odinmain.utils.skyblock.ClickType
 import me.odinmain.utils.skyblock.PlayerUtils.windowClick
+import me.odinmain.utils.skyblock.getItemIndexInContainerChest
+import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.inventory.ContainerChest
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -58,11 +60,11 @@ object WardrobeKeybinds : Module(
         val equippedIndex = getItemIndexInContainerChest(chest, "equipped", 36..44, true)
 
         val index = when {
-            nextPageKeybind.key == key -> if (current.toInt() < total.toInt()) 53 else return modMessage("§cYou are already on the last page.").let { false }
-            previousPageKeybind.key == key -> if (current.toInt() > 1) 45 else return modMessage("§cYou are already on the first page.").let { false }
-            unequipKeybind.key == key -> equippedIndex ?: return modMessage("§cCouldn't find equipped armor.").let { false }
+            nextPageKeybind.isDown() -> if (current.toInt() < total.toInt()) 53 else return modMessage("§cYou are already on the last page.").let { false }
+            previousPageKeybind.isDown() -> if (current.toInt() > 1) 45 else return modMessage("§cYou are already on the first page.").let { false }
+            unequipKeybind.isDown() -> equippedIndex ?: return modMessage("§cCouldn't find equipped armor.").let { false }
             else -> {
-                val keyIndex = arrayOf(wardrobe1, wardrobe2, wardrobe3, wardrobe4, wardrobe5, wardrobe6, wardrobe7, wardrobe8, wardrobe9).indexOfFirst { it.key == key }.takeIf { it != -1 } ?: return false
+                val keyIndex = arrayOf(wardrobe1, wardrobe2, wardrobe3, wardrobe4, wardrobe5, wardrobe6, wardrobe7, wardrobe8, wardrobe9).indexOfFirst { it.isDown() }.takeIf { it != -1 } ?: return false
                 if (equippedIndex == keyIndex + 36 && disallowUnequippingEquipped) return modMessage("§cArmor already equipped.").let { false }
                 keyIndex + 36
             }

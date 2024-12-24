@@ -7,11 +7,13 @@ import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.name
-import me.odinmain.utils.skyblock.*
+import me.odinmain.utils.skyblock.ClickType
 import me.odinmain.utils.skyblock.PlayerUtils.windowClick
+import me.odinmain.utils.skyblock.getItemIndexInContainerChestByLore
+import me.odinmain.utils.skyblock.getItemIndexInContainerChestByUUID
+import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.inventory.ContainerChest
-import net.minecraftforge.client.event.GuiScreenEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.input.Keyboard
 
@@ -59,11 +61,11 @@ object PetKeybinds : Module(
         val (current, total) = listOf(matchResult.groups[1]?.value?.toIntOrNull() ?: 1, matchResult.groups[2]?.value?.toIntOrNull() ?: 1)
 
         val index = when {
-            nextPageKeybind.key == key -> if (current < total) 53 else return modMessage("§cYou are already on the last page.").let { false }
-            previousPageKeybind.key == key -> if (current > 1) 45 else return modMessage("§cYou are already on the first page.").let { false }
-            unequipKeybind.key == key -> getItemIndexInContainerChestByLore(chest, "§7§cClick to despawn!", 10..43) ?: return modMessage("§cCouldn't find equipped pet").let { false }
+            nextPageKeybind.isDown() -> if (current < total) 53 else return modMessage("§cYou are already on the last page.").let { false }
+            previousPageKeybind.isDown() -> if (current > 1) 45 else return modMessage("§cYou are already on the first page.").let { false }
+            unequipKeybind.isDown() -> getItemIndexInContainerChestByLore(chest, "§7§cClick to despawn!", 10..43) ?: return modMessage("§cCouldn't find equipped pet").let { false }
             else -> {
-                val petIndex = arrayOf(pet1, pet2, pet3, pet4, pet5, pet6, pet7, pet8, pet9).indexOfFirst { it.key == key }.takeIf { it != -1 } ?: return false
+                val petIndex = arrayOf(pet1, pet2, pet3, pet4, pet5, pet6, pet7, pet8, pet9).indexOfFirst { it.isDown() }.takeIf { it != -1 } ?: return false
                 petList.getOrNull(petIndex)?.let { getItemIndexInContainerChestByUUID(chest, it, 10..43) ?: return modMessage("§cCouldn't find matching pet or there is no pet in that position.").let { false }}
             }
         }
