@@ -38,7 +38,7 @@ val FORMATTING_CODE_PATTERN = Regex("§[0-9a-fk-or]", RegexOption.IGNORE_CASE)
  * Returns the string without any minecraft formatting codes.
  */
 inline val String?.noControlCodes: String
-    get() = this?.let { FORMATTING_CODE_PATTERN.replace(it, "") } ?: ""
+    get() = this?.replace(FORMATTING_CODE_PATTERN, "") ?: ""
 
 /**
  * Checks if the current string contains at least one of the specified strings.

@@ -107,7 +107,7 @@ object TerminalSolver : Module(
                 currentTerm = Terminal(type = newTermType, guiName = windowName, items = arrayOfNulls(newTermType.size))
                 devMessage("§aNew terminal: §6${currentTerm.type.name}")
                 TerminalEvent.Opened(currentTerm).postAndCatch()
-                lastTermOpened = currentTerm
+                lastTermOpened = currentTerm.copy()
                 lastRubixSolution = null
             }
             if (renderType == 3 && Loader.instance().activeModList.any { it.modId == "notenoughupdates" }) NEUApi.setInventoryButtonsToDisabled()

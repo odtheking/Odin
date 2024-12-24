@@ -3,9 +3,12 @@ package me.odinmain.utils.skyblock
 import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.events.impl.PacketEvent
-import me.odinmain.utils.*
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.clock.Executor.Companion.register
+import me.odinmain.utils.equalsOneOf
+import me.odinmain.utils.getSBMaxHealth
+import me.odinmain.utils.noControlCodes
+import me.odinmain.utils.runIn
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.entity.monster.EntityGiantZombie
 import net.minecraft.entity.monster.EntityMagmaCube
@@ -17,7 +20,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object KuudraUtils {
 
-    var kuudraTeammates: ArrayList<KuudraPlayer> = ArrayList<KuudraPlayer>(4)
+    var kuudraTeammates: ArrayList<KuudraPlayer> = ArrayList(4)
     var giantZombies: ArrayList<EntityGiantZombie> = arrayListOf()
     var supplies = BooleanArray(6) { true }
     var kuudraEntity: EntityMagmaCube? = null
@@ -86,7 +89,7 @@ object KuudraUtils {
                         if (entity.heldItem?.unformattedName?.endsWith("Head") == true) giantZombies.add(entity)
 
                     is EntityMagmaCube ->
-                        if (entity.slimeSize == 30 && entity.getSBMaxHealth().toFloat() == 100000f) kuudraEntity = entity
+                        if (entity.slimeSize == 30 && entity.getSBMaxHealth() == 100000f) kuudraEntity = entity
 
                     is EntityArmorStand -> {
                         if (entity.name.noControlCodes.matches(progressRegex)) buildingPiles.add(entity)
@@ -123,13 +126,14 @@ object KuudraUtils {
     private val tablistRegex = Regex("^\\[(\\d+)] (?:\\[\\w+] )*(\\w+)")
 
     private fun updateKuudraTeammates(previousTeammates: ArrayList<KuudraPlayer>, tabList: List<S38PacketPlayerListItem.AddPlayerData>): ArrayList<KuudraPlayer> {
+        val world = mc.theWorld ?: return previousTeammates
         for (line in tabList) {
             val text = line.displayName?.unformattedText?.noControlCodes ?: continue
             val (_, name) = tablistRegex.find(text)?.destructured ?: continue
 
             previousTeammates.find { it.playerName == name }?.let { kuudraPlayer ->
-                kuudraPlayer.entity = mc.theWorld?.getPlayerEntityByName(name) ?: kuudraPlayer.entity
-            } ?: previousTeammates.add(KuudraPlayer(name, entity = mc.theWorld?.getPlayerEntityByName(name) ?: continue))
+                kuudraPlayer.entity = world.getPlayerEntityByName(name) ?: kuudraPlayer.entity
+            } ?: previousTeammates.add(KuudraPlayer(name, entity = world.getPlayerEntityByName(name) ?: continue))
         }
         return previousTeammates
     }
