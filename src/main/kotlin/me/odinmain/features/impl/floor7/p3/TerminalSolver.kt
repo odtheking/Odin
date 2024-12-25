@@ -95,7 +95,7 @@ object TerminalSolver : Module(
     data class Terminal(val type: TerminalTypes, val solution: ArrayList<Int> = arrayListOf(), val items: Array<ItemStack?> = emptyArray(), val guiName: String = "", val timeOpened: Long = System.currentTimeMillis())
     var currentTerm = Terminal(TerminalTypes.NONE)
         private set
-    private var lastTermOpened = Terminal(TerminalTypes.NONE)
+    var lastTermOpened = Terminal(TerminalTypes.NONE)
     private var lastRubixSolution: Int? = null
 
     init {
@@ -313,8 +313,9 @@ object TerminalSolver : Module(
 
     init {
         onMessage(terminalActivatedRegex) { message ->
-            if (terminalActivatedRegex.find(message)?.groupValues?.get(1) == mc.thePlayer.name)
+            if (terminalActivatedRegex.find(message)?.groupValues?.get(1) == mc.thePlayer.name) {
                 TerminalEvent.Solved(lastTermOpened).postAndCatch()
+            }
         }
     }
 

@@ -27,6 +27,6 @@ object InOrder : TermSimGui(
         }
         playTermSimSound()
         if (guiInventorySlots?.none { it?.stack?.metadata == 14 } == true)
-            TerminalEvent.Solved(TerminalSolver.currentTerm).postAndCatch()
+            TerminalEvent.Solved(TerminalSolver.lastTermOpened).postAndCatch()
     }
 }

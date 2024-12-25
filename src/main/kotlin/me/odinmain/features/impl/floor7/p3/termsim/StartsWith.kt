@@ -35,7 +35,7 @@ class StartsWith(private val letter: String = listOf("A", "B", "C", "G", "D", "M
         createNewGui { if (it == slot) ItemStack(item, stackSize, metadata).apply { addEnchantment(Enchantment.infinity, 1) } else it.stack }
         playTermSimSound()
         if (guiInventorySlots?.none { it?.stack?.displayName?.startsWith(letter, true) == true && !it.stack.isItemEnchanted } == true)
-            TerminalEvent.Solved(TerminalSolver.currentTerm).postAndCatch()
+            TerminalEvent.Solved(TerminalSolver.lastTermOpened).postAndCatch()
     }
 
     private fun getLetterItemStack(filterNot: Boolean = false): ItemStack =

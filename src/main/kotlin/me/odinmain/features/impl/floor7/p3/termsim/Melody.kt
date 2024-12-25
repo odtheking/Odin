@@ -48,7 +48,7 @@ object Melody : TermSimGui(
         updateGui()
 
         playTermSimSound()
-        if (currentRow >= 5) TerminalEvent.Solved(TerminalSolver.currentTerm).postAndCatch()
+        if (currentRow >= 5) TerminalEvent.Solved(TerminalSolver.lastTermOpened).postAndCatch()
     }
 
     private fun updateGui() {

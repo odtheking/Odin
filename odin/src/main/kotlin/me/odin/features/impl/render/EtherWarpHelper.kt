@@ -16,6 +16,7 @@ import me.odinmain.utils.skyblock.EtherWarpHelper
 import me.odinmain.utils.skyblock.EtherWarpHelper.etherPos
 import me.odinmain.utils.skyblock.PlayerUtils.playLoudSound
 import me.odinmain.utils.skyblock.usingEtherWarp
+import me.odinmain.utils.toAABB
 import net.minecraft.network.play.server.S29PacketSoundEffect
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
@@ -31,10 +32,11 @@ object EtherWarpHelper : Module(
     private val renderFail by BooleanSetting("Show when failed", true, description = "Shows the box even when the guess failed.").withDependency { render }
     private val wrongColor by ColorSetting("Wrong Color", Color.RED.withAlpha(.5f), allowAlpha = true, description = "Color of the box if guess failed.").withDependency { renderFail }
 
-    private val style by SelectorSetting("Style", Renderer.DEFAULT_STYLE, Renderer.styles, description = Renderer.STYLE_DESCRIPTION)
-    private val lineWidth by NumberSetting("Line Width", 2f, 0.1f, 10f, 0.1f, description = "The width of the box's lines.")
-    private val depthCheck by BooleanSetting("Depth check", false, description = "Boxes show through walls.")
-    private val expand by NumberSetting("Expand", 0.0, -1, 1, 0.01, description = "Expands the box by this amount.")
+    private val style by SelectorSetting("Style", Renderer.DEFAULT_STYLE, Renderer.styles, description = Renderer.STYLE_DESCRIPTION).withDependency { render }
+    private val lineWidth by NumberSetting("Line Width", 2f, 0.1f, 10f, 0.1f, description = "The width of the box's lines.").withDependency { render }
+    private val depthCheck by BooleanSetting("Depth check", false, description = "Boxes show through walls.").withDependency { render }
+    private val fullBlock by BooleanSetting("Full Block", false, description = "If the box should be a full block.").withDependency { render }
+    private val expand by NumberSetting("Expand", 0.0, -1, 1, 0.01, description = "Expands the box by this amount.").withDependency { render }
     private val useServerPosition by BooleanSetting("Use Server Position", true, description = "If etherwarp guess should use your server position or real position.").withDependency { render }
 
     private val dropdown by DropdownSetting("Sounds", false)
@@ -46,7 +48,7 @@ object EtherWarpHelper : Module(
     ).withDependency { sound == defaultSounds.size - 1 && sounds && dropdown }
     private val soundVolume by NumberSetting("Volume", 1f, 0, 1, .01f, description = "Volume of the sound.").withDependency { sounds && dropdown }
     private val soundPitch by NumberSetting("Pitch", 2f, 0, 2, .01f, description = "Pitch of the sound.").withDependency { sounds && dropdown }
-    val reset by ActionSetting("Play sound", description = "Plays the selected sound.") { playLoudSound(if (sound == defaultSounds.size - 1) customSound else defaultSounds[sound], soundVolume, soundPitch) }.withDependency { sounds && dropdown }
+    private val reset by ActionSetting("Play sound", description = "Plays the selected sound.") { playLoudSound(if (sound == defaultSounds.size - 1) customSound else defaultSounds[sound], soundVolume, soundPitch) }.withDependency { sounds && dropdown }
 
     @SubscribeEvent
     fun onRenderWorldLast(event: RenderWorldLastEvent) {
@@ -60,7 +62,10 @@ object EtherWarpHelper : Module(
 
         etherPos = EtherWarpHelper.getEtherPos(positionLook)
         if (etherPos.succeeded || renderFail)
-            Renderer.drawStyledBlock(etherPos.pos ?: return, if (etherPos.succeeded) color else wrongColor, style, lineWidth, depthCheck, true, expand)
+            if (!fullBlock)
+                Renderer.drawStyledBlock(etherPos.pos ?: return, if (etherPos.succeeded) color else wrongColor, style, lineWidth, depthCheck, true, expand)
+            else
+                Renderer.drawStyledBox(etherPos.pos?.toAABB()?.expand(expand, expand, expand) ?: return, if (etherPos.succeeded) color else wrongColor, style, lineWidth, depthCheck)
     }
 
     @SubscribeEvent
