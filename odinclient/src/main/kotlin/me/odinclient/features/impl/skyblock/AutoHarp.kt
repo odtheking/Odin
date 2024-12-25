@@ -49,7 +49,7 @@ object AutoHarp : Module(
             val slot = container.inventorySlots[37 + it]
             if ((slot.stack?.item as? ItemBlock)?.block === Blocks.quartz_block) {
                 PlayerUtils.windowClick(slot.slotNumber, ClickType.Middle)
-                return
+                return@repeat
             }
         }
     }
