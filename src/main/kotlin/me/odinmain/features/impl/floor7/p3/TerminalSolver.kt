@@ -95,7 +95,7 @@ object TerminalSolver : Module(
     data class Terminal(val type: TerminalTypes, val solution: ArrayList<Int> = arrayListOf(), val items: Array<ItemStack?> = emptyArray(), val guiName: String = "", val timeOpened: Long = System.currentTimeMillis())
     var currentTerm = Terminal(TerminalTypes.NONE)
         private set
-    private var lastTermOpened = Terminal(TerminalTypes.NONE)
+    var lastTermOpened = Terminal(TerminalTypes.NONE)
     private var lastRubixSolution: Int? = null
 
     init {
@@ -208,7 +208,7 @@ object TerminalSolver : Module(
         GlStateManager.disableLighting()
         GlStateManager.enableDepth()
         when (currentTerm.type) {
-            TerminalTypes.PANES -> Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, panesColor.rgba)
+            TerminalTypes.PANES ->  if (renderType != 1) Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, panesColor.rgba)
 
             TerminalTypes.RUBIX -> {
                 val needed = currentTerm.solution.count { it == event.slot.slotIndex }
@@ -220,7 +220,7 @@ object TerminalSolver : Module(
                     else -> oppositeRubixColor1
                 }
 
-                Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, color.rgba)
+                if (renderType != 1) Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, color.rgba)
                 mcText(text.toString(), event.x + 8f - getMCTextWidth(text.toString()) / 2, event.y + 4.5, 1, textColor, shadow = textShadow, false)
             }
             TerminalTypes.ORDER -> {
@@ -313,8 +313,9 @@ object TerminalSolver : Module(
 
     init {
         onMessage(terminalActivatedRegex) { message ->
-            if (terminalActivatedRegex.find(message)?.groupValues?.get(1) == mc.thePlayer.name)
+            if (terminalActivatedRegex.find(message)?.groupValues?.get(1) == mc.thePlayer.name) {
                 TerminalEvent.Solved(lastTermOpened).postAndCatch()
+            }
         }
     }
 

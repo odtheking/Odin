@@ -44,7 +44,7 @@ open class TermSimGui(val name: String, val size: Int, private val inv: Inventor
         ping = terminalPing
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
     fun onTerminalSolved(event: TerminalEvent.Solved) {
         if (OdinMain.mc.currentScreen !== this) return
         PacketEvent.Receive(S2EPacketCloseWindow(-2)).postAndCatch()

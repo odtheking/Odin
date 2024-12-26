@@ -10,6 +10,7 @@ import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.runOnMCThread
 import net.minecraft.inventory.ContainerChest
+import net.minecraft.network.play.client.C0EPacketClickWindow
 import net.minecraft.util.Vec3
 
 object PlayerUtils {
@@ -64,11 +65,14 @@ object PlayerUtils {
         Executor(delay = 500, "Click Dispatcher") { windowClickQueue.clear() }.register()
     }
 
+    /*
+     * Wrapper for windowClick which handles click spamming. Use instant for player action click redirect.
+     */
     fun windowClick(slotId: Int, button: Int, mode: Int, instant: Boolean = false) {
         if (mc.currentScreen is TermSimGui) {
             val gui = mc.currentScreen as TermSimGui
             gui.delaySlotClick(gui.inventorySlots.getSlot(slotId), button)
-        } else if (instant) sendWindowClick(slotId, button, mode)
+        } else if (instant) sendWindowClick(slotId, button, mode, instant = true)
         else windowClickQueue.add(WindowClick(slotId, button, mode))
     }
 
@@ -88,9 +92,12 @@ object PlayerUtils {
         windowClickQueue.removeFirstOrNull()
     }
 
-    private fun sendWindowClick(slotId: Int, button: Int, mode: Int) {
+    private fun sendWindowClick(slotId: Int, button: Int, mode: Int, instant: Boolean = false) {
         mc.thePlayer?.openContainer?.let {
-            if (it is ContainerChest) mc.playerController?.windowClick(it.windowId, slotId, button, mode, mc.thePlayer)
+            if (it !is ContainerChest) return
+
+            if (instant) mc.playerController?.windowClick(it.windowId, slotId, button, mode, mc.thePlayer)
+            else mc.netHandler.networkManager.sendPacket(C0EPacketClickWindow(it.windowId, slotId, button, mode, mc.thePlayer.inventory.getStackInSlot(slotId), it.getNextTransactionID(mc.thePlayer.inventory)))
         }
     }
 

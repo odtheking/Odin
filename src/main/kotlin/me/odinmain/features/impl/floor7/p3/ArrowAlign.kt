@@ -4,7 +4,9 @@ import me.odinmain.events.impl.PacketEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.utils.*
+import me.odinmain.utils.addVec
+import me.odinmain.utils.distanceSquaredTo
+import me.odinmain.utils.flooredVec
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
@@ -49,6 +51,8 @@ object ArrowAlign : Module(
                     if ((arr[i] == -1 || currentFrameRotations?.get(i) == -1) && arr[i] != currentFrameRotations?.get(i)) return@forEach
                 }
 
+                targetSolution = arr
+
                 for (i in arr.indices) {
                     clicksRemaining[i] = calculateClicksNeeded(currentFrameRotations?.get(i) ?: return@forEach, arr[i]).takeIf { it != 0 } ?: continue
                 }
@@ -59,7 +63,7 @@ object ArrowAlign : Module(
     @SubscribeEvent
     fun onPacket(event: PacketEvent.Send) {
         val packet = event.packet as? C02PacketUseEntity ?: return
-        if (DungeonUtils.getF7Phase() != M7Phases.P3 || clicksRemaining.isEmpty() || packet.action != C02PacketUseEntity.Action.INTERACT) return
+        if (DungeonUtils.getF7Phase() != M7Phases.P3 || packet.action != C02PacketUseEntity.Action.INTERACT) return
         val entity = packet.getEntityFromWorld(mc.theWorld) ?: return
         val entityPosition = entity.positionVector.flooredVec()
         if (entity !is EntityItemFrame || entity.displayedItem?.item != Items.arrow) return

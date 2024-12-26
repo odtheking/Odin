@@ -8,12 +8,14 @@ import me.odinmain.features.settings.impl.DropdownSetting
 import me.odinmain.features.settings.impl.SelectorSetting
 import me.odinmain.utils.equalsOneOf
 import net.minecraft.entity.EntityLivingBase
+import net.minecraft.entity.player.EntityPlayer
 
 object HideArmor : Module(
     name = "Hide Armor",
     description = "Hide armor pieces.",
     category = Category.SKYBLOCK
 ) {
+    private val hideOnlyPlayers by BooleanSetting("Hide Only Players", false, description = "Only hide armor on players.")
     private val hideArmor by SelectorSetting(name = "Hide Armor", "Self", options = arrayListOf("Self", "Others", "Both"), description = "Hide the armor of yourself, others, or both.")
     private val selfDropdown by DropdownSetting("Self").withDependency { hideArmor == 0 || hideArmor == 2 }
     private val selfHelmet by BooleanSetting("Helmet", true, description = "Hide your helmet.").withDependency { selfDropdown }
@@ -30,7 +32,7 @@ object HideArmor : Module(
 
     @JvmStatic
     fun shouldHideArmor(entityLivingBase: EntityLivingBase, piece: Int): Boolean {
-        if (!enabled || mc.thePlayer == null) return false
+        if (!enabled || mc.thePlayer == null || (hideOnlyPlayers && entityLivingBase !is EntityPlayer)) return false
 
         return when {
             entityLivingBase == mc.thePlayer && hideArmor.equalsOneOf(0, 2) -> when (piece) {
@@ -53,7 +55,7 @@ object HideArmor : Module(
 
     @JvmStatic
     fun shouldHideSkull(entityLivingBase: EntityLivingBase): Boolean {
-        if (!enabled || mc.thePlayer == null) return false
+        if (!enabled || mc.thePlayer == null || (hideOnlyPlayers && entityLivingBase !is EntityPlayer)) return false
 
         return when {
             entityLivingBase == mc.thePlayer && hideArmor.equalsOneOf(0, 2) -> selfSkull
