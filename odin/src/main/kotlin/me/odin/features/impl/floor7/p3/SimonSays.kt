@@ -1,7 +1,6 @@
 package me.odin.features.impl.floor7.p3
 
-import me.odinmain.events.impl.BlockChangeEvent
-import me.odinmain.events.impl.PostEntityMetadata
+import me.odinmain.events.impl.*
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
@@ -20,6 +19,7 @@ import net.minecraft.block.BlockButtonStone
 import net.minecraft.entity.item.EntityItem
 import net.minecraft.init.Blocks
 import net.minecraft.item.Item
+import net.minecraft.network.play.client.C02PacketUseEntity
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
 import net.minecraftforge.client.event.RenderWorldLastEvent
@@ -37,6 +37,7 @@ object SimonSays : Module(
     private val lineWidth by NumberSetting("Line Width", 2f, 0.1f, 10f, 0.1f, description = "The width of the box's lines.")
     private val depthCheck by BooleanSetting("Depth check", false, description = "Boxes show through walls.")
     private val clearAfter by BooleanSetting("Clear After", false, description = "Clears the clicks when showing next, should work better with ss skip, but will be less consistent.")
+    private val blockWrong by BooleanSetting("Block Wrong Clicks", false, description = "Blocks wrong clicks, shift will override this.")
 
     private val firstButton = BlockPos(110, 121, 91)
     private val clickInOrder = ArrayList<BlockPos>()
@@ -89,6 +90,7 @@ object SimonSays : Module(
 
     @SubscribeEvent
     fun onPostMetadata(event: PostEntityMetadata) {
+        if (DungeonUtils.getF7Phase() != M7Phases.P3) return
         val entity = (mc.theWorld?.getEntityByID(event.packet.entityId) as? EntityItem)?.takeIf { Item.getIdFromItem(it.entityItem?.item) == 77 } ?: return
         val index = clickInOrder.indexOf(BlockPos(entity.posX.floor(), entity.posY.floor(), entity.posZ.floor()).east())
         if (index == 2 && clickInOrder.size == 3) clickInOrder.removeFirst()
@@ -96,8 +98,19 @@ object SimonSays : Module(
     }
 
     @SubscribeEvent
+    fun onPacket(event: PacketEvent.Send) {
+        val packet = event.packet as? C02PacketUseEntity ?: return
+        if (DungeonUtils.getF7Phase() != M7Phases.P3 || packet.action != C02PacketUseEntity.Action.INTERACT) return
+
+        val entityPosition = (packet.getEntityFromWorld(mc.theWorld ?: return) as? EntityItem)?.takeIf { Item.getIdFromItem(it.entityItem?.item) == 77 }?.positionVector ?: return
+        if (!blockWrong || mc.thePlayer?.isSneaking == true || entityPosition.xCoord != 110.0 || entityPosition.yCoord !in 120.0..123.0 || entityPosition.zCoord !in 91.0..95.0) return
+
+        if ((entityPosition != clickInOrder.getOrNull(clickNeeded))) event.isCanceled = true
+    }
+
+    @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-        if (clickNeeded >= clickInOrder.size) return
+        if (DungeonUtils.getF7Phase() != M7Phases.P3 || clickNeeded >= clickInOrder.size) return
 
         for (index in clickNeeded until clickInOrder.size) {
             with(clickInOrder[index]) {

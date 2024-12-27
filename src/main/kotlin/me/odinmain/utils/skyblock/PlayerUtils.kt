@@ -96,8 +96,8 @@ object PlayerUtils {
         mc.thePlayer?.openContainer?.let {
             if (it !is ContainerChest) return
 
-            if (instant) mc.playerController?.windowClick(it.windowId, slotId, button, mode, mc.thePlayer)
-            else mc.netHandler.networkManager.sendPacket(C0EPacketClickWindow(it.windowId, slotId, button, mode, mc.thePlayer.inventory.getStackInSlot(slotId), it.getNextTransactionID(mc.thePlayer.inventory)))
+            if (instant) mc.netHandler.networkManager.sendPacket(C0EPacketClickWindow(it.windowId, slotId, button, mode, mc.thePlayer.inventory.getStackInSlot(slotId), it.getNextTransactionID(mc.thePlayer.inventory)))
+            else mc.playerController?.windowClick(it.windowId, slotId, button, mode, mc.thePlayer)
         }
     }
 
