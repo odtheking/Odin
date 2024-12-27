@@ -114,7 +114,7 @@ object TerminalSolver : Module(
         }
 
         onPacket(S2FPacketSetSlot::class.java) { event ->
-            if (currentTerm.type == TerminalTypes.NONE || event.func_149173_d() < 0 || event.func_149173_d() >= currentTerm.type.size || event.func_149174_e() == null) return@onPacket
+            if (currentTerm.type == TerminalTypes.NONE || event.func_149173_d() !in 0 until currentTerm.type.size || event.func_149174_e() == null) return@onPacket
             currentTerm.apply {
                 items[event.func_149173_d()] = event.func_149174_e()
                 when (type) {

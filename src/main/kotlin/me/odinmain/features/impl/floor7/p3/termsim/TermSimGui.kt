@@ -66,8 +66,8 @@ open class TermSimGui(val name: String, val size: Int, private val inv: Inventor
     fun onPacketSend(event: PacketEvent.Send) {
         val packet = event.packet as? C0EPacketClickWindow ?: return
         if (OdinMain.mc.currentScreen != this) return
-        delaySlotClick(guiInventorySlots?.get(packet.slotId - 37) ?: return, packet.usedButton)
         event.isCanceled = true
+        delaySlotClick(guiInventorySlots?.get(packet.slotId - 37) ?: return, packet.usedButton)
     }
 
     @SubscribeEvent(priority = EventPriority.LOWEST)

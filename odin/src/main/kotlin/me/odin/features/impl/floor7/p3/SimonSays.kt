@@ -1,6 +1,7 @@
 package me.odin.features.impl.floor7.p3
 
-import me.odinmain.events.impl.*
+import me.odinmain.events.impl.BlockChangeEvent
+import me.odinmain.events.impl.PostEntityMetadata
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
@@ -19,10 +20,10 @@ import net.minecraft.block.BlockButtonStone
 import net.minecraft.entity.item.EntityItem
 import net.minecraft.init.Blocks
 import net.minecraft.item.Item
-import net.minecraft.network.play.client.C02PacketUseEntity
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
 import net.minecraftforge.client.event.RenderWorldLastEvent
+import net.minecraftforge.event.entity.player.PlayerInteractEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object SimonSays : Module(
@@ -36,7 +37,6 @@ object SimonSays : Module(
     private val style by SelectorSetting("Style", Renderer.DEFAULT_STYLE, Renderer.styles, description = Renderer.STYLE_DESCRIPTION)
     private val lineWidth by NumberSetting("Line Width", 2f, 0.1f, 10f, 0.1f, description = "The width of the box's lines.")
     private val depthCheck by BooleanSetting("Depth check", false, description = "Boxes show through walls.")
-    private val clearAfter by BooleanSetting("Clear After", false, description = "Clears the clicks when showing next, should work better with ss skip, but will be less consistent.")
     private val blockWrong by BooleanSetting("Block Wrong Clicks", false, description = "Blocks wrong clicks, shift will override this.")
 
     private val firstButton = BlockPos(110, 121, 91)
@@ -77,7 +77,7 @@ object SimonSays : Module(
                     currentPhase++
                     phaseClock.update()
                 }
-                if (clearAfter) clickInOrder.clear()
+                clickInOrder.clear()
             } else if (state.block == Blocks.stone_button) {
                 if (old.block == Blocks.air && clickInOrder.size > currentPhase + 1) devMessage("was skipped!?!?!")
                 if (old.block == Blocks.stone_button && state.getValue(BlockButtonStone.POWERED)) {
@@ -98,14 +98,17 @@ object SimonSays : Module(
     }
 
     @SubscribeEvent
-    fun onPacket(event: PacketEvent.Send) {
-        val packet = event.packet as? C02PacketUseEntity ?: return
-        if (DungeonUtils.getF7Phase() != M7Phases.P3 || packet.action != C02PacketUseEntity.Action.INTERACT) return
+    fun onInteract(event: PlayerInteractEvent) {
+        if (
+            event.pos == null ||
+            event.action != PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK ||
+            event.world != mc.theWorld ||
+            !blockWrong ||
+            mc.thePlayer?.isSneaking == true ||
+            event.pos.x != 110 || event.pos.y !in 120..123 || event.pos.z !in 91..95
+        ) return
 
-        val entityPosition = (packet.getEntityFromWorld(mc.theWorld ?: return) as? EntityItem)?.takeIf { Item.getIdFromItem(it.entityItem?.item) == 77 }?.positionVector ?: return
-        if (!blockWrong || mc.thePlayer?.isSneaking == true || entityPosition.xCoord != 110.0 || entityPosition.yCoord !in 120.0..123.0 || entityPosition.zCoord !in 91.0..95.0) return
-
-        if ((entityPosition != clickInOrder.getOrNull(clickNeeded))) event.isCanceled = true
+        if (event.pos.east() != clickInOrder.getOrNull(clickNeeded)) event.isCanceled = true
     }
 
     @SubscribeEvent
