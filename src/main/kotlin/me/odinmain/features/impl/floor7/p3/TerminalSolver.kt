@@ -290,8 +290,8 @@ object TerminalSolver : Module(
         }
 
         if (middleClickGUI) {
-            windowClick(slotIndex, if (event.button == 0) ClickType.Middle else ClickType.Right, instant = true)
             event.isCanceled = true
+            windowClick(slotIndex, if (event.button == 0) ClickType.Middle else ClickType.Right, instant = true)
         }
     }
 

@@ -5,12 +5,9 @@ import me.odinmain.OdinMain.mc
 import me.odinmain.features.impl.floor7.p3.termsim.TermSimGui
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.clock.Executor.Companion.register
-import me.odinmain.utils.floored
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
-import me.odinmain.utils.runOnMCThread
 import net.minecraft.inventory.ContainerChest
-import net.minecraft.network.play.client.C0EPacketClickWindow
 import net.minecraft.util.Vec3
 
 object PlayerUtils {
@@ -52,10 +49,6 @@ object PlayerUtils {
 
     fun getPositionString() = "x: ${posX.toInt()}, y: ${posY.toInt()}, z: ${posZ.toInt()}"
 
-    val posFloored
-        get() = mc.thePlayer.positionVector.floored()
-
-
     private data class WindowClick(val slotId: Int, val button: Int, val mode: Int)
 
     private val windowClickQueue = mutableListOf<WindowClick>()
@@ -72,7 +65,7 @@ object PlayerUtils {
         if (mc.currentScreen is TermSimGui) {
             val gui = mc.currentScreen as TermSimGui
             gui.delaySlotClick(gui.inventorySlots.getSlot(slotId), button)
-        } else if (instant) sendWindowClick(slotId, button, mode, instant = true)
+        } else if (instant) sendWindowClick(slotId, button, mode)
         else windowClickQueue.add(WindowClick(slotId, button, mode))
     }
 
@@ -92,12 +85,10 @@ object PlayerUtils {
         windowClickQueue.removeFirstOrNull()
     }
 
-    private fun sendWindowClick(slotId: Int, button: Int, mode: Int, instant: Boolean = false) {
+    private fun sendWindowClick(slotId: Int, button: Int, mode: Int) {
         mc.thePlayer?.openContainer?.let {
             if (it !is ContainerChest) return
-
-            if (instant) mc.netHandler.networkManager.sendPacket(C0EPacketClickWindow(it.windowId, slotId, button, mode, mc.thePlayer.inventory.getStackInSlot(slotId), it.getNextTransactionID(mc.thePlayer.inventory)))
-            else mc.playerController?.windowClick(it.windowId, slotId, button, mode, mc.thePlayer)
+            mc.playerController?.windowClick(it.windowId, slotId, button, mode, mc.thePlayer)
         }
     }
 
