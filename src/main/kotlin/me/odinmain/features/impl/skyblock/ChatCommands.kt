@@ -136,6 +136,13 @@ object ChatCommands : Module(
                 disableRequeue = true
                 dtPlayer = name
             }
+            "undowntime", "undt" -> {
+                if (!dt || channel != ChatChannel.PARTY) return
+                if (dtReason.none { it.first == name }) return modMessage("§6${name} §chas no reminder set!")
+                modMessage("§aReminder removed!")
+                dtReason.removeIf { it.first == name }
+                if (dtReason.isEmpty()) disableRequeue = false
+            }
             "f1", "f2", "f3", "f4", "f5", "f6", "f7", "m1", "m2", "m3", "m4", "m5", "m6", "m7", "t1", "t2", "t3", "t4", "t5" -> {
                 if (!queInstance || channel != ChatChannel.PARTY) return
                 modMessage("§8Entering -> §e${message.substring(1).capitalizeFirst()}")

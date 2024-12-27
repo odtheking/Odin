@@ -15,7 +15,6 @@ object TerminalSimulator : Module(
     category = Category.FLOOR7
 ) {
     private val ping by NumberSetting("Ping", 0, 0, 500, description = "Ping of the terminal.")
-    val openStart by BooleanSetting("Open Start", false, description = "Open the start menu after you finish a terminal.")
 
     val termSimPBs = PersonalBest("Termsim", 6)
 
