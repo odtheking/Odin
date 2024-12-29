@@ -27,7 +27,7 @@ object MelodyGui : TermGui() {
             roundedRectangle(-getTextWidth("Click the button on time!", 20f) / 2, -210, getTextWidth("Click the button on time!", 20f), 3, Color.WHITE, radius = 5f)
         }
 
-        ArrayList(TerminalSolver.currentTerm.solution).forEach { pane ->
+        TerminalSolver.currentTerm.solution.forEach { pane ->
             val row = pane / 9 - 1
             val col = pane % 9 - 2
             val colorMelody = when {

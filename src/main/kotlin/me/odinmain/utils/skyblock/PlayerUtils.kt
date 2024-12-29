@@ -8,6 +8,7 @@ import me.odinmain.utils.clock.Executor.Companion.register
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import net.minecraft.inventory.ContainerChest
+import net.minecraft.network.play.client.C0EPacketClickWindow
 import net.minecraft.util.Vec3
 
 object PlayerUtils {
@@ -65,7 +66,7 @@ object PlayerUtils {
         if (mc.currentScreen is TermSimGui) {
             val gui = mc.currentScreen as TermSimGui
             gui.delaySlotClick(gui.inventorySlots.getSlot(slotId), button)
-        } else if (instant) sendWindowClick(slotId, button, mode)
+        } else if (instant) sendWindowClickPacket(slotId, button, mode)
         else windowClickQueue.add(WindowClick(slotId, button, mode))
     }
 
@@ -89,6 +90,13 @@ object PlayerUtils {
         mc.thePlayer?.openContainer?.let {
             if (it !is ContainerChest) return
             mc.playerController?.windowClick(it.windowId, slotId, button, mode, mc.thePlayer)
+        }
+    }
+
+    private fun sendWindowClickPacket(slotId: Int, button: Int, mode: Int) {
+        mc.thePlayer?.openContainer?.let {
+            if (it !is ContainerChest) return
+            mc.netHandler?.networkManager?.sendPacket(C0EPacketClickWindow(it.windowId, slotId, button, mode, it.inventory[slotId], it.getNextTransactionID(mc.thePlayer?.inventory)))
         }
     }
 

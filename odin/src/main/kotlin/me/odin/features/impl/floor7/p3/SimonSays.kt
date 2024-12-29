@@ -105,7 +105,7 @@ object SimonSays : Module(
             event.world != mc.theWorld ||
             !blockWrong ||
             mc.thePlayer?.isSneaking == true ||
-            event.pos.x != 110 || event.pos.y !in 120..123 || event.pos.z !in 91..95
+            event.pos.x != 110 || event.pos.y !in 120..123 || event.pos.z !in 92..95
         ) return
 
         if (event.pos.east() != clickInOrder.getOrNull(clickNeeded)) event.isCanceled = true
