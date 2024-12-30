@@ -42,8 +42,7 @@ fun fastEyeHeight(): Float =
  * @param pos The position to get the eyes of
  * @return The position of the player's eyes
  */
-fun getPositionEyes(pos: Vec3 =
-                        mc.thePlayer?.positionVector ?: Vec3(0.0, 0.0, 0.0)): Vec3 = Vec3(pos.xCoord, pos.yCoord + fastEyeHeight(), pos.zCoord)
+fun getPositionEyes(pos: Vec3 = mc.thePlayer?.positionVector ?: Vec3(0.0, 0.0, 0.0)): Vec3 = Vec3(pos.xCoord, pos.yCoord + fastEyeHeight(), pos.zCoord)
 
 /**
  * Gets a normalized vector of the player's look

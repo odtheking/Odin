@@ -1,10 +1,15 @@
 package me.odinmain.utils
 
 import com.google.gson.JsonParser
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeoutOrNull
 import me.odinmain.OdinMain.logger
 import me.odinmain.features.impl.render.DevPlayers
-import java.io.*
+import java.io.BufferedReader
+import java.io.FileOutputStream
+import java.io.InputStreamReader
+import java.io.OutputStreamWriter
 import java.net.HttpURLConnection
 import java.net.URL
 
@@ -106,7 +111,7 @@ fun fetchURLData(url: String): String {
     } catch (e: Exception) {
         // Print the stack trace in case of an exception and return an empty string
         logger.error("Error fetching data from URL: $url", e)
-        return ""
+        return "Failed to fetch content from URL: $url"
     }
 }
 

@@ -4,12 +4,18 @@ import me.odinmain.OdinMain.isLegitVersion
 import me.odinmain.events.impl.PostEntityMetadata
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.features.settings.impl.*
+import me.odinmain.features.settings.impl.BooleanSetting
+import me.odinmain.features.settings.impl.ColorSetting
+import me.odinmain.features.settings.impl.NumberSetting
+import me.odinmain.features.settings.impl.SelectorSetting
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
-import me.odinmain.utils.*
+import me.odinmain.utils.addVec
+import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.skyblock.modMessage
+import me.odinmain.utils.toAABB
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraftforge.client.event.RenderWorldLastEvent
@@ -20,6 +26,7 @@ object KeyHighlight : Module(
     description = "Highlights wither and blood keys in dungeons.",
     category = Category.DUNGEON,
 ) {
+    private val announceKeySpawn by BooleanSetting("Announce Key Spawn", true, description = "Announces when a key is spawned.")
     private val style by SelectorSetting("Style", Renderer.DEFAULT_STYLE, Renderer.styles, description = Renderer.STYLE_DESCRIPTION)
     private val witherColor by ColorSetting("Wither Color", Color.BLACK.withAlpha(0.8f), allowAlpha = true, description = "The color of the box.")
     private val bloodColor by ColorSetting("Blood Color", Color.RED.withAlpha(0.8f), allowAlpha = true, description = "The color of the box.")
@@ -43,6 +50,7 @@ object KeyHighlight : Module(
             "Blood Key" -> KeyInfo(entity, bloodColor)
             else -> return
         }
+        if (announceKeySpawn) modMessage("§7Found the §4${entity.name.noControlCodes}§7 key!")
     }
 
     @SubscribeEvent

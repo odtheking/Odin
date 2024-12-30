@@ -119,7 +119,9 @@ object KuudraUtils {
 
     @SubscribeEvent
     fun handleTabListPacket(event: PacketEvent.Receive) {
-        if (event.packet !is S38PacketPlayerListItem || !event.packet.action.equalsOneOf(S38PacketPlayerListItem.Action.UPDATE_DISPLAY_NAME, S38PacketPlayerListItem.Action.ADD_PLAYER)) return
+        if (event.packet !is S38PacketPlayerListItem ||
+            !event.packet.action.equalsOneOf(S38PacketPlayerListItem.Action.UPDATE_DISPLAY_NAME, S38PacketPlayerListItem.Action.ADD_PLAYER) ||
+            !LocationUtils.currentArea.isArea(Island.Unknown, Island.Kuudra)) return
         kuudraTeammates = updateKuudraTeammates(kuudraTeammates, event.packet.entries)
     }
 
