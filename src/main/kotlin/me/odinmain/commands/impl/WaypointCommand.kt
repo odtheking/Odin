@@ -30,7 +30,7 @@ val waypointCommand = commodore("waypoint", "odinwaypoint") {
         runs {
             partyMessage(PlayerUtils.getPositionString())
         }
-        runs { x: Double, y: Double, z: Double ->
+        runs { x: Int, y: Int, z: Int ->
             partyMessage("x: $x y: $y, z: $z")
         }
     }

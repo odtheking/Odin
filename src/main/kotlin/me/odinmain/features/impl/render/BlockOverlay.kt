@@ -3,10 +3,14 @@ package me.odinmain.features.impl.render
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.*
+import me.odinmain.features.settings.impl.BooleanSetting
+import me.odinmain.features.settings.impl.ColorSetting
+import me.odinmain.features.settings.impl.NumberSetting
+import me.odinmain.features.settings.impl.SelectorSetting
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.getBlockAt
+import me.odinmain.utils.skyblock.usingEtherWarp
 import net.minecraft.block.material.Material
 import net.minecraft.util.MovingObjectPosition.MovingObjectType
 import net.minecraftforge.client.event.DrawBlockHighlightEvent
@@ -22,10 +26,11 @@ object BlockOverlay : Module(
     private val lineWidth by NumberSetting("Line Width", 2f, 0.1f, 10f, 0.1f, description = "The width of the box's lines.")
     private val depthCheck by BooleanSetting("Depth check", true, description = "Boxes show through walls.")
     private val lineSmoothing by BooleanSetting("Line Smoothing", true, description = "Makes the lines smoother.").withDependency { style == 1 || style == 2 }
+    private val disableWhenEtherwarping by BooleanSetting("Disable When Etherwarping", true, description = "Disables the block overlay when etherwarping.")
 
     @SubscribeEvent
     fun onRenderBlockOverlay(event: DrawBlockHighlightEvent) {
-        if (event.target.typeOfHit != MovingObjectType.BLOCK || mc.gameSettings?.thirdPersonView != 0) return
+        if (event.target.typeOfHit != MovingObjectType.BLOCK || mc.gameSettings?.thirdPersonView != 0 || (disableWhenEtherwarping && mc.thePlayer.usingEtherWarp)) return
         event.isCanceled = true
 
         if (getBlockAt(event.target.blockPos).material === Material.air || event.target.blockPos !in mc.theWorld.worldBorder) return

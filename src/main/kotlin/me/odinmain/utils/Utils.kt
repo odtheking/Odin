@@ -105,14 +105,6 @@ fun Long.floor(): Long {
 }
 
 /**
- * Floors the current Int number.
- * @return The floored Int number (no change as Int is already an integer).
- */
-fun Int.floor(): Int {
-    return this
-}
-
-/**
  * Rounds the current number to the specified number of decimals.
  * @param decimals The number of decimals to round to.
  * @return The rounded number.

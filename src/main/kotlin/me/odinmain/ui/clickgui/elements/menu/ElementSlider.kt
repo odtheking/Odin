@@ -2,7 +2,9 @@ package me.odinmain.ui.clickgui.elements.menu
 
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.font.OdinFont
-import me.odinmain.ui.clickgui.elements.*
+import me.odinmain.ui.clickgui.elements.Element
+import me.odinmain.ui.clickgui.elements.ElementType
+import me.odinmain.ui.clickgui.elements.ModuleButton
 import me.odinmain.ui.clickgui.util.ColorUtil.brighter
 import me.odinmain.ui.clickgui.util.ColorUtil.clickGUIColor
 import me.odinmain.ui.clickgui.util.ColorUtil.elementBackground
@@ -38,8 +40,8 @@ class ElementSlider(parent: ModuleButton, setting: NumberSetting<*>) :
     private inline val color: Color
         get() = clickGUIColor.brighter(1 + handler.percent() / 200f)
 
-    fun getDisplay(): String {
-        return if (setting.valueDouble - setting.valueDouble.floor().toDouble() == 0.0) {
+    private fun getDisplay(): String {
+        return if (setting.valueDouble - setting.valueDouble.floor() == 0.0) {
             "${(setting.valueInt * 100.0).roundToInt() / 100}${setting.unit}"
         } else {
             "${(setting.valueDouble * 100.0).roundToInt() / 100.0}${setting.unit}"

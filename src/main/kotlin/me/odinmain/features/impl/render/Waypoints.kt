@@ -29,7 +29,7 @@ object Waypoints : Module(
         EtherWarpHelper.getEtherPos(PositionLook(mc.thePlayer.renderVec, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch), pingDistance).pos?.let { pos ->
             val position = pos.addVec(0.5, 0.5, 0.5)
             WaypointManager.addTempWaypoint(x = position.x, y = position.y, z = position.z, time = pingWaypointTime)
-            if (sendPingedLocation) sendCommand("odinwaypoint share ${position.x} ${position.y} ${position.z}", true)
+            if (sendPingedLocation) sendCommand("odinwaypoint share ${pos.x} ${pos.y} ${pos.z}", true)
         }
     }.withDependency { pingLocationToggle && pingLocationDropDown }
     private val sendPingedLocation: Boolean by BooleanSetting("Send Pinged Location", false, description = "Sends the location you are looking at as coords in chat for waypoints.").withDependency { pingLocationToggle && pingLocationDropDown }
