@@ -52,6 +52,6 @@ class SelectAll(private val color: String = EnumDyeColor.entries.random().name.r
         playTermSimSound()
         if (guiInventorySlots?.none {
                 it?.stack?.isItemEnchanted == false && it.stack?.item in items && if (it.stack?.item == dye) it.stack?.metadata == correctDye else it.stack?.metadata == correctMeta
-            } == true) TerminalEvent.Solved(TerminalSolver.currentTerm).postAndCatch()
+            } == true) TerminalEvent.Solved(TerminalSolver.lastTermOpened).postAndCatch()
     }
 }

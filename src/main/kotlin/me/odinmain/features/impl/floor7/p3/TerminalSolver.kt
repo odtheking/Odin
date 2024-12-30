@@ -39,6 +39,7 @@ import net.minecraftforge.event.entity.player.ItemTooltipEvent
 import net.minecraftforge.fml.common.Loader
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.input.Keyboard
+import java.util.concurrent.CopyOnWriteArrayList
 
 @AlwaysActive // So it can be used in other modules
 object TerminalSolver : Module(
@@ -49,10 +50,9 @@ object TerminalSolver : Module(
     val renderType by SelectorSetting("Mode", "Odin", arrayListOf("Odin", "Skytils", "SBE", "Custom GUI"), description = "How the terminal solver should render.")
     val customGuiText by SelectorSetting("Custom Gui Title", "Top Left", arrayListOf("Top Left", "Middle", "Disabled"), description = "Where the custom gui text should be rendered.").withDependency { renderType == 3 }
     val customScale by NumberSetting("Custom Scale", 1f, .8f, 2.5f, .1f, description = "Size of the Custom Terminal Gui.").withDependency { renderType == 3 }
-    val textShadow by BooleanSetting("Text Shadow", true, description = "Adds a shadow to the text.")
     private val cancelToolTip by BooleanSetting("Stop Tooltips", true, description = "Stops rendering tooltips in terminals.").withDependency { renderType != 3 }
-    private val blockIncorrectClicks by BooleanSetting("Block Incorrect Clicks", true, description = "Blocks incorrect clicks in terminals.").withDependency { renderType != 3 }
     private val middleClickGUI by BooleanSetting("Middle Click GUI", true, description = "Replaces right click with middle click in terminals.").withDependency { renderType != 3 }
+    private val blockIncorrectClicks by BooleanSetting("Block Incorrect Clicks", true, description = "Blocks incorrect clicks in terminals.").withDependency { renderType != 3 }
     private val cancelMelodySolver by BooleanSetting("Stop Melody Solver", false, description = "Stops rendering the melody solver.")
 
     private val showRemoveWrongSettings by DropdownSetting("Render Wrong Settings").withDependency { renderType == 1 }
@@ -92,10 +92,10 @@ object TerminalSolver : Module(
     val melodyPressColor by ColorSetting("Melody Press Color", Color.CYAN.withAlpha(0.75f), true, description = "Color of the location for pressing for melody.").withDependency { showColors && !cancelMelodySolver }
     val melodyCorrectRowColor by ColorSetting("Melody Correct Row Color", Color.WHITE.withAlpha(0.75f), true, description = "Color of the whole row for melody.").withDependency { showColors && !cancelMelodySolver }
 
-    data class Terminal(val type: TerminalTypes, val solution: ArrayList<Int> = arrayListOf(), val items: Array<ItemStack?> = emptyArray(), val guiName: String = "", val timeOpened: Long = System.currentTimeMillis())
+    data class Terminal(val type: TerminalTypes, val solution: CopyOnWriteArrayList<Int> = CopyOnWriteArrayList(), val items: Array<ItemStack?> = emptyArray(), val guiName: String = "", val timeOpened: Long = System.currentTimeMillis())
     var currentTerm = Terminal(TerminalTypes.NONE)
         private set
-    private var lastTermOpened = Terminal(TerminalTypes.NONE)
+    var lastTermOpened = Terminal(TerminalTypes.NONE)
     private var lastRubixSolution: Int? = null
 
     init {
@@ -114,7 +114,7 @@ object TerminalSolver : Module(
         }
 
         onPacket(S2FPacketSetSlot::class.java) { event ->
-            if (currentTerm.type == TerminalTypes.NONE || event.func_149173_d() < 0 || event.func_149173_d() >= currentTerm.type.size || event.func_149174_e() == null) return@onPacket
+            if (currentTerm.type == TerminalTypes.NONE || event.func_149173_d() !in 0 until currentTerm.type.size || event.func_149174_e() == null) return@onPacket
             currentTerm.apply {
                 items[event.func_149173_d()] = event.func_149174_e()
                 when (type) {
@@ -208,7 +208,7 @@ object TerminalSolver : Module(
         GlStateManager.disableLighting()
         GlStateManager.enableDepth()
         when (currentTerm.type) {
-            TerminalTypes.PANES -> Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, panesColor.rgba)
+            TerminalTypes.PANES ->  if (renderType != 1) Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, panesColor.rgba)
 
             TerminalTypes.RUBIX -> {
                 val needed = currentTerm.solution.count { it == event.slot.slotIndex }
@@ -220,8 +220,8 @@ object TerminalSolver : Module(
                     else -> oppositeRubixColor1
                 }
 
-                Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, color.rgba)
-                mcText(text.toString(), event.x + 8f - getMCTextWidth(text.toString()) / 2, event.y + 4.5, 1, textColor, shadow = textShadow, false)
+                if (renderType != 1) Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, color.rgba)
+                mcText(text.toString(), event.x + 8f - getMCTextWidth(text.toString()) / 2, event.y + 4.5, 1, textColor, center = false)
             }
             TerminalTypes.ORDER -> {
                 val index = currentTerm.solution.indexOf(event.slot.slotIndex)
@@ -235,7 +235,7 @@ object TerminalSolver : Module(
                     event.isCanceled = true
                 }
                 val amount = event.slot.stack?.stackSize ?: 0
-                mcText(amount.toString(), event.x + 8.5f - getMCTextWidth(amount.toString()) / 2, event.y + 4.5f, 1, textColor, shadow = textShadow, false)
+                mcText(amount.toString(), event.x + 8.5f - getMCTextWidth(amount.toString()) / 2, event.y + 4.5f, 1, textColor, center = false)
             }
             TerminalTypes.STARTS_WITH ->
                 if (renderType != 1 || (renderType == 1 && !removeWrong)) Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, startsWithColor.rgba)
@@ -290,8 +290,8 @@ object TerminalSolver : Module(
         }
 
         if (middleClickGUI) {
-            windowClick(slotIndex, if (event.button == 0) ClickType.Middle else ClickType.Right, instant = true)
             event.isCanceled = true
+            windowClick(slotIndex, if (event.button == 0) ClickType.Middle else ClickType.Right, instant = true)
         }
     }
 
@@ -313,8 +313,9 @@ object TerminalSolver : Module(
 
     init {
         onMessage(terminalActivatedRegex) { message ->
-            if (terminalActivatedRegex.find(message)?.groupValues?.get(1) == mc.thePlayer.name)
+            if (terminalActivatedRegex.find(message)?.groupValues?.get(1) == mc.thePlayer.name) {
                 TerminalEvent.Solved(lastTermOpened).postAndCatch()
+            }
         }
     }
 

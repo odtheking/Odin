@@ -84,7 +84,7 @@ object AutoExperiments : Module(
             }
         }
         if (hasAdded && invSlots[49].stack?.item == Items.clock && chronomatronOrder.size > clicks && System.currentTimeMillis() - lastClickTime > delay) {
-            windowClick(chronomatronOrder[clicks], ClickType.Middle, true)
+            windowClick(chronomatronOrder[clicks], ClickType.Middle)
             lastClickTime = System.currentTimeMillis()
             clicks++
         }
@@ -104,7 +104,7 @@ object AutoExperiments : Module(
             if (ultrasequencerOrder.size > 9 - serumCount && autoClose) mc.thePlayer?.closeScreen()
         }
         if (invSlots[49].stack?.item == Items.clock && ultrasequencerOrder.contains(clicks) && System.currentTimeMillis() - lastClickTime > delay) {
-            ultrasequencerOrder[clicks]?.let { windowClick(it, ClickType.Middle, true) }
+            ultrasequencerOrder[clicks]?.let { windowClick(it, ClickType.Middle) }
             lastClickTime = System.currentTimeMillis()
             clicks++
         }

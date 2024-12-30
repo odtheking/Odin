@@ -4,7 +4,9 @@ import me.odinmain.events.impl.PacketEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.utils.*
+import me.odinmain.utils.addVec
+import me.odinmain.utils.distanceSquaredTo
+import me.odinmain.utils.flooredVec
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
@@ -49,6 +51,8 @@ object ArrowAlign : Module(
                     if ((arr[i] == -1 || currentFrameRotations?.get(i) == -1) && arr[i] != currentFrameRotations?.get(i)) return@forEach
                 }
 
+                targetSolution = arr
+
                 for (i in arr.indices) {
                     clicksRemaining[i] = calculateClicksNeeded(currentFrameRotations?.get(i) ?: return@forEach, arr[i]).takeIf { it != 0 } ?: continue
                 }
@@ -59,10 +63,8 @@ object ArrowAlign : Module(
     @SubscribeEvent
     fun onPacket(event: PacketEvent.Send) {
         val packet = event.packet as? C02PacketUseEntity ?: return
-        if (DungeonUtils.getF7Phase() != M7Phases.P3 || clicksRemaining.isEmpty() || packet.action != C02PacketUseEntity.Action.INTERACT) return
-        val entity = packet.getEntityFromWorld(mc.theWorld) ?: return
-        val entityPosition = entity.positionVector.flooredVec()
-        if (entity !is EntityItemFrame || entity.displayedItem?.item != Items.arrow) return
+        if (DungeonUtils.getF7Phase() != M7Phases.P3 || packet.action != C02PacketUseEntity.Action.INTERACT) return
+        val entityPosition = (packet.getEntityFromWorld(mc.theWorld) as? EntityItemFrame)?.takeIf { it.displayedItem?.item == Items.arrow }?.positionVector?.flooredVec() ?: return
         val frameIndex = ((entityPosition.yCoord - frameGridCorner.yCoord) + (entityPosition.zCoord - frameGridCorner.zCoord) * 5).toInt()
         if (entityPosition.xCoord != frameGridCorner.xCoord || currentFrameRotations?.get(frameIndex) == -1 || frameIndex !in 0..24) return
 
@@ -74,11 +76,7 @@ object ArrowAlign : Module(
         recentClickTimestamps[frameIndex] = System.currentTimeMillis()
         currentFrameRotations = currentFrameRotations?.toMutableList()?.apply { this[frameIndex] = (this[frameIndex] + 1) % 8 }
 
-        currentFrameRotations?.let {
-            val target = targetSolution ?: return
-            val remainingClicks = calculateClicksNeeded(it[frameIndex], target[frameIndex])
-            if (remainingClicks == 0) clicksRemaining.remove(frameIndex)
-        }
+        if (calculateClicksNeeded(currentFrameRotations?.get(frameIndex) ?: return, targetSolution?.get(frameIndex) ?: return) == 0) clicksRemaining.remove(frameIndex)
     }
 
     @SubscribeEvent
@@ -87,9 +85,9 @@ object ArrowAlign : Module(
         clicksRemaining.forEach { (index, clickNeeded) ->
             val color = when {
                 clickNeeded == 0 -> return@forEach
-                clickNeeded < 3 -> Color(85, 255, 85)
-                clickNeeded < 5 -> Color(255, 170, 0)
-                else -> Color(170, 0, 0)
+                clickNeeded < 3 -> Color.DARK_GREEN
+                clickNeeded < 5 -> Color.ORANGE
+                else -> Color.RED
             }
             Renderer.drawStringInWorld(clickNeeded.toString(), getFramePositionFromIndex(index).addVec(y = 0.6, z = 0.5), color)
         }

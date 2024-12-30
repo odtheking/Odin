@@ -32,7 +32,7 @@ object Rubix : TermSimGui(
 
         playTermSimSound()
         if (indices.all { guiInventorySlots?.get(it)?.stack?.metadata == guiInventorySlots?.get(12)?.stack?.metadata })
-            TerminalEvent.Solved(TerminalSolver.currentTerm).postAndCatch()
+            TerminalEvent.Solved(TerminalSolver.lastTermOpened).postAndCatch()
     }
 
     private fun getPane(): ItemStack {
