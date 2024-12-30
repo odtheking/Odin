@@ -155,44 +155,7 @@ object RenderOptimizer : Module(
             event.isCanceled = true
     }
 
-    private val mobColors: HashMap<Class<*>, Color> = hashMapOf(
-        EntityCaveSpider::class.java to caveSpiderColor,
-        EntitySpider::class.java to spiderColor,
-        EntityPig::class.java to pigColor,
-        EntitySheep::class.java to sheepColor,
-        EntityCow::class.java to cowColor,
-        EntityMooshroom::class.java to mooshroomColor,
-        EntityWolf::class.java to wolfColor,
-        EntityChicken::class.java to chickenColor,
-        EntityOcelot::class.java to ocelotColor,
-        EntityRabbit::class.java to rabbitColor,
-        EntitySilverfish::class.java to silverfishColor,
-        EntityEndermite::class.java to endermiteColor,
-        EntityCreeper::class.java to creeperColor,
-        EntityEnderman::class.java to endermanColor,
-        EntitySnowman::class.java to snowmanColor,
-        EntitySkeleton::class.java to skeletonColor,
-        EntityWitch::class.java to witchColor,
-        EntityBlaze::class.java to blazeColor,
-        EntityPigZombie::class.java to pigZombieColor,
-        EntityZombie::class.java to zombieColor,
-        EntitySlime::class.java to slimeColor,
-        EntityMagmaCube::class.java to magmaCubeColor,
-        EntityGiantZombie::class.java to giantZombieColor,
-        EntityGhast::class.java to ghastColor,
-        EntitySquid::class.java to squidColor,
-        EntityVillager::class.java to villagerColor,
-        EntityIronGolem::class.java to ironGolemColor,
-        EntityBat::class.java to batColor,
-        EntityGuardian::class.java to guardianColor,
-        EntityDragon::class.java to dragonColor,
-        EntityWither::class.java to witherColor,
-        EntityXPOrb::class.java to xpOrbColor,
-        EntityArmorStand::class.java to armorStandColor,
-        EntityHorse::class.java to horseColor
-    )
-
-    private val renderList: ArrayList<Entity> = ArrayList()
+    private val renderList: ArrayList<Pair<Entity, Color>> = ArrayList()
 
     @SubscribeEvent
     fun renderEntities(event: RenderWorldLastEvent) {
@@ -208,11 +171,10 @@ object RenderOptimizer : Module(
         GlStateManager.color(1f, 1f, 1f, 1f)
         GlStateManager.translate(-mc.renderManager.viewerPosX, -mc.renderManager.viewerPosY, -mc.renderManager.viewerPosZ)
 
-        
         worldRenderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR)
-        for (entity in renderList) {
-            val color = getColor(entity)
-            with (entity.renderBoundingBox) {
+        for (pair in renderList) {
+            val color = pair.second
+            with (pair.first.renderBoundingBox) {
                 worldRenderer.pos(minX, minY, minZ).color(color.r, color.g, color.b, color.a).endVertex()
                 worldRenderer.pos(minX, minY, maxZ).color(color.r, color.g, color.b, color.a).endVertex()
                 worldRenderer.pos(maxX, minY, maxZ).color(color.r, color.g, color.b, color.a).endVertex()
@@ -254,7 +216,7 @@ object RenderOptimizer : Module(
         GlStateManager.popMatrix()
     }
 
-    private fun getColor(entity: Entity): Color {
+    private fun getColor(entity: Entity): Color? {
         return when (entity.javaClass) {
             EntityCaveSpider::class.java -> caveSpiderColor
             EntitySpider::class.java -> spiderColor
@@ -290,7 +252,7 @@ object RenderOptimizer : Module(
             EntityXPOrb::class.java -> xpOrbColor
             EntityArmorStand::class.java -> armorStandColor
             EntityHorse::class.java -> horseColor
-            else -> Color.WHITE
+            else -> null
         }
     }
 
@@ -321,10 +283,11 @@ object RenderOptimizer : Module(
                 entity.lastTickPosZ = entity.posZ
             }
 
-            if (mobColors[entity.javaClass] == null) {
+            val color = getColor(entity)
+            if (color == null) {
                 mc.renderManager.renderEntitySimple(entity, partialTicks)
                 continue
-            } else renderList.add(entity)
+            } else renderList.add(Pair(entity, color))
         }
     }
 
