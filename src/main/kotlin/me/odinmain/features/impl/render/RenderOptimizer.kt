@@ -71,40 +71,41 @@ object RenderOptimizer : Module(
     private val potatoMode by BooleanSetting(name = "Potato Mode", description = "")
     private val editMobColors by DropdownSetting("Edit Mob Colors").withDependency { potatoMode }
 
-    private val caveSpiderColor by ColorSetting(name = "Cave Spider", default = Color(102, 0, 255), description = "").withDependency { potatoMode && editMobColors }
-    private val spiderColor by ColorSetting(name = "Spider", default = Color(102, 102, 102), description = "").withDependency { potatoMode && editMobColors }
-    private val pigColor by ColorSetting(name = "Pig", default = Color(255, 102, 255), description = "").withDependency { potatoMode && editMobColors }
-    private val sheepColor by ColorSetting(name = "Sheep", default = Color.WHITE, description = "").withDependency { potatoMode && editMobColors }
-    private val cowColor by ColorSetting(name = "Cow", default = Color(0, 255, 0), description = "").withDependency { potatoMode && editMobColors }
-    private val mooshroomColor by ColorSetting(name = "Mooshroom", default = Color.RED, description = "").withDependency { potatoMode && editMobColors }
-    private val wolfColor by ColorSetting(name = "Wolf", default = Color(128, 128, 128), description = "").withDependency { potatoMode && editMobColors }
-    private val chickenColor by ColorSetting(name = "Chicken", default = Color.YELLOW, description = "").withDependency { potatoMode && editMobColors }
-    private val ocelotColor by ColorSetting(name = "Ocelot", default = Color(255, 204, 0), description = "").withDependency { potatoMode && editMobColors }
-    private val rabbitColor by ColorSetting(name = "Rabbit", default = Color(245, 245, 220), description = "").withDependency { potatoMode && editMobColors }
-    private val silverfishColor by ColorSetting(name = "Silverfish", default = Color(179, 179, 179), description = "").withDependency { potatoMode && editMobColors }
-    private val endermiteColor by ColorSetting(name = "Endermite", default = Color(138, 43, 226), description = "").withDependency { potatoMode && editMobColors }
-    private val creeperColor by ColorSetting(name = "Creeper", default = Color(0, 255, 0), description = "").withDependency { potatoMode && editMobColors }
-    private val endermanColor by ColorSetting(name = "Enderman", default = Color(51, 0, 102), description = "").withDependency { potatoMode && editMobColors }
-    private val snowmanColor by ColorSetting(name = "Snowman", default = Color(240, 240, 240), description = "").withDependency { potatoMode && editMobColors }
-    private val skeletonColor by ColorSetting(name = "Skeleton", default = Color(51, 51, 51), description = "").withDependency { potatoMode && editMobColors }
-    private val witchColor by ColorSetting(name = "Witch", default = Color(128, 0, 128), description = "").withDependency { potatoMode && editMobColors }
-    private val blazeColor by ColorSetting(name = "Blaze", default = Color(255, 102, 0), description = "").withDependency { potatoMode && editMobColors }
-    private val pigZombieColor by ColorSetting(name = "Pig Zombie", default = Color(255, 0, 255), description = "").withDependency { potatoMode && editMobColors }
-    private val zombieColor by ColorSetting(name = "Zombie", default = Color(0, 255, 0), description = "").withDependency { potatoMode && editMobColors }
-    private val slimeColor by ColorSetting(name = "Slime", default = Color(0, 255, 0), description = "").withDependency { potatoMode && editMobColors }
-    private val magmaCubeColor by ColorSetting(name = "Magma Cube", default = Color(255, 51, 51), description = "").withDependency { potatoMode && editMobColors }
-    private val giantZombieColor by ColorSetting(name = "Giant Zombie", default = Color.RED, description = "").withDependency { potatoMode && editMobColors }
-    private val ghastColor by ColorSetting(name = "Ghast", default = Color(255, 0, 102), description = "").withDependency { potatoMode && editMobColors }
-    private val squidColor by ColorSetting(name = "Squid", default = Color.BLUE, description = "").withDependency { potatoMode && editMobColors }
-    private val villagerColor by ColorSetting(name = "Villager", default = Color(169, 169, 169), description = "").withDependency { potatoMode && editMobColors }
-    private val ironGolemColor by ColorSetting(name = "Iron Golem", default = Color(168, 168, 168), description = "").withDependency { potatoMode && editMobColors }
-    private val batColor by ColorSetting(name = "Bat", default = Color(79, 79, 79), description = "").withDependency { potatoMode && editMobColors }
-    private val guardianColor by ColorSetting(name = "Guardian", default = Color(0, 51, 255), description = "").withDependency { potatoMode && editMobColors }
-    private val dragonColor by ColorSetting(name = "Dragon", default = Color(102, 0, 204), description = "").withDependency { potatoMode && editMobColors }
-    private val witherColor by ColorSetting(name = "Wither", default = Color.BLACK, description = "").withDependency { potatoMode && editMobColors }
-    private val xpOrbColor by ColorSetting(name = "XP Orb", default = Color.YELLOW, description = "").withDependency { potatoMode && editMobColors }
-    private val armorStandColor by ColorSetting(name = "Armor Stand", default = Color(169, 169, 169), description = "").withDependency { potatoMode && editMobColors }
-    private val horseColor by ColorSetting(name = "Horse", default = Color(153, 102, 51), description = "").withDependency { potatoMode && editMobColors }
+    private val caveSpiderColor by ColorSetting(name = "Cave Spider", default = Color(102, 0, 255), allowAlpha = true, description = "").withDependency { potatoMode && editMobColors }
+    private val spiderColor by ColorSetting(name = "Spider", default = Color(102, 102, 102), allowAlpha = true, description = "").withDependency { potatoMode && editMobColors }
+    private val pigColor by ColorSetting(name = "Pig", default = Color(255, 102, 255), allowAlpha = true, description = "").withDependency { potatoMode && editMobColors }
+    private val sheepColor by ColorSetting(name = "Sheep", default = Color.WHITE, allowAlpha = true, description = "").withDependency { potatoMode && editMobColors }
+    private val cowColor by ColorSetting(name = "Cow", default = Color(0, 255, 0), allowAlpha = true, description = "").withDependency { potatoMode && editMobColors }
+    private val mooshroomColor by ColorSetting(name = "Mooshroom", default = Color.RED, allowAlpha = true, description = "").withDependency { potatoMode && editMobColors }
+    private val wolfColor by ColorSetting(name = "Wolf", default = Color(128, 128, 128), allowAlpha = true, description = "").withDependency { potatoMode && editMobColors }
+    private val chickenColor by ColorSetting(name = "Chicken", default = Color.YELLOW, allowAlpha = true, description = "").withDependency { potatoMode && editMobColors }
+    private val ocelotColor by ColorSetting(name = "Ocelot", default = Color(255, 204, 0), allowAlpha = true, description = "").withDependency { potatoMode && editMobColors }
+    private val rabbitColor by ColorSetting(name = "Rabbit", default = Color(245, 245, 220), allowAlpha = true, description = "").withDependency { potatoMode && editMobColors }
+    private val silverfishColor by ColorSetting(name = "Silverfish", default = Color(179, 179, 179), allowAlpha = true, description = "").withDependency { potatoMode && editMobColors }
+    private val endermiteColor by ColorSetting(name = "Endermite", default = Color(138, 43, 226), allowAlpha = true, description = "").withDependency { potatoMode && editMobColors }
+    private val creeperColor by ColorSetting(name = "Creeper", default = Color(0, 255, 0), allowAlpha = true, description = "").withDependency { potatoMode && editMobColors }
+    private val endermanColor by ColorSetting(name = "Enderman", default = Color(51, 0, 102), allowAlpha = true, description = "").withDependency { potatoMode && editMobColors }
+    private val snowmanColor by ColorSetting(name = "Snowman", default = Color(240, 240, 240), allowAlpha = true, description = "").withDependency { potatoMode && editMobColors }
+    private val skeletonColor by ColorSetting(name = "Skeleton", default = Color(51, 51, 51), allowAlpha = true, description = "").withDependency { potatoMode && editMobColors }
+    private val witchColor by ColorSetting(name = "Witch", default = Color(128, 0, 128), allowAlpha = true, description = "").withDependency { potatoMode && editMobColors }
+    private val blazeColor by ColorSetting(name = "Blaze", default = Color(255, 102, 0), allowAlpha = true, description = "").withDependency { potatoMode && editMobColors }
+    private val pigZombieColor by ColorSetting(name = "Pig Zombie", default = Color(255, 0, 255), allowAlpha = true, description = "").withDependency { potatoMode && editMobColors }
+    private val zombieColor by ColorSetting(name = "Zombie", default = Color(0, 255, 0), allowAlpha = true, description = "").withDependency { potatoMode && editMobColors }
+    private val slimeColor by ColorSetting(name = "Slime", default = Color(0, 255, 0), allowAlpha = true, description = "").withDependency { potatoMode && editMobColors }
+    private val magmaCubeColor by ColorSetting(name = "Magma Cube", default = Color(255, 51, 51), allowAlpha = true, description = "").withDependency { potatoMode && editMobColors }
+    private val giantZombieColor by ColorSetting(name = "Giant Zombie", default = Color.RED, allowAlpha = true, description = "").withDependency { potatoMode && editMobColors }
+    private val ghastColor by ColorSetting(name = "Ghast", default = Color(255, 0, 102), allowAlpha = true, description = "").withDependency { potatoMode && editMobColors }
+    private val squidColor by ColorSetting(name = "Squid", default = Color.BLUE, allowAlpha = true, description = "").withDependency { potatoMode && editMobColors }
+    private val villagerColor by ColorSetting(name = "Villager", default = Color(169, 169, 169), allowAlpha = true, description = "").withDependency { potatoMode && editMobColors }
+    private val ironGolemColor by ColorSetting(name = "Iron Golem", default = Color(168, 168, 168), allowAlpha = true, description = "").withDependency { potatoMode && editMobColors }
+    private val batColor by ColorSetting(name = "Bat", default = Color(79, 79, 79), allowAlpha = true, description = "").withDependency { potatoMode && editMobColors }
+    private val guardianColor by ColorSetting(name = "Guardian", default = Color(0, 51, 255), allowAlpha = true, description = "").withDependency { potatoMode && editMobColors }
+    private val dragonColor by ColorSetting(name = "Dragon", default = Color(102, 0, 204), allowAlpha = true, description = "").withDependency { potatoMode && editMobColors }
+    private val witherColor by ColorSetting(name = "Wither", default = Color.BLACK, allowAlpha = true, description = "").withDependency { potatoMode && editMobColors }
+    private val xpOrbColor by ColorSetting(name = "XP Orb", default = Color.YELLOW, allowAlpha = true, description = "").withDependency { potatoMode && editMobColors }
+    private val armorStandColor by ColorSetting(name = "Armor Stand", default = Color(169, 169, 169), allowAlpha = true, description = "").withDependency { potatoMode && editMobColors }
+    private val horseColor by ColorSetting(name = "Horse", default = Color(153, 102, 51), allowAlpha = true, description = "").withDependency { potatoMode && editMobColors }
+
 
     init {
         execute(500) {
@@ -270,12 +271,11 @@ object RenderOptimizer : Module(
         renderTileEntities(camera, partialTicks)
 
         for (entity in mc.theWorld.loadedEntityList) {
-            if (!(mc.renderManager.shouldRender(entity, camera, mc.renderManager.viewerPosX, mc.renderManager.viewerPosY, mc.renderManager.viewerPosZ) || entity.riddenByEntity == mc.thePlayer)) continue
-
             val shouldRender = (entity != mc.renderViewEntity || mc.gameSettings.thirdPersonView != 0 || (mc.renderViewEntity as? EntityLivingBase)?.isPlayerSleeping == true) &&
                     (entity.posY < 0.0 || entity.posY >= 256.0 || mc.theWorld.isBlockLoaded(BlockPos(entity)))
-
             if (!shouldRender) continue
+            if (!(mc.renderManager.shouldRender(entity, camera, mc.renderManager.viewerPosX, mc.renderManager.viewerPosY, mc.renderManager.viewerPosZ))) continue
+
             if (entity.ticksExisted == 0) {
                 entity.lastTickPosX = entity.posX
                 entity.lastTickPosY = entity.posY
