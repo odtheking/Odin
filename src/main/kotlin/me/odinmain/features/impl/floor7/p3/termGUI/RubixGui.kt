@@ -22,10 +22,8 @@ object RubixGui : TermGui() {
             roundedRectangle(-getTextWidth("Change all to same color!", 20f) / 2, -135, getTextWidth("Change all to same color!", 20f), 3, Color.WHITE, radius = 5f)
         }
         currentTerm.solution.toSet().forEach { pane ->
-            val slot = mc.thePlayer?.inventoryContainer?.inventorySlots?.get(pane) ?: return@forEach
-
-            val needed = currentTerm.solution.count {it == slot.slotIndex}
-            val adjusted = if (slot.slotIndex == currentTerm.clickedSlot?.first && currentTerm.clickedSlot?.second?.let { System.currentTimeMillis() - it < 600 } == true && hideClicked) when (needed) {
+            val needed = currentTerm.solution.count { it == pane }
+            val adjusted = if (pane == currentTerm.clickedSlot?.first && currentTerm.clickedSlot?.second?.let { System.currentTimeMillis() - it < 600 } == true && hideClicked) when (needed) {
                 3 -> 4
                 4 -> 0
                 else -> needed - 1

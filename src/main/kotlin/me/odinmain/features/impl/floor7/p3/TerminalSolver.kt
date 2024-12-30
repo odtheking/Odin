@@ -99,13 +99,6 @@ object TerminalSolver : Module(
     var lastTermOpened = Terminal(TerminalTypes.NONE)
     private var lastRubixSolution: Int? = null
 
-    fun canClick(slotIndex: Int, button: Int, needed: Int = currentTerm.solution.count { it == slotIndex }): Boolean = when {
-        slotIndex !in currentTerm.solution -> false
-        currentTerm.type == TerminalTypes.ORDER && slotIndex != currentTerm.solution.firstOrNull() -> false
-        currentTerm.type == TerminalTypes.RUBIX && ((needed < 3 && button != 0) || (needed >= 3 && button != 1)) -> false
-        else -> true
-    }
-
     init {
         onPacket(S2DPacketOpenWindow::class.java) { packet ->
             val windowName = packet.windowTitle?.formattedText?.noControlCodes ?: return@onPacket
@@ -242,7 +235,7 @@ object TerminalSolver : Module(
                 }
             }
             currentTerm.type == TerminalTypes.ORDER -> {
-                val index = if (currentTerm.clickedSlot?.second?.let { System.currentTimeMillis() - it < 600} == true && hideClicked) currentTerm.solution.indexOf(event.slot.slotIndex) -1 else currentTerm.solution.indexOf(event.slot.slotIndex)
+                val index = currentTerm.solution.indexOf(event.slot.slotIndex) + if (currentTerm.clickedSlot?.second?.let { System.currentTimeMillis() - it < 600 } == true && hideClicked) -1 else 0
                 if (index != -1) {
                     if (index < 3) {
                         val color = when (index) {
@@ -267,7 +260,6 @@ object TerminalSolver : Module(
                 }.rgba
                 Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, colorMelody)
             }
-
         }
         GlStateManager.enableLighting()
         translate(0f, 0f, -zLevel)
@@ -295,7 +287,7 @@ object TerminalSolver : Module(
                 event.isCanceled = true
                 return
             }
-            if (currentTerm.clickedSlot?.second?.let { System.currentTimeMillis() - it < 600} != true) currentTerm.clickedSlot = slotIndex to System.currentTimeMillis()
+            if (currentTerm.clickedSlot?.second?.let { System.currentTimeMillis() - it < 600 } != true) currentTerm.clickedSlot = slotIndex to System.currentTimeMillis()
         }
 
         if (middleClickGUI) {
@@ -322,9 +314,7 @@ object TerminalSolver : Module(
 
     init {
         onMessage(terminalActivatedRegex) { message ->
-            if (terminalActivatedRegex.find(message)?.groupValues?.get(1) == mc.thePlayer.name) {
-                TerminalEvent.Solved(lastTermOpened).postAndCatch()
-            }
+            if (terminalActivatedRegex.find(message)?.groupValues?.get(1) == mc.thePlayer.name) TerminalEvent.Solved(lastTermOpened).postAndCatch()
         }
     }
 
@@ -333,6 +323,13 @@ object TerminalSolver : Module(
         devMessage("§cLeft terminal: §6${currentTerm.type.name}")
         TerminalEvent.Closed(currentTerm).postAndCatch()
         currentTerm = Terminal(TerminalTypes.NONE)
+    }
+
+    fun canClick(slotIndex: Int, button: Int, needed: Int = currentTerm.solution.count { it == slotIndex }): Boolean = when {
+        slotIndex !in currentTerm.solution -> false
+        currentTerm.type == TerminalTypes.ORDER && slotIndex != currentTerm.solution.firstOrNull() -> false
+        currentTerm.type == TerminalTypes.RUBIX && ((needed < 3 && button != 0) || (needed >= 3 && button != 1)) -> false
+        else -> true
     }
 
     private val colorOrder = listOf(1, 4, 13, 11, 14)

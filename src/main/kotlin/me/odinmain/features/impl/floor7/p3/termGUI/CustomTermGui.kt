@@ -12,7 +12,6 @@ import me.odinmain.utils.render.scale
 import me.odinmain.utils.render.translate
 import me.odinmain.utils.skyblock.ClickType
 import me.odinmain.utils.skyblock.PlayerUtils.windowClick
-import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.client.gui.ScaledResolution
 
 object CustomTermGui {
@@ -35,10 +34,8 @@ abstract class TermGui {
 
     fun mouseClicked(x: Int, y: Int, button: Int) {
         itemIndexMap.entries.find { it.value.isPointWithin(x, y) }?.let { (slot, _) ->
-            if (System.currentTimeMillis() - currentTerm.timeOpened < 300) return
-            if (!canClick(slot , button)) return
-            if (GuiEvent.CustomTermGuiClick(slot , if (button == 0) 3 else 0, button).postAndCatch()) return
-            if (currentTerm.clickedSlot?.second?.let { System.currentTimeMillis() - it < 600} != true) currentTerm.clickedSlot = slot to System.currentTimeMillis()
+            if (System.currentTimeMillis() - currentTerm.timeOpened < 300 || !canClick(slot, button) || (GuiEvent.CustomTermGuiClick(slot, if (button == 0) 3 else 0, button).postAndCatch())) return
+            if (currentTerm.clickedSlot?.second?.let { System.currentTimeMillis() - it < 600 } != true) currentTerm.clickedSlot = slot to System.currentTimeMillis()
             windowClick(slot, if (button == 1) ClickType.Right else ClickType.Middle, true)
         }
     }

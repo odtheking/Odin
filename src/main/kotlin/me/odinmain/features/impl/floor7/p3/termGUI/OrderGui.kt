@@ -27,9 +27,8 @@ object OrderGui : TermGui() {
         currentTerm.solution.forEach { pane ->
             val row = pane / 9 - 1
             val col = pane % 9 - 2
-            val slot =  mc.thePlayer.openContainer.inventorySlots[pane]
-            val amount = slot?.stack?.stackSize ?: return@forEach
-            val index = if (currentTerm.clickedSlot?.second?.let { System.currentTimeMillis() - it < 600 } == true && hideClicked) currentTerm.solution.indexOf(slot.slotIndex) -1 else currentTerm.solution.indexOf(slot.slotIndex)
+            val amount = currentTerm.items[pane]?.stackSize ?: return@forEach
+            val index = if (currentTerm.clickedSlot?.second?.let { System.currentTimeMillis() - it < 600 } == true && hideClicked) currentTerm.solution.indexOf(pane) -1 else currentTerm.solution.indexOf(pane)
             if (index > -1 && index < 3) {
                 val color = when (index) {
                     0    -> orderColor
