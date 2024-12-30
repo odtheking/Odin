@@ -2,8 +2,10 @@ package me.odinmain.features.impl.floor7.p3.termGUI
 
 import me.odinmain.OdinMain.mc
 import me.odinmain.features.impl.floor7.p3.TerminalSolver
+import me.odinmain.features.impl.floor7.p3.TerminalSolver.currentTerm
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.customScale
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.gap
+import me.odinmain.features.impl.floor7.p3.TerminalSolver.hideClicked
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.orderColor
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.orderColor2
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.orderColor3
@@ -22,13 +24,13 @@ object OrderGui : TermGui() {
             text("Click in order!", 0, -113, Color.WHITE, 20, align = TextAlign.Middle, verticalAlign = TextPos.Top)
             roundedRectangle(-getTextWidth("Click in order!", 20f) / 2, -85, getTextWidth("Click in order!", 20f), 3, Color.WHITE, radius = 5f)
         }
-        TerminalSolver.currentTerm.solution.forEach { pane ->
+        currentTerm.solution.forEach { pane ->
             val row = pane / 9 - 1
             val col = pane % 9 - 2
-            val amount = mc.thePlayer.openContainer.inventorySlots[pane]?.stack?.stackSize ?: 0
-            if (amount == 0) return@forEach
-            val index = TerminalSolver.currentTerm.solution.indexOf(pane)
-            if (index < 3) {
+            val slot =  mc.thePlayer.openContainer.inventorySlots[pane]
+            val amount = slot?.stack?.stackSize ?: return@forEach
+            val index = if (currentTerm.clickedSlot?.second?.let { System.currentTimeMillis() - it < 600 } == true && hideClicked) currentTerm.solution.indexOf(slot.slotIndex) -1 else currentTerm.solution.indexOf(slot.slotIndex)
+            if (index > -1 && index < 3) {
                 val color = when (index) {
                     0    -> orderColor
                     1    -> orderColor2
@@ -43,7 +45,7 @@ object OrderGui : TermGui() {
                     box.h.toFloat() * customScale
                 )
             }
-            mcText(amount.toString(), -163 + col * 70 + 26f , -60 + row * 70 + (27f - (textScale*3) - (gap * 0.5)), 2 + textScale, TerminalSolver.textColor)
+            if (index != -1) mcText(amount.toString(), -163 + col * 70 + 26f , -60 + row * 70 + (27f - (textScale*3) - (gap * 0.5)), 2 + textScale, TerminalSolver.textColor)
         }
     }
 }

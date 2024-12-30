@@ -3,8 +3,8 @@ package me.odinmain.features.impl.floor7.p3.termGUI
 import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.GuiEvent
 import me.odinmain.features.impl.floor7.p3.TerminalSolver
+import me.odinmain.features.impl.floor7.p3.TerminalSolver.canClick
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.currentTerm
-import me.odinmain.features.impl.floor7.p3.TerminalTypes
 import me.odinmain.utils.postAndCatch
 import me.odinmain.utils.render.Box
 import me.odinmain.utils.render.isPointWithin
@@ -12,6 +12,7 @@ import me.odinmain.utils.render.scale
 import me.odinmain.utils.render.translate
 import me.odinmain.utils.skyblock.ClickType
 import me.odinmain.utils.skyblock.PlayerUtils.windowClick
+import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.client.gui.ScaledResolution
 
 object CustomTermGui {
@@ -20,43 +21,25 @@ object CustomTermGui {
         scale(1f / sr.scaleFactor, 1f / sr.scaleFactor)
         translate(mc.displayWidth / 2, mc.displayHeight / 2)
         scale(TerminalSolver.customScale, TerminalSolver.customScale)
-        when (currentTerm.type) {
-            TerminalTypes.PANES -> PanesGui.render()
-            TerminalTypes.RUBIX -> RubixGui.render()
-            TerminalTypes.ORDER -> OrderGui.render()
-            TerminalTypes.STARTS_WITH -> StartsWithGui.render()
-            TerminalTypes.SELECT -> SelectAllGui.render()
-            TerminalTypes.MELODY -> MelodyGui.render()
-            TerminalTypes.NONE -> {}
-        }
+        currentTerm.type.gui?.render()
         scale(1f / TerminalSolver.customScale, 1f / TerminalSolver.customScale)
         translate(-mc.displayWidth / 2, -mc.displayHeight / 2)
         scale(sr.scaleFactor, sr.scaleFactor)
     }
 
-    fun mouseClicked(x: Int, y: Int, button: Int) {
-        when (currentTerm.type) {
-            TerminalTypes.PANES -> PanesGui.mouseClicked(x, y, button)
-            TerminalTypes.RUBIX -> RubixGui.mouseClicked(x, y, button)
-            TerminalTypes.ORDER -> OrderGui.mouseClicked(x, y, button)
-            TerminalTypes.STARTS_WITH -> StartsWithGui.mouseClicked(x, y, button)
-            TerminalTypes.SELECT -> SelectAllGui.mouseClicked(x, y, button)
-            TerminalTypes.MELODY -> MelodyGui.mouseClicked(x, y, button)
-            TerminalTypes.NONE -> return
-        }
-    }
+    fun mouseClicked(x: Int, y: Int, button: Int) = currentTerm.type.gui?.mouseClicked(x, y, button)
 }
 
 abstract class TermGui {
     protected val itemIndexMap: MutableMap<Int, Box> = mutableMapOf()
 
     fun mouseClicked(x: Int, y: Int, button: Int) {
-        itemIndexMap.entries.find { it.value.isPointWithin(x, y) }?.let {
+        itemIndexMap.entries.find { it.value.isPointWithin(x, y) }?.let { (slot, _) ->
             if (System.currentTimeMillis() - currentTerm.timeOpened < 300) return
-            val needed = currentTerm.solution.count { slot -> slot == it.key }
-            if (currentTerm.type == TerminalTypes.RUBIX && ((needed < 3 && button != 0) || (needed >= 3 && button != 1))) return
-            if (GuiEvent.CustomTermGuiClick(it.key, if (button == 0) 3 else 0, button).postAndCatch()) return
-            windowClick(it.key, if (button == 1) ClickType.Right else ClickType.Middle, true)
+            if (!canClick(slot , button)) return
+            if (GuiEvent.CustomTermGuiClick(slot , if (button == 0) 3 else 0, button).postAndCatch()) return
+            if (currentTerm.clickedSlot?.second?.let { System.currentTimeMillis() - it < 600} != true) currentTerm.clickedSlot = slot to System.currentTimeMillis()
+            windowClick(slot, if (button == 1) ClickType.Right else ClickType.Middle, true)
         }
     }
 

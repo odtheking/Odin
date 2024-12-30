@@ -2,8 +2,10 @@ package me.odinmain.features.impl.floor7.p3.termGUI
 
 import me.odinmain.OdinMain.mc
 import me.odinmain.features.impl.floor7.p3.TerminalSolver
+import me.odinmain.features.impl.floor7.p3.TerminalSolver.currentTerm
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.customScale
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.gap
+import me.odinmain.features.impl.floor7.p3.TerminalSolver.hideClicked
 import me.odinmain.utils.render.*
 
 object StartsWithGui : TermGui() {
@@ -18,7 +20,11 @@ object StartsWithGui : TermGui() {
             text("What Starts With \"*\"?", 0, -163, Color.WHITE, 20, align = TextAlign.Middle, verticalAlign = TextPos.Top)
             roundedRectangle(-getTextWidth("What Starts With \"*\"?", 20f) / 2, -135, getTextWidth("What Starts With \"*\"?", 20f), 3, Color.WHITE, radius = 5f)
         }
-        TerminalSolver.currentTerm.solution.forEach { pane ->
+        currentTerm.solution.forEach { pane ->
+            if (hideClicked) {
+                val slot = mc.thePlayer?.inventoryContainer?.inventorySlots?.get(pane) ?: return@forEach
+                if (slot.slotIndex == currentTerm.clickedSlot?.first && currentTerm.clickedSlot?.second?.let { System.currentTimeMillis() - it < 600 } == true) return@forEach
+            }
             val row = pane / 9 - 1
             val col = pane % 9 - 2
             val box = BoxWithClass((-168 + ((gap -20).unaryPlus() * 0.5)) + col * 70, -115 + row * 70, 70 - gap, 70 - gap)
