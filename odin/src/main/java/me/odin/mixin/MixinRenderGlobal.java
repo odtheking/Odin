@@ -14,7 +14,6 @@ public class MixinRenderGlobal {
 
     @Inject(at = @At("HEAD"), method = "renderEntities", cancellable = true)
     public void renderEntities(Entity renderViewEntity, ICamera camera, float partialTicks, CallbackInfo ci) {
-        RenderOptimizer.INSTANCE.hookRenderEntities(renderViewEntity, camera, partialTicks, ci);
+        RenderOptimizer.hookRenderEntities(renderViewEntity, camera, partialTicks, ci);
     }
-
 }

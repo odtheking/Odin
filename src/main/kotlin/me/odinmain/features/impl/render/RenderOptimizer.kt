@@ -7,9 +7,7 @@ import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.features.settings.impl.DropdownSetting
-import me.odinmain.utils.containsOneOf
-import me.odinmain.utils.equalsOneOf
-import me.odinmain.utils.noControlCodes
+import me.odinmain.utils.*
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.RenderUtils.renderBoundingBox
 import me.odinmain.utils.render.RenderUtils.tessellator
@@ -160,7 +158,7 @@ object RenderOptimizer : Module(
     @SubscribeEvent
     fun renderEntities(event: RenderWorldLastEvent) {
         mc.mcProfiler.endStartSection("entities2")
-
+        startProfile("Potato entities")
         GlStateManager.pushMatrix()
         GlStateManager.disableCull()
         GlStateManager.enableAlpha()
@@ -214,6 +212,7 @@ object RenderOptimizer : Module(
         GlStateManager.enableTexture2D()
         GlStateManager.resetColor()
         GlStateManager.popMatrix()
+        endProfile()
     }
 
     private fun getColor(entity: Entity): Color? {
@@ -256,9 +255,9 @@ object RenderOptimizer : Module(
         }
     }
 
-
+    @JvmStatic
     fun hookRenderEntities(renderViewEntity: Entity, camera: ICamera, partialTicks: Float, ci: CallbackInfo) {
-        if (this.enabled && potatoMode) ci.cancel() else return
+        if (enabled && potatoMode) ci.cancel() else return
 
         if (MinecraftForgeClient.getRenderPass() != 0) return
 
