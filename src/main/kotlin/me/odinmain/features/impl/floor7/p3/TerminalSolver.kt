@@ -38,7 +38,6 @@ import net.minecraft.network.play.server.S2FPacketSetSlot
 import net.minecraftforge.event.entity.player.ItemTooltipEvent
 import net.minecraftforge.fml.common.Loader
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 import org.lwjgl.input.Keyboard
 import java.util.concurrent.CopyOnWriteArrayList
 
@@ -95,6 +94,7 @@ object TerminalSolver : Module(
     val melodyCorrectRowColor by ColorSetting("Melody Correct Row Color", Color.WHITE.withAlpha(0.75f), true, description = "Color of the whole row for melody.").withDependency { showColors && !cancelMelodySolver }
 
     data class Terminal(val type: TerminalTypes, val solution: CopyOnWriteArrayList<Int> = CopyOnWriteArrayList(), val items: Array<ItemStack?> = emptyArray(), val guiName: String = "", val timeOpened: Long = System.currentTimeMillis(), var clickedSlot: Pair<Int, Long>? = null)
+    private val terminalActivatedRegex = Regex("(.{1,16}) activated a terminal! \\((\\d)/(\\d)\\)")
     var currentTerm = Terminal(TerminalTypes.NONE)
         private set
     var lastTermOpened = Terminal(TerminalTypes.NONE)
@@ -168,6 +168,14 @@ object TerminalSolver : Module(
         onPacket(S2EPacketCloseWindow::class.java) {
             leftTerm()
         }
+
+        onMessage(terminalActivatedRegex) { message ->
+            if (terminalActivatedRegex.find(message)?.groupValues?.get(1) == mc.thePlayer.name) TerminalEvent.Solved(lastTermOpened).postAndCatch()
+        }
+
+        execute(50) {
+            if (enabled && currentTerm.clickedSlot?.second?.let { System.currentTimeMillis() - it > 600 } == true) currentTerm.clickedSlot = null
+        }
     }
 
     @SubscribeEvent
@@ -203,19 +211,26 @@ object TerminalSolver : Module(
     @SubscribeEvent
     fun drawSlot(event: GuiEvent.DrawSlot) {
         if (!enabled || renderType == 3 || currentTerm.type == TerminalTypes.NONE || (currentTerm.type == TerminalTypes.MELODY && cancelMelodySolver)) return
-        if (event.slot.slotIndex !in currentTerm.solution && event.slot.slotIndex <= (event.gui.inventorySlots?.inventorySlots?.size ?: 0) - 37 && getShouldBlockWrong() && event.slot.inventory !is InventoryPlayer) event.isCanceled = true
-        if (event.slot.slotIndex !in currentTerm.solution || event.slot.slotIndex > (event.gui.inventorySlots?.inventorySlots?.size ?: 0) - 37 || event.slot.inventory is InventoryPlayer) return
+
+        val slotIndex = event.slot.slotIndex
+        val inventorySize = event.gui.inventorySlots?.inventorySlots?.size ?: 0
+
+        if (slotIndex !in currentTerm.solution && slotIndex <= inventorySize - 37 && getShouldBlockWrong() && event.slot.inventory !is InventoryPlayer) event.isCanceled = true
+        if (slotIndex !in currentTerm.solution || slotIndex > inventorySize - 37 || event.slot.inventory is InventoryPlayer) return
+
         val zLevel = if (renderType == 2 && currentTerm.type.equalsOneOf(TerminalTypes.STARTS_WITH, TerminalTypes.SELECT)) 0f else 400f
 
         translate(0f, 0f, zLevel)
         GlStateManager.disableLighting()
         GlStateManager.enableDepth()
-        val cancel = event.slot.slotIndex == currentTerm.clickedSlot?.first && hideClicked
-        when {
-            currentTerm.type == TerminalTypes.PANES && renderType != 1 && !cancel -> Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, panesColor.rgba)
-            currentTerm.type == TerminalTypes.RUBIX -> {
-                val needed = currentTerm.solution.count { it == event.slot.slotIndex }
 
+        val cancel = slotIndex == currentTerm.clickedSlot?.first && hideClicked
+
+        when (currentTerm.type) {
+            TerminalTypes.PANES -> if (renderType != 1 && !cancel) Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, panesColor.rgba)
+
+            TerminalTypes.RUBIX -> {
+                val needed = currentTerm.solution.count { it == slotIndex }
                 val realNeeded = if (!cancel) needed else when (needed) {
                     3 -> 4
                     4 -> 0
@@ -235,7 +250,7 @@ object TerminalSolver : Module(
                     mcText(text.toString(), event.x + 8f - getMCTextWidth(text.toString()) / 2, event.y + 4.5, 1, textColor, center = false)
                 }
             }
-            currentTerm.type == TerminalTypes.ORDER -> {
+            TerminalTypes.ORDER -> {
                 val index = currentTerm.solution.indexOf(event.slot.slotIndex) + if (currentTerm.clickedSlot != null && hideClicked) -1 else 0
                 if (index != -1) {
                     if (index < 3) {
@@ -247,13 +262,14 @@ object TerminalSolver : Module(
                         Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, color)
                         event.isCanceled = true
                     }
-                    val amount = event.slot.stack?.stackSize ?: 0
-                    mcText(amount.toString(), event.x + 8.5f - getMCTextWidth(amount.toString()) / 2, event.y + 4.5f, 1, textColor, center = false)
+                    val amount = event.slot.stack?.stackSize?.toString() ?: ""
+                    mcText(amount, event.x + 8.5f - getMCTextWidth(amount) / 2, event.y + 4.5f, 1, textColor, center = false)
                 }
             }
-            currentTerm.type == TerminalTypes.STARTS_WITH && !cancel && (renderType != 1 || (renderType == 1 && !removeWrong)) -> Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, startsWithColor.rgba)
-            currentTerm.type == TerminalTypes.SELECT && !cancel && (renderType != 1 || (renderType == 1 && !removeWrong)) -> Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, startsWithColor.rgba)
-            currentTerm.type == TerminalTypes.MELODY && (renderType != 1 || (renderType == 1 && !removeWrong)) -> {
+            TerminalTypes.STARTS_WITH, TerminalTypes.SELECT ->
+                if (!cancel && (renderType != 1 || (renderType == 1 && !removeWrong))) Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, startsWithColor.rgba)
+
+            TerminalTypes.MELODY -> if (renderType != 1 || (renderType == 1 && !removeWrong)) {
                 val colorMelody = when {
                     event.slot.stack?.metadata == 5 && Item.getIdFromItem(event.slot.stack.item) == 160 -> melodyRowColor
                     event.slot.stack?.metadata == 2 && Item.getIdFromItem(event.slot.stack.item) == 160 -> melodyColumColor
@@ -261,6 +277,7 @@ object TerminalSolver : Module(
                 }.rgba
                 Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, colorMelody)
             }
+            TerminalTypes.NONE -> {}
         }
         GlStateManager.enableLighting()
         translate(0f, 0f, -zLevel)
@@ -309,19 +326,6 @@ object TerminalSolver : Module(
     @SubscribeEvent
     fun itemStack(event: GuiEvent.DrawSlotOverlay) {
         if (enabled && currentTerm.type == TerminalTypes.ORDER && (event.stack?.item?.registryName ?: return) == "minecraft:stained_glass_pane") event.isCanceled = true
-    }
-
-    @SubscribeEvent
-    fun onTick(event: ClientTickEvent) {
-        if (enabled && currentTerm.clickedSlot?.second?.let { System.currentTimeMillis() - it > 600 } == true) currentTerm.clickedSlot = null
-    }
-
-    private val terminalActivatedRegex = Regex("(.{1,16}) activated a terminal! \\((\\d)/(\\d)\\)")
-
-    init {
-        onMessage(terminalActivatedRegex) { message ->
-            if (terminalActivatedRegex.find(message)?.groupValues?.get(1) == mc.thePlayer.name) TerminalEvent.Solved(lastTermOpened).postAndCatch()
-        }
     }
 
     private fun leftTerm() {
