@@ -277,7 +277,7 @@ object TerminalSolver : Module(
                 }.rgba
                 Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, colorMelody)
             }
-            TerminalTypes.NONE -> {}
+            else -> {}
         }
         GlStateManager.enableLighting()
         translate(0f, 0f, -zLevel)
