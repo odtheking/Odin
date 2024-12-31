@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Pseudo
-@Mixin(targets = "gg.skytils.skytilsmod.features.impl.misc.Funny")
+@Mixin(targets = "gg.skytils.skytilsmod.features.impl.misc.Funny", remap = false)
 public class MixinSkytilsFunny {
     @Dynamic
     @Inject(method = "joinedSkyblock", at = @At("HEAD"), cancellable = true)
