@@ -21,7 +21,7 @@ object PanesGui : TermGui() {
             roundedRectangle(-getTextWidth("Correct All the Panes", 20f) / 2, -110, getTextWidth("Correct All the Panes", 20f), 3, Color.WHITE, radius = 5f)
         }
         currentTerm.solution.forEach { pane ->
-            if (hideClicked && pane == currentTerm.clickedSlot?.first && currentTerm.clickedSlot?.second?.let { System.currentTimeMillis() - it < 600 } == true) return@forEach
+            if (hideClicked && pane == currentTerm.clickedSlot?.first) return@forEach
             val row = pane / 9 - 1
             val col = pane % 9 - 2
             val box = BoxWithClass((-168 + ((gap - 20).unaryPlus() * 0.5)) + col * 70, -85 + row * 70, 70 - gap, 70 - gap)

@@ -28,7 +28,7 @@ object OrderGui : TermGui() {
             val row = pane / 9 - 1
             val col = pane % 9 - 2
             val amount = currentTerm.items[pane]?.stackSize ?: return@forEach
-            val index = if (currentTerm.clickedSlot?.second?.let { System.currentTimeMillis() - it < 600 } == true && hideClicked) currentTerm.solution.indexOf(pane) -1 else currentTerm.solution.indexOf(pane)
+            val index = if (currentTerm.clickedSlot != null && hideClicked) currentTerm.solution.indexOf(pane) -1 else currentTerm.solution.indexOf(pane)
             if (index > -1 && index < 3) {
                 val color = when (index) {
                     0    -> orderColor

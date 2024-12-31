@@ -23,7 +23,7 @@ object RubixGui : TermGui() {
         }
         currentTerm.solution.toSet().forEach { pane ->
             val needed = currentTerm.solution.count { it == pane }
-            val adjusted = if (pane == currentTerm.clickedSlot?.first && currentTerm.clickedSlot?.second?.let { System.currentTimeMillis() - it < 600 } == true && hideClicked) when (needed) {
+            val adjusted = if (pane == currentTerm.clickedSlot?.first && hideClicked) when (needed) {
                 3 -> 4
                 4 -> 0
                 else -> needed - 1

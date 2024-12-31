@@ -38,6 +38,7 @@ import net.minecraft.network.play.server.S2FPacketSetSlot
 import net.minecraftforge.event.entity.player.ItemTooltipEvent
 import net.minecraftforge.fml.common.Loader
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 import org.lwjgl.input.Keyboard
 import java.util.concurrent.CopyOnWriteArrayList
 
@@ -209,7 +210,7 @@ object TerminalSolver : Module(
         translate(0f, 0f, zLevel)
         GlStateManager.disableLighting()
         GlStateManager.enableDepth()
-        val cancel = event.slot.slotIndex == currentTerm.clickedSlot?.first && currentTerm.clickedSlot?.second?.let { System.currentTimeMillis() - it < 600 } == true && hideClicked
+        val cancel = event.slot.slotIndex == currentTerm.clickedSlot?.first && hideClicked
         when {
             currentTerm.type == TerminalTypes.PANES && renderType != 1 && !cancel -> Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, panesColor.rgba)
             currentTerm.type == TerminalTypes.RUBIX -> {
@@ -308,6 +309,11 @@ object TerminalSolver : Module(
     @SubscribeEvent
     fun itemStack(event: GuiEvent.DrawSlotOverlay) {
         if (enabled && currentTerm.type == TerminalTypes.ORDER && (event.stack?.item?.registryName ?: return) == "minecraft:stained_glass_pane") event.isCanceled = true
+    }
+
+    @SubscribeEvent
+    fun onTick(event: ClientTickEvent) {
+        if (enabled && currentTerm.clickedSlot?.second?.let { System.currentTimeMillis() - it > 600 } == true) currentTerm.clickedSlot = null
     }
 
     private val terminalActivatedRegex = Regex("(.{1,16}) activated a terminal! \\((\\d)/(\\d)\\)")

@@ -7,6 +7,7 @@ import me.odinmain.features.impl.floor7.p3.TerminalSolver.customScale
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.gap
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.hideClicked
 import me.odinmain.utils.render.*
+import me.odinmain.utils.skyblock.modMessage
 
 object StartsWithGui : TermGui() {
     override fun render() {
@@ -21,7 +22,7 @@ object StartsWithGui : TermGui() {
             roundedRectangle(-getTextWidth("What Starts With \"*\"?", 20f) / 2, -135, getTextWidth("What Starts With \"*\"?", 20f), 3, Color.WHITE, radius = 5f)
         }
         currentTerm.solution.forEach { pane ->
-            if (hideClicked && pane == currentTerm.clickedSlot?.first && currentTerm.clickedSlot?.second?.let { System.currentTimeMillis() - it < 600 } == true) return@forEach
+            if (hideClicked && pane == currentTerm.clickedSlot?.first) return@forEach
             val row = pane / 9 - 1
             val col = pane % 9 - 2
             val box = BoxWithClass((-168 + ((gap -20).unaryPlus() * 0.5)) + col * 70, -115 + row * 70, 70 - gap, 70 - gap)
