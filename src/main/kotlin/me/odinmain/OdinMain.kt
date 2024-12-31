@@ -71,6 +71,7 @@ object OdinMain {
             petCommand, visualWordsCommand, PosMsgCommand
         )
         OdinFont.init()
+        scope.launch(Dispatchers.IO) { DevPlayers.preloadCapes() }
     }
 
     fun postInit() {

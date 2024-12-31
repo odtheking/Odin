@@ -1,15 +1,18 @@
 package me.odinmain.features.impl.render
 
 
+import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonDeserializer
 import com.google.gson.JsonElement
-import kotlinx.coroutines.DelicateCoroutinesApi
+import com.google.gson.annotations.SerializedName
+import com.mojang.authlib.GameProfile
 import kotlinx.coroutines.runBlocking
 import me.odinmain.OdinMain.mc
 import me.odinmain.OdinMain.scope
 import me.odinmain.features.impl.render.ClickGUIModule.devSize
+import me.odinmain.utils.downloadFile
 import me.odinmain.utils.getDataFromServer
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.translate
@@ -17,11 +20,19 @@ import net.minecraft.client.entity.AbstractClientPlayer
 import net.minecraft.client.model.ModelBase
 import net.minecraft.client.model.ModelRenderer
 import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.client.renderer.texture.DynamicTexture
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.client.event.RenderPlayerEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import java.awt.image.BufferedImage
+import java.io.File
+import java.io.IOException
 import java.lang.reflect.Type
+import java.net.URL
+import javax.imageio.ImageIO
+import kotlin.io.encoding.Base64
+import kotlin.io.encoding.ExperimentalEncodingApi
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -30,7 +41,7 @@ object DevPlayers {
     val isDev get() = devs.containsKey(mc.session?.username)
 
     data class DevPlayer(val xScale: Float = 1f, val yScale: Float = 1f, val zScale: Float = 1f,
-                         val wings: Boolean = false, val wingsColor: Color = Color(255, 255, 255))
+                         val wings: Boolean = false, val wingsColor: Color = Color(255, 255, 255), var capeLocation: ResourceLocation? = null)
     data class DevData(val devName: String, val wingsColor: Triple<Int, Int, Int>, val size: Triple<Float, Float, Float>, val wings: Boolean)
 
     @Suppress("UNCHECKED_CAST")
@@ -98,10 +109,9 @@ object DevPlayers {
         DragonWings.renderWings(event.entityPlayer, event.partialRenderTick, dev)
     }
 
-    private val dragonWingTextureLocation = ResourceLocation("textures/entity/enderdragon/dragon.png")
-
     object DragonWings : ModelBase() {
 
+        private val dragonWingTextureLocation = ResourceLocation("textures/entity/enderdragon/dragon.png")
         private val wing: ModelRenderer
         private val wingTip: ModelRenderer
 
@@ -174,4 +184,85 @@ object DevPlayers {
             return f
         }
     }
+
+    val capeFolder = File(mc.mcDataDir, "config/odin/capes")
+    private val capeUpdateCache = mutableMapOf<String, Boolean>()
+    data class Capes(
+        @SerializedName("capes")
+        val capes: List<String>
+    )
+
+    @OptIn(ExperimentalEncodingApi::class)
+    fun preloadCapes() {
+        if (!capeFolder.exists()) capeFolder.mkdirs()
+
+        val capeList = fetchCapeList("https://odtheking.github.io/Odin/capes/capes.json")
+
+        capeList.forEach { fileName ->
+            val capeFile = File(capeFolder, fileName)
+            val capeUrl = "https://odtheking.github.io/Odin/capes/$fileName"
+
+            synchronized(capeUpdateCache) {
+                if (capeUpdateCache[fileName] != true) {
+                    if (!capeFile.exists() || !isFileUpToDate(capeUrl, capeFile)) {
+                        println("Downloading cape: $fileName")
+                        downloadFile(capeUrl, capeFile.path)
+                    }
+                    capeUpdateCache[fileName] = true
+                }
+            }
+        }
+    }
+
+    private fun fetchCapeList(manifestUrl: String): List<String> {
+        return try {
+            val json = URL(manifestUrl).readText()
+            val manifest = Gson().fromJson(json, Capes::class.java)
+            manifest.capes
+        } catch (e: IOException) {
+            e.printStackTrace()
+            emptyList()
+        }
+    }
+
+    @OptIn(ExperimentalEncodingApi::class)
+    fun hookGetLocationCape(gameProfile: GameProfile): ResourceLocation? {
+        val name = gameProfile.name
+        if (!devs.containsKey(name)) return null
+        val dev = devs[name]
+
+        val nameEncoded = Base64.encode(name.toByteArray())
+        val capeFile = File(capeFolder, "$nameEncoded.png")
+
+        return getCapeLocation(dev, capeFile)
+    }
+
+    private fun isFileUpToDate(url: String, file: File): Boolean {
+        try {
+            val connection = URL(url).openConnection()
+            connection.connect()
+            val remoteLastModified = connection.getHeaderFieldDate("Last-Modified", 0L)
+            val localLastModified = file.lastModified()
+            return localLastModified >= remoteLastModified
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+        return false
+    }
+
+    private fun getCapeLocation(dev: DevPlayer?, file: File): ResourceLocation? {
+        if (dev?.capeLocation == null && file.exists()) {
+            var image: BufferedImage? = null
+            try {
+                image = ImageIO.read(file)
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+
+            val capeLocation = mc.textureManager.getDynamicTextureLocation("odincapes", DynamicTexture(image))
+            dev?.capeLocation = capeLocation
+        }
+        return dev?.capeLocation
+    }
+
 }

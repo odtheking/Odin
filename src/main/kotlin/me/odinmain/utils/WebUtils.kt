@@ -7,7 +7,9 @@ import kotlinx.coroutines.withTimeoutOrNull
 import me.odinmain.OdinMain.logger
 import me.odinmain.features.impl.render.DevPlayers
 import java.io.BufferedReader
+import java.io.File
 import java.io.FileOutputStream
+import java.io.InputStream
 import java.io.InputStreamReader
 import java.io.OutputStreamWriter
 import java.net.HttpURLConnection
@@ -116,22 +118,21 @@ fun fetchURLData(url: String): String {
 }
 
 fun downloadFile(url: String, outputPath: String) {
-    val wrappedURL = URL(url)
-    val connection = wrappedURL.openConnection()
+    val url = URL(url)
+    val connection = url.openConnection()
     connection.connect()
 
-    val inputStream = connection.getInputStream()
-    val outputStream = FileOutputStream(outputPath)
+    val inputStream: InputStream = connection.getInputStream()
+    val outputFile = File(outputPath)
 
-    val buffer = ByteArray(1024)
-    var bytesRead: Int
+    outputFile.parentFile?.mkdirs()
 
-    while (inputStream.read(buffer).also { bytesRead = it } != -1) {
-        outputStream.write(buffer, 0, bytesRead)
+    val outputStream = FileOutputStream(outputFile)
+    inputStream.use { input ->
+        outputStream.use { output ->
+            input.copyTo(output)
+        }
     }
-
-    outputStream.close()
-    inputStream.close()
 }
 
 suspend fun hasBonusPaulScore(): Boolean = withTimeoutOrNull(5000) {
