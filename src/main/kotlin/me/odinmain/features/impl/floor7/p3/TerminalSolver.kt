@@ -236,7 +236,7 @@ object TerminalSolver : Module(
                 }
             }
             currentTerm.type == TerminalTypes.ORDER -> {
-                val index = currentTerm.solution.indexOf(event.slot.slotIndex) + if (currentTerm.clickedSlot?.second?.let { System.currentTimeMillis() - it < 600 } == true && hideClicked) -1 else 0
+                val index = currentTerm.solution.indexOf(event.slot.slotIndex) + if (currentTerm.clickedSlot != null && hideClicked) -1 else 0
                 if (index != -1) {
                     if (index < 3) {
                         val color = when (index) {
