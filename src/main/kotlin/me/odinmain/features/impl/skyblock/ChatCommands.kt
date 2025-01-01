@@ -51,7 +51,7 @@ object ChatCommands : Module(
     private val promote by BooleanSetting(name = "Promote", default = false, description = "Executes the /party promote command.").withDependency { showSettings }
     private val location by BooleanSetting(name = "Location", default = true, description = "Sends your current location.").withDependency { showSettings }
     private val holding by BooleanSetting(name = "Holding", default = true, description = "Sends the item you are holding.").withDependency { showSettings }
-
+    private val kick by BooleanSetting(name = "Kick", default = true, description = "Executes the /p kick command.").withDependency { showSettings }
     private var dtPlayer: String? = null
     private val dtReason = mutableListOf<Pair<String, String>>()
     val blacklist: MutableList<String> by ListSetting("Blacklist", mutableListOf())
@@ -92,7 +92,7 @@ object ChatCommands : Module(
     private fun handleChatCommands(message: String, name: String, channel: ChatChannel) {
         val commandsMap = when (channel) {
             ChatChannel.PARTY -> mapOf (
-                "coords" to coords, "odin" to odin, "boop" to boop, "cf" to cf, "8ball" to eightball, "dice" to dice, "racism" to racism, "tps" to tps, "warp" to warp,
+                "coords" to coords, "odin" to odin, "boop" to boop, "cf" to cf, "kick" to kick, "8ball" to eightball, "dice" to dice, "racism" to racism, "tps" to tps, "warp" to warp,
                 "warptransfer" to warptransfer, "allinvite" to allinvite, "pt" to pt, "dt" to dt, "m?" to queInstance, "f?" to queInstance, "t?" to queInstance, "time" to time,
                 "demote" to demote, "promote" to promote
             )
@@ -106,6 +106,7 @@ object ChatCommands : Module(
             "coords", "co" -> if (coords) channelMessage(PlayerUtils.getPositionString(), name, channel)
             "odin", "od" -> if (odin) channelMessage("Odin! https://discord.gg/2nCbC9hkxT", name, channel)
             "boop" -> if (boop) sendChatMessage("/boop ${message.substringAfter("boop ")}")
+            "kick" -> if (kick) sendCommand("p ${message.substringAfter("kick ")}")
             "cf" -> if (cf) channelMessage(if (Math.random() < 0.5) "heads" else "tails", name, channel)
             "8ball" -> if (eightball) channelMessage(responses.random(), name, channel)
             "dice" -> if (dice) channelMessage((1..6).random(), name, channel)
