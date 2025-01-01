@@ -300,12 +300,11 @@ object TerminalSolver : Module(
 
         val slotIndex = (event.gui as? GuiChest)?.slotUnderMouse?.slotIndex ?: return
 
-        if (currentTerm.type != TerminalTypes.MELODY) {
-            if (!canClick(slotIndex, event.button) && blockIncorrectClicks) {
-                event.isCanceled = true
-                return
-            }
+        if (canClick(slotIndex, event.button)) {
             if (currentTerm.clickedSlot?.second?.let { System.currentTimeMillis() - it < 600 } != true) currentTerm.clickedSlot = slotIndex to System.currentTimeMillis()
+        } else if (blockIncorrectClicks) {
+            event.isCanceled = true
+            return
         }
 
         if (middleClickGUI) {
@@ -336,6 +335,7 @@ object TerminalSolver : Module(
     }
 
     fun canClick(slotIndex: Int, button: Int, needed: Int = currentTerm.solution.count { it == slotIndex }): Boolean = when {
+        currentTerm.type == TerminalTypes.MELODY -> true
         slotIndex !in currentTerm.solution -> false
         currentTerm.type == TerminalTypes.ORDER && slotIndex != currentTerm.solution.firstOrNull() -> false
         currentTerm.type == TerminalTypes.RUBIX && ((needed < 3 && button != 0) || (needed >= 3 && button != 1)) -> false
