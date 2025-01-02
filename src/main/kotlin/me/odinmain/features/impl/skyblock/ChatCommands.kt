@@ -52,7 +52,6 @@ object ChatCommands : Module(
     private val location by BooleanSetting(name = "Location", default = true, description = "Sends your current location.").withDependency { showSettings }
     private val holding by BooleanSetting(name = "Holding", default = true, description = "Sends the item you are holding.").withDependency { showSettings }
 
-    private var dtPlayer: String? = null
     private val dtReason = mutableListOf<Pair<String, String>>()
     val blacklist: MutableList<String> by ListSetting("Blacklist", mutableListOf())
 
@@ -134,7 +133,6 @@ object ChatCommands : Module(
                 modMessage("§aReminder set for the end of the run! §7(disabled auto requeue for this run)")
                 dtReason.add(name to reason)
                 disableRequeue = true
-                dtPlayer = name
             }
             "undowntime", "undt" -> {
                 if (!dt || channel != ChatChannel.PARTY) return

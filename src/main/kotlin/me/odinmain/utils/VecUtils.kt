@@ -179,6 +179,9 @@ private fun isInterceptable3(start: Vec3, goal: Vec3, aabb: AxisAlignedBB): Bool
     } catch (_: Exception) { false }
 }
 
+fun isVecInAABB(vec: Vec3, aabb: AxisAlignedBB): Boolean =
+    vec.xCoord in aabb.minX..aabb.maxX && vec.yCoord in aabb.minY..aabb.maxY && vec.zCoord in aabb.minZ..aabb.maxZ
+
 /**
  * Checks if a Vec3 is within the YZ bounds of an axis-aligned bounding box (AABB).
  *
