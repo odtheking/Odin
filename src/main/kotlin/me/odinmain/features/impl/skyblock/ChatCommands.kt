@@ -151,13 +151,14 @@ object ChatCommands : Module(
             }
             "demote" -> if (demote && channel == ChatChannel.PARTY) sendCommand("p demote $name")
             "promote" -> if (promote && channel == ChatChannel.PARTY) sendCommand("p promote $name")
-            "kick", "k" -> if (kick && channel == ChatChannel.PARTY) sendCommand("p kick ${message.substringAfter("kick ")}
+            "kick", "k" -> if (kick && channel == ChatChannel.PARTY) sendCommand("p kick ${message.substringAfter("kick ")}")
+
             // Private cmds only
             "invite", "inv" -> if (invite && channel == ChatChannel.PRIVATE) {
                 modMessage("§aClick on this message to invite $name to your party!", chatStyle = createClickStyle(ClickEvent.Action.RUN_COMMAND, "/party invite $name"))
                 PlayerUtils.playLoudSound("note.pling", 100f, 1f)
             }
-        }-
+        }
     }
 
     @SubscribeEvent
