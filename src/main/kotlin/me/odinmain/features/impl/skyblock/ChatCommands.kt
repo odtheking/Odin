@@ -110,7 +110,6 @@ object ChatCommands : Module(
             "cf" -> if (cf) channelMessage(if (Math.random() < 0.5) "heads" else "tails", name, channel)
             "8ball" -> if (eightball) channelMessage(responses.random(), name, channel)
             "dice" -> if (dice) channelMessage((1..6).random(), name, channel)
-            "kick" -> if (kick) sendCommand("p kick ${message.substringAfter("kick ")}")
             "racism" -> if (racism) channelMessage("$name is ${Random.nextInt(1, 101)}% racist. Racism is not allowed!", name, channel)
             "ping" -> if (ping) channelMessage("Current Ping: ${floor(ServerUtils.averagePing).toInt()}ms", name, channel)
             "tps" -> if (tps) channelMessage("Current TPS: ${ServerUtils.averageTps.floor()}", name, channel)
@@ -152,13 +151,13 @@ object ChatCommands : Module(
             }
             "demote" -> if (demote && channel == ChatChannel.PARTY) sendCommand("p demote $name")
             "promote" -> if (promote && channel == ChatChannel.PARTY) sendCommand("p promote $name")
-
+            "kick", "k" -> if (kick && channel == ChatChannel.PARTY) sendCommand("p kick ${message.substringAfter("kick ")}
             // Private cmds only
             "invite", "inv" -> if (invite && channel == ChatChannel.PRIVATE) {
                 modMessage("§aClick on this message to invite $name to your party!", chatStyle = createClickStyle(ClickEvent.Action.RUN_COMMAND, "/party invite $name"))
                 PlayerUtils.playLoudSound("note.pling", 100f, 1f)
             }
-        }
+        }-
     }
 
     @SubscribeEvent
