@@ -210,7 +210,8 @@ object ChatCommands : Module(
         ":dab:" to "<o/",
         ":cat:" to "= ＾● ⋏ ●＾ =",
         ":cute:" to "(✿◠‿◠)",
-        ":skull:" to "☠"
+        ":skull:" to "☠",
+        ":bum:" to "♿"
     )
 
     private fun isInBlacklist(name: String) =
