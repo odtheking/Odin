@@ -1,9 +1,6 @@
 package me.odinmain
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import me.odinmain.commands.impl.*
 import me.odinmain.commands.registerCommands
 import me.odinmain.config.Config
@@ -44,7 +41,7 @@ object OdinMain {
     val mc: Minecraft = Minecraft.getMinecraft()
 
     const val VERSION = "@VER@"
-    val scope = CoroutineScope(EmptyCoroutineContext)
+    val scope = CoroutineScope(SupervisorJob() + EmptyCoroutineContext)
     val logger: Logger = LogManager.getLogger("Odin")
 
     var display: GuiScreen? = null

@@ -2,8 +2,10 @@ package me.odinmain.features.impl.floor7.p3.termGUI
 
 import me.odinmain.OdinMain.mc
 import me.odinmain.features.impl.floor7.p3.TerminalSolver
+import me.odinmain.features.impl.floor7.p3.TerminalSolver.currentTerm
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.customScale
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.gap
+import me.odinmain.features.impl.floor7.p3.TerminalSolver.hideClicked
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.textScale
 import me.odinmain.utils.render.*
 
@@ -19,22 +21,31 @@ object RubixGui : TermGui() {
             text("Change all to same color!", 0, -163, Color.WHITE, 20, align = TextAlign.Middle, verticalAlign = TextPos.Top)
             roundedRectangle(-getTextWidth("Change all to same color!", 20f) / 2, -135, getTextWidth("Change all to same color!", 20f), 3, Color.WHITE, radius = 5f)
         }
-        TerminalSolver.currentTerm.solution.forEach { pane ->
-            val slot = mc.thePlayer?.inventoryContainer?.inventorySlots?.get(pane) ?: return@forEach
-            val needed = TerminalSolver.currentTerm.solution.count {it == slot.slotIndex}
-            val text = if (needed < 3) needed else (needed - 5)
+        currentTerm.solution.toSet().forEach { pane ->
+            val needed = currentTerm.solution.count { it == pane }
+            val adjusted = if (pane == currentTerm.clickedSlot?.first && hideClicked) when (needed) {
+                3 -> 4
+                4 -> 0
+                else -> needed - 1
+            } else needed
+
+            val text = if (needed < 3) adjusted else (adjusted - 5)
 
             val row = pane / 9 - 1
             val col = pane % 9 - 2
             val box = BoxWithClass((-168 + ((gap -20).unaryPlus() * 0.5)) + col * 70, -110 + row * 70, 70 - gap, 70 - gap)
-            val color = when {
-                needed < 3 && text == 2 -> TerminalSolver.rubixColor2
-                needed < 3 && text == 1 -> TerminalSolver.rubixColor1
-                text == -2 -> TerminalSolver.oppositeRubixColor2
-                else -> TerminalSolver.oppositeRubixColor1
+
+            if (adjusted != 0) {
+                val color = when (text) {
+                    2 -> TerminalSolver.rubixColor2
+                    1 -> TerminalSolver.rubixColor1
+                    -2 -> TerminalSolver.oppositeRubixColor2
+                    else -> TerminalSolver.oppositeRubixColor1
+                }
+                roundedRectangle(box, color)
+                mcText(text.toString(), -168 + col * 70 + 26f , -110 + row * 70 + (27f - (textScale*3) - (gap * 0.5)), 2 + textScale, Color.WHITE)
             }
-            roundedRectangle(box, color)
-            mcText(text.toString(), -168 + col * 70 + 26f , -110 + row * 70 + (27f - (textScale*3) - (gap * 0.5)), 2 + textScale, Color.WHITE)
+            
             itemIndexMap[pane] = Box(
                 box.x.toFloat() * customScale + mc.displayWidth / 2,
                 box.y.toFloat() * customScale + mc.displayHeight / 2,

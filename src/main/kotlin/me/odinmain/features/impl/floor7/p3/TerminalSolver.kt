@@ -51,6 +51,7 @@ object TerminalSolver : Module(
     val customGuiText by SelectorSetting("Custom Gui Title", "Top Left", arrayListOf("Top Left", "Middle", "Disabled"), description = "Where the custom gui text should be rendered.").withDependency { renderType == 3 }
     val customScale by NumberSetting("Custom Scale", 1f, .8f, 2.5f, .1f, description = "Size of the Custom Terminal Gui.").withDependency { renderType == 3 }
     private val cancelToolTip by BooleanSetting("Stop Tooltips", true, description = "Stops rendering tooltips in terminals.").withDependency { renderType != 3 }
+    val hideClicked by BooleanSetting("Hide Clicked", false, description = "Visually hides your first click before a gui updates instantly to improve perceived response time. Does not affect actual click time.")
     private val middleClickGUI by BooleanSetting("Middle Click GUI", true, description = "Replaces right click with middle click in terminals.").withDependency { renderType != 3 }
     private val blockIncorrectClicks by BooleanSetting("Block Incorrect Clicks", true, description = "Blocks incorrect clicks in terminals.").withDependency { renderType != 3 }
     private val cancelMelodySolver by BooleanSetting("Stop Melody Solver", false, description = "Stops rendering the melody solver.")
@@ -91,7 +92,8 @@ object TerminalSolver : Module(
     val melodyPressColor by ColorSetting("Melody Press Color", Color.CYAN.withAlpha(0.75f), true, description = "Color of the location for pressing for melody.").withDependency { showColors && !cancelMelodySolver }
     val melodyCorrectRowColor by ColorSetting("Melody Correct Row Color", Color.WHITE.withAlpha(0.75f), true, description = "Color of the whole row for melody.").withDependency { showColors && !cancelMelodySolver }
 
-    data class Terminal(val type: TerminalTypes, val solution: CopyOnWriteArrayList<Int> = CopyOnWriteArrayList(), val items: Array<ItemStack?> = emptyArray(), val guiName: String = "", val timeOpened: Long = System.currentTimeMillis())
+    data class Terminal(val type: TerminalTypes, val solution: CopyOnWriteArrayList<Int> = CopyOnWriteArrayList(), val items: Array<ItemStack?> = emptyArray(), val guiName: String = "", val timeOpened: Long = System.currentTimeMillis(), var clickedSlot: Pair<Int, Long>? = null)
+    private val terminalActivatedRegex = Regex("(.{1,16}) activated a terminal! \\((\\d)/(\\d)\\)")
     var currentTerm = Terminal(TerminalTypes.NONE)
         private set
     var lastTermOpened = Terminal(TerminalTypes.NONE)
@@ -115,6 +117,7 @@ object TerminalSolver : Module(
         onPacket(S2FPacketSetSlot::class.java) { event ->
             if (currentTerm.type == TerminalTypes.NONE || event.func_149173_d() !in 0 until currentTerm.type.size || event.func_149174_e() == null) return@onPacket
             currentTerm.apply {
+                clickedSlot = null
                 items[event.func_149173_d()] = event.func_149174_e()
                 when (type) {
                     TerminalTypes.PANES -> {
@@ -152,7 +155,7 @@ object TerminalSolver : Module(
                         solution.clear()
                         solution.addAll(solveMelody(items))
                     }
-                    else -> return@onPacket modMessage("This shouldn't be impossible, please report this!")
+                    else -> return@onPacket modMessage("This shouldn't be possible, please report this!")
                 }
             }
         }
@@ -163,6 +166,14 @@ object TerminalSolver : Module(
 
         onPacket(S2EPacketCloseWindow::class.java) {
             leftTerm()
+        }
+
+        onMessage(terminalActivatedRegex) { message ->
+            if (terminalActivatedRegex.find(message)?.groupValues?.get(1) == mc.thePlayer.name) TerminalEvent.Solved(lastTermOpened).postAndCatch()
+        }
+
+        execute(50) {
+            if (enabled && currentTerm.clickedSlot?.second?.let { System.currentTimeMillis() - it > 600 } == true) currentTerm.clickedSlot = null
         }
     }
 
@@ -199,58 +210,72 @@ object TerminalSolver : Module(
     @SubscribeEvent
     fun drawSlot(event: GuiEvent.DrawSlot) {
         if (!enabled || renderType == 3 || currentTerm.type == TerminalTypes.NONE || (currentTerm.type == TerminalTypes.MELODY && cancelMelodySolver)) return
-        if (event.slot.slotIndex !in currentTerm.solution && event.slot.slotIndex <= (event.gui.inventorySlots?.inventorySlots?.size ?: 0) - 37 && getShouldBlockWrong() && event.slot.inventory !is InventoryPlayer) event.isCanceled = true
-        if (event.slot.slotIndex !in currentTerm.solution || event.slot.slotIndex > (event.gui.inventorySlots?.inventorySlots?.size ?: 0) - 37 || event.slot.inventory is InventoryPlayer) return
+
+        val slotIndex = event.slot.slotIndex
+        val inventorySize = event.gui.inventorySlots?.inventorySlots?.size ?: 0
+
+        if (slotIndex !in currentTerm.solution && slotIndex <= inventorySize - 37 && getShouldBlockWrong() && event.slot.inventory !is InventoryPlayer) event.isCanceled = true
+        if (slotIndex !in currentTerm.solution || slotIndex > inventorySize - 37 || event.slot.inventory is InventoryPlayer) return
+
         val zLevel = if (renderType == 2 && currentTerm.type.equalsOneOf(TerminalTypes.STARTS_WITH, TerminalTypes.SELECT)) 0f else 400f
 
         translate(0f, 0f, zLevel)
         GlStateManager.disableLighting()
         GlStateManager.enableDepth()
+
+        val cancel = slotIndex == currentTerm.clickedSlot?.first && hideClicked
+
         when (currentTerm.type) {
-            TerminalTypes.PANES ->  if (renderType != 1) Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, panesColor.rgba)
+            TerminalTypes.PANES -> if (renderType != 1 && !cancel) Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, panesColor.rgba)
 
             TerminalTypes.RUBIX -> {
-                val needed = currentTerm.solution.count { it == event.slot.slotIndex }
-                val text = if (needed < 3) needed else (needed - 5)
-                val color = when {
-                    needed < 3 && text == 2 -> rubixColor2
-                    needed < 3 && text == 1 -> rubixColor1
-                    text == -2 -> oppositeRubixColor2
-                    else -> oppositeRubixColor1
+                val needed = currentTerm.solution.count { it == slotIndex }
+                val realNeeded = if (!cancel) needed else when (needed) {
+                    3 -> 4
+                    4 -> 0
+                    else -> needed - 1
                 }
 
-                if (renderType != 1) Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, color.rgba)
-                mcText(text.toString(), event.x + 8f - getMCTextWidth(text.toString()) / 2, event.y + 4.5, 1, Color.WHITE, center = false)
+
+                if (realNeeded != 0 && renderType != -1) {
+                    val text = if (needed < 3) realNeeded else (realNeeded - 5)
+                    val color = when (text) {
+                        2 -> rubixColor2
+                        1 -> rubixColor1
+                        -2 -> oppositeRubixColor2
+                        else -> oppositeRubixColor1
+                    }
+
+                    if (renderType != 1) Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, color.rgba)
+                    mcText(text.toString(), event.x + 8f - getMCTextWidth(text.toString()) / 2, event.y + 4.5, 1, Color.WHITE, center = false)
+                }
             }
             TerminalTypes.ORDER -> {
-                val index = currentTerm.solution.indexOf(event.slot.slotIndex)
-                if (index < 3) {
-                    val color = when (index) {
-                        0 -> orderColor
-                        1 -> orderColor2
-                        else -> orderColor3
-                    }.rgba
-                    Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, color)
-                    event.isCanceled = true
+                val index = currentTerm.solution.indexOf(event.slot.slotIndex) + if (currentTerm.clickedSlot != null && hideClicked) -1 else 0
+                if (index != -1) {
+                    if (index < 3) {
+                        val color = when (index) {
+                            0 -> orderColor
+                            1 -> orderColor2
+                            else -> orderColor3
+                        }.rgba
+                        Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, color)
+                        event.isCanceled = true
+                    }
+                    val amount = event.slot.stack?.stackSize?.toString() ?: ""
+                    mcText(amount, event.x + 8.5f - getMCTextWidth(amount) / 2, event.y + 4.5f, 1, Color.WHITE, center = false)
                 }
-                val amount = event.slot.stack?.stackSize ?: 0
-                mcText(amount.toString(), event.x + 8.5f - getMCTextWidth(amount.toString()) / 2, event.y + 4.5f, 1, Color.WHITE, center = false)
             }
-            TerminalTypes.STARTS_WITH ->
-                if (renderType != 1 || (renderType == 1 && !removeWrong)) Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, startsWithColor.rgba)
+            TerminalTypes.STARTS_WITH, TerminalTypes.SELECT ->
+                if (!cancel && (renderType != 1 || (renderType == 1 && !removeWrong))) Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, startsWithColor.rgba)
 
-            TerminalTypes.SELECT ->
-                if (renderType != 1 || (renderType == 1 && !removeWrong)) Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, startsWithColor.rgba)
-
-            TerminalTypes.MELODY -> {
-                if (renderType != 1 || (renderType == 1 && !removeWrong)) {
-                    val colorMelody = when {
-                        event.slot.stack?.metadata == 5 && Item.getIdFromItem(event.slot.stack.item) == 160 -> melodyRowColor
-                        event.slot.stack?.metadata == 2 && Item.getIdFromItem(event.slot.stack.item) == 160 -> melodyColumColor
-                        else -> melodyPressColor
-                    }.rgba
-                    Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, colorMelody)
-                }
+            TerminalTypes.MELODY -> if (renderType != 1 || (renderType == 1 && !removeWrong)) {
+                val colorMelody = when {
+                    event.slot.stack?.metadata == 5 && Item.getIdFromItem(event.slot.stack.item) == 160 -> melodyRowColor
+                    event.slot.stack?.metadata == 2 && Item.getIdFromItem(event.slot.stack.item) == 160 -> melodyColumColor
+                    else -> melodyPressColor
+                }.rgba
+                Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, colorMelody)
             }
             else -> {}
         }
@@ -275,17 +300,11 @@ object TerminalSolver : Module(
 
         val slotIndex = (event.gui as? GuiChest)?.slotUnderMouse?.slotIndex ?: return
 
-        if (blockIncorrectClicks && currentTerm.type != TerminalTypes.MELODY) {
-            val needed = currentTerm.solution.count { it == slotIndex }
-            when {
-                slotIndex !in currentTerm.solution -> true
-                currentTerm.type == TerminalTypes.ORDER && slotIndex != currentTerm.solution.firstOrNull() -> true
-                currentTerm.type == TerminalTypes.RUBIX && ((needed < 3 && event.button != 0) || (needed >= 3 && event.button != 1)) -> true
-                else -> false
-            }.takeIf { it }?.let {
-                event.isCanceled = true
-                return
-            }
+        if (canClick(slotIndex, event.button)) {
+            if (currentTerm.clickedSlot?.second?.let { System.currentTimeMillis() - it < 600 } != true) currentTerm.clickedSlot = slotIndex to System.currentTimeMillis()
+        } else if (blockIncorrectClicks) {
+            event.isCanceled = true
+            return
         }
 
         if (middleClickGUI) {
@@ -308,21 +327,19 @@ object TerminalSolver : Module(
         if (enabled && currentTerm.type == TerminalTypes.ORDER && (event.stack?.item?.registryName ?: return) == "minecraft:stained_glass_pane") event.isCanceled = true
     }
 
-    private val terminalActivatedRegex = Regex("(.{1,16}) activated a terminal! \\((\\d)/(\\d)\\)")
-
-    init {
-        onMessage(terminalActivatedRegex) { message ->
-            if (terminalActivatedRegex.find(message)?.groupValues?.get(1) == mc.thePlayer.name) {
-                TerminalEvent.Solved(lastTermOpened).postAndCatch()
-            }
-        }
-    }
-
     private fun leftTerm() {
         if (currentTerm.type == TerminalTypes.NONE) return
         devMessage("§cLeft terminal: §6${currentTerm.type.name}")
         TerminalEvent.Closed(currentTerm).postAndCatch()
         currentTerm = Terminal(TerminalTypes.NONE)
+    }
+
+    fun canClick(slotIndex: Int, button: Int, needed: Int = currentTerm.solution.count { it == slotIndex }): Boolean = when {
+        currentTerm.type == TerminalTypes.MELODY -> true
+        slotIndex !in currentTerm.solution -> false
+        currentTerm.type == TerminalTypes.ORDER && slotIndex != currentTerm.solution.firstOrNull() -> false
+        currentTerm.type == TerminalTypes.RUBIX && ((needed < 3 && button != 0) || (needed >= 3 && button != 1)) -> false
+        else -> true
     }
 
     private val colorOrder = listOf(1, 4, 13, 11, 14)
