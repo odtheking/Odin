@@ -15,11 +15,14 @@ import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.name
 import me.odinmain.utils.render.*
 import me.odinmain.utils.render.RenderUtils.drawTexturedModalRect
-import me.odinmain.utils.skyblock.*
+import me.odinmain.utils.skyblock.ClickType
 import me.odinmain.utils.skyblock.PlayerUtils.windowClick
 import me.odinmain.utils.skyblock.dungeon.DungeonClass
 import me.odinmain.utils.skyblock.dungeon.DungeonPlayer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.leapTeammates
+import me.odinmain.utils.skyblock.getItemIndexInContainerChest
+import me.odinmain.utils.skyblock.modMessage
+import me.odinmain.utils.skyblock.partyMessage
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.inventory.ContainerChest
@@ -28,7 +31,6 @@ import net.minecraftforge.client.event.GuiOpenEvent
 import net.minecraftforge.fml.common.Loader
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.input.Keyboard
-import org.lwjgl.input.Mouse
 import org.lwjgl.opengl.Display
 
 object LeapMenu : Module(
@@ -145,7 +147,7 @@ object LeapMenu : Module(
         if (playerToLeap == EMPTY) return
         if (playerToLeap.isDead) return modMessage("This player is dead, can't leap.")
 
-        leapTo(playerToLeap.name, gui.inventorySlots as ContainerChest)
+        leapTo(playerToLeap.name, gui)
 
         event.isCanceled = true
     }

@@ -89,6 +89,8 @@ object PlayerUtils {
     private fun sendWindowClick(slotId: Int, button: Int, mode: Int) {
         mc.thePlayer?.openContainer?.let {
             if (it !is ContainerChest) return
+            if (slotId !in 0 until it.inventorySlots.size) return
+
             mc.playerController?.windowClick(it.windowId, slotId, button, mode, mc.thePlayer)
         }
     }
@@ -96,6 +98,7 @@ object PlayerUtils {
     private fun sendWindowClickPacket(slotId: Int, button: Int, mode: Int) {
         mc.thePlayer?.openContainer?.let {
             if (it !is ContainerChest) return
+            if (slotId !in 0 until it.inventorySlots.size) return
             mc.netHandler?.networkManager?.sendPacket(C0EPacketClickWindow(it.windowId, slotId, button, mode, it.inventory[slotId], it.getNextTransactionID(mc.thePlayer?.inventory)))
         }
     }

@@ -71,7 +71,6 @@ object TerminalSolver : Module(
     private val backgroundColor by ColorSetting("Background Color", Color(45, 45, 45), true, description = "Background color of the terminal solver.").withDependency { renderType == 0 && showColors }
 
     val customGuiColor by ColorSetting("Custom Gui Color", ColorUtil.moduleButtonColor.withAlpha(.8f), true, description = "Color of the custom gui.").withDependency { renderType == 3 && showColors }
-    val textColor by ColorSetting("Text Color", Color(220, 220, 220), true, description = "Text color of the terminal solver.").withDependency { showColors }
     val panesColor by ColorSetting("Panes Color", Color(0, 170, 170), true, description = "Color of the panes terminal solver.").withDependency { showColors }
 
     val rubixColor1 by ColorSetting("Rubix Color 1", Color(0, 170, 170), true, description = "Color of the rubix terminal solver for 1 click.").withDependency { showColors }
@@ -237,6 +236,7 @@ object TerminalSolver : Module(
                     else -> needed - 1
                 }
 
+
                 if (realNeeded != 0 && renderType != -1) {
                     val text = if (needed < 3) realNeeded else (realNeeded - 5)
                     val color = when (text) {
@@ -247,7 +247,7 @@ object TerminalSolver : Module(
                     }
 
                     if (renderType != 1) Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, color.rgba)
-                    mcText(text.toString(), event.x + 8f - getMCTextWidth(text.toString()) / 2, event.y + 4.5, 1, textColor, center = false)
+                    mcText(text.toString(), event.x + 8f - getMCTextWidth(text.toString()) / 2, event.y + 4.5, 1, Color.WHITE, center = false)
                 }
             }
             TerminalTypes.ORDER -> {
@@ -263,7 +263,7 @@ object TerminalSolver : Module(
                         event.isCanceled = true
                     }
                     val amount = event.slot.stack?.stackSize?.toString() ?: ""
-                    mcText(amount, event.x + 8.5f - getMCTextWidth(amount) / 2, event.y + 4.5f, 1, textColor, center = false)
+                    mcText(amount, event.x + 8.5f - getMCTextWidth(amount) / 2, event.y + 4.5f, 1, Color.WHITE, center = false)
                 }
             }
             TerminalTypes.STARTS_WITH, TerminalTypes.SELECT ->
