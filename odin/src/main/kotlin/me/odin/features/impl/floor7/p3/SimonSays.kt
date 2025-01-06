@@ -77,7 +77,6 @@ object SimonSays : Module(
                     currentPhase++
                     phaseClock.update()
                 }
-                clickInOrder.clear()
             } else if (state.block == Blocks.stone_button) {
                 if (old.block == Blocks.air && clickInOrder.size > currentPhase + 1) devMessage("was skipped!?!?!")
                 if (old.block == Blocks.stone_button && state.getValue(BlockButtonStone.POWERED)) {

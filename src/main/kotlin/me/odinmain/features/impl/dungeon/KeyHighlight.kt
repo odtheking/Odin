@@ -13,8 +13,8 @@ import me.odinmain.utils.addVec
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
+import me.odinmain.utils.skyblock.PlayerUtils.alert
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
-import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.toAABB
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityArmorStand
@@ -44,13 +44,14 @@ object KeyHighlight : Module(
     fun postMetadata(event: PostEntityMetadata) {
         if (!DungeonUtils.inDungeons || DungeonUtils.inBoss) return
         val entity = mc.theWorld?.getEntityByID(event.packet.entityId) as? EntityArmorStand ?: return
+        if (currentKey?.entity == entity) return
 
         currentKey = when (entity.name.noControlCodes) {
             "Wither Key" -> KeyInfo(entity, witherColor)
             "Blood Key" -> KeyInfo(entity, bloodColor)
             else -> return
         }
-        if (announceKeySpawn) modMessage("§7Found the §4${entity.name.noControlCodes}§7 key!")
+        if (announceKeySpawn) alert("${entity.name}§7 spawned!")
     }
 
     @SubscribeEvent
