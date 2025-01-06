@@ -5,7 +5,9 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.NumberSetting
-import me.odinmain.utils.skyblock.*
+import me.odinmain.utils.skyblock.ClickType
+import me.odinmain.utils.skyblock.Island
+import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.PlayerUtils.windowClick
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.init.Blocks
@@ -73,7 +75,7 @@ object AutoExperiments : Module(
     private fun solveChronomatron(invSlots: List<Slot>) {
         if (invSlots[49].stack?.item == Item.getItemFromBlock(Blocks.glowstone) && invSlots[lastAdded].stack?.isItemEnchanted == false) {
             hasAdded = false
-            if (chronomatronOrder.size > 11 - serumCount && autoClose) mc.thePlayer?.closeScreen()
+            if (autoClose && chronomatronOrder.size > 11 - serumCount) mc.thePlayer?.closeScreen()
         }
         if (!hasAdded && invSlots[49].stack?.item == Items.clock) {
             invSlots.find { it.slotNumber in 10..43 && it.stack?.isItemEnchanted == true }?.let {
@@ -84,7 +86,7 @@ object AutoExperiments : Module(
             }
         }
         if (hasAdded && invSlots[49].stack?.item == Items.clock && chronomatronOrder.size > clicks && System.currentTimeMillis() - lastClickTime > delay) {
-            windowClick(chronomatronOrder[clicks], ClickType.Middle)
+            windowClick(chronomatronOrder[clicks], ClickType.Middle, true)
             lastClickTime = System.currentTimeMillis()
             clicks++
         }
@@ -104,7 +106,7 @@ object AutoExperiments : Module(
             if (ultrasequencerOrder.size > 9 - serumCount && autoClose) mc.thePlayer?.closeScreen()
         }
         if (invSlots[49].stack?.item == Items.clock && ultrasequencerOrder.contains(clicks) && System.currentTimeMillis() - lastClickTime > delay) {
-            ultrasequencerOrder[clicks]?.let { windowClick(it, ClickType.Middle) }
+            ultrasequencerOrder[clicks]?.let { windowClick(it, ClickType.Middle, true) }
             lastClickTime = System.currentTimeMillis()
             clicks++
         }
