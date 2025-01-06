@@ -5,7 +5,7 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.ListSetting
-import me.odinmain.utils.isVecInXZ
+import me.odinmain.utils.isVecInAABB
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.skyblock.partyMessage
@@ -67,9 +67,9 @@ object PosMessages : Module(
 
     private fun handleInString(posMessage: PosMessage) {
         val msgSent = sentMessages.getOrDefault(posMessage, false)
-        if (mc.thePlayer != null && isVecInXZ(mc.thePlayer.positionVector, AxisAlignedBB(posMessage.x, posMessage.y, posMessage.z, posMessage.x2 ?: return, posMessage.y2 ?: return, posMessage.z2 ?: return))) {
+        if (mc.thePlayer != null && isVecInAABB(mc.thePlayer.positionVector, AxisAlignedBB(posMessage.x, posMessage.y, posMessage.z, posMessage.x2 ?: return, posMessage.y2 ?: return, posMessage.z2 ?: return))) {
             if (!msgSent) Timer().schedule(posMessage.delay) {
-                if (isVecInXZ(mc.thePlayer.positionVector, AxisAlignedBB(posMessage.x, posMessage.y, posMessage.z, posMessage.x2, posMessage.y2, posMessage.z2)))
+                if (isVecInAABB(mc.thePlayer.positionVector, AxisAlignedBB(posMessage.x, posMessage.y, posMessage.z, posMessage.x2, posMessage.y2, posMessage.z2)))
                     partyMessage(posMessage.message)
             }
             sentMessages[posMessage] = true
