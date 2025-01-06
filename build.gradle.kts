@@ -4,10 +4,10 @@ plugins {
     idea
     java
     id("com.github.johnrengelman.shadow") version "8.1.1"
-    kotlin("jvm") version "2.0.0-Beta1"
-    id("net.kyori.blossom") version "1.3.1"
-    id("gg.essential.loom") version "0.10.0.+"
     id("dev.architectury.architectury-pack200") version "0.1.3"
+    id("gg.essential.loom") version "0.10.0.+"
+    id("net.kyori.blossom") version "1.3.1"
+    kotlin("jvm") version "2.0.0-Beta1"
 }
 
 version = project.findProperty("version") as String
@@ -23,12 +23,12 @@ allprojects {
         maven("https://repo.essential.gg/repository/maven-public/")
     }
 
-    apply(plugin = "java")
-    apply(plugin = "org.jetbrains.kotlin.jvm")
-    apply(plugin = "com.github.johnrengelman.shadow")
-    apply(plugin = "net.kyori.blossom")
-    apply(plugin = "gg.essential.loom")
     apply(plugin = "dev.architectury.architectury-pack200")
+    apply(plugin = "com.github.johnrengelman.shadow")
+    apply(plugin = "org.jetbrains.kotlin.jvm")
+    apply(plugin = "gg.essential.loom")
+    apply(plugin = "net.kyori.blossom")
+    apply(plugin = "java")
 
     dependencies {
         minecraft("com.mojang:minecraft:1.8.9")
