@@ -1,4 +1,4 @@
-package me.odin.mixin;
+package me.odin.mixin.mixins;
 
 import me.odinmain.features.impl.render.RenderOptimizer;
 import net.minecraft.client.renderer.RenderGlobal;
