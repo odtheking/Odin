@@ -32,6 +32,8 @@ import java.net.URL
 import javax.imageio.ImageIO
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
+import kotlin.io.path.ExperimentalPathApi
+import kotlin.io.path.createDirectories
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -188,81 +190,84 @@ object DevPlayers {
         }
     }
 
-    val capeFolder = File(mc.mcDataDir, "config/odin/capes")
+    private lateinit var capeData: Map<String, List<String>>
+    private val capeFolder = File(mc.mcDataDir, "config/odin/capes")
     private val capeUpdateCache = mutableMapOf<String, Boolean>()
     data class Capes(
         @SerializedName("capes")
-        val capes: List<String>
+        val capes: Map<String, List<String>>
     )
 
-    @OptIn(ExperimentalEncodingApi::class)
+    @OptIn(ExperimentalPathApi::class)
     fun preloadCapes() {
-        if (!capeFolder.exists()) capeFolder.mkdirs()
+        if (!capeFolder.exists()) capeFolder.toPath().createDirectories()
 
-        val capeList = fetchCapeList("https://odtheking.github.io/Odin/capes/capes.json")
-
-        capeList.forEach { fileName ->
-            val capeFile = File(capeFolder, fileName)
-            val capeUrl = "https://odtheking.github.io/Odin/capes/$fileName"
+        capeData = fetchCapeData("https://odtheking.github.io/Odin/capes/capes.json")
+        capeData.forEach { (capeFileName, _) ->
+            val capeFile = File(capeFolder, capeFileName)
+            val capeUrl = "https://odtheking.github.io/Odin/capes/$capeFileName"
 
             synchronized(capeUpdateCache) {
-                if (capeUpdateCache[fileName] != true) {
+                if (capeUpdateCache[capeFileName] != true) {
                     if (!capeFile.exists() || !isFileUpToDate(capeUrl, capeFile)) {
                         downloadFile(capeUrl, capeFile.path)
                     }
-                    capeUpdateCache[fileName] = true
+                    capeUpdateCache[capeFileName] = true
                 }
             }
         }
     }
 
-    private fun fetchCapeList(manifestUrl: String): List<String> {
+    private fun fetchCapeData(manifestUrl: String): Map<String, List<String>> {
         return try {
             val json = URL(manifestUrl).readText()
             val manifest = Gson().fromJson(json, Capes::class.java)
             manifest.capes
         } catch (e: IOException) {
             e.printStackTrace()
-            emptyList()
+            emptyMap()
         }
     }
 
     @OptIn(ExperimentalEncodingApi::class)
     fun hookGetLocationCape(gameProfile: GameProfile): ResourceLocation? {
         val name = gameProfile.name
-        if (!devs.containsKey(name)) return null
-        val dev = devs[name]
-
         val nameEncoded = Base64.encode(name.toByteArray())
-        val capeFile = File(capeFolder, "$nameEncoded.png")
 
-        return getCapeLocation(dev, capeFile)
+        val capeFileName = findCapeFileName(nameEncoded) ?: return null
+        val capeFile = File(capeFolder, capeFileName)
+
+        return getCapeLocation(devs[name], capeFile)
+    }
+
+    private fun findCapeFileName(encodedName: String): String? {
+        return capeData.entries.find { (_, usernames) ->
+            encodedName in usernames
+        }?.key
     }
 
     private fun isFileUpToDate(url: String, file: File): Boolean {
-        try {
+        return try {
             val connection = URL(url).openConnection()
             connection.connect()
             val remoteLastModified = connection.getHeaderFieldDate("Last-Modified", 0L)
             val localLastModified = file.lastModified()
-            return localLastModified >= remoteLastModified
+            localLastModified >= remoteLastModified
         } catch (e: IOException) {
             e.printStackTrace()
+            false
         }
-        return false
     }
 
     private fun getCapeLocation(dev: DevPlayer?, file: File): ResourceLocation? {
         if (dev?.capeLocation == null && file.exists()) {
-            var image: BufferedImage? = null
             try {
-                image = ImageIO.read(file)
+                val image: BufferedImage = ImageIO.read(file)
+                val capeLocation = mc.textureManager.getDynamicTextureLocation("odincapes", DynamicTexture(image))
+                dev?.capeLocation = capeLocation
             } catch (e: IOException) {
                 e.printStackTrace()
             }
-
-            val capeLocation = mc.textureManager.getDynamicTextureLocation("odincapes", DynamicTexture(image))
-            dev?.capeLocation = capeLocation
         }
         return dev?.capeLocation
     }
