@@ -3,8 +3,6 @@ package me.odinmain
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import me.odinmain.features.impl.render.ClickGUIModule
-import me.odinmain.features.impl.render.ClickGUIModule.updateMessage
-import me.odinmain.font.OdinFont
 import me.odinmain.ui.OdinGuiButton
 import me.odinmain.utils.downloadFile
 import me.odinmain.utils.fetchURLData
@@ -21,148 +19,184 @@ import org.lwjgl.opengl.GL11
 import java.io.File
 import java.lang.management.ManagementFactory
 
-
 object OdinUpdater : GuiScreen() {
 
-    private val logoTexture = DynamicTexture(RenderUtils.loadBufferedImage("/assets/odinmain/logo.png"))
-    private val javaRuntime = "\"${System.getProperty("java.home")}${File.separatorChar}bin${File.separatorChar}javaw${if (System.getProperty("os.name").contains("win")) ".exe" else ""}\""
-    private val javaUpdateGuide = ChatComponentText(null).setChatStyle(ChatStyle().setChatClickEvent(ClickEvent(ClickEvent.Action.OPEN_URL, "https://github.com/ChatTriggers/ChatTriggers/wiki/Fixing-broken-imports")))
+    // Constants
+    private const val GITHUB_TAGS_URL = "https://api.github.com/repos/odtheking/OdinClient/tags"
+    private const val JAVA_UPDATE_GUIDE_URL = "https://github.com/ChatTriggers/ChatTriggers/wiki/Fixing-broken-imports"
+    private const val LOGO_PATH = "/assets/odinmain/logo.png"
+    private const val DEFAULT_SCALE_FACTOR = 1
 
-    private var tag = ""
-    private var isNewer = false
-    private var isOutdatedJava = false
-    private var scaleFactor = 1
+    // Dynamic texture for the logo
+    private val logoTexture = DynamicTexture(RenderUtils.loadBufferedImage(LOGO_PATH))
 
-    @SubscribeEvent()
+    // Java runtime path
+    private val javaRuntime: String = buildString {
+        append(System.getProperty("java.home"))
+        append(File.separatorChar).append("bin").append(File.separatorChar).append("javaw")
+        if (System.getProperty("os.name").contains("win", ignoreCase = true)) append(".exe")
+    }
+
+    // Variables
+    private var latestTag: String = ""
+    private var isNewerVersionAvailable = false
+    private var isJavaOutdated = false
+    private var scaleFactor = DEFAULT_SCALE_FACTOR
+
+    @SubscribeEvent
     fun onGuiOpen(event: GuiOpenEvent) {
-        if (event.gui !is GuiMainMenu || isNewer) return
+        if (event.gui !is GuiMainMenu || isNewerVersionAvailable) return
 
-        val gson = Gson()
-
-        // To prevent this in the future do the TrustManager thing and add a X509 cert to access github in jre 51
-        val javaVersion = System.getProperty("java.version")
-        if (javaVersion == "1.8.0_51") {
-            isOutdatedJava = true
+        checkJavaVersion()
+        fetchLatestVersionTag()?.let { tag ->
+            latestTag = tag
+            isNewerVersionAvailable = isVersionNewer(latestTag, OdinMain.VERSION)
         }
 
-        val tags: JsonArray = try {
-            gson.fromJson(fetchURLData("https://api.github.com/repos/odtheking/OdinClient/tags"), JsonArray::class.java)
+        //if (isNewerVersionAvailable) OdinMain.display = this
+    }
+
+    private fun checkJavaVersion() {
+        isJavaOutdated = System.getProperty("java.version") == "1.8.0_51"
+    }
+
+    private fun fetchLatestVersionTag(): String? {
+        return try {
+            val tagsJson: JsonArray = Gson().fromJson(fetchURLData(GITHUB_TAGS_URL), JsonArray::class.java)
+            tagsJson.firstOrNull()?.asJsonObject?.get("name")?.asString
         } catch (e: Exception) {
-            return
+            println("Failed to fetch latest version tag: ${e.message}")
+            null
         }
-
-        tag = tags[0].asJsonObject["name"].asString.replace("\"", "")
-
-        isNewer = this.isSecondNewer(tag)
-
-        if (!isNewer)
-            OdinMain.display = this@OdinUpdater
     }
 
     override fun initGui() {
-        // add discord link also maybe
-        // add link to / or changelog maybe
-        // add a warning that updating will restart the game
-        this.scaleFactor = ScaledResolution(mc).scaleFactor
-        if (isOutdatedJava) {
-            this.buttonList.add(OdinGuiButton(2, mc.displayWidth / 2 - 175, mc.displayHeight - 500, 350, 80, "Update Java Guide", 24f))
-            this.buttonList.add(OdinGuiButton(0, mc.displayWidth / 2 - 60, mc.displayHeight - 100, 120, 50, "Close", 20f))
+        scaleFactor = ScaledResolution(mc).scaleFactor
+        buttonList.clear()
+
+        if (isJavaOutdated) {
+            buttonList.add(createButton(2, "Update Java Guide", 350, 80, 24f))
+            buttonList.add(createButton(0, "Close", 120, 50, 20f))
         } else {
-            this.buttonList.add(OdinGuiButton(0, mc.displayWidth / 2 - 60, mc.displayHeight - 100, 120, 50, "Later", 20f))
-            this.buttonList.add(OdinGuiButton(1, mc.displayWidth / 2 - 100, mc.displayHeight - 300, 200, 70, "Update", 24f))
+            buttonList.add(createButton(0, "Later", 120, 50, 20f))
+            buttonList.add(createButton(1, "Update", 200, 70, 24f))
         }
+
         super.initGui()
     }
 
+    private fun createButton(id: Int, label: String, width: Int, height: Int, fontSize: Float): OdinGuiButton {
+        val x = centerX - width / 2
+        val y = if (id == 1) centerY - 100 else centerY + 100
+        return OdinGuiButton(id, x, y, width, height, label, fontSize)
+    }
+
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
-        this.drawBackground(0)
+        drawBackground(0)
         GlStateManager.pushMatrix()
         GlStateManager.scale(1f / scaleFactor, 1f / scaleFactor, 1f)
-        this.drawLogo()
-        if (isOutdatedJava) {
-            text("You are currently using an outdated version of Java (${System.getProperty("java.version")}), which prevents the auto-updater from functioning correctly. Upgrading to a newer version of Java will not only resolve this issue but also provide enhanced security features and improved performance.", mc.displayWidth / 2f, 500f, Color.RED, 18f, OdinFont.REGULAR, TextAlign.Middle, TextPos.Middle, false)
+
+        drawLogo()
+
+        if (isJavaOutdated) {
+            text(
+                "Outdated Java (${System.getProperty("java.version")}). Update to fix issues.",
+                centerX,
+                450f,
+                Color.RED,
+                18f
+            )
         } else {
-            text("A new version of ${if (OdinMain.isLegitVersion) "Odin" else "OdinClient"} is available!", mc.displayWidth / 2f, 450f, Color.WHITE, 18f, OdinFont.REGULAR, TextAlign.Middle, TextPos.Middle, false)
-            text("§fNewest: §r$tag   §fCurrent: §r${OdinMain.VERSION}", mc.displayWidth / 2f - getTextWidth("Newest: $tag   Current: ${OdinMain.VERSION}", 18f) / 2, 500f, ClickGUIModule.color, 18f, OdinFont.REGULAR, TextAlign.Left, TextPos.Middle, false)
+            text("New version available: $latestTag", centerX, 450f, Color.WHITE, 18f)
+            text(
+                "Current: ${OdinMain.VERSION}",
+                centerX,
+                500f,
+                ClickGUIModule.color,
+                18f
+            )
         }
+
         GlStateManager.popMatrix()
         super.drawScreen(mouseX, mouseY, partialTicks)
-    }
-
-    override fun actionPerformed(button: GuiButton?) {
-        if (button == null) return
-        when (button.id) {
-            0 -> {
-                isNewer = true
-                mc.displayGuiScreen(null)
-            }
-            1 -> {
-                Runtime.getRuntime().addShutdownHook(Thread {
-                    val newJar = "${if (OdinMain.isLegitVersion) "odin" else "odinclient"}-$tag.jar"
-                    val newDownloadUrl = "https://github.com/odtheking/OdinClient/releases/download/$tag/$newJar"
-                    val newVersionPath = "${mc.mcDataDir}${File.separatorChar}mods${File.separatorChar}$newJar"
-                    downloadFile(newDownloadUrl, newVersionPath)
-
-                    val currentJarPath = "${mc.mcDataDir}${File.separatorChar}mods${File.separatorChar}${if (OdinMain.isLegitVersion) "odin" else "odinclient"}-${OdinMain.VERSION}.jar"
-                    val updaterUrl = "https://github.com/odtheking/OdinUpdater/releases/download/OdinUpdater/OdinUpdater.jar"
-                    val updaterPath = "${System.getProperty("java.io.tmpdir")}${File.separatorChar}OdinUpdater.jar"
-                    downloadFile(updaterUrl, updaterPath)
-
-                    val relaunchCommand: String = getRelaunchCommand()
-                    val relaunchCommandDir = "${System.getProperty("java.io.tmpdir")}${File.separatorChar}odinRelaunchCommand.txt"
-                    val relaunchCommandFile = File(relaunchCommandDir)
-                    if (!relaunchCommandFile.exists()) relaunchCommandFile.createNewFile()
-                    relaunchCommandFile.writeText(relaunchCommand, charset("UTF-8"))
-
-                    Runtime.getRuntime().exec("$javaRuntime -jar $updaterPath \"$currentJarPath\" \"${relaunchCommandDir}\"")
-                })
-                mc.shutdown()
-            }
-            2 -> {
-                this.handleComponentClick(javaUpdateGuide)
-            }
-        }
-        super.actionPerformed(button)
-    }
-
-    private fun getRelaunchCommand(): String {
-        var command = javaRuntime
-        for (inputArg in ManagementFactory.getRuntimeMXBean().inputArguments) {
-            command += if (inputArg.contains("-Dos.name=")) " \"$inputArg\"" else " $inputArg"
-        }
-        command += " -cp ${ManagementFactory.getRuntimeMXBean().classPath} ${System.getProperty("sun.java.command")}"
-        return command
     }
 
     private fun drawLogo() {
         GlStateManager.pushMatrix()
         GlStateManager.enableBlend()
         GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
-        GlStateManager.translate(mc.displayWidth / 2f - 384, 0f, 0f)
+        GlStateManager.translate(centerX - 384f, 0f, 0f)
         GlStateManager.scale(0.4f, 0.4f, 1f)
         drawDynamicTexture(logoTexture, 0f, 0f, 1920f, 1080f)
         GlStateManager.disableBlend()
         GlStateManager.popMatrix()
     }
 
-    private fun isSecondNewer(second: String?): Boolean {
-        val currentVersion = OdinMain.VERSION
-        if (currentVersion.isEmpty() || second.isNullOrEmpty()) return false // Handle null or empty strings appropriately
+    override fun actionPerformed(button: GuiButton?) {
+        when (button?.id) {
+            0 -> mc.displayGuiScreen(null) // Close or Later
+            1 -> performUpdate() // Update
+            2 -> openJavaUpdateGuide() // Java Update Guide
+        }
+        super.actionPerformed(button)
+    }
 
-        val (major, minor, patch, beta) = currentVersion.split(".").mapNotNull { it.toIntOrNull() ?: if (it.startsWith("beta") && updateMessage == 1) it.substring(4).toIntOrNull() else 99 }.plus(listOf(99, 99, 99, 99))
-        val (major2, minor2, patch2, beta2) = second.split(".").mapNotNull { it.toIntOrNull() ?: if (it.startsWith("beta")  && updateMessage == 1) it.substring(4).toIntOrNull() else 99 }.plus(listOf(99, 99, 99, 99))
+    private fun openJavaUpdateGuide() {
+        val updateGuide = ChatComponentText("").setChatStyle(ChatStyle().setChatClickEvent(
+            ClickEvent(ClickEvent.Action.OPEN_URL, JAVA_UPDATE_GUIDE_URL)
+        ))
+        handleComponentClick(updateGuide)
+    }
 
-        return when {
-            major > major2 -> false
-            major < major2 -> true
-            minor > minor2 -> false
-            minor < minor2 -> true
-            patch > patch2 -> false
-            patch < patch2 -> true
-            beta > beta2 -> false
-            beta < beta2 -> true
-            else -> false // equal, or something went wrong, either way it's best to assume it's false.
+    private fun performUpdate() {
+        Runtime.getRuntime().addShutdownHook(Thread {
+            val versionType = if (!OdinMain.isLegitVersion) "Client" else ""
+            val newJarName = "Odin$versionType-$latestTag.jar"
+            val downloadUrl = "https://github.com/odtheking/OdinClient/releases/download/$latestTag/$newJarName"
+            val destinationPath = "${mc.mcDataDir}/mods/$newJarName".replace('/', File.separatorChar)
+            downloadFile(downloadUrl, destinationPath)
+
+            val updaterUrl = "https://github.com/odtheking/OdinUpdater/releases/download/OdinUpdater/OdinUpdater.jar"
+            val updaterPath = "${System.getProperty("java.io.tmpdir")}/OdinUpdater.jar".replace('/', File.separatorChar)
+            downloadFile(updaterUrl, updaterPath)
+
+            val relaunchCommand = buildRelaunchCommand()
+            val relaunchFilePath = "${System.getProperty("java.io.tmpdir")}/odinRelaunchCommand.txt".replace('/', File.separatorChar)
+            File(relaunchFilePath).writeText(relaunchCommand, Charsets.UTF_8)
+
+            Runtime.getRuntime().exec("$javaRuntime -jar $updaterPath $destinationPath $relaunchFilePath")
+        })
+
+        mc.shutdown()
+    }
+
+    private fun buildRelaunchCommand(): String {
+        return buildString {
+            append(javaRuntime)
+            ManagementFactory.getRuntimeMXBean().inputArguments.forEach { arg ->
+                append(" ")
+                append(if (arg.contains("-Dos.name=")) "\"$arg\"" else arg)
+            }
+            append(" -cp ").append(ManagementFactory.getRuntimeMXBean().classPath)
+            append(" ").append(System.getProperty("sun.java.command"))
         }
     }
+
+    private fun isVersionNewer(newVersion: String, currentVersion: String): Boolean {
+        val newParts = newVersion.split(".").map { it.toIntOrNull() ?: 0 }
+        val currentParts = currentVersion.split(".").map { it.toIntOrNull() ?: 0 }
+
+        for (i in newParts.indices) {
+            val newPart = newParts.getOrElse(i) { 0 }
+            val currentPart = currentParts.getOrElse(i) { 0 }
+            if (newPart > currentPart) return true
+            if (newPart < currentPart) return false
+        }
+
+        return false
+    }
+
+    private val centerX: Int get() = mc.displayWidth / 2
+    private val centerY: Int get() = mc.displayHeight / 2
 
 }
