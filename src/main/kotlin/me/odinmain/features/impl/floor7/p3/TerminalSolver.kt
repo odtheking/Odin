@@ -104,7 +104,7 @@ object TerminalSolver : Module(
             val windowName = packet.windowTitle?.formattedText?.noControlCodes ?: return@onPacket
             val newTermType = TerminalTypes.entries.find { terminal -> windowName.startsWith(terminal.guiName) }?.takeIf { it != TerminalTypes.NONE } ?: return@onPacket
 
-            if (newTermType != currentTerm.type) {
+            if (windowName != currentTerm.guiName) {
                 currentTerm = Terminal(type = newTermType, guiName = windowName, items = arrayOfNulls(newTermType.size))
                 devMessage("§aNew terminal: §6${currentTerm.type.name}")
                 TerminalEvent.Opened(currentTerm).postAndCatch()
@@ -235,7 +235,6 @@ object TerminalSolver : Module(
                     4 -> 0
                     else -> needed - 1
                 }
-
 
                 if (realNeeded != 0 && renderType != -1) {
                     val text = if (needed < 3) realNeeded else (realNeeded - 5)
