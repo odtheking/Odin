@@ -7,7 +7,10 @@ import me.odinmain.events.impl.ServerTickEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.*
+import me.odinmain.features.settings.impl.BooleanSetting
+import me.odinmain.features.settings.impl.ColorSetting
+import me.odinmain.features.settings.impl.DropdownSetting
+import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.*
 import me.odinmain.utils.ServerUtils.averagePing
 import me.odinmain.utils.render.Color
@@ -55,8 +58,43 @@ object BloodCamp : Module(
     private val firstSpawnRegex = Regex("^\\[BOSS] The Watcher: Let's see how you can handle this.$")
 
     init {
-        onPacket(S17PacketEntityLookMove::class.java, { bloodHelper && enabled }) {
-            onPacketLookMove(it)
+        onPacket(S17PacketEntityLookMove::class.java, { bloodHelper && enabled }) { packet ->
+            val world = mc.theWorld ?: return@onPacket
+            val entity = packet.getEntity(world) as? EntityArmorStand ?: return@onPacket
+            if (currentWatcherEntity?.let { it.getDistanceToEntity(entity) <= 20 } != true || entity.getEquipmentInSlot(4)?.item != Items.skull || getSkullValue(entity) !in allowedMobSkulls) return@onPacket
+
+            val packetVector = Vec3(
+                (entity.serverPosX + packet.func_149062_c()) / 32.0,
+                (entity.serverPosY + packet.func_149061_d()) / 32.0,
+                (entity.serverPosZ + packet.func_149064_e()) / 32.0,
+            )
+
+            if (!entityDataMap.containsKey(entity)) entityDataMap[entity] = EntityData(startVector = packetVector, started = currentTickTime, firstSpawns = firstSpawns)
+            val data = entityDataMap[entity] ?: return@onPacket
+
+            val timeTook = currentTickTime - data.started
+            val time = getTime(data.firstSpawns, timeTook)
+
+            val speedVectors = Vec3(
+                (packetVector.xCoord - data.startVector.xCoord) / timeTook,
+                (packetVector.yCoord - data.startVector.yCoord) / timeTook,
+                (packetVector.zCoord - data.startVector.zCoord) / timeTook,
+            )
+
+            val endpoint = Vec3(
+                packetVector.xCoord + speedVectors.xCoord * time,
+                packetVector.yCoord + speedVectors.yCoord * time,
+                packetVector.zCoord + speedVectors.zCoord * time,
+            )
+
+            if (!renderDataMap.containsKey(entity)) renderDataMap[entity] = RenderEData(packetVector, endpoint, currentTickTime, speedVectors)
+            else renderDataMap[entity]?.let {
+                it.lastEndVector = it.endVector.clone()
+                it.currVector = packetVector
+                it.endVector = endpoint
+                it.endVecUpdated = currentTickTime
+                it.speedVectors = speedVectors
+            }
         }
 
         onMessage(firstSpawnRegex) {
@@ -103,44 +141,6 @@ object BloodCamp : Module(
     @SubscribeEvent
     fun onEntityLeaveWorld(event: EntityLeaveWorldEvent) {
         if (event.entity == currentWatcherEntity) currentWatcherEntity = null
-    }
-
-    private fun onPacketLookMove(packet: S17PacketEntityLookMove) {
-        val entity = packet.getEntity(mc.theWorld ?: return) as? EntityArmorStand ?: return
-        if (currentWatcherEntity?.let { it.getDistanceToEntity(entity) <= 20 } != true || entity.getEquipmentInSlot(4)?.item != Items.skull || getSkullValue(entity) !in allowedMobSkulls) return
-
-        val packetVector = Vec3(
-            (entity.serverPosX + packet.func_149062_c()) / 32.0,
-            (entity.serverPosY + packet.func_149061_d()) / 32.0,
-            (entity.serverPosZ + packet.func_149064_e()) / 32.0,
-        )
-
-        if (!entityDataMap.containsKey(entity)) entityDataMap[entity] = EntityData(startVector = packetVector, started = currentTickTime, firstSpawns = firstSpawns)
-        val data = entityDataMap[entity] ?: return
-
-        val timeTook = currentTickTime - data.started
-        val time = getTime(data.firstSpawns, timeTook)
-
-        val speedVectors = Vec3(
-            (packetVector.xCoord - data.startVector.xCoord) / timeTook,
-            (packetVector.yCoord - data.startVector.yCoord) / timeTook,
-            (packetVector.zCoord - data.startVector.zCoord) / timeTook,
-        )
-
-        val endpoint = Vec3(
-            packetVector.xCoord + speedVectors.xCoord * time,
-            packetVector.yCoord + speedVectors.yCoord * time,
-            packetVector.zCoord + speedVectors.zCoord * time,
-        )
-
-        if (!renderDataMap.containsKey(entity)) renderDataMap[entity] = RenderEData(packetVector, endpoint, currentTickTime, speedVectors)
-        else renderDataMap[entity]?.let {
-            it.lastEndVector = it.endVector.clone()
-            it.currVector = packetVector
-            it.endVector = endpoint
-            it.endVecUpdated = currentTickTime
-            it.speedVectors = speedVectors
-        }
     }
 
     @SubscribeEvent

@@ -91,7 +91,7 @@ object KuudraDisplay : Module(
 
         return when {
             // Scaled
-            kuudraHP <= 25000 && scaledHealth && LocationUtils.kuudraTier == 5 -> "$color${(health * 12).round(2)}M§7/§a300M §c❤"
+            kuudraHP <= 25000 && scaledHealth && LocationUtils.kuudraTier == 5 -> "$color${(health * 12).round(2)}M§7/§a240M §c❤"
             // Percentage
             healthFormat -> "$color${health}§a% §c❤"
             // Exact
