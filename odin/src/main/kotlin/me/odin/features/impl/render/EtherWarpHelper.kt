@@ -23,7 +23,7 @@ import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object EtherWarpHelper : Module(
-    name = "Ether Warp Helper",
+    name = "Etherwarp Helper",
     description = "Helpful tools for Ether Warp.",
     category = Category.RENDER
 ) {
