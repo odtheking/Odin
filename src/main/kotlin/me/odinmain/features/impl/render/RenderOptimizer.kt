@@ -24,7 +24,6 @@ import net.minecraft.client.renderer.culling.ICamera
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.entity.Entity
-import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.boss.EntityDragon
 import net.minecraft.entity.boss.EntityWither
 import net.minecraft.entity.item.*
@@ -38,6 +37,7 @@ import net.minecraft.network.play.server.S1CPacketEntityMetadata
 import net.minecraft.network.play.server.S2APacketParticles
 import net.minecraft.tileentity.TileEntityEndPortal
 import net.minecraft.tileentity.TileEntitySign
+import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumParticleTypes
 import net.minecraftforge.client.MinecraftForgeClient
@@ -45,6 +45,7 @@ import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.opengl.GL11
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo
+
 
 object RenderOptimizer : Module(
     name = "Render Optimizer",
@@ -214,7 +215,8 @@ object RenderOptimizer : Module(
             event.isCanceled = true
     }
 
-    private val renderList: ArrayList<Pair<Entity, Color>> = ArrayList()
+    private val renderList = arrayListOf<Pair<Entity, Color>>()
+    private val defaultRenderList = arrayListOf<Entity>()
 
     @SubscribeEvent
     fun renderEntities(event: RenderWorldLastEvent) {
@@ -233,38 +235,42 @@ object RenderOptimizer : Module(
             val color = pair.second
             if (color.a < 0.1) continue
             val box = pair.first.renderBoundingBox
-            worldRenderer.pos(box.maxX, box.minY, box.minZ).color(color.r, color.g, color.b, color.a).endVertex()
-            worldRenderer.pos(box.maxX, box.minY, box.maxZ).color(color.r, color.g, color.b, color.a).endVertex()
-            worldRenderer.pos(box.minX, box.minY, box.maxZ).color(color.r, color.g, color.b, color.a).endVertex()
-            worldRenderer.pos(box.minX, box.minY, box.minZ).color(color.r, color.g, color.b, color.a).endVertex()
-            worldRenderer.pos(box.minX, box.maxY, box.maxZ).color(color.r, color.g, color.b, color.a).endVertex()
-            worldRenderer.pos(box.maxX, box.maxY, box.maxZ).color(color.r, color.g, color.b, color.a).endVertex()
-            worldRenderer.pos(box.maxX, box.maxY, box.minZ).color(color.r, color.g, color.b, color.a).endVertex()
-            worldRenderer.pos(box.minX, box.maxY, box.minZ).color(color.r, color.g, color.b, color.a).endVertex()
-            worldRenderer.pos(box.maxX, box.minY, box.maxZ).color(color.r, color.g, color.b, color.a).endVertex()
-            worldRenderer.pos(box.maxX, box.maxY, box.maxZ).color(color.r, color.g, color.b, color.a).endVertex()
-            worldRenderer.pos(box.minX, box.maxY, box.maxZ).color(color.r, color.g, color.b, color.a).endVertex()
-            worldRenderer.pos(box.minX, box.minY, box.maxZ).color(color.r, color.g, color.b, color.a).endVertex()
-            worldRenderer.pos(box.minX, box.minY, box.minZ).color(color.r, color.g, color.b, color.a).endVertex()
-            worldRenderer.pos(box.minX, box.maxY, box.minZ).color(color.r, color.g, color.b, color.a).endVertex()
-            worldRenderer.pos(box.maxX, box.maxY, box.minZ).color(color.r, color.g, color.b, color.a).endVertex()
-            worldRenderer.pos(box.maxX, box.minY, box.minZ).color(color.r, color.g, color.b, color.a).endVertex()
-            worldRenderer.pos(box.minX, box.minY, box.maxZ).color(color.r, color.g, color.b, color.a).endVertex()
-            worldRenderer.pos(box.minX, box.maxY, box.maxZ).color(color.r, color.g, color.b, color.a).endVertex()
-            worldRenderer.pos(box.minX, box.maxY, box.minZ).color(color.r, color.g, color.b, color.a).endVertex()
-            worldRenderer.pos(box.minX, box.minY, box.minZ).color(color.r, color.g, color.b, color.a).endVertex()
-            worldRenderer.pos(box.maxX, box.minY, box.minZ).color(color.r, color.g, color.b, color.a).endVertex()
-            worldRenderer.pos(box.maxX, box.maxY, box.minZ).color(color.r, color.g, color.b, color.a).endVertex()
-            worldRenderer.pos(box.maxX, box.maxY, box.maxZ).color(color.r, color.g, color.b, color.a).endVertex()
-            worldRenderer.pos(box.maxX, box.minY, box.maxZ).color(color.r, color.g, color.b, color.a).endVertex()
+            drawEntityProxy(box, color)
         }
-        renderList.clear()
         tessellator.draw()
+        renderList.clear()
 
         GlStateManager.resetColor()
         GlStateManager.disableBlend()
         GlStateManager.enableTexture2D()
         GlStateManager.popMatrix()
+    }
+
+    private fun drawEntityProxy(box: AxisAlignedBB, color: Color) {
+        worldRenderer.pos(box.maxX, box.minY, box.minZ).color(color.r, color.g, color.b, color.a).endVertex()
+        worldRenderer.pos(box.maxX, box.minY, box.maxZ).color(color.r, color.g, color.b, color.a).endVertex()
+        worldRenderer.pos(box.minX, box.minY, box.maxZ).color(color.r, color.g, color.b, color.a).endVertex()
+        worldRenderer.pos(box.minX, box.minY, box.minZ).color(color.r, color.g, color.b, color.a).endVertex()
+        worldRenderer.pos(box.minX, box.maxY, box.maxZ).color(color.r, color.g, color.b, color.a).endVertex()
+        worldRenderer.pos(box.maxX, box.maxY, box.maxZ).color(color.r, color.g, color.b, color.a).endVertex()
+        worldRenderer.pos(box.maxX, box.maxY, box.minZ).color(color.r, color.g, color.b, color.a).endVertex()
+        worldRenderer.pos(box.minX, box.maxY, box.minZ).color(color.r, color.g, color.b, color.a).endVertex()
+        worldRenderer.pos(box.maxX, box.minY, box.maxZ).color(color.r, color.g, color.b, color.a).endVertex()
+        worldRenderer.pos(box.maxX, box.maxY, box.maxZ).color(color.r, color.g, color.b, color.a).endVertex()
+        worldRenderer.pos(box.minX, box.maxY, box.maxZ).color(color.r, color.g, color.b, color.a).endVertex()
+        worldRenderer.pos(box.minX, box.minY, box.maxZ).color(color.r, color.g, color.b, color.a).endVertex()
+        worldRenderer.pos(box.minX, box.minY, box.minZ).color(color.r, color.g, color.b, color.a).endVertex()
+        worldRenderer.pos(box.minX, box.maxY, box.minZ).color(color.r, color.g, color.b, color.a).endVertex()
+        worldRenderer.pos(box.maxX, box.maxY, box.minZ).color(color.r, color.g, color.b, color.a).endVertex()
+        worldRenderer.pos(box.maxX, box.minY, box.minZ).color(color.r, color.g, color.b, color.a).endVertex()
+        worldRenderer.pos(box.minX, box.minY, box.maxZ).color(color.r, color.g, color.b, color.a).endVertex()
+        worldRenderer.pos(box.minX, box.maxY, box.maxZ).color(color.r, color.g, color.b, color.a).endVertex()
+        worldRenderer.pos(box.minX, box.maxY, box.minZ).color(color.r, color.g, color.b, color.a).endVertex()
+        worldRenderer.pos(box.minX, box.minY, box.minZ).color(color.r, color.g, color.b, color.a).endVertex()
+        worldRenderer.pos(box.maxX, box.minY, box.minZ).color(color.r, color.g, color.b, color.a).endVertex()
+        worldRenderer.pos(box.maxX, box.maxY, box.minZ).color(color.r, color.g, color.b, color.a).endVertex()
+        worldRenderer.pos(box.maxX, box.maxY, box.maxZ).color(color.r, color.g, color.b, color.a).endVertex()
+        worldRenderer.pos(box.maxX, box.minY, box.maxZ).color(color.r, color.g, color.b, color.a).endVertex()
     }
 
     private val entityColorMap = mapOf(
@@ -319,7 +325,6 @@ object RenderOptimizer : Module(
         return if (toggle()) color() else null
     }
 
-
     @JvmStatic
     fun hookRenderEntities(renderViewEntity: Entity, camera: ICamera, partialTicks: Float, ci: CallbackInfo) {
         if (enabled && potatoMode) ci.cancel() else return
@@ -333,11 +338,9 @@ object RenderOptimizer : Module(
 
         renderTileEntities(camera, partialTicks)
 
-        val defaultRenderList = arrayListOf<Entity>()
         for (entity in mc.theWorld.loadedEntityList) {
-            val shouldRender = (entity != mc.renderViewEntity || mc.gameSettings.thirdPersonView != 0 || (mc.renderViewEntity as? EntityLivingBase)?.isPlayerSleeping == true) &&
-                    (entity.posY < 0.0 || entity.posY >= 256.0 || mc.theWorld.isBlockLoaded(BlockPos(entity)))
-            if (!shouldRender) continue
+            if ((mc.gameSettings.thirdPersonView == 0 && entity == mc.renderViewEntity) ||
+                (entity.posY < 0.0 || entity.posY >= 256.0 || !mc.theWorld.isBlockLoaded(BlockPos(entity)))) continue
             if (!(mc.renderManager.shouldRender(entity, camera, mc.renderManager.viewerPosX, mc.renderManager.viewerPosY, mc.renderManager.viewerPosZ))) continue
             if (entity.ticksExisted == 0) {
                 entity.lastTickPosX = entity.posX
@@ -355,7 +358,7 @@ object RenderOptimizer : Module(
             else renderList.add(Pair(entity, color))
         }
 
-        if (defaultRenderList.isNotEmpty()) defaultRenderList.forEach { mc.renderManager.renderEntitySimple(it, partialTicks) }
+        for (entity in defaultRenderList) { mc.renderManager.renderEntitySimple(entity, partialTicks) }
         defaultRenderList.clear()
     }
 
