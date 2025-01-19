@@ -90,6 +90,7 @@ object CustomHighlight : Module(
     }
 
     private fun parseColor(color: String): Color? = kotlin.runCatching {
+        if (color.isEmpty()) return null
         Color(color.padEnd(8, 'f'))
     }.getOrNull()
 
