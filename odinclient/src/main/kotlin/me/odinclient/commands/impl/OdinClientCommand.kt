@@ -1,11 +1,11 @@
 package me.odinclient.commands.impl
 
+import com.github.stivais.commodore.Commodore
 import me.odinmain.OdinMain.mc
-import me.odinmain.commands.commodore
 import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.smoothRotateTo
 
-val OdinClientCommand = commodore("odinclient") {
+val OdinClientCommand = Commodore("odinclient") {
     literal("set") {
         runs { yaw: Float, pitch: Float ->
             mc.thePlayer.rotationYaw = yaw.coerceIn(minimumValue = -180f, maximumValue = 180f)

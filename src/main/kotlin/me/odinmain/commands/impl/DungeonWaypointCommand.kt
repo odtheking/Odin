@@ -1,8 +1,8 @@
 package me.odinmain.commands.impl
 
+import com.github.stivais.commodore.Commodore
 import kotlinx.coroutines.launch
 import me.odinmain.OdinMain.scope
-import me.odinmain.commands.commodore
 import me.odinmain.config.DungeonWaypointConfig
 import me.odinmain.config.DungeonWaypointConfig.decodeWaypoints
 import me.odinmain.config.DungeonWaypointConfig.encodeWaypoints
@@ -18,7 +18,7 @@ import me.odinmain.utils.writeToClipboard
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.util.BlockPos
 
-val dungeonWaypointsCommand = commodore("dwp", "dungeonwaypoints") {
+val dungeonWaypointsCommand = Commodore("dwp", "dungeonwaypoints") {
     runs {
         DungeonWaypoints.onKeybind()
     }

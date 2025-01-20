@@ -1,13 +1,41 @@
 package me.odinmain.features.impl.floor7.p3
 
+import com.github.stivais.commodore.parsers.CommandParsable
 import me.odinmain.features.impl.floor7.p3.termGUI.*
+import me.odinmain.features.impl.floor7.p3.termsim.*
 
-enum class TerminalTypes(val guiName: String, val size: Int, val gui: TermGui?) {
-    PANES("Correct all the panes!",     45, PanesGui),
-    RUBIX("Change all to same color!",  45, RubixGui),
-    ORDER("Click in order!",            36, OrderGui),
-    STARTS_WITH("What starts with:",    45, StartsWithGui),
-    SELECT("Select all the",            54, SelectAllGui),
-    MELODY("Click the button on time!", 54, MelodyGui),
-    NONE("None",                         0, null)
+@CommandParsable
+enum class TerminalTypes(
+    val guiName: String,
+    val size: Int,
+    val gui: TermGui?
+) : Type {
+    PANES("Correct all the panes!", 45, PanesGui) {
+        override fun getSimulator() = CorrectPanesSim
+    },
+    RUBIX("Change all to same color!", 45, RubixGui) {
+        override fun getSimulator() = RubixSim
+    },
+    ORDER("Click in order!", 36, OrderGui) {
+        override fun getSimulator() = ClickInOrderSim
+    },
+    STARTS_WITH("What starts with:", 45, StartsWithGui) {
+        override fun getSimulator() = StartsWithSim()
+    },
+    SELECT("Select all the", 54, SelectAllGui) {
+        override fun getSimulator() = SelectAllSim()
+    },
+    MELODY("Click the button on time!", 54, MelodyGui) {
+        override fun getSimulator() = MelodySim
+    },
+
+    // why is none a thing
+    NONE("None", 0, null) {
+        override fun getSimulator() = StartGUI
+    //throw NotImplementedError("There is no simulator for TerminalType: None")
+    }
+}
+
+private interface Type {
+    fun getSimulator(): TermSimGUI
 }

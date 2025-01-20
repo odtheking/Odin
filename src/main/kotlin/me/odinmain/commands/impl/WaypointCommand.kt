@@ -1,7 +1,7 @@
 package me.odinmain.commands.impl
 
+import com.github.stivais.commodore.Commodore
 import me.odinmain.OdinMain.mc
-import me.odinmain.commands.commodore
 import me.odinmain.features.impl.render.WaypointManager
 import me.odinmain.utils.floor
 import me.odinmain.utils.skyblock.PlayerUtils
@@ -12,7 +12,7 @@ import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.skyblock.partyMessage
 import kotlin.math.roundToInt
 
-val waypointCommand = commodore("waypoint", "odinwaypoint") {
+val waypointCommand = Commodore("waypoint", "odinwaypoint") {
 
     literal("help").runs {
         modMessage(

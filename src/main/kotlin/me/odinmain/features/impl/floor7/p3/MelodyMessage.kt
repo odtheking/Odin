@@ -3,7 +3,7 @@ package me.odinmain.features.impl.floor7.p3
 import me.odinmain.events.impl.TerminalEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.features.impl.floor7.p3.termsim.TermSimGui
+import me.odinmain.features.impl.floor7.p3.termsim.TermSimGUI
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.StringSetting
@@ -29,7 +29,7 @@ object MelodyMessage : Module(
 
     @SubscribeEvent
     fun onGuiLoad(event: TerminalEvent.Opened) {
-        if (DungeonUtils.getF7Phase() != M7Phases.P3 || event.terminal.type != TerminalTypes.MELODY || mc.currentScreen is TermSimGui) return
+        if (DungeonUtils.getF7Phase() != M7Phases.P3 || event.terminal.type != TerminalTypes.MELODY || mc.currentScreen is TermSimGUI) return
         if (sendMelodyMessage) partyMessage(melodyMessage)
         if (melodySendCoords) sendCommand("od sendcoords", true)
 
@@ -38,7 +38,7 @@ object MelodyMessage : Module(
 
     init {
         execute(250) {
-            if (DungeonUtils.getF7Phase() != M7Phases.P3 || TerminalSolver.currentTerm.type != TerminalTypes.MELODY || mc.currentScreen is TermSimGui) return@execute
+            if (DungeonUtils.getF7Phase() != M7Phases.P3 || TerminalSolver.currentTerm.type != TerminalTypes.MELODY || mc.currentScreen is TermSimGUI) return@execute
 
             val containerChest = mc.thePlayer.openContainer as? ContainerChest ?: return@execute
             if (containerChest.name != "Click the button on time!" || !melodyProgress) return@execute

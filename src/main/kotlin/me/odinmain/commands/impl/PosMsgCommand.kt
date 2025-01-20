@@ -1,8 +1,8 @@
 package me.odinmain.commands.impl
 
+import com.github.stivais.commodore.Commodore
 import com.github.stivais.commodore.utils.GreedyString
 import me.odinmain.OdinMain.mc
-import me.odinmain.commands.commodore
 import me.odinmain.config.Config
 import me.odinmain.features.impl.dungeon.PosMessages
 import me.odinmain.features.impl.dungeon.PosMessages.findParser
@@ -11,7 +11,7 @@ import me.odinmain.features.impl.dungeon.PosMessages.posMessageStrings
 import me.odinmain.utils.round
 import me.odinmain.utils.skyblock.modMessage
 
-val PosMsgCommand = commodore("posmsg") {
+val PosMsgCommand = Commodore("posmsg") {
     literal("add") {
         literal("at").runs { x: Double, y: Double, z: Double, delay: Long, distance: Double, message: GreedyString ->
             val saveData = "x: ${x}, y: ${y}, z: ${z}, delay: ${delay}, distance: ${distance}, message: \"${message}\""

@@ -11,7 +11,7 @@ import net.minecraft.item.ItemStack
 import net.minecraftforge.fml.common.registry.GameData
 import kotlin.math.floor
 
-class StartsWith(private val letter: String = listOf("A", "B", "C", "G", "D", "M", "N", "R", "S", "T").random()) : TermSimGui(
+class StartsWithSim(private val letter: String = listOf("A", "B", "C", "G", "D", "M", "N", "R", "S", "T").random()) : TermSimGUI(
     "What starts with: \'$letter\'?",
     TerminalTypes.STARTS_WITH.size
 ) {

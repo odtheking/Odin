@@ -1,8 +1,11 @@
+@file:Suppress("UNUSED")
+
 package me.odinmain.commands.impl
 
+import com.github.stivais.commodore.Commodore
+import com.github.stivais.commodore.parsers.CommandParsable
 import com.github.stivais.commodore.utils.GreedyString
 import me.odinmain.OdinMain.display
-import me.odinmain.commands.commodore
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints
 import me.odinmain.features.impl.render.ClickGUIModule
 import me.odinmain.features.impl.render.ServerHud.colorizeFPS
@@ -11,14 +14,13 @@ import me.odinmain.features.impl.render.ServerHud.colorizeTps
 import me.odinmain.ui.clickgui.ClickGUI
 import me.odinmain.ui.hud.EditHUDGui
 import me.odinmain.utils.ServerUtils
-import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.fillItemFromSack
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.writeToClipboard
 import kotlin.math.round
 
-val mainCommand = commodore("od", "odin") {
+val mainCommand = Commodore("od", "odin") {
     runs {
         display = ClickGUI
     }
@@ -112,24 +114,13 @@ val mainCommand = commodore("od", "odin") {
         DungeonWaypoints.onKeybind()
     }
 
-    runs { tier: String ->
-        val normalizedTier = tier.trim().replace(Regex(" +"), "")
-            .replace("floor", "f", ignoreCase = true)
-            .replace("tier", "t", ignoreCase = true)
-            .replace("master", "m", ignoreCase = true)
+    // separated for better error handling,
+    // i.e. when a command fails it will show:
+    // /od <floor> and /od <kuudra tier>
+    runs { floor: Floors -> sendCommand("joininstance ${floor.instance()}") }
+    runs { `kuudra tier`: KuudraTier -> sendCommand("joininstance ${`kuudra tier`.instance()}") }
 
-        if (normalizedTier[0].equalsOneOf('f', 'm')) {
-            if (normalizedTier.length != 2 || normalizedTier[1] !in '1'..'7') return@runs
-            sendCommand("joininstance ${if (normalizedTier[0] == 'm') "master_" else ""}catacombs_floor_${floors[normalizedTier[1]]}")
-        } else if (normalizedTier[0] == 't') {
-            if (normalizedTier.length != 2 || normalizedTier[1] !in '1'..'5') return@runs
-            sendCommand("joininstance kuudra_${tiers[normalizedTier[1]]}")
-        }
-    } suggests {
-        (tiers.keys.map { "t$it" } + floors.keys.map { "m$it" } + floors.keys.map { "f$it" }).toList()
-    }
-
-    literal("leap").runs { player1: String?, player2: String?, player3: String?, player4: String? ->
+    literal("leaporder", "leap").runs { player1: String?, player2: String?, player3: String?, player4: String? ->
         val players = listOfNotNull(player1, player2, player3, player4)
         DungeonUtils.customLeapOrder = players
         modMessage("§aCustom leap order set to: §f${players.joinToString(", ")}")
@@ -140,10 +131,17 @@ val mainCommand = commodore("od", "odin") {
     }
 }
 
-private val floors = mapOf(
-    '1' to "one", '2' to "two", '3' to "three", '4' to "four", '5' to "five", '6' to "six", '7' to "seven"
-)
+@CommandParsable
+private enum class Floors {
+    F1, F2, F3, F4, F5, F6, F7, M1, M2, M3, M4, M5, M6, M7;
 
-private val tiers = mapOf(
-    '1' to "normal", '2' to "hot", '3' to "burning", '4' to "fiery", '5' to "infernal"
-)
+    private val floors = listOf("one", "two", "three", "four", "five", "six", "seven")
+    fun instance() = "${if (ordinal > 6) "master_" else ""}catacombs_floor_${floors[(ordinal % 7)]}"
+}
+
+@CommandParsable
+private enum class KuudraTier(private val test: String) {
+    T1("normal"), T2("hot"), T3("burning"), T4("fiery"), T5("infernal");
+
+    fun instance() = "kuudra_${test}"
+}

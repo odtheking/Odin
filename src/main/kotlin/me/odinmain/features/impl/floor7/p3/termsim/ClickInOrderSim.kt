@@ -8,21 +8,23 @@ import net.minecraft.inventory.Slot
 import net.minecraft.item.ItemStack
 import kotlin.math.floor
 
-object CorrectPanes : TermSimGui(
-    TerminalTypes.PANES.guiName, TerminalTypes.PANES.size
+object ClickInOrderSim : TermSimGUI(
+    TerminalTypes.ORDER.guiName, TerminalTypes.ORDER.size
 ) {
-    private val greenPane get() = ItemStack(pane, 1, 5 ).apply { setStackDisplayName("") }
-    private val redPane   get() = ItemStack(pane, 1, 14).apply { setStackDisplayName("") }
-
     override fun create() {
+        val used = (1..14).shuffled().toMutableList()
         createNewGui {
-            if (floor(it.slotIndex / 9.0) in 1.0..3.0 && it.slotIndex % 9 in 2..6) if (Math.random() > 0.75) greenPane else redPane else blackPane
+            if (floor(it.slotIndex / 9.0) in 1.0..2.0 && it.slotIndex % 9 in 1..7) ItemStack(pane, used.removeFirst(), 14).apply { setStackDisplayName("") }
+            else blackPane
         }
     }
 
     override fun slotClick(slot: Slot, button: Int) {
-        createNewGui { if (it == slot) { if (slot.stack?.metadata == 14) greenPane else redPane } else it.stack }
-
+        if (guiInventorySlots?.minByOrNull { if (it.stack?.metadata == 14) it.stack?.stackSize ?: 999 else 1000 } != slot) return
+        createNewGui {
+            if (it == slot) ItemStack(pane, slot.stack.stackSize, 5).apply { setStackDisplayName("") }
+            else it.stack
+        }
         playTermSimSound()
         if (guiInventorySlots?.none { it?.stack?.metadata == 14 } == true)
             TerminalEvent.Solved(TerminalSolver.lastTermOpened).postAndCatch()
