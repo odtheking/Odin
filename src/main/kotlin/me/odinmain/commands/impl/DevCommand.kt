@@ -3,6 +3,8 @@ package me.odinmain.commands.impl
 import com.github.stivais.commodore.Commodore
 import com.github.stivais.commodore.utils.GreedyString
 import kotlinx.coroutines.launch
+import me.odinmain.OdinMain
+import me.odinmain.OdinMain.VERSION
 import me.odinmain.OdinMain.mc
 import me.odinmain.OdinMain.scope
 import me.odinmain.events.impl.PacketEvent
@@ -14,17 +16,15 @@ import me.odinmain.features.impl.floor7.WitherDragonState
 import me.odinmain.features.impl.floor7.WitherDragons.priorityDragon
 import me.odinmain.features.impl.floor7.WitherDragonsEnum
 import me.odinmain.features.impl.nether.NoPre
+import me.odinmain.features.impl.render.ClickGUIModule
 import me.odinmain.features.impl.render.DevPlayers.updateDevs
-import me.odinmain.utils.isOtherPlayer
-import me.odinmain.utils.postAndCatch
-import me.odinmain.utils.sendDataToServer
+import me.odinmain.utils.*
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.Blessing
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.getRelativeCoords
 import me.odinmain.utils.skyblock.dungeon.ScanUtils
 import me.odinmain.utils.skyblock.dungeon.ScanUtils.getRoomCenter
-import me.odinmain.utils.writeToClipboard
 import net.minecraft.network.play.server.S02PacketChat
 import net.minecraft.util.ChatComponentText
 
@@ -140,6 +140,17 @@ val devCommand = Commodore("oddev") {
         """.trimIndent(), "")
 
     }
+
+    literal("debug") {
+        modMessage("""
+            ${getChatBreak()}
+            |Version: $VERSION, legit: ${OdinMain.isLegitVersion}
+            |Hypixel: ${LocationUtils.isOnHypixel}${if (ClickGUIModule.forceHypixel) " (forced)" else ""}
+            |Location: ${LocationUtils.currentArea}${DungeonUtils.currentRoom?.data?.name?.let { ", $it" } ?: ""}
+            ${getChatBreak()}
+        """.trimIndent())
+    }
+
     literal("simulate").runs { str: GreedyString ->
         mc.thePlayer.addChatMessage(ChatComponentText(str.string))
         PacketEvent.Receive(S02PacketChat(ChatComponentText(str.string))).postAndCatch()

@@ -17,7 +17,8 @@ import net.minecraftforge.fml.common.network.FMLNetworkEvent
 
 object LocationUtils {
 
-    private var isOnHypixel: Boolean = false
+    var isOnHypixel: Boolean = false
+        private set
     var isInSkyblock: Boolean = false
 
     var currentDungeon: Dungeon? = null
