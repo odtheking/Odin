@@ -95,60 +95,49 @@ val devCommand = Commodore("oddev") {
         }
     }
 
-    literal("dunginfo").runs {
-        modMessage("""
-            ${getChatBreak()}
-            |inDungeons: ${DungeonUtils.inDungeons}
-            |InBoss: ${DungeonUtils.inBoss}
-            |Floor: ${DungeonUtils.floor.name}
-            |Score: ${DungeonUtils.score}${when (MapInfo.togglePaul) {1 -> ", Force disabled Paul"; 2 -> ", Force enabled Paul"; else -> "" }}
-            |Secrets: (${DungeonUtils.secretCount} - ${DungeonUtils.neededSecretsAmount} - ${DungeonUtils.totalSecrets} - ${DungeonUtils.knownSecrets}) 
-            |mimicKilled: ${DungeonUtils.mimicKilled}
-            |Deaths: ${DungeonUtils.deathCount}, Crypts: ${DungeonUtils.cryptCount}
-            |BonusScore: ${DungeonUtils.getBonusScore}, isPaul: ${DungeonUtils.isPaul}
-            |OpenRooms: ${DungeonUtils.openRoomCount}, CompletedRooms: ${DungeonUtils.completedRoomCount} ${DungeonUtils.percentCleared}%, Blood Done: ${DungeonUtils.bloodDone}, Total: ${DungeonUtils.totalRooms}
-            |Puzzles: ${DungeonUtils.puzzles.joinToString { "${it.name} (${it.status.toString()})" }}, Count: ${DungeonUtils.puzzleCount}
-            |DungeonTime: ${DungeonUtils.dungeonTime}
-            |currentDungeonPlayer: ${DungeonUtils.currentDungeonPlayer.name}, ${DungeonUtils.currentDungeonPlayer.clazz}, ${DungeonUtils.currentDungeonPlayer.isDead}, ${DungeonUtils.isGhost}
-            |doorOpener: ${DungeonUtils.doorOpener}
-            |currentRoom: ${DungeonUtils.currentRoom?.data?.name}, roomsPassed: ${DungeonUtils.passedRooms.map { it.data.name }}
-            |Teammates: ${DungeonUtils.dungeonTeammates.joinToString { "§${it.clazz.colorCode}${it.name} (${it.clazz} [${it.clazzLvl}])" }}
-            |TeammatesNoSelf: ${DungeonUtils.dungeonTeammatesNoSelf.map { it.name }}
-            |LeapTeammates: ${DungeonUtils.leapTeammates.map { it.name }}
-            |Blessings: ${Blessing.entries.joinToString { "${it.name}: ${it.current}" }}
-            ${getChatBreak()}
-        """.trimIndent(), "")
-    }
-
-    literal("getlocation").runs {
-        modMessage("currentarea: ${LocationUtils.currentArea}, isDungeon ${DungeonUtils.inDungeons}, inKuudra: ${KuudraUtils.inKuudra} kuudratier: ${LocationUtils.kuudraTier}, dungeonfloor: ${DungeonUtils.floorNumber}")
-    }
-
-    literal("kuudrainfo").runs {
-        modMessage("""
-            ${getChatBreak()}
-            |inKuudra: ${KuudraUtils.inKuudra}, tier: ${LocationUtils.kuudraTier}, phase: ${KuudraUtils.phase}
-            |kuudraTeammates: ${KuudraUtils.kuudraTeammates.joinToString { it.playerName }}
-            |giantZombies: ${KuudraUtils.giantZombies.joinToString { it.positionVector.toString() }}
-            |supplies: ${KuudraUtils.supplies.joinToString()}
-            |kuudraEntity: ${KuudraUtils.kuudraEntity}
-            |builders: ${KuudraUtils.playersBuildingAmount}
-            |build: ${KuudraUtils.buildDonePercentage}
-            |buildingPiles: ${KuudraUtils.buildingPiles.joinToString { it.positionVector.toString() }}
-            |missing: ${NoPre.missing}
-            ${getChatBreak()}
-        """.trimIndent(), "")
-
-    }
-
-    literal("debug") {
+    literal("debug").runs {
         modMessage("""
             ${getChatBreak()}
             |Version: $VERSION, legit: ${OdinMain.isLegitVersion}
             |Hypixel: ${LocationUtils.isOnHypixel}${if (ClickGUIModule.forceHypixel) " (forced)" else ""}
-            |Location: ${LocationUtils.currentArea}${DungeonUtils.currentRoom?.data?.name?.let { ", $it" } ?: ""}
+            ${when {
+                KuudraUtils.inKuudra -> """
+                    |inKuudra: ${KuudraUtils.inKuudra}, tier: ${LocationUtils.kuudraTier}, phase: ${KuudraUtils.phase}
+                    |kuudraTeammates: ${KuudraUtils.kuudraTeammates.joinToString { it.playerName }}
+                    |giantZombies: ${KuudraUtils.giantZombies.joinToString { it.positionVector.toString() }}
+                    |supplies: ${KuudraUtils.supplies.joinToString()}
+                    |kuudraEntity: ${KuudraUtils.kuudraEntity}
+                    |builders: ${KuudraUtils.playersBuildingAmount}
+                    |build: ${KuudraUtils.buildDonePercentage}
+                    |buildingPiles: ${KuudraUtils.buildingPiles.joinToString { it.positionVector.toString() }}
+                    |missing: ${NoPre.missing}
+                """.trimIndent()
+                DungeonUtils.inDungeons -> """
+                    |inDungeons: ${DungeonUtils.inDungeons}
+                    |InBoss: ${DungeonUtils.inBoss}
+                    |Floor: ${DungeonUtils.floor.name}
+                    |Score: ${DungeonUtils.score}${when (MapInfo.togglePaul) {1 -> ", Force disabled Paul"; 2 -> ", Force enabled Paul"; else -> "" }}
+                    |Secrets: (${DungeonUtils.secretCount} - ${DungeonUtils.neededSecretsAmount} - ${DungeonUtils.totalSecrets} - ${DungeonUtils.knownSecrets}) 
+                    |mimicKilled: ${DungeonUtils.mimicKilled}
+                    |Deaths: ${DungeonUtils.deathCount}, Crypts: ${DungeonUtils.cryptCount}
+                    |BonusScore: ${DungeonUtils.getBonusScore}, isPaul: ${DungeonUtils.isPaul}
+                    |OpenRooms: ${DungeonUtils.openRoomCount}, CompletedRooms: ${DungeonUtils.completedRoomCount} ${DungeonUtils.percentCleared}%, Blood Done: ${DungeonUtils.bloodDone}, Total: ${DungeonUtils.totalRooms}
+                    |Puzzles: ${DungeonUtils.puzzles.joinToString { "${it.name} (${it.status.toString()})" }}, Count: ${DungeonUtils.puzzleCount}
+                    |DungeonTime: ${DungeonUtils.dungeonTime}
+                    |currentDungeonPlayer: ${DungeonUtils.currentDungeonPlayer.name}, ${DungeonUtils.currentDungeonPlayer.clazz}, ${DungeonUtils.currentDungeonPlayer.isDead}, ${DungeonUtils.isGhost}
+                    |doorOpener: ${DungeonUtils.doorOpener}
+                    |currentRoom: ${DungeonUtils.currentRoom?.data?.name}, roomsPassed: ${DungeonUtils.passedRooms.map { it.data.name }}
+                    |Teammates: ${DungeonUtils.dungeonTeammates.joinToString { "§${it.clazz.colorCode}${it.name} (${it.clazz} [${it.clazzLvl}])" }}
+                    |TeammatesNoSelf: ${DungeonUtils.dungeonTeammatesNoSelf.map { it.name }}
+                    |LeapTeammates: ${DungeonUtils.leapTeammates.map { it.name }}
+                    |Blessings: ${Blessing.entries.joinToString { "${it.name}: ${it.current}" }}
+                """.trimIndent()
+                else -> """
+                    |Current Area: ${LocationUtils.currentArea}
+                """.trimIndent()
+            }}
             ${getChatBreak()}
-        """.trimIndent())
+        """.trimIndent(), "")
     }
 
     literal("simulate").runs { str: GreedyString ->
