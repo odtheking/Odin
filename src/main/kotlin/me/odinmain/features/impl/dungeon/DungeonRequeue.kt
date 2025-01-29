@@ -26,7 +26,9 @@ object DungeonRequeue : Module(
             }
 
             runIn(delay * 20) {
-                sendCommand(if (type) "instancerequeue" else "od ${DungeonUtils.floor.name.lowercase()}", clientSide = !type)
+                if (!disableRequeue) {
+                    sendCommand(if (type) "instancerequeue" else "od ${DungeonUtils.floor.name.lowercase()}", clientSide = !type)
+                }
             }
         }
 
