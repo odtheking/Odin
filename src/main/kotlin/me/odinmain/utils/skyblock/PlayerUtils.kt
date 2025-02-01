@@ -2,7 +2,7 @@ package me.odinmain.utils.skyblock
 
 import me.odinmain.OdinMain.logger
 import me.odinmain.OdinMain.mc
-import me.odinmain.features.impl.floor7.p3.termsim.TermSimGui
+import me.odinmain.features.impl.floor7.p3.termsim.TermSimGUI
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.clock.Executor.Companion.register
 import me.odinmain.utils.render.Color
@@ -63,8 +63,8 @@ object PlayerUtils {
      * Wrapper for windowClick which handles click spamming. Use instant for player action click redirect.
      */
     fun windowClick(slotId: Int, button: Int, mode: Int, instant: Boolean = false) {
-        if (mc.currentScreen is TermSimGui) {
-            val gui = mc.currentScreen as TermSimGui
+        if (mc.currentScreen is TermSimGUI) {
+            val gui = mc.currentScreen as TermSimGUI
             gui.delaySlotClick(gui.inventorySlots.getSlot(slotId), button)
         } else if (instant) sendWindowClickPacket(slotId, button, mode)
         else windowClickQueue.add(WindowClick(slotId, button, mode))

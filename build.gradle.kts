@@ -18,6 +18,7 @@ blossom {
 
 allprojects {
     repositories {
+//        mavenLocal()
         mavenCentral()
         maven("https://repo.spongepowered.org/maven/")
         maven("https://repo.essential.gg/repository/maven-public/")
@@ -38,13 +39,17 @@ allprojects {
         implementation(kotlin("stdlib-jdk8"))
 
         compileOnly("com.github.NotEnoughUpdates:NotEnoughUpdates:2.4.0:all")
-        implementation("com.github.Stivais:Commodore:3f4a14b1cf")
+
+        // 1.0.0-legacy
+        implementation("com.github.Stivais:Commodore:bea320fe0a")
 
         annotationProcessor("org.spongepowered:mixin:0.8.5-SNAPSHOT")
         implementation("org.spongepowered:mixin:0.7.11-SNAPSHOT") { isTransitive = false }
 
         implementation("gg.essential:loader-launchwrapper:1.1.3")
         compileOnly("gg.essential:essential-1.8.9-forge:12132+g6e2bf4dc5")
+
+        implementation("com.mojang:brigadier:1.2.9")
     }
 
     loom {
@@ -59,4 +64,10 @@ allprojects {
 
     java.toolchain.languageVersion.set(JavaLanguageVersion.of(8))
     kotlin.jvmToolchain(8)
+
+    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+        kotlinOptions {
+            freeCompilerArgs += "-Xlambdas=class"
+        }
+    }
 }

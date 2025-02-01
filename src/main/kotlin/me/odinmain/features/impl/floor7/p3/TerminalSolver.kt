@@ -92,7 +92,15 @@ object TerminalSolver : Module(
     val melodyPressColor by ColorSetting("Melody Press Color", Color.CYAN.withAlpha(0.75f), true, description = "Color of the location for pressing for melody.").withDependency { showColors && !cancelMelodySolver }
     val melodyCorrectRowColor by ColorSetting("Melody Correct Row Color", Color.WHITE.withAlpha(0.75f), true, description = "Color of the whole row for melody.").withDependency { showColors && !cancelMelodySolver }
 
-    data class Terminal(val type: TerminalTypes, val solution: CopyOnWriteArrayList<Int> = CopyOnWriteArrayList(), val items: Array<ItemStack?> = emptyArray(), val guiName: String = "", val timeOpened: Long = System.currentTimeMillis(), var clickedSlot: Pair<Int, Long>? = null)
+    data class Terminal(
+        val type: TerminalTypes,
+        val solution: CopyOnWriteArrayList<Int> = CopyOnWriteArrayList(),
+        val items: Array<ItemStack?> = emptyArray(),
+        val guiName: String = "",
+        val timeOpened: Long = System.currentTimeMillis(),
+        var clickedSlot: Pair<Int, Long>? = null
+
+    )
     private val terminalActivatedRegex = Regex("(.{1,16}) activated a terminal! \\((\\d)/(\\d)\\)")
     var currentTerm = Terminal(TerminalTypes.NONE)
         private set

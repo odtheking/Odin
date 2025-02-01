@@ -23,12 +23,15 @@ object KuudraRequeue : Module(
                 disableRequeue = false
                 return@onMessage
             }
+
             runIn(delay * 20) {
-                sendCommand("od t${LocationUtils.kuudraTier}", true)
+                if (!disableRequeue) {
+                    sendCommand("od t${LocationUtils.kuudraTier}", true)
+                }
             }
         }
 
-        onMessage(Regex("(\\[.+])? ?(.{1,16}) has left the party.")) {
+        onMessage(Regex("(\\[.+])? ?(.{1,16}) has (left|been removed from) the party.")) {
             if (disablePartyLeave) disableRequeue = true
         }
     }

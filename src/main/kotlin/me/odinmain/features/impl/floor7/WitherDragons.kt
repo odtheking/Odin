@@ -40,7 +40,7 @@ object WitherDragons : Module(
         } else {
             priorityDragon.takeIf { drag -> drag != WitherDragonsEnum.None }?.let { dragon ->
                 if (dragon.timeToSpawn <= 0) return@HudSetting 0f to 0f
-                mcText("§${dragon.colorCode}${dragon.name.first()}: ${colorDragonTimer(dragon.timeToSpawn)}${String.format(Locale.US, "%.2f", dragon.timeToSpawn / 20.0)}", 2, 5f, 1, Color.WHITE, center = false)
+                mcText("§${dragon.colorCode}${dragon.name.first()}: ${colorDragonTimer(dragon.timeToSpawn)}${dragon.timeToSpawn * 50}ms", 2, 5f, 1, Color.WHITE, center = false)
             }
             getMCTextWidth("§5P §a4.5s")+ 2f to 33f
         }
@@ -143,7 +143,7 @@ object WitherDragons : Module(
         }
         if (dragonTimer) {
             WitherDragonsEnum.entries.forEach { dragon ->
-                if (dragon.state == WitherDragonState.SPAWNING && dragon.timeToSpawn > 0) Renderer.drawStringInWorld(
+                if (dragon.state == WitherDragonState.SPAWNING) Renderer.drawStringInWorld(
                     "§${dragon.colorCode}${dragon.name.first()}: ${colorDragonTimer(dragon.timeToSpawn)}${String.format(Locale.US, "%.2f", dragon.timeToSpawn / 20.0)}", dragon.spawnPos,
                     color = Color.WHITE, depth = false, scale = 0.16f
                 )

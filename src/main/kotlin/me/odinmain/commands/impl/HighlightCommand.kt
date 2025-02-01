@@ -1,12 +1,12 @@
 package me.odinmain.commands.impl
 
+import com.github.stivais.commodore.Commodore
 import com.github.stivais.commodore.utils.GreedyString
-import me.odinmain.commands.commodore
 import me.odinmain.config.Config
 import me.odinmain.features.impl.render.CustomHighlight.highlightList
 import me.odinmain.utils.skyblock.modMessage
 
-val highlightCommand = commodore("highlight") {
+val highlightCommand = Commodore("highlight") {
     literal("add").runs { mob: GreedyString ->
         val lowercase = mob.string.lowercase()
         if (lowercase in highlightList) return@runs modMessage("$mob is already in the highlight list.")

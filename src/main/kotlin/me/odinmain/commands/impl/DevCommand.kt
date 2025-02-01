@@ -1,10 +1,10 @@
 package me.odinmain.commands.impl
 
+import com.github.stivais.commodore.Commodore
 import com.github.stivais.commodore.utils.GreedyString
 import kotlinx.coroutines.launch
 import me.odinmain.OdinMain.mc
 import me.odinmain.OdinMain.scope
-import me.odinmain.commands.commodore
 import me.odinmain.events.impl.PacketEvent
 import me.odinmain.features.ModuleManager.generateFeatureList
 import me.odinmain.features.impl.dungeon.MapInfo
@@ -28,7 +28,9 @@ import me.odinmain.utils.writeToClipboard
 import net.minecraft.network.play.server.S02PacketChat
 import net.minecraft.util.ChatComponentText
 
-val devCommand = commodore("oddev") {
+
+
+val devCommand = Commodore("oddev") {
 
     literal("drags") {
         runs { text: GreedyString ->

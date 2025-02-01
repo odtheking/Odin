@@ -12,7 +12,7 @@ import net.minecraft.item.ItemStack
 import net.minecraftforge.event.entity.player.ItemTooltipEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
-object StartGui : TermSimGui(
+object StartGUI : TermSimGUI(
     "Terminal Simulator", 27
 ) {
     private val dye = Item.getItemById(351)
@@ -65,13 +65,13 @@ object StartGui : TermSimGui(
                 repeat(6) { i -> TerminalSimulator.termSimPBs.set(i, 999.0) }
                 modMessage("§cPBs reset!")
             }
-            10 -> CorrectPanes.open(ping)
-            11 -> Rubix.open(ping)
-            12 -> InOrder.open(ping)
+            10 -> CorrectPanesSim.open(ping)
+            11 -> RubixSim.open(ping)
+            12 -> ClickInOrderSim.open(ping)
             13 -> openRandomTerminal(ping)
-            14 -> StartsWith().open(ping)
-            15 -> SelectAll().open(ping)
-            16 -> Melody.open(ping)
+            14 -> StartsWithSim().open(ping)
+            15 -> SelectAllSim().open(ping)
+            16 -> MelodySim.open(ping)
         }
     }
 }

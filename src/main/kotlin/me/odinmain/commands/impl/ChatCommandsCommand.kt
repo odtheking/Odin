@@ -1,11 +1,11 @@
 package me.odinmain.commands.impl
 
-import me.odinmain.commands.commodore
+import com.github.stivais.commodore.Commodore
 import me.odinmain.config.Config
 import me.odinmain.features.impl.skyblock.ChatCommands.blacklist
 import me.odinmain.utils.skyblock.modMessage
 
-val chatCommandsCommand = commodore("chatcommandslist", "cclist", "chatclist", "ccommandslist") {
+val chatCommandsCommand = Commodore("chatcommandslist", "cclist", "chatclist", "ccommandslist") {
     literal("add").runs { name: String ->
         val lowercase = name.lowercase()
         if (lowercase in blacklist) return@runs modMessage("$name is already in the list.")

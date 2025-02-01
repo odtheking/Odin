@@ -8,7 +8,7 @@ import net.minecraft.inventory.Slot
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
 
-object Melody : TermSimGui(
+object MelodySim : TermSimGUI(
     TerminalTypes.MELODY.guiName, TerminalTypes.MELODY.size
 ) {
     private val magentaPane get() = ItemStack(pane, 1, 2 ).apply { setStackDisplayName("") }
