@@ -62,7 +62,9 @@ object ChatCommands : Module(
         onMessage(Regex(" {29}> EXTRA STATS <|^\\[NPC] Elle: Good job everyone. A hard fought battle come to an end. Let's get out of here before we run into any more trouble!$")) {
             if (!dt || dtReason.isEmpty()) return@onMessage
             runIn(30) {
-                partyMessage("Players need DT: ${dtReason.groupBy({ it.second }, { it.first }).entries.joinToString(separator = ", ") { (reason, names) -> "${names.joinToString(", ")}: $reason" }}")
+                dtReason.find { it.first == mc.thePlayer.name }?.let { partyMessage("Downtime needed: ${it.second}") }
+                partyMessage("Players need DT: ${dtReason.joinToString(", ") { it.first }}")
+                modMessage("DT Reasons: ${dtReason.groupBy({ it.second }, { it.first }).entries.joinToString(separator = ", ") { (reason, names) -> "${names.joinToString(", ")}: $reason" }}")
                 PlayerUtils.alert("§cPlayers need DT")
                 dtReason.clear()
             }

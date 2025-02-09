@@ -57,7 +57,8 @@ object DungeonWaypoints : Module(
     private var reachColor by ColorSetting("Reach Color", Color(0, 255, 213, 0.43f), description = "Color of the reach box highlight.", allowAlpha = true).withDependency { allowEdits }
     private val allowTextEdit by BooleanSetting("Allow Text Edit", true, description = "Allows you to set the text of a waypoint while sneaking.")
 
-    private val renderTitle by BooleanSetting("Render Title", true, description = "Renders the title of the waypoint.")
+    private val renderTitle by BooleanSetting("Render Title", true, description = "Renders the titles of waypoints")
+    private val titleScale by NumberSetting("Title Scale", 1f, 0.1f, 4f, increment = 0.1f, description = "The scale of the titles of waypoints.").withDependency { renderTitle }
     private val disableDepth by BooleanSetting("Global Depth", false, description = "Disables depth testing for all waypoints.")
 
     private val settingsDropDown by DropdownSetting("Next Waypoint Settings")
@@ -183,7 +184,7 @@ object DungeonWaypoints : Module(
         if (renderTitle) {
             for (waypoint in room.waypoints) {
                 if (waypoint.clicked) continue
-                Renderer.drawStringInWorld(waypoint.title ?: continue, Vec3(waypoint.x + 0.5, waypoint.y + 0.5, waypoint.z + 0.5), depth = waypoint.depth)
+                Renderer.drawStringInWorld(waypoint.title ?: continue, Vec3(waypoint.x + 0.5, waypoint.y + 0.5 + getMCTextHeight() * 0.015 * titleScale, waypoint.z + 0.5), depth = waypoint.depth, scale = 0.03f * titleScale)
             }
         }
 
