@@ -73,8 +73,8 @@ object RenderOptimizer : Module(
     private const val SOUL_WEAVER_TEXTURE = "eyJ0aW1lc3RhbXAiOjE1NTk1ODAzNjI1NTMsInByb2ZpbGVJZCI6ImU3NmYwZDlhZjc4MjQyYzM5NDY2ZDY3MjE3MzBmNDUzIiwicHJvZmlsZU5hbWUiOiJLbGxscmFoIiwic2lnbmF0dXJlUmVxdWlyZWQiOnRydWUsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS8yZjI0ZWQ2ODc1MzA0ZmE0YTFmMGM3ODViMmNiNmE2YTcyNTYzZTlmM2UyNGVhNTVlMTgxNzg0NTIxMTlhYTY2In19fQ=="
     private val dungeonMobSpawns = setOf("Lurker", "Dreadlord", "Souleater", "Zombie", "Skeleton", "Skeletor", "Sniper", "Super Archer", "Spider", "Fels", "Withermancer")
 
-    private val potatoMode by BooleanSetting(name = "Potato Mode", description = "")
-    private val showStarredNametags by BooleanSetting("Show Starred Nametags", description = "").withDependency { potatoMode }
+    private val potatoMode by BooleanSetting(name = "Potato Mode (exp)", description = "Potato mode for low-end computers.")
+    private val showStarredNametags by BooleanSetting("Show Starred Nametags", description = "Shows the nametags of starred mobs.").withDependency { potatoMode }
     private val editEntityColors by DropdownSetting("Entity Colors").withDependency { potatoMode }
     private val editShouldRender by DropdownSetting("Potato Entities").withDependency { potatoMode }
 
@@ -339,7 +339,7 @@ object RenderOptimizer : Module(
         renderTileEntities(camera, partialTicks)
 
         for (entity in mc.theWorld.loadedEntityList) {
-            if ((mc.gameSettings.thirdPersonView == 0 && entity == mc.renderViewEntity) ||
+            if (entity.isInvisible || (mc.gameSettings.thirdPersonView == 0 && entity == mc.renderViewEntity) ||
                 (entity.posY < 0.0 || entity.posY >= 256.0 || !mc.theWorld.isBlockLoaded(BlockPos(entity)))) continue
             if (!(mc.renderManager.shouldRender(entity, camera, mc.renderManager.viewerPosX, mc.renderManager.viewerPosY, mc.renderManager.viewerPosZ))) continue
             if (entity.ticksExisted == 0) {
@@ -374,7 +374,7 @@ object RenderOptimizer : Module(
 
         for (tileEntity in mc.theWorld.loadedTileEntityList) {
             if (tileEntity is TileEntitySign || tileEntity is TileEntityEndPortal) continue
-            if (camera.isBoundingBoxInFrustum(tileEntity.getRenderBoundingBox())) TileEntityRendererDispatcher.instance.renderTileEntity(tileEntity, partialTicks, -1)
+            if (camera.isBoundingBoxInFrustum(tileEntity.renderBoundingBox)) TileEntityRendererDispatcher.instance.renderTileEntity(tileEntity, partialTicks, -1)
         }
     }
 
