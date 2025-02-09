@@ -24,6 +24,7 @@ import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.input.Keyboard
+import kotlin.math.roundToInt
 
 object DianaHelper : Module(
     name = "Diana Helper",
@@ -49,7 +50,8 @@ object DianaHelper : Module(
         sendCommand("warp ${warpLocation?.name ?: return@onPress}")
         warpLocation = null
     }
-    private val autoWarp by BooleanSetting("Auto Warp", description = "Automatically warps you to the nearest warp location 2 seconds after you activate the spade ability.").withDependency { !isLegitVersion }
+    private val autoWarp by BooleanSetting("Auto Warp", description = "Automatically warps you to the nearest warp location after you activate the spade ability.").withDependency { !isLegitVersion }
+    private val autoWarpWaitTime by NumberSetting("Auto Warp Wait Time", 2f, 0.0, 10.0, 0.1, description = "Time to wait before warping.").withDependency { autoWarp }
     private val resetBurrows by ActionSetting("Reset Burrows", description = "Removes all the current burrows.") { activeBurrows.clear() }
     private var warpLocation: WarpPoint? = null
 
@@ -120,7 +122,7 @@ object DianaHelper : Module(
     @SubscribeEvent
     fun onRightClick(event: ClickEvent.Right) {
         if (!isDoingDiana || !isHolding("ANCESTRAL_SPADE") || !autoWarp || isLegitVersion) return
-        runIn(40) {
+        runIn((autoWarpWaitTime * 20).roundToInt()) {
             if (!cmdCooldown.hasTimePassed()) return@runIn
             modMessage("§6Warping to ${warpLocation?.displayName ?: return@runIn}")
             sendCommand("warp ${warpLocation?.name ?: return@runIn}")
