@@ -63,7 +63,6 @@ object ChatCommands : Module(
             if (!dt || dtReason.isEmpty()) return@onMessage
             runIn(30) {
                 dtReason.find { it.first == mc.thePlayer.name }?.let { partyMessage("Downtime needed: ${it.second}") }
-                partyMessage("Players need DT: ${dtReason.joinToString(", ") { it.first }}")
                 modMessage("DT Reasons: ${dtReason.groupBy({ it.second }, { it.first }).entries.joinToString(separator = ", ") { (reason, names) -> "${names.joinToString(", ")}: $reason" }}")
                 PlayerUtils.alert("§cPlayers need DT")
                 dtReason.clear()

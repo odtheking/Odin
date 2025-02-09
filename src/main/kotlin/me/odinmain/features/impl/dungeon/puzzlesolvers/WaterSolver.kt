@@ -32,7 +32,8 @@ object WaterSolver {
 
     private var solutions = HashMap<LeverBlock, Array<Double>>()
     private var patternIdentifier = -1
-    private var openedWater = -1L
+    private var openedWaterTicks = -1
+    private var tickCounter = 0
 
     fun scan() = with (DungeonUtils.currentRoom) {
         if (this?.data?.name != "Water Board" || patternIdentifier != -1) return@with
@@ -86,11 +87,12 @@ object WaterSolver {
 
         solutions.forEach { (lever, times) ->
             times.drop(lever.i).forEachIndexed { index, time ->
+                val timeInTicks = (time * 20).toInt()
                 Renderer.drawStringInWorld(when {
-                    openedWater == -1L && time == 0.0 -> "§a§lCLICK ME!"
-                    openedWater == -1L -> "§e${time}s"
+                    openedWaterTicks == -1 && timeInTicks == 0 -> "§a§lCLICK ME!"
+                    openedWaterTicks == -1 -> "§e${time}s"
                     else ->
-                        (openedWater + time * 1000L - System.currentTimeMillis()).takeIf { it > 0 }?.let { "§e${String.format(Locale.US, "%.2f", it / 1000)}s" } ?: "§a§lCLICK ME!"
+                        (openedWaterTicks + timeInTicks - tickCounter).takeIf { it > 0 }?.let { "§e${String.format(Locale.US, "%.2f", it / 20.0)}s" } ?: "§a§lCLICK ME!"
                 }, lever.leverPos.addVector(0.5, (index + lever.i) * 0.5 + 1.5, 0.5), Color.WHITE, scale = 0.04f)
             }
         }
@@ -99,16 +101,21 @@ object WaterSolver {
     fun waterInteract(event: C08PacketPlayerBlockPlacement) {
         if (solutions.isEmpty()) return
         LeverBlock.entries.find { it.leverPos.equal(event.position.toVec3()) }?.let {
-            if (it == LeverBlock.WATER && openedWater == -1L) openedWater = System.currentTimeMillis()
+            if (it == LeverBlock.WATER && openedWaterTicks == -1) openedWaterTicks = tickCounter
             it.i++
         }
+    }
+
+    fun onServerTick() {
+        tickCounter++
     }
 
     fun reset() {
         LeverBlock.entries.forEach { it.i = 0 }
         patternIdentifier = -1
         solutions.clear()
-        openedWater = -1
+        openedWaterTicks = -1
+        tickCounter = 0
     }
 
     private enum class WoolColor(val relativePosition: BlockPos) {
