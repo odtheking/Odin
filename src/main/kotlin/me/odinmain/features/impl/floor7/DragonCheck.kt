@@ -6,6 +6,7 @@ import me.odinmain.features.impl.floor7.WitherDragons.sendNotification
 import me.odinmain.features.impl.floor7.WitherDragons.sendSpray
 import me.odinmain.utils.isVecInXZ
 import me.odinmain.utils.skyblock.modMessage
+import net.minecraft.entity.Entity
 import net.minecraft.entity.boss.EntityDragon
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.init.Blocks

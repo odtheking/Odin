@@ -67,7 +67,7 @@ object DianaBurrowEstimate {
             activeBurrows.remove(location)
             recentBurrows.add(location)
             lastDugBurrow = null
-            runIn(1200) { recentBurrows.remove(location) }
+            runIn(1200) { if (location in recentBurrows) recentBurrows.remove(location) }
             true
         } == true
     }
@@ -204,16 +204,16 @@ object DianaBurrowEstimate {
     }
 
     private fun reset() {
-        lastDingTime = 0L
-        lastDingPitch = 0f
-        firstPitch = 0f
-        lastParticlePosition = null
         secondLastParticlePosition = null
-        lastSoundPoint = null
-        firstParticlePoint = null
         currentParticlePosition = null
         estimatedBurrowPosition = null
+        lastParticlePosition = null
+        firstParticlePoint = null
+        lastSoundPoint = null
+        lastDingPitch = 0f
         numberOfDings = 0
+        lastDingTime = 0L
+        firstPitch = 0f
         dingPitchSlopes.clear()
     }
 
@@ -232,9 +232,8 @@ object DianaBurrowEstimate {
         ENCHANT ({ particleType == EnumParticleTypes.ENCHANTMENT_TABLE && particleCount == 5 && particleSpeed == .05f && xOffset == .5f && yOffset == .4f && zOffset == .5f });
 
         companion object {
-            fun getParticleType(packet: S2APacketParticles): ParticleType? {
-                return if (!packet.isLongDistance) null else entries.find { it.check(packet) }
-            }
+            fun getParticleType(packet: S2APacketParticles): ParticleType? =
+                if (!packet.isLongDistance) null else entries.find { it.check(packet) }
         }
     }
 
