@@ -2,8 +2,8 @@ Legit Feature List:
 
 Category: Dungeon
 - Positional Messages: Sends a message when you're near a certain position. /posmsg
-- Teammate Highlight: Enhances visibility of your dungeon teammates and their name tags.
 - Dungeon Waypoints: Shows waypoints for dungeons. Currently it's quite buggy and doesn't work well with some rooms.
+- Teammate Highlight: Enhances visibility of your dungeon teammates and their name tags.
 - Dungeon Requeue: Automatically starts a new dungeon at the end of a dungeon.
 - Terracotta Timer: Displays the time until the terracotta respawns.
 - Blessing Display: Displays the current blessings of the dungeon.
@@ -24,13 +24,13 @@ Category: Floor 7
 - Terminal Simulator: Simulates a floor 7 terminal from phase 3.
 - Melody Message: Helpful messages for the melody terminal in floor 7.
 - Terminal Sounds: Plays a sound whenever you click in a terminal.
-- Terminal Solver: Renders solution for terminals in floor 7.
 - Wither Dragons: Various features for Wither dragons (boxes, timer, HP, priority and more).
+- Terminal Solver: Renders solution for terminals in floor 7.
 - Terminal Times: Records the time taken to complete terminals in floor 7.
 - Arrows Device: Solver for the Sharp Shooter puzzle in floor 7.
+- Arrow Align: Shows a solution for the Arrow Align device.
 - Tick Timers: Various tick timers for the floor 7 boss.
 - Simon Says: Shows a solution for the Simon Says device.
-- Arrow Align: Shows a solution for the Arrow Align device.
 
 Category: Render
 - Ether Warp Helper: Helpful tools for Ether Warp.
@@ -40,16 +40,16 @@ Category: Render
 - Personal Dragon: Spawns your own personal dragon.
 - No Cursor Reset: Makes your cursor stop resetting between guis.
 - Name Changer: Replaces your name with the given nick, color codes work (&).
-- Space Helmet: Equips you with a space helmet.
 - Item Highlight: Outlines dropped item entities.
+- Space Helmet: Equips you with a space helmet.
 - Block Overlay: Lets you customize the vanilla block overlay.
 - Visual Words: Replaces words in the world with other words. (/visualwords)
 - CPS Display: Displays your clicks per second.
 - BPS Display: Displays how many blocks per second you're breaking.
-- Server Hud: Displays your current ping, FPS and server's TPS.
 - Animations: Changes the appearance of the first-person view model.
-- Farm Keys: Temporarily changes your keybinds for farming in Skyblock.
+- Server Hud: Displays your current ping, FPS and server's TPS.
 - Waypoints: Allows to render waypoints based on coordinates in chat.
+- Farm Keys: Temporarily changes your keybinds for farming in Skyblock.
 - Click Gui: Allows you to customize the GUI.
 - Camera: Allows you to change camera settings.
 - Sidebar: Various settings to change the look of the minecraft sidebar.
@@ -58,13 +58,13 @@ Category: Render
 Category: Skyblock
 - Command Keybinds: Various keybinds for common skyblock commands.
 - Wardrobe Keybinds: Keybinds for wardrobe equiping and unequipping.
-- Deployable Timer: Displays the active deployable and it's time left.
 - Invincibility Timer: Timer to show how long you have left Invincible.
+- Deployable Timer: Displays the active deployable and it's time left.
 - Chat Commands: Type !help in the corresponding channel for cmd list. Use /blacklist.
 - Player Display: Displays info about the skyblock player.
 - Pet Keybinds: Keybinds for the pets menu. (/petkeys)
-- Diana Helper: Displays the location of the Diana guess and burrows.
 - Spring Boots: Shows how many blocks you can jump.
+- Diana Helper: Displays the location of the Diana guess and burrows.
 - Chat Emotes: Allows you to send hypixel's emotes.
 - Hide Players: Hides players in your vicinity.
 - Mob Spawn: Sends a message whenever a mob spawns.
