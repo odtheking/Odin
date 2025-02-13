@@ -35,6 +35,7 @@ object ChatCommands : Module(
     private val allinvite by BooleanSetting(name = "Allinvite", default = true, description = "Executes the /party settings allinvite command.").withDependency { showSettings }
     private val odin by BooleanSetting(name = "Odin", default = true, description = "Sends the odin discord link.").withDependency { showSettings }
     private val boop by BooleanSetting(name = "Boop", default = true, description = "Executes the /boop command.").withDependency { showSettings }
+    private val kick by BooleanSetting(name = "Kick", default = true, description = "Executes the /p kick command.").withDependency { showSettings }
     private val cf by BooleanSetting(name = "Coinflip (cf)", default = true, description = "Sends the result of a coinflip..").withDependency { showSettings }
     private val eightball by BooleanSetting(name = "Eightball", default = true, description = "Sends a random 8ball response.").withDependency { showSettings }
     private val dice by BooleanSetting(name = "Dice", default = true, description = "Rolls a dice.").withDependency { showSettings }
@@ -92,7 +93,7 @@ object ChatCommands : Module(
     private fun handleChatCommands(message: String, name: String, channel: ChatChannel) {
         val commandsMap = when (channel) {
             ChatChannel.PARTY -> mapOf (
-                "coords" to coords, "odin" to odin, "boop" to boop, "cf" to cf, "8ball" to eightball, "dice" to dice, "racism" to racism, "tps" to tps, "warp" to warp,
+                "coords" to coords, "odin" to odin, "boop" to boop, "kick" to kick, "cf" to cf, "8ball" to eightball, "dice" to dice, "racism" to racism, "tps" to tps, "warp" to warp,
                 "warptransfer" to warptransfer, "allinvite" to allinvite, "pt" to pt, "dt" to dt, "m?" to queInstance, "f?" to queInstance, "t?" to queInstance, "time" to time,
                 "demote" to demote, "promote" to promote
             )
@@ -105,7 +106,7 @@ object ChatCommands : Module(
             "help", "h" -> channelMessage("Commands: ${commandsMap.filterValues { it }.keys.joinToString(", ")}", name, channel)
             "coords", "co" -> if (coords) channelMessage(PlayerUtils.getPositionString(), name, channel)
             "odin", "od" -> if (odin) channelMessage("Odin! https://discord.gg/2nCbC9hkxT", name, channel)
-            "boop" -> if (boop) sendChatMessage("/boop ${message.substringAfter("boop ")}")
+            "boop" -> if (boop) sendCommand("boop ${message.substringAfter("boop ")}")
             "cf" -> if (cf) channelMessage(if (Math.random() < 0.5) "heads" else "tails", name, channel)
             "8ball" -> if (eightball) channelMessage(responses.random(), name, channel)
             "dice" -> if (dice) channelMessage((1..6).random(), name, channel)
@@ -149,6 +150,7 @@ object ChatCommands : Module(
             }
             "demote" -> if (demote && channel == ChatChannel.PARTY) sendCommand("p demote $name")
             "promote" -> if (promote && channel == ChatChannel.PARTY) sendCommand("p promote $name")
+            "kick", "k" -> if (kick && channel == ChatChannel.PARTY) sendCommand("p kick ${message.substringAfter("kick ")}")
 
             // Private cmds only
             "invite", "inv" -> if (invite && channel == ChatChannel.PRIVATE) {
@@ -207,7 +209,8 @@ object ChatCommands : Module(
         ":dab:" to "<o/",
         ":cat:" to "= ＾● ⋏ ●＾ =",
         ":cute:" to "(✿◠‿◠)",
-        ":skull:" to "☠"
+        ":skull:" to "☠",
+        ":bum:" to "♿"
     )
 
     private fun isInBlacklist(name: String) =
