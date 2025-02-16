@@ -35,18 +35,20 @@ object DungeonRequeue : Module(
         onMessage(Regex("(\\[.+])? ?(.{1,16}) has (left|been removed from|disbanded) the party.")) {
             if (disablePartyLeave) disableRequeue = true
         }
-        onMessage(Regex("You have been kicked from the party by (\\[.+])? ?(.{1,16})")) {
-            if (disablePartyLeave) disableRequeue = true
-        }
-        onMessage(Regex("You left the party.")) {
-            if (disablePartyLeave) disableRequeue = true
-        }
         onMessage(Regex("The party was transferred to (\\[.+])? ?(.{1,16}) because (\\[.+])? ?(.{1,16}) left")) {
             if (disablePartyLeave) disableRequeue = true
         }
         onMessage(Regex("The party was disbanded because all invites expired and the party was empty.")) {
             if (disablePartyLeave) disableRequeue = true
         }
+
+        onMessage(Regex("You have been kicked from the party by (\\[.+])? ?(.{1,16})")) {
+            disableRequeue = true
+        }
+        onMessage(Regex("You left the party.")) {
+            disableRequeue = true
+        }
+
 
         onWorldLoad { disableRequeue = false }
     }
