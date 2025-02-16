@@ -3,6 +3,7 @@ package me.odinmain.features.impl.floor7.p3
 import me.odinmain.events.impl.PacketEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
+import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.utils.addVec
 import me.odinmain.utils.distanceSquaredTo
@@ -27,6 +28,7 @@ object ArrowAlign : Module(
     category = Category.FLOOR7
 ) {
     private val blockWrong by BooleanSetting("Block Wrong Clicks", false, description = "Blocks wrong clicks, shift will override this.")
+    private val invertSneak by BooleanSetting("Invert Sneak", false, description = "Only block wrong clicks whilst sneaking, instead of whilst standing").withDependency { blockWrong }
 
     private val frameGridCorner = Vec3(-2.0, 120.0, 75.0)
     private val recentClickTimestamps = mutableMapOf<Int, Long>()
@@ -68,7 +70,7 @@ object ArrowAlign : Module(
         val frameIndex = ((entityPosition.yCoord - frameGridCorner.yCoord) + (entityPosition.zCoord - frameGridCorner.zCoord) * 5).toInt()
         if (entityPosition.xCoord != frameGridCorner.xCoord || currentFrameRotations?.get(frameIndex) == -1 || frameIndex !in 0..24) return
 
-        if (!clicksRemaining.containsKey(frameIndex) && !mc.thePlayer.isSneaking && blockWrong) {
+        if (!clicksRemaining.containsKey(frameIndex) && ((!mc.thePlayer.isSneaking &&  !invertSneak) || (mc.thePlayer.isSneaking && invertSneak)) && blockWrong) {
             event.isCanceled = true
             return
         }
