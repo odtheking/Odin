@@ -32,7 +32,7 @@ object DungeonRequeue : Module(
             }
         }
 
-        onMessage(Regex("(\\[.+])? ?(.{1,16}) has (left|been removed from|disbanded) the party.")) {
+        onMessage(Regex("(\\[.+])? ?(.{1,16}) has (left|been removed from) the party.")) {
             if (disablePartyLeave) disableRequeue = true
         }
         onMessage(Regex("The party was transferred to (\\[.+])? ?(.{1,16}) because (\\[.+])? ?(.{1,16}) left")) {
@@ -46,6 +46,9 @@ object DungeonRequeue : Module(
             disableRequeue = true
         }
         onMessage(Regex("You left the party.")) {
+            disableRequeue = true
+        }
+        onMessage(Regex("(\\[.+])? ?(.{1,16}) has disbanded the party.")) {
             disableRequeue = true
         }
 
