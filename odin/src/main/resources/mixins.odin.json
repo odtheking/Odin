@@ -30,7 +30,6 @@
     "mixins.MixinMouseHelper",
     "mixins.MixinNetworkManager",
     "mixins.MixinNetworkPlayerInfo",
-    "mixins.MixinPlayerControllerMP",
     "mixins.MixinRenderDragon",
     "mixins.MixinRenderEntityItem",
     "mixins.MixinRendererLivingEntity",

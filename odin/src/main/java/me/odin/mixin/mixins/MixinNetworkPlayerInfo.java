@@ -25,5 +25,4 @@ public abstract class MixinNetworkPlayerInfo {
         this.locationCape = DevPlayers.INSTANCE.hookGetLocationCape(this.gameProfile);
         if (this.locationCape != null) cir.setReturnValue(this.locationCape);
     }
-
 }

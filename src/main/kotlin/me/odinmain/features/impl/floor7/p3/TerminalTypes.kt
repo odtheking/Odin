@@ -29,10 +29,8 @@ enum class TerminalTypes(
         override fun getSimulator() = MelodySim
     },
 
-    // why is none a thing
     NONE("None", 0, null) {
         override fun getSimulator() = StartGUI
-    //throw NotImplementedError("There is no simulator for TerminalType: None")
     }
 }
 

@@ -10,7 +10,6 @@ val termSimCommand = Commodore("termsim") {
     }
 
     runs { terminal: TerminalTypes, ping: Long? ->
-        val simulatedPing = ping ?: 0L
-        terminal.getSimulator().open(simulatedPing)
+        terminal.getSimulator().open(ping ?: 0L)
     }
 }

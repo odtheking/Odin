@@ -15,6 +15,7 @@ import me.odinmain.ui.util.MouseUtils.mouseY
 import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.skyblock.ClickType
 import me.odinmain.utils.skyblock.PlayerUtils.windowClick
+import net.minecraft.network.play.server.S2DPacketOpenWindow
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object HoverTerms : Module(
@@ -92,8 +93,9 @@ object HoverTerms : Module(
         previouslyClicked.clear()
     }
 
-    @SubscribeEvent
-    fun onGuiOpen(event: GuiEvent.Loaded) {
-        clickedThisWindow = false
+    init {
+        onPacket(S2DPacketOpenWindow::class.java) {
+            clickedThisWindow = false
+        }
     }
 }

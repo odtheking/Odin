@@ -9,7 +9,6 @@ import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.skyblock.uuid
 
 val petCommand = Commodore("petkeys") {
-
     literal("add").runs {
         val petID = if (isHolding("PET")) mc.thePlayer?.heldItem.uuid else null
         if (petID == null) return@runs modMessage("You can only add pets to the pet list!")
@@ -46,5 +45,4 @@ val petCommand = Commodore("petkeys") {
         if (petList.isEmpty()) return@runs modMessage("Pet list is empty")
         modMessage("Pet list:\n${petList.joinToString("\n")}")
     }
-
 }

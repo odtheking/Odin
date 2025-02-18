@@ -1,11 +1,7 @@
 package me.odinmain.features.impl.render
 
 
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
-import com.google.gson.JsonDeserializationContext
-import com.google.gson.JsonDeserializer
-import com.google.gson.JsonElement
+import com.google.gson.*
 import com.google.gson.annotations.SerializedName
 import com.mojang.authlib.GameProfile
 import kotlinx.coroutines.runBlocking
@@ -32,7 +28,6 @@ import java.net.URL
 import javax.imageio.ImageIO
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
-import kotlin.io.path.ExperimentalPathApi
 import kotlin.io.path.createDirectories
 import kotlin.math.cos
 import kotlin.math.sin
@@ -93,6 +88,7 @@ object DevPlayers {
         updateDevs()
     }
 
+    @JvmStatic
     fun preRenderCallbackScaleHook(entityLivingBaseIn: AbstractClientPlayer) {
         if (!devs.containsKey(entityLivingBaseIn.name)) return
         if (!devSize && entityLivingBaseIn.name == mc.thePlayer.name) return
@@ -198,7 +194,6 @@ object DevPlayers {
         val capes: Map<String, List<String>>
     )
 
-    @OptIn(ExperimentalPathApi::class)
     fun preloadCapes() {
         if (!capeFolder.exists()) capeFolder.toPath().createDirectories()
 
@@ -241,9 +236,7 @@ object DevPlayers {
     }
 
     private fun findCapeFileName(encodedName: String): String? {
-        return capeData.entries.find { (_, usernames) ->
-            encodedName in usernames
-        }?.key
+        return capeData.entries.find { (_, usernames) -> encodedName in usernames }?.key
     }
 
     private fun isFileUpToDate(url: String, file: File): Boolean {
@@ -271,5 +264,4 @@ object DevPlayers {
         }
         return dev?.capeLocation
     }
-
 }

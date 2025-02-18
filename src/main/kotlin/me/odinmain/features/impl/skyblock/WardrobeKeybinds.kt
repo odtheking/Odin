@@ -72,7 +72,7 @@ object WardrobeKeybinds : Module(
 
         if (!clickCoolDown.hasTimePassed(delay)) return false
         if (index > chest.lowerChestInventory.sizeInventory - 1 || index < 1) return modMessage("§cInvalid index. $index, ${chest.name}").let { false }
-        windowClick(index, ClickType.Left, true)
+        windowClick(index, ClickType.Left)
         clickCoolDown.update()
         return true
     }
