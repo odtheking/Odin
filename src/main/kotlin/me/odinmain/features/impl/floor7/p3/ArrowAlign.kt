@@ -70,7 +70,7 @@ object ArrowAlign : Module(
         val frameIndex = ((entityPosition.yCoord - frameGridCorner.yCoord) + (entityPosition.zCoord - frameGridCorner.zCoord) * 5).toInt()
         if (entityPosition.xCoord != frameGridCorner.xCoord || currentFrameRotations?.get(frameIndex) == -1 || frameIndex !in 0..24) return
 
-        if (!clicksRemaining.containsKey(frameIndex) && ((!mc.thePlayer.isSneaking &&  !invertSneak) || (mc.thePlayer.isSneaking && invertSneak)) && blockWrong) {
+        if (!clicksRemaining.containsKey(frameIndex) && mc.thePlayer.isSneaking == invertSneak && blockWrong) {
             event.isCanceled = true
             return
         }
