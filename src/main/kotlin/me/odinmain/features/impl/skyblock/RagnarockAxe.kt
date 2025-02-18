@@ -9,7 +9,7 @@ import net.minecraft.network.play.server.S29PacketSoundEffect
 
 object RagnarockAxe : Module(
     name = "Rag Axe",
-    description = "Tracks rag axe cooldowns.",
+    description = "Provides alerts about ragnarock axe's state.",
     category = Category.SKYBLOCK
 ) {
     private val alert by BooleanSetting("Alert", true, description = "Alerts you when you start casting rag axe.")

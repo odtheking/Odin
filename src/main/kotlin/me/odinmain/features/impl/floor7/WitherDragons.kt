@@ -28,7 +28,7 @@ import java.util.*
 
 object WitherDragons : Module(
     name = "Wither Dragons",
-    description = "Various features for Wither dragons (boxes, timer, HP, priority and more).",
+    description = "Tools for managing M7 dragons timers, boxes, priority, health, relics and alerts.",
     category = Category.FLOOR7
 ) {
     private val dragonTimerDropDown by DropdownSetting("Dragon Timer Dropdown")

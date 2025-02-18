@@ -13,7 +13,7 @@ import java.util.*
  */
 object SecretHitboxes : Module(
     name = "Secret Hitboxes",
-    description = "Full block Secret hitboxes.",
+    description = "Extends the hitboxes of secret blocks to a full block.",
     category = Category.DUNGEON
 ) {
     val lever by BooleanSetting("Lever", default = false, description = "Extends the lever hitbox.")

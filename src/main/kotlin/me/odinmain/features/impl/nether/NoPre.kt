@@ -14,7 +14,7 @@ import net.minecraft.util.Vec3
 
 object NoPre : Module(
     name = "Pre-Spot Alert",
-    description = "Alerts the party about the state of a pre spot.",
+    description = "Alerts the party if a pre spot is missing.",
     category = Category.NETHER
 ) {
     private val showCratePriority by BooleanSetting("Show Crate Priority", false, description = "Shows the crate priority alert.")

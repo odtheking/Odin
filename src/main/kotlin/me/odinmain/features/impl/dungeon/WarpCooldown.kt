@@ -8,13 +8,15 @@ import me.odinmain.features.settings.impl.HudSetting
 import me.odinmain.features.settings.impl.StringSetting
 import me.odinmain.font.OdinFont
 import me.odinmain.utils.clock.Clock
-import me.odinmain.utils.render.*
+import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.getTextWidth
+import me.odinmain.utils.render.text
 import me.odinmain.utils.skyblock.partyMessage
-import java.util.Locale
+import java.util.*
 
 object WarpCooldown : Module(
     name = "Warp Cooldown",
-    description = "Displays the time until you can warp into a dungeon again.",
+    description = "Displays the time until you can warp into a new dungeon.",
     category = Category.DUNGEON
 ) {
     private val announceKick: Boolean by BooleanSetting("Announce Kick", false, description = "Announce when you get kicked from skyblock.")

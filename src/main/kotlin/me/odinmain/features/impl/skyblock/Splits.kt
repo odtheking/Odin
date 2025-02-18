@@ -2,15 +2,20 @@ package me.odinmain.features.impl.skyblock
 
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.features.settings.impl.*
+import me.odinmain.features.settings.impl.BooleanSetting
+import me.odinmain.features.settings.impl.HudSetting
+import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.SplitsManager.currentSplits
 import me.odinmain.utils.SplitsManager.getAndUpdateSplitsTimes
 import me.odinmain.utils.formatTime
-import me.odinmain.utils.render.*
+import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.getMCTextHeight
+import me.odinmain.utils.render.getMCTextWidth
+import me.odinmain.utils.render.mcText
 
 object Splits : Module(
     name = "Splits",
-    description = "Automatic advanced skyblock splits.",
+    description = "Provides visual timers for Kuudra and Dungeons.",
     category = Category.SKYBLOCK
 ) {
     private val hud by HudSetting("Splits Display HUD", 10f, 10f, 1f, true) { example ->

@@ -22,7 +22,7 @@ import kotlin.math.ceil
 
 object AbilityTimers : Module(
     name = "Ability Timers",
-    description = "Various Timers for various items.",
+    description = "Provides timers for Wither Impact, Tactical Insertion, and Enrage.",
     category = Category.SKYBLOCK
 ) {
     private val witherHud: HudElement by HudSetting("Wither Impact Hud", 10f, 10f, 1f, true) {

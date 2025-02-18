@@ -16,7 +16,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 object TerminalSounds : Module(
     name = "Terminal Sounds",
     category = Category.FLOOR7,
-    description = "Plays a sound whenever you click in a terminal."
+    description = "Plays a sound whenever you click a correct item in a terminal."
 ){
     private val defaultSounds = arrayListOf("mob.blaze.hit", "random.pop", "random.orb", "random.break", "mob.guardian.land.hit", "Custom")
 

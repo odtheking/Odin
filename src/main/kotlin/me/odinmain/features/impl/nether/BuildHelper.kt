@@ -21,7 +21,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object BuildHelper : Module(
     name = "Build Helper",
-    description = "Helps you to build the ballista in Kuudra.",
+    description = "Displays various information about the current state of the ballista build.",
     category = Category.NETHER
 ) {
     private val buildHelperDraw by BooleanSetting("Render on Ballista", false, description = "Draws the build helper.")

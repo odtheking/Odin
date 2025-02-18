@@ -21,7 +21,7 @@ import org.lwjgl.input.Keyboard
 
 object WardrobeKeybinds : Module(
     name = "Wardrobe Keybinds",
-    description = "Keybinds for wardrobe equiping and unequipping.",
+    description = "Keybinds for wardrobe equipping and unequipping.",
     category = Category.SKYBLOCK
 ) {
     private val unequipKeybind by KeybindSetting("Unequip Keybind", Keyboard.KEY_NONE, "Unequips the current armor.")

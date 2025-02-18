@@ -14,7 +14,7 @@ import java.util.*
 object TickTimers : Module(
     name = "Tick Timers",
     category = Category.FLOOR7,
-    description = "Various tick timers for the floor 7 boss."
+    description = "Displays timers for Necron, Goldor, and Storm."
 ) {
     private val displayInTicks by BooleanSetting("Display in Ticks", default = false, description = "Display the timers in ticks instead of seconds.")
     private val symbolDisplay: Boolean by BooleanSetting("Display Symbol", default = true, description = "Displays s or t after the timers.")

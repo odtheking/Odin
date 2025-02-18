@@ -32,7 +32,7 @@ import org.lwjgl.input.Keyboard
 
 object GhostBlocks : Module(
     name = "Ghost Blocks",
-    description = "Creates ghost blocks on key press, and in specific locations.",
+    description = "Creates ghost blocks by key, tools, swap stonk, stonk delay and pre configured.",
     category = Category.DUNGEON,
     key = null,
 ) {

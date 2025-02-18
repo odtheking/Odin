@@ -21,7 +21,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object Mimic : Module(
     name = "Mimic",
-    description = "Helpful mimic utilities.",
+    description = "Highlights and announces mimic kills in dungeons.",
     category = Category.DUNGEON
 ) {
     private val mimicMessageToggle by BooleanSetting("Toggle Mimic Message", default = true, description = "Toggles the mimic killed message.")
