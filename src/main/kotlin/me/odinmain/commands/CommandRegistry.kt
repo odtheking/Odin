@@ -29,8 +29,18 @@ object CommandRegistry {
         }
     }
 
+    // need to make root in commodore not private
     fun register() {
         commands.forEach { commodore ->
+//            if (findCorrespondingNode(commodore, "help") == null) { // creates a (barebones) help node for the command
+//                root.literal("help").runs {
+//                    val builder = StringBuilder("List of commands for /${root.name}:\n").also {
+//                        it.buildTree(root)
+//                        it.setLength(it.length - 1)
+//                    }
+//                    modMessage(builder.toString())
+//                }
+//            }
             commodore.register { problem, cause ->
                 val builder = StringBuilder()
 
@@ -58,6 +68,9 @@ object CommandRegistry {
                     builder.append("\n")
                 }
             }
+        }
+        if (from.children.size == 0) {
+            builder.append("  /${getArgumentsRequired(from).joinToString(" ")}\n")
         }
     }
 }
