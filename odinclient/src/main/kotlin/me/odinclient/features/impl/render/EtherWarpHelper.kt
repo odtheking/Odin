@@ -8,7 +8,6 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.toBlockPos
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.toVec3
-import me.odinmain.features.impl.render.DevPlayers.isDev
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
@@ -36,7 +35,7 @@ object EtherWarpHelper : Module(
     description = "Provides configurable visual and audio feedback for etherwarp.",
     category = Category.RENDER
 ) {
-    private val zeroPing by BooleanSetting("Zero Ping", false, description = "Teleports you to the exact position of the etherwarp.").withDependency { isDev }
+    private val zeroPing by BooleanSetting("Zero Ping", false, description = "Teleports you to the exact position of the etherwarp.").withDependency { LocationUtils.currentArea.isArea(Island.SinglePlayer) }
     private val render by BooleanSetting("Show Etherwarp Guess", true, description = "Shows where etherwarp will take you.")
     private val color by ColorSetting("Color", Color.ORANGE.withAlpha(.5f), allowAlpha = true, description = "Color of the box.").withDependency { render }
     private val renderFail by BooleanSetting("Show when failed", true, description = "Shows the box even when the guess failed.").withDependency { render }

@@ -51,7 +51,7 @@ object DianaHelper : Module(
         warpLocation = null
     }
     private val autoWarp by BooleanSetting("Auto Warp", description = "Automatically warps you to the nearest warp location after you activate the spade ability.").withDependency { !isLegitVersion }
-    private val autoWarpWaitTime by NumberSetting("Auto Warp Wait Time", 2f, 0.0, 10.0, 0.1, description = "Time to wait before warping.").withDependency { autoWarp }
+    private val autoWarpWaitTime by NumberSetting("Auto Warp Wait Time", 2f, 0.2, 10.0, 0.1, unit = "s", description = "Time to wait before warping.").withDependency { autoWarp }
     private val resetBurrows by ActionSetting("Reset Burrows", description = "Removes all the current burrows.") { activeBurrows.clear() }
     private var warpLocation: WarpPoint? = null
 

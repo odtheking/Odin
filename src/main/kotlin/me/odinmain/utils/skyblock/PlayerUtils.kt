@@ -49,7 +49,7 @@ object PlayerUtils {
     private var lastClickSent = 0L
 
     fun windowClick(slotId: Int, button: Int, mode: Int) {
-        if (lastClickSent + 50 > System.currentTimeMillis()) return devMessage("Click spam detected, ignoring click.")
+        if (lastClickSent + 50 > System.currentTimeMillis()) return devMessage("§cIgnoring click on slot §9$slotId.")
         mc.thePlayer?.openContainer?.let {
             if (it !is ContainerChest || slotId !in 0 until it.inventorySlots.size) return
             mc.netHandler?.networkManager?.sendPacket(C0EPacketClickWindow(it.windowId, slotId, button, mode, it.inventory[slotId], it.getNextTransactionID(mc.thePlayer?.inventory)))
