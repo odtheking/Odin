@@ -33,7 +33,7 @@ import kotlin.math.absoluteValue
 
 object EtherWarpHelper : Module(
     name = "Etherwarp Helper",
-    description = "Helpful tools for Ether Warp.",
+    description = "Provides configurable visual and audio feedback for etherwarp.",
     category = Category.RENDER
 ) {
     private val zeroPing by BooleanSetting("Zero Ping", false, description = "Teleports you to the exact position of the etherwarp.").withDependency { isDev }

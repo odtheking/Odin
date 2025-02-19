@@ -16,7 +16,7 @@ import java.util.*
 
 object PlayerDisplay : Module(
     name = "Player Display",
-    description = "Displays info about the skyblock player.",
+    description = "Allows to customize the player stat displays (health, strength and more).",
     category = Category.SKYBLOCK,
 ) {
     private val hideElements by DropdownSetting("Hide Elements")

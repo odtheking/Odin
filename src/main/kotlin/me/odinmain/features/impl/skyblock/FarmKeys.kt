@@ -2,13 +2,14 @@ package me.odinmain.features.impl.skyblock
 
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.features.settings.impl.*
+import me.odinmain.features.settings.impl.KeybindSetting
+import me.odinmain.features.settings.impl.NumberSetting
 import net.minecraft.client.settings.KeyBinding
 import org.lwjgl.input.Keyboard
 
 object FarmKeys: Module(
     name = "Farm Keys",
-    description = "Temporarily changes your keybinds for farming in Skyblock.",
+    description = "Temporarily changes your minecraft keybind configuration for farming in Skyblock.",
     category = Category.SKYBLOCK
 ) {
     private val blockBreakKey by KeybindSetting("Block breaking", Keyboard.KEY_NONE, "Changes the keybind for breaking blocks.")

@@ -316,7 +316,7 @@ object TerminalSolver : Module(
 
         if (middleClickGUI) {
             event.isCanceled = true
-            windowClick(slotIndex, if (event.button == 0) ClickType.Middle else ClickType.Right, instant = true)
+            windowClick(slotIndex, if (event.button == 0) ClickType.Middle else ClickType.Right)
         }
     }
 

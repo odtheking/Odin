@@ -21,7 +21,7 @@ import kotlin.math.sin
 
 object SupplyHelper : Module(
     name = "Supply Helper",
-    description = "Helps with supplies in kuudra.",
+    description = "Provides visual aid for supply drops in Kuudra.",
     category = Category.NETHER
 ) {
     private val suppliesWaypoints by BooleanSetting("Supplies Waypoints", true, description = "Renders the supply waypoints.")

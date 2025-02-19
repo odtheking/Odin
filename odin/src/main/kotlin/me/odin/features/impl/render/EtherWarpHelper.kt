@@ -24,7 +24,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object EtherWarpHelper : Module(
     name = "Etherwarp Helper",
-    description = "Helpful tools for Ether Warp.",
+    description = "Provides configurable visual and audio feedback for etherwarp.",
     category = Category.RENDER
 ) {
     private val render by BooleanSetting("Show Etherwarp Guess", true, description = "Shows where etherwarp will take you.")

@@ -23,7 +23,7 @@ import kotlin.collections.set
 
 object ArrowAlign : Module(
     name = "Arrow Align",
-    description = "Shows a solution for the Arrow Align device.",
+    description = "Shows the solution for the Arrow Align device.",
     category = Category.FLOOR7
 ) {
     private val blockWrong by BooleanSetting("Block Wrong Clicks", false, description = "Blocks wrong clicks, shift will override this.")

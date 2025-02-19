@@ -156,7 +156,7 @@ object LeapMenu : Module(
         val index = getItemIndexInContainerChest(containerChest, name, 11..16) ?: return modMessage("Cant find player $name. This shouldn't be possible! are you nicked?")
         modMessage("Teleporting to $name.")
         if (leapAnnounce) partyMessage("Leaped to $name!")
-        windowClick(index, ClickType.Middle, true)
+        windowClick(index, ClickType.Middle)
     }
 
     init {

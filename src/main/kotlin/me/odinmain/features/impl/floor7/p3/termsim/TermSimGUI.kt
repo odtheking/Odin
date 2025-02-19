@@ -84,7 +84,7 @@ open class TermSimGUI(
         event.isCanceled = true
     }
 
-    fun delaySlotClick(slot: Slot, button: Int) {
+    private fun delaySlotClick(slot: Slot, button: Int) {
         if (OdinMain.mc.currentScreen == StartGUI) return slotClick(slot, button)
         if (!doesAcceptClick || slot.inventory != inv || (slot.stack?.item == pane && slot.stack?.metadata == 15)) return
         doesAcceptClick = false

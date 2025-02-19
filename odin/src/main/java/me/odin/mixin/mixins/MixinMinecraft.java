@@ -3,7 +3,6 @@ package me.odin.mixin.mixins;
 import me.odinmain.events.impl.ClickEvent;
 import me.odinmain.events.impl.InputEvent;
 import me.odinmain.features.impl.render.CPSDisplay;
-import me.odinmain.utils.skyblock.PlayerUtils;
 import net.minecraft.client.Minecraft;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -25,11 +24,6 @@ public class MixinMinecraft {
     @Inject(method = {"runTick"}, at = {@At(value = "INVOKE", target = "Lorg/lwjgl/input/Mouse;getEventButton()I", remap = false)})
     public void mouseKeyPresses(CallbackInfo ci) {
         if (Mouse.getEventButtonState()) postAndCatch(new InputEvent.Mouse(Mouse.getEventButton()));
-    }
-
-    @Inject(method = {"runTick"}, at = {@At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiScreen;handleInput()V")})
-    private void handleInput(CallbackInfo ci) {
-        PlayerUtils.handleWindowClickQueue();
     }
 
     @Inject(method = "rightClickMouse", at = @At("HEAD"), cancellable = true)

@@ -5,7 +5,9 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.HudSetting
 import me.odinmain.utils.noControlCodes
-import me.odinmain.utils.render.*
+import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.getMCTextWidth
+import me.odinmain.utils.render.mcText
 import me.odinmain.utils.skyblock.drawItem
 import me.odinmain.utils.skyblock.getSkullValue
 import net.minecraft.entity.item.EntityArmorStand
@@ -15,7 +17,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object DeployableTimer : Module(
     name = "Deployable Timer",
-    description = "Displays the active deployable and it's time left.",
+    description = "Displays the active deployable remaining time.",
     category = Category.SKYBLOCK
 ) {
     private val firework = Item.getByNameOrId("minecraft:fireworks")

@@ -14,14 +14,16 @@ import me.odinmain.utils.xzDistance
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityArmorStand
-import net.minecraft.entity.monster.*
+import net.minecraft.entity.monster.EntityBlaze
+import net.minecraft.entity.monster.EntityPigZombie
+import net.minecraft.entity.monster.EntitySkeleton
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import kotlin.collections.set
 
 object BlazeAttunement : Module(
     name = "Blaze Attunement",
     category = Category.NETHER,
-    description = "Displays what attunement a blaze boss currently needs."
+    description = "Displays what attunement a blaze boss currently requires."
 ) {
     private val overlay by BooleanSetting("Overlay Entities", false, description = "Overlay the entities with the color of the attunement.")
     private val thickness by NumberSetting("Outline Thickness", 5f, 5f, 20f, 0.5f, description = "The thickness of the outline.")

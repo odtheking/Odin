@@ -7,9 +7,9 @@ import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.utils.skyblock.*
 import net.minecraft.network.play.server.S29PacketSoundEffect
 
-object RagnarokAxe : Module(
+object RagnarockAxe : Module(
     name = "Rag Axe",
-    description = "Tracks rag axe cooldowns.",
+    description = "Provides alerts about ragnarock axe's state.",
     category = Category.SKYBLOCK
 ) {
     private val alert by BooleanSetting("Alert", true, description = "Alerts you when you start casting rag axe.")
@@ -27,7 +27,7 @@ object RagnarokAxe : Module(
             if (alert) PlayerUtils.alert("§aCasted Rag Axe")
             val strengthGain = ((mc.thePlayer?.heldItem?.getSBStrength ?: return@onPacket) * 1.5).toInt()
             if (strengthGainedMessage) modMessage("§7Gained strength: §4$strengthGain")
-            if (announceStrengthGained) partyMessage("Gained strength from RagnarokAxe: $strengthGain")
+            if (announceStrengthGained) partyMessage("Gained strength from Ragnarock Axe: $strengthGain")
         }
     }
 }

@@ -9,11 +9,14 @@ import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.rangeAdd
 import me.odinmain.utils.runIn
-import me.odinmain.utils.skyblock.*
+import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.WITHER_ESSENCE_ID
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.getF7Phase
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.inDungeons
+import me.odinmain.utils.skyblock.getBlockAt
+import me.odinmain.utils.skyblock.getItemSlot
+import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.block.state.IBlockState
 import net.minecraft.enchantment.Enchantment
 import net.minecraft.init.Blocks
@@ -29,7 +32,7 @@ import org.lwjgl.input.Keyboard
 
 object GhostBlocks : Module(
     name = "Ghost Blocks",
-    description = "Creates ghost blocks on key press, and in specific locations.",
+    description = "Creates ghost blocks by key, tools, swap stonk, stonk delay and pre configured.",
     category = Category.DUNGEON,
     key = null,
 ) {
@@ -128,6 +131,7 @@ object GhostBlocks : Module(
 
     private fun BlockData.reset() = mc.theWorld?.setBlockState(pos, state)
 
+    @JvmStatic
     fun breakBlock(pos: BlockPos) {
         if (!stonkDelayToggle || (sdOnlySB && !LocationUtils.isInSkyblock)) return
         sdBlocks.add(BlockData(pos, mc.theWorld.getBlockState(pos), System.currentTimeMillis(), false))

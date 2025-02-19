@@ -26,31 +26,30 @@ object AutoExperiments : Module(
     private val autoClose by BooleanSetting("Auto Close", true, description = "Automatically close the GUI after completing the experiment.")
     private val serumCount by NumberSetting("Serum Count", 0, 0, 3, 1, description = "Consumed Metaphysical Serum count.")
 
-    private var currentExperiment = ExperimentType.NONE
-    private var hasAdded = false
-    private var clicks = 0
-    private var lastClickTime: Long = 0
-    private val chronomatronOrder = ArrayList<Int>(28)
-    private var lastAdded = 0
     private var ultrasequencerOrder = HashMap<Int, Int>()
+    private var currentExperiment = ExperimentType.NONE
+    private val chronomatronOrder = ArrayList<Int>(28)
+    private var lastClickTime = 0L
+    private var hasAdded = false
+    private var lastAdded = 0
+    private var clicks = 0
 
     private fun reset() {
         currentExperiment = ExperimentType.NONE
-        hasAdded = false
-        chronomatronOrder.clear()
-        lastAdded = 0
         ultrasequencerOrder.clear()
+        chronomatronOrder.clear()
+        hasAdded = false
+        lastAdded = 0
     }
 
     @SubscribeEvent
     fun onGuiOpen(event: GuiEvent.Loaded) {
         reset()
         if (!LocationUtils.currentArea.isArea(Island.PrivateIsland)) return
-        val chestName = event.name
 
         currentExperiment = when {
-            chestName.startsWith("Chronomatron") -> ExperimentType.CHRONOMATRON
-            chestName.startsWith("Ultrasequencer") -> ExperimentType.ULTRASEQUENCER
+            event.name.startsWith("Chronomatron") -> ExperimentType.CHRONOMATRON
+            event.name.startsWith("Ultrasequencer") -> ExperimentType.ULTRASEQUENCER
             else -> ExperimentType.NONE
         }
     }
@@ -86,7 +85,7 @@ object AutoExperiments : Module(
             }
         }
         if (hasAdded && invSlots[49].stack?.item == Items.clock && chronomatronOrder.size > clicks && System.currentTimeMillis() - lastClickTime > delay) {
-            windowClick(chronomatronOrder[clicks], ClickType.Middle, true)
+            windowClick(chronomatronOrder[clicks], ClickType.Middle)
             lastClickTime = System.currentTimeMillis()
             clicks++
         }
@@ -106,7 +105,7 @@ object AutoExperiments : Module(
             if (ultrasequencerOrder.size > 9 - serumCount && autoClose) mc.thePlayer?.closeScreen()
         }
         if (invSlots[49].stack?.item == Items.clock && ultrasequencerOrder.contains(clicks) && System.currentTimeMillis() - lastClickTime > delay) {
-            ultrasequencerOrder[clicks]?.let { windowClick(it, ClickType.Middle, true) }
+            ultrasequencerOrder[clicks]?.let { windowClick(it, ClickType.Middle) }
             lastClickTime = System.currentTimeMillis()
             clicks++
         }

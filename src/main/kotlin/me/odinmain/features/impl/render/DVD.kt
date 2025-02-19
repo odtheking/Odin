@@ -6,7 +6,6 @@ import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.features.settings.impl.StringSetting
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.RenderUtils.bind
 import me.odinmain.utils.render.getMCTextHeight
 import me.odinmain.utils.render.mcText
 import me.odinmain.utils.render.roundedRectangle
@@ -31,8 +30,8 @@ object DVD : Module(
 
     private var lastUpdateTime = System.nanoTime()
     private var color = Color.WHITE.copy()
-    private var x = 0f
-    private var y = 0f
+    private var x = 10f
+    private var y = 10f
     private var dx = 1
     private var dy = 1
 
@@ -54,7 +53,6 @@ object DVD : Module(
         updatePosition()
         roundedRectangle(x, y, boxWidth, boxHeight, color, if (roundedCorners) 12f else 0f)
         mcText(text, x + boxWidth / 2, y + boxHeight / 2 - getMCTextHeight() * textScale / 2 , textScale, color, true)
-        Color.WHITE.bind()
     }
 
     private fun updatePosition() {

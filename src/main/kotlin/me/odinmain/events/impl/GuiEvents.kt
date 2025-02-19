@@ -2,8 +2,6 @@ package me.odinmain.events.impl
 
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.inventory.GuiContainer
-import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.inventory.Container
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.inventory.Slot
 import net.minecraft.item.ItemStack
@@ -34,10 +32,7 @@ abstract class GuiEvent : Event() {
     class KeyPress(val gui: GuiScreen, val key: Int, val char: Char) : GuiEvent()
 
     @Cancelable
-    class WindowClick(val windowId: Int, val slotId: Int, val mouseButtonClicked: Int, val mode: Int, val playerIn: EntityPlayer) : GuiEvent()
-
-    @Cancelable
-    class CustomTermGuiClick(val slot: Int, val mode: Int, val button: Int) : GuiEvent()
+    class CustomTermGuiClick(val slot: Int, val button: Int) : GuiEvent()
 }
 
 

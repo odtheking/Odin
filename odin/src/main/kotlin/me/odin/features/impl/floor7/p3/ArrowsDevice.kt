@@ -29,7 +29,7 @@ import org.lwjgl.input.Keyboard
 
 object ArrowsDevice : Module(
     name = "Arrows Device",
-    description = "Solver for the Sharp Shooter puzzle in floor 7.",
+    description = "Shows a solution for the Sharp Shooter puzzle in floor 7.",
     category = Category.FLOOR7,
 ) {
     private val solver by BooleanSetting("Solver", default = true, description = "Enables the solver.")

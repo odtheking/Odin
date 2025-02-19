@@ -6,7 +6,6 @@ import com.github.stivais.commodore.Commodore
 import com.github.stivais.commodore.parsers.CommandParsable
 import com.github.stivais.commodore.utils.GreedyString
 import me.odinmain.OdinMain.display
-import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints
 import me.odinmain.features.impl.render.ClickGUIModule
 import me.odinmain.features.impl.render.ServerHud.colorizeFPS
 import me.odinmain.features.impl.render.ServerHud.colorizePing
@@ -66,10 +65,15 @@ val mainCommand = Commodore("od", "odin") {
             """
              List of commands:
              §3- /od §7» §8Main command.
-             §3- /blacklist §7» §8Used to configure your blacklist.
+             §3- /od edithud §7» §8Edit HUD.
+             §3- /od reset <clickgui|hud> §7» §8Resets positions accordingly. 
+             §3- /dwp §7» §8Dungeon waypoints command.
+             §3- /petkeys §7» §8Pet keys command.
+             §3- /posmsg §7» §8Position message command.
+             §3- /chatclist §7» §8Used to configure your blacklist/whitelist.
              §3- /highlight §7» §8Used to configure Highlight list.
              §3- /waypoint §7» §8Configure waypoints.
-             §3- /termsim {ping}? {amount}? §7» §8Simulates terminals so you can practice them.
+             §3- /termsim <ping>? §7» §8Simulates terminals so you can practice them.
              §3- /od rq §7» §8Requeues dungeon run.
              §3- /od m? » §8Teleports you to a floor in master mode.
              §3- /od f? » §8Teleports you to a floor in normal mode.
@@ -82,15 +86,15 @@ val mainCommand = Commodore("od", "odin") {
              §3- /od ij §7» §8Refills inflatable Jerry's up to 64.
              §3- /od sl §7» §8Refills spirit leaps up to 16.
              §3- /od sb §7» §8Refills super booms up to 64.
-             §3- /spcmd §7» §8Use /spcmd cmds for command list.
+             §3- /spcmd §7» §8Use /spcmd help for command list.
              §3- /visualwords §7» §8Command to replace words in the game.
-             §3- /od leap §7» §8Sets custom leap order.
+             §3- /od leaporder §7» §8Sets custom leap order.
              """.trimIndent()
         )
     }
 
     literal("dianareset").runs {
-        modMessage("Resetting all active diana waypoints.")
+        modMessage("§aResetting all active diana waypoints.")
         DianaBurrowEstimate.activeBurrows.clear()
     }
 
@@ -108,10 +112,6 @@ val mainCommand = Commodore("od", "odin") {
 
     literal("tps").runs {
         modMessage("${colorizeTps(round(ServerUtils.averageTps))}ms")
-    }
-
-    literal("dwp").runs {
-        DungeonWaypoints.onKeybind()
     }
 
     // separated for better error handling,

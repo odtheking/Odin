@@ -73,7 +73,7 @@ object PetKeybinds : Module(
         if (nounequip && getItemIndexInContainerChestByLore(chest, "§7§cClick to despawn!", 10..43) == index && !unequipKeybind.isDown()) return modMessage("§cThat pet is already equipped!").let { false }
         if (!clickCoolDown.hasTimePassed(delay) || index == null) return false
         if (index > chest.lowerChestInventory.sizeInventory - 1 || index < 1) return modMessage("§cInvalid index. $index, ${chest.name}").let { false }
-        windowClick(index, ClickType.Middle, true)
+        windowClick(index, ClickType.Middle)
         clickCoolDown.update()
         return true
     }

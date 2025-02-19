@@ -20,7 +20,7 @@ import kotlin.random.Random
 object ChatCommands : Module(
     name = "Chat Commands",
     category = Category.SKYBLOCK,
-    description = "Type !help in the corresponding channel for cmd list. Use /blacklist.",
+    description = "Type !help in the corresponding channel for cmd list. Use /chatclist.",
 ) {
     private val chatEmotes by BooleanSetting(name = "Chat Emotes", default = true, description = "Replaces chat emotes with their corresponding emojis.")
     private val party by BooleanSetting(name = "Party commands", default = true, description = "Toggles chat commands in party chat.")
