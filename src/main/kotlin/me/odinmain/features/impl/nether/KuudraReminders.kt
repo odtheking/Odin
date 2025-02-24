@@ -27,10 +27,10 @@ object KuudraReminders : Module(
     private data class Reminder(val regex: Regex, val shouldRun: Boolean, val alert: String)
     private val reminders = listOf(
         Reminder(Regex("WARNING: You do not have a key for this tier in your inventory, you will not be able to claim rewards."), keyReminder, "No key in inventory"),
-        Reminder(Regex("Your Fresh Tools Perk bonus doubles your building speed for the next 10 seconds!"), freshTools, "Buy Upgrades"),
-        Reminder(Regex("\\[NPC] Elle: It's time to build the Ballista again! Cover me!"), buildBallista, "Pick up supplies"),
-        Reminder(Regex("\\[NPC] Elle: Okay adventurers, I will go and fish up Kuudra!"), buyUpgrades, "Build Ballista"),
-        Reminder(Regex("\\[NPC] Elle: Not again!"), pickUpSupplies, "Fresh Tools")
+        Reminder(Regex("Your Fresh Tools Perk bonus doubles your building speed for the next 10 seconds!"), freshTools, "Fresh Tools"),
+        Reminder(Regex("\\[NPC] Elle: It's time to build the Ballista again! Cover me!"), buildBallista, "Build Ballista"),
+        Reminder(Regex("\\[NPC] Elle: Okay adventurers, I will go and fish up Kuudra!"), buyUpgrades, "Buy Upgrades"),
+        Reminder(Regex("\\[NPC] Elle: Not again!"), pickUpSupplies, "Pick up supplies")
     )
 
     init {
