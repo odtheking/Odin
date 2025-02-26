@@ -55,8 +55,6 @@ object BloodCamp : Module(
     private val watcherBar by BooleanSetting("Watcher Bar", default = true, description = "Shows the watcher's health.")
     private val watcherHighlight by BooleanSetting("Watcher Highlight", default = false, description = "Highlights the watcher.")
 
-    private val firstSpawnRegex = Regex("^\\[BOSS] The Watcher: Let's see how you can handle this.$")
-
     init {
         onPacket(S17PacketEntityLookMove::class.java, { bloodHelper && enabled }) { packet ->
             val world = mc.theWorld ?: return@onPacket
@@ -97,7 +95,7 @@ object BloodCamp : Module(
             }
         }
 
-        onMessage(firstSpawnRegex) {
+        onMessage(Regex("^\\[BOSS] The Watcher: Let's see how you can handle this.$")) {
             firstSpawns = false
         }
 

@@ -41,6 +41,9 @@ object DungeonRequeue : Module(
         onMessage(Regex("The party was disbanded because all invites expired and the party was empty.")) {
             if (disablePartyLeave) disableRequeue = true
         }
+        onMessage(Regex("Kicked (\\[.+])? ?(.{1,16}) because they were offline.")) {
+            if (disablePartyLeave) disableRequeue = true
+        }
 
         onMessage(Regex("You have been kicked from the party by (\\[.+])? ?(.{1,16})")) {
             disableRequeue = true

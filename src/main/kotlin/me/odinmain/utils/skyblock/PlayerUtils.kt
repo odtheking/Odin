@@ -1,11 +1,13 @@
 package me.odinmain.utils.skyblock
 
 import me.odinmain.OdinMain.mc
+import me.odinmain.events.impl.PacketEvent
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.network.play.client.C0EPacketClickWindow
 import net.minecraft.util.Vec3
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object PlayerUtils {
     var shouldBypassVolume = false
@@ -48,12 +50,16 @@ object PlayerUtils {
 
     private var lastClickSent = 0L
 
+    @SubscribeEvent
+    fun onPacketSend(event: PacketEvent.Send) {
+        lastClickSent = System.currentTimeMillis()
+    }
+
     fun windowClick(slotId: Int, button: Int, mode: Int) {
-        if (lastClickSent + 50 > System.currentTimeMillis()) return devMessage("§cIgnoring click on slot §9$slotId.")
+        if (lastClickSent + 45 > System.currentTimeMillis()) return devMessage("§cIgnoring click on slot §9$slotId.")
         mc.thePlayer?.openContainer?.let {
             if (it !is ContainerChest || slotId !in 0 until it.inventorySlots.size) return
             mc.netHandler?.networkManager?.sendPacket(C0EPacketClickWindow(it.windowId, slotId, button, mode, it.inventory[slotId], it.getNextTransactionID(mc.thePlayer?.inventory)))
-            lastClickSent = System.currentTimeMillis()
         }
     }
 

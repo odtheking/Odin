@@ -37,6 +37,7 @@ import net.minecraft.network.play.server.S2EPacketCloseWindow
 import net.minecraft.network.play.server.S2FPacketSetSlot
 import net.minecraftforge.event.entity.player.ItemTooltipEvent
 import net.minecraftforge.fml.common.Loader
+import net.minecraftforge.fml.common.eventhandler.EventPriority
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.input.Keyboard
 import java.util.concurrent.CopyOnWriteArrayList
@@ -295,7 +296,7 @@ object TerminalSolver : Module(
         if (cancelToolTip && enabled && currentTerm.type != TerminalTypes.NONE) event.toolTip.clear()
     }
 
-    @SubscribeEvent(receiveCanceled = true)
+    @SubscribeEvent(receiveCanceled = true, priority = EventPriority.HIGHEST)
     fun onGuiClick(event: GuiEvent.MouseClick) {
         if (!enabled || currentTerm.type == TerminalTypes.NONE) return
 

@@ -27,7 +27,7 @@ object TerminalSounds : Module(
     ).withDependency { sound == defaultSounds.size - 1 && clickSounds }
     private val clickVolume by NumberSetting("Click Volume", 1f, 0, 1, .01f, description = "Volume of the sound.").withDependency { clickSounds }
     private val clickPitch by NumberSetting("Click Pitch", 2f, 0, 2, .01f, description = "Pitch of the sound.").withDependency { clickSounds }
-    val reset by ActionSetting("Play sound", description = "Plays the sound with the current settings.") {
+    val reset by ActionSetting("Play click sound", description = "Plays the sound with the current settings.") {
         PlayerUtils.playLoudSound(if (sound == defaultSounds.size - 1) customSound else defaultSounds[sound], clickVolume, clickPitch)
     }
     private val completeSounds by BooleanSetting("Complete Sounds", default = false, description = "Plays a sound when you complete a terminal.")
@@ -38,7 +38,7 @@ object TerminalSounds : Module(
     ).withDependency { completedSound == defaultSounds.size - 1 && completeSounds }
     private val completeVolume by NumberSetting("Completion Volume", 1f, 0, 1, .01f, description = "Volume of the sound.").withDependency { completeSounds }
     private val completePitch by NumberSetting("Completion Pitch", 2f, 0, 2, .01f, description = "Pitch of the sound.").withDependency { completeSounds }
-    val playCompleteSound by ActionSetting("Play sound", description = "Plays the sound with the current settings.") {
+    val playCompleteSound by ActionSetting("Play complete sound", description = "Plays the sound with the current settings.") {
         PlayerUtils.playLoudSound(if (completedSound == defaultSounds.size - 1) customCompleteSound else defaultSounds[completedSound], completeVolume, completePitch)
     }
 
