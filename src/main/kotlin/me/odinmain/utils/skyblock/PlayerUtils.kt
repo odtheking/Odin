@@ -52,6 +52,7 @@ object PlayerUtils {
 
     @SubscribeEvent
     fun onPacketSend(event: PacketEvent.Send) {
+        if (event.packet !is C0EPacketClickWindow) return
         lastClickSent = System.currentTimeMillis()
     }
 
