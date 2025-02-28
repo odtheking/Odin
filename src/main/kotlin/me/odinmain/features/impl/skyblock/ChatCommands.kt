@@ -110,7 +110,7 @@ object ChatCommands : Module(
             "cf" -> if (cf) channelMessage(if (Math.random() < 0.5) "heads" else "tails", name, channel)
             "8ball" -> if (eightball) channelMessage(responses.random(), name, channel)
             "dice" -> if (dice) channelMessage((1..6).random(), name, channel)
-            "racism" -> if (racism) channelMessage("You are ${Random.nextInt(1, 101)}% racist. Racism is not allowed!", name, channel)
+            "racism" -> if (racism) channelMessage("$name is ${Random.nextInt(1, 101)}% racist. Racism is not allowed!", name, channel)
             "ping" -> if (ping) channelMessage("Current Ping: ${floor(ServerUtils.averagePing).toInt()}ms", name, channel)
             "tps" -> if (tps) channelMessage("Current TPS: ${ServerUtils.averageTps.floor()}", name, channel)
             "fps" -> if (fps) channelMessage("Current FPS: ${ServerUtils.fps}", name, channel)
