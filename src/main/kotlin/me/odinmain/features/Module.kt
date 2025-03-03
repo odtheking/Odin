@@ -116,14 +116,14 @@ abstract class Module(
     /**
      * Helper function to make cleaner code, and more performance, since we don't need multiple registers for packet received events.
      *
-     * @param type The packet type to listen for.
+     * @param T The type of the packet to listen for.
      * @param shouldRun Get whether the function should run (Will in most cases be used with the "enabled" value)
      * @param func The function to run when the packet is received.
      */
-    fun <T : Packet<*>> onPacket(type: Class<T>, shouldRun: () -> Boolean = { alwaysActive || enabled }, func: (T) -> Unit) {
+    inline fun <reified T : Packet<*>> onPacket(noinline shouldRun: () -> Boolean = { alwaysActive || enabled }, noinline func: (T) -> Unit) {
         @Suppress("UNCHECKED_CAST")
         ModuleManager.packetFunctions.add(
-            ModuleManager.PacketFunction(type, func, shouldRun) as ModuleManager.PacketFunction<Packet<*>>
+            ModuleManager.PacketFunction(T::class.java, func, shouldRun) as ModuleManager.PacketFunction<Packet<*>>
         )
     }
 

@@ -5,7 +5,10 @@ import me.odinmain.utils.*
 import me.odinmain.utils.render.RenderUtils.renderVec
 import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
-import kotlin.math.*
+import kotlin.math.abs
+import kotlin.math.floor
+import kotlin.math.max
+import kotlin.math.sign
 
 object EtherWarpHelper {
     data class EtherPos(val succeeded: Boolean, val pos: BlockPos?) {
@@ -33,7 +36,7 @@ object EtherWarpHelper {
         return traverseVoxels(startPos, endPos).takeUnless { it == EtherPos.NONE && returnEnd } ?: EtherPos(true, endPos.toBlockPos())
     }
 
-    fun getEtherPos(positionLook: PositionLook = PositionLook(mc.thePlayer.renderVec, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch), distance: Double = 60.0): EtherPos {
+    fun getEtherPos(positionLook: PositionLook = PositionLook(mc.thePlayer.renderVec, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch), distance: Double =  56.0 + mc.thePlayer.heldItem.getTunerBonus): EtherPos {
         return getEtherPos(positionLook.pos, positionLook.yaw, positionLook.pitch, distance)
     }
 

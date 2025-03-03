@@ -13,8 +13,6 @@ import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.profile
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
-import me.odinmain.utils.skyblock.Island
-import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.PersonalBest
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.getRealCoords
@@ -118,18 +116,18 @@ object PuzzleSolvers : Module(
 
     init {
         execute(500) {
-            if ((!inDungeons || inBoss) && !LocationUtils.currentArea.isArea(Island.SinglePlayer)) return@execute
+            if (!inDungeons || inBoss) return@execute
             if (blazeSolver) BlazeSolver.getBlaze()
             if (waterSolver) WaterSolver.scan()
         }
 
-        onPacket(S08PacketPlayerPosLook::class.java) {
-            if ((!inDungeons || inBoss) && !LocationUtils.currentArea.isArea(Island.SinglePlayer)) return@onPacket
+        onPacket<S08PacketPlayerPosLook> {
+            if (!inDungeons || inBoss) return@onPacket
             if (tpMaze) TPMazeSolver.tpPacket(it)
         }
 
-        onPacket(C08PacketPlayerBlockPlacement::class.java) {
-            if ((!inDungeons || inBoss) && !LocationUtils.currentArea.isArea(Island.SinglePlayer)) return@onPacket
+        onPacket<C08PacketPlayerBlockPlacement> {
+            if (!inDungeons || inBoss) return@onPacket
             if (waterSolver) waterInteract(it)
             if (boulderSolver) BoulderSolver.playerInteract(it)
         }
@@ -143,9 +141,8 @@ object PuzzleSolvers : Module(
             QuizSolver.onMessage(it)
         }
 
-        onPacket(S24PacketBlockAction::class.java) { packet ->
-            if ((!inDungeons || inBoss) && !LocationUtils.currentArea.isArea(Island.SinglePlayer) || packet.blockType !is BlockChest) return@onPacket
-            if (packet.blockType !is BlockChest) return@onPacket
+        onPacket<S24PacketBlockAction> { packet ->
+            if (!inDungeons || inBoss || packet.blockType !is BlockChest) return@onPacket
             val room = DungeonUtils.currentRoom?.takeIf { room -> room.data.type == RoomType.PUZZLE } ?: return@onPacket
 
             when (room.data.name) {
@@ -174,7 +171,7 @@ object PuzzleSolvers : Module(
 
     @SubscribeEvent
     fun onWorldRender(event: RenderWorldLastEvent) {
-        if ((!inDungeons || inBoss) && !LocationUtils.currentArea.isArea(Island.SinglePlayer)) return
+        if (!inDungeons || inBoss) return
         profile("Puzzle Solvers Render") {
             if (iceFillSolver) IceFillSolver.onRenderWorld(iceFillColor)
             if (weirdosSolver) WeirdosSolver.onRenderWorld(weirdosColor, weirdosWrongColor, weirdosStyle)
@@ -201,13 +198,13 @@ object PuzzleSolvers : Module(
 
     @SubscribeEvent
     fun blockUpdateEvent(event: BlockChangeEvent) {
-        if ((!inDungeons || inBoss) && !LocationUtils.currentArea.isArea(Island.SinglePlayer)) return
+        if (!inDungeons || inBoss) return
         if (beamsSolver) BeamsSolver.onBlockChange(event)
     }
 
     @SubscribeEvent
     fun onServerTick(event: ServerTickEvent) {
-        if ((!inDungeons || inBoss) && !LocationUtils.currentArea.isArea(Island.SinglePlayer)) return
+        if (!inDungeons || inBoss) return
         if (waterSolver) WaterSolver.onServerTick()
     }
 

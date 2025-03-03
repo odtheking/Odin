@@ -2,8 +2,12 @@ package me.odinmain.features.impl.skyblock
 
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.features.settings.impl.*
-import me.odinmain.utils.render.*
+import me.odinmain.features.settings.impl.BooleanSetting
+import me.odinmain.features.settings.impl.HudSetting
+import me.odinmain.features.settings.impl.StringSetting
+import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.getMCTextWidth
+import me.odinmain.utils.render.mcText
 import net.minecraft.network.play.server.S29PacketSoundEffect
 
 object ArrowHit : Module(
@@ -28,7 +32,7 @@ object ArrowHit : Module(
         }
     }
     init {
-        onPacket(S29PacketSoundEffect::class.java) {
+        onPacket<S29PacketSoundEffect> {
             if (it.soundName != "random.successful_hit") return@onPacket
             arrowCount += 1
             if (arrowCount >= (resetCount.toIntOrNull() ?: 9999) && resetOnNumber) arrowCount = 0

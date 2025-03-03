@@ -3,21 +3,25 @@ package me.odinmain.utils.skyblock
 import me.odinmain.OdinMain.mc
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.noControlCodes
-import me.odinmain.utils.render.*
+import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.RenderUtils.bind
+import me.odinmain.utils.render.scale
+import me.odinmain.utils.render.translate
 import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.RenderHelper
 import net.minecraft.entity.Entity
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.item.ItemStack
-import net.minecraft.nbt.*
+import net.minecraft.nbt.NBTTagCompound
+import net.minecraft.nbt.NBTTagList
+import net.minecraft.nbt.NBTTagString
 import net.minecraftforge.common.util.Constants
 
 /**
  * Returns the ExtraAttribute Compound
  */
-val ItemStack?.extraAttributes: NBTTagCompound?
+inline val ItemStack?.extraAttributes: NBTTagCompound?
     get() = this?.getSubCompound("ExtraAttributes", false)
 
 fun ItemStack.displayName(): String =
@@ -26,13 +30,13 @@ fun ItemStack.displayName(): String =
 /**
  * Returns displayName without control codes.
  */
-val ItemStack?.unformattedName: String
+inline val ItemStack?.unformattedName: String
     get() = this?.displayName()?.noControlCodes ?: ""
 
 /**
  * Returns the lore for an Item
  */
-val ItemStack?.lore: List<String>
+inline val ItemStack?.lore: List<String>
     get() = this?.tagCompound?.getCompoundTag("display")?.getTagList("Lore", 8)?.let {
         List(it.tagCount()) { i -> it.getStringTagAt(i) }
     }.orEmpty()
@@ -40,45 +44,48 @@ val ItemStack?.lore: List<String>
 /**
  * Returns Item ID for an Item
  */
-val ItemStack?.skyblockID: String
+inline val ItemStack?.skyblockID: String
     get() = this?.extraAttributes?.getString("id") ?: ""
 
 /**
  * Returns uuid for an Item
  */
-val ItemStack?.uuid: String
+inline val ItemStack?.uuid: String
     get() = this?.extraAttributes?.getString("uuid") ?: ""
 
  /**
  * Returns if an item has an ability
  */
-val ItemStack?.hasAbility: Boolean
+inline val ItemStack?.hasAbility: Boolean
      get() = this?.lore?.any { it.contains("Ability:") && it.endsWith("RIGHT CLICK") } == true
 
  /**
  * Returns if an item is a shortbow
  */
-val ItemStack?.isShortbow: Boolean
+inline val ItemStack?.isShortbow: Boolean
     get() =this?.lore?.any { it.contains("Shortbow: Instantly shoots!") } == true
 
 /**
  * Returns if an item is a fishing rod
  */
-val ItemStack?.isFishingRod: Boolean
+inline val ItemStack?.isFishingRod: Boolean
     get() = this?.lore?.any { it.contains("FISHING ROD") } == true
 
 /**
  * Returns if an item is Spirit leaps or an Infinileap
  */
-val ItemStack?.isLeap: Boolean
+inline val ItemStack?.isLeap: Boolean
     get() = this?.skyblockID?.equalsOneOf("INFINITE_SPIRIT_LEAP", "SPIRIT_LEAP") == true
 
-val EntityPlayerSP.usingEtherWarp: Boolean
+inline val EntityPlayerSP.usingEtherWarp: Boolean
     get() {
-        val item = heldItem ?: return false
-        if (item.skyblockID == "ETHERWARP_CONDUIT") return true
-        return isSneaking && item.extraAttributes?.getBoolean("ethermerge") == true
+        if (heldItem?.skyblockID == "ETHERWARP_CONDUIT") return true
+        return isSneaking && heldItem?.extraAttributes?.getBoolean("ethermerge") == true
     }
+
+inline val ItemStack?.getTunerBonus: Int
+    get() = this?.tagCompound?.getCompoundTag("ExtraAttributes")?.getInteger("tuned_transmission") ?: 0
+
 
 /**
  * Returns the ID of held item
@@ -176,7 +183,7 @@ val strengthRegex = Regex("Strength: \\+(\\d+)")
 /**
  * Returns the primary Strength value for an Item
  */
-val ItemStack?.getSBStrength: Int
+inline val ItemStack?.getSBStrength: Int
     get() {
         return this?.lore?.firstOrNull { it.noControlCodes.startsWith("Strength:") }
             ?.let { loreLine -> strengthRegex.find(loreLine.noControlCodes)?.groups?.get(1)?.value?.toIntOrNull() } ?: 0
@@ -220,7 +227,7 @@ fun ItemStack.drawItem(x: Float = 0f, y: Float = 0f, scale: Float = 1f, z: Float
     GlStateManager.popMatrix()
 }
 
-val ItemStack.skullTexture: String? get() {
+inline val ItemStack.skullTexture: String? get() {
     return this.tagCompound
         ?.getCompoundTag("SkullOwner")
         ?.getCompoundTag("Properties")

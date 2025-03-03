@@ -8,8 +8,8 @@ import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.HudSetting
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.mcTextAndWidth
+import me.odinmain.utils.toFixed
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import java.util.*
 
 object TickTimers : Module(
     name = "Tick Timers",
@@ -88,7 +88,7 @@ object TickTimers : Module(
             time.toFloat() >= max * 0.33 -> "§6"
             else -> "§c"
         }
-        val timeDisplay = if (displayInTicks) "$time${if (symbolDisplay) "t" else ""}" else "${String.format(Locale.US, "%.2f", time.toFloat() / 20)}${if (symbolDisplay) "s" else ""}"
+        val timeDisplay = if (displayInTicks) "$time${if (symbolDisplay) "t" else ""}" else "${(time / 20f).toFixed()}${if (symbolDisplay) "s" else ""}"
         return "${if (showPrefix) "$prefix " else ""}$color$timeDisplay"
     }
 }

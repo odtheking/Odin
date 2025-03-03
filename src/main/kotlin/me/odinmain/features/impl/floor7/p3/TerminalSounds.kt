@@ -61,7 +61,7 @@ object TerminalSounds : Module(
 
         onMessage(Regex("The Core entrance is opening!"), { enabled && shouldReplaceSounds }) { mc.thePlayer.playSound("note.pling", 8f, 4f) }
 
-        onPacket(C0EPacketClickWindow::class.java) { if (shouldReplaceSounds) clickSlot(it.slotId) }
+        onPacket<C0EPacketClickWindow> { if (shouldReplaceSounds) clickSlot(it.slotId) }
     }
 
     private fun clickSlot(slot: Int) {

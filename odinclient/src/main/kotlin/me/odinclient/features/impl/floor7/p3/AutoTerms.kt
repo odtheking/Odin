@@ -61,7 +61,7 @@ object AutoTerms : Module(
     }
 
     init {
-        onPacket(S2DPacketOpenWindow::class.java) {
+        onPacket<S2DPacketOpenWindow> {
             clickedThisWindow = false
         }
     }

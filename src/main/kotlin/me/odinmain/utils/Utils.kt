@@ -13,7 +13,6 @@ import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.skyblock.sendCommand
 import me.odinmain.utils.skyblock.skyblockID
 import net.minecraft.client.gui.GuiScreen
-import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.SharedMonsterAttributes
 import net.minecraft.entity.player.EntityPlayer
@@ -49,6 +48,10 @@ inline val String?.noControlCodes: String
  */
 fun String.containsOneOf(vararg options: String, ignoreCase: Boolean = false): Boolean {
     return options.any { this.contains(it, ignoreCase) }
+}
+
+fun Number.toFixed(decimals: Int = 2): String {
+    return "%.${decimals}f".format(Locale.US, this)
 }
 
 /**
@@ -115,10 +118,10 @@ fun Number.round(decimals: Int): Number {
     return round(this.toDouble() * factor) / factor
 }
 
-val ContainerChest.name: String
+inline val ContainerChest.name: String
     get() = this.lowerChestInventory?.displayName?.unformattedText ?: ""
 
-val Container.name: String
+inline val Container.name: String
     get() = (this as? ContainerChest)?.name ?: "Undefined Container"
 
 operator fun Number.div(number: Number): Number {
@@ -235,13 +238,10 @@ fun formatTime(time: Long, decimalPlaces: Int = 2): String {
         remaining -= it * 60000
         if (it > 0) "${it}m " else ""
     }
-    val seconds = (remaining / 1000f).let {
-        String.format(Locale.US, "%.${decimalPlaces}f", it)
-    }
-    return "$hours$minutes${seconds}s"
+    return "$hours$minutes${(remaining / 1000f).toFixed()}s"
 }
 
-val Char.isHexaDecimal
+inline val Char.isHexaDecimal
     get() = isDigit() || lowercase().equalsOneOf("a","b","c","d","e","f")
 
 fun checkGLError(message: String) {
@@ -289,8 +289,6 @@ inline fun <T> MutableCollection<T>.removeFirstOrNull(predicate: (T) -> Boolean)
 }
 
 fun Int.rangeAdd(add: Int): IntRange = this..this+add
-
-val Entity.rotation get() = Pair(rotationYaw, rotationPitch)
 
 fun runOnMCThread(run: () -> Unit) {
     if (!mc.isCallingFromMinecraftThread) mc.addScheduledTask(run) else run()

@@ -6,8 +6,11 @@ import me.odinmain.features.impl.render.DevPlayers
 import me.odinmain.features.impl.skyblock.ChatCommands
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.runOnMCThread
-import net.minecraft.event.*
-import net.minecraft.util.*
+import net.minecraft.event.ClickEvent
+import net.minecraft.event.HoverEvent
+import net.minecraft.util.ChatComponentText
+import net.minecraft.util.ChatStyle
+import net.minecraft.util.EnumChatFormatting
 import net.minecraftforge.client.ClientCommandHandler
 import kotlin.math.roundToInt
 
@@ -54,6 +57,7 @@ fun modMessage(message: Any?, prefix: String = "§3Odin §8»§r ", chatStyle: C
 fun devMessage(message: Any?) {
     if (!devMessages || !DevPlayers.isDev) return
     modMessage(message, prefix = "§3Odin§bDev §8»§r ")
+    println("OdinDev » $message")
 }
 
 /**

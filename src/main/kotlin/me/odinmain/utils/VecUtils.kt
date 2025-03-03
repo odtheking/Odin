@@ -20,7 +20,6 @@ data class PositionLook(val pos: Vec3, val yaw: Float, val pitch: Float)
 
 fun BlockPos.add(vec: Vec2): BlockPos = this.add(vec.x, 0, vec.z)
 
-
 fun Entity.distanceSquaredTo(pos: Vec3): Double =
     (posX - pos.xCoord).pow(2.0) + (posY - pos.yCoord).pow(2.0) + (posZ - pos.zCoord).pow(2.0)
 
@@ -70,6 +69,15 @@ fun getLook(yaw: Float = mc.thePlayer?.rotationYaw ?: 0f, pitch: Float = mc.theP
 fun isFacingAABB(aabb: AxisAlignedBB, range: Float, yaw: Float = mc.thePlayer?.rotationYaw ?: 0f, pitch: Float = mc.thePlayer?.rotationPitch ?: 0f): Boolean =
     isInterceptable(aabb, range, yaw, pitch)
 
+
+operator fun Vec3.component1(): Double =
+    xCoord
+
+operator fun Vec3.component2(): Double =
+    yCoord
+
+operator fun Vec3.component3(): Double =
+    zCoord
 
 /**
  * Returns true if the given position is being looked at by the player within the given range, ignoring the Y value.
@@ -259,14 +267,6 @@ fun Vec3.subtractVec(x: Number = .0, y: Number = .0, z: Number = .0): Vec3 =
 fun Vec3i.addVec(x: Number = .0, y: Number = .0, z: Number = .0): Vec3i =
     Vec3i(this.x + x.toInt(), this.y + y.toInt(), this.z + z.toInt())
 
-
-/**
- * Floors every coordinate of a Vec3 and turns it into a Vec3i.
- */
-fun Vec3.floored(): Vec3i =
-    Vec3i(xCoord.floor(), yCoord.floor(), zCoord.floor())
-
-
 /**
  * Floors every coordinate of a Vec3
  */
@@ -338,13 +338,13 @@ fun Vec3.coerceYIn(min: Double, max: Double): Vec3 =
  * Gets the Vec3 position of the given S29PacketSoundEffect.
  * @author Bonsai
  */
-val S29PacketSoundEffect.positionVector: Vec3 get() =
+inline val S29PacketSoundEffect.positionVector: Vec3 get() =
     Vec3(this.x, this.y, this.z)
 
-val S2APacketParticles.positionVector: Vec3 get() =
+inline val S2APacketParticles.positionVector: Vec3 get() =
     Vec3(this.xCoordinate, this.yCoordinate, this.zCoordinate)
 
-val AxisAlignedBB.corners: List<Vec3> get() =
+inline val AxisAlignedBB.corners: List<Vec3> get() =
     listOf(
         Vec3(minX, minY, minZ), Vec3(minX, maxY, minZ), Vec3(maxX, maxY, minZ), Vec3(maxX, minY, minZ),
         Vec3(minX, minY, maxZ), Vec3(minX, maxY, maxZ), Vec3(maxX, maxY, maxZ), Vec3(maxX, minY, maxZ)
@@ -356,7 +356,7 @@ operator fun Vec3.unaryMinus(): Vec3 =
 fun AxisAlignedBB.offset(vec: Vec3) =
     AxisAlignedBB(this.minX + vec.xCoord, this.minY + vec.yCoord, this.minZ + vec.zCoord, this.maxX + vec.xCoord, this.maxY + vec.yCoord, this.maxZ + vec.zCoord)
 
-val AxisAlignedBB.middle: Vec3 get() =
+inline val AxisAlignedBB.middle: Vec3 get() =
     Vec3(this.minX + (this.maxX - this.minX) / 2, this.minY + (this.maxY - this.minY) / 2, this.minZ + (this.maxZ - this.minZ) / 2)
 
 /**

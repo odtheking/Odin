@@ -6,7 +6,6 @@ import me.odinmain.events.impl.RoomEnterEvent
 import me.odinmain.events.impl.SecretPickupEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.WaypointType.entries
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.SecretWaypoints.onEtherwarp
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.SecretWaypoints.onLocked
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.SecretWaypoints.onPosUpdate
@@ -118,9 +117,7 @@ object DungeonWaypoints : Module(
             fun getType() = if (waypointType.equalsOneOf(0, 1, 5)) null else getByInt(timerSetting)
             fun getArrayList() = ArrayList(TimerType.entries.map { it.displayName })
             fun getByInt(i: Int) = TimerType.entries.getOrNull(i).takeIf { it != NONE }
-            fun getByName(name: String): TimerType? {
-                return TimerType.entries.find { it.name == name.uppercase() }
-            }
+            fun getByName(name: String): TimerType? = TimerType.entries.find { it.name == name.uppercase() }
         }
     }
 
@@ -150,15 +147,15 @@ object DungeonWaypoints : Module(
             onLocked()
         }
 
-        onPacket(S08PacketPlayerPosLook::class.java) {
+        onPacket<S08PacketPlayerPosLook> {
             onEtherwarp(it)
         }
 
-        onPacket(C04PacketPlayerPosition::class.java) {
+        onPacket<C04PacketPlayerPosition> {
             onPosUpdate(Vec3(it.positionX, it.positionY, it.positionZ))
         }
 
-        onPacket(C06PacketPlayerPosLook::class.java) {
+        onPacket<C06PacketPlayerPosLook> {
             onPosUpdate(Vec3(it.positionX, it.positionY, it.positionZ))
         }
     }
@@ -177,7 +174,7 @@ object DungeonWaypoints : Module(
 
     @SubscribeEvent
     fun onRender(event: RenderWorldLastEvent) {
-        if ((DungeonUtils.inBoss || !DungeonUtils.inDungeons) && !LocationUtils.currentArea.isArea(Island.SinglePlayer)) return
+        if (DungeonUtils.inBoss || !DungeonUtils.inDungeons) return
         val room = DungeonUtils.currentRoom ?: return
         startProfile("Dungeon Waypoints")
         glList = RenderUtils.drawBoxes(room.waypoints, glList, disableDepth)

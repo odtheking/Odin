@@ -11,7 +11,6 @@ import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.skyblock.ClickType
 import me.odinmain.utils.skyblock.PlayerUtils.windowClick
 import me.odinmain.utils.skyblock.devMessage
-import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.network.play.server.S2DPacketOpenWindow
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
@@ -29,7 +28,7 @@ object QueueTerms : Module(
     private var lastClickTime = 0L
 
     init {
-        onPacket(S2DPacketOpenWindow::class.java) {
+        onPacket<S2DPacketOpenWindow> {
             clickedThisWindow = false
         }
     }
@@ -60,7 +59,6 @@ object QueueTerms : Module(
     @SubscribeEvent
     fun onCustomTermClick(event: GuiEvent.CustomTermGuiClick) {
         if (TerminalSolver.currentTerm.type.equalsOneOf(TerminalTypes.NONE, TerminalTypes.MELODY) || TerminalSolver.renderType != 3) return
-        modMessage("Registered click on slot ${event.slot}")
         queue.takeIf { it.count { click -> click.slot == event.slot } < 2 }?.add(Click(slot = event.slot, button = event.button))
         devMessage("Queued click on slot ${event.slot}")
         event.isCanceled = true

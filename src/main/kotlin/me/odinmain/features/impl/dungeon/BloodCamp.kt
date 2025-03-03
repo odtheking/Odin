@@ -31,7 +31,6 @@ import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.min
 import kotlin.math.roundToInt
@@ -56,7 +55,7 @@ object BloodCamp : Module(
     private val watcherHighlight by BooleanSetting("Watcher Highlight", default = false, description = "Highlights the watcher.")
 
     init {
-        onPacket(S17PacketEntityLookMove::class.java, { bloodHelper && enabled }) { packet ->
+        onPacket<S17PacketEntityLookMove>({ bloodHelper && enabled }) { packet ->
             val world = mc.theWorld ?: return@onPacket
             val entity = packet.getEntity(world) as? EntityArmorStand ?: return@onPacket
             if (currentWatcherEntity?.let { it.getDistanceToEntity(entity) <= 20 } != true || entity.getEquipmentInSlot(4)?.item != Items.skull || getSkullValue(entity) !in allowedMobSkulls) return@onPacket
@@ -88,10 +87,10 @@ object BloodCamp : Module(
             if (!renderDataMap.containsKey(entity)) renderDataMap[entity] = RenderEData(packetVector, endpoint, currentTickTime, speedVectors)
             else renderDataMap[entity]?.let {
                 it.lastEndVector = it.endVector.clone()
-                it.currVector = packetVector
-                it.endVector = endpoint
                 it.endVecUpdated = currentTickTime
                 it.speedVectors = speedVectors
+                it.currVector = packetVector
+                it.endVector = endpoint
             }
         }
 
@@ -100,11 +99,11 @@ object BloodCamp : Module(
         }
 
         onWorldLoad {
-            entityDataMap.clear()
-            firstSpawns = true
             currentWatcherEntity = null
+            entityDataMap.clear()
             renderDataMap.clear()
             currentTickTime = 0
+            firstSpawns = true
         }
     }
 
@@ -184,7 +183,7 @@ object BloodCamp : Module(
                 timeDisplay in 0.0..0.5 -> Color.RED
                 else -> Color.BLUE
             }
-            if (drawTime) Renderer.drawStringInWorld("${String.format(Locale.US, "%.2f", timeDisplay)}s", endPoint.addVec(y = 2), colorTime, depth = true, scale = 0.03f)
+            if (drawTime) Renderer.drawStringInWorld("${timeDisplay.toFixed()}s", endPoint.addVec(y = 2), colorTime, depth = true, scale = 0.03f)
         }
     }
 
