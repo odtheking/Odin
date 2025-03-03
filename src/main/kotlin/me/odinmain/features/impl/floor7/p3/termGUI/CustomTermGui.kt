@@ -34,9 +34,8 @@ abstract class TermGui {
 
     fun mouseClicked(x: Int, y: Int, button: Int) {
         itemIndexMap.entries.find { it.value.isPointWithin(x, y) }?.let { (slot, _) ->
-            if (System.currentTimeMillis() - currentTerm.timeOpened < 300 || GuiEvent.CustomTermGuiClick(slot, button).postAndCatch() || !canClick(slot, button) ) return
-            if (currentTerm.clickedSlot?.second?.let { System.currentTimeMillis() - it < 600 } != true) currentTerm.clickedSlot = slot to System.currentTimeMillis()
-            windowClick(slot, if (button == 1) ClickType.Right else ClickType.Middle)
+            if (System.currentTimeMillis() - currentTerm.timeOpened >= 300 && !GuiEvent.CustomTermGuiClick(slot, button).postAndCatch() && canClick(slot, button))
+                windowClick(slot, if (button == 1) ClickType.Right else ClickType.Middle)
         }
     }
 

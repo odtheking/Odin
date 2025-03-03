@@ -32,6 +32,7 @@ import net.minecraft.item.EnumDyeColor
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
 import net.minecraft.network.play.client.C0DPacketCloseWindow
+import net.minecraft.network.play.client.C0EPacketClickWindow
 import net.minecraft.network.play.server.S2DPacketOpenWindow
 import net.minecraft.network.play.server.S2EPacketCloseWindow
 import net.minecraft.network.play.server.S2FPacketSetSlot
@@ -177,6 +178,10 @@ object TerminalSolver : Module(
             leftTerm()
         }
 
+        onPacket<C0EPacketClickWindow> { packet ->
+            if (currentTerm.clickedSlot?.second?.let { System.currentTimeMillis() - it < 600 } != true) currentTerm.clickedSlot = packet.slotId to System.currentTimeMillis()
+        }
+
         onMessage(terminalActivatedRegex) { message ->
             if (terminalActivatedRegex.find(message)?.groupValues?.get(1) == mc.thePlayer.name) TerminalEvent.Solved(lastTermOpened).postAndCatch()
         }
@@ -308,16 +313,14 @@ object TerminalSolver : Module(
 
         val slotIndex = (event.gui as? GuiChest)?.slotUnderMouse?.slotIndex ?: return
 
-        if (canClick(slotIndex, event.button)) {
-            if (currentTerm.clickedSlot?.second?.let { System.currentTimeMillis() - it < 600 } != true) currentTerm.clickedSlot = slotIndex to System.currentTimeMillis()
-        } else if (blockIncorrectClicks) {
+        if (blockIncorrectClicks && !canClick(slotIndex, event.button)) {
             event.isCanceled = true
             return
         }
 
         if (middleClickGUI) {
-            event.isCanceled = true
             windowClick(slotIndex, if (event.button == 0) ClickType.Middle else ClickType.Right)
+            event.isCanceled = true
         }
     }
 

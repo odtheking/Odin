@@ -14,6 +14,7 @@ import me.odinmain.utils.skyblock.devMessage
 import net.minecraft.network.play.server.S2DPacketOpenWindow
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import java.util.*
 
 object QueueTerms : Module(
     name = "Queue Terms",
@@ -23,7 +24,7 @@ object QueueTerms : Module(
 ) {
     private val dispatchDelay by NumberSetting("Dispatch Delay", 140L, 140L, 300L, unit = "ms", description = "The delay between each click.")
     private data class Click(val slot: Int, val button: Int)
-    private val queue = mutableListOf<Click>()
+    private val queue: Queue<Click> = LinkedList()
     private var clickedThisWindow = false
     private var lastClickTime = 0L
 
@@ -49,7 +50,7 @@ object QueueTerms : Module(
             queue.isEmpty() ||
             clickedThisWindow
         ) return
-        val click = queue.removeFirst().takeIf { TerminalSolver.canClick(it.slot, it.button) } ?: return
+        val click = queue.poll()?.takeIf { TerminalSolver.canClick(it.slot, it.button) } ?: return
         clickedThisWindow = true
         windowClick(slotId = click.slot, if (click.button == 1) ClickType.Right else ClickType.Middle)
         devMessage("Dispatched click on slot ${click.slot}")
@@ -59,7 +60,7 @@ object QueueTerms : Module(
     @SubscribeEvent
     fun onCustomTermClick(event: GuiEvent.CustomTermGuiClick) {
         if (TerminalSolver.currentTerm.type.equalsOneOf(TerminalTypes.NONE, TerminalTypes.MELODY) || TerminalSolver.renderType != 3) return
-        queue.takeIf { it.count { click -> click.slot == event.slot } < 2 }?.add(Click(slot = event.slot, button = event.button))
+        queue.takeIf { it.count { click -> click.slot == event.slot } < 2 }?.offer(Click(slot = event.slot, button = event.button))
         devMessage("Queued click on slot ${event.slot}")
         event.isCanceled = true
     }

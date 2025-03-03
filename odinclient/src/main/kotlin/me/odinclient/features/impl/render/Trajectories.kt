@@ -9,6 +9,9 @@ import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.addVec
+import me.odinmain.utils.component1
+import me.odinmain.utils.component2
+import me.odinmain.utils.component3
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.OutlineUtils
 import me.odinmain.utils.render.RenderUtils
@@ -151,7 +154,7 @@ object Trajectories : Module(
             motionVec = Vec3(motionVec.xCoord * 0.99, motionVec.yCoord * 0.99 - 0.03, motionVec.zCoord * 0.99)
         }
 
-        return Pair(lines, rayTraceHit)
+        return lines to rayTraceHit
     }
 
     private fun setBowTrajectoryHeading(yawOffset: Float, bowCharge: Boolean): Pair<ArrayList<Vec3>, MovingObjectPosition?> {
@@ -159,11 +162,11 @@ object Trajectories : Module(
 
         val yawRadians = Math.toRadians((mc.thePlayer.rotationYaw + yawOffset).toDouble())
         val pitchRadians = Math.toRadians(mc.thePlayer.rotationPitch.toDouble())
-        val player = mc.thePlayer ?: return Pair(arrayListOf(), null)
+        val (renderX, renderY, renderZ) = mc.thePlayer?.renderVec ?: return Pair(arrayListOf(), null)
 
-        val posX = player.renderX - cos(Math.toRadians(mc.thePlayer.rotationYaw.toDouble())) * 0.16
-        val posY = player.renderY + mc.thePlayer.eyeHeight - 0.1
-        val posZ = player.renderZ - sin(Math.toRadians(mc.thePlayer.rotationYaw.toDouble())) * 0.16
+        val posX = renderX - cos(Math.toRadians(mc.thePlayer.rotationYaw.toDouble())) * 0.16
+        val posY = renderY + mc.thePlayer.eyeHeight - 0.1
+        val posZ = renderZ - sin(Math.toRadians(mc.thePlayer.rotationYaw.toDouble())) * 0.16
 
         var motionX = -sin(yawRadians) * cos(pitchRadians)
         var motionY = -sin(pitchRadians)
@@ -212,7 +215,7 @@ object Trajectories : Module(
             posVec = posVec.add(motionVec)
             motionVec = Vec3(motionVec.xCoord * 0.99, motionVec.yCoord * 0.99 - 0.05, motionVec.zCoord * 0.99)
         }
-        return Pair(lines, rayTraceHit)
+        return lines to rayTraceHit
     }
 
     private fun drawPlaneCollision(rayTrace: MovingObjectPosition?) {
