@@ -17,7 +17,7 @@ fun cleanSB(scoreboard: String?): String {
  * @return A list of strings representing lines on the scoreboard sidebar. Returns an empty list if the scoreboard or
  * objective is not available, or if the list is empty after filtering.
  */
-val sidebarLines: List<String>
+inline val sidebarLines: List<String>
     get() {
         val scoreboard = mc.theWorld?.scoreboard ?: return emptyList()
         val objective = scoreboard.getObjectiveInDisplaySlot(1) ?: return emptyList()
@@ -32,7 +32,7 @@ fun cleanLine(scoreboard: String): String = scoreboard.noControlCodes.filter { i
 
 // Tablist utils
 
-val getTabList: List<String>
+inline val getTabList: List<String>
     get() {
         val playerInfoMap = mc.thePlayer?.sendQueue?.playerInfoMap ?: return emptyList()
         return playerInfoMap.toMutableList().map { mc.ingameGUI.tabList.getPlayerName(it) }

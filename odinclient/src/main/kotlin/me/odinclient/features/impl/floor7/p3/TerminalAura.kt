@@ -43,7 +43,7 @@ object TerminalAura : Module(
             interactClock.update()
         }
 
-        onPacket(S2DPacketOpenWindow::class.java) {
+        onPacket<S2DPacketOpenWindow> {
             if (it.windowTitle.formattedText.noControlCodes == "Click the button on time!") interactClock.update()
         }
     }

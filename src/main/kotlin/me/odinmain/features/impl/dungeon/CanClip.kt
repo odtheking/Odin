@@ -6,7 +6,10 @@ import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.HudSetting
 import me.odinmain.font.OdinFont
 import me.odinmain.ui.clickgui.animations.impl.EaseInOut
-import me.odinmain.utils.render.*
+import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.Renderer
+import me.odinmain.utils.render.getTextWidth
+import me.odinmain.utils.render.text
 import me.odinmain.utils.runIn
 import me.odinmain.utils.skyblock.getBlockAt
 import me.odinmain.utils.skyblock.isAir
@@ -62,7 +65,7 @@ object CanClip : Module(
     private val Blocks = mutableMapOf<Vec3, String>()
 
     init {
-        onPacket(C07PacketPlayerDigging::class.java) {
+        onPacket<C07PacketPlayerDigging> {
             if (it.status != C07PacketPlayerDigging.Action.START_DESTROY_BLOCK || !line || getBlockAt(it.position) !is BlockStairs) return@onPacket
             val state = mc.theWorld?.getBlockState(it.position) ?: return@onPacket
 

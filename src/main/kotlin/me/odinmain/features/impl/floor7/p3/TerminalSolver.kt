@@ -109,7 +109,7 @@ object TerminalSolver : Module(
     private var lastRubixSolution: Int? = null
 
     init {
-        onPacket(S2DPacketOpenWindow::class.java) { packet ->
+        onPacket<S2DPacketOpenWindow> { packet ->
             val windowName = packet.windowTitle?.formattedText?.noControlCodes ?: return@onPacket
             val newTermType = TerminalTypes.entries.find { terminal -> windowName.startsWith(terminal.guiName) }?.takeIf { it != TerminalTypes.NONE } ?: return@onPacket
 
@@ -123,7 +123,7 @@ object TerminalSolver : Module(
             if (renderType == 3 && Loader.instance().activeModList.any { it.modId == "notenoughupdates" }) NEUApi.setInventoryButtonsToDisabled()
         }
 
-        onPacket(S2FPacketSetSlot::class.java) { event ->
+        onPacket<S2FPacketSetSlot> { event ->
             if (currentTerm.type == TerminalTypes.NONE || event.func_149173_d() !in 0 until currentTerm.type.size || event.func_149174_e() == null) return@onPacket
             currentTerm.apply {
                 clickedSlot = null
@@ -169,11 +169,11 @@ object TerminalSolver : Module(
             }
         }
 
-        onPacket(C0DPacketCloseWindow::class.java) {
+        onPacket<C0DPacketCloseWindow> {
             leftTerm()
         }
 
-        onPacket(S2EPacketCloseWindow::class.java) {
+        onPacket<S2EPacketCloseWindow> {
             leftTerm()
         }
 

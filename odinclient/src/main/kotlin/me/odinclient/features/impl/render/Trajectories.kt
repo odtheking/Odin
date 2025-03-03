@@ -4,14 +4,19 @@ import me.odinmain.events.impl.RenderEntityModelEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.*
+import me.odinmain.features.settings.impl.BooleanSetting
+import me.odinmain.features.settings.impl.ColorSetting
+import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
-import me.odinmain.utils.*
-import me.odinmain.utils.render.*
+import me.odinmain.utils.addVec
+import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.OutlineUtils
+import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.render.RenderUtils.renderVec
 import me.odinmain.utils.render.RenderUtils.renderX
 import me.odinmain.utils.render.RenderUtils.renderY
 import me.odinmain.utils.render.RenderUtils.renderZ
+import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.isHolding
 import me.odinmain.utils.skyblock.isLeap
@@ -23,11 +28,16 @@ import net.minecraft.entity.monster.EntityBlaze
 import net.minecraft.entity.projectile.EntityArrow
 import net.minecraft.item.ItemBow
 import net.minecraft.item.ItemEnderPearl
-import net.minecraft.util.*
+import net.minecraft.util.AxisAlignedBB
+import net.minecraft.util.EnumFacing
 import net.minecraft.util.MathHelper.sqrt_double
+import net.minecraft.util.MovingObjectPosition
+import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import kotlin.math.*
+import kotlin.math.cos
+import kotlin.math.sin
+import kotlin.math.sqrt
 
 object Trajectories : Module(
     name = "Trajectories",
@@ -107,9 +117,9 @@ object Trajectories : Module(
         var motionZ = cos(yawRadians) * cos(pitchRadians) * 0.4
         var motionY = -sin(pitchRadians) * 0.4
 
-        var posX = player.renderX - cos(yawRadians) * 0.16
-        var posY = player.renderY + player.eyeHeight - 0.1
-        var posZ = player.renderZ - sin(yawRadians) * 0.16
+        val posX = player.renderX - cos(yawRadians) * 0.16
+        val posY = player.renderY + player.eyeHeight - 0.1
+        val posZ = player.renderZ - sin(yawRadians) * 0.16
 
         val f = sqrt_double(motionX * motionX + motionY * motionY + motionZ * motionZ)
         motionX = (motionX / f) * 1.5
@@ -145,15 +155,15 @@ object Trajectories : Module(
     }
 
     private fun setBowTrajectoryHeading(yawOffset: Float, bowCharge: Boolean): Pair<ArrayList<Vec3>, MovingObjectPosition?> {
-        var charge = if (bowCharge) minOf((72000 - mc.thePlayer.itemInUseCount) / 20f, 1.0f) * 2 else 2f
+        val charge = if (bowCharge) minOf((72000 - mc.thePlayer.itemInUseCount) / 20f, 1.0f) * 2 else 2f
 
         val yawRadians = Math.toRadians((mc.thePlayer.rotationYaw + yawOffset).toDouble())
         val pitchRadians = Math.toRadians(mc.thePlayer.rotationPitch.toDouble())
         val player = mc.thePlayer ?: return Pair(arrayListOf(), null)
 
-        var posX = player.renderX - cos(Math.toRadians(mc.thePlayer.rotationYaw.toDouble())) * 0.16
-        var posY = player.renderY + mc.thePlayer.eyeHeight - 0.1
-        var posZ = player.renderZ - sin(Math.toRadians(mc.thePlayer.rotationYaw.toDouble())) * 0.16
+        val posX = player.renderX - cos(Math.toRadians(mc.thePlayer.rotationYaw.toDouble())) * 0.16
+        val posY = player.renderY + mc.thePlayer.eyeHeight - 0.1
+        val posZ = player.renderZ - sin(Math.toRadians(mc.thePlayer.rotationYaw.toDouble())) * 0.16
 
         var motionX = -sin(yawRadians) * cos(pitchRadians)
         var motionY = -sin(pitchRadians)

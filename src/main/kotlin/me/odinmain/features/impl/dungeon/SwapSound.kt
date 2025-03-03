@@ -34,7 +34,7 @@ object SwapSound : Module(
     private var playedThisTick = false
 
     init {
-        onPacket(C09PacketHeldItemChange::class.java) {
+        onPacket<C09PacketHeldItemChange> {
             slot = it.slotId
         }
     }

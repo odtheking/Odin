@@ -22,7 +22,7 @@ object RagnarockAxe : Module(
             if (alertCancelled) PlayerUtils.alert("§cRag Axe Cancelled")
         }
 
-        onPacket(S29PacketSoundEffect::class.java) {
+        onPacket<S29PacketSoundEffect> {
             if (it.soundName != "mob.wolf.howl" || it.pitch != 1.4920635f || !isHolding("RAGNAROCK_AXE")) return@onPacket
             if (alert) PlayerUtils.alert("§aCasted Rag Axe")
             val strengthGain = ((mc.thePlayer?.heldItem?.getSBStrength ?: return@onPacket) * 1.5).toInt()

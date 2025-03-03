@@ -39,8 +39,8 @@ object ChestEsp : Module(
     init {
         onWorldLoad { clickedChests.clear() }
 
-        onPacket(C08PacketPlayerBlockPlacement::class.java) { packet ->
-            if (getBlockAt(packet.position).equalsOneOf(Blocks.chest, Blocks.trapped_chest)) clickedChests.add(packet.position)
+        onPacket<C08PacketPlayerBlockPlacement> {
+            if (getBlockAt(it.position).equalsOneOf(Blocks.chest, Blocks.trapped_chest)) clickedChests.add(it.position)
         }
 
         execute(200) {

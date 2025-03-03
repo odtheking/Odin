@@ -63,20 +63,20 @@ object DianaHelper : Module(
         get() = hasSpade && LocationUtils.currentArea.isArea(Island.Hub) && enabled
 
     init {
-        onPacket(S29PacketSoundEffect::class.java, { isDoingDiana }) {
+        onPacket<S29PacketSoundEffect>({ isDoingDiana }) {
             DianaBurrowEstimate.handleSoundPacket(it)
         }
 
-        onPacket(S2APacketParticles::class.java, { isDoingDiana }) {
+        onPacket<S2APacketParticles>({ isDoingDiana }) {
             DianaBurrowEstimate.handleParticlePacket(it)
             DianaBurrowEstimate.handleBurrow(it)
         }
 
-        onPacket(C08PacketPlayerBlockPlacement::class.java, { isDoingDiana }) {
+        onPacket<C08PacketPlayerBlockPlacement>({ isDoingDiana }) {
             DianaBurrowEstimate.blockEvent(it.position)
         }
 
-        onPacket(C07PacketPlayerDigging::class.java, { isDoingDiana }) {
+        onPacket<C07PacketPlayerDigging>({ isDoingDiana }) {
             DianaBurrowEstimate.blockEvent(it.position)
         }
 
