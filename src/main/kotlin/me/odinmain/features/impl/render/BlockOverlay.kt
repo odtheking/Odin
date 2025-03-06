@@ -41,7 +41,7 @@ object BlockOverlay : Module(
 
     init {
         HighlightRenderer.addEntityGetter({ HighlightRenderer.HighlightType.entries[entityMode]}) {
-            if (!entityToggle) emptyList()
+            if (!entityToggle || !enabled) emptyList()
             else mc.objectMouseOver.entityHit?.takeIf { !it.isInvisible }?.let { listOf(HighlightRenderer.HighlightEntity(it, entityColor, thickness, true, entityStyle)) } ?: emptyList()
         }
     }

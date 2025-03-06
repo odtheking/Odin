@@ -225,6 +225,7 @@ object DevPlayers {
     }
 
     @OptIn(ExperimentalEncodingApi::class)
+    @JvmStatic
     fun hookGetLocationCape(gameProfile: GameProfile): ResourceLocation? {
         val name = gameProfile.name
         val nameEncoded = Base64.encode(name.toByteArray())

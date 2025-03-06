@@ -17,7 +17,8 @@ import me.odinmain.utils.toBlockPos
 import net.minecraft.util.BlockPos
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import java.util.concurrent.CopyOnWriteArrayList
+import java.util.*
+import java.util.concurrent.ConcurrentLinkedQueue
 
 object SecretClicked : Module(
     name = "Secret Clicked",
@@ -51,14 +52,14 @@ object SecretClicked : Module(
     private val chimeInBoss by BooleanSetting("Chime In Boss", false, description = "Prevent playing the sound if in boss room.").withDependency { chimeDropdownSetting && chime }
 
     private data class Secret(val pos: BlockPos, var locked: Boolean = false)
-    private val clickedSecretsList = CopyOnWriteArrayList<Secret>()
+    private val clickedSecretsQueue: Queue<Secret> = ConcurrentLinkedQueue()
     private var lastPlayed = System.currentTimeMillis()
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-        if (!boxes || !DungeonUtils.inDungeons || (DungeonUtils.inBoss && !boxInBoss) || clickedSecretsList.isEmpty()) return
+        if (!boxes || !DungeonUtils.inDungeons || (DungeonUtils.inBoss && !boxInBoss) || clickedSecretsQueue.isEmpty()) return
 
-        clickedSecretsList.forEach {
+        clickedSecretsQueue.forEach {
             val currentColor = if (it.locked) lockedColor else color
             if (useRealSize) Renderer.drawStyledBlock(it.pos, currentColor, style, lineWidth, depthCheck)
             else Renderer.drawStyledBox(it.pos.toAABB(), currentColor, style, lineWidth, depthCheck)
@@ -82,14 +83,14 @@ object SecretClicked : Module(
     }
 
     private fun secretBox(pos: BlockPos) {
-        if (!boxes || (DungeonUtils.inBoss && !boxInBoss) || clickedSecretsList.any { it.pos == pos }) return
-        clickedSecretsList.add(Secret(pos))
-        runIn(timeToStay * 20) { clickedSecretsList.removeFirstOrNull() }
+        if (!boxes || (DungeonUtils.inBoss && !boxInBoss) || clickedSecretsQueue.any { it.pos == pos }) return
+        clickedSecretsQueue.add(Secret(pos))
+        runIn(timeToStay * 20) { clickedSecretsQueue.poll() }
     }
 
     init {
-        onWorldLoad { clickedSecretsList.clear() }
+        onWorldLoad { clickedSecretsQueue.clear() }
 
-        onMessage(Regex("That chest is locked!")) { clickedSecretsList.lastOrNull()?.locked = true }
+        onMessage(Regex("That chest is locked!")) { clickedSecretsQueue.peek()?.locked = true }
     }
 }

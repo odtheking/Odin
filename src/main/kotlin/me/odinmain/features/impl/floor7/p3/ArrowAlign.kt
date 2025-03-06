@@ -5,9 +5,7 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.utils.addVec
-import me.odinmain.utils.distanceSquaredTo
-import me.odinmain.utils.flooredVec
+import me.odinmain.utils.*
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
@@ -66,9 +64,9 @@ object ArrowAlign : Module(
     fun onPacket(event: PacketEvent.Send) {
         val packet = event.packet as? C02PacketUseEntity ?: return
         if (DungeonUtils.getF7Phase() != M7Phases.P3 || packet.action != C02PacketUseEntity.Action.INTERACT) return
-        val entityPosition = (packet.getEntityFromWorld(mc.theWorld) as? EntityItemFrame)?.takeIf { it.displayedItem?.item == Items.arrow }?.positionVector?.flooredVec() ?: return
-        val frameIndex = ((entityPosition.yCoord - frameGridCorner.yCoord) + (entityPosition.zCoord - frameGridCorner.zCoord) * 5).toInt()
-        if (entityPosition.xCoord != frameGridCorner.xCoord || currentFrameRotations?.get(frameIndex) == -1 || frameIndex !in 0..24) return
+        val (x, y, z) = (packet.getEntityFromWorld(mc.theWorld) as? EntityItemFrame)?.takeIf { it.displayedItem?.item == Items.arrow }?.positionVector?.flooredVec() ?: return
+        val frameIndex = ((y - frameGridCorner.yCoord) + (z - frameGridCorner.zCoord) * 5).toInt()
+        if (x != frameGridCorner.xCoord || currentFrameRotations?.get(frameIndex) == -1 || frameIndex !in 0..24) return
 
         if (!clicksRemaining.containsKey(frameIndex) && mc.thePlayer.isSneaking == invertSneak && blockWrong) {
             event.isCanceled = true

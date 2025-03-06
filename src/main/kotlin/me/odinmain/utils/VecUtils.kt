@@ -70,14 +70,17 @@ fun isFacingAABB(aabb: AxisAlignedBB, range: Float, yaw: Float = mc.thePlayer?.r
     isInterceptable(aabb, range, yaw, pitch)
 
 
-operator fun Vec3.component1(): Double =
-    xCoord
+operator fun Vec3.component1(): Double = xCoord
 
-operator fun Vec3.component2(): Double =
-    yCoord
+operator fun Vec3.component2(): Double = yCoord
 
-operator fun Vec3.component3(): Double =
-    zCoord
+operator fun Vec3.component3(): Double = zCoord
+
+operator fun Vec3i.component1(): Int = x
+
+operator fun Vec3i.component2(): Int = y
+
+operator fun Vec3i.component3(): Int = z
 
 /**
  * Returns true if the given position is being looked at by the player within the given range, ignoring the Y value.

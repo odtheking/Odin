@@ -52,7 +52,7 @@ object QueueTerms : Module(
         ) return
         val click = queue.poll()?.takeIf { TerminalSolver.canClick(it.slot, it.button) } ?: return
         clickedThisWindow = true
-        windowClick(slotId = click.slot, if (click.button == 1) ClickType.Right else ClickType.Middle)
+        windowClick(click.slot, if (click.button == 1) ClickType.Right else ClickType.Middle)
         devMessage("Dispatched click on slot ${click.slot}")
         lastClickTime = System.currentTimeMillis()
     }

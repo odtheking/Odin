@@ -147,15 +147,15 @@ object Triggerbot : Module(
             }
         }
     }
-    val frameGridCorner = Vec3(-2.0, 120.0, 75.0)
+    private val frameGridCorner = Vec3(-2.0, 120.0, 75.0)
 
     private fun arrowAlignTriggerbot() {
         if ((sneakToDisableTriggerbot && mc.thePlayer.isSneaking) || clicksRemaining.isEmpty()) return
         val targetFrame = mc.objectMouseOver?.entityHit as? EntityItemFrame ?: return
 
-        val targetFramePosition = targetFrame.positionVector.flooredVec()
-        val frameIndex = ((targetFramePosition.yCoord - frameGridCorner.yCoord) + (targetFramePosition.zCoord - frameGridCorner.zCoord) * 5).toInt()
-        if (targetFramePosition.xCoord != frameGridCorner.xCoord || currentFrameRotations?.get(frameIndex) == -1 || frameIndex !in 0..24) return
+        val (x, y, z) = targetFrame.positionVector.flooredVec()
+        val frameIndex = ((y - frameGridCorner.yCoord) + (z - frameGridCorner.zCoord) * 5).toInt()
+        if (x != frameGridCorner.xCoord || currentFrameRotations?.get(frameIndex) == -1 || frameIndex !in 0..24) return
         clicksRemaining[frameIndex]?.let {
             PlayerUtils.rightClick()
             triggerBotClock.update()
