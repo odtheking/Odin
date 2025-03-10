@@ -57,6 +57,7 @@ object TerminalSolver : Module(
     private val middleClickGUI by BooleanSetting("Middle Click GUI", true, description = "Replaces right click with middle click in terminals.").withDependency { renderType != 3 }
     private val blockIncorrectClicks by BooleanSetting("Block Incorrect Clicks", true, description = "Blocks incorrect clicks in terminals.").withDependency { renderType != 3 }
     private val cancelMelodySolver by BooleanSetting("Stop Melody Solver", false, description = "Stops rendering the melody solver.")
+    val showNumbers by BooleanSetting("Show Numbers", true, description = "Shows numbers in the order terminal.").withDependency { renderType == 1 }
 
     private val showRemoveWrongSettings by DropdownSetting("Render Wrong Settings").withDependency { renderType == 1 }
     private val removeWrong by BooleanSetting("Stop Rendering Wrong", true, description = "Main toggle for stopping the rendering of incorrect items in terminals.").withDependency { renderType == 1 && showRemoveWrongSettings }
@@ -276,7 +277,7 @@ object TerminalSolver : Module(
                         event.isCanceled = true
                     }
                     val amount = event.slot.stack?.stackSize?.toString() ?: ""
-                    mcText(amount, event.x + 8.5f - getMCTextWidth(amount) / 2, event.y + 4.5f, 1, Color.WHITE, center = false)
+                    if (showNumbers) mcText(amount, event.x + 8.5f - getMCTextWidth(amount) / 2, event.y + 4.5f, 1, Color.WHITE, center = false)
                 }
             }
             TerminalTypes.STARTS_WITH, TerminalTypes.SELECT ->

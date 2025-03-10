@@ -45,8 +45,7 @@ object OrderGui : TermGui() {
                 )
             }
             
-            if (index != -1) mcText(amount.toString(), -163 + col * 70 + 26f , -60 + row * 70 + (27f - (textScale*3) - (gap * 0.5)), 2 + textScale, Color.WHITE)
-            mcText(amount.toString(), -163 + col * 70 + 26f , -60 + row * 70 + (27f - (textScale*3) - (gap * 0.5)), 2 + textScale, Color.WHITE)
+            if (TerminalSolver.showNumbers && index != -1) mcText(amount.toString(), -163 + col * 70 + 26f , -60 + row * 70 + (27f - (textScale * 3) - (gap * 0.5)), 2 + textScale, Color.WHITE)
         }
     }
 }
