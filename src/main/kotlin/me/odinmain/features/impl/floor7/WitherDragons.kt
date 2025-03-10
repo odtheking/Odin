@@ -39,7 +39,7 @@ object WitherDragons : Module(
             getMCTextWidth("§5P §a4.5s")+ 2f to 33f
         } else {
             priorityDragon.takeIf { drag -> drag != WitherDragonsEnum.None }?.let { dragon ->
-                if (dragon.timeToSpawn <= 0) return@HudSetting 0f to 0f
+                if (dragon.state != WitherDragonState.SPAWNING && dragon.timeToSpawn <= 0) return@HudSetting 0f to 0f
                 mcText("§${dragon.colorCode}${dragon.name.first()}: ${colorDragonTimer(dragon.timeToSpawn)}${dragon.timeToSpawn * 50}ms", 2, 5f, 1, Color.WHITE, center = false)
             }
             getMCTextWidth("§5P §a4.5s")+ 2f to 33f
@@ -96,7 +96,7 @@ object WitherDragons : Module(
             WitherDragonsEnum.reset()
         }
 
-        onPacket<S2APacketParticles>({ DungeonUtils.getF7Phase() == M7Phases.P5 }) {
+        onPacket<S2APacketParticles> ({ DungeonUtils.getF7Phase() == M7Phases.P5 }) {
             handleSpawnPacket(it)
         }
 
@@ -104,20 +104,20 @@ object WitherDragons : Module(
             if (relicAnnounce || relicAnnounceTime) relicsBlockPlace(it)
         }
 
-        onPacket<S29PacketSoundEffect>({ DungeonUtils.getF7Phase() == M7Phases.P5 }) {
+        onPacket<S29PacketSoundEffect> ({ DungeonUtils.getF7Phase() == M7Phases.P5 }) {
             if (it.soundName != "random.successful_hit" || !sendArrowHit || priorityDragon == WitherDragonsEnum.None) return@onPacket
             if (priorityDragon.entity?.isEntityAlive == true && currentTick - priorityDragon.spawnedTime < priorityDragon.skipKillTime) arrowsHit++
         }
 
-        onPacket<S04PacketEntityEquipment>({ DungeonUtils.getF7Phase() == M7Phases.P5 && enabled }) {
+        onPacket<S04PacketEntityEquipment> ({ DungeonUtils.getF7Phase() == M7Phases.P5 && enabled }) {
             dragonSprayed(it)
         }
 
-        onPacket<S0FPacketSpawnMob>({ DungeonUtils.getF7Phase() == M7Phases.P5 && enabled }) {
+        onPacket<S0FPacketSpawnMob> ({ DungeonUtils.getF7Phase() == M7Phases.P5 && enabled }) {
             if (it.entityType == 63) dragonSpawn(it)
         }
 
-        onPacket<S1CPacketEntityMetadata>({ DungeonUtils.getF7Phase() == M7Phases.P5 && enabled }) {
+        onPacket<S1CPacketEntityMetadata> ({ DungeonUtils.getF7Phase() == M7Phases.P5 && enabled }) {
             dragonUpdate(it)
         }
 
