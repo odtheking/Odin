@@ -3,7 +3,10 @@ package me.odinmain.commands.impl
 import com.github.stivais.commodore.Commodore
 import me.odinmain.OdinMain.mc
 import me.odinmain.features.impl.render.WaypointManager
-import me.odinmain.utils.floor
+import me.odinmain.utils.component1
+import me.odinmain.utils.component2
+import me.odinmain.utils.component3
+import me.odinmain.utils.flooredVec
 import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.PlayerUtils.posX
 import me.odinmain.utils.skyblock.PlayerUtils.posY
@@ -20,8 +23,9 @@ val waypointCommand = Commodore("waypoint", "odinwaypoint") {
                  Waypoint command help:
                  §3- /waypoint » §8Main command.
                  §3- /waypoint share » §8Used to send your location in party chat.
-                 §3- /waypoint add temp» §8Used to add temporary waypoints.
-                 §3- /waypoint add perm» §8Used to add permanent waypoints.
+                 §3- /waypoint addtemp » §8Used to add temporary waypoints.
+                 §3- /waypoint addtemp <x, y, z> » §8Used to add temporary waypoints.
+                 §3- /waypoint addtemp <name, x?, y?, z?> » §8Used to add temporary waypoints.
             """.trimIndent()
         )
     }
@@ -41,25 +45,12 @@ val waypointCommand = Commodore("waypoint", "odinwaypoint") {
         }
 
         runs { name: String, x: Int?, y: Int?, z: Int? ->
-            val xPos = x ?: posX.floor().toInt(); val yPos = y ?: posY.floor().toInt(); val zPos = z ?: posZ.floor().toInt()
-            WaypointManager.addTempWaypoint(name, xPos, yPos, zPos)
+            val (posX, posY, posZ) = mc.thePlayer?.positionVector?.flooredVec() ?: return@runs
+            WaypointManager.addTempWaypoint(name, x ?: posX.toInt(), y ?: posY.toInt(), z ?: posZ.toInt())
         }
 
         runs {
-            WaypointManager.addTempWaypoint("", mc.thePlayer.posX.roundToInt(), mc.thePlayer.posY.roundToInt(), mc.thePlayer.posZ.roundToInt())
+            WaypointManager.addTempWaypoint("", posX.roundToInt(), posY.roundToInt(), posZ.roundToInt())
         }
     }
-
-    /*literal("gui").runs {  §3- /waypoint gui » §8Used to open the GUI.
-       display = WaypointGUI
-   }*/
-
-    /*literal("add") {
-        // remove temp waypoints its really useless icl
-        runs { name: String, x: Int?, y: Int?, z: Int? ->
-            val xPos = x ?: posX.floor().toInt(); val yPos = y ?: posY.floor().toInt(); val zPos = z ?: posZ.floor().toInt()
-            WaypointManager.addWaypoint(name, xPos, yPos, zPos)
-            modMessage("Added permanent waypoint \"$name\" at $xPos, $yPos, $zPos.")
-        }
-    }*/ // not handling permanent waypoints until we have the gui to manage them
 }

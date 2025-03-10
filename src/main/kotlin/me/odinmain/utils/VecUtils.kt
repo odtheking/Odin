@@ -274,7 +274,7 @@ fun Vec3i.addVec(x: Number = .0, y: Number = .0, z: Number = .0): Vec3i =
  * Floors every coordinate of a Vec3
  */
 fun Vec3.flooredVec(): Vec3 =
-    Vec3(xCoord.floor(), yCoord.floor(), zCoord.floor())
+    Vec3(floor(xCoord), floor(yCoord), floor(zCoord))
 
 /**
  * @param add Will determine the maximum bounds

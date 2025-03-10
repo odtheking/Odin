@@ -8,12 +8,30 @@ import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.DropdownSetting
 import me.odinmain.features.settings.impl.ListSetting
-import me.odinmain.utils.*
+import me.odinmain.utils.ServerUtils
+import me.odinmain.utils.capitalizeFirst
+import me.odinmain.utils.noControlCodes
+import me.odinmain.utils.runIn
 import me.odinmain.utils.skyblock.*
 import net.minecraft.event.ClickEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
+import kotlin.collections.MutableList
+import kotlin.collections.any
+import kotlin.collections.component1
+import kotlin.collections.component2
+import kotlin.collections.filterValues
+import kotlin.collections.find
+import kotlin.collections.groupBy
+import kotlin.collections.indices
+import kotlin.collections.joinToString
+import kotlin.collections.listOf
+import kotlin.collections.mapOf
+import kotlin.collections.mutableListOf
+import kotlin.collections.none
+import kotlin.collections.random
+import kotlin.collections.toMutableList
 import kotlin.math.floor
 import kotlin.random.Random
 
@@ -112,7 +130,7 @@ object ChatCommands : Module(
             "dice" -> if (dice) channelMessage((1..6).random(), name, channel)
             "racism" -> if (racism) channelMessage("$name is ${Random.nextInt(1, 101)}% racist. Racism is not allowed!", name, channel)
             "ping" -> if (ping) channelMessage("Current Ping: ${floor(ServerUtils.averagePing).toInt()}ms", name, channel)
-            "tps" -> if (tps) channelMessage("Current TPS: ${ServerUtils.averageTps.floor()}", name, channel)
+            "tps" -> if (tps) channelMessage("Current TPS: ${floor(ServerUtils.averageTps)}", name, channel)
             "fps" -> if (fps) channelMessage("Current FPS: ${ServerUtils.fps}", name, channel)
             "time" -> if (time) channelMessage("Current Time: ${ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss z"))}", name, channel)
             "location" -> if (location) channelMessage("Current Location: ${LocationUtils.currentArea.displayName}", name, channel)

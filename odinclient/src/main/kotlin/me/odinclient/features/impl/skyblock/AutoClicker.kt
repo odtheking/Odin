@@ -33,10 +33,10 @@ object AutoClicker : Module(
 
     @SubscribeEvent
     fun onRenderWorldLast(event: RenderWorldLastEvent) {
+        if (mc.currentScreen != null) return
         val nowMillis = System.currentTimeMillis()
         if (terminatorOnly) {
             if (!isHolding("TERMINATOR") || !mc.gameSettings.keyBindUseItem.isKeyDown) return
-            val nowMillis = System.currentTimeMillis()
             if (nowMillis < nextRightClick) return
             nextRightClick = nowMillis + ((1000 / cps) + ((Math.random() - .5) * 60.0))
             leftClick()

@@ -7,7 +7,7 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
-import me.odinmain.utils.rangeAdd
+import me.odinmain.utils.addRange
 import me.odinmain.utils.runIn
 import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
@@ -170,7 +170,7 @@ object GhostBlocks : Module(
     fun postChunkData(packet: S21PacketChunkData) {
         if (!enabled || !stonkDelayToggle || (sdOnlySB && !LocationUtils.isInSkyblock)) return
         sdBlocks.forEach {
-            if (it.pos.x in (packet.chunkX shl 4).rangeAdd(15) && it.pos.z in (packet.chunkZ shl 4).rangeAdd(15)) {
+            if (it.pos.x in (packet.chunkX shl 4).addRange(15) && it.pos.z in (packet.chunkZ shl 4).addRange(15)) {
                 mc.theWorld?.setBlockState(it.pos, Blocks.air.defaultState)
                 it.serverReplaced = true
                 it.state = mc.theWorld.getBlockState(it.pos)

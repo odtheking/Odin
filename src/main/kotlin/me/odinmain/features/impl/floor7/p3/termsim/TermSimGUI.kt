@@ -32,7 +32,7 @@ open class TermSimGUI(
 
     val pane: Item = Item.getItemById(160)
     val blackPane = ItemStack(pane, 1, 15).apply { setStackDisplayName("") }
-    val guiInventorySlots get() = inventorySlots?.inventorySlots?.subList(0, size)
+    inline val guiInventorySlots get() = inventorySlots?.inventorySlots?.subList(0, size)
     private var doesAcceptClick = true
     protected var ping = 0L
 

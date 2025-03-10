@@ -36,7 +36,7 @@ object TeammatesHighlight : Module(
     private val depthCheck by BooleanSetting("Depth check", false, description = "Highlights teammates only when they are visible.")
     private val inBoss by BooleanSetting("In boss", true, description = "Highlights teammates in boss rooms.")
 
-    private val shouldRender get() = (inBoss || !DungeonUtils.inBoss) && DungeonUtils.inDungeons
+    private inline val shouldRender get() = (inBoss || !DungeonUtils.inBoss) && DungeonUtils.inDungeons
 
     init {
         HighlightRenderer.addEntityGetter({ HighlightRenderer.HighlightType.entries[mode] }) {

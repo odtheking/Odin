@@ -27,7 +27,6 @@ import net.minecraftforge.fml.common.eventhandler.Event
 import org.lwjgl.opengl.GL11
 import org.lwjgl.util.glu.GLU
 import java.util.*
-import kotlin.math.floor
 import kotlin.math.pow
 import kotlin.math.round
 
@@ -46,13 +45,11 @@ inline val String?.noControlCodes: String
  * @param ignoreCase If comparison should be case-sensitive or not.
  * @return `true` if the string contains at least one of the specified options, otherwise `false`.
  */
-fun String.containsOneOf(vararg options: String, ignoreCase: Boolean = false): Boolean {
-    return options.any { this.contains(it, ignoreCase) }
-}
+fun String.containsOneOf(vararg options: String, ignoreCase: Boolean = false): Boolean =
+    options.any { this.contains(it, ignoreCase) }
 
-fun Number.toFixed(decimals: Int = 2): String {
-    return "%.${decimals}f".format(Locale.US, this)
-}
+fun Number.toFixed(decimals: Int = 2): String =
+    "%.${decimals}f".format(Locale.US, this)
 
 /**
  * Checks if the current string contains at least one of the specified strings.
@@ -61,13 +58,11 @@ fun Number.toFixed(decimals: Int = 2): String {
  * @param ignoreCase If comparison should be case-sensitive or not.
  * @return `true` if the string contains at least one of the specified options, otherwise `false`.
  */
-fun String.containsOneOf(options: Collection<String>, ignoreCase: Boolean = false): Boolean {
-    return options.any { this.contains(it, ignoreCase) }
-}
+fun String.containsOneOf(options: Collection<String>, ignoreCase: Boolean = false): Boolean =
+    options.any { this.contains(it, ignoreCase) }
 
-fun String.startsWithOneOf(vararg options: String, ignoreCase: Boolean = false): Boolean {
-    return options.any { this.startsWith(it, ignoreCase) }
-}
+fun String.startsWithOneOf(vararg options: String, ignoreCase: Boolean = false): Boolean =
+    options.any { this.startsWith(it, ignoreCase) }
 
 /**
  * Checks if the current object is equal to at least one of the specified objects.
@@ -75,37 +70,11 @@ fun String.startsWithOneOf(vararg options: String, ignoreCase: Boolean = false):
  * @param options List of other objects to check.
  * @return `true` if the object is equal to one of the specified objects.
  */
-fun Any?.equalsOneOf(vararg options: Any?): Boolean {
-    return options.any { this == it }
-}
+fun Any?.equalsOneOf(vararg options: Any?): Boolean =
+    options.any { this == it }
 
-fun String?.matchesOneOf(vararg options: Regex): Boolean {
-    return options.any { it.matches(this ?: "") }
-}
-
-/**
- * Floors the current Double number.
- * @return The floored Double number.
- */
-fun Double.floor(): Double {
-    return floor(this)
-}
-
-/**
- * Floors the current Float number.
- * @return The floored Float number.
- */
-fun Float.floor(): Float {
-    return floor(this.toDouble()).toFloat()
-}
-
-/**
- * Floors the current Long number.
- * @return The floored Long number (no change as Long is already an integer).
- */
-fun Long.floor(): Long {
-    return this
-}
+fun String?.matchesOneOf(vararg options: Regex): Boolean =
+    options.any { it.matches(this ?: "") }
 
 /**
  * Rounds the current number to the specified number of decimals.
@@ -124,37 +93,38 @@ inline val ContainerChest.name: String
 inline val Container.name: String
     get() = (this as? ContainerChest)?.name ?: "Undefined Container"
 
-operator fun Number.div(number: Number): Number {
-    return this.toDouble() / number.toDouble()
-}
+operator fun Number.div(number: Number): Number =
+    this.toDouble() / number.toDouble()
 
-operator fun Number.times(number: Number): Number {
-    return this.toDouble() * number.toDouble()
-}
 
-operator fun Number.minus(number: Number): Number {
-    return this.toDouble() - number.toDouble()
-}
+operator fun Number.times(number: Number): Number =
+    this.toDouble() * number.toDouble()
 
-operator fun Number.plus(number: Number): Number {
-    return this.toDouble() + number.toDouble()
-}
+operator fun Number.minus(number: Number): Number =
+    this.toDouble() - number.toDouble()
+
+operator fun Number.plus(number: Number): Number =
+    this.toDouble() + number.toDouble()
 
 /**
  * Posts an event to the event bus and catches any errors.
  * @author Skytils
  */
-fun Event.postAndCatch(): Boolean {
-    return runCatching {
+fun Event.postAndCatch(): Boolean =
+    runCatching {
         MinecraftForge.EVENT_BUS.post(this)
     }.onFailure {
-        it.printStackTrace()
-        logger.error("An error occurred", it)
-        val style = ChatStyle()
-        style.chatClickEvent = ClickEvent(ClickEvent.Action.RUN_COMMAND, "/od copy ```${it.stackTraceToString().lineSequence().take(10).joinToString("\n")}```")
-        style.chatHoverEvent = HoverEvent(HoverEvent.Action.SHOW_TEXT, ChatComponentText("§6Click to copy the error to your clipboard."))
-        modMessage("${OdinMain.VERSION} Caught an ${it::class.simpleName ?: "error"} at ${this::class.simpleName}. §cPlease click this message to copy and send it in the Odin discord!",
-            chatStyle = style)}.getOrDefault(isCanceled)
+        logError(it, this)
+    }.getOrDefault(isCanceled)
+
+fun logError(throwable: Throwable, context: Any) {
+    val message = "${OdinMain.VERSION} Caught an ${throwable::class.simpleName ?: "error"} at ${context::class.simpleName}."
+    logger.error(message, throwable)
+    val style = ChatStyle().apply {
+        chatClickEvent = ClickEvent(ClickEvent.Action.RUN_COMMAND, "/od copy $message \n``` ${throwable.message?.lineSequence()?.take(10)?.joinToString("\n")}```")
+        chatHoverEvent = HoverEvent(HoverEvent.Action.SHOW_TEXT, ChatComponentText("§6Click to copy the error to your clipboard."))
+    }
+    modMessage("$message §cPlease click this message to copy and send it in the Odin discord!", chatStyle = style)
 }
 
 /**
@@ -186,16 +156,14 @@ inline fun profile(name: String, func: () -> Unit) {
 /**
  * Starts a minecraft profiler section with the specified name + "Odin: ".
  * */
-fun startProfile(name: String) {
+fun startProfile(name: String) =
     mc.mcProfiler.startSection("Odin: $name")
-}
 
 /**
  * Ends the current minecraft profiler section.
  */
-fun endProfile() {
+fun endProfile() =
     mc.mcProfiler.endSection()
-}
 
 /**
  * Returns the String with the first letter capitalized
@@ -288,7 +256,7 @@ inline fun <T> MutableCollection<T>.removeFirstOrNull(predicate: (T) -> Boolean)
     return first
 }
 
-fun Int.rangeAdd(add: Int): IntRange = this..this+add
+fun Int.addRange(add: Int): IntRange = this..this+add
 
 fun runOnMCThread(run: () -> Unit) {
     if (!mc.isCallingFromMinecraftThread) mc.addScheduledTask(run) else run()

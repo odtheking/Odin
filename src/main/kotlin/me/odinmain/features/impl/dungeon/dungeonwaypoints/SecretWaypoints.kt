@@ -105,7 +105,6 @@ object SecretWaypoints {
         val waypoints = getWaypoints(room)
         waypoints.find { wp -> wp.toVec3().addVec(y = 0.5).distanceTo(room.getRelativeCoords(pos)) <= 2 && wp.type == WaypointType.MOVE && !wp.clicked }?.let { wp ->
             wp.timer?.let { if (handleTimer(wp, waypoints, room)) wp.clicked = true else return } ?: run { wp.clicked = true }
-
             setWaypoints(room)
             devMessage("clicked ${wp.toVec3()}")
             glList = -1

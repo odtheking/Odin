@@ -57,7 +57,7 @@ object TerminalSolver : Module(
     private val middleClickGUI by BooleanSetting("Middle Click GUI", true, description = "Replaces right click with middle click in terminals.").withDependency { renderType != 3 }
     private val blockIncorrectClicks by BooleanSetting("Block Incorrect Clicks", true, description = "Blocks incorrect clicks in terminals.").withDependency { renderType != 3 }
     private val cancelMelodySolver by BooleanSetting("Stop Melody Solver", false, description = "Stops rendering the melody solver.")
-    val showNumbers by BooleanSetting("Show Numbers", true, description = "Shows numbers in the order terminal.").withDependency { renderType == 1 }
+    val showNumbers by BooleanSetting("Show Numbers", true, description = "Shows numbers in the order terminal.")
 
     private val showRemoveWrongSettings by DropdownSetting("Render Wrong Settings").withDependency { renderType == 1 }
     private val removeWrong by BooleanSetting("Stop Rendering Wrong", true, description = "Main toggle for stopping the rendering of incorrect items in terminals.").withDependency { renderType == 1 && showRemoveWrongSettings }

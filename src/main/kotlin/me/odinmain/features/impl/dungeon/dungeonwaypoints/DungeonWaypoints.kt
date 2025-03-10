@@ -83,7 +83,7 @@ object DungeonWaypoints : Module(
     }
     private val debugWaypoint by BooleanSetting("Debug Waypoint", false, description = "Shows a waypoint in the middle of every extra room.").withDependency { DevPlayers.isDev }
 
-    private val selectedColor get() = when (colorPallet) {
+    private inline val selectedColor get() = when (colorPallet) {
         0 -> color
         1 -> Color.CYAN
         2 -> Color.MAGENTA
@@ -99,7 +99,7 @@ object DungeonWaypoints : Module(
     enum class WaypointType {
         NONE, NORMAL, SECRET, ETHERWARP, MOVE, BLOCKETHERWARP
         ;
-        val displayName get() = name.lowercase().capitalizeFirst()
+        inline val displayName get() = name.lowercase().capitalizeFirst()
         companion object {
             fun getArrayList() = ArrayList(entries.map { it.displayName })
             fun getByInt(i: Int) = entries.getOrNull(i).takeIf { it != NONE }
@@ -112,7 +112,7 @@ object DungeonWaypoints : Module(
     enum class TimerType {
         NONE, START, CHECKPOINT, END,
         ;
-        val displayName get() = name.lowercase().capitalizeFirst()
+        inline val displayName get() = name.lowercase().capitalizeFirst()
         companion object{
             fun getType() = if (waypointType.equalsOneOf(0, 1, 5)) null else getByInt(timerSetting)
             fun getArrayList() = ArrayList(TimerType.entries.map { it.displayName })
@@ -128,7 +128,7 @@ object DungeonWaypoints : Module(
         var type: WaypointType? = null, val timer: TimerType? = null,
         @Transient var clicked: Boolean = false,
     ) {
-        var secret: Boolean
+        inline var secret: Boolean
             get() = type == WaypointType.SECRET
             set(value) {
                 type = if (value) WaypointType.SECRET else null

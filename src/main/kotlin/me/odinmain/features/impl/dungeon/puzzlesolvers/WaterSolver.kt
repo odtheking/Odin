@@ -125,7 +125,7 @@ object WaterSolver {
         GREEN(BlockPos(15, 56, 16)),
         RED(BlockPos(15, 56, 15));
 
-        val isExtended: Boolean get() =
+        inline val isExtended: Boolean get() =
             DungeonUtils.currentRoom?.let { getBlockAt(it.getRealCoords(relativePosition)) == Blocks.wool } == true
     }
 
@@ -139,7 +139,7 @@ object WaterSolver {
         WATER(Vec3(15.0, 60.0, 5.0)),
         NONE(Vec3(0.0, 0.0, 0.0));
 
-        val leverPos: Vec3
+        inline val leverPos: Vec3
             get() = DungeonUtils.currentRoom?.getRealCoords(relativePosition) ?: Vec3(0.0, 0.0, 0.0)
     }
 }

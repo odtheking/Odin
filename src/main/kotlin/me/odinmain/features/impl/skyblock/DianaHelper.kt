@@ -57,9 +57,9 @@ object DianaHelper : Module(
 
     private val cmdCooldown = Clock(3_000)
     var renderPos: Vec3? = null
-    private val hasSpade: Boolean
+    private inline val hasSpade: Boolean
         get() = mc.thePlayer?.inventory?.mainInventory?.find { it.skyblockID == "ANCESTRAL_SPADE" } != null
-    private val isDoingDiana: Boolean
+    private inline val isDoingDiana: Boolean
         get() = hasSpade && LocationUtils.currentArea.isArea(Island.Hub) && enabled
 
     init {

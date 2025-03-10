@@ -7,7 +7,9 @@ import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.isOtherPlayer
-import me.odinmain.utils.render.*
+import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.HighlightRenderer
+import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.entity.Entity
@@ -33,7 +35,7 @@ object CustomHighlight : Module(
     private val showInvisible by BooleanSetting("Show Invisible", false, description = "Highlights invisible entities.").withDependency { !isLegitVersion }
 
     val highlightList: MutableList<String> by ListSetting("List", mutableListOf())
-    private val depthCheck get() = if (isLegitVersion) true else xray
+    private inline val depthCheck get() = if (isLegitVersion) true else xray
     private var currentEntities = mutableSetOf<Entity>()
 
     init {

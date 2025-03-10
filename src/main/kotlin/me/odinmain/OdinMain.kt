@@ -44,7 +44,7 @@ object OdinMain {
     val logger: Logger = LogManager.getLogger("Odin")
 
     var display: GuiScreen? = null
-    val isLegitVersion: Boolean
+    inline val isLegitVersion: Boolean
         get() = Loader.instance().activeModList.none { it.modId == "odclient" }
 
     fun init() {

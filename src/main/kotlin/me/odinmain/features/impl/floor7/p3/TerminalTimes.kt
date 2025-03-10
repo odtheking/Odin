@@ -77,7 +77,7 @@ object TerminalTimes : Module(
         }
     }
 
-    private val Long.seconds
+    private inline val Long.seconds
         get() = ((if (useRealTime) System.currentTimeMillis() else currentTick) - this) / 1000.0
 
     private fun resetSection(full: Boolean = false) {

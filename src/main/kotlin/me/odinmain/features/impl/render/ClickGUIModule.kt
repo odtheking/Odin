@@ -34,9 +34,8 @@ object ClickGUIModule: Module(
     val switchType by BooleanSetting("Switch Type", true, description = "Switches the type of the settings in the gui.")
     val hudChat by BooleanSetting("Shows HUDs in GUIs", true, description = "Shows HUDs in GUIs.")
     val forceHypixel by BooleanSetting("Force Hypixel", false, description = "Forces the hypixel check to be on (not recommended).")
-    val updateMessage by SelectorSetting("Update Message", "Beta", arrayListOf("Beta", "Full", "None"), description = "Shows the update message in chat.")
 
-    val devMessages by BooleanSetting("Dev Messages", false, description = "Enables dev messages in chat.").withDependency { DevPlayers.isDev }
+    val devMessages by BooleanSetting("Dev Message", false, description = "Enables dev messages in chat.")
     val devSize by BooleanSetting("Dev Size", true, description = "Toggles client side dev size.").withDependency { DevPlayers.isDev }
     private val devWings by BooleanSetting("Dev Wings", false, description = "Toggles client side dev wings.").withDependency { DevPlayers.isDev }
     private val devWingsColor by ColorSetting("Dev Wings Color", Color(255, 255, 255), description = "Color of the dev wings.").withDependency { DevPlayers.isDev }

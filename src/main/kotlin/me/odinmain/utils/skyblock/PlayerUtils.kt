@@ -24,7 +24,7 @@ object PlayerUtils {
     fun playLoudSound(sound: String?, volume: Float, pitch: Float, pos: Vec3? = null) {
         mc.addScheduledTask {
             shouldBypassVolume = true
-            mc.theWorld?.playSound(pos?.xCoord ?: mc.thePlayer.posX, pos?.yCoord ?: mc.thePlayer.posY, pos?.zCoord  ?: mc.thePlayer.posZ, sound, volume, pitch, false)
+            mc.theWorld?.playSound(pos?.xCoord ?: posX, pos?.yCoord ?: posY, pos?.zCoord  ?: posZ, sound, volume, pitch, false)
             shouldBypassVolume = false
         }
     }

@@ -2,7 +2,6 @@ package me.odinmain.utils.skyblock
 
 import me.odinmain.OdinMain.mc
 import me.odinmain.features.impl.render.ClickGUIModule.devMessages
-import me.odinmain.features.impl.render.DevPlayers
 import me.odinmain.features.impl.skyblock.ChatCommands
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.runOnMCThread
@@ -55,7 +54,7 @@ fun modMessage(message: Any?, prefix: String = "§3Odin §8»§r ", chatStyle: C
  * @param message Message to be sent.
  */
 fun devMessage(message: Any?) {
-    if (!devMessages || !DevPlayers.isDev) return
+    if (!devMessages) return
     modMessage(message, prefix = "§3Odin§bDev §8»§r ")
     println("OdinDev » $message")
 }
