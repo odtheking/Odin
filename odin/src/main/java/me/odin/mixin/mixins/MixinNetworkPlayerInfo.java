@@ -23,7 +23,9 @@ public abstract class MixinNetworkPlayerInfo {
     @Inject(method = "getLocationCape", at = @At("HEAD"), cancellable = true)
     private void getDevCape(CallbackInfoReturnable<ResourceLocation> cir) {
         ResourceLocation devCape = DevPlayers.hookGetLocationCape(this.gameProfile);
-        if (devCape != null) cir.setReturnValue(devCape);
-        else cir.setReturnValue(this.locationCape);
+        if (devCape != null) {
+            this.locationCape = devCape;
+            cir.setReturnValue(devCape);
+        }
     }
 }
