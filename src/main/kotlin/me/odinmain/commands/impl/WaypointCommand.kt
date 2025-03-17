@@ -6,7 +6,7 @@ import me.odinmain.features.impl.render.WaypointManager
 import me.odinmain.utils.component1
 import me.odinmain.utils.component2
 import me.odinmain.utils.component3
-import me.odinmain.utils.flooredVec
+import me.odinmain.utils.floorVec
 import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.PlayerUtils.posX
 import me.odinmain.utils.skyblock.PlayerUtils.posY
@@ -45,7 +45,7 @@ val waypointCommand = Commodore("waypoint", "odinwaypoint") {
         }
 
         runs { name: String, x: Int?, y: Int?, z: Int? ->
-            val (posX, posY, posZ) = mc.thePlayer?.positionVector?.flooredVec() ?: return@runs
+            val (posX, posY, posZ) = mc.thePlayer?.positionVector?.floorVec() ?: return@runs
             WaypointManager.addTempWaypoint(name, x ?: posX.toInt(), y ?: posY.toInt(), z ?: posZ.toInt())
         }
 

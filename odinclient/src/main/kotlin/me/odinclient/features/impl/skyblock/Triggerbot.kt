@@ -153,7 +153,7 @@ object Triggerbot : Module(
         if ((sneakToDisableTriggerbot && mc.thePlayer.isSneaking) || clicksRemaining.isEmpty()) return
         val targetFrame = mc.objectMouseOver?.entityHit as? EntityItemFrame ?: return
 
-        val (x, y, z) = targetFrame.positionVector.flooredVec()
+        val (x, y, z) = targetFrame.positionVector.floorVec()
         val frameIndex = ((y - frameGridCorner.yCoord) + (z - frameGridCorner.zCoord) * 5).toInt()
         if (x != frameGridCorner.xCoord || currentFrameRotations?.get(frameIndex) == -1 || frameIndex !in 0..24) return
         clicksRemaining[frameIndex]?.let {

@@ -23,6 +23,7 @@ import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.block.BlockButtonStone
 import net.minecraft.entity.item.EntityItem
 import net.minecraft.init.Blocks
+import net.minecraft.item.Item
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
@@ -127,8 +128,8 @@ object SimonSays : Module(
 
     @SubscribeEvent
     fun onPostMetadata(event: PostEntityMetadata) {
-        val (x, y, z) = (mc.theWorld?.getEntityByID(event.packet.entityId) as? EntityItem)?.positionVector ?: return
-        val index = clickInOrder.indexOf(BlockPos(floor(x), floor(y), floor(z)).east())
+        val (x, y, z) = (mc.theWorld?.getEntityByID(event.packet.entityId) as? EntityItem)?.takeIf { Item.getIdFromItem(it.entityItem?.item) == 77 }?.positionVector?.floorVec() ?: return
+        val index = clickInOrder.indexOf(BlockPos(x, y, z).east())
         if (index == 2 && clickInOrder.size == 3) clickInOrder.removeFirst()
         else if (index == 0 && clickInOrder.size == 2) clickInOrder.reverse()
     }

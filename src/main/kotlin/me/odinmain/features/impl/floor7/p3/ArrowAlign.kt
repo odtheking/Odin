@@ -38,7 +38,7 @@ object ArrowAlign : Module(
         execute(50) {
             if (DungeonUtils.getF7Phase() != M7Phases.P3) return@execute
             clicksRemaining.clear()
-            if ((mc.thePlayer?.distanceSquaredTo(Vec3(0.0, 120.0, 77.0)) ?: return@execute) > 200) {
+            if ((mc.thePlayer?.positionVector?.distanceTo(Vec3(0.0, 120.0, 77.0)) ?: return@execute) > 200) {
                 currentFrameRotations = null
                 targetSolution = null
                 return@execute
@@ -64,7 +64,7 @@ object ArrowAlign : Module(
     fun onPacket(event: PacketEvent.Send) {
         val packet = event.packet as? C02PacketUseEntity ?: return
         if (DungeonUtils.getF7Phase() != M7Phases.P3 || packet.action != C02PacketUseEntity.Action.INTERACT) return
-        val (x, y, z) = (packet.getEntityFromWorld(mc.theWorld) as? EntityItemFrame)?.takeIf { it.displayedItem?.item == Items.arrow }?.positionVector?.flooredVec() ?: return
+        val (x, y, z) = (packet.getEntityFromWorld(mc.theWorld) as? EntityItemFrame)?.takeIf { it.displayedItem?.item == Items.arrow }?.positionVector?.floorVec() ?: return
         val frameIndex = ((y - frameGridCorner.yCoord) + (z - frameGridCorner.zCoord) * 5).toInt()
         if (x != frameGridCorner.xCoord || currentFrameRotations?.get(frameIndex) == -1 || frameIndex !in 0..24) return
 
@@ -101,7 +101,7 @@ object ArrowAlign : Module(
             if (recentClickTimestamps[index]?.let { System.currentTimeMillis() - it < 1000 } == true && currentFrameRotations != null)
                 currentFrameRotations?.get(index) ?: -1
             else
-                itemFrames.associate { it.positionVector.flooredVec().toString() to it.rotation }[getFramePositionFromIndex(index).toString()] ?: -1
+                itemFrames.associate { it.positionVector.floorVec().toString() to it.rotation }[getFramePositionFromIndex(index).toString()] ?: -1
         }
     }
 

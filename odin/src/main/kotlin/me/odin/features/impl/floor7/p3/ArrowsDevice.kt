@@ -9,7 +9,6 @@ import me.odinmain.features.settings.impl.ActionSetting
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.features.settings.impl.KeybindSetting
-import me.odinmain.utils.distanceSquaredTo
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
@@ -72,7 +71,7 @@ object ArrowsDevice : Module(
 
             // Cast is safe since we won't return an entity that isn't an armor stand
             activeArmorStand = mc.theWorld?.loadedEntityList?.filterIsInstance<EntityArmorStand>()?.find {
-                it.name.equalsOneOf(INACTIVE_DEVICE_STRING, ACTIVE_DEVICE_STRING) && it.distanceSquaredTo(standPosition.toVec3()) <= 4.0
+                it.name.equalsOneOf(INACTIVE_DEVICE_STRING, ACTIVE_DEVICE_STRING) && standPosition.toVec3().squareDistanceTo(it.positionVector) <= 4.0
             }
         }
 
@@ -84,7 +83,7 @@ object ArrowsDevice : Module(
     }
 
     private val isPlayerOnStand: Boolean
-        get() = (mc.thePlayer?.distanceSquaredTo(standPosition.toVec3()) ?: Double.MAX_VALUE) <= 1.0
+        get() = (mc.thePlayer?.positionVector?.squareDistanceTo(standPosition.toVec3()) ?: Double.MAX_VALUE) <= 1.0
 
     private val isPlayerInRoom: Boolean
         get() = mc.thePlayer?.let { roomBoundingBox.isVecInside(it.positionVector) } == true

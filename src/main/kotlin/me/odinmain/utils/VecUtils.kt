@@ -20,15 +20,6 @@ data class PositionLook(val pos: Vec3, val yaw: Float, val pitch: Float)
 
 fun BlockPos.add(vec: Vec2): BlockPos = this.add(vec.x, 0, vec.z)
 
-fun Entity.distanceSquaredTo(pos: Vec3): Double =
-    (posX - pos.xCoord).pow(2.0) + (posY - pos.yCoord).pow(2.0) + (posZ - pos.zCoord).pow(2.0)
-
-/**
- * Gets the distance between two entities, ignoring y coordinate, squared.
- */
-fun Entity.xzDistance(entity1: Entity): Double =
-    (posX - entity1.posX).pow(2.0) + (posZ - entity1.posZ).pow(2.0)
-
 /**
  * Gets the eye height of the player
  * @return The eye height of the player
@@ -68,7 +59,6 @@ fun getLook(yaw: Float = mc.thePlayer?.rotationYaw ?: 0f, pitch: Float = mc.theP
  */
 fun isFacingAABB(aabb: AxisAlignedBB, range: Float, yaw: Float = mc.thePlayer?.rotationYaw ?: 0f, pitch: Float = mc.thePlayer?.rotationPitch ?: 0f): Boolean =
     isInterceptable(aabb, range, yaw, pitch)
-
 
 operator fun Vec3.component1(): Double = xCoord
 
@@ -273,7 +263,7 @@ fun Vec3i.addVec(x: Number = .0, y: Number = .0, z: Number = .0): Vec3i =
 /**
  * Floors every coordinate of a Vec3
  */
-fun Vec3.flooredVec(): Vec3 =
+fun Vec3.floorVec(): Vec3 =
     Vec3(floor(xCoord), floor(yCoord), floor(zCoord))
 
 /**
@@ -293,7 +283,6 @@ fun Vec3.toAABB(add: Double = 1.0): AxisAlignedBB =
  */
 fun Vec3.toBlockPos(add: Double = 0.0): BlockPos =
     BlockPos(this.xCoord + add, this.yCoord + add, this.zCoord + add)
-
 
 /**
  * Clones a Vec3 object.

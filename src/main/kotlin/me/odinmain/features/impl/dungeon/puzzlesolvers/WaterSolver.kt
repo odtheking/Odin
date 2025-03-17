@@ -35,7 +35,7 @@ object WaterSolver {
     private var openedWaterTicks = -1
     private var tickCounter = 0
 
-    fun scan() = with (DungeonUtils.currentRoom) {
+    fun scan(optimized: Boolean) = with (DungeonUtils.currentRoom) {
         if (this?.data?.name != "Water Board" || patternIdentifier != -1) return@with
         val extendedSlots = WoolColor.entries.joinToString("") { if (it.isExtended) it.ordinal.toString() else "" }.takeIf { it.length == 3 } ?: return
 
@@ -50,7 +50,7 @@ object WaterSolver {
         modMessage("$patternIdentifier || ${WoolColor.entries.filter { it.isExtended }.joinToString(", ") { it.name.lowercase() }}")
 
         solutions.clear()
-        waterSolutions[patternIdentifier.toString()].asJsonObject[extendedSlots].asJsonObject.entrySet().forEach {
+        waterSolutions[optimized.toString()].asJsonObject[patternIdentifier.toString()].asJsonObject[extendedSlots].asJsonObject.entrySet().forEach {
             solutions[
                 when (it.key) {
                     "diamond_block" -> LeverBlock.DIAMOND
