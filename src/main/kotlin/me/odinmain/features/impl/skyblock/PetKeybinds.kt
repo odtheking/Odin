@@ -46,15 +46,15 @@ object PetKeybinds : Module(
 
     @SubscribeEvent
     fun onGuiMouseClick(event: GuiEvent.MouseClick) {
-        if (onClick(event.gui as? GuiChest ?: return, event.button)) event.isCanceled = true
+        if (onClick(event.gui as? GuiChest ?: return)) event.isCanceled = true
     }
 
     @SubscribeEvent
     fun onGuiKeyPress(event: GuiEvent.KeyPress) {
-        if (onClick(event.gui as? GuiChest ?: return, event.key)) event.isCanceled = true
+        if (onClick(event.gui as? GuiChest ?: return)) event.isCanceled = true
     }
 
-    private fun onClick(gui: GuiChest, key: Int): Boolean {
+    private fun onClick(gui: GuiChest): Boolean {
         val chest = gui.inventorySlots as? ContainerChest ?: return false
 
         val matchResult = petsRegex.find(chest.name) ?: return false

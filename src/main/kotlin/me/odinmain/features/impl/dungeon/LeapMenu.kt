@@ -155,7 +155,6 @@ object LeapMenu : Module(
     private fun leapTo(name: String, containerChest: ContainerChest) {
         val index = getItemIndexInContainerChest(containerChest, name, 11..16) ?: return modMessage("Cant find player $name. This shouldn't be possible! are you nicked?")
         modMessage("Teleporting to $name.")
-        if (leapAnnounce) partyMessage("Leaped to $name!")
         windowClick(index, ClickType.Middle)
     }
 
@@ -164,7 +163,13 @@ object LeapMenu : Module(
             leapHelperBossChatEvent(it)
         }
 
-        onWorldLoad { worldLoad() }
+        onMessage(Regex("You have teleported to (\\w{1,16})!")) {
+            if (leapAnnounce) partyMessage("Leaped to $name!")
+        }
+
+        onWorldLoad {
+            worldLoad()
+        }
     }
 
 

@@ -45,11 +45,10 @@ object BlazeAttunement : Module(
                     else -> return@forEach
                 }.withAlpha(.4f)
 
-                val entities = mc.theWorld?.getEntitiesWithinAABBExcludingEntity(entity, entity.entityBoundingBox.offset(0.0, -1.0, 0.0))
-                        ?.filter { it is EntityBlaze || it is EntitySkeleton || it is EntityPigZombie }
-                        ?.sortedByDescending { it.positionVector.distanceTo(entity.positionVector) }
-                        ?.takeIf { it.isNotEmpty() } ?: return@execute
-                currentBlazes[entities.first()] = color
+                currentBlazes[mc.theWorld?.getEntitiesWithinAABBExcludingEntity(entity, entity.entityBoundingBox.offset(0.0, -1.0, 0.0))
+                    ?.filter { it is EntityBlaze || it is EntitySkeleton || it is EntityPigZombie }
+                    ?.sortedByDescending { it.positionVector.squareDistanceTo(entity.positionVector) }
+                    ?.takeIf { it.isNotEmpty() }?.firstOrNull() ?: return@execute] = color
             }
         }
     }

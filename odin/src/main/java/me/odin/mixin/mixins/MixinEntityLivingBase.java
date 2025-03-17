@@ -24,8 +24,7 @@ public abstract class MixinEntityLivingBase {
         int length = Animations.INSTANCE.getIgnoreHaste() ? 6 : this.isPotionActive(Potion.digSpeed) ?
                 6 - (1 + this.getActivePotionEffect(Potion.digSpeed).getAmplifier()) :
                 (this.isPotionActive(Potion.digSlowdown) ?
-                        6 + (1 + this.getActivePotionEffect(Potion.digSlowdown).getAmplifier()) * 2 :
-                        6);
+                6 + (1 + this.getActivePotionEffect(Potion.digSlowdown).getAmplifier()) * 2 : 6);
         cir.setReturnValue(Math.max((int)(length* Math.exp(-Animations.INSTANCE.getSpeed())), 1));
     }
 }

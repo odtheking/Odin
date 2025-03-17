@@ -100,9 +100,9 @@ object ChatCommands : Module(
             val ign = match.groups[2]?.value ?: match.groups[5]?.value ?: match.groups[9]?.value ?: return@onMessage
             val msg = match.groups[3]?.value ?: match.groups[7]?.value ?: match.groups[10]?.value ?: return@onMessage
 
-            if (whitelistOnly != isInBlacklist(ign)) return@onMessage
+            if (whitelistOnly != isInBlacklist(ign) || !msg.startsWith("!")) return@onMessage
 
-            runIn(8) { handleChatCommands(msg, ign, channel) }
+            runIn(5) { handleChatCommands(msg, ign, channel) }
 
             onWorldLoad { dtReason.clear() }
         }
@@ -119,7 +119,6 @@ object ChatCommands : Module(
             ChatChannel.PRIVATE -> mapOf ("coords" to coords, "odin" to odin, "boop" to boop, "cf" to cf, "8ball" to eightball, "dice" to dice, "racism" to racism, "ping" to ping, "tps" to tps, "invite" to invite, "time" to time)
         }
 
-        if (!message.startsWith("!")) return
         when (message.split(" ")[0].drop(1).lowercase()) {
             "help", "h" -> channelMessage("Commands: ${commandsMap.filterValues { it }.keys.joinToString(", ")}", name, channel)
             "coords", "co" -> if (coords) channelMessage(PlayerUtils.getPositionString(), name, channel)
