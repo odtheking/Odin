@@ -5,21 +5,38 @@ import me.odinmain.commands.commodore
 import me.odinmain.config.Config
 import me.odinmain.features.impl.render.CustomHighlight.currentEntities
 import me.odinmain.features.impl.render.CustomHighlight.highlightList
+import me.odinmain.utils.render.Color
 import me.odinmain.utils.skyblock.modMessage
 
+@OptIn(ExperimentalStdlibApi::class)
 val highlightCommand = commodore("highlight") {
-    literal("add").runs { mob: GreedyString, hex: String? ->
-        val colorRegex = Regex("^#?([0-9a-fA-F]{6}|[0-9a-fA-F]{8})$")
+    val colorRegex = Regex("^(.*?)(?:\\s+#?([0-9a-fA-F]{6}|[0-9a-fA-F]{8}))?$")
 
-        val parts = mob.string.trim().split(" ")
-        val color = parts.lastOrNull()?.takeIf { it.matches(colorRegex) }?.removePrefix("#")
-        val mobName = if (color != null) parts.dropLast(1).joinToString(" ") else mob.string
-        val lowercase = mobName.lowercase()
+    literal("add").runs { input: GreedyString ->
+        val inputString = input.string.trim()
+        val matchResult = colorRegex.matchEntire(inputString) ?: return@runs modMessage("Invalid format. Use: /highlight add <mob name> [#hexcolor]")
 
-        if (highlightList.any { it.key == lowercase }) return@runs modMessage("$mobName is already in the highlight list.")
+        val (mobName, colorCode) = matchResult.destructured
+        val mobNameTrimmed = mobName.trim()
+        val lowercase = mobNameTrimmed.lowercase()
 
-        modMessage("Added $mobName to the highlight list${color?.let { " with color #$it" } ?: ""}.")
-        highlightList[lowercase] = color ?: ""
+        if (mobNameTrimmed.isEmpty()) return@runs modMessage("Mob name cannot be empty.")
+
+        if (highlightList.any { it.key == lowercase }) return@runs modMessage("$mobNameTrimmed is already in the highlight list.")
+
+        if (colorCode.isNotEmpty() && !Regex("^[0-9a-fA-F]{6}|[0-9a-fA-F]{8}$").matches(colorCode)) return@runs modMessage("Invalid color format. Use #RRGGBB or #RRGGBBAA.")
+
+        val color = if (colorCode.isNotEmpty()) {
+            try {
+                Color(colorCode.padEnd(8, 'f'))
+            } catch (e: Exception) {
+                modMessage("Invalid color format. Use #RRGGBB or #RRGGBBAA.")
+                null
+            }
+        } else null
+
+        highlightList[lowercase] = color
+        modMessage("Added $mobNameTrimmed to the highlight list${if (colorCode.isNotEmpty()) " with color #$colorCode" else ""}.")
         Config.save()
     }
 
@@ -41,6 +58,8 @@ val highlightCommand = commodore("highlight") {
 
     literal("list").runs {
         if (highlightList.isEmpty()) return@runs modMessage("Highlight list is empty")
-        modMessage("Highlight list:\n${highlightList.entries.joinToString("\n")}")
+        modMessage("Highlight list:\n${highlightList.entries.joinToString("\n") {
+            "${it.key} - ${it.value?.rgba?.toHexString() ?: "default color"}"
+        }}")
     }
 }

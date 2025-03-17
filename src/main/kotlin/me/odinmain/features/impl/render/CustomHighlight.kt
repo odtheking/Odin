@@ -32,7 +32,7 @@ object CustomHighlight : Module(
     private val xray by BooleanSetting("Depth Check", false, description = "Highlights entities through walls.").withDependency { !isLegitVersion }
     private val showInvisible by BooleanSetting("Show Invisible", false, description = "Highlights invisible entities.").withDependency { !isLegitVersion }
 
-    val highlightList: MutableMap<String, String> by MapSetting("Map", mutableMapOf(), "")
+    val highlightList: MutableMap<String, Color?> by MapSetting("Map", mutableMapOf(), "")
     private val depthCheck get() = if (isLegitVersion) true else xray
     val currentEntities = mutableSetOf<HighlightEntity>()
 
@@ -85,14 +85,8 @@ object CustomHighlight : Module(
     }
 
     private fun getColorFromList(name: String): Color {
-        val colorString = highlightList.entries.firstOrNull { name.contains(it.key, true) }?.value
-        return colorString?.let { parseColor(it) } ?: color
+        return highlightList.entries.firstOrNull { name.contains(it.key, true) }?.value ?: color
     }
-
-    private fun parseColor(color: String): Color? = kotlin.runCatching {
-        if (color.isEmpty()) return null
-        Color(color.padEnd(8, 'f'))
-    }.getOrNull()
 
     data class HighlightEntity(val entity: Entity, val color: Color)
 }
