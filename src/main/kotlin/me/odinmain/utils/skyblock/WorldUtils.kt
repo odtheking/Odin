@@ -30,15 +30,6 @@ fun isAir(blockPos: BlockPos): Boolean =
     getBlockAt(blockPos) == Blocks.air
 
 /**
- * Checks if the block at the specified `BlockPos` is a gold block in the Minecraft world.
- *
- * @param blockPos The position in the world to query.
- * @return `true` if the block at the given position is a gold block, `false` otherwise.
- */
-fun isGold(blockPos: BlockPos): Boolean =
-    getBlockAt(blockPos) == Blocks.gold_block
-
-/**
  * Retrieves the block at the specified `BlockPos` in the Minecraft world.
  *
  * @param pos The position in the world to query for the block.

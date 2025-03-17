@@ -12,9 +12,9 @@ import me.odinmain.ui.clickgui.util.ColorUtil.textColor
 import me.odinmain.ui.clickgui.util.HoverHandler
 import me.odinmain.ui.util.MouseUtils.isAreaHovered
 import me.odinmain.ui.util.MouseUtils.mouseX
-import me.odinmain.utils.floor
 import me.odinmain.utils.render.*
 import org.lwjgl.input.Keyboard
+import kotlin.math.floor
 import kotlin.math.roundToInt
 
 /**
@@ -41,7 +41,7 @@ class ElementSlider(parent: ModuleButton, setting: NumberSetting<*>) :
         get() = clickGUIColor.brighter(1 + handler.percent() / 200f)
 
     private fun getDisplay(): String {
-        return if (setting.valueDouble - setting.valueDouble.floor() == 0.0) {
+        return if (setting.valueDouble - floor(setting.valueDouble) == 0.0) {
             "${(setting.valueInt * 100.0).roundToInt() / 100}${setting.unit}"
         } else {
             "${(setting.valueDouble * 100.0).roundToInt() / 100.0}${setting.unit}"

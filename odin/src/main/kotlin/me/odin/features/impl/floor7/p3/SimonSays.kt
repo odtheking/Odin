@@ -9,8 +9,8 @@ import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.features.settings.impl.SelectorSetting
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
+import me.odinmain.utils.*
 import me.odinmain.utils.clock.Clock
-import me.odinmain.utils.floor
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.devMessage
@@ -25,6 +25,7 @@ import net.minecraft.util.BlockPos
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.event.entity.player.PlayerInteractEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import kotlin.math.floor
 
 object SimonSays : Module(
     name = "Simon Says",
@@ -90,8 +91,8 @@ object SimonSays : Module(
     @SubscribeEvent
     fun onPostMetadata(event: PostEntityMetadata) {
         if (DungeonUtils.getF7Phase() != M7Phases.P3) return
-        val entity = (mc.theWorld?.getEntityByID(event.packet.entityId) as? EntityItem)?.takeIf { Item.getIdFromItem(it.entityItem?.item) == 77 } ?: return
-        val index = clickInOrder.indexOf(BlockPos(entity.posX.floor(), entity.posY.floor(), entity.posZ.floor()).east())
+        val (x, y, z) = (mc.theWorld?.getEntityByID(event.packet.entityId) as? EntityItem)?.takeIf { Item.getIdFromItem(it.entityItem?.item) == 77 }?.positionVector?.floorVec() ?: return
+        val index = clickInOrder.indexOf(BlockPos(x, y, z).east())
         if (index == 2 && clickInOrder.size == 3) clickInOrder.removeFirst()
         else if (index == 0 && clickInOrder.size == 2) clickInOrder.reverse()
     }

@@ -14,7 +14,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object Ghosts : Module(
     name = "Ghosts",
-    description = "Diverse QOL for ghosts in the Dwarven Mines.",
+    description = "Adds visual changes to ghosts.",
     category = Category.SKYBLOCK
 ) {
     private var showGhostNametag by BooleanSetting(name = "Show Ghost Nametag", description = "Show the ghost's name tag.")
@@ -37,22 +37,19 @@ object Ghosts : Module(
 
     @SubscribeEvent
     fun onRenderWorldLast(event: RenderWorldLastEvent) {
+        if (!showGhostNametag) return
         creeperList.forEach { entity ->
             if (entity.isDead) return@forEach
-            if (showGhostNametag) drawGhostNameTag(entity)
+            val isRunic = entity.getSBMaxHealth() == 4000000f
+            val bracketsColor = if (isRunic) "&5" else "&8"
+            val lvlColor = if (isRunic) "&d" else "&7"
+            val nameColor = if (isRunic) "&5" else "&c"
+            val currentHealthColor = if (isRunic) "&d" else if (entity.health < entity.getSBMaxHealth() / 2) "&e" else "&a"
+            val maxHealthColor = if (isRunic) "&5" else "&a"
+            val name = "${bracketsColor}[${lvlColor}Lv250${bracketsColor}] ${nameColor + if (isRunic) "Runic " else ""}Ghost ${currentHealthColor + transformToSuffixedNumber(entity.health) + "&f"}/${maxHealthColor + transformToSuffixedNumber(entity.getSBMaxHealth()) + "&c" + "❤"}".replace("&", "§")
+
+            Renderer.drawStringInWorld(name, entity.renderVec.addVec(y = entity.height + 0.5), Color.WHITE, depth = false)
         }
-    }
-
-    private fun drawGhostNameTag(creeper: EntityCreeper) {
-        val isRunic = creeper.getSBMaxHealth() == 4000000f
-        val bracketsColor = if (isRunic) "&5" else "&8"
-        val lvlColor = if (isRunic) "&d" else "&7"
-        val nameColor = if (isRunic) "&5" else "&c"
-        val currentHealthColor = if (isRunic) "&d" else if (creeper.health < creeper.getSBMaxHealth() / 2) "&e" else "&a"
-        val maxHealthColor = if (isRunic) "&5" else "&a"
-        val name = "${bracketsColor}[${lvlColor}Lv250${bracketsColor}] ${nameColor + if (isRunic) "Runic " else ""}Ghost ${currentHealthColor + transformToSuffixedNumber(creeper.health) + "&f"}/${maxHealthColor + transformToSuffixedNumber(creeper.getSBMaxHealth()) + "&c" + "❤"}".replace("&", "§")
-
-        Renderer.drawStringInWorld(name, creeper.renderVec.addVec(y = creeper.height + 0.5), Color.WHITE, depth = false)
     }
 
     private fun transformToSuffixedNumber(number: Float): String {

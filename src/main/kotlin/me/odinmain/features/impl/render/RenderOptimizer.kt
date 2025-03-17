@@ -24,8 +24,6 @@ import net.minecraft.client.renderer.culling.ICamera
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.entity.Entity
-import net.minecraft.entity.boss.EntityDragon
-import net.minecraft.entity.boss.EntityWither
 import net.minecraft.entity.item.*
 import net.minecraft.entity.monster.*
 import net.minecraft.entity.passive.*
@@ -73,8 +71,8 @@ object RenderOptimizer : Module(
     private const val SOUL_WEAVER_TEXTURE = "eyJ0aW1lc3RhbXAiOjE1NTk1ODAzNjI1NTMsInByb2ZpbGVJZCI6ImU3NmYwZDlhZjc4MjQyYzM5NDY2ZDY3MjE3MzBmNDUzIiwicHJvZmlsZU5hbWUiOiJLbGxscmFoIiwic2lnbmF0dXJlUmVxdWlyZWQiOnRydWUsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS8yZjI0ZWQ2ODc1MzA0ZmE0YTFmMGM3ODViMmNiNmE2YTcyNTYzZTlmM2UyNGVhNTVlMTgxNzg0NTIxMTlhYTY2In19fQ=="
     private val dungeonMobSpawns = setOf("Lurker", "Dreadlord", "Souleater", "Zombie", "Skeleton", "Skeletor", "Sniper", "Super Archer", "Spider", "Fels", "Withermancer")
 
-    private val potatoMode by BooleanSetting(name = "Potato Mode", description = "")
-    private val showStarredNametags by BooleanSetting("Show Starred Nametags", description = "").withDependency { potatoMode }
+    private val potatoMode by BooleanSetting(name = "Potato Mode (exp)", description = "Potato mode for low-end computers.")
+    private val showStarredNametags by BooleanSetting("Show Starred Nametags", description = "Shows the nametags of starred mobs.").withDependency { potatoMode }
     private val editEntityColors by DropdownSetting("Entity Colors").withDependency { potatoMode }
     private val editShouldRender by DropdownSetting("Potato Entities").withDependency { potatoMode }
 
@@ -107,8 +105,6 @@ object RenderOptimizer : Module(
     private val ironGolemColor by ColorSetting(name = "Iron Golem", default = Color(168, 168, 168), allowAlpha = true, description = "").withDependency { potatoMode && editEntityColors }
     private val batColor by ColorSetting(name = "Bat", default = Color(79, 79, 79), allowAlpha = true, description = "").withDependency { potatoMode && editEntityColors }
     private val guardianColor by ColorSetting(name = "Guardian", default = Color(0, 51, 255), allowAlpha = true, description = "").withDependency { potatoMode && editEntityColors }
-    private val dragonColor by ColorSetting(name = "Dragon", default = Color(102, 0, 204), allowAlpha = true, description = "").withDependency { potatoMode && editEntityColors }
-    private val witherColor by ColorSetting(name = "Wither", default = Color.BLACK, allowAlpha = true, description = "").withDependency { potatoMode && editEntityColors }
     private val xpOrbColor by ColorSetting(name = "XP Orb", default = Color.YELLOW, allowAlpha = true, description = "").withDependency { potatoMode && editEntityColors }
     private val armorStandColor by ColorSetting(name = "Armor Stand", default = Color(169, 169, 169), allowAlpha = true, description = "").withDependency { potatoMode && editEntityColors }
     private val horseColor by ColorSetting(name = "Horse", default = Color(153, 102, 51), allowAlpha = true, description = "").withDependency { potatoMode && editEntityColors }
@@ -152,8 +148,6 @@ object RenderOptimizer : Module(
     private val shouldRenderIronGolem by BooleanSetting(name = "Render Iron Golem", default = true, description = "").withDependency { potatoMode && editShouldRender }
     private val shouldRenderBat by BooleanSetting(name = "Render Bat", default = true, description = "").withDependency { potatoMode && editShouldRender }
     private val shouldRenderGuardian by BooleanSetting(name = "Render Guardian", default = true, description = "").withDependency { potatoMode && editShouldRender }
-    private val shouldRenderDragon by BooleanSetting(name = "Render Dragon", default = true, description = "").withDependency { potatoMode && editShouldRender }
-    private val shouldRenderWither by BooleanSetting(name = "Render Wither", default = true, description = "").withDependency { potatoMode && editShouldRender }
     private val shouldRenderXPOrb by BooleanSetting(name = "Render XP Orb", default = true, description = "").withDependency { potatoMode && editShouldRender }
     private val shouldRenderArmorStand by BooleanSetting(name = "Render Armor Stand", default = true, description = "").withDependency { potatoMode && editShouldRender }
     private val shouldRenderHorse by BooleanSetting(name = "Render Horse", default = true, description = "").withDependency { potatoMode && editShouldRender }
@@ -303,8 +297,6 @@ object RenderOptimizer : Module(
         EntityIronGolem::class.java to Pair(::shouldRenderIronGolem, ::ironGolemColor),
         EntityBat::class.java to Pair(::shouldRenderBat, ::batColor),
         EntityGuardian::class.java to Pair(::shouldRenderGuardian, ::guardianColor),
-        EntityDragon::class.java to Pair(::shouldRenderDragon, ::dragonColor),
-        EntityWither::class.java to Pair(::shouldRenderWither, ::witherColor),
         EntityXPOrb::class.java to Pair(::shouldRenderXPOrb, ::xpOrbColor),
         EntityArmorStand::class.java to Pair(::shouldRenderArmorStand, ::armorStandColor),
         EntityHorse::class.java to Pair(::shouldRenderHorse, ::horseColor),
@@ -339,7 +331,7 @@ object RenderOptimizer : Module(
         renderTileEntities(camera, partialTicks)
 
         for (entity in mc.theWorld.loadedEntityList) {
-            if ((mc.gameSettings.thirdPersonView == 0 && entity == mc.renderViewEntity) ||
+            if (entity.isInvisible || (mc.gameSettings.thirdPersonView == 0 && entity == mc.renderViewEntity) ||
                 (entity.posY < 0.0 || entity.posY >= 256.0 || !mc.theWorld.isBlockLoaded(BlockPos(entity)))) continue
             if (!(mc.renderManager.shouldRender(entity, camera, mc.renderManager.viewerPosX, mc.renderManager.viewerPosY, mc.renderManager.viewerPosZ))) continue
             if (entity.ticksExisted == 0) {
@@ -353,9 +345,7 @@ object RenderOptimizer : Module(
                 continue
             }
 
-            val color = getColor(entity)
-            if (color == null) defaultRenderList.add(entity)
-            else renderList.add(Pair(entity, color))
+            getColor(entity)?.let { renderList.add(Pair(entity, it)) } ?: defaultRenderList.add(entity)
         }
 
         for (entity in defaultRenderList) { mc.renderManager.renderEntitySimple(entity, partialTicks) }
@@ -364,17 +354,14 @@ object RenderOptimizer : Module(
 
     private fun renderTileEntities(camera: ICamera, partialTicks: Float) {
         TileEntityRendererDispatcher.instance.cacheActiveRenderInfo(mc.theWorld, mc.textureManager, mc.fontRendererObj, mc.renderViewEntity, partialTicks)
-        val entity = this.mc.renderViewEntity
-        val x = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * partialTicks
-        val y = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * partialTicks
-        val z = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * partialTicks
-        TileEntityRendererDispatcher.staticPlayerX = x
-        TileEntityRendererDispatcher.staticPlayerY = y
-        TileEntityRendererDispatcher.staticPlayerZ = z
+        val entity = mc.renderViewEntity
+        TileEntityRendererDispatcher.staticPlayerX = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * partialTicks
+        TileEntityRendererDispatcher.staticPlayerY = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * partialTicks
+        TileEntityRendererDispatcher.staticPlayerZ = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * partialTicks
 
         for (tileEntity in mc.theWorld.loadedTileEntityList) {
             if (tileEntity is TileEntitySign || tileEntity is TileEntityEndPortal) continue
-            if (camera.isBoundingBoxInFrustum(tileEntity.getRenderBoundingBox())) TileEntityRendererDispatcher.instance.renderTileEntity(tileEntity, partialTicks, -1)
+            if (camera.isBoundingBoxInFrustum(tileEntity.renderBoundingBox)) TileEntityRendererDispatcher.instance.renderTileEntity(tileEntity, partialTicks, -1)
         }
     }
 

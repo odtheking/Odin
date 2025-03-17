@@ -24,6 +24,7 @@ import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.input.Keyboard
+import kotlin.math.roundToInt
 
 object DianaHelper : Module(
     name = "Diana Helper",
@@ -49,32 +50,33 @@ object DianaHelper : Module(
         sendCommand("warp ${warpLocation?.name ?: return@onPress}")
         warpLocation = null
     }
-    private val autoWarp by BooleanSetting("Auto Warp", description = "Automatically warps you to the nearest warp location 2 seconds after you activate the spade ability.").withDependency { !isLegitVersion }
+    private val autoWarp by BooleanSetting("Auto Warp", description = "Automatically warps you to the nearest warp location after you activate the spade ability.").withDependency { !isLegitVersion }
+    private val autoWarpWaitTime by NumberSetting("Auto Warp Wait Time", 2f, 0.2, 10.0, 0.1, unit = "s", description = "Time to wait before warping.").withDependency { autoWarp }
     private val resetBurrows by ActionSetting("Reset Burrows", description = "Removes all the current burrows.") { activeBurrows.clear() }
     private var warpLocation: WarpPoint? = null
 
     private val cmdCooldown = Clock(3_000)
     var renderPos: Vec3? = null
-    private val hasSpade: Boolean
+    private inline val hasSpade: Boolean
         get() = mc.thePlayer?.inventory?.mainInventory?.find { it.skyblockID == "ANCESTRAL_SPADE" } != null
-    private val isDoingDiana: Boolean
+    private inline val isDoingDiana: Boolean
         get() = hasSpade && LocationUtils.currentArea.isArea(Island.Hub) && enabled
 
     init {
-        onPacket(S29PacketSoundEffect::class.java, { isDoingDiana }) {
+        onPacket<S29PacketSoundEffect>({ isDoingDiana }) {
             DianaBurrowEstimate.handleSoundPacket(it)
         }
 
-        onPacket(S2APacketParticles::class.java, { isDoingDiana }) {
+        onPacket<S2APacketParticles>({ isDoingDiana }) {
             DianaBurrowEstimate.handleParticlePacket(it)
             DianaBurrowEstimate.handleBurrow(it)
         }
 
-        onPacket(C08PacketPlayerBlockPlacement::class.java, { isDoingDiana }) {
+        onPacket<C08PacketPlayerBlockPlacement>({ isDoingDiana }) {
             DianaBurrowEstimate.blockEvent(it.position)
         }
 
-        onPacket(C07PacketPlayerDigging::class.java, { isDoingDiana }) {
+        onPacket<C07PacketPlayerDigging>({ isDoingDiana }) {
             DianaBurrowEstimate.blockEvent(it.position)
         }
 
@@ -120,7 +122,7 @@ object DianaHelper : Module(
     @SubscribeEvent
     fun onRightClick(event: ClickEvent.Right) {
         if (!isDoingDiana || !isHolding("ANCESTRAL_SPADE") || !autoWarp || isLegitVersion) return
-        runIn(40) {
+        runIn((autoWarpWaitTime * 20).roundToInt()) {
             if (!cmdCooldown.hasTimePassed()) return@runIn
             modMessage("§6Warping to ${warpLocation?.displayName ?: return@runIn}")
             sendCommand("warp ${warpLocation?.name ?: return@runIn}")

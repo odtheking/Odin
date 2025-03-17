@@ -3,13 +3,17 @@ package me.odinmain.features.impl.dungeon
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.*
-import me.odinmain.utils.render.*
+import me.odinmain.features.settings.impl.BooleanSetting
+import me.odinmain.features.settings.impl.ColorSetting
+import me.odinmain.features.settings.impl.HudSetting
+import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.getMCTextWidth
+import me.odinmain.utils.render.mcText
 import me.odinmain.utils.skyblock.dungeon.Blessing
 
 object BlessingDisplay : Module(
     name = "Blessing Display",
-    description = "Displays the current blessings of the dungeon.",
+    description = "Displays the current active blessings of the dungeon.",
     category = Category.DUNGEON,
 ) {
     private val power by BooleanSetting("Power Blessing", true, description = "Displays the power blessing.")

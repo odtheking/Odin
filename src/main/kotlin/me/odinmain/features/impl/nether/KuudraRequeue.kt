@@ -23,13 +23,35 @@ object KuudraRequeue : Module(
                 disableRequeue = false
                 return@onMessage
             }
+
             runIn(delay * 20) {
-                sendCommand("od t${LocationUtils.kuudraTier}", true)
+                if (!disableRequeue) {
+                    sendCommand("od t${LocationUtils.kuudraTier}", true)
+                }
             }
         }
 
-        onMessage(Regex("(\\[.+])? ?(.{1,16}) has left the party.")) {
+        onMessage(Regex("(\\[.+])? ?(.{1,16}) has (left|been removed from) the party.")) {
             if (disablePartyLeave) disableRequeue = true
+        }
+        onMessage(Regex("The party was transferred to (\\[.+])? ?(.{1,16}) because (\\[.+])? ?(.{1,16}) left")) {
+            if (disablePartyLeave) disableRequeue = true
+        }
+        onMessage(Regex("The party was disbanded because all invites expired and the party was empty.")) {
+            if (disablePartyLeave) disableRequeue = true
+        }
+        onMessage(Regex("Kicked (\\[.+])? ?(.{1,16}) because they were offline.")) {
+            if (disablePartyLeave) disableRequeue = true
+        }
+
+        onMessage(Regex("You have been kicked from the party by (\\[.+])? ?(.{1,16})")) {
+            disableRequeue = true
+        }
+        onMessage(Regex("You left the party.")) {
+            disableRequeue = true
+        }
+        onMessage(Regex("(\\[.+])? ?(.{1,16}) has disbanded the party.")) {
+            disableRequeue = true
         }
     }
 }

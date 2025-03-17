@@ -14,7 +14,7 @@ import me.odinmain.utils.skyblock.modMessage
 object MapInfo : Module(
     name = "Map Info",
     category = Category.DUNGEON,
-    description = "Displays various information about the current dungeon map."
+    description = "Displays stats about the dungeon such as score, secrets, and deaths."
 ) {
     private val disableInBoss by BooleanSetting("Disable in boss", default = true, description = "Disables the information display when you're in boss.")
     private val scoreTitle by BooleanSetting("300 Score Title", default = true, description = "Displays a title on 300 score.")

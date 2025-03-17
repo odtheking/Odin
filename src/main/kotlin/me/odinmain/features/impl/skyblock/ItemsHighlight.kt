@@ -20,7 +20,7 @@ import net.minecraft.entity.item.EntityItem
 
 object ItemsHighlight : Module(
     name = "Item Highlight",
-    description = "Outlines dropped item entities.",
+    description = "Highlights items on the ground.",
     category = Category.RENDER
 ) {
     private val mode by SelectorSetting("Mode", "Overlay", arrayListOf("Boxes", "Box 2D", "Overlay"), description = HighlightRenderer.HIGHLIGHT_MODE_DESCRIPTION)

@@ -23,12 +23,14 @@ import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.block.BlockButtonStone
 import net.minecraft.entity.item.EntityItem
 import net.minecraft.init.Blocks
+import net.minecraft.item.Item
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.event.entity.player.PlayerInteractEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import kotlin.math.floor
 
 object SimonSays : Module(
     name = "Simon Says",
@@ -126,8 +128,8 @@ object SimonSays : Module(
 
     @SubscribeEvent
     fun onPostMetadata(event: PostEntityMetadata) {
-        val entity = mc.theWorld?.getEntityByID(event.packet.entityId) as? EntityItem ?: return
-        val index = clickInOrder.indexOf(BlockPos(entity.posX.floor(), entity.posY.floor(), entity.posZ.floor()).east())
+        val (x, y, z) = (mc.theWorld?.getEntityByID(event.packet.entityId) as? EntityItem)?.takeIf { Item.getIdFromItem(it.entityItem?.item) == 77 }?.positionVector?.floorVec() ?: return
+        val index = clickInOrder.indexOf(BlockPos(x, y, z).east())
         if (index == 2 && clickInOrder.size == 3) clickInOrder.removeFirst()
         else if (index == 0 && clickInOrder.size == 2) clickInOrder.reverse()
     }

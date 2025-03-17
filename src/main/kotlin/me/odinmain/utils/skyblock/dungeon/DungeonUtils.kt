@@ -22,95 +22,97 @@ import net.minecraft.util.Vec3
 import net.minecraftforge.event.entity.EntityJoinWorldEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import kotlin.math.*
+import kotlin.math.ceil
+import kotlin.math.floor
+import kotlin.math.roundToLong
 
 object DungeonUtils {
 
-    val inDungeons: Boolean
+    inline val inDungeons: Boolean
         get() = LocationUtils.currentArea.isArea(Island.Dungeon)
 
-    val floorNumber: Int
+    inline val floorNumber: Int
         get() = currentDungeon?.floor?.floorNumber ?: 0
 
-    val floor: Floor
+    inline val floor: Floor
         get() = currentDungeon?.floor ?: Floor.E
 
-    val inBoss: Boolean
+    inline val inBoss: Boolean
         get() = currentDungeon?.inBoss == true
 
-    val secretCount: Int
+    inline val secretCount: Int
         get() = currentDungeon?.dungeonStats?.secretsFound ?: 0
 
-    val knownSecrets: Int
+    inline val knownSecrets: Int
         get() = currentDungeon?.dungeonStats?.knownSecrets ?: 0
 
-    val secretPercentage: Float
+    inline val secretPercentage: Float
         get() = currentDungeon?.dungeonStats?.secretsPercent ?: 0f
 
-    val totalSecrets: Int
+    inline val totalSecrets: Int
         get() = if (secretCount == 0 || secretPercentage == 0f) 0 else floor(100 / secretPercentage * secretCount + 0.5).toInt()
 
-    val deathCount: Int
+    inline val deathCount: Int
         get() = currentDungeon?.dungeonStats?.deaths ?: 0
 
-    val cryptCount: Int
+    inline val cryptCount: Int
         get() = currentDungeon?.dungeonStats?.crypts ?: 0
 
-    val openRoomCount: Int
+    inline val openRoomCount: Int
         get() = currentDungeon?.dungeonStats?.openedRooms ?: 0
 
-    val completedRoomCount: Int
+    inline val completedRoomCount: Int
         get() = currentDungeon?.dungeonStats?.completedRooms ?: 0
 
-    val percentCleared: Int
+    inline val percentCleared: Int
         get() = currentDungeon?.dungeonStats?.percentCleared ?: 0
 
-    val totalRooms: Int
+    inline val totalRooms: Int
         get() = if (completedRoomCount == 0 || percentCleared == 0) 0 else floor((completedRoomCount / (percentCleared * 0.01).toFloat()) + 0.4).toInt()
 
-    val puzzles: List<Puzzle>
+    inline val puzzles: List<Puzzle>
         get() = currentDungeon?.puzzles.orEmpty()
 
-    val puzzleCount: Int
+    inline val puzzleCount: Int
         get() = currentDungeon?.puzzles?.size ?: 0
 
-    val dungeonTime: String
+    inline val dungeonTime: String
         get() = currentDungeon?.dungeonStats?.elapsedTime ?: "00m 00s"
 
-    val isGhost: Boolean
+    inline val isGhost: Boolean
         get() = getItemSlot("Haunt", true) != null
 
-    val currentRoomName: String
+    inline val currentRoomName: String
         get() = currentDungeon?.currentRoom?.data?.name ?: "Unknown"
 
-    val dungeonTeammates: ArrayList<DungeonPlayer>
+    inline val dungeonTeammates: ArrayList<DungeonPlayer>
         get() = currentDungeon?.dungeonTeammates ?: ArrayList()
 
-    val dungeonTeammatesNoSelf: ArrayList<DungeonPlayer>
+    inline val dungeonTeammatesNoSelf: ArrayList<DungeonPlayer>
         get() = currentDungeon?.dungeonTeammatesNoSelf ?: ArrayList()
 
-    val leapTeammates: ArrayList<DungeonPlayer>
+    inline val leapTeammates: ArrayList<DungeonPlayer>
         get() = currentDungeon?.leapTeammates ?: ArrayList()
 
-    val currentDungeonPlayer: DungeonPlayer
+    inline val currentDungeonPlayer: DungeonPlayer
         get() = dungeonTeammates.find { it.name == mc.thePlayer?.name } ?: DungeonPlayer(mc.thePlayer?.name ?: "Unknown", DungeonClass.Unknown, 0, entity = mc.thePlayer)
 
-    val doorOpener: String
+    inline val doorOpener: String
         get() = currentDungeon?.dungeonStats?.doorOpener ?: "Unknown"
 
-    val mimicKilled: Boolean
+    inline val mimicKilled: Boolean
         get() = currentDungeon?.dungeonStats?.mimicKilled == true
 
-    val currentRoom: Room?
+    inline val currentRoom: Room?
         get() = currentDungeon?.currentRoom
 
-    val passedRooms: Set<Room>
+    inline val passedRooms: Set<Room>
         get() = currentDungeon?.passedRooms.orEmpty()
 
-    val isPaul: Boolean
+    inline val isPaul: Boolean
         get() = currentDungeon?.paul == true
 
-    val getBonusScore: Int
+    inline val getBonusScore: Int
         get() {
             var score = cryptCount.coerceAtMost(5)
             if (mimicKilled) score += 2
@@ -118,10 +120,10 @@ object DungeonUtils {
             return score
         }
 
-    val bloodDone: Boolean
+    inline val bloodDone: Boolean
         get() = currentDungeon?.dungeonStats?.bloodDone == true
 
-    val score: Int
+    inline val score: Int
         get() {
             val completed: Float = completedRoomCount.toFloat() + (if (!bloodDone) 1f else 0f) + (if (!inBoss) 1f else 0f)
             val total: Float = if (totalRooms != 0) totalRooms.toFloat() else 36f
@@ -135,7 +137,7 @@ object DungeonUtils {
             return exploration + (20 + skillRooms - puzzlePenalty - (deathCount * 2 - 1).coerceAtLeast(0)).coerceIn(20, 100) + getBonusScore + 100
         }
 
-    val neededSecretsAmount: Int
+    inline val neededSecretsAmount: Int
         get() = ceil((totalSecrets * floor.secretPercentage) * (40 - getBonusScore + (deathCount * 2 - 1).coerceAtLeast(0)) / 40.0).toInt()
 
     /**
@@ -145,7 +147,7 @@ object DungeonUtils {
      * @return `true` if the current dungeon floor matches any of the specified options, otherwise `false`.
      */
     fun isFloor(vararg options: Int): Boolean {
-        return options.any { it == currentDungeon?.floor?.floorNumber }
+        return floorNumber in options
     }
 
     /**
@@ -154,7 +156,7 @@ object DungeonUtils {
      * @return The current phase of floor 7 boss, or `null` if the player is not in the boss room.
      */
     fun getF7Phase(): M7Phases {
-        if ((!isFloor(7) || !inBoss) && !LocationUtils.currentArea.isArea(Island.SinglePlayer)) return M7Phases.Unknown
+        if ((!isFloor(7) || !inBoss) && LocationUtils.isOnHypixel) return M7Phases.Unknown
 
         return when {
             posY > 210 -> M7Phases.P1

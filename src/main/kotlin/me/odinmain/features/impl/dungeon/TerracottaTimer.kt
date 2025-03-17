@@ -4,14 +4,16 @@ import me.odinmain.events.impl.BlockChangeEvent
 import me.odinmain.events.impl.ServerTickEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.utils.*
+import me.odinmain.utils.addVec
+import me.odinmain.utils.equal
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.toFixed
+import me.odinmain.utils.toVec3
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import java.util.Locale
 import java.util.concurrent.CopyOnWriteArrayList
 
 object TerracottaTimer : Module(
@@ -40,7 +42,7 @@ object TerracottaTimer : Module(
     fun onRenderWorld(event: RenderWorldLastEvent) {
         if (!DungeonUtils.inBoss || !DungeonUtils.isFloor(6) || terracottaSpawning.isEmpty()) return
         terracottaSpawning.forEach {
-            Renderer.drawStringInWorld(String.format(Locale.US, "%.2f", it.time) + "s", it.pos, getColor(it.time), depth = false, scale = 0.03f)
+            Renderer.drawStringInWorld("${it.time.toFixed()}s", it.pos, getColor(it.time), depth = false, scale = 0.03f)
         }
     }
 

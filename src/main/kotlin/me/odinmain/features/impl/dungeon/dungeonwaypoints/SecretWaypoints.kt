@@ -71,9 +71,10 @@ object SecretWaypoints {
 
         val waypoints = getWaypoints(room)
         val waypoint = if (distance == 0) getWaypoints(room).find { wp -> wp.toVec3().equal(vec) && wp.secret && !wp.clicked }
-        else waypoints.minByOrNull { wp ->
-            if (wp.secret && !wp.clicked) wp.toVec3().distanceTo(vec).takeIf { it <= distance } ?: Double.MAX_VALUE
-            else Double.MAX_VALUE
+        else waypoints.fold(null) { near: DungeonWaypoint?, wp ->
+            val waypointDistance = wp.toVec3().distanceTo(vec)
+            if (waypointDistance <= distance && wp.secret && !wp.clicked && (near == null || waypointDistance < near.toVec3().distanceTo(vec))) wp
+            else near
         }
 
         waypoint?.let {
@@ -104,7 +105,6 @@ object SecretWaypoints {
         val waypoints = getWaypoints(room)
         waypoints.find { wp -> wp.toVec3().addVec(y = 0.5).distanceTo(room.getRelativeCoords(pos)) <= 2 && wp.type == WaypointType.MOVE && !wp.clicked }?.let { wp ->
             wp.timer?.let { if (handleTimer(wp, waypoints, room)) wp.clicked = true else return } ?: run { wp.clicked = true }
-
             setWaypoints(room)
             devMessage("clicked ${wp.toVec3()}")
             glList = -1

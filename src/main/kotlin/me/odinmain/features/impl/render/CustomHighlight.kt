@@ -33,7 +33,7 @@ object CustomHighlight : Module(
     private val showInvisible by BooleanSetting("Show Invisible", false, description = "Highlights invisible entities.").withDependency { !isLegitVersion }
 
     val highlightList: MutableMap<String, Color?> by MapSetting("Map", mutableMapOf(), "")
-    private val depthCheck get() = if (isLegitVersion) true else xray
+    private inline val depthCheck get() = if (isLegitVersion) true else xray
     val currentEntities = mutableSetOf<HighlightEntity>()
 
     init {

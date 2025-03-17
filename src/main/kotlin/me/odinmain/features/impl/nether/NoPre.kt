@@ -14,7 +14,7 @@ import net.minecraft.util.Vec3
 
 object NoPre : Module(
     name = "Pre-Spot Alert",
-    description = "Alerts the party about the state of a pre spot.",
+    description = "Alerts the party if a pre spot is missing.",
     category = Category.NETHER
 ) {
     private val showCratePriority by BooleanSetting("Show Crate Priority", false, description = "Shows the crate priority alert.")
@@ -86,15 +86,15 @@ object NoPre : Module(
             // Shop Missing
             SupplyPickUpSpot.Shop -> when (preSpot) {
                 SupplyPickUpSpot.Triangle, SupplyPickUpSpot.X -> "Go X Cannon"
-                SupplyPickUpSpot.Equals -> if (advanced) "Go X Cannon" else "Go Shop"
-                SupplyPickUpSpot.Slash -> "Go Square"
+                SupplyPickUpSpot.Equals, SupplyPickUpSpot.Slash -> "Go Square, place on Shop"
                 else -> ""
             }
 
             // Triangle Missing
             SupplyPickUpSpot.Triangle -> when (preSpot) {
                 SupplyPickUpSpot.Triangle -> if (advanced) "Pull Square and X Cannon. Next: collect Shop" else "Pull Square. Next: collect Shop"
-                SupplyPickUpSpot.X, SupplyPickUpSpot.Equals -> "Go X Cannon"
+                SupplyPickUpSpot.X -> "Go X Cannon"
+                SupplyPickUpSpot.Equals -> if (advanced) "Go Shop" else "Go X Cannon"
                 SupplyPickUpSpot.Slash -> "Go Square, place on Triangle"
                 else -> ""
             }
@@ -110,9 +110,9 @@ object NoPre : Module(
 
             // Slash Missing
             SupplyPickUpSpot.Slash -> when (preSpot) {
-                SupplyPickUpSpot.Triangle -> "Go x Cannon"
+                SupplyPickUpSpot.Triangle -> "Go Square, place on Slash"
                 SupplyPickUpSpot.X -> "Go X Cannon"
-                SupplyPickUpSpot.Equals -> "Go Square, place on Slash"
+                SupplyPickUpSpot.Equals -> if (advanced) "Go Shop" else "Go X Cannon"
                 SupplyPickUpSpot.Slash -> if (advanced) "Pull Square and X Cannon. Next: collect Shop" else "Pull Square. Next: collect Shop"
                 else -> ""
             }
@@ -120,16 +120,14 @@ object NoPre : Module(
             // Square Missing
             SupplyPickUpSpot.Square -> when (preSpot) {
                 SupplyPickUpSpot.Triangle, SupplyPickUpSpot.Equals -> "Go Shop"
-                SupplyPickUpSpot.X -> "Go X Cannon"
-                SupplyPickUpSpot.Slash -> "Go X Cannon"
+                SupplyPickUpSpot.X, SupplyPickUpSpot.Slash -> "Go X Cannon"
                 else -> ""
             }
 
             // X Cannon Missing
             SupplyPickUpSpot.xCannon -> when (preSpot) {
                 SupplyPickUpSpot.Triangle, SupplyPickUpSpot.Equals -> "Go Shop"
-                SupplyPickUpSpot.X -> "Go Square"
-                SupplyPickUpSpot.Slash -> "Go Square, place on X Cannon"
+                SupplyPickUpSpot.Slash, SupplyPickUpSpot.X -> "Go Square, place on X Cannon"
                 else -> ""
             }
 

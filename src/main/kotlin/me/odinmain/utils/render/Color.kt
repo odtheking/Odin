@@ -151,10 +151,10 @@ class Color(hue: Float, saturation: Float, brightness: Float, alpha: Float = 1f)
         val DARK_GRAY = Color(35, 35, 35)
 
         @JvmField
-        val BLUE = Color(85,  255,255)
+        val BLUE = Color(85, 255,255)
 
         @JvmField
-        val PINK = Color(255,85,255)
+        val PINK = Color(255, 85, 255)
 
         @JvmField
         val YELLOW = Color(253, 218, 13)

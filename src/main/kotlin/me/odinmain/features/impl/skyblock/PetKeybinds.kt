@@ -46,15 +46,15 @@ object PetKeybinds : Module(
 
     @SubscribeEvent
     fun onGuiMouseClick(event: GuiEvent.MouseClick) {
-        if (onClick(event.gui as? GuiChest ?: return, event.button)) event.isCanceled = true
+        if (onClick(event.gui as? GuiChest ?: return)) event.isCanceled = true
     }
 
     @SubscribeEvent
     fun onGuiKeyPress(event: GuiEvent.KeyPress) {
-        if (onClick(event.gui as? GuiChest ?: return, event.key)) event.isCanceled = true
+        if (onClick(event.gui as? GuiChest ?: return)) event.isCanceled = true
     }
 
-    private fun onClick(gui: GuiChest, key: Int): Boolean {
+    private fun onClick(gui: GuiChest): Boolean {
         val chest = gui.inventorySlots as? ContainerChest ?: return false
 
         val matchResult = petsRegex.find(chest.name) ?: return false
@@ -72,8 +72,7 @@ object PetKeybinds : Module(
 
         if (nounequip && getItemIndexInContainerChestByLore(chest, "§7§cClick to despawn!", 10..43) == index && !unequipKeybind.isDown()) return modMessage("§cThat pet is already equipped!").let { false }
         if (!clickCoolDown.hasTimePassed(delay) || index == null) return false
-        if (index > chest.lowerChestInventory.sizeInventory - 1 || index < 1) return modMessage("§cInvalid index. $index, ${chest.name}").let { false }
-        windowClick(index, ClickType.Middle, true)
+        windowClick(index, ClickType.Middle)
         clickCoolDown.update()
         return true
     }

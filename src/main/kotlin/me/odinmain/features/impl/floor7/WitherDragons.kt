@@ -20,15 +20,15 @@ import me.odinmain.utils.runIn
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.M7Phases
 import me.odinmain.utils.skyblock.modMessage
+import me.odinmain.utils.toFixed
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.server.*
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import java.util.*
 
 object WitherDragons : Module(
     name = "Wither Dragons",
-    description = "Various features for Wither dragons (boxes, timer, HP, priority and more).",
+    description = "Tools for managing M7 dragons timers, boxes, priority, health, relics and alerts.",
     category = Category.FLOOR7
 ) {
     private val dragonTimerDropDown by DropdownSetting("Dragon Timer Dropdown")
@@ -39,6 +39,7 @@ object WitherDragons : Module(
             getMCTextWidth("§5P §a4.5s")+ 2f to 33f
         } else {
             priorityDragon.takeIf { drag -> drag != WitherDragonsEnum.None }?.let { dragon ->
+                if (dragon.state != WitherDragonState.SPAWNING && dragon.timeToSpawn <= 0) return@HudSetting 0f to 0f
                 mcText("§${dragon.colorCode}${dragon.name.first()}: ${colorDragonTimer(dragon.timeToSpawn)}${dragon.timeToSpawn * 50}ms", 2, 5f, 1, Color.WHITE, center = false)
             }
             getMCTextWidth("§5P §a4.5s")+ 2f to 33f
@@ -84,7 +85,7 @@ object WitherDragons : Module(
     private val relicHud by HudSetting("Relic Hud", 10f, 10f, 1f, true) {
         if (it) return@HudSetting mcTextAndWidth("§3Relics: 4.30s", 2, 5f, 1, Color.WHITE, center = false) + 2f to 16f
         if (DungeonUtils.getF7Phase() != M7Phases.P5 || KingRelics.relicTicksToSpawn <= 0) return@HudSetting 0f to 0f
-        mcTextAndWidth("§3Relics: ${String.format(Locale.US, "%.2f", KingRelics.relicTicksToSpawn / 20.0)}s", 2, 5f, 1, Color.WHITE, center = false) + 2f to 16f
+        mcTextAndWidth("§3Relics: ${(KingRelics.relicTicksToSpawn / 20f).toFixed()}s", 2, 5f, 1, Color.WHITE, center = false) + 2f to 16f
     }.withDependency { relicDropDown }
 
     var priorityDragon = WitherDragonsEnum.None
@@ -95,28 +96,28 @@ object WitherDragons : Module(
             WitherDragonsEnum.reset()
         }
 
-        onPacket(S2APacketParticles::class.java, { DungeonUtils.getF7Phase() == M7Phases.P5 }) {
+        onPacket<S2APacketParticles> ({ DungeonUtils.getF7Phase() == M7Phases.P5 }) {
             handleSpawnPacket(it)
         }
 
-        onPacket(C08PacketPlayerBlockPlacement::class.java) {
+        onPacket<C08PacketPlayerBlockPlacement> {
             if (relicAnnounce || relicAnnounceTime) relicsBlockPlace(it)
         }
 
-        onPacket(S29PacketSoundEffect::class.java, { DungeonUtils.getF7Phase() == M7Phases.P5 }) {
+        onPacket<S29PacketSoundEffect> ({ DungeonUtils.getF7Phase() == M7Phases.P5 }) {
             if (it.soundName != "random.successful_hit" || !sendArrowHit || priorityDragon == WitherDragonsEnum.None) return@onPacket
             if (priorityDragon.entity?.isEntityAlive == true && currentTick - priorityDragon.spawnedTime < priorityDragon.skipKillTime) arrowsHit++
         }
 
-        onPacket(S04PacketEntityEquipment::class.java, { DungeonUtils.getF7Phase() == M7Phases.P5 && enabled }) {
+        onPacket<S04PacketEntityEquipment> ({ DungeonUtils.getF7Phase() == M7Phases.P5 && enabled }) {
             dragonSprayed(it)
         }
 
-        onPacket(S0FPacketSpawnMob::class.java, { DungeonUtils.getF7Phase() == M7Phases.P5 && enabled }) {
+        onPacket<S0FPacketSpawnMob> ({ DungeonUtils.getF7Phase() == M7Phases.P5 && enabled }) {
             if (it.entityType == 63) dragonSpawn(it)
         }
 
-        onPacket(S1CPacketEntityMetadata::class.java, { DungeonUtils.getF7Phase() == M7Phases.P5 && enabled }) {
+        onPacket<S1CPacketEntityMetadata> ({ DungeonUtils.getF7Phase() == M7Phases.P5 && enabled }) {
             dragonUpdate(it)
         }
 
@@ -143,7 +144,7 @@ object WitherDragons : Module(
         if (dragonTimer) {
             WitherDragonsEnum.entries.forEach { dragon ->
                 if (dragon.state == WitherDragonState.SPAWNING) Renderer.drawStringInWorld(
-                    "§${dragon.colorCode}${dragon.name.first()}: ${colorDragonTimer(dragon.timeToSpawn)}${dragon.timeToSpawn * 50}ms", dragon.spawnPos,
+                    "§${dragon.colorCode}${dragon.name.first()}: ${colorDragonTimer(dragon.timeToSpawn)}${(dragon.timeToSpawn / 20f).toFixed()}", dragon.spawnPos,
                     color = Color.WHITE, depth = false, scale = 0.16f
                 )
             }
@@ -176,7 +177,7 @@ object WitherDragons : Module(
         arrowsHit = 0
         runIn(dragon.skipKillTime, true) {
             if (dragon.entity?.isEntityAlive != true && arrowsHit <= 0) return@runIn
-            modMessage("§fYou hit §6${arrowsHit} §farrows on §${dragon.colorCode}${dragon.name}${if (dragon.entity?.isEntityAlive == true) " §fin §c${String.format(Locale.US, "%.2f", dragon.skipKillTime.toFloat()/20)} §fSeconds." else "."}")
+            modMessage("§fYou hit §6${arrowsHit} §farrows on §${dragon.colorCode}${dragon.name}${if (dragon.entity?.isEntityAlive == true) " §fin §c${(dragon.skipKillTime / 20f).toFixed()} §fSeconds." else "."}")
             arrowsHit = 0
         }
     }
@@ -200,9 +201,9 @@ object WitherDragons : Module(
 
     private fun formatHealth(health: Float): String {
         return when {
-            health >= 1_000_000_000 -> "${String.format(Locale.US, "%.2f", health / 1_000_000_000)}b"
-            health >= 1_000_000     -> "${String.format(Locale.US, "%.2f", health / 1_000_000    )}m"
-            health >= 1_000         -> "${String.format(Locale.US, "%.2f", health / 1_000        )}k"
+            health >= 1_000_000_000 -> "${(health / 1_000_000_000).toFixed()}b"
+            health >= 1_000_000     -> "${(health / 1_000_000    ).toFixed()}m"
+            health >= 1_000         -> "${(health / 1_000        ).toFixed()}k"
             else -> "${health.toInt()}"
         }
     }

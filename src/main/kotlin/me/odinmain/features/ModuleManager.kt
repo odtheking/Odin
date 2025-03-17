@@ -20,6 +20,7 @@ import me.odinmain.features.settings.impl.KeybindSetting
 import me.odinmain.ui.hud.EditHUDGui
 import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.capitalizeFirst
+import me.odinmain.utils.logError
 import me.odinmain.utils.profile
 import me.odinmain.utils.render.getTextWidth
 import net.minecraft.network.Packet
@@ -33,14 +34,8 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
  * @author Aton, Bonsai
  */
 object ModuleManager {
-    data class PacketFunction<T : Packet<*>>(
-        val type: Class<T>,
-        val function: (T) -> Unit,
-        val shouldRun: () -> Boolean,
-    )
-
+    data class PacketFunction<T : Packet<*>>(val type: Class<T>, val function: (T) -> Unit, val shouldRun: () -> Boolean)
     data class MessageFunction(val filter: Regex, val shouldRun: () -> Boolean, val function: (String) -> Unit)
-
     data class TickTask(var ticksLeft: Int, val server: Boolean, val function: () -> Unit)
 
     val packetFunctions = mutableListOf<PacketFunction<Packet<*>>>()
@@ -66,7 +61,7 @@ object ModuleManager {
 
         //skyblock
         NoCursorReset, AutoSprint, BlazeAttunement, ChatCommands, DeployableTimer, DianaHelper, ArrowHit,
-        RagnarokAxe, MobSpawn, Splits, WardrobeKeybinds, InvincibilityTimer, ItemsHighlight, PlayerDisplay,
+        RagnarockAxe, MobSpawn, Splits, WardrobeKeybinds, InvincibilityTimer, ItemsHighlight, PlayerDisplay,
         FarmKeys, PetKeybinds, CommandKeybinds, SpringBoots, AbilityTimers,
 
         // kuudra
@@ -101,14 +96,18 @@ object ModuleManager {
     }
 
     private fun tickTaskTick(server: Boolean = false) {
-        tickTasks.removeAll {
-            if (it.server != server) return@removeAll false
-            if (it.ticksLeft <= 0) {
-                it.function()
-                return@removeAll true
+        runCatching {
+            tickTasks.removeAll {
+                if (it.server != server) return@removeAll false
+                if (it.ticksLeft <= 0) {
+                    it.function()
+                    return@removeAll true
+                }
+                it.ticksLeft--
+                false
             }
-            it.ticksLeft--
-            false
+        }.onFailure {
+            logError(it, this)
         }
     }
 
@@ -135,8 +134,7 @@ object ModuleManager {
 
     @SubscribeEvent
     fun onWorldLoad(event: WorldEvent.Load) {
-        worldLoadFunctions
-            .forEach { it.invoke() }
+        worldLoadFunctions.forEach { it.invoke() }
     }
 
     @SubscribeEvent

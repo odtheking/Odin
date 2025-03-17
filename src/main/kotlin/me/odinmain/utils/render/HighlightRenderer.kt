@@ -36,9 +36,9 @@ object HighlightRenderer {
 
     init {
         Executor(200, "HighlightRenderer") {
-            entities.forEach { it.value.clear() }
-            entityGetters.forEach {
-                entities[it.first.invoke()]?.addAll(it.second.invoke())
+            entities.values.forEach { it.clear() }
+            entityGetters.forEach { (type, getter) ->
+                entities[type()]?.addAll(getter())
             }
         }.register()
     }

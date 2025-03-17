@@ -111,7 +111,7 @@ object ArrowsDevice : Module(
             if (DungeonUtils.getF7Phase() != M7Phases.P3) return@execute
 
             activeArmorStand = mc.theWorld?.loadedEntityList?.filterIsInstance<EntityArmorStand>()?.find {
-                it.name.equalsOneOf(INACTIVE_DEVICE_STRING, ACTIVE_DEVICE_STRING) && it.distanceSquaredTo(standPosition.toVec3()) <= 4.0
+                it.name.equalsOneOf(INACTIVE_DEVICE_STRING, ACTIVE_DEVICE_STRING) && standPosition.toVec3().distanceTo(it.positionVector) <= 4.0
             }
         }
 
@@ -178,7 +178,7 @@ object ArrowsDevice : Module(
         get() = mc.theWorld?.getBlockState(lastGateBlock) == Blocks.air.defaultState
 
     private val isPlayerOnStand: Boolean
-        get() = (mc.thePlayer?.distanceSquaredTo(standPosition.toVec3()) ?: Double.MAX_VALUE) <= 1.0
+        get() = (mc.thePlayer?.positionVector?.distanceTo(standPosition.toVec3()) ?: Double.MAX_VALUE) <= 1.0
 
     private val isPlayerInRoom: Boolean
         get() = mc.thePlayer?.let { roomBoundingBox.isVecInside(it.positionVector) } == true

@@ -8,13 +8,13 @@ import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.HudSetting
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.mcTextAndWidth
+import me.odinmain.utils.toFixed
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import java.util.*
 
 object TickTimers : Module(
     name = "Tick Timers",
     category = Category.FLOOR7,
-    description = "Various tick timers for the floor 7 boss."
+    description = "Displays timers for Necron, Goldor, and Storm."
 ) {
     private val displayInTicks by BooleanSetting("Display in Ticks", default = false, description = "Display the timers in ticks instead of seconds.")
     private val symbolDisplay: Boolean by BooleanSetting("Display Symbol", default = true, description = "Displays s or t after the timers.")
@@ -88,7 +88,7 @@ object TickTimers : Module(
             time.toFloat() >= max * 0.33 -> "§6"
             else -> "§c"
         }
-        val timeDisplay = if (displayInTicks) "$time${if (symbolDisplay) "t" else ""}" else "${String.format(Locale.US, "%.2f", time.toFloat() / 20)}${if (symbolDisplay) "s" else ""}"
+        val timeDisplay = if (displayInTicks) "$time${if (symbolDisplay) "t" else ""}" else "${(time / 20f).toFixed()}${if (symbolDisplay) "s" else ""}"
         return "${if (showPrefix) "$prefix " else ""}$color$timeDisplay"
     }
 }

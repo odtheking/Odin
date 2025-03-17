@@ -3,10 +3,9 @@ package me.odinmain.features.impl.floor7.p3
 import me.odinmain.events.impl.PacketEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
+import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.utils.addVec
-import me.odinmain.utils.distanceSquaredTo
-import me.odinmain.utils.flooredVec
+import me.odinmain.utils.*
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
@@ -23,10 +22,11 @@ import kotlin.collections.set
 
 object ArrowAlign : Module(
     name = "Arrow Align",
-    description = "Shows a solution for the Arrow Align device.",
+    description = "Shows the solution for the Arrow Align device.",
     category = Category.FLOOR7
 ) {
     private val blockWrong by BooleanSetting("Block Wrong Clicks", false, description = "Blocks wrong clicks, shift will override this.")
+    private val invertSneak by BooleanSetting("Invert Sneak", false, description = "Only block wrong clicks whilst sneaking, instead of whilst standing").withDependency { blockWrong }
 
     private val frameGridCorner = Vec3(-2.0, 120.0, 75.0)
     private val recentClickTimestamps = mutableMapOf<Int, Long>()
@@ -38,7 +38,7 @@ object ArrowAlign : Module(
         execute(50) {
             if (DungeonUtils.getF7Phase() != M7Phases.P3) return@execute
             clicksRemaining.clear()
-            if ((mc.thePlayer?.distanceSquaredTo(Vec3(0.0, 120.0, 77.0)) ?: return@execute) > 200) {
+            if ((mc.thePlayer?.positionVector?.distanceTo(Vec3(0.0, 120.0, 77.0)) ?: return@execute) > 200) {
                 currentFrameRotations = null
                 targetSolution = null
                 return@execute
@@ -64,11 +64,11 @@ object ArrowAlign : Module(
     fun onPacket(event: PacketEvent.Send) {
         val packet = event.packet as? C02PacketUseEntity ?: return
         if (DungeonUtils.getF7Phase() != M7Phases.P3 || packet.action != C02PacketUseEntity.Action.INTERACT) return
-        val entityPosition = (packet.getEntityFromWorld(mc.theWorld) as? EntityItemFrame)?.takeIf { it.displayedItem?.item == Items.arrow }?.positionVector?.flooredVec() ?: return
-        val frameIndex = ((entityPosition.yCoord - frameGridCorner.yCoord) + (entityPosition.zCoord - frameGridCorner.zCoord) * 5).toInt()
-        if (entityPosition.xCoord != frameGridCorner.xCoord || currentFrameRotations?.get(frameIndex) == -1 || frameIndex !in 0..24) return
+        val (x, y, z) = (packet.getEntityFromWorld(mc.theWorld) as? EntityItemFrame)?.takeIf { it.displayedItem?.item == Items.arrow }?.positionVector?.floorVec() ?: return
+        val frameIndex = ((y - frameGridCorner.yCoord) + (z - frameGridCorner.zCoord) * 5).toInt()
+        if (x != frameGridCorner.xCoord || currentFrameRotations?.get(frameIndex) == -1 || frameIndex !in 0..24) return
 
-        if (!clicksRemaining.containsKey(frameIndex) && !mc.thePlayer.isSneaking && blockWrong) {
+        if (!clicksRemaining.containsKey(frameIndex) && mc.thePlayer.isSneaking == invertSneak && blockWrong) {
             event.isCanceled = true
             return
         }
@@ -101,7 +101,7 @@ object ArrowAlign : Module(
             if (recentClickTimestamps[index]?.let { System.currentTimeMillis() - it < 1000 } == true && currentFrameRotations != null)
                 currentFrameRotations?.get(index) ?: -1
             else
-                itemFrames.associate { it.positionVector.flooredVec().toString() to it.rotation }[getFramePositionFromIndex(index).toString()] ?: -1
+                itemFrames.associate { it.positionVector.floorVec().toString() to it.rotation }[getFramePositionFromIndex(index).toString()] ?: -1
         }
     }
 

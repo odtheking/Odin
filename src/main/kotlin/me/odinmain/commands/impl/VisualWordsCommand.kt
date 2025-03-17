@@ -1,12 +1,12 @@
 package me.odinmain.commands.impl
 
+import com.github.stivais.commodore.Commodore
 import com.github.stivais.commodore.utils.GreedyString
-import me.odinmain.commands.commodore
 import me.odinmain.config.Config
 import me.odinmain.features.impl.render.VisualWords
 import me.odinmain.utils.skyblock.modMessage
 
-val visualWordsCommand = commodore("visualwords") {
+val visualWordsCommand = Commodore("visualwords") {
 
     literal("add").runs { command: GreedyString ->
         if (!command.string.contains("replace")) return@runs modMessage("You are missing the 'replace' keyword")

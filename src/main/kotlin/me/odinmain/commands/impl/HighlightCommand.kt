@@ -1,5 +1,6 @@
 package me.odinmain.commands.impl
 
+import com.github.stivais.commodore.Commodore
 import com.github.stivais.commodore.utils.GreedyString
 import me.odinmain.commands.commodore
 import me.odinmain.config.Config
@@ -9,7 +10,7 @@ import me.odinmain.utils.render.Color
 import me.odinmain.utils.skyblock.modMessage
 
 @OptIn(ExperimentalStdlibApi::class)
-val highlightCommand = commodore("highlight") {
+val highlightCommand = Commodore("highlight") {
     val colorRegex = Regex("^(.*?)(?:\\s+#?([0-9a-fA-F]{6}|[0-9a-fA-F]{8}))?$")
 
     literal("add").runs { input: GreedyString ->

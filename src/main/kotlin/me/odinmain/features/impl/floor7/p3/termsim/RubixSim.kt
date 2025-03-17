@@ -8,7 +8,7 @@ import net.minecraft.inventory.Slot
 import net.minecraft.item.ItemStack
 import kotlin.math.floor
 
-object Rubix : TermSimGui(
+object RubixSim : TermSimGUI(
     TerminalTypes.RUBIX.guiName, TerminalTypes.RUBIX.size
 ) {
     private val indices = listOf(12, 13, 14, 21, 22, 23, 30, 31, 32)

@@ -32,11 +32,13 @@ import net.minecraft.item.EnumDyeColor
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
 import net.minecraft.network.play.client.C0DPacketCloseWindow
+import net.minecraft.network.play.client.C0EPacketClickWindow
 import net.minecraft.network.play.server.S2DPacketOpenWindow
 import net.minecraft.network.play.server.S2EPacketCloseWindow
 import net.minecraft.network.play.server.S2FPacketSetSlot
 import net.minecraftforge.event.entity.player.ItemTooltipEvent
 import net.minecraftforge.fml.common.Loader
+import net.minecraftforge.fml.common.eventhandler.EventPriority
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.input.Keyboard
 import java.util.concurrent.CopyOnWriteArrayList
@@ -55,6 +57,7 @@ object TerminalSolver : Module(
     private val middleClickGUI by BooleanSetting("Middle Click GUI", true, description = "Replaces right click with middle click in terminals.").withDependency { renderType != 3 }
     private val blockIncorrectClicks by BooleanSetting("Block Incorrect Clicks", true, description = "Blocks incorrect clicks in terminals.").withDependency { renderType != 3 }
     private val cancelMelodySolver by BooleanSetting("Stop Melody Solver", false, description = "Stops rendering the melody solver.")
+    val showNumbers by BooleanSetting("Show Numbers", true, description = "Shows numbers in the order terminal.")
 
     private val showRemoveWrongSettings by DropdownSetting("Render Wrong Settings").withDependency { renderType == 1 }
     private val removeWrong by BooleanSetting("Stop Rendering Wrong", true, description = "Main toggle for stopping the rendering of incorrect items in terminals.").withDependency { renderType == 1 && showRemoveWrongSettings }
@@ -92,7 +95,15 @@ object TerminalSolver : Module(
     val melodyPressColor by ColorSetting("Melody Press Color", Color.CYAN.withAlpha(0.75f), true, description = "Color of the location for pressing for melody.").withDependency { showColors && !cancelMelodySolver }
     val melodyCorrectRowColor by ColorSetting("Melody Correct Row Color", Color.WHITE.withAlpha(0.75f), true, description = "Color of the whole row for melody.").withDependency { showColors && !cancelMelodySolver }
 
-    data class Terminal(val type: TerminalTypes, val solution: CopyOnWriteArrayList<Int> = CopyOnWriteArrayList(), val items: Array<ItemStack?> = emptyArray(), val guiName: String = "", val timeOpened: Long = System.currentTimeMillis(), var clickedSlot: Pair<Int, Long>? = null)
+    data class Terminal(
+        val type: TerminalTypes,
+        val solution: CopyOnWriteArrayList<Int> = CopyOnWriteArrayList(),
+        val items: Array<ItemStack?> = emptyArray(),
+        val guiName: String = "",
+        val timeOpened: Long = System.currentTimeMillis(),
+        var clickedSlot: Pair<Int, Long>? = null
+
+    )
     private val terminalActivatedRegex = Regex("(.{1,16}) activated a terminal! \\((\\d)/(\\d)\\)")
     var currentTerm = Terminal(TerminalTypes.NONE)
         private set
@@ -100,7 +111,7 @@ object TerminalSolver : Module(
     private var lastRubixSolution: Int? = null
 
     init {
-        onPacket(S2DPacketOpenWindow::class.java) { packet ->
+        onPacket<S2DPacketOpenWindow> { packet ->
             val windowName = packet.windowTitle?.formattedText?.noControlCodes ?: return@onPacket
             val newTermType = TerminalTypes.entries.find { terminal -> windowName.startsWith(terminal.guiName) }?.takeIf { it != TerminalTypes.NONE } ?: return@onPacket
 
@@ -114,7 +125,7 @@ object TerminalSolver : Module(
             if (renderType == 3 && Loader.instance().activeModList.any { it.modId == "notenoughupdates" }) NEUApi.setInventoryButtonsToDisabled()
         }
 
-        onPacket(S2FPacketSetSlot::class.java) { event ->
+        onPacket<S2FPacketSetSlot> { event ->
             if (currentTerm.type == TerminalTypes.NONE || event.func_149173_d() !in 0 until currentTerm.type.size || event.func_149174_e() == null) return@onPacket
             currentTerm.apply {
                 clickedSlot = null
@@ -160,12 +171,16 @@ object TerminalSolver : Module(
             }
         }
 
-        onPacket(C0DPacketCloseWindow::class.java) {
+        onPacket<C0DPacketCloseWindow> {
             leftTerm()
         }
 
-        onPacket(S2EPacketCloseWindow::class.java) {
+        onPacket<S2EPacketCloseWindow> {
             leftTerm()
+        }
+
+        onPacket<C0EPacketClickWindow> { packet ->
+            if (currentTerm.clickedSlot?.second?.let { System.currentTimeMillis() - it < 600 } != true) currentTerm.clickedSlot = packet.slotId to System.currentTimeMillis()
         }
 
         onMessage(terminalActivatedRegex) { message ->
@@ -262,7 +277,7 @@ object TerminalSolver : Module(
                         event.isCanceled = true
                     }
                     val amount = event.slot.stack?.stackSize?.toString() ?: ""
-                    mcText(amount, event.x + 8.5f - getMCTextWidth(amount) / 2, event.y + 4.5f, 1, Color.WHITE, center = false)
+                    if (showNumbers) mcText(amount, event.x + 8.5f - getMCTextWidth(amount) / 2, event.y + 4.5f, 1, Color.WHITE, center = false)
                 }
             }
             TerminalTypes.STARTS_WITH, TerminalTypes.SELECT ->
@@ -287,7 +302,7 @@ object TerminalSolver : Module(
         if (cancelToolTip && enabled && currentTerm.type != TerminalTypes.NONE) event.toolTip.clear()
     }
 
-    @SubscribeEvent(receiveCanceled = true)
+    @SubscribeEvent(receiveCanceled = true, priority = EventPriority.HIGHEST)
     fun onGuiClick(event: GuiEvent.MouseClick) {
         if (!enabled || currentTerm.type == TerminalTypes.NONE) return
 
@@ -299,16 +314,14 @@ object TerminalSolver : Module(
 
         val slotIndex = (event.gui as? GuiChest)?.slotUnderMouse?.slotIndex ?: return
 
-        if (canClick(slotIndex, event.button)) {
-            if (currentTerm.clickedSlot?.second?.let { System.currentTimeMillis() - it < 600 } != true) currentTerm.clickedSlot = slotIndex to System.currentTimeMillis()
-        } else if (blockIncorrectClicks) {
+        if (blockIncorrectClicks && !canClick(slotIndex, event.button)) {
             event.isCanceled = true
             return
         }
 
         if (middleClickGUI) {
+            windowClick(slotIndex, if (event.button == 0) ClickType.Middle else ClickType.Right)
             event.isCanceled = true
-            windowClick(slotIndex, if (event.button == 0) ClickType.Middle else ClickType.Right, instant = true)
         }
     }
 

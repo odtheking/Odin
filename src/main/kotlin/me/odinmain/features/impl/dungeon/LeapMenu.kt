@@ -41,7 +41,7 @@ object LeapMenu : Module(
     val type by SelectorSetting("Sorting", "Odin Sorting", arrayListOf("Odin Sorting", "A-Z Class (BetterMap)", "A-Z Name", "Custom sorting", "No Sorting"), description = "How to sort the leap menu.")
     private val onlyClass by BooleanSetting("Only Classes", false, description = "Renders classes instead of names.")
     private val colorStyle by BooleanSetting("Color Style", false, description = "Which color style to use.")
-    private val backgroundColor by ColorSetting("Background Color", Color.DARK_GRAY.withAlpha(0.9f), allowAlpha = true, description = "Color of the background of the leap menu.")
+    private val backgroundColor by ColorSetting("Background Color", Color.DARK_GRAY.withAlpha(0.75f), allowAlpha = true, description = "Color of the background of the leap menu.").withDependency { !colorStyle }
     private val roundedRect by BooleanSetting("Rounded Rect", true, description = "Toggles the rounded rect for the gui.")
     private val useNumberKeys by BooleanSetting("Use Number Keys", false, description = "Use keyboard keys to leap to the player you want, going from left to right, top to bottom.")
     private val topLeftKeybind by KeybindSetting("Top Left", Keyboard.KEY_1, "Used to click on the first person in the leap menu.").withDependency { useNumberKeys }
@@ -155,8 +155,7 @@ object LeapMenu : Module(
     private fun leapTo(name: String, containerChest: ContainerChest) {
         val index = getItemIndexInContainerChest(containerChest, name, 11..16) ?: return modMessage("Cant find player $name. This shouldn't be possible! are you nicked?")
         modMessage("Teleporting to $name.")
-        if (leapAnnounce) partyMessage("Leaped to $name!")
-        windowClick(index, ClickType.Middle, true)
+        windowClick(index, ClickType.Middle)
     }
 
     init {
@@ -164,7 +163,13 @@ object LeapMenu : Module(
             leapHelperBossChatEvent(it)
         }
 
-        onWorldLoad { worldLoad() }
+        onMessage(Regex("You have teleported to (\\w{1,16})!")) {
+            if (leapAnnounce) partyMessage("Leaped to $name!")
+        }
+
+        onWorldLoad {
+            worldLoad()
+        }
     }
 
 

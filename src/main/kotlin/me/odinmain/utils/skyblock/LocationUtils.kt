@@ -3,41 +3,44 @@ package me.odinmain.utils.skyblock
 import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.PacketEvent
 import me.odinmain.features.impl.render.ClickGUIModule
-import me.odinmain.utils.*
+import me.odinmain.utils.cleanLine
+import me.odinmain.utils.cleanSB
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.clock.Executor.Companion.register
+import me.odinmain.utils.sidebarLines
 import me.odinmain.utils.skyblock.dungeon.Dungeon
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.Floor
-import net.minecraft.client.network.NetHandlerPlayClient
+import me.odinmain.utils.startsWithOneOf
 import net.minecraft.network.play.server.S3FPacketCustomPayload
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.network.FMLNetworkEvent
 
 object LocationUtils {
-
-    private var isOnHypixel: Boolean = false
+    var isOnHypixel: Boolean = false
+        private set
     var isInSkyblock: Boolean = false
-
+        private set
     var currentDungeon: Dungeon? = null
         private set
     var currentArea: Island = Island.Unknown
+        private set
     var kuudraTier: Int = 0
+        private set
 
     init {
         Executor(500, "LocationUtils") {
             if (!isInSkyblock)
                 isInSkyblock = isOnHypixel && mc.theWorld?.scoreboard?.getObjectiveInDisplaySlot(1)?.let { cleanSB(it.displayName).contains("SKYBLOCK") } == true
 
-            if (currentArea.isArea(Island.Kuudra) && kuudraTier == 0)
-                sidebarLines.find { cleanLine(it).contains("Kuudra's Hollow (") }?.let {
-                    kuudraTier = it.substringBefore(")").lastOrNull()?.digitToIntOrNull() ?: 0 }
-
             if (currentArea.isArea(Island.Unknown)) currentArea = getArea()
 
             if ((DungeonUtils.inDungeons || currentArea.isArea(Island.SinglePlayer)) && currentDungeon == null) currentDungeon = Dungeon(getFloor() ?: return@Executor)
 
+            if (currentArea.isArea(Island.Kuudra) && kuudraTier == 0)
+                sidebarLines.find { cleanLine(it).contains("Kuudra's Hollow (") }?.let {
+                    kuudraTier = it.substringBefore(")").lastOrNull()?.digitToIntOrNull() ?: 0 }
         }.register()
     }
 
@@ -79,21 +82,14 @@ object LocationUtils {
     /**
      * Returns the current area from the tab list info.
      * If no info can be found, return Island.Unknown.
-     *
-     * @author Aton
      */
     private fun getArea(): Island {
         if (mc.isSingleplayer) return Island.SinglePlayer
         if (!isInSkyblock) return Island.Unknown
-        val netHandlerPlayClient: NetHandlerPlayClient = mc.thePlayer?.sendQueue ?: return Island.Unknown
-        val list = netHandlerPlayClient.playerInfoMap ?: return Island.Unknown
 
-        val area = list.find {
-            it?.displayName?.unformattedText?.startsWith("Area: ") == true ||
-                    it?.displayName?.unformattedText?.startsWith("Dungeon: ") == true
-        }?.displayName?.formattedText
+        val area = mc.thePlayer?.sendQueue?.playerInfoMap?.find { it?.displayName?.unformattedText?.startsWithOneOf("Area: ", "Dungeon: ") == true }?.displayName?.formattedText ?: return Island.Unknown
 
-        return Island.entries.firstOrNull { area?.contains(it.displayName, true) == true } ?: Island.Unknown
+        return Island.entries.firstOrNull { area.contains(it.displayName, true) } ?: Island.Unknown
     }
 
     fun getFloor(): Floor? {

@@ -24,12 +24,15 @@ import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.eventhandler.EventPriority
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
-open class TermSimGui(val name: String, val size: Int, private val inv: InventoryBasic = InventoryBasic(name, true, size)) : GuiChest(
-    InventoryPlayer(mc.thePlayer), inv
-) {
+open class TermSimGUI(
+    val name: String,
+    val size: Int,
+    private val inv: InventoryBasic = InventoryBasic(name, true, size)
+) : GuiChest(InventoryPlayer(mc.thePlayer), inv) {
+
     val pane: Item = Item.getItemById(160)
     val blackPane = ItemStack(pane, 1, 15).apply { setStackDisplayName("") }
-    val guiInventorySlots get() = inventorySlots?.inventorySlots?.subList(0, size)
+    inline val guiInventorySlots get() = inventorySlots?.inventorySlots?.subList(0, size)
     private var doesAcceptClick = true
     protected var ping = 0L
 
@@ -48,7 +51,7 @@ open class TermSimGui(val name: String, val size: Int, private val inv: Inventor
     fun onTerminalSolved(event: TerminalEvent.Solved) {
         if (OdinMain.mc.currentScreen !== this) return
         PacketEvent.Receive(S2EPacketCloseWindow(-2)).postAndCatch()
-        StartGui.open(ping)
+        StartGUI.open(ping)
     }
 
     open fun slotClick(slot: Slot, button: Int) {}
@@ -66,7 +69,7 @@ open class TermSimGui(val name: String, val size: Int, private val inv: Inventor
     fun onPacketSend(event: PacketEvent.Send) {
         val packet = event.packet as? C0EPacketClickWindow ?: return
         if (OdinMain.mc.currentScreen !== this) return
-        delaySlotClick(guiInventorySlots?.get(packet.slotId - 37) ?: return, packet.usedButton)
+        delaySlotClick(guiInventorySlots?.getOrNull(packet.slotId) ?: return, packet.usedButton)
         event.isCanceled = true
     }
 
@@ -81,8 +84,8 @@ open class TermSimGui(val name: String, val size: Int, private val inv: Inventor
         event.isCanceled = true
     }
 
-    fun delaySlotClick(slot: Slot, button: Int) {
-        if (OdinMain.mc.currentScreen == StartGui) return slotClick(slot, button)
+    private fun delaySlotClick(slot: Slot, button: Int) {
+        if (OdinMain.mc.currentScreen == StartGUI) return slotClick(slot, button)
         if (!doesAcceptClick || slot.inventory != inv || (slot.stack?.item == pane && slot.stack?.metadata == 15)) return
         doesAcceptClick = false
         runIn((ping / 50).toInt()) {

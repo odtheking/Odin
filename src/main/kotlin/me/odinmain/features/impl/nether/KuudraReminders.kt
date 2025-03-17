@@ -8,7 +8,6 @@ import me.odinmain.utils.isOtherPlayer
 import me.odinmain.utils.skyblock.KuudraUtils
 import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.partyMessage
-import net.minecraftforge.event.world.NoteBlockEvent.Play
 
 object KuudraReminders : Module(
     name = "Kuudra Reminders",
@@ -28,10 +27,10 @@ object KuudraReminders : Module(
     private data class Reminder(val regex: Regex, val shouldRun: Boolean, val alert: String)
     private val reminders = listOf(
         Reminder(Regex("WARNING: You do not have a key for this tier in your inventory, you will not be able to claim rewards."), keyReminder, "No key in inventory"),
-        Reminder(Regex("Your Fresh Tools Perk bonus doubles your building speed for the next 10 seconds!"), freshTools, "No key in inventory"),
-        Reminder(Regex("\\[NPC] Elle: It's time to build the Ballista again! Cover me!"), buildBallista, "No key in inventory"),
-        Reminder(Regex("\\[NPC] Elle: Okay adventurers, I will go and fish up Kuudra!"), buyUpgrades, "No key in inventory"),
-        Reminder(Regex("\\[NPC] Elle: Not again!"), pickUpSupplies, "No key in inventory")
+        Reminder(Regex("Your Fresh Tools Perk bonus doubles your building speed for the next 10 seconds!"), freshTools, "Fresh Tools"),
+        Reminder(Regex("\\[NPC] Elle: It's time to build the Ballista again! Cover me!"), buildBallista, "Build Ballista"),
+        Reminder(Regex("\\[NPC] Elle: Okay adventurers, I will go and fish up Kuudra!"), buyUpgrades, "Buy Upgrades"),
+        Reminder(Regex("\\[NPC] Elle: Not again!"), pickUpSupplies, "Pick up supplies")
     )
 
     init {

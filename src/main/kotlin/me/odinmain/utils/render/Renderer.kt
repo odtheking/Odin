@@ -3,14 +3,18 @@ package me.odinmain.utils.render
 import me.odinmain.OdinMain.mc
 import me.odinmain.ui.clickgui.util.ColorUtil.multiplyAlpha
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
-import me.odinmain.utils.*
+import me.odinmain.utils.addVec
+import me.odinmain.utils.fastEyeHeight
 import me.odinmain.utils.render.RenderUtils.drawBeaconBeam
 import me.odinmain.utils.render.RenderUtils.outlineBounds
 import me.odinmain.utils.render.RenderUtils.renderVec
 import me.odinmain.utils.skyblock.getBlockAt
+import me.odinmain.utils.toAABB
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.entity.Entity
-import net.minecraft.util.*
+import net.minecraft.util.AxisAlignedBB
+import net.minecraft.util.BlockPos
+import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -20,7 +24,7 @@ import kotlin.math.min
 
 object Renderer {
 
-    const val DEFAULT_STYLE = "Filled"
+    const val DEFAULT_STYLE = "Outline"
     val styles = arrayListOf("Filled", "Outline", "Filled Outline")
     const val STYLE_DESCRIPTION = "How the box should be rendered."
 

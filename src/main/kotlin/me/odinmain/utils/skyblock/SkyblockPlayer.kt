@@ -26,7 +26,7 @@ object SkyblockPlayer {
     private val OVERFLOW_MANA_REGEX = Regex("([\\d|,]+)ʬ")
     private val DEFENSE_REGEX = Regex("([\\d|,]+)❈ Defense")
 
-    val currentHealth: Int get() = (mc.thePlayer?.let { player -> (maxHealth * player.health / player.maxHealth).toInt() } ?: 0)
+    inline val currentHealth: Int get() = (mc.thePlayer?.let { player -> (maxHealth * player.health / player.maxHealth).toInt() } ?: 0)
     var maxHealth: Int = 0
     var currentMana: Int = 0
     var maxMana: Int = 0

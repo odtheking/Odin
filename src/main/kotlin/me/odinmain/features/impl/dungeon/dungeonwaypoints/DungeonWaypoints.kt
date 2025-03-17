@@ -6,7 +6,6 @@ import me.odinmain.events.impl.RoomEnterEvent
 import me.odinmain.events.impl.SecretPickupEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.WaypointType.entries
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.SecretWaypoints.onEtherwarp
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.SecretWaypoints.onLocked
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.SecretWaypoints.onPosUpdate
@@ -57,7 +56,8 @@ object DungeonWaypoints : Module(
     private var reachColor by ColorSetting("Reach Color", Color(0, 255, 213, 0.43f), description = "Color of the reach box highlight.", allowAlpha = true).withDependency { allowEdits }
     private val allowTextEdit by BooleanSetting("Allow Text Edit", true, description = "Allows you to set the text of a waypoint while sneaking.")
 
-    private val renderTitle by BooleanSetting("Render Title", true, description = "Renders the title of the waypoint.")
+    private val renderTitle by BooleanSetting("Render Title", true, description = "Renders the titles of waypoints")
+    private val titleScale by NumberSetting("Title Scale", 1f, 0.1f, 4f, increment = 0.1f, description = "The scale of the titles of waypoints.").withDependency { renderTitle }
     private val disableDepth by BooleanSetting("Global Depth", false, description = "Disables depth testing for all waypoints.")
 
     private val settingsDropDown by DropdownSetting("Next Waypoint Settings")
@@ -83,7 +83,7 @@ object DungeonWaypoints : Module(
     }
     private val debugWaypoint by BooleanSetting("Debug Waypoint", false, description = "Shows a waypoint in the middle of every extra room.").withDependency { DevPlayers.isDev }
 
-    private val selectedColor get() = when (colorPallet) {
+    private inline val selectedColor get() = when (colorPallet) {
         0 -> color
         1 -> Color.CYAN
         2 -> Color.MAGENTA
@@ -99,7 +99,7 @@ object DungeonWaypoints : Module(
     enum class WaypointType {
         NONE, NORMAL, SECRET, ETHERWARP, MOVE, BLOCKETHERWARP
         ;
-        val displayName get() = name.lowercase().capitalizeFirst()
+        inline val displayName get() = name.lowercase().capitalizeFirst()
         companion object {
             fun getArrayList() = ArrayList(entries.map { it.displayName })
             fun getByInt(i: Int) = entries.getOrNull(i).takeIf { it != NONE }
@@ -112,14 +112,12 @@ object DungeonWaypoints : Module(
     enum class TimerType {
         NONE, START, CHECKPOINT, END,
         ;
-        val displayName get() = name.lowercase().capitalizeFirst()
+        inline val displayName get() = name.lowercase().capitalizeFirst()
         companion object{
             fun getType() = if (waypointType.equalsOneOf(0, 1, 5)) null else getByInt(timerSetting)
             fun getArrayList() = ArrayList(TimerType.entries.map { it.displayName })
             fun getByInt(i: Int) = TimerType.entries.getOrNull(i).takeIf { it != NONE }
-            fun getByName(name: String): TimerType? {
-                return TimerType.entries.find { it.name == name.uppercase() }
-            }
+            fun getByName(name: String): TimerType? = TimerType.entries.find { it.name == name.uppercase() }
         }
     }
 
@@ -130,7 +128,7 @@ object DungeonWaypoints : Module(
         var type: WaypointType? = null, val timer: TimerType? = null,
         @Transient var clicked: Boolean = false,
     ) {
-        var secret: Boolean
+        inline var secret: Boolean
             get() = type == WaypointType.SECRET
             set(value) {
                 type = if (value) WaypointType.SECRET else null
@@ -149,15 +147,15 @@ object DungeonWaypoints : Module(
             onLocked()
         }
 
-        onPacket(S08PacketPlayerPosLook::class.java) {
+        onPacket<S08PacketPlayerPosLook> {
             onEtherwarp(it)
         }
 
-        onPacket(C04PacketPlayerPosition::class.java) {
+        onPacket<C04PacketPlayerPosition> {
             onPosUpdate(Vec3(it.positionX, it.positionY, it.positionZ))
         }
 
-        onPacket(C06PacketPlayerPosLook::class.java) {
+        onPacket<C06PacketPlayerPosLook> {
             onPosUpdate(Vec3(it.positionX, it.positionY, it.positionZ))
         }
     }
@@ -176,14 +174,14 @@ object DungeonWaypoints : Module(
 
     @SubscribeEvent
     fun onRender(event: RenderWorldLastEvent) {
-        if ((DungeonUtils.inBoss || !DungeonUtils.inDungeons) && !LocationUtils.currentArea.isArea(Island.SinglePlayer)) return
+        if (DungeonUtils.inBoss || !DungeonUtils.inDungeons) return
         val room = DungeonUtils.currentRoom ?: return
         startProfile("Dungeon Waypoints")
         glList = RenderUtils.drawBoxes(room.waypoints, glList, disableDepth)
         if (renderTitle) {
             for (waypoint in room.waypoints) {
                 if (waypoint.clicked) continue
-                Renderer.drawStringInWorld(waypoint.title ?: continue, Vec3(waypoint.x + 0.5, waypoint.y + 0.5, waypoint.z + 0.5), depth = waypoint.depth)
+                Renderer.drawStringInWorld(waypoint.title ?: continue, Vec3(waypoint.x + 0.5, waypoint.y + 0.5 + getMCTextHeight() * 0.015 * titleScale, waypoint.z + 0.5), depth = waypoint.depth, scale = 0.03f * titleScale)
             }
         }
 

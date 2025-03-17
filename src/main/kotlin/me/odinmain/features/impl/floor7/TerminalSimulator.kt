@@ -4,7 +4,6 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.p3.TerminalTypes
 import me.odinmain.features.impl.floor7.p3.termsim.*
-import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.skyblock.PersonalBest
 import me.odinmain.utils.skyblock.sendCommand
@@ -30,12 +29,12 @@ object TerminalSimulator : Module(
 
     fun openRandomTerminal(ping: Long = 0L) {
         when (listOf(TerminalTypes.PANES, TerminalTypes.RUBIX, TerminalTypes.ORDER, TerminalTypes.STARTS_WITH, TerminalTypes.SELECT).random()) {
-            TerminalTypes.STARTS_WITH -> StartsWith().open(ping)
-            TerminalTypes.PANES       -> CorrectPanes.open(ping)
-            TerminalTypes.SELECT      -> SelectAll().open(ping)
-            TerminalTypes.ORDER       -> InOrder.open(ping)
-            TerminalTypes.MELODY      -> Melody.open(ping)
-            TerminalTypes.RUBIX       -> Rubix.open(ping)
+            TerminalTypes.STARTS_WITH -> StartsWithSim().open(ping)
+            TerminalTypes.PANES       -> CorrectPanesSim.open(ping)
+            TerminalTypes.SELECT      -> SelectAllSim().open(ping)
+            TerminalTypes.ORDER       -> ClickInOrderSim.open(ping)
+            TerminalTypes.MELODY      -> MelodySim.open(ping)
+            TerminalTypes.RUBIX       -> RubixSim.open(ping)
             TerminalTypes.NONE        -> {}
         }
     }

@@ -7,12 +7,17 @@ import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.p3.ArrowAlign.clicksRemaining
 import me.odinmain.features.impl.floor7.p3.ArrowAlign.currentFrameRotations
 import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.*
+import me.odinmain.features.settings.impl.BooleanSetting
+import me.odinmain.features.settings.impl.DropdownSetting
+import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.*
 import me.odinmain.utils.clock.Clock
-import me.odinmain.utils.skyblock.*
+import me.odinmain.utils.skyblock.Island
+import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.M7Phases
+import me.odinmain.utils.skyblock.skyblockID
+import me.odinmain.utils.skyblock.unformattedName
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.entity.item.EntityEnderCrystal
@@ -27,7 +32,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 
 object Triggerbot : Module(
     name = "Triggerbot",
-    description = "Various Triggerbots. (Blood, Spirit Bear, Crystal Triggerbot, Secret Triggerbot, Relic Triggerbot)",
+    description = "Provides triggerbots for Blood, Spirit Bear, Crystal Triggerbot, Secret Triggerbot, Relic Triggerbot.",
     category = Category.DUNGEON
 ) {
     private val bloodDropDown by DropdownSetting("Blood Dropdown", false)
@@ -142,15 +147,15 @@ object Triggerbot : Module(
             }
         }
     }
-    val frameGridCorner = Vec3(-2.0, 120.0, 75.0)
+    private val frameGridCorner = Vec3(-2.0, 120.0, 75.0)
 
     private fun arrowAlignTriggerbot() {
         if ((sneakToDisableTriggerbot && mc.thePlayer.isSneaking) || clicksRemaining.isEmpty()) return
         val targetFrame = mc.objectMouseOver?.entityHit as? EntityItemFrame ?: return
 
-        val targetFramePosition = targetFrame.positionVector.flooredVec()
-        val frameIndex = ((targetFramePosition.yCoord - frameGridCorner.yCoord) + (targetFramePosition.zCoord - frameGridCorner.zCoord) * 5).toInt()
-        if (targetFramePosition.xCoord != frameGridCorner.xCoord || currentFrameRotations?.get(frameIndex) == -1 || frameIndex !in 0..24) return
+        val (x, y, z) = targetFrame.positionVector.floorVec()
+        val frameIndex = ((y - frameGridCorner.yCoord) + (z - frameGridCorner.zCoord) * 5).toInt()
+        if (x != frameGridCorner.xCoord || currentFrameRotations?.get(frameIndex) == -1 || frameIndex !in 0..24) return
         clicksRemaining[frameIndex]?.let {
             PlayerUtils.rightClick()
             triggerBotClock.update()

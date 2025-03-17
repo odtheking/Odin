@@ -1,17 +1,19 @@
 package me.odinmain.commands.impl
 
+import com.github.stivais.commodore.Commodore
 import com.github.stivais.commodore.utils.GreedyString
-import me.odinmain.OdinMain.mc
-import me.odinmain.commands.commodore
 import me.odinmain.config.Config
 import me.odinmain.features.impl.dungeon.PosMessages
 import me.odinmain.features.impl.dungeon.PosMessages.findParser
 import me.odinmain.features.impl.dungeon.PosMessages.parsedStrings
 import me.odinmain.features.impl.dungeon.PosMessages.posMessageStrings
 import me.odinmain.utils.round
+import me.odinmain.utils.skyblock.PlayerUtils.posX
+import me.odinmain.utils.skyblock.PlayerUtils.posY
+import me.odinmain.utils.skyblock.PlayerUtils.posZ
 import me.odinmain.utils.skyblock.modMessage
 
-val PosMsgCommand = commodore("posmsg") {
+val PosMsgCommand = Commodore("posmsg") {
     literal("add") {
         literal("at").runs { x: Double, y: Double, z: Double, delay: Long, distance: Double, message: GreedyString ->
             val saveData = "x: ${x}, y: ${y}, z: ${z}, delay: ${delay}, distance: ${distance}, message: \"${message}\""
@@ -30,9 +32,9 @@ val PosMsgCommand = commodore("posmsg") {
             Config.save()
         }
         literal("atself").runs { delay: Long, distance: Double, message: GreedyString ->
-            val x = mc.thePlayer.posX.round(2).toDouble()
-            val y = mc.thePlayer.posY.round(2).toDouble()
-            val z = mc.thePlayer.posZ.round(2).toDouble()
+            val x = posX.round(2).toDouble()
+            val y = posY.round(2).toDouble()
+            val z = posZ.round(2).toDouble()
             val saveData = "x: ${x}, y: ${y}, z: ${z}, delay: ${delay}, distance: ${distance}, message: \"${message}\""
             if (posMessageStrings.contains(saveData)) return@runs modMessage("This message already exists!")
             modMessage("Message \"${message}\" added at ${x}, ${y}, ${z}, with ${delay}ms delay, triggered up to $distance blocks away.")

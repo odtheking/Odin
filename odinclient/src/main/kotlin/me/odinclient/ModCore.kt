@@ -10,7 +10,7 @@ import me.odinclient.features.impl.floor7.p3.*
 import me.odinclient.features.impl.render.*
 import me.odinclient.features.impl.skyblock.*
 import me.odinmain.OdinMain
-import me.odinmain.commands.registerCommands
+import me.odinmain.commands.CommandRegistry
 import me.odinmain.features.ModuleManager
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.Mod
@@ -31,13 +31,13 @@ class ModCore {
 
     @EventHandler
     fun init(event: FMLInitializationEvent) {
-        OdinMain.init()
-        MinecraftForge.EVENT_BUS.register(this)
-
-        registerCommands(
+        CommandRegistry.add(
             autoSellCommand,
             OdinClientCommand
         )
+
+        OdinMain.init()
+        MinecraftForge.EVENT_BUS.register(this)
     }
 
     @EventHandler

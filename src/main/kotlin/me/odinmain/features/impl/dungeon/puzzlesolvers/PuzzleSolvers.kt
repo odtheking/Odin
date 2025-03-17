@@ -2,6 +2,7 @@ package me.odinmain.features.impl.dungeon.puzzlesolvers
 
 import me.odinmain.events.impl.BlockChangeEvent
 import me.odinmain.events.impl.RoomEnterEvent
+import me.odinmain.events.impl.ServerTickEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.dungeon.puzzlesolvers.WaterSolver.waterInteract
@@ -12,8 +13,6 @@ import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.profile
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
-import me.odinmain.utils.skyblock.Island
-import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.PersonalBest
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.getRealCoords
@@ -31,11 +30,12 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 object PuzzleSolvers : Module(
     name = "Puzzle Solvers",
     category = Category.DUNGEON,
-    description = "Displays solutions for dungeon puzzles.",
+    description = "Displays solutions for Water Board, TP Maze, Ice Fill, Blaze, Creeper Beams, Three Weirdos, Quiz and Boulder dungeon puzzles.",
     key = null
 ) {
     private val waterDropDown by DropdownSetting("Water Board")
     private val waterSolver by BooleanSetting("Water Board Solver", false, description = "Shows you the solution to the water puzzle.").withDependency { waterDropDown }
+    private val optimizedSolutions by BooleanSetting("Optimized Solutions", false, description = "Use optimized solutions for the water puzzle.").withDependency { waterSolver && waterDropDown }
     private val showTracer by BooleanSetting("Show Tracer", true, description = "Shows a tracer to the next lever.").withDependency { waterSolver && waterDropDown }
     private val tracerColorFirst by ColorSetting("Tracer Color First", Color.GREEN, true, description = "Color for the first tracer.").withDependency { showTracer && waterDropDown }
     private val tracerColorSecond by ColorSetting("Tracer Color Second", Color.ORANGE, true, description = "Color for the second tracer.").withDependency { showTracer && waterDropDown }
@@ -117,18 +117,18 @@ object PuzzleSolvers : Module(
 
     init {
         execute(500) {
-            if ((!inDungeons || inBoss) && !LocationUtils.currentArea.isArea(Island.SinglePlayer)) return@execute
+            if (!inDungeons || inBoss) return@execute
             if (blazeSolver) BlazeSolver.getBlaze()
-            if (waterSolver) WaterSolver.scan()
+            if (waterSolver) WaterSolver.scan(optimizedSolutions)
         }
 
-        onPacket(S08PacketPlayerPosLook::class.java) {
-            if ((!inDungeons || inBoss) && !LocationUtils.currentArea.isArea(Island.SinglePlayer)) return@onPacket
+        onPacket<S08PacketPlayerPosLook> {
+            if (!inDungeons || inBoss) return@onPacket
             if (tpMaze) TPMazeSolver.tpPacket(it)
         }
 
-        onPacket(C08PacketPlayerBlockPlacement::class.java) {
-            if ((!inDungeons || inBoss) && !LocationUtils.currentArea.isArea(Island.SinglePlayer)) return@onPacket
+        onPacket<C08PacketPlayerBlockPlacement> {
+            if (!inDungeons || inBoss) return@onPacket
             if (waterSolver) waterInteract(it)
             if (boulderSolver) BoulderSolver.playerInteract(it)
         }
@@ -142,9 +142,8 @@ object PuzzleSolvers : Module(
             QuizSolver.onMessage(it)
         }
 
-        onPacket(S24PacketBlockAction::class.java) { packet ->
-            if ((!inDungeons || inBoss) && !LocationUtils.currentArea.isArea(Island.SinglePlayer) || packet.blockType !is BlockChest) return@onPacket
-            if (packet.blockType !is BlockChest) return@onPacket
+        onPacket<S24PacketBlockAction> { packet ->
+            if (!inDungeons || inBoss || packet.blockType !is BlockChest) return@onPacket
             val room = DungeonUtils.currentRoom?.takeIf { room -> room.data.type == RoomType.PUZZLE } ?: return@onPacket
 
             when (room.data.name) {
@@ -173,7 +172,7 @@ object PuzzleSolvers : Module(
 
     @SubscribeEvent
     fun onWorldRender(event: RenderWorldLastEvent) {
-        if ((!inDungeons || inBoss) && !LocationUtils.currentArea.isArea(Island.SinglePlayer)) return
+        if (!inDungeons || inBoss) return
         profile("Puzzle Solvers Render") {
             if (iceFillSolver) IceFillSolver.onRenderWorld(iceFillColor)
             if (weirdosSolver) WeirdosSolver.onRenderWorld(weirdosColor, weirdosWrongColor, weirdosStyle)
@@ -200,8 +199,14 @@ object PuzzleSolvers : Module(
 
     @SubscribeEvent
     fun blockUpdateEvent(event: BlockChangeEvent) {
-        if ((!inDungeons || inBoss) && !LocationUtils.currentArea.isArea(Island.SinglePlayer)) return
+        if (!inDungeons || inBoss) return
         if (beamsSolver) BeamsSolver.onBlockChange(event)
+    }
+
+    @SubscribeEvent
+    fun onServerTick(event: ServerTickEvent) {
+        if (!inDungeons || inBoss) return
+        if (waterSolver) WaterSolver.onServerTick()
     }
 
     fun onPuzzleComplete(puzzleName: String) {

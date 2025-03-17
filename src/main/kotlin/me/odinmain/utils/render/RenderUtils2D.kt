@@ -2,8 +2,7 @@ package me.odinmain.utils.render
 
 import me.odinmain.OdinMain.mc
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
-import me.odinmain.utils.addVec
-import me.odinmain.utils.corners
+import me.odinmain.utils.*
 import me.odinmain.utils.render.RenderUtils.bind
 import me.odinmain.utils.render.RenderUtils.renderVec
 import me.odinmain.utils.render.RenderUtils.tessellator
@@ -33,9 +32,9 @@ object RenderUtils2D {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     fun onRenderWorld(event: RenderWorldLastEvent) {
+        val (x, y, z) = mc.thePlayer?.renderVec ?: return
         GlStateManager.pushMatrix()
-        val renderPos = mc.thePlayer?.renderVec ?: return GlStateManager.popMatrix()
-        GlStateManager.translate(-renderPos.xCoord, -renderPos.yCoord, -renderPos.zCoord)
+        GlStateManager.translate(-x, -y, -z)
 
         GL11.glGetFloat(GL11.GL_MODELVIEW_MATRIX, modelViewMatrix)
         GL11.glGetFloat(GL11.GL_PROJECTION_MATRIX, projectionMatrix)

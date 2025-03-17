@@ -11,8 +11,10 @@ import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.skyblock.ClickType
 import me.odinmain.utils.skyblock.PlayerUtils.windowClick
 import me.odinmain.utils.skyblock.devMessage
+import net.minecraft.network.play.server.S2DPacketOpenWindow
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import java.util.*
 
 object QueueTerms : Module(
     name = "Queue Terms",
@@ -21,53 +23,45 @@ object QueueTerms : Module(
     tag = TagType.RISKY
 ) {
     private val dispatchDelay by NumberSetting("Dispatch Delay", 140L, 140L, 300L, unit = "ms", description = "The delay between each click.")
-    private data class Click(val slot: Int, val mode: Int, val button: Int)
-    private val previouslyClicked = mutableSetOf<Int>()
-    private val queue = mutableListOf<Click>()
+    private data class Click(val slot: Int, val button: Int)
+    private val queue: Queue<Click> = LinkedList()
     private var clickedThisWindow = false
     private var lastClickTime = 0L
 
-    @SubscribeEvent
-    fun onGuiOpen(event: GuiEvent.Loaded) {
-        clickedThisWindow = false
+    init {
+        onPacket<S2DPacketOpenWindow> {
+            clickedThisWindow = false
+        }
     }
 
     @SubscribeEvent
     fun onTerminalLeft(event: TerminalEvent.Closed) {
         clickedThisWindow = false
-        previouslyClicked.clear()
         queue.clear()
     }
 
     @SubscribeEvent
     fun onTick(event: TickEvent.ClientTickEvent) {
-        if (TerminalSolver.currentTerm.type.equalsOneOf(TerminalTypes.NONE, TerminalTypes.MELODY) || TerminalSolver.renderType != 3) return
         if (
+            TerminalSolver.currentTerm.type.equalsOneOf(TerminalTypes.NONE, TerminalTypes.MELODY) ||
+            TerminalSolver.renderType != 3 ||
             event.phase != TickEvent.Phase.START ||
             System.currentTimeMillis() - lastClickTime < dispatchDelay ||
             queue.isEmpty() ||
             clickedThisWindow
         ) return
-        val click = queue.removeFirst()
+        val click = queue.poll()?.takeIf { TerminalSolver.canClick(it.slot, it.button) } ?: return
         clickedThisWindow = true
-        windowClick(slotId = click.slot, if (click.mode == 0) ClickType.Middle else ClickType.Right)
+        windowClick(click.slot, if (click.button == 1) ClickType.Right else ClickType.Middle)
+        devMessage("Dispatched click on slot ${click.slot}")
         lastClickTime = System.currentTimeMillis()
     }
 
     @SubscribeEvent
     fun onCustomTermClick(event: GuiEvent.CustomTermGuiClick) {
-        if (TerminalSolver.currentTerm.type == TerminalTypes.NONE || TerminalSolver.renderType != 3) return
+        if (TerminalSolver.currentTerm.type.equalsOneOf(TerminalTypes.NONE, TerminalTypes.MELODY) || TerminalSolver.renderType != 3) return
+        queue.takeIf { it.count { click -> click.slot == event.slot } < 2 }?.offer(Click(slot = event.slot, button = event.button))
+        devMessage("Queued click on slot ${event.slot}")
         event.isCanceled = true
-        handleWindowClick(event.slot, event.mode, event.button)
-    }
-
-    private fun handleWindowClick(slot: Int, mode: Int, button: Int) {
-        if ((TerminalSolver.currentTerm.type == TerminalTypes.ORDER && slot != TerminalSolver.currentTerm.solution.first()) || TerminalSolver.renderType != 3) return
-        if (slot in previouslyClicked) return
-        if (TerminalSolver.currentTerm.type == TerminalTypes.RUBIX) {
-            if (TerminalSolver.currentTerm.solution.count { it == slot }.equalsOneOf(1, 4)) previouslyClicked += slot
-        } else previouslyClicked += slot
-        queue.takeIf { it.count { click -> click.slot == slot } < 2 }?.add(Click(slot = slot, mode = mode, button = button))
-        devMessage("Queued click on slot $slot")
     }
 }

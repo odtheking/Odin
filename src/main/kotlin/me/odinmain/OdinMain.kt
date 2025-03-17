@@ -1,8 +1,7 @@
 package me.odinmain
 
 import kotlinx.coroutines.*
-import me.odinmain.commands.impl.*
-import me.odinmain.commands.registerCommands
+import me.odinmain.commands.CommandRegistry
 import me.odinmain.config.Config
 import me.odinmain.config.DungeonWaypointConfig
 import me.odinmain.config.PBConfig
@@ -45,7 +44,7 @@ object OdinMain {
     val logger: Logger = LogManager.getLogger("Odin")
 
     var display: GuiScreen? = null
-    val isLegitVersion: Boolean
+    inline val isLegitVersion: Boolean
         get() = Loader.instance().activeModList.none { it.modId == "odclient" }
 
     fun init() {
@@ -60,13 +59,7 @@ object OdinMain {
             this
         ).forEach { MinecraftForge.EVENT_BUS.register(it) }
 
-        registerCommands(
-            mainCommand, soopyCommand,
-            termSimCommand, chatCommandsCommand,
-            devCommand, highlightCommand,
-            waypointCommand, dungeonWaypointsCommand,
-            petCommand, visualWordsCommand, PosMsgCommand
-        )
+        CommandRegistry.register()
         OdinFont.init()
         scope.launch(Dispatchers.IO) { DevPlayers.preloadCapes() }
     }

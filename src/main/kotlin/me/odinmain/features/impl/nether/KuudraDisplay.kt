@@ -24,7 +24,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 
 object KuudraDisplay : Module(
     name = "Kuudra Display",
-    description = "Displays information about Kuudra.",
+    description = "Displays information about Kuudra entity itself.",
     category = Category.NETHER
 ) {
     private val highlightKuudra by BooleanSetting("Highlight Kuudra", true, description = "Highlights the kuudra entity.")
@@ -37,7 +37,7 @@ object KuudraDisplay : Module(
     private val scaledHealth by BooleanSetting("Use Scaled", true, description = "Use scaled health display.").withDependency { kuudraHPDisplay }
     private val hud by HudSetting("Health Display", 10f, 10f, 1f, true) {
         if (it) {
-            mcText("§a99.975M/300M", 1f, 1f, 1, Color.WHITE, center = false)
+            mcText("§a99.975M/240M", 1f, 1f, 1, Color.WHITE, center = false)
             getMCTextWidth("99.975k/100k") + 2f to 10f
         } else {
             if (!KuudraUtils.inKuudra) return@HudSetting 0f to 0f
@@ -91,7 +91,7 @@ object KuudraDisplay : Module(
 
         return when {
             // Scaled
-            kuudraHP <= 25000 && scaledHealth && LocationUtils.kuudraTier == 5 -> "$color${(health * 12).round(2)}M§7/§a240M §c❤"
+            kuudraHP <= 25000 && scaledHealth && LocationUtils.kuudraTier == 5 -> "$color${(health * 9.6).round(2)}M§7/§a240M §c❤"
             // Percentage
             healthFormat -> "$color${health}§a% §c❤"
             // Exact

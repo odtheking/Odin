@@ -12,6 +12,8 @@ import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.postAndCatch
 import me.odinmain.utils.skyblock.Island
 import me.odinmain.utils.skyblock.LocationUtils
+import me.odinmain.utils.skyblock.PlayerUtils.posX
+import me.odinmain.utils.skyblock.PlayerUtils.posZ
 import me.odinmain.utils.skyblock.devMessage
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.inBoss
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.inDungeons
@@ -68,13 +70,12 @@ object ScanUtils {
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
         if (event.phase != TickEvent.Phase.END || mc.theWorld == null || mc.thePlayer == null) return
-
         if ((!inDungeons && !LocationUtils.currentArea.isArea(Island.SinglePlayer)) || inBoss) {
             currentRoom?.let { RoomEnterEvent(null).postAndCatch() }
             return
         } // We want the current room to register as null if we are not in a dungeon
 
-        val roomCenter = getRoomCenter(mc.thePlayer.posX.toInt(), mc.thePlayer.posZ.toInt())
+        val roomCenter = getRoomCenter(posX.toInt(), posZ.toInt())
         if (roomCenter == lastRoomPos && LocationUtils.currentArea.isArea(Island.SinglePlayer)) return // extra SinglePlayer caching for invalid placed rooms
         lastRoomPos = roomCenter
 
@@ -83,7 +84,7 @@ object ScanUtils {
             return
         } // We want to use cached rooms instead of scanning it again if we have already passed through it and if we are already in it we don't want to trigger the event
 
-        scanRoom(roomCenter)?.let { room -> if (room.rotation != Rotations.NONE) RoomEnterEvent(room).postAndCatch() }
+        scanRoom(roomCenter)?.let { room -> if (room.rotation != Rotations.NONE) RoomEnterEvent(room).postAndCatch() } ?: devMessage("${getCore(roomCenter)} at $roomCenter is not a registered room core (last registered visited room is ${currentRoom?.data?.name})")
     }
 
     private fun updateRotation(room: Room) {

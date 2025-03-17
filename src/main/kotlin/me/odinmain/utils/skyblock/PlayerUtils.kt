@@ -1,15 +1,13 @@
 package me.odinmain.utils.skyblock
 
-import me.odinmain.OdinMain.logger
 import me.odinmain.OdinMain.mc
-import me.odinmain.features.impl.floor7.p3.termsim.TermSimGui
-import me.odinmain.utils.clock.Executor
-import me.odinmain.utils.clock.Executor.Companion.register
+import me.odinmain.events.impl.PacketEvent
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.network.play.client.C0EPacketClickWindow
 import net.minecraft.util.Vec3
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object PlayerUtils {
     var shouldBypassVolume = false
@@ -26,7 +24,7 @@ object PlayerUtils {
     fun playLoudSound(sound: String?, volume: Float, pitch: Float, pos: Vec3? = null) {
         mc.addScheduledTask {
             shouldBypassVolume = true
-            mc.theWorld?.playSound(pos?.xCoord ?: mc.thePlayer.posX, pos?.yCoord ?: mc.thePlayer.posY, pos?.zCoord  ?: mc.thePlayer.posZ, sound, volume, pitch, false)
+            mc.theWorld?.playSound(pos?.xCoord ?: posX, pos?.yCoord ?: posY, pos?.zCoord  ?: posZ, sound, volume, pitch, false)
             shouldBypassVolume = false
         }
     }
@@ -50,65 +48,28 @@ object PlayerUtils {
 
     fun getPositionString() = "x: ${posX.toInt()}, y: ${posY.toInt()}, z: ${posZ.toInt()}"
 
-    private data class WindowClick(val slotId: Int, val button: Int, val mode: Int)
+    private var lastClickSent = 0L
 
-    private val windowClickQueue = mutableListOf<WindowClick>()
-
-    init {
-        // Used to clear the click queue every 500ms, to make sure it isn't getting filled up.
-        Executor(delay = 500, "Click Dispatcher") { windowClickQueue.clear() }.register()
+    @SubscribeEvent
+    fun onPacketSend(event: PacketEvent.Send) {
+        if (event.packet !is C0EPacketClickWindow) return
+        lastClickSent = System.currentTimeMillis()
     }
 
-    /*
-     * Wrapper for windowClick which handles click spamming. Use instant for player action click redirect.
-     */
-    fun windowClick(slotId: Int, button: Int, mode: Int, instant: Boolean = false) {
-        if (mc.currentScreen is TermSimGui) {
-            val gui = mc.currentScreen as TermSimGui
-            gui.delaySlotClick(gui.inventorySlots.getSlot(slotId), button)
-        } else if (instant) sendWindowClickPacket(slotId, button, mode)
-        else windowClickQueue.add(WindowClick(slotId, button, mode))
-    }
-
-    @JvmStatic
-    fun handleWindowClickQueue() {
-        if (mc.thePlayer?.openContainer == null) return windowClickQueue.clear()
-        if (windowClickQueue.isEmpty()) return
-        windowClickQueue.first().apply {
-            try {
-                sendWindowClick(slotId, button, mode)
-            } catch (e: Exception) {
-                println("Error sending window click: $this")
-                logger.error(e)
-                windowClickQueue.clear()
-            }
-        }
-        windowClickQueue.removeFirstOrNull()
-    }
-
-    private fun sendWindowClick(slotId: Int, button: Int, mode: Int) {
+    fun windowClick(slotId: Int, button: Int, mode: Int) {
+        if (lastClickSent + 45 > System.currentTimeMillis()) return devMessage("§cIgnoring click on slot §9$slotId.")
         mc.thePlayer?.openContainer?.let {
-            if (it !is ContainerChest) return
-            if (slotId !in 0 until it.inventorySlots.size) return
-
-            mc.playerController?.windowClick(it.windowId, slotId, button, mode, mc.thePlayer)
-        }
-    }
-
-    private fun sendWindowClickPacket(slotId: Int, button: Int, mode: Int) {
-        mc.thePlayer?.openContainer?.let {
-            if (it !is ContainerChest) return
-            if (slotId !in 0 until it.inventorySlots.size) return
+            if (it !is ContainerChest || slotId !in 0 until it.inventorySlots.size) return
             mc.netHandler?.networkManager?.sendPacket(C0EPacketClickWindow(it.windowId, slotId, button, mode, it.inventory[slotId], it.getNextTransactionID(mc.thePlayer?.inventory)))
         }
     }
 
-    fun windowClick(slotId: Int, clickType: ClickType, instant: Boolean = false) {
+    fun windowClick(slotId: Int, clickType: ClickType) {
         when (clickType) {
-            is ClickType.Left -> windowClick(slotId, 0, 0, instant)
-            is ClickType.Right -> windowClick(slotId, 1, 0, instant)
-            is ClickType.Middle -> windowClick(slotId, 2, 3, instant)
-            is ClickType.Shift -> windowClick(slotId, 0, 1, instant)
+            is ClickType.Left -> windowClick(slotId, 0, 0)
+            is ClickType.Right -> windowClick(slotId, 1, 0)
+            is ClickType.Middle -> windowClick(slotId, 2, 3)
+            is ClickType.Shift -> windowClick(slotId, 0, 1)
         }
     }
 }

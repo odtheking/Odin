@@ -25,7 +25,10 @@ import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL13
 import org.lwjgl.util.glu.Cylinder
 import java.awt.image.BufferedImage
-import kotlin.math.*
+import kotlin.math.cos
+import kotlin.math.floor
+import kotlin.math.roundToInt
+import kotlin.math.sin
 
 object RenderUtils {
 
@@ -40,7 +43,7 @@ object RenderUtils {
      * @receiver The entity for which to retrieve the rendered x-coordinate.
      * @return The rendered x-coordinate.
      */
-    val Entity.renderX: Double
+    inline val Entity.renderX: Double
         get() = prevPosX + (posX - prevPosX ) * partialTicks
 
     /**
@@ -49,7 +52,7 @@ object RenderUtils {
      * @receiver The entity for which to retrieve the rendered y-coordinate.
      * @return The rendered y-coordinate.
      */
-    val Entity.renderY: Double
+    inline val Entity.renderY: Double
         get() = prevPosY + (posY - prevPosY) * partialTicks
 
     /**
@@ -58,7 +61,7 @@ object RenderUtils {
      * @receiver The entity for which to retrieve the rendered z-coordinate.
      * @return The rendered z-coordinate.
      */
-    val Entity.renderZ: Double
+    inline val Entity.renderZ: Double
         get() = prevPosZ + (posZ - prevPosZ) * partialTicks
 
     /**
@@ -67,7 +70,7 @@ object RenderUtils {
      * @receiver The entity for which to retrieve the rendered position.
      * @return The rendered position as a `Vec3`.
      */
-    val Entity.renderVec: Vec3
+    inline val Entity.renderVec: Vec3
         get() = Vec3(renderX, renderY, renderZ)
 
     /**
@@ -76,7 +79,7 @@ object RenderUtils {
      * @receiver The entity for which to retrieve the rendered bounding box.
      * @return The rendered bounding box as an `AxisAlignedBB`.
      */
-    val Entity.renderBoundingBox: AxisAlignedBB
+    inline val Entity.renderBoundingBox: AxisAlignedBB
         get() = AxisAlignedBB(
             renderX - this.width / 2,
             renderY,

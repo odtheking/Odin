@@ -3,6 +3,9 @@ package me.odinclient.features.impl.floor7
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.NumberSetting
+import me.odinmain.utils.component1
+import me.odinmain.utils.component2
+import me.odinmain.utils.component3
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.M7Phases
 import net.minecraft.entity.Entity
@@ -23,13 +26,13 @@ object RelicAura : Module(
     @SubscribeEvent
     fun onTick(event: TickEvent.ClientTickEvent) {
         if (DungeonUtils.getF7Phase() != M7Phases.P5) return
-        val armorStands = mc.theWorld?.loadedEntityList?.firstOrNull {
+        val armorStand = mc.theWorld?.loadedEntityList?.firstOrNull {
             it is EntityArmorStand && it.inventory?.get(4)?.displayName?.contains("Relic") == true && mc.thePlayer.getDistanceToEntity(it) < distance } ?: return
-        interactWithEntity(armorStands)
+        interactWithEntity(armorStand)
     }
 
     private fun interactWithEntity(entity: Entity) {
-        val objectMouseOver = mc.objectMouseOver?.hitVec ?: return
-        mc.netHandler.addToSendQueue(C02PacketUseEntity(entity, Vec3(objectMouseOver.xCoord - entity.posX, objectMouseOver.yCoord - entity.posY, objectMouseOver.zCoord - entity.posZ)))
+        val (x, y, z) = mc.objectMouseOver?.hitVec ?: return
+        mc.netHandler.addToSendQueue(C02PacketUseEntity(entity, Vec3(x - entity.posX, y - entity.posY, z - entity.posZ)))
     }
 }

@@ -24,7 +24,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 
 object SpringBoots : Module(
     name = "Spring Boots",
-    description = "Shows how many blocks you can jump.",
+    description = "Shows the current jump height of your spring boots.",
     category = Category.DUNGEON
 ) {
     private val hud by HudSetting("Display", 10f, 10f, 1f, true) {
@@ -53,7 +53,7 @@ object SpringBoots : Module(
     private var blockPos: Vec3? = null
 
     init {
-        onPacket(S29PacketSoundEffect::class.java) {
+        onPacket<S29PacketSoundEffect> {
             if (!LocationUtils.isInSkyblock) return@onPacket
             when (it.soundName) {
                 "random.eat", "fireworks.launch" -> if (it.pitch.equalsOneOf(0.0952381f, 1.6984127f)) pitchCounts.fill(0)

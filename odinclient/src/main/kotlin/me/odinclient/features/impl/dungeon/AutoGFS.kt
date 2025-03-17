@@ -11,7 +11,7 @@ import me.odinmain.utils.skyblock.skyblockID
 
 object AutoGFS : Module(
     name = "Auto GFS",
-    description = "Automatically refills certain items from sack.",
+    description = "Automatically refills certain items from your sacks.",
     category = Category.DUNGEON
 ) {
     private val inKuudra by BooleanSetting("In Kuudra", true, description = "Only gfs in Kuudra.")
@@ -23,14 +23,12 @@ object AutoGFS : Module(
     private val refillOnTimer by BooleanSetting("Refill on Timer", true, description = "Refill on a 5s intervals.")
     private val timerIncrements by NumberSetting("Timer Increments", 5L, 1, 60, description = "The interval in which to refill.", unit = "s")
 
-    private val dungeonStartRegex = Regex("\\[NPC] Mort: Here, I found this map when I first entered the dungeon\\.|\\[NPC] Mort: Right-click the Orb for spells, and Left-click \\(or Drop\\) to use your Ultimate!")
-
     init {
         execute({ timerIncrements * 1000 }) {
             if (refillOnTimer) refill()
         }
 
-        onMessage(dungeonStartRegex) {
+        onMessage(Regex("\\[NPC] Mort: Here, I found this map when I first entered the dungeon\\.|\\[NPC] Mort: Right-click the Orb for spells, and Left-click \\(or Drop\\) to use your Ultimate!")) {
             if (refillOnDungeonStart) refill()
         }
     }
