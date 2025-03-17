@@ -2,7 +2,6 @@ package me.odinmain.commands.impl
 
 import com.github.stivais.commodore.Commodore
 import com.github.stivais.commodore.utils.GreedyString
-import me.odinmain.commands.commodore
 import me.odinmain.config.Config
 import me.odinmain.features.impl.render.CustomHighlight.currentEntities
 import me.odinmain.features.impl.render.CustomHighlight.highlightList
