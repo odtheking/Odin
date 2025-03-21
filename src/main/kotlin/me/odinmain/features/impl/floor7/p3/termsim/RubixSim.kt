@@ -22,12 +22,12 @@ object RubixSim : TermSimGUI(
     }
 
     override fun slotClick(slot: Slot, button: Int) {
-        val current = order.find { it == slot.stack.metadata } ?: return
+        val current = order.find { it == slot.stack?.metadata } ?: return
         createNewGui {
             if (it == slot) {
                 if (button == 1) genStack(order.getOrElse(order.indexOf(current) - 1) { order.last() })
-                else (genStack(order[(order.indexOf(current) + 1) % order.size]))
-            } else it.stack
+                else genStack(order[(order.indexOf(current) + 1) % order.size])
+            } else it.stack ?: blackPane
         }
 
         playTermSimSound()
