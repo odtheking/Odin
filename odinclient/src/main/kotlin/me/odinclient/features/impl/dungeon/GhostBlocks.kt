@@ -139,9 +139,9 @@ object GhostBlocks : Module(
 
     @SubscribeEvent
     fun onBlockChange(event: BlockChangeEvent) {
-        if (event.update == Blocks.air.defaultState || !stonkDelayToggle || (sdOnlySB && !LocationUtils.isInSkyblock)) return
+        if (event.updated == Blocks.air.defaultState || !stonkDelayToggle || (sdOnlySB && !LocationUtils.isInSkyblock)) return
         sdBlocks.find { event.pos == it.pos }?.let {
-            it.state = event.update
+            it.state = event.updated
             it.serverReplaced = true
             event.isCanceled = true
         }

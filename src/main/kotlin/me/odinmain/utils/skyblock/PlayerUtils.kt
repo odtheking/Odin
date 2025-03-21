@@ -60,7 +60,8 @@ object PlayerUtils {
         if (lastClickSent + 45 > System.currentTimeMillis()) return devMessage("§cIgnoring click on slot §9$slotId.")
         mc.thePlayer?.openContainer?.let {
             if (it !is ContainerChest || slotId !in 0 until it.inventorySlots.size) return
-            mc.netHandler?.networkManager?.sendPacket(C0EPacketClickWindow(it.windowId, slotId, button, mode, it.inventory[slotId], it.getNextTransactionID(mc.thePlayer?.inventory)))
+            mc.playerController?.windowClick(it.windowId, slotId, button, mode, mc.thePlayer)
+            //mc.netHandler?.networkManager?.sendPacket(C0EPacketClickWindow(it.windowId, slotId, button, mode, it.inventory[slotId], it.getNextTransactionID(mc.thePlayer?.inventory)))
         }
     }
 

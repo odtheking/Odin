@@ -38,7 +38,6 @@ object ChocolateFactory : Module(
         Island.SpiderDen, Island.CrimsonIsle, Island.TheEnd, Island.GoldMine, Island.DeepCaverns, Island.DwarvenMines,
         Island.CrystalHollows, Island.FarmingIsland, Island.ThePark, Island.DungeonHub, Island.Hub
     )
-    private val eggFoundRegex = Regex(".*(A|found|collected).+Chocolate (Breakfast|Lunch|Dinner|Brunch|Déjeuner|Supper).*")
 
     init {
         onWorldLoad { currentDetectedEggs.clear() }
@@ -70,8 +69,8 @@ object ChocolateFactory : Module(
             if (eggEsp && LocationUtils.currentArea in possibleLocations && currentDetectedEggs.size < 6) scanForEggs()
         }
 
-        onMessage(eggFoundRegex) {
-            if (eggFoundRegex.find(it)?.groupValues?.getOrNull(1).equalsOneOf("found", "collected"))
+        onMessage(Regex(".*(A|found|collected).+Chocolate (Breakfast|Lunch|Dinner|Brunch|Déjeuner|Supper).*")) {
+            if (it.groupValues.getOrNull(1).equalsOneOf("found", "collected"))
                 currentDetectedEggs.minByOrNull { egg -> egg.entity.getDistanceToEntity(mc.thePlayer) }?.isFound = true
         }
     }
@@ -114,11 +113,11 @@ object ChocolateFactory : Module(
     private var currentDetectedEggs = mutableListOf<Egg>()
 
     private enum class ChocolateEggs(
-        val texture: String, val type: String, val color: Color, val index: Int
+        val texture: String, val type: String, val color: Color
     ) {
-        Breakfast(BunnyEggTextures.BREAKFAST_EGG_TEXTURE, "§6Breakfast Egg", Color.ORANGE, 0),
-        Lunch(BunnyEggTextures.LUNCH_EGG_TEXTURE, "§9Lunch Egg ", Color.BLUE, 1),
-        Dinner(BunnyEggTextures.DINNER_EGG_TEXTURE, "§aDinner Egg", Color.GREEN, 2),
+        Breakfast(BunnyEggTextures.BREAKFAST_EGG_TEXTURE, "§6Breakfast Egg", Color.ORANGE),
+        Lunch(BunnyEggTextures.LUNCH_EGG_TEXTURE, "§9Lunch Egg ", Color.BLUE),
+        Dinner(BunnyEggTextures.DINNER_EGG_TEXTURE, "§aDinner Egg", Color.GREEN),
     }
 
     private data class Egg(val entity: EntityArmorStand, val renderName: String, val color: Color, var isFound: Boolean = false)

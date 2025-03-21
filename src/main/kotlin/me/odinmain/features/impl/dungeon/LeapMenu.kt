@@ -160,11 +160,11 @@ object LeapMenu : Module(
 
     init {
         onMessage(Regex(".*")) {
-            leapHelperBossChatEvent(it)
+            leapHelperBossChatEvent(it.value)
         }
 
         onMessage(Regex("You have teleported to (\\w{1,16})!")) {
-            if (leapAnnounce) partyMessage("Leaped to $name!")
+            if (leapAnnounce) partyMessage("Leaped to ${it.groupValues[1]}!")
         }
 
         onWorldLoad {

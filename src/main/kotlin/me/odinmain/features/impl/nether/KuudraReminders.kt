@@ -24,24 +24,24 @@ object KuudraReminders : Module(
     private val manaDrain by BooleanSetting("Mana Drain", true, description = "Notifies your party when you use mana on them.")
     private val onlyKuudra by BooleanSetting("Notify in Kuudra Only", true, description = "Notify of mana drain only when in Kuudra.").withDependency { manaDrain }
 
-    private data class Reminder(val regex: Regex, val shouldRun: Boolean, val alert: String)
+    private data class Reminder(val regex: Regex, val shouldRun: () -> Boolean, val alert: String)
     private val reminders = listOf(
-        Reminder(Regex("WARNING: You do not have a key for this tier in your inventory, you will not be able to claim rewards."), keyReminder, "No key in inventory"),
-        Reminder(Regex("Your Fresh Tools Perk bonus doubles your building speed for the next 10 seconds!"), freshTools, "Fresh Tools"),
-        Reminder(Regex("\\[NPC] Elle: It's time to build the Ballista again! Cover me!"), buildBallista, "Build Ballista"),
-        Reminder(Regex("\\[NPC] Elle: Okay adventurers, I will go and fish up Kuudra!"), buyUpgrades, "Buy Upgrades"),
-        Reminder(Regex("\\[NPC] Elle: Not again!"), pickUpSupplies, "Pick up supplies")
+        Reminder(Regex("WARNING: You do not have a key for this tier in your inventory, you will not be able to claim rewards."), { keyReminder }, "No key in inventory"),
+        Reminder(Regex("Your Fresh Tools Perk bonus doubles your building speed for the next 10 seconds!"), { freshTools }, "Fresh Tools"),
+        Reminder(Regex("\\[NPC] Elle: It's time to build the Ballista again! Cover me!"), { buildBallista }, "Build Ballista"),
+        Reminder(Regex("\\[NPC] Elle: Okay adventurers, I will go and fish up Kuudra!"), { buyUpgrades }, "Buy Upgrades"),
+        Reminder(Regex("\\[NPC] Elle: Not again!"), { pickUpSupplies }, "Pick up supplies")
     )
 
     init {
         reminders.forEach { reminder ->
-            onMessage(reminder.regex, { reminder.shouldRun && enabled }) {
+            onMessage(reminder.regex, { enabled && reminder.shouldRun() }) {
                 PlayerUtils.alert(reminder.alert, playSound = playSound, displayText = displayText)
             }
         }
 
-        onMessage(Regex("Used Extreme Focus! \\((\\d+) Mana\\)"), { enabled && manaDrain && (onlyKuudra && KuudraUtils.inKuudra)}) {
-            val mana = Regex("Used Extreme Focus! \\((\\d+) Mana\\)").find(it)?.groupValues?.get(1)?.toIntOrNull() ?: return@onMessage
+        onMessage(Regex("Used Extreme Focus! \\((\\d+) Mana\\)"), { enabled && manaDrain && (onlyKuudra && KuudraUtils.inKuudra) }) {
+            val mana = it.groupValues[1].toIntOrNull() ?: return@onMessage
             val players = mc.theWorld?.playerEntities?.filter { entity -> entity.isOtherPlayer() && entity.getDistanceSqToEntity(mc.thePlayer) < 49 }?.takeIf { it.isNotEmpty() } ?: return@onMessage
             partyMessage("Used $mana mana on ${players.joinToString(", ") { player -> player.name }}.")
         }

@@ -384,7 +384,7 @@ object ArrowsDevice : Module(
         if (!DungeonUtils.inDungeons || DungeonUtils.getF7Phase() != M7Phases.P3 || !positions.contains(event.pos)) return
 
         // Target was hit
-        if (event.old.block == Blocks.emerald_block && event.update.block == Blocks.stained_hardened_clay) {
+        if (event.old.block == Blocks.emerald_block && event.updated.block == Blocks.stained_hardened_clay) {
             markedPositions.add(event.pos)
             // This condition should always be true but im never sure with Hypixel
             if (targetPosition == event.pos) {
@@ -395,7 +395,7 @@ object ArrowsDevice : Module(
         }
 
         // New target appeared
-        if (event.old.block == Blocks.stained_hardened_clay && event.update.block == Blocks.emerald_block) {
+        if (event.old.block == Blocks.stained_hardened_clay && event.updated.block == Blocks.emerald_block) {
             // Can happen with resets
             markedPositions.remove(event.pos)
             targetPosition = event.pos

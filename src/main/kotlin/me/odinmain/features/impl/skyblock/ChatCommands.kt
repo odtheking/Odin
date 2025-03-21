@@ -89,16 +89,15 @@ object ChatCommands : Module(
         }
 
         onMessage(messageRegex) {
-            val channel = when(it.split(" ")[0]) {
+            val channel = when(it.value.split(" ")[0]) {
                 "From" -> if (!private) return@onMessage else ChatChannel.PRIVATE
                 "Party" -> if (!party)  return@onMessage else ChatChannel.PARTY
                 "Guild" -> if (!guild)  return@onMessage else ChatChannel.GUILD
                 else -> return@onMessage
             }
 
-            val match = messageRegex.find(it) ?: return@onMessage
-            val ign = match.groups[2]?.value ?: match.groups[5]?.value ?: match.groups[9]?.value ?: return@onMessage
-            val msg = match.groups[3]?.value ?: match.groups[7]?.value ?: match.groups[10]?.value ?: return@onMessage
+            val ign = it.groups[2]?.value ?: it.groups[5]?.value ?: it.groups[9]?.value ?: return@onMessage
+            val msg = it.groups[3]?.value ?: it.groups[7]?.value ?: it.groups[10]?.value ?: return@onMessage
 
             if (whitelistOnly != isInBlacklist(ign) || !msg.startsWith("!")) return@onMessage
 

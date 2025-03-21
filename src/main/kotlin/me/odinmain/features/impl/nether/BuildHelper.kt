@@ -14,6 +14,7 @@ import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.render.getTextWidth
 import me.odinmain.utils.render.text
 import me.odinmain.utils.skyblock.KuudraUtils
+import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.PlayerUtils
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
@@ -50,7 +51,7 @@ object BuildHelper : Module(
     @SubscribeEvent
     fun renderWorldEvent(event: RenderWorldLastEvent) {
         if (!KuudraUtils.inKuudra || KuudraUtils.phase != 2) return
-        if (stunNotification && KuudraUtils.buildDonePercentage > stunNotificationNumber) PlayerUtils.alert("§lGo to stun", playSound = false, color = Color.CYAN)
+        if (stunNotification && LocationUtils.kuudraTier > 2 && KuudraUtils.buildDonePercentage > stunNotificationNumber) PlayerUtils.alert("§lGo to stun", playSound = false, color = Color.CYAN)
         if (buildHelperDraw)
             Renderer.drawStringInWorld("Build ${colorBuild(KuudraUtils.buildDonePercentage)}%", Vec3(-101.5, 84.0, -105.5), buildHelperColor, depth = false, scale = 0.15f)
 

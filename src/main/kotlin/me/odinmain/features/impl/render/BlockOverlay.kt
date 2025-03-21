@@ -25,7 +25,7 @@ object BlockOverlay : Module(
 ) {
     private val blockOverlayToggle by BooleanSetting("Block Overlay", true, description = "Master toggle for Block Overlay feature.")
 
-    private val style by SelectorSetting("Style", Renderer.DEFAULT_STYLE, Renderer.styles, description = Renderer.STYLE_DESCRIPTION).withDependency { blockOverlayToggle }
+    private val style by SelectorSetting("Block Style", Renderer.DEFAULT_STYLE, Renderer.styles, description = Renderer.STYLE_DESCRIPTION).withDependency { blockOverlayToggle }
     private val color by ColorSetting("Block Color", Color(0, 0, 0, 0.4f), allowAlpha = true, description = "The color of the box.").withDependency { blockOverlayToggle }
     private val lineWidth by NumberSetting("Line Width", 2f, 0.1f, 10f, 0.1f, description = "The width of the box's lines.").withDependency { blockOverlayToggle }
     private val depthCheck by BooleanSetting("Depth check", true, description = "Boxes show through walls.").withDependency { blockOverlayToggle }
@@ -37,7 +37,7 @@ object BlockOverlay : Module(
     private val entityMode by SelectorSetting("Mode", HighlightRenderer.HIGHLIGHT_MODE_DEFAULT, HighlightRenderer.highlightModeList, description = HighlightRenderer.HIGHLIGHT_MODE_DESCRIPTION).withDependency { entityToggle }
     private val entityColor by ColorSetting("Entity Color", Color.WHITE.withAlpha(0.75f), true, description = "The color of the highlight.").withDependency { entityToggle }
     private val thickness by NumberSetting("Line Width", 2f, 1f, 6f, .1f, description = "The line width of Outline / Boxes/ 2D Boxes.").withDependency { entityToggle && entityMode != HighlightRenderer.HighlightType.Overlay.ordinal }
-    private val entityStyle by SelectorSetting("Style", Renderer.DEFAULT_STYLE, Renderer.styles, description = Renderer.STYLE_DESCRIPTION).withDependency { entityToggle && entityMode == HighlightRenderer.HighlightType.Boxes.ordinal }
+    private val entityStyle by SelectorSetting("Entity Style", Renderer.DEFAULT_STYLE, Renderer.styles, description = Renderer.STYLE_DESCRIPTION).withDependency { entityToggle && entityMode == HighlightRenderer.HighlightType.Boxes.ordinal }
 
     init {
         HighlightRenderer.addEntityGetter({ HighlightRenderer.HighlightType.entries[entityMode]}) {

@@ -34,8 +34,8 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
  * @author Aton, Bonsai
  */
 object ModuleManager {
-    data class PacketFunction<T : Packet<*>>(val type: Class<T>, val function: (T) -> Unit, val shouldRun: () -> Boolean)
-    data class MessageFunction(val filter: Regex, val shouldRun: () -> Boolean, val function: (String) -> Unit)
+    data class PacketFunction<T : Packet<*>>(val type: Class<T>, val shouldRun: () -> Boolean, val function: (T) -> Unit)
+    data class MessageFunction(val filter: Regex, val shouldRun: () -> Boolean, val function: (MatchResult) -> Unit)
     data class TickTask(var ticksLeft: Int, val server: Boolean, val function: () -> Unit)
 
     val packetFunctions = mutableListOf<PacketFunction<Packet<*>>>()
@@ -48,7 +48,7 @@ object ModuleManager {
         // dungeon
         DungeonRequeue, BlessingDisplay, PosMessages, ExtraStats, KeyHighlight, Mimic, TeammatesHighlight,
         TerracottaTimer, BloodCamp, SecretClicked, DungeonWaypoints, LeapMenu, PuzzleSolvers,
-        WarpCooldown, MapInfo, SwapSound,
+        WarpCooldown, MapInfo, SwapSound, LividSolver,
 
         // floor 7
         TerminalSolver, TerminalTimes, MelodyMessage, TickTimers, InactiveWaypoints, WitherDragons,
@@ -114,21 +114,21 @@ object ModuleManager {
     @SubscribeEvent(receiveCanceled = true)
     fun onReceivePacket(event: PacketEvent.Receive) {
         packetFunctions.forEach {
-            if (it.type.isInstance(event.packet) && it.shouldRun.invoke()) it.function(event.packet)
+            if (it.shouldRun() && it.type.isInstance(event.packet)) it.function(event.packet)
         }
     }
 
     @SubscribeEvent(receiveCanceled = true)
     fun onSendPacket(event: PacketEvent.Send) {
         packetFunctions.forEach {
-            if (it.type.isInstance(event.packet) && it.shouldRun.invoke()) it.function(event.packet)
+            if (it.shouldRun() && it.type.isInstance(event.packet)) it.function(event.packet)
         }
     }
 
     @SubscribeEvent(receiveCanceled = true)
     fun onChatPacket(event: ChatPacketEvent) {
         messageFunctions.forEach {
-            if (event.message matches it.filter && it.shouldRun()) it.function(event.message)
+            if (it.shouldRun()) it.function(it.filter.find(event.message) ?: return@forEach)
         }
     }
 

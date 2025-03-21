@@ -73,9 +73,6 @@ fun String.startsWithOneOf(vararg options: String, ignoreCase: Boolean = false):
 fun Any?.equalsOneOf(vararg options: Any?): Boolean =
     options.any { this == it }
 
-fun String?.matchesOneOf(vararg options: Regex): Boolean =
-    options.any { it.matches(this ?: "") }
-
 /**
  * Rounds the current number to the specified number of decimals.
  * @param decimals The number of decimals to round to.
@@ -121,7 +118,7 @@ fun logError(throwable: Throwable, context: Any) {
     val message = "${OdinMain.VERSION} Caught an ${throwable::class.simpleName ?: "error"} at ${context::class.simpleName}."
     logger.error(message, throwable)
     val style = ChatStyle().apply {
-        chatClickEvent = ClickEvent(ClickEvent.Action.RUN_COMMAND, "/od copy $message \n``` ${throwable.message?.lineSequence()?.take(10)?.joinToString("\n")}```")
+        chatClickEvent = ClickEvent(ClickEvent.Action.RUN_COMMAND, "/od copy $message \n``` ${throwable.message} \n${throwable.stackTraceToString().lineSequence().take(10).joinToString("\n")}```")
         chatHoverEvent = HoverEvent(HoverEvent.Action.SHOW_TEXT, ChatComponentText("§6Click to copy the error to your clipboard."))
     }
     modMessage("$message §cPlease click this message to copy and send it in the Odin discord!", chatStyle = style)

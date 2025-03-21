@@ -104,7 +104,6 @@ object TerminalSolver : Module(
         var clickedSlot: Pair<Int, Long>? = null
 
     )
-    private val terminalActivatedRegex = Regex("(.{1,16}) activated a terminal! \\((\\d)/(\\d)\\)")
     var currentTerm = Terminal(TerminalTypes.NONE)
         private set
     var lastTermOpened = Terminal(TerminalTypes.NONE)
@@ -183,8 +182,8 @@ object TerminalSolver : Module(
             if (currentTerm.clickedSlot?.second?.let { System.currentTimeMillis() - it < 600 } != true) currentTerm.clickedSlot = packet.slotId to System.currentTimeMillis()
         }
 
-        onMessage(terminalActivatedRegex) { message ->
-            if (terminalActivatedRegex.find(message)?.groupValues?.get(1) == mc.thePlayer.name) TerminalEvent.Solved(lastTermOpened).postAndCatch()
+        onMessage(Regex("(.{1,16}) activated a terminal! \\((\\d)/(\\d)\\)")) { message ->
+            if (message.groupValues[1] == mc.thePlayer.name) TerminalEvent.Solved(lastTermOpened).postAndCatch()
         }
 
         execute(50) {

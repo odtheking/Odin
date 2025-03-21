@@ -14,7 +14,6 @@ import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.getRealCoords
 import me.odinmain.utils.skyblock.getBlockIdAt
-import me.odinmain.utils.toAABB
 import me.odinmain.utils.toVec3
 import net.minecraft.init.Blocks
 import net.minecraft.util.BlockPos
@@ -70,10 +69,10 @@ object BeamsSolver {
 
     fun onBlockChange(event: BlockChangeEvent) {
         if (DungeonUtils.currentRoomName != "Creeper Beams") return
-        if (event.pos == DungeonUtils.currentRoom?.getRealCoords(15, 69, 15) && event.old.block == Blocks.air && event.update.block == Blocks.chest) onPuzzleComplete("Creeper Beams")
+        if (event.pos == DungeonUtils.currentRoom?.getRealCoords(15, 69, 15) && event.old.block == Blocks.air && event.updated.block == Blocks.chest) onPuzzleComplete("Creeper Beams")
         currentLanternPairs.forEach { (key, value) ->
             if (event.pos.equalsOneOf(key, value.first) &&
-                event.update.block != Blocks.sea_lantern &&
+                event.updated.block != Blocks.sea_lantern &&
                 event.old.block == Blocks.sea_lantern) currentLanternPairs.remove(key)
         }
     }

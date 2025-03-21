@@ -55,7 +55,6 @@ object DungeonRequeue : Module(
             disableRequeue = true
         }
 
-
         onWorldLoad { disableRequeue = false }
     }
 }

@@ -123,7 +123,7 @@ abstract class Module(
     inline fun <reified T : Packet<*>> onPacket(noinline shouldRun: () -> Boolean = { alwaysActive || enabled }, noinline func: (T) -> Unit) {
         @Suppress("UNCHECKED_CAST")
         ModuleManager.packetFunctions.add(
-            ModuleManager.PacketFunction(T::class.java, func, shouldRun) as ModuleManager.PacketFunction<Packet<*>>
+            ModuleManager.PacketFunction(T::class.java, shouldRun, func) as ModuleManager.PacketFunction<Packet<*>>
         )
     }
 
@@ -136,8 +136,8 @@ abstract class Module(
      *
      * @author Bonsai
      */
-    fun onMessage(filter: Regex, shouldRun: () -> Boolean = { alwaysActive || enabled }, func: (String) -> Unit) {
-        ModuleManager.messageFunctions.add(ModuleManager.MessageFunction(filter, shouldRun, func))
+    fun onMessage(filter: Regex, shouldRun: () -> Boolean = { alwaysActive || enabled }, func: (MatchResult) -> Unit) {
+        ModuleManager.messageFunctions.add(ModuleManager.MessageFunction(filter, shouldRun) { matchResult -> func(matchResult) })
     }
 
     fun onWorldLoad(func: () -> Unit) {

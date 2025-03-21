@@ -30,7 +30,6 @@ import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.event.entity.player.PlayerInteractEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import kotlin.math.floor
 
 object SimonSays : Module(
     name = "Simon Says",
@@ -94,7 +93,7 @@ object SimonSays : Module(
     @SubscribeEvent
     fun onBlockChange(event: BlockChangeEvent) {
         if (DungeonUtils.getF7Phase() != M7Phases.P3) return
-        val state = event.update
+        val state = event.updated
         val pos = event.pos
         val old = event.old
 

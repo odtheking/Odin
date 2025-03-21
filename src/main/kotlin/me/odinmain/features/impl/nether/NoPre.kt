@@ -24,8 +24,6 @@ object NoPre : Module(
     private var preSpot = SupplyPickUpSpot.None
     var missing = SupplyPickUpSpot.None
 
-    private val partyChatRegex = Regex("^Party > (\\[[^]]*?])? ?(\\w{1,16}): No ?(Triangle|X|Equals|Slash|xCannon|Square|Shop)!\$")
-
     init {
         onMessage(Regex("\\[NPC] Elle: Head over to the main platform, I will join you when I get a bite!")) {
             val playerLocation = mc.thePlayer?.positionVector ?: return@onMessage
@@ -67,8 +65,8 @@ object NoPre : Module(
             partyMessage(msg)
         }
 
-        onMessage(partyChatRegex) {
-            missing = SupplyPickUpSpot.valueOf(partyChatRegex.find(it)?.groupValues?.lastOrNull() ?: return@onMessage)
+        onMessage(Regex("^Party > (\\[[^]]*?])? ?(\\w{1,16}): No ?(Triangle|X|Equals|Slash|xCannon|Square|Shop)!\$")) {
+            missing = SupplyPickUpSpot.valueOf(it.groupValues.lastOrNull() ?: return@onMessage)
             if (!showCratePriority) return@onMessage
             val cratePriority = cratePriority(missing).ifEmpty { return@onMessage }
             PlayerUtils.alert(cratePriority, time = cratePriorityTitleTime)

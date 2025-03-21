@@ -35,17 +35,14 @@ object Waypoints : Module(
     private val pingWaypointTime by NumberSetting("Ping Waypoint Time", 15000L, 0L, 128000L, 1000L, description = "Time to wait before sending the waypoint command.").withDependency { pingLocationToggle && pingLocationDropDown }
     private val pingDistance by NumberSetting("Ping Distance", 64.0, 1, 128, 1, description = "Distance to ping location.").withDependency { pingLocationToggle && pingLocationDropDown }
 
-    private val partyChatRegex = Regex("^Party > (?:\\[[^]]*?])? ?(\\w{1,16})(?: [ቾ⚒])?: x: (-?\\d+), y: (-?\\d+), z: (-?\\d+).*") // https://regex101.com/r/8K26A1/1
-    private val allChatRegex = Regex("^(?!Party >).*\\s(?:\\[[^]]*?])? ?(\\w{1,16})(?: [ቾ⚒])?: x: (-?\\d+),? y: (-?\\d+),? z: (-?\\d+).*") // https://regex101.com/r/A3aoyL/1
-
     init {
-        onMessage(partyChatRegex, { fromParty && enabled }) {
-            val (name, x, y, z) = partyChatRegex.find(it)?.destructured ?: return@onMessage
+        onMessage(Regex("^Party > (?:\\[[^]]*?])? ?(\\w{1,16})(?: [ቾ⚒])?: x: (-?\\d+), y: (-?\\d+), z: (-?\\d+).*"), { fromParty && enabled }) { // https://regex101.com/r/8K26A1/1
+            val (name, x, y, z) = it.destructured
             WaypointManager.addTempWaypoint("§6$name", x.toIntOrNull() ?: return@onMessage, y.toIntOrNull() ?: return@onMessage, z.toIntOrNull() ?: return@onMessage)
         }
 
-        onMessage(allChatRegex, { fromAll && enabled }) {
-            val (name, x, y, z) = allChatRegex.find(it)?.destructured ?: return@onMessage
+        onMessage(Regex("^(?!Party >).*\\s(?:\\[[^]]*?])? ?(\\w{1,16})(?: [ቾ⚒])?: x: (-?\\d+),? y: (-?\\d+),? z: (-?\\d+).*"), { fromAll && enabled }) { // https://regex101.com/r/A3aoyL/1
+            val (name, x, y, z) = it.destructured
             WaypointManager.addTempWaypoint("§6$name", x.toIntOrNull() ?: return@onMessage, y.toIntOrNull() ?: return@onMessage, z.toIntOrNull() ?: return@onMessage)
         }
     }

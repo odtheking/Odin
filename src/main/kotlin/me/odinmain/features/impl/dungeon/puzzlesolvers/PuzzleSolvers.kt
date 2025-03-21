@@ -133,13 +133,13 @@ object PuzzleSolvers : Module(
             if (boulderSolver) BoulderSolver.playerInteract(it)
         }
 
-        onMessage(Regex("\\[NPC] (.+): (.+).?"), { enabled && weirdosSolver }) { str ->
-            val (npc, message) = Regex("\\[NPC] (.+): (.+).?").find(str)?.destructured ?: return@onMessage
+        onMessage(Regex("\\[NPC] (.+): (.+).?"), { enabled && weirdosSolver && inDungeons && !inBoss }) { str ->
+            val (npc, message) = str.destructured
             WeirdosSolver.onNPCMessage(npc, message)
         }
 
-        onMessage(Regex(".*"), { enabled && quizSolver }) {
-            QuizSolver.onMessage(it)
+        onMessage(Regex(".*"), { enabled && quizSolver && inDungeons && !inBoss }) {
+            QuizSolver.onMessage(it.value)
         }
 
         onPacket<S24PacketBlockAction> { packet ->
