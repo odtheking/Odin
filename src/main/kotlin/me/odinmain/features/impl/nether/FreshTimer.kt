@@ -1,5 +1,7 @@
 package me.odinmain.features.impl.nether
 
+import com.github.stivais.aurora.color.Color
+import com.github.stivais.aurora.utils.color
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
@@ -9,6 +11,8 @@ import me.odinmain.utils.skyblock.KuudraUtils
 import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.skyblock.partyMessage
 import me.odinmain.utils.ui.Colors
+import me.odinmain.utils.ui.TextHUD
+import me.odinmain.utils.ui.buildText
 
 object FreshTimer : Module(
     name = "Fresh Timer",
@@ -17,20 +21,14 @@ object FreshTimer : Module(
     private val notifyFresh by BooleanSetting("Notify Fresh", true, description = "Notifies your party when you get fresh timer.")
     val highlightFresh by BooleanSetting("Highlight Fresh", true, description = "Highlights fresh timer users.")
     val highlightFreshColor by ColorSetting("Highlight Fresh Color", Colors.MINECRAFT_YELLOW, true, description = "Color of the highlight.").withDependency { highlightFresh }
-    private val freshTimerHUDColor by ColorSetting("Fresh Timer Color", Colors.MINECRAFT_GOLD, true, description = "Color of the fresh timer HUD.")
-    /*private val hud by HudSetting("Fresh timer HUD", 10f, 10f, 1f, true) {
-        if (it) {
-            text("Fresh§f: 9s", 1f, 9f, freshTimerHUDColor, 12f, OdinFont.REGULAR, shadow = true)
-            getTextWidth("Fresh: 10s", 12f) + 2f to 16f
-        } else {
-            val player = KuudraUtils.kuudraTeammates.find { teammate -> teammate.playerName == mc.thePlayer.name } ?: return@HudSetting 0f to 0f
-            val timeLeft = (10000L - (System.currentTimeMillis() - player.eatFreshTime)).takeIf { it > 0 } ?: return@HudSetting 0f to 0f
-            if (player.eatFresh && KuudraUtils.phase == 2)
-                text("Fresh§f: ${(timeLeft / 1000.0).round(2)}s", 1f, 9f, freshTimerHUDColor,12f, OdinFont.REGULAR, shadow = true)
 
-            getTextWidth("Fresh: 10s", 12f) + 2f to 12f
-        }
-    }*/
+    private val HUD by TextHUD("Fresh Timer") { color, font, shadow ->
+        buildText(
+            string = "Fresh:",
+            supplier = { "${String.format("%.2f", getFreshTimeLeft() / 1000.0)}s" },
+            font, color,  color { colorFresh(getFreshTimeLeft()).rgba }, shadow
+        )
+    }.setting("Displays the time until fresh timer ends.")
 
     init {
         onMessage(Regex("Your Fresh Tools Perk bonus doubles your building speed for the next 10 seconds!")) {
@@ -43,6 +41,19 @@ object FreshTimer : Module(
                 if (notifyFresh) modMessage("Fresh tools has expired")
                 teammate.eatFresh = false
             }
+        }
+    }
+
+    private fun getFreshTimeLeft(): Double {
+        val player = KuudraUtils.kuudraTeammates.find { teammate -> teammate.playerName == mc.thePlayer.name } ?: return 0.0
+        return ((10000L - (System.currentTimeMillis() - player.eatFreshTime)).takeIf { it > 0 })?.div(1000.0) ?: 0.0
+    }
+
+    private fun colorFresh(timeLeft: Double): Color {
+        return when {
+            timeLeft >= 6 -> Colors.MINECRAFT_GREEN
+            timeLeft >= 3 -> Colors.MINECRAFT_GOLD
+            else -> Colors.MINECRAFT_RED
         }
     }
 }

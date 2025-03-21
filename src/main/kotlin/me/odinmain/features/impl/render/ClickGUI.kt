@@ -185,7 +185,7 @@ object ClickGUI : Module(
                 ) {
                     text(
                         string = panel.displayName,
-                        size = 20.px
+                        size = 70.percent
                     )
                     onClick(1) {
                         height.animate(0.5.seconds, Animation.Style.EaseInOutQuint)
@@ -273,7 +273,7 @@ object ClickGUI : Module(
                 hoverEffect(factor = 1.2f, style = Animation.Style.Linear)
                 text(
                     string = module.name,
-                    size = 50.percent
+                    size = 60.percent
                 )
                 hoverInformation(
                     description = module.description

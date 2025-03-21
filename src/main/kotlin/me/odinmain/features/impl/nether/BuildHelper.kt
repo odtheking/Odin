@@ -30,7 +30,7 @@ object BuildHelper : Module(
         buildText(
             string = "Build:",
             supplier = { if (preview) "72%" else "${ KuudraUtils.buildDonePercentage }%" },
-            font, color, color { colorBuild(KuudraUtils.buildDonePercentage).rgba }, shadow
+            font, color, color { colorBuild(if (preview) 72 else KuudraUtils.buildDonePercentage).rgba }, shadow
         )
     }.setting(description = "Displays the build percentage.")
 
@@ -39,17 +39,16 @@ object BuildHelper : Module(
         buildText(
             string = "Builders:",
             supplier = { if (preview) "2" else "${ KuudraUtils.playersBuildingAmount }%" },
-            font, color, color { colorBuilders(KuudraUtils.playersBuildingAmount).rgba }, shadow
+            font, color, color { colorBuilders(if (preview) 2 else KuudraUtils.playersBuildingAmount).rgba }, shadow
         )
     }.setting(description = "Displays the amount of builders.")
 
     private val FreshersHUD by TextHUD("Freshers HUD", Colors.MINECRAFT_GOLD) { color, font, shadow ->
         needs { KuudraUtils.phase == 2 }
-        val buildersAmount = KuudraUtils.kuudraTeammates.count { teammate -> teammate.eatFresh }
         buildText(
             string = "Freshers:",
-            supplier = { if (preview) "1" else buildersAmount },
-            font, color, color { colorBuilders(buildersAmount).rgba }, shadow
+            supplier = { if (preview) "1" else buildHelpers },
+            font, color, color { colorBuilders(if (preview) 1 else buildHelpers).rgba }, shadow
         )
     }.setting(description = "Displays the amount of freshers.")
 
@@ -88,4 +87,6 @@ object BuildHelper : Module(
             else -> Colors.MINECRAFT_RED
         }
     }
+
+    private val buildHelpers get() = KuudraUtils.kuudraTeammates.count { teammate -> teammate.eatFresh }
 }

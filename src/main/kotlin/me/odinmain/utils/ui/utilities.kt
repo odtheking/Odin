@@ -81,21 +81,13 @@ inline fun Module.TextHUD(
     crossinline block: HUD.Scope.(Color, Font, shadow: Boolean) -> Unit
 ): HUD {
     val colorSetting = ColorSetting("Color", color, allowAlpha = false, description = "The color of the text.")
-    val fontSetting = SelectorSetting("Font", arrayListOf("Regular", "Minecraft"), description = "The font of the text.")
+    val fontSetting = makeFontSetting()
     val shadowSetting = BooleanSetting("Shadow", true, description = "Whether to display a shadow behind the text.")
 
     val hud = HUD(name) {
-        val font = when (fontSetting.value) {
-            1 -> mcFont
-            else -> regularFont
-        }
-        block(colorSetting.value, font, shadowSetting.value)
+        block(colorSetting.value, getFont(fontSetting.value), shadowSetting.value)
     }
-    hud.registerSettings(
-        colorSetting,
-        fontSetting,
-        shadowSetting
-    )
+    hud.registerSettings(colorSetting, fontSetting, shadowSetting)
     return hud
 }
 
@@ -155,11 +147,15 @@ fun ElementScope<*>.lifetimeAnimations(
  */
 fun makeFontSetting(name: String = "Font", description: String = "The font of the text.") = SelectorSetting(
     name,
-    options = arrayListOf("Regular", "Minecraft"),
+    options = arrayListOf("Minecraft", "Regular"),
     description = description,
 )
 
 /**
  * Gets font based on [makeFontSetting].
  */
-fun getFont(fromIndex: Int) = if (fromIndex == 0) regularFont else mcFont
+fun getFont(fromIndex: Int) = when (fromIndex) {
+    0 -> regularFont
+    1 -> mcFont
+    else -> mcFont
+}

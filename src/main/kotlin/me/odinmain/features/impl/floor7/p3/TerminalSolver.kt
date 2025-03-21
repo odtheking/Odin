@@ -176,7 +176,7 @@ object TerminalSolver : Module(
                 }
 
                 Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, color.rgba)
-                RenderUtils.drawText(text.toString(), event.x + 8f - mc.fontRendererObj.getStringWidth(text.toString()) / 2, event.y + 4.5f, 1.0, textColor, shadow = textShadow, false)
+                RenderUtils.drawText(text.toString(), event.x + 8f - mc.fontRendererObj.getStringWidth(text.toString()) / 2, event.y + 4.5f, 1.0, shadow = textShadow)
             }
             TerminalTypes.ORDER -> {
                 val index = currentTerm.solution.indexOf(event.slot.slotIndex)
@@ -190,7 +190,7 @@ object TerminalSolver : Module(
                     event.isCanceled = true
                 }
                 val amount = event.slot.stack?.stackSize ?: 0
-                RenderUtils.drawText(amount.toString(), event.x + 8.5f - mc.fontRendererObj.getStringWidth(amount.toString()) / 2, event.y + 4.5f, 1.0, textColor, shadow = textShadow, false)
+                RenderUtils.drawText(amount.toString(), event.x + 8.5f - mc.fontRendererObj.getStringWidth(amount.toString()) / 2, event.y + 4.5f, 1.0, shadow = textShadow)
             }
             TerminalTypes.STARTS_WITH ->
                 if (renderType != 1 || (renderType == 1 && !removeWrong)) Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, startsWithColor.rgba)

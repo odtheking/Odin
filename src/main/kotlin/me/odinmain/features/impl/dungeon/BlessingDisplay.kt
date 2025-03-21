@@ -6,21 +6,18 @@ import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.ColorSetting
+import me.odinmain.features.settings.impl.SelectorSetting
 import me.odinmain.utils.skyblock.dungeon.Blessing
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.ui.Colors
+import me.odinmain.utils.ui.TextHUD
 import me.odinmain.utils.ui.buildText
-import me.odinmain.utils.ui.getFont
-import me.odinmain.utils.ui.makeFontSetting
 
 object BlessingDisplay : Module(
     name = "Blessing Display",
     description = "Displays the current blessings of the dungeon."
 ) {
-    // general settings
-    private val textColor by ColorSetting("Text Color", Color.WHITE, allowAlpha = false, description = "The color of the text.")
-    private val font by makeFontSetting()
-    private val shadow by BooleanSetting("Shadow", true, description = "Whether to display a shadow behind the text.")
+    private val location by SelectorSetting("Location", "Both", arrayListOf("Both", "Only Dungeon", "Only Boss"), description = "Whether to display the blessings in the dungeon, boss or both.")
 
     private var power by BooleanSetting("Power Blessing", true, description = "Displays the power blessing.")
     private val powerColor by ColorSetting("Power Color", Colors.MINECRAFT_DARK_RED, allowAlpha = false, description = "The color of the power blessing.").withDependency { power }
@@ -41,23 +38,21 @@ object BlessingDisplay : Module(
         BlessingData(Blessing.WISDOM, { wisdom }, { wisdomColor })
     )
 
-    private val HUD by HUD("Blessings HUD") {
-        needs { DungeonUtils.inDungeons }
+    private val HUD by TextHUD("Blessings HUD") { color, font, shadow ->
+        needs { if (location == 0) DungeonUtils.inDungeons else if (location == 1) DungeonUtils.inDungeons && !DungeonUtils.inBoss else DungeonUtils.inBoss }
         column {
-            blessings.loop { (blessing, enabled, color) ->
+            blessings.loop { (blessing, enabled, blessingColor) ->
                 if (!enabled()) return@loop
                 buildText(
                     string = blessing.displayString,
                     supplier = { if (preview) 19 else blessing.current },
-                    font = getFont(font),
-                    color1 = color(), color2 = textColor,
+                    font = font,
+                    color1 = blessingColor(), color2 = color,
                     shadow
                 ).needs { blessing.current != 0 }
             }
         }
-    }.registerSettings(
-        ::textColor, ::font, ::shadow,
-        ::power, ::powerColor, ::time, ::timeColor, ::stone, ::stoneColor, ::life, ::lifeColor, ::wisdom, ::wisdomColor
+    }.registerSettings(::power, ::powerColor, ::time, ::timeColor, ::stone, ::stoneColor, ::life, ::lifeColor, ::wisdom, ::wisdomColor
     ).setting(description = "Displays the current active blessings in the dungeon.")
 
     private data class BlessingData(val type: Blessing, val enabled: () -> Boolean, val color: () -> Color)

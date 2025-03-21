@@ -4,9 +4,9 @@ import com.github.stivais.aurora.AuroraUI
 import com.github.stivais.aurora.Window
 import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.GuiEvent
-import me.odinmain.events.impl.RenderOverlayNoCaching
 import net.minecraft.client.gui.GuiScreen.getClipboardString
 import net.minecraft.client.gui.GuiScreen.setClipboardString
+import net.minecraftforge.client.event.GuiOpenEvent
 import net.minecraftforge.client.event.GuiScreenEvent
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -14,7 +14,8 @@ import org.lwjgl.input.Keyboard
 import org.lwjgl.input.Mouse
 import org.lwjgl.opengl.Display
 
-class UIHandler(private val ui: AuroraUI): Window {
+// Custom class to allow simple custom GUIs to be created without the need for a full GUI system
+class UIChest(private val ui: AuroraUI): Window {
 
     private var previousWidth: Int = 0
     private var previousHeight: Int = 0
@@ -32,7 +33,8 @@ class UIHandler(private val ui: AuroraUI): Window {
     }
 
     @SubscribeEvent
-    fun onRender(event: RenderOverlayNoCaching) {
+    fun onRender(event: GuiEvent.DrawGuiContainerScreenEvent) {
+        event.isCanceled = true
         val w = mc.framebuffer.framebufferWidth
         val h = mc.framebuffer.framebufferHeight
         if (w != previousWidth || h != previousHeight) {
@@ -61,6 +63,11 @@ class UIHandler(private val ui: AuroraUI): Window {
     @SubscribeEvent
     fun onKeyboardClick(event: GuiScreenEvent.MouseInputEvent.Pre) {
         ui.eventManager.onKeyTyped(Keyboard.getEventCharacter())
+    }
+
+    @SubscribeEvent
+    fun onGuiOpen(event: GuiOpenEvent) {
+        if (event.gui == null) close()
     }
 
     override fun getClipboard(): String? {

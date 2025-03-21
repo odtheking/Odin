@@ -17,6 +17,8 @@ import me.odinmain.OdinMain.mc
 import me.odinmain.OdinMain.wrapper
 import net.minecraft.client.renderer.GlStateManager
 import org.lwjgl.opengl.GL11.*
+import org.lwjgl.opengl.GL13.GL_ACTIVE_TEXTURE
+import org.lwjgl.opengl.GL13.glActiveTexture
 
 // TODO: Needs scissors
 object NVGRenderer : Renderer, Lwjgl3Wrapper by wrapper {
@@ -38,6 +40,10 @@ object NVGRenderer : Renderer, Lwjgl3Wrapper by wrapper {
 
     private var drawing: Boolean = false
 
+    private var depthState: Boolean? = null
+    private var activeTexture: Int? = null
+    private var textureState: Int? = null
+
     init {
         vg = nvgCreate(NVG_ANTIALIAS or NVG_DEBUG)
         require(vg != -1L) { "Failed to initialize NanoVG" }
@@ -49,6 +55,9 @@ object NVGRenderer : Renderer, Lwjgl3Wrapper by wrapper {
         GlStateManager.pushMatrix()
         if (!mc.framebuffer.isStencilEnabled) mc.framebuffer.enableStencil()
         glPushAttrib(GL_ALL_ATTRIB_BITS)
+        depthState = glIsEnabled(GL_DEPTH_TEST)
+        activeTexture = glGetInteger(GL_ACTIVE_TEXTURE)
+        textureState = glGetInteger(GL_TEXTURE_BINDING_2D)
         GlStateManager.disableAlpha()
         nvgBeginFrame(vg, width, height, 1f)
         nvgTextAlign(vg, NVG_ALIGN_LEFT or NVG_ALIGN_TOP)
@@ -57,6 +66,9 @@ object NVGRenderer : Renderer, Lwjgl3Wrapper by wrapper {
     override fun endFrame() {
         if (!drawing) throw IllegalStateException("[NVGRenderer] Not drawing, but called endFrame")
         nvgEndFrame(vg)
+        depthState?.let { if (it) glEnable(GL_DEPTH_TEST) else glDisable(GL_DEPTH_TEST) }
+        activeTexture?.let { glActiveTexture(it) }
+        textureState?.let { glBindTexture(GL_TEXTURE_2D, it) }
         glPopAttrib()
         GlStateManager.enableAlpha()
         GlStateManager.popMatrix()

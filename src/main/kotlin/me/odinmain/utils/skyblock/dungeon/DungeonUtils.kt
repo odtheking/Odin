@@ -23,6 +23,9 @@ import net.minecraft.util.Vec3
 import net.minecraftforge.event.entity.EntityJoinWorldEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import java.io.File
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
 import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.roundToLong
@@ -228,9 +231,18 @@ object DungeonUtils {
             val (_, name, clazz, clazzLevel) = tablistRegex.find(displayName)?.destructured ?: continue
 
             previousTeammates.find { it.name == name }?.let { player -> player.isDead = clazz == "DEAD" } ?:
-            previousTeammates.add(DungeonPlayer(name, DungeonClass.entries.find { it.name == clazz } ?: continue, clazzLvl = romanToInt(clazzLevel), Image("https://mc-heads.net/avatar/$name/128"), mc.theWorld?.getPlayerEntityByName(name), false))
+            previousTeammates.add(DungeonPlayer(name, DungeonClass.entries.find { it.name == clazz } ?: continue, clazzLvl = romanToInt(clazzLevel),
+                imageFromName(name) ?: continue, mc.theWorld?.getPlayerEntityByName(name), false))
         }
         return previousTeammates
+    }
+
+    fun imageFromName(playerName: String): Image? {
+        val inputStream = mc.resourceManager?.getResource(mc.netHandler?.getPlayerInfo(playerName)?.locationSkin ?: return null)?.inputStream ?: return null
+        val tempFile = File.createTempFile("tempImage", null)
+        tempFile.deleteOnExit()
+        Files.copy(inputStream, tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING)
+        return Image(tempFile.absolutePath)
     }
 
     const val WITHER_ESSENCE_ID = "e0f3e929-869e-3dca-9504-54c666ee6f23"

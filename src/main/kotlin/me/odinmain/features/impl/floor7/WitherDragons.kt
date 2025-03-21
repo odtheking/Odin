@@ -39,7 +39,6 @@ object WitherDragons : Module(
 ) {
     private val dragonTimerDropDown by DropdownSetting("Dragon Timer Dropdown")
     private val dragonTimer by BooleanSetting("Dragon Timer", true, description = "Displays a timer for when M7 dragons spawn.").withDependency { dragonTimerDropDown }
-    val addUselessDecimal by BooleanSetting("Add Useless Decimal", false, description = "Adds a decimal to the timer.").withDependency { dragonTimer && dragonTimerDropDown }
     private val HUD by TextHUD("Dragon Timer HUD") { color, font, shadow ->
         needs { DungeonUtils.getF7Phase() == M7Phases.P5 }
         buildText(
@@ -150,7 +149,7 @@ object WitherDragons : Module(
         if (dragonTimer) {
             WitherDragonsEnum.entries.forEach { dragon ->
                 if (dragon.state == WitherDragonState.SPAWNING) Renderer.drawStringInWorld(
-                    "§${dragon.colorCode}${dragon.name.first()}: ${colorDragonTimer(dragon.timeToSpawn)}${String.format(Locale.US, "%.2f", dragon.timeToSpawn / 20.0)}${if (addUselessDecimal) "0" else ""}", dragon.spawnPos,
+                    "§${dragon.colorCode}${dragon.name.first()}: ${colorDragonTimer(dragon.timeToSpawn)}${String.format(Locale.US, "%.2f", dragon.timeToSpawn / 20.0)}", dragon.spawnPos,
                     color = Color.WHITE, depth = false, scale = 0.16f
                 )
             }

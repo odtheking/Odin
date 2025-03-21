@@ -1,8 +1,5 @@
 package me.odinmain.features.impl.nether
 
-import com.github.stivais.aurora.animations.Animation
-import com.github.stivais.aurora.dsl.seconds
-import com.github.stivais.aurora.transforms.impl.Alpha
 import me.odinmain.events.impl.ServerTickEvent
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
@@ -21,10 +18,7 @@ object EnrageDisplay : Module(
     private val unit by SelectorSetting("Unit", arrayListOf("Seconds", "Ticks"), description = "The unit of time to display.")
     private val showUnit by BooleanSetting("Show unit", default = false, description = "Displays the unit of time for the enrage duration.")
 
-    private val animation = Alpha.Animated(from = 0f, to = 1f)
-
     private val HUD by TextHUD("Enrage Display") { color, font, shadow ->
-        if (!preview) transform(animation)
         buildText(
             string = "Enrage:",
             supplier = { getDisplay(if (preview) 120 else enrageTimer) },
@@ -46,13 +40,11 @@ object EnrageDisplay : Module(
         onPacket(S29PacketSoundEffect::class.java) {
             if (it.soundName != "mob.zombie.remedy" || it.pitch != 1.0f || it.volume != 0.5f || reaperArmor.any { id -> mc.thePlayer?.getCurrentArmor(reaperArmor.indexOf(id))?.skyblockID != id }) return@onPacket
             enrageTimer = 120
-            animation.animate(0.25.seconds, Animation.Style.EaseOutQuint)
         }
     }
 
     @SubscribeEvent
     fun onTick(event: ServerTickEvent) {
-        if (enrageTimer == 0) animation.animate(0.25.seconds, Animation.Style.EaseOutQuint)
         enrageTimer--
     }
 }

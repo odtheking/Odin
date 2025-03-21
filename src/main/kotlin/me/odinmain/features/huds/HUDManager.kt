@@ -18,6 +18,7 @@ import me.odinmain.features.impl.render.ClickGUI.`gray 38`
 import me.odinmain.features.impl.render.ClickGUI.hoverInformation
 import me.odinmain.features.settings.Setting
 import me.odinmain.features.settings.Setting.Renders.Companion.onValueChanged
+import me.odinmain.utils.runIn
 import me.odinmain.utils.ui.renderer.NVGRenderer
 import me.odinmain.utils.ui.screens.UIHandler
 import kotlin.math.abs
@@ -58,8 +59,8 @@ object HUDManager {
 
         object : Element(copies()) {
             override fun draw() {
-                renderer.line(snapLineX, 0f, snapLineX, ui.main.height, 1f, Color.WHITE.rgba)
-                renderer.line(0f, snapLineY, ui.main.width, snapLineY, 1f, Color.WHITE.rgba)
+                renderer.line(snapLineX, 0f, snapLineX, ui.main.height, 1f, Color.RED.rgba)
+                renderer.line(0f, snapLineY, ui.main.width, snapLineY, 1f, Color.GREEN.rgba)
             }
         }.add()
 
@@ -73,6 +74,7 @@ object HUDManager {
                     hud.x.value = (element.x / ui.main.width) * 100f
                     hud.y.value = (element.y / ui.main.height) * 100f
                 }
+
                 onScroll { (amount) ->
                     hud.scale.set(hud.scale.value + hud.scale.increment * amount)
                     representation.scaleTransformation = hud.scale.value
@@ -178,8 +180,11 @@ object HUDManager {
             UI?.close()
         }
         onRemove {
-            setupHUDs()
             Config.save()
+            UI?.close()
+            runIn(1) {
+                setupHUDs()
+            }
         }
     }
 
