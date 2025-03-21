@@ -55,33 +55,39 @@ object DianaHelper : Module(
     private val resetBurrows by ActionSetting("Reset Burrows", description = "Removes all the current burrows.") { activeBurrows.clear() }
     private var warpLocation: WarpPoint? = null
 
+    private var isDoingDiana: Boolean = false
     private val cmdCooldown = Clock(3_000)
     var renderPos: Vec3? = null
+
     private inline val hasSpade: Boolean
         get() = mc.thePlayer?.inventory?.mainInventory?.find { it.skyblockID == "ANCESTRAL_SPADE" } != null
-    private inline val isDoingDiana: Boolean
-        get() = hasSpade && LocationUtils.currentArea.isArea(Island.Hub) && enabled
 
     init {
-        onPacket<S29PacketSoundEffect>({ isDoingDiana }) {
+        execute(2000) {
+            if (!isDoingDiana)
+                isDoingDiana = enabled && LocationUtils.currentArea.isArea(Island.Hub) && hasSpade
+        }
+
+        onPacket<S29PacketSoundEffect> ({ isDoingDiana }) {
             DianaBurrowEstimate.handleSoundPacket(it)
         }
 
-        onPacket<S2APacketParticles>({ isDoingDiana }) {
+        onPacket<S2APacketParticles> ({ isDoingDiana }) {
             DianaBurrowEstimate.handleParticlePacket(it)
             DianaBurrowEstimate.handleBurrow(it)
         }
 
-        onPacket<C08PacketPlayerBlockPlacement>({ isDoingDiana }) {
+        onPacket<C08PacketPlayerBlockPlacement> ({ isDoingDiana }) {
             DianaBurrowEstimate.blockEvent(it.position)
         }
 
-        onPacket<C07PacketPlayerDigging>({ isDoingDiana }) {
+        onPacket<C07PacketPlayerDigging> ({ isDoingDiana }) {
             DianaBurrowEstimate.blockEvent(it.position)
         }
 
         onWorldLoad {
             DianaBurrowEstimate.onWorldLoad()
+            isDoingDiana = false
             renderPos = null
         }
 
@@ -89,6 +95,7 @@ object DianaHelper : Module(
             if (sendInqMsg) partyMessage("${PlayerUtils.getPositionString()} I dug up an inquisitor come over here!")
             PlayerUtils.alert("§6§lInquisitor!")
         }
+
         onMessage(Regex("^(You dug out a Griffin Burrow! .+|You finished the Griffin burrow chain! \\(4\\/4\\))\$")) {
             DianaBurrowEstimate.onBurrowDug()
         }

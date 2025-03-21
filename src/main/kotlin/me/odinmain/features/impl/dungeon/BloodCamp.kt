@@ -20,6 +20,8 @@ import me.odinmain.utils.skyblock.devMessage
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.inBoss
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.inDungeons
+import me.odinmain.utils.skyblock.dungeon.DungeonUtils.passedRooms
+import me.odinmain.utils.skyblock.dungeon.tiles.RoomType
 import me.odinmain.utils.skyblock.getSkullValue
 import net.minecraft.entity.boss.BossStatus
 import net.minecraft.entity.item.EntityArmorStand
@@ -55,7 +57,8 @@ object BloodCamp : Module(
     private val watcherHighlight by BooleanSetting("Watcher Highlight", default = false, description = "Highlights the watcher.")
 
     init {
-        onPacket<S17PacketEntityLookMove>({ bloodHelper && enabled }) { packet ->
+        onPacket<S17PacketEntityLookMove> ({ bloodHelper && enabled }) { packet ->
+            if (!inDungeons || inBoss || passedRooms.none { it.data.type == RoomType.BLOOD }) return@onPacket
             val world = mc.theWorld ?: return@onPacket
             val entity = packet.getEntity(world) as? EntityArmorStand ?: return@onPacket
             if (currentWatcherEntity?.let { it.getDistanceToEntity(entity) <= 20 } != true || entity.getEquipmentInSlot(4)?.item != Items.skull || getSkullValue(entity) !in allowedMobSkulls) return@onPacket
@@ -142,6 +145,8 @@ object BloodCamp : Module(
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
+        if (!inDungeons || inBoss || passedRooms.none { it.data.type == RoomType.BLOOD }) return
+
         if (watcherHighlight)
             currentWatcherEntity?.let { Renderer.drawBox(it.renderVec.toAABB(), Color.RED, 1f, depth = isLegitVersion, fillAlpha = 0) }
 

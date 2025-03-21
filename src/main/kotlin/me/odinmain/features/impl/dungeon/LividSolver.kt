@@ -13,6 +13,7 @@ import me.odinmain.utils.render.HighlightRenderer
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.runIn
 import me.odinmain.utils.skyblock.devMessage
+import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.getBlockAt
 import me.odinmain.utils.skyblock.getBlockStateAt
 import me.odinmain.utils.skyblock.modMessage
@@ -42,6 +43,7 @@ object LividSolver : Module(
 
     @SubscribeEvent
     fun onBlockChange(event: BlockChangeEvent) {
+        if (!DungeonUtils.inBoss || !DungeonUtils.isFloor(5)) return
         if (event.pos != woolLocation) return
         val block = getBlockAt(event.pos)
         if (block != Blocks.wool) {
@@ -55,10 +57,10 @@ object LividSolver : Module(
 
     @SubscribeEvent
     fun onPostMetaData(event: PostEntityMetadata) {
+        if (!DungeonUtils.inBoss || !DungeonUtils.isFloor(5)) return
         val entity = (mc.theWorld?.getEntityByID(event.packet.entityId) as? EntityOtherPlayerMP)?.takeIf { it.name == "${currentLivid.name} Livid" } ?: return
         currentLivid.entity = entity
     }
-
 
     private data class Livid(val name: String, val colorCode: Char, val color: Color, val woolMetadata: Int, var entity: EntityOtherPlayerMP? = null)
 

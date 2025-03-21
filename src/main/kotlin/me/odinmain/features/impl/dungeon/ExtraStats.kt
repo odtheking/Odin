@@ -63,7 +63,6 @@ object ExtraStats : Module(
         }
     }
 
-
     @SubscribeEvent
     fun onChatMessage(event: ClientChatReceivedEvent) {
         if (DungeonUtils.inDungeons && regexes.any { it.matches(event.message.unformattedText.noControlCodes) }) event.isCanceled = true
