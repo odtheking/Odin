@@ -30,8 +30,10 @@ import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.player.InventoryPlayer
 import net.minecraft.item.EnumDyeColor
 import net.minecraft.network.play.client.C0DPacketCloseWindow
+import net.minecraft.network.play.client.C0EPacketClickWindow
 import net.minecraft.network.play.server.S2DPacketOpenWindow
 import net.minecraft.network.play.server.S2EPacketCloseWindow
+import net.minecraft.network.play.server.S2FPacketSetSlot
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.event.entity.player.ItemTooltipEvent
 import net.minecraftforge.fml.common.Loader
@@ -96,6 +98,7 @@ object TerminalSolver : Module(
     var lastTermOpened: TerminalHandler? = null
     private val startsWithRegex = Regex("What starts with: '(\\w+)'?")
     private var previousWindowName = ""
+    private var lastClickTime = 0L
 
     init {
         onPacket<S2DPacketOpenWindow> { packet ->
@@ -135,6 +138,17 @@ object TerminalSolver : Module(
 
         onPacket<S2EPacketCloseWindow> {
             leftTerm()
+        }
+
+        onPacket<C0EPacketClickWindow> {
+            lastClickTime = System.currentTimeMillis()
+        }
+
+        execute(50) {
+            if (System.currentTimeMillis() - lastClickTime >= 600) currentTerm?.let {
+                it.solve(S2FPacketSetSlot(mc.thePlayer?.openContainer?.windowId ?: return@execute, it.type.windowSize - 1, null))
+                it.isClicked = false
+            }
         }
 
         onMessage(Regex("(.{1,16}) activated a terminal! \\((\\d)/(\\d)\\)")) { message ->
