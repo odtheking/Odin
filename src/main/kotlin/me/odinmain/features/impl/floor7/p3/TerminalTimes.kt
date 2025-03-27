@@ -32,9 +32,8 @@ object TerminalTimes : Module(
 
     @SubscribeEvent
     fun onTerminalClose(event: TerminalEvent.Solved) {
-        if (event.terminal.type == TerminalTypes.NONE) return
         val pbs = if (mc.currentScreen is TermSimGUI) TerminalSimulator.termSimPBs else terminalPBs
-        pbs.time(event.terminal.type.ordinal, (System.currentTimeMillis() - event.terminal.timeOpened) / 1000.0, "s§7!", "§a${event.terminal.guiName}${if (mc.currentScreen is TermSimGUI) " §7(termsim)" else ""} §7solved in §6", addPBString = true, addOldPBString = true, sendOnlyPB = sendMessage)
+        pbs.time(event.terminal.type.ordinal, (System.currentTimeMillis() - event.terminal.timeOpened) / 1000.0, "s§7!", "§a${event.terminal.type.guiName}${if (mc.currentScreen is TermSimGUI) " §7(termsim)" else ""} §7solved in §6", addPBString = true, addOldPBString = true, sendOnlyPB = sendMessage)
     }
 
     private val terminalCompleteRegex = Regex("(.{1,16}) (activated|completed) a (terminal|lever|device)! \\((\\d)/(\\d)\\)")

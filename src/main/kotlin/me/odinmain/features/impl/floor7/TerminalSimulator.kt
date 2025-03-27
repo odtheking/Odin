@@ -28,14 +28,13 @@ object TerminalSimulator : Module(
     }
 
     fun openRandomTerminal(ping: Long = 0L) {
-        when (listOf(TerminalTypes.PANES, TerminalTypes.RUBIX, TerminalTypes.ORDER, TerminalTypes.STARTS_WITH, TerminalTypes.SELECT).random()) {
+        when (listOf(TerminalTypes.PANES, TerminalTypes.RUBIX, TerminalTypes.NUMBERS, TerminalTypes.STARTS_WITH, TerminalTypes.SELECT).random()) {
             TerminalTypes.STARTS_WITH -> StartsWithSim().open(ping)
-            TerminalTypes.PANES       -> CorrectPanesSim.open(ping)
+            TerminalTypes.PANES       -> PanesSim.open(ping)
             TerminalTypes.SELECT      -> SelectAllSim().open(ping)
-            TerminalTypes.ORDER       -> ClickInOrderSim.open(ping)
+            TerminalTypes.NUMBERS       -> NumbersSim.open(ping)
             TerminalTypes.MELODY      -> MelodySim.open(ping)
             TerminalTypes.RUBIX       -> RubixSim.open(ping)
-            TerminalTypes.NONE        -> {}
         }
     }
 }

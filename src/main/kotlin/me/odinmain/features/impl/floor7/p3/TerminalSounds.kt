@@ -4,7 +4,7 @@ import me.odinmain.events.impl.PacketEvent
 import me.odinmain.events.impl.TerminalEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.features.impl.floor7.p3.TerminalSolver.currentTerm
+import me.odinmain.features.impl.floor7.p3.TerminalSolver
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.equalsOneOf
@@ -61,16 +61,12 @@ object TerminalSounds : Module(
 
         onMessage(Regex("The Core entrance is opening!"), { enabled && shouldReplaceSounds }) { mc.thePlayer.playSound("note.pling", 8f, 4f) }
 
-        onPacket<C0EPacketClickWindow> { if (shouldReplaceSounds) clickSlot(it.slotId) }
+        onPacket<C0EPacketClickWindow> { if (shouldReplaceSounds) clickSlot(it.slotId, it.usedButton) }
     }
 
-    private fun clickSlot(slot: Int) {
-        if (
-            (!currentTerm.type.equalsOneOf(TerminalTypes.MELODY, TerminalTypes.ORDER) && slot !in TerminalSolver.currentTerm.solution) ||
-            (currentTerm.type == TerminalTypes.ORDER && slot != (TerminalSolver.currentTerm.solution.firstOrNull() ?: return)) ||
-            (currentTerm.type == TerminalTypes.MELODY && slot !in intArrayOf(43, 34, 25, 16))
-        ) return
-        if ((TerminalSolver.currentTerm.solution.size == 1 || (currentTerm.type == TerminalTypes.MELODY && slot == 43)) && completeSounds) {
+    private fun clickSlot(slot: Int, button: Int) {
+        if (TerminalSolver.currentTerm?.canClick(slot, button) == false) return
+        if ((TerminalSolver.currentTerm?.solution?.size == 1 || (TerminalSolver.currentTerm?.type == TerminalTypes.MELODY && slot == 43)) && completeSounds) {
             if (!cancelLastClick) playTerminalSound()
             playCompleteSound()
         } else playTerminalSound()
@@ -86,5 +82,5 @@ object TerminalSounds : Module(
         lastPlayed = System.currentTimeMillis()
     }
 
-    private inline val shouldReplaceSounds get() = (currentTerm.type != TerminalTypes.NONE && clickSounds)
+    private inline val shouldReplaceSounds get() = (TerminalSolver.currentTerm?.type != null && clickSounds)
 }

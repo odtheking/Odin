@@ -203,7 +203,7 @@ fun formatTime(time: Long, decimalPlaces: Int = 2): String {
         remaining -= it * 60000
         if (it > 0) "${it}m " else ""
     }
-    return "$hours$minutes${(remaining / 1000f).toFixed()}s"
+    return "$hours$minutes${(remaining / 1000f).toFixed(decimalPlaces)}s"
 }
 
 inline val Char.isHexaDecimal

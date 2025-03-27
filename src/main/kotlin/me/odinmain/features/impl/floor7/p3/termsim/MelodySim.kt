@@ -9,7 +9,7 @@ import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
 
 object MelodySim : TermSimGUI(
-    TerminalTypes.MELODY.guiName, TerminalTypes.MELODY.size
+    TerminalTypes.MELODY.guiName, TerminalTypes.MELODY.windowSize
 ) {
     private val magentaPane get() = ItemStack(pane, 1, 2 ).apply { setStackDisplayName("") }
     private val greenPane   get() = ItemStack(pane, 1, 5 ).apply { setStackDisplayName("") }
@@ -48,12 +48,12 @@ object MelodySim : TermSimGUI(
         updateGui()
 
         playTermSimSound()
-        if (currentRow >= 5) TerminalEvent.Solved(TerminalSolver.lastTermOpened).postAndCatch()
+        if (currentRow >= 5) TerminalSolver.lastTermOpened?.let { TerminalEvent.Solved(it).postAndCatch() }
     }
 
     private fun updateGui() {
-        guiInventorySlots?.forEachIndexed { index, currentStack ->
-            guiInventorySlots?.get(index)?.setSlot(guiInventorySlots?.map { it.generateItemStack() }?.getOrNull(index)?.takeIf { it != currentStack.stack } ?: return@forEachIndexed)
+        guiInventorySlots.forEachIndexed { index, currentStack ->
+            currentStack?.setSlot(guiInventorySlots.map { it.generateItemStack() }.getOrNull(index)?.takeIf { it != currentStack.stack } ?: return@forEachIndexed)
         }
     }
 

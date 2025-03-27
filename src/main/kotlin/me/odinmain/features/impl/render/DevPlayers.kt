@@ -1,6 +1,5 @@
 package me.odinmain.features.impl.render
 
-
 import com.google.gson.*
 import com.google.gson.annotations.SerializedName
 import com.mojang.authlib.GameProfile

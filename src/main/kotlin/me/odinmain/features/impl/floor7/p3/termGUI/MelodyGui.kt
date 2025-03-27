@@ -27,7 +27,7 @@ object MelodyGui : TermGui() {
             roundedRectangle(-getTextWidth("Click the button on time!", 20f) / 2, -210, getTextWidth("Click the button on time!", 20f), 3, Color.WHITE, radius = 5f)
         }
 
-        TerminalSolver.currentTerm.solution.forEach { pane ->
+        TerminalSolver.currentTerm?.solution?.forEach { pane ->
             val row = pane / 9 - 1
             val col = pane % 9 - 2
             val colorMelody = when {
@@ -42,18 +42,20 @@ object MelodyGui : TermGui() {
             roundedRectangle(box, colorMelody)
         }
 
-        TerminalSolver.currentTerm.items.forEachIndexed { index, item ->
-            if (Item.getIdFromItem(item?.item) != 159) return@forEachIndexed
-            val row = index / 9 - 1
-            val col = index % 9 - 2
-            val box = BoxWithClass(ceil(-163 + ((gap-20).unaryPlus() * 0.5)) + col * 70, -115 + row * 70, 70 - gap, 70 - gap)
-            if (index !in TerminalSolver.currentTerm.solution) roundedRectangle(box, melodyPressColumColor)
-            itemIndexMap[index] = Box(
-                box.x.toFloat() * customScale + mc.displayWidth / 2,
-                box.y.toFloat() * customScale + mc.displayHeight / 2,
-                box.w.toFloat() * customScale,
-                box.h.toFloat() * customScale
-            )
+        TerminalSolver.currentTerm?.let {
+            it.items.forEachIndexed { index, item ->
+                if (Item.getIdFromItem(item?.item) != 159) return@forEachIndexed
+                val row = index / 9 - 1
+                val col = index % 9 - 2
+                val box = BoxWithClass(ceil(-163 + ((gap - 20).unaryPlus() * 0.5)) + col * 70, -115 + row * 70, 70 - gap, 70 - gap)
+                if (index !in it.solution) roundedRectangle(box, melodyPressColumColor)
+                itemIndexMap[index] = Box(
+                    box.x.toFloat() * customScale + mc.displayWidth / 2,
+                    box.y.toFloat() * customScale + mc.displayHeight / 2,
+                    box.w.toFloat() * customScale,
+                    box.h.toFloat() * customScale
+                )
+            }
         }
     }
 }

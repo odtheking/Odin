@@ -13,7 +13,7 @@ import kotlin.math.floor
 
 class StartsWithSim(private val letter: String = listOf("A", "B", "C", "G", "D", "M", "N", "R", "S", "T").random()) : TermSimGUI(
     "What starts with: \'$letter\'?",
-    TerminalTypes.STARTS_WITH.size
+    TerminalTypes.STARTS_WITH.windowSize
 ) {
     override fun create() {
         createNewGui {
@@ -34,8 +34,8 @@ class StartsWithSim(private val letter: String = listOf("A", "B", "C", "G", "D",
 
         createNewGui { if (it == slot) ItemStack(item, stackSize, metadata).apply { addEnchantment(Enchantment.infinity, 1) } else it.stack }
         playTermSimSound()
-        if (guiInventorySlots?.none { it?.stack?.displayName?.startsWith(letter, true) == true && !it.stack.isItemEnchanted } == true)
-            TerminalEvent.Solved(TerminalSolver.lastTermOpened).postAndCatch()
+        if (guiInventorySlots.none { it?.stack?.displayName?.startsWith(letter, true) == true && !it.stack.isItemEnchanted })
+            TerminalSolver.lastTermOpened?.let { TerminalEvent.Solved(it).postAndCatch() }
     }
 
     private fun getLetterItemStack(filterNot: Boolean = false): ItemStack =

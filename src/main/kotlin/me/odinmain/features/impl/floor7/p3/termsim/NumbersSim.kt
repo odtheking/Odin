@@ -8,8 +8,8 @@ import net.minecraft.inventory.Slot
 import net.minecraft.item.ItemStack
 import kotlin.math.floor
 
-object ClickInOrderSim : TermSimGUI(
-    TerminalTypes.ORDER.guiName, TerminalTypes.ORDER.size
+object NumbersSim : TermSimGUI(
+    TerminalTypes.NUMBERS.guiName, TerminalTypes.NUMBERS.windowSize
 ) {
     override fun create() {
         val used = (1..14).shuffled().toMutableList()
@@ -20,13 +20,13 @@ object ClickInOrderSim : TermSimGUI(
     }
 
     override fun slotClick(slot: Slot, button: Int) {
-        if (guiInventorySlots?.minByOrNull { if (it.stack?.metadata == 14) it.stack?.stackSize ?: 999 else 1000 } != slot) return
+        if (guiInventorySlots.minByOrNull { if (it.stack?.metadata == 14) it.stack?.stackSize ?: 999 else 1000 } != slot) return
         createNewGui {
             if (it == slot) ItemStack(pane, slot.stack.stackSize, 5).apply { setStackDisplayName("") }
             else it.stack
         }
         playTermSimSound()
-        if (guiInventorySlots?.none { it?.stack?.metadata == 14 } == true)
-            TerminalEvent.Solved(TerminalSolver.lastTermOpened).postAndCatch()
+        if (guiInventorySlots.none { it?.stack?.metadata == 14 })
+            TerminalSolver.lastTermOpened?.let { TerminalEvent.Solved(it).postAndCatch() }
     }
 }

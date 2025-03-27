@@ -2,6 +2,8 @@ package me.odinmain.utils.skyblock
 
 import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.PacketEvent
+import me.odinmain.features.impl.floor7.p3.termsim.TermSimGUI
+import me.odinmain.utils.postAndCatch
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import net.minecraft.inventory.ContainerChest
@@ -53,6 +55,7 @@ object PlayerUtils {
     @SubscribeEvent
     fun onPacketSend(event: PacketEvent.Send) {
         if (event.packet !is C0EPacketClickWindow) return
+        //modMessage(System.currentTimeMillis() - lastClickSent)
         lastClickSent = System.currentTimeMillis()
     }
 
@@ -60,6 +63,10 @@ object PlayerUtils {
         if (lastClickSent + 45 > System.currentTimeMillis()) return devMessage("§cIgnoring click on slot §9$slotId.")
         mc.thePlayer?.openContainer?.let {
             if (it !is ContainerChest || slotId !in 0 until it.inventorySlots.size) return
+            if (mc.currentScreen is TermSimGUI) {
+                PacketEvent.Send(C0EPacketClickWindow(it.windowId, slotId, button, mode, it.inventorySlots[slotId].stack, it.getNextTransactionID(mc.thePlayer?.inventory))).postAndCatch()
+                return
+            }
             mc.playerController?.windowClick(it.windowId, slotId, button, mode, mc.thePlayer)
             //mc.netHandler?.networkManager?.sendPacket(C0EPacketClickWindow(it.windowId, slotId, button, mode, it.inventory[slotId], it.getNextTransactionID(mc.thePlayer?.inventory)))
         }

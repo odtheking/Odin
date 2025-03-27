@@ -65,9 +65,9 @@ object StartGUI : TermSimGUI(
                 repeat(6) { i -> TerminalSimulator.termSimPBs.set(i, 999.0) }
                 modMessage("§cPBs reset!")
             }
-            10 -> CorrectPanesSim.open(ping)
+            10 -> PanesSim.open(ping)
             11 -> RubixSim.open(ping)
-            12 -> ClickInOrderSim.open(ping)
+            12 -> NumbersSim.open(ping)
             13 -> openRandomTerminal(ping)
             14 -> StartsWithSim().open(ping)
             15 -> SelectAllSim().open(ping)

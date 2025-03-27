@@ -4,12 +4,13 @@ import me.odinmain.events.impl.TerminalEvent
 import me.odinmain.features.impl.floor7.p3.TerminalSolver
 import me.odinmain.features.impl.floor7.p3.TerminalTypes
 import me.odinmain.utils.postAndCatch
+import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.inventory.Slot
 import net.minecraft.item.ItemStack
 import kotlin.math.floor
 
-object CorrectPanesSim : TermSimGUI(
-    TerminalTypes.PANES.guiName, TerminalTypes.PANES.size
+object PanesSim : TermSimGUI(
+    TerminalTypes.PANES.guiName, TerminalTypes.PANES.windowSize
 ) {
     private val greenPane get() = ItemStack(pane, 1, 5 ).apply { setStackDisplayName("") }
     private val redPane   get() = ItemStack(pane, 1, 14).apply { setStackDisplayName("") }
@@ -24,7 +25,7 @@ object CorrectPanesSim : TermSimGUI(
         createNewGui { if (it == slot) { if (slot.stack?.metadata == 14) greenPane else redPane } else it.stack }
 
         playTermSimSound()
-        if (guiInventorySlots?.none { it?.stack?.metadata == 14 } == true)
-            TerminalEvent.Solved(TerminalSolver.lastTermOpened).postAndCatch()
+        if (guiInventorySlots.none { it?.stack?.metadata == 14 })
+            TerminalSolver.lastTermOpened?.let { TerminalEvent.Solved(it).postAndCatch() }
     }
 }

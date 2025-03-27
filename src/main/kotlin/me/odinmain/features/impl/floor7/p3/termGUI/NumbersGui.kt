@@ -2,17 +2,15 @@ package me.odinmain.features.impl.floor7.p3.termGUI
 
 import me.odinmain.OdinMain.mc
 import me.odinmain.features.impl.floor7.p3.TerminalSolver
-import me.odinmain.features.impl.floor7.p3.TerminalSolver.currentTerm
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.customScale
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.gap
-import me.odinmain.features.impl.floor7.p3.TerminalSolver.hideClicked
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.orderColor
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.orderColor2
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.orderColor3
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.textScale
 import me.odinmain.utils.render.*
 
-object OrderGui : TermGui() {
+object NumbersGui : TermGui() {
     override fun render() {
         setCurrentGui(this)
         itemIndexMap.clear()
@@ -24,28 +22,31 @@ object OrderGui : TermGui() {
             text("Click in order!", 0, -113, Color.WHITE, 20, align = TextAlign.Middle, verticalAlign = TextPos.Top)
             roundedRectangle(-getTextWidth("Click in order!", 20f) / 2, -85, getTextWidth("Click in order!", 20f), 3, Color.WHITE, radius = 5f)
         }
-        currentTerm.solution.forEach { pane ->
-            val row = pane / 9 - 1
-            val col = pane % 9 - 2
-            val amount = currentTerm.items[pane]?.stackSize ?: return@forEach
-            val index = currentTerm.solution.indexOf(pane) + if (currentTerm.clickedSlot != null && hideClicked) -1 else 0
-            if (index in 0 until 3) {
-                val color = when (index) {
-                    0    -> orderColor
-                    1    -> orderColor2
-                    else -> orderColor3
-                }
+        with (TerminalSolver.currentTerm ?: return) {
+            solution.forEach { pane ->
+                val row = pane / 9 - 1
+                val col = pane % 9 - 2
+                val amount = items[pane]?.stackSize ?: return@forEach
+                val index = solution.indexOf(pane)
                 val box = BoxWithClass((-163 + ((gap-20).unaryPlus() * 0.5)) + col * 70, -60 + row * 70, 70 - gap, 70 - gap)
-                roundedRectangle(box, color)
+                if (index in 0 until 3) {
+                    val color = when (index) {
+                        0    -> orderColor
+                        1    -> orderColor2
+                        else -> orderColor3
+                    }
+                    roundedRectangle(box, color)
+                }
                 itemIndexMap[pane] = Box(
                     box.x.toFloat() * customScale + mc.displayWidth / 2,
                     box.y.toFloat() * customScale + mc.displayHeight / 2,
                     box.w.toFloat() * customScale,
                     box.h.toFloat() * customScale
                 )
+
+                if (TerminalSolver.showNumbers && index != -1) mcText(amount.toString(), -163 + col * 70 + 26f , -60 + row * 70 + (27f - (textScale * 3) - (gap * 0.5)), 2 + textScale, Color.WHITE)
             }
-            
-            if (TerminalSolver.showNumbers && index != -1) mcText(amount.toString(), -163 + col * 70 + 26f , -60 + row * 70 + (27f - (textScale * 3) - (gap * 0.5)), 2 + textScale, Color.WHITE)
         }
+
     }
 }

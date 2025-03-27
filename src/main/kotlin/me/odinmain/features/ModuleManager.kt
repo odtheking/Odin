@@ -23,11 +23,13 @@ import me.odinmain.utils.capitalizeFirst
 import me.odinmain.utils.logError
 import me.odinmain.utils.profile
 import me.odinmain.utils.render.getTextWidth
+import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.network.Packet
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import java.util.concurrent.CopyOnWriteArrayList
 
 /**
  * Class that contains all Modules and huds
@@ -38,10 +40,10 @@ object ModuleManager {
     data class MessageFunction(val filter: Regex, val shouldRun: () -> Boolean, val function: (MatchResult) -> Unit)
     data class TickTask(var ticksLeft: Int, val server: Boolean, val function: () -> Unit)
 
-    val packetFunctions = mutableListOf<PacketFunction<Packet<*>>>()
-    val messageFunctions = mutableListOf<MessageFunction>()
-    val worldLoadFunctions = mutableListOf<() -> Unit>()
-    val tickTasks = mutableListOf<TickTask>()
+    val packetFunctions = arrayListOf<PacketFunction<Packet<*>>>()
+    val messageFunctions = arrayListOf<MessageFunction>()
+    val worldLoadFunctions = arrayListOf<() -> Unit>()
+    val tickTasks = arrayListOf<TickTask>()
     val huds = arrayListOf<HudElement>()
 
     val modules: ArrayList<Module> = arrayListOf(
@@ -96,18 +98,14 @@ object ModuleManager {
     }
 
     private fun tickTaskTick(server: Boolean = false) {
-        runCatching {
-            tickTasks.removeAll {
-                if (it.server != server) return@removeAll false
-                if (it.ticksLeft <= 0) {
-                    it.function()
-                    return@removeAll true
-                }
-                it.ticksLeft--
-                false
+        tickTasks.removeAll { tickTask ->
+            if (tickTask.server != server) return@removeAll false
+            if (tickTask.ticksLeft <= 0) {
+                runCatching { tickTask.function() }.onFailure { logError(it, this) }
+                return@removeAll true
             }
-        }.onFailure {
-            logError(it, this)
+            tickTask.ticksLeft--
+            false
         }
     }
 

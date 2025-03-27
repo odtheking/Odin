@@ -38,7 +38,7 @@ object MelodyMessage : Module(
 
     init {
         execute(250) {
-            if (DungeonUtils.getF7Phase() != M7Phases.P3 || TerminalSolver.currentTerm.type != TerminalTypes.MELODY || mc.currentScreen is TermSimGUI) return@execute
+            if (DungeonUtils.getF7Phase() != M7Phases.P3 || TerminalSolver.currentTerm?.type != TerminalTypes.MELODY || mc.currentScreen is TermSimGUI) return@execute
 
             val containerChest = mc.thePlayer.openContainer as? ContainerChest ?: return@execute
             if (containerChest.name != "Click the button on time!" || !melodyProgress) return@execute
