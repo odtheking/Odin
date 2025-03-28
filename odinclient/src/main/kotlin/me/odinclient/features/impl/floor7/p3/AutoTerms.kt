@@ -7,8 +7,6 @@ import me.odinmain.features.impl.floor7.p3.TerminalTypes
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.skyblock.ClickType
-import me.odinmain.utils.skyblock.PlayerUtils.windowClick
-import net.minecraft.network.play.server.S2DPacketOpenWindow
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
@@ -46,7 +44,6 @@ object AutoTerms : Module(
 
         lastClickTime = System.currentTimeMillis()
         firstClick = false
-        isClicked = true
 
         when (type) {
             TerminalTypes.RUBIX ->
