@@ -11,9 +11,7 @@ import me.odinmain.features.settings.impl.SelectorSetting
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.HighlightRenderer
 import me.odinmain.utils.render.Renderer
-import me.odinmain.utils.skyblock.devMessage
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
-import me.odinmain.utils.skyblock.getBlockAt
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.init.Blocks
@@ -41,19 +39,14 @@ object LividSolver : Module(
 
         onWorldLoad {
             currentLivid = Livid.HOCKEY
+            currentLivid.entity = null
         }
     }
 
     @SubscribeEvent
     fun onBlockChange(event: BlockChangeEvent) {
-        if (!DungeonUtils.inBoss || !DungeonUtils.isFloor(5) || event.pos != woolLocation) return
-        val block = getBlockAt(event.pos)
-        if (block != Blocks.wool) {
-            currentLivid.entity = null
-            return
-        }
-        devMessage("metadata: ${block.getMetaFromState(event.updated)} at ${event.pos}")
-        currentLivid = Livid.entries.find { livid -> livid.woolMetadata == block.getMetaFromState(event.updated) } ?: return
+        if (!DungeonUtils.inBoss || !DungeonUtils.isFloor(5) || event.updated.block != Blocks.wool || event.pos != woolLocation) return
+        currentLivid = Livid.entries.find { livid -> livid.woolMetadata == event.updated.block.getMetaFromState(event.updated) } ?: return
         modMessage("Found Livid: §${currentLivid.colorCode}${currentLivid.entityName}")
     }
 
