@@ -13,9 +13,11 @@ import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.LocationUtils.currentDungeon
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.getSkullValue
+import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.skyblock.partyMessage
 import me.odinmain.utils.toAABB
 import net.minecraft.entity.monster.EntityZombie
+import net.minecraft.network.play.server.S13PacketDestroyEntities
 import net.minecraftforge.event.entity.living.LivingDeathEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -36,7 +38,7 @@ object Mimic : Module(
 
     @SubscribeEvent
     fun onEntityLeaveWorld(event: EntityLeaveWorldEvent) {
-        if (DungeonUtils.inDungeons && event.entity is EntityZombie && event.entity.isChild && getSkullValue(event.entity).equals(MIMIC_TEXTURE)) mimicKilled()
+        if (DungeonUtils.inDungeons && event.entity is EntityZombie && event.entity.isChild && !event.entity.isEntityAlive && getSkullValue(event.entity).equals(MIMIC_TEXTURE)) mimicKilled()
     }
 
     @SubscribeEvent
