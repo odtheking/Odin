@@ -36,7 +36,7 @@ object Mimic : Module(
 
     @SubscribeEvent
     fun onEntityLeaveWorld(event: EntityLeaveWorldEvent) {
-        if (DungeonUtils.inDungeons && event.entity is EntityZombie && event.entity.isChild && getSkullValue(event.entity).equals(MIMIC_TEXTURE)) mimicKilled()
+        if (DungeonUtils.inDungeons && event.entity is EntityZombie && event.entity.isChild && !event.entity.isEntityAlive && getSkullValue(event.entity).equals(MIMIC_TEXTURE)) mimicKilled()
     }
 
     @SubscribeEvent
