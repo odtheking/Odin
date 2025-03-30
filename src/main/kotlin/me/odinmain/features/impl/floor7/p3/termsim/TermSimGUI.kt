@@ -9,7 +9,6 @@ import me.odinmain.features.impl.floor7.p3.TerminalSounds
 import me.odinmain.features.impl.floor7.p3.TerminalSounds.clickSounds
 import me.odinmain.utils.postAndCatch
 import me.odinmain.utils.runIn
-import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.entity.player.InventoryPlayer
 import net.minecraft.inventory.InventoryBasic
@@ -95,11 +94,12 @@ open class TermSimGUI(
     }
 
     final override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
-        delaySlotClick(slotUnderMouse ?: return, mouseButton)
+        val slotIndex = slotUnderMouse?.slotIndex ?: return
+        PacketEvent.Send(C0EPacketClickWindow(-2, slotIndex, mouseButton, 0, guiInventorySlots[slotIndex].stack, 0)).postAndCatch()
     }
 
     final override fun handleMouseClick(slotIn: Slot?, slotId: Int, clickedButton: Int, clickType: Int) {
-        delaySlotClick(slotIn ?: return, clickedButton)
+        PacketEvent.Send(C0EPacketClickWindow(-2, slotId, clickedButton, clickType, guiInventorySlots[slotId].stack, 0)).postAndCatch()
     }
 
     fun createNewGui(block: (Slot) -> ItemStack) {

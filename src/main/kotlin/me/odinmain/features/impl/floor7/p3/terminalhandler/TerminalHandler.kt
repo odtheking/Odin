@@ -3,6 +3,7 @@ package me.odinmain.features.impl.floor7.p3.terminalhandler
 import me.odinmain.events.impl.PacketEvent
 import me.odinmain.events.impl.TerminalEvent
 import me.odinmain.features.impl.floor7.p3.TerminalTypes
+import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.postAndCatch
 import me.odinmain.utils.skyblock.ClickType
 import me.odinmain.utils.skyblock.PlayerUtils
@@ -48,10 +49,10 @@ open class TerminalHandler(val type: TerminalTypes, val timeOpened: Long = Syste
     }
 
     fun canClick(slotIndex: Int, button: Int, needed: Int = solution.count { it == slotIndex }): Boolean = when {
-        type == TerminalTypes.MELODY -> slotIndex in intArrayOf(16, 25, 34, 43)
+        type == TerminalTypes.MELODY -> slotIndex.equalsOneOf(16, 25, 34, 43)
         slotIndex !in solution -> false
         type == TerminalTypes.NUMBERS && slotIndex != solution.firstOrNull() -> false
-        type == TerminalTypes.RUBIX && ((needed < 3 && button != 0) || (needed >= 3 && button != 1)) -> false
+        type == TerminalTypes.RUBIX && ((needed < 3 && button == 1) || (needed >= 3 && button != 1)) -> false
         else -> true
     }
 }

@@ -7,7 +7,6 @@ import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.p3.termGUI.CustomTermGui
 import me.odinmain.features.impl.floor7.p3.terminalhandler.*
-import me.odinmain.features.impl.floor7.p3.terminalhandler.TerminalHandler
 import me.odinmain.features.settings.AlwaysActive
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
@@ -158,7 +157,7 @@ object TerminalSolver : Module(
 
     @SubscribeEvent
     fun onGuiRender(event: GuiEvent.DrawGuiBackground) {
-        if (!enabled || currentTerm?.type == null || (currentTerm?.type == TerminalTypes.MELODY && cancelMelodySolver)) return
+        if (!enabled || currentTerm == null || (currentTerm?.type == TerminalTypes.MELODY && cancelMelodySolver)) return
         when (renderType) {
             0 -> {
                 GlStateManager.translate(event.guiLeft.toFloat(), event.guiTop.toFloat(), 399f)
@@ -253,12 +252,12 @@ object TerminalSolver : Module(
 
     @SubscribeEvent
     fun onTooltip(event: ItemTooltipEvent) {
-        if (cancelToolTip && enabled && currentTerm?.type != null) event.toolTip.clear()
+        if (cancelToolTip && enabled && currentTerm != null) event.toolTip.clear()
     }
 
     @SubscribeEvent(receiveCanceled = true, priority = EventPriority.HIGHEST)
     fun onGuiClick(event: GuiEvent.MouseClick) = with(currentTerm) {
-        if (!enabled || this?.type == null) return
+        if (!enabled || this == null) return
 
         if (renderType == 3 && !(type == TerminalTypes.MELODY && cancelMelodySolver)) {
             CustomTermGui.mouseClicked(MouseUtils.mouseX.toInt(), MouseUtils.mouseY.toInt(), event.button)
@@ -284,7 +283,7 @@ object TerminalSolver : Module(
 
     @SubscribeEvent
     fun onGuiKeyPress(event: GuiEvent.KeyPress) {
-        if (!enabled || currentTerm?.type == null || (currentTerm?.type == TerminalTypes.MELODY && cancelMelodySolver)) return
+        if (!enabled || currentTerm == null || (currentTerm?.type == TerminalTypes.MELODY && cancelMelodySolver)) return
         if (renderType == 3 && (Keyboard.isKeyDown(mc.gameSettings.keyBindDrop.keyCode) || (event.key in 2..10))) {
             CustomTermGui.mouseClicked(MouseUtils.mouseX.toInt(), MouseUtils.mouseY.toInt(), if (event.key == Keyboard.KEY_LCONTROL && event.key == mc.gameSettings.keyBindDrop.keyCode) 1 else 0)
             event.isCanceled = true

@@ -64,7 +64,7 @@ object PlayerUtils {
         mc.thePlayer?.openContainer?.let {
             if (it !is ContainerChest || slotId !in 0 until it.inventorySlots.size) return
             if (mc.currentScreen is TermSimGUI) {
-                PacketEvent.Send(C0EPacketClickWindow(it.windowId, slotId, button, mode, it.inventorySlots[slotId].stack, it.getNextTransactionID(mc.thePlayer?.inventory))).postAndCatch()
+                PacketEvent.Send(C0EPacketClickWindow(-2, slotId, button, mode, it.inventorySlots[slotId].stack, 0)).postAndCatch()
                 return
             }
             mc.playerController?.windowClick(it.windowId, slotId, button, mode, mc.thePlayer)

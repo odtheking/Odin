@@ -4,10 +4,8 @@ import me.odinmain.events.impl.PacketEvent
 import me.odinmain.events.impl.TerminalEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.features.impl.floor7.p3.TerminalSolver
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
-import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.skyblock.PlayerUtils
 import net.minecraft.network.play.client.C0EPacketClickWindow
 import net.minecraft.network.play.server.S29PacketSoundEffect
@@ -27,7 +25,7 @@ object TerminalSounds : Module(
     ).withDependency { sound == defaultSounds.size - 1 && clickSounds }
     private val clickVolume by NumberSetting("Click Volume", 1f, 0, 1, .01f, description = "Volume of the sound.").withDependency { clickSounds }
     private val clickPitch by NumberSetting("Click Pitch", 2f, 0, 2, .01f, description = "Pitch of the sound.").withDependency { clickSounds }
-    val reset by ActionSetting("Play click sound", description = "Plays the sound with the current settings.") {
+    private val reset by ActionSetting("Play click sound", description = "Plays the sound with the current settings.") {
         PlayerUtils.playLoudSound(if (sound == defaultSounds.size - 1) customSound else defaultSounds[sound], clickVolume, clickPitch)
     }
     private val completeSounds by BooleanSetting("Complete Sounds", default = false, description = "Plays a sound when you complete a terminal.")
@@ -38,7 +36,7 @@ object TerminalSounds : Module(
     ).withDependency { completedSound == defaultSounds.size - 1 && completeSounds }
     private val completeVolume by NumberSetting("Completion Volume", 1f, 0, 1, .01f, description = "Volume of the sound.").withDependency { completeSounds }
     private val completePitch by NumberSetting("Completion Pitch", 2f, 0, 2, .01f, description = "Pitch of the sound.").withDependency { completeSounds }
-    val playCompleteSound by ActionSetting("Play complete sound", description = "Plays the sound with the current settings.") {
+    private val playCompleteSound by ActionSetting("Play complete sound", description = "Plays the sound with the current settings.") {
         PlayerUtils.playLoudSound(if (completedSound == defaultSounds.size - 1) customCompleteSound else defaultSounds[completedSound], completeVolume, completePitch)
     }
 
@@ -61,12 +59,11 @@ object TerminalSounds : Module(
 
         onMessage(Regex("The Core entrance is opening!"), { enabled && shouldReplaceSounds }) { mc.thePlayer.playSound("note.pling", 8f, 4f) }
 
-        onPacket<C0EPacketClickWindow> { if (shouldReplaceSounds) clickSlot(it.slotId, it.usedButton) }
+        onPacket<C0EPacketClickWindow> ({ enabled && shouldReplaceSounds }) { playSoundForSlot(it.slotId) }
     }
 
-    private fun clickSlot(slot: Int, button: Int) {
-        if (TerminalSolver.currentTerm?.canClick(slot, button) == false) return
-        if ((TerminalSolver.currentTerm?.solution?.size == 1 || (TerminalSolver.currentTerm?.type == TerminalTypes.MELODY && slot == 43)) && completeSounds) {
+    private fun playSoundForSlot(slot: Int) {
+        if ((TerminalSolver.currentTerm?.solution?.size == 0 || (TerminalSolver.currentTerm?.type == TerminalTypes.MELODY && slot == 43)) && completeSounds) {
             if (!cancelLastClick) playTerminalSound()
             playCompleteSound()
         } else playTerminalSound()
@@ -82,5 +79,5 @@ object TerminalSounds : Module(
         lastPlayed = System.currentTimeMillis()
     }
 
-    private inline val shouldReplaceSounds get() = (TerminalSolver.currentTerm?.type != null && clickSounds)
+    private inline val shouldReplaceSounds get() = (TerminalSolver.currentTerm != null && clickSounds)
 }

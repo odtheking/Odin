@@ -21,7 +21,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object LividSolver : Module(
     name = "Livid Solver",
-    description = "Automatically solves the Livid puzzle in dungeons.",
+    description = "Provides a visual cue for the correct Livid's location in the boss fight.",
     category = Category.DUNGEON
 ) {
     private val mode by SelectorSetting("Mode", HighlightRenderer.HIGHLIGHT_MODE_DEFAULT, HighlightRenderer.highlightModeList, description = HighlightRenderer.HIGHLIGHT_MODE_DESCRIPTION)

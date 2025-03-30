@@ -32,7 +32,7 @@ object BlockOverlay : Module(
     private val lineSmoothing by BooleanSetting("Line Smoothing", true, description = "Makes the lines smoother.").withDependency { blockOverlayToggle && (style == 1 || style == 2) }
     private val disableWhenEtherwarping by BooleanSetting("Disable When Etherwarping", true, description = "Disables the block overlay when etherwarping.").withDependency { blockOverlayToggle }
 
-    private val entityToggle by BooleanSetting("Entity Highlight", true, description = "Master toggle for Entity Highlight feature.")
+    private val entityToggle by BooleanSetting("Entity Highlight", false, description = "Master toggle for Entity Highlight feature.")
 
     private val entityMode by SelectorSetting("Mode", HighlightRenderer.HIGHLIGHT_MODE_DEFAULT, HighlightRenderer.highlightModeList, description = HighlightRenderer.HIGHLIGHT_MODE_DESCRIPTION).withDependency { entityToggle }
     private val entityColor by ColorSetting("Entity Color", Color.WHITE.withAlpha(0.75f), true, description = "The color of the highlight.").withDependency { entityToggle }
