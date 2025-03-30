@@ -1,5 +1,6 @@
 package me.odinmain.features.impl.floor7.p3
 
+import me.odinmain.events.impl.GuiEvent
 import me.odinmain.events.impl.PacketEvent
 import me.odinmain.events.impl.TerminalEvent
 import me.odinmain.features.Category
@@ -7,8 +8,9 @@ import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.skyblock.PlayerUtils
-import net.minecraft.network.play.client.C0EPacketClickWindow
+import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.network.play.server.S29PacketSoundEffect
+import net.minecraftforge.fml.common.eventhandler.EventPriority
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object TerminalSounds : Module(
@@ -54,16 +56,25 @@ object TerminalSounds : Module(
         else if (shouldReplaceSounds && completeSounds && !clickSounds) playCompleteSound()
     }
 
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    fun onSlotClick(event: GuiEvent.MouseClick) {
+        if (shouldReplaceSounds) playSoundForSlot((event.gui as? GuiChest)?.slotUnderMouse?.slotIndex ?: return, event.button)
+    }
+
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    fun onCustomSlotClick(event: GuiEvent.CustomTermGuiClick) {
+        if (shouldReplaceSounds) playSoundForSlot(event.slot, event.button)
+    }
+
     init {
         onMessage(Regex("The gate has been destroyed!"), { enabled && shouldReplaceSounds }) { mc.thePlayer.playSound("note.pling", 8f, 4f) }
 
         onMessage(Regex("The Core entrance is opening!"), { enabled && shouldReplaceSounds }) { mc.thePlayer.playSound("note.pling", 8f, 4f) }
-
-        onPacket<C0EPacketClickWindow> ({ enabled && shouldReplaceSounds }) { playSoundForSlot(it.slotId) }
     }
 
-    private fun playSoundForSlot(slot: Int) {
-        if ((TerminalSolver.currentTerm?.solution?.size == 0 || (TerminalSolver.currentTerm?.type == TerminalTypes.MELODY && slot == 43)) && completeSounds) {
+    private fun playSoundForSlot(slot: Int, button: Int) {
+        if (TerminalSolver.currentTerm?.isClicked == true || TerminalSolver.currentTerm?.canClick(slot, button) == false) return
+        if ((TerminalSolver.currentTerm?.solution?.size == 1 || (TerminalSolver.currentTerm?.type == TerminalTypes.MELODY && slot == 43)) && completeSounds) {
             if (!cancelLastClick) playTerminalSound()
             playCompleteSound()
         } else playTerminalSound()

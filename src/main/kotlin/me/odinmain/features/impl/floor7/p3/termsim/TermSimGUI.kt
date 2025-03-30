@@ -94,25 +94,24 @@ open class TermSimGUI(
     }
 
     final override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
-        val slotIndex = slotUnderMouse?.slotIndex ?: return
-        PacketEvent.Send(C0EPacketClickWindow(-2, slotIndex, mouseButton, 0, guiInventorySlots[slotIndex].stack, 0)).postAndCatch()
+        delaySlotClick(slotUnderMouse ?: return, mouseButton)
     }
 
     final override fun handleMouseClick(slotIn: Slot?, slotId: Int, clickedButton: Int, clickType: Int) {
-        PacketEvent.Send(C0EPacketClickWindow(-2, slotId, clickedButton, clickType, guiInventorySlots[slotId].stack, 0)).postAndCatch()
+        delaySlotClick(slotIn ?: return, clickedButton)
     }
 
-    fun createNewGui(block: (Slot) -> ItemStack) {
+    protected fun createNewGui(block: (Slot) -> ItemStack) {
         PacketEvent.Receive(S2DPacketOpenWindow(0, "minecraft:chest", ChatComponentText(name), size)).postAndCatch()
         guiInventorySlots.forEach { it.setSlot(block(it)) }
     }
 
-    fun Slot.setSlot(stack: ItemStack) {
+    protected fun Slot.setSlot(stack: ItemStack) {
         PacketEvent.Receive(S2FPacketSetSlot(-2, slotNumber, stack)).postAndCatch()
         putStack(stack)
     }
 
-    fun playTermSimSound() {
+    protected fun playTermSimSound() {
         if (!TerminalSounds.enabled || !clickSounds) mc.thePlayer?.playSound("random.orb", 1f, 1f)
     }
 }

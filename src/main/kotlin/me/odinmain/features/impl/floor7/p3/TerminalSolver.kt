@@ -255,7 +255,7 @@ object TerminalSolver : Module(
         if (cancelToolTip && enabled && currentTerm != null) event.toolTip.clear()
     }
 
-    @SubscribeEvent(receiveCanceled = true, priority = EventPriority.HIGHEST)
+    @SubscribeEvent(receiveCanceled = true, priority = EventPriority.HIGH)
     fun onGuiClick(event: GuiEvent.MouseClick) = with(currentTerm) {
         if (!enabled || this == null) return
 
