@@ -12,11 +12,12 @@ import me.odinmain.utils.render.getTextWidth
 import me.odinmain.utils.render.text
 import me.odinmain.utils.runIn
 import me.odinmain.utils.skyblock.getBlockAt
-import me.odinmain.utils.skyblock.isAir
+import me.odinmain.utils.skyblock.getBlockStateAt
 import me.odinmain.utils.toVec3
 import net.minecraft.block.BlockStairs
 import net.minecraft.block.properties.IProperty
 import net.minecraft.block.state.IBlockState
+import net.minecraft.init.Blocks
 import net.minecraft.network.play.client.C07PacketPlayerDigging
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
@@ -62,26 +63,26 @@ object CanClip : Module(
         if (prev != canClip) animation.start()
     }
 
-    private val Blocks = mutableMapOf<Vec3, String>()
+    private val blocks = mutableMapOf<Vec3, String>()
 
     init {
         onPacket<C07PacketPlayerDigging> {
             if (it.status != C07PacketPlayerDigging.Action.START_DESTROY_BLOCK || !line || getBlockAt(it.position) !is BlockStairs) return@onPacket
-            val state = mc.theWorld?.getBlockState(it.position) ?: return@onPacket
+            val state = getBlockStateAt(it.position)
 
             runIn(1) {
-                if (isAir(it.position)) Blocks[it.position.toVec3()] = getDirection(state)
+                if (state.block == Blocks.air) blocks[it.position.toVec3()] = getDirection(state)
             }
         }
 
         onWorldLoad {
-            Blocks.clear()
+            blocks.clear()
         }
     }
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-        Blocks.forEach { (pos, dir) ->
+        blocks.forEach { (pos, dir) ->
             val pos1: Vec3
             val pos2: Vec3
             when (dir) {

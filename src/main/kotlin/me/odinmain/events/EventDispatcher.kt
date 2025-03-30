@@ -9,6 +9,7 @@ import me.odinmain.utils.skyblock.dungeon.DungeonUtils.dungeonItemDrops
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.inBoss
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.inDungeons
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.isSecret
+import me.odinmain.utils.skyblock.getBlockStateAt
 import me.odinmain.utils.skyblock.unformattedName
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.entity.item.EntityItem
@@ -37,7 +38,7 @@ object EventDispatcher {
     @SubscribeEvent
     fun onPacket(event: PacketEvent.Send) = with(event.packet) {
         if (inDungeons && this is C08PacketPlayerBlockPlacement && position != null)
-            SecretPickupEvent.Interact(position, mc.theWorld?.getBlockState(position)?.takeIf { isSecret(it, position) } ?: return).postAndCatch()
+            SecretPickupEvent.Interact(position, getBlockStateAt(position).takeIf { isSecret(it, position) } ?: return).postAndCatch()
     }
 
     /**

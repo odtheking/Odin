@@ -178,7 +178,6 @@ object GhostBlocks : Module(
         }
     }
 
-
     // TODO: MAKE THIS JSON PLS ITS SO BAD
     private val enderChests = mapOf(
         1 to arrayOf(
