@@ -145,7 +145,7 @@ enum class ItemRarity(
     RARE("RARE", "§9", Color.BLUE),
     EPIC("EPIC", "§5", Color.PURPLE),
     LEGENDARY("LEGENDARY", "§6", Color.ORANGE),
-    MYTHIC("MYTHIC", "§d", Color.MAGENTA),
+    MYTHIC("MYTHIC", "§d", Color.PINK),
     DIVINE("DIVINE", "§b", Color.CYAN),
     SPECIAL("SPECIAL", "§c", Color.RED),
     VERY_SPECIAL("VERY SPECIAL", "§c", Color.RED);

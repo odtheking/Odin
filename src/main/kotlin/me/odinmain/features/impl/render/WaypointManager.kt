@@ -31,7 +31,7 @@ object WaypointManager {
 
     private val colors = listOf(
         Color.ORANGE, Color.GREEN, Color.PINK, Color.CYAN, Color.YELLOW, Color.DARK_RED, Color.WHITE,
-        Color.PURPLE, Color.YELLOW, Color.RED, Color.PINK, Color.DARK_GREEN, Color.BLUE, Color.MAGENTA
+        Color.PURPLE, Color.YELLOW, Color.RED, Color.PINK, Color.DARK_GREEN, Color.BLUE
     )
 
     fun addTempWaypoint(name: String = "§fWaypoint", vec3: Vec3i) {

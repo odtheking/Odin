@@ -86,7 +86,7 @@ object DungeonWaypoints : Module(
     private inline val selectedColor get() = when (colorPallet) {
         0 -> color
         1 -> Color.CYAN
-        2 -> Color.MAGENTA
+        2 -> Color.PURPLE
         3 -> Color.YELLOW
         4 -> Color.GREEN
         5 -> Color.RED

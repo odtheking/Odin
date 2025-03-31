@@ -23,7 +23,7 @@ object GyroWand : Module(
     description = "Shows area of effect and cooldown of the Gyrokinetic Wand.",
     category = Category.SKYBLOCK
 ) {
-    private val color by ColorSetting("Color", Color.MAGENTA.withAlpha(0.5f), allowAlpha = true, description = "The color of the Gyrokinetic Wand range.")
+    private val color by ColorSetting("Color", Color.PURPLE.withAlpha(0.5f), allowAlpha = true, description = "The color of the Gyrokinetic Wand range.")
     private val thickness by NumberSetting("Thickness", 0.4f, 0, 10, 0.05f, description = "The thickness of the Gyrokinetic Wand range.")
     private val steps by NumberSetting("Smoothness", 40, 20, 80, 1, description = "The amount of steps to use when rendering the Gyrokinetic Wand range.")
     private val showCooldown by BooleanSetting("Show Cooldown", true, description = "Shows the cooldown of the Gyrokinetic Wand.")
