@@ -88,6 +88,7 @@ open class TermSimGUI(
         if (!doesAcceptClick || slot.inventory != inv || (slot.stack?.item == pane && slot.stack?.metadata == 15)) return
         doesAcceptClick = false
         runIn((ping / 50).toInt()) {
+            if (OdinMain.mc.currentScreen != this) return@runIn
             doesAcceptClick = true
             slotClick(slot, button)
         }

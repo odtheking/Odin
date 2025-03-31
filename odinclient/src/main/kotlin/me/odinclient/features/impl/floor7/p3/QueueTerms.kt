@@ -9,6 +9,7 @@ import me.odinmain.features.impl.floor7.p3.TerminalTypes
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.skyblock.ClickType
 import me.odinmain.utils.skyblock.devMessage
+import net.minecraftforge.fml.common.eventhandler.EventPriority
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import java.util.*
@@ -24,12 +25,11 @@ object QueueTerms : Module(
     private val queue: Queue<Click> = LinkedList()
     private var lastClickTime = 0L
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.LOWEST)
     fun onCustomTermClick(event: GuiEvent.CustomTermGuiClick) {
         with (TerminalSolver.currentTerm ?: return) {
-            if (type == TerminalTypes.MELODY || TerminalSolver.renderType != 3 || !isClicked) return
+            if (type == TerminalTypes.MELODY || TerminalSolver.renderType != 3 || !isClicked || !canClick(event.slot, event.button)) return
 
-            if (!canClick(event.slot, event.button)) return@with
             queue.offer(Click(event.slot, event.button))
             simulateClick(event.slot, if (event.button == 0) ClickType.Middle else ClickType.Right)
 

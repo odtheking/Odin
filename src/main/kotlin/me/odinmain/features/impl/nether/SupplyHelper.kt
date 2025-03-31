@@ -38,6 +38,7 @@ object SupplyHelper : Module(
         }
 
         onMessage(supplyPickUpRegex, { sendSupplyTime && enabled }) {
+            if (!sendSupplyTime || !KuudraUtils.inKuudra || KuudraUtils.phase != 1) return@onMessage
             val (name, current, total) = it.destructured
             modMessage("§6$name §a§lrecovered a supply in ${formatTime((System.currentTimeMillis() - startRun))}! §r§8($current/$total)", "")
         }
@@ -45,8 +46,8 @@ object SupplyHelper : Module(
 
     @SubscribeEvent
     fun onChatMessage(event: ClientChatReceivedEvent) {
-        if (!KuudraUtils.inKuudra || KuudraUtils.phase != 1 && !sendSupplyTime) return
-        if (supplyPickUpRegex.matches(event.message.unformattedText)) event.isCanceled = true
+        if (sendSupplyTime && KuudraUtils.inKuudra && KuudraUtils.phase == 1 && supplyPickUpRegex.matches(event.message.unformattedText))
+            event.isCanceled = true
     }
 
     @SubscribeEvent

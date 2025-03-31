@@ -25,9 +25,7 @@ object KuudraRequeue : Module(
             }
 
             runIn(delay * 20) {
-                if (!disableRequeue) {
-                    sendCommand("od t${LocationUtils.kuudraTier}", true)
-                }
+                if (!disableRequeue) sendCommand("od t${LocationUtils.kuudraTier}", true)
             }
         }
 
@@ -47,11 +45,14 @@ object KuudraRequeue : Module(
         onMessage(Regex("You have been kicked from the party by (\\[.+])? ?(.{1,16})")) {
             disableRequeue = true
         }
+
         onMessage(Regex("You left the party.")) {
             disableRequeue = true
         }
+
         onMessage(Regex("(\\[.+])? ?(.{1,16}) has disbanded the party.")) {
             disableRequeue = true
         }
+
     }
 }

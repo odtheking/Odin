@@ -36,13 +36,12 @@ object Mimic : Module(
 
     @SubscribeEvent
     fun onEntityLeaveWorld(event: EntityLeaveWorldEvent) {
-        if (DungeonUtils.inDungeons && event.entity is EntityZombie && event.entity.isChild && !event.entity.isEntityAlive && getSkullValue(event.entity).equals(MIMIC_TEXTURE)) mimicKilled()
+        if (DungeonUtils.inDungeons && event.entity is EntityZombie && event.entity.isChild && !event.entity.isEntityAlive && getSkullValue(event.entity) == MIMIC_TEXTURE) mimicKilled()
     }
 
     @SubscribeEvent
     fun onEntityDeath(event: LivingDeathEvent) = with(event.entity) {
-        if (!DungeonUtils.inDungeons || this !is EntityZombie || !this.isChild || !(0..3).all { this.getCurrentArmor(it) == null }) return
-        mimicKilled()
+        if (DungeonUtils.inDungeons && this is EntityZombie && isChild && (0..3).all { getCurrentArmor(it) == null }) mimicKilled()
     }
 
     @SubscribeEvent

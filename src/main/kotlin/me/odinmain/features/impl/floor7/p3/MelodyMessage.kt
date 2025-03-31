@@ -33,7 +33,7 @@ object MelodyMessage : Module(
         if (sendMelodyMessage) partyMessage(melodyMessage)
         if (melodySendCoords) sendCommand("od sendcoords", true)
 
-        claySlots = hashMapOf(25 to "Melody terminal is at 25%", 34 to "Melody terminal is at 50%", 43 to "Melody terminal is at 75%")
+        claySlots = hashMapOf(25 to "Melody 25%", 34 to "Melody 50%", 43 to "Melody 75%")
     }
 
     init {
