@@ -9,7 +9,7 @@ import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
 
 object MelodySim : TermSimGUI(
-    TerminalTypes.MELODY.guiName, TerminalTypes.MELODY.windowSize
+    TerminalTypes.MELODY.windowName, TerminalTypes.MELODY.windowSize
 ) {
     private val magentaPane get() = ItemStack(pane, 1, 2 ).apply { setStackDisplayName("") }
     private val greenPane   get() = ItemStack(pane, 1, 5 ).apply { setStackDisplayName("") }

@@ -102,7 +102,7 @@ object TerminalSolver : Module(
     init {
         onPacket<S2DPacketOpenWindow> { packet ->
             previousWindowName = packet.windowTitle?.formattedText?.noControlCodes?.takeIf { it != previousWindowName } ?: return@onPacket
-            val newTermType = TerminalTypes.entries.find { terminal -> previousWindowName.startsWith(terminal.guiName) }
+            val newTermType = TerminalTypes.entries.find { terminal -> previousWindowName.startsWith(terminal.windowName) }
 
             currentTerm = when (newTermType) {
                 TerminalTypes.PANES -> PanesHandler()
@@ -300,6 +300,7 @@ object TerminalSolver : Module(
             MinecraftForge.EVENT_BUS.unregister(it)
             devMessage("§cLeft terminal: §6${it.type.name}")
             TerminalEvent.Closed(it).postAndCatch()
+            previousWindowName = ""
             currentTerm = null
         }
     }

@@ -9,7 +9,7 @@ import net.minecraft.item.ItemStack
 import kotlin.math.floor
 
 object NumbersSim : TermSimGUI(
-    TerminalTypes.NUMBERS.guiName, TerminalTypes.NUMBERS.windowSize
+    TerminalTypes.NUMBERS.windowName, TerminalTypes.NUMBERS.windowSize
 ) {
     override fun create() {
         val used = (1..14).shuffled().toMutableList()

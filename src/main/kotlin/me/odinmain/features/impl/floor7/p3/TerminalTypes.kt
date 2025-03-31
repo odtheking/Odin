@@ -6,7 +6,7 @@ import me.odinmain.features.impl.floor7.p3.termsim.*
 
 @CommandParsable
 enum class TerminalTypes(
-    val guiName: String,
+    val windowName: String,
     val windowSize: Int,
     val gui: TermGui?
 ) : Type {

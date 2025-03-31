@@ -9,7 +9,7 @@ import net.minecraft.item.ItemStack
 import kotlin.math.floor
 
 object RubixSim : TermSimGUI(
-    TerminalTypes.RUBIX.guiName, TerminalTypes.RUBIX.windowSize
+    TerminalTypes.RUBIX.windowName, TerminalTypes.RUBIX.windowSize
 ) {
     private val indices = listOf(12, 13, 14, 21, 22, 23, 30, 31, 32)
     private val order = listOf(1, 4, 13, 11, 14)
