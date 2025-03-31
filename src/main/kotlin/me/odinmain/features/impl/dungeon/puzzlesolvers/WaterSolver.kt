@@ -44,7 +44,10 @@ object WaterSolver {
             getBlockAt(getRealCoords(16, 78, 27)) == Blocks.emerald_block -> 1 // left block == emerald
             getBlockAt(getRealCoords(14, 78, 27)) == Blocks.diamond_block -> 2 // right block == diamond
             getBlockAt(getRealCoords(14, 78, 27)) == Blocks.quartz_block  -> 3 // right block == quartz
-            else -> return@with modMessage("§cFailed to get Water Board pattern.")
+            else -> {
+                patternIdentifier = -2
+                return@with modMessage("§cFailed to get Water Board pattern. Was the puzzle already started?")
+            }
         }
 
         modMessage("$patternIdentifier || ${WoolColor.entries.filter { it.isExtended }.joinToString(", ") { it.name.lowercase() }}")
