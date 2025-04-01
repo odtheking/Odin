@@ -48,7 +48,7 @@ object HighlightRenderer {
         entities[HighlightType.Boxes]?.forEach {
             if (!it.entity.isEntityAlive) return@forEach
             Renderer.drawStyledBox(it.entity.renderBoundingBox, it.color, it.boxStyle, it.thickness, it.depth)
-            Renderer.drawTracer(it.entity.getPositionVector(), it.color, it.depth)
+            Renderer.drawTracer(it.entity.getPositionVector(), it.color, 2f, it.depth)
         }
     }
 
