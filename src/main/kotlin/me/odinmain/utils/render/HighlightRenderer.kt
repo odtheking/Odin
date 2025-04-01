@@ -16,7 +16,7 @@ object HighlightRenderer {
     enum class HighlightType {
         Outline, Boxes, Box2d, Overlay
     }
-    data class HighlightEntity(val entity: Entity, val color: Color, val thickness: Float, val depth: Boolean, val boxStyle: Int = 0, val tracer: Boolean = false, tracerWidth: Float = 2f)
+    data class HighlightEntity(val entity: Entity, val color: Color, val thickness: Float, val depth: Boolean, val boxStyle: Int = 0, val tracer: Boolean = false, val tracerWidth: Float = 2f)
     const val HIGHLIGHT_MODE_DEFAULT = "Outline"
 
     val highlightModeList = arrayListOf("Outline", "Boxes", "Box 2D", "Overlay")
