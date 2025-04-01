@@ -11,8 +11,10 @@ import me.odinmain.features.settings.impl.SelectorSetting
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.HighlightRenderer
 import me.odinmain.utils.render.Renderer
+import me.odinmain.utils.runIn
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.modMessage
+import net.minecraft.block.BlockStainedGlass
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.init.Blocks
 import net.minecraft.potion.Potion
@@ -46,14 +48,16 @@ object LividSolver : Module(
     @SubscribeEvent
     fun onBlockChange(event: BlockChangeEvent) {
         if (!DungeonUtils.inBoss || !DungeonUtils.isFloor(5) || event.updated.block != Blocks.wool || event.pos != woolLocation) return
-        currentLivid = Livid.entries.find { livid -> livid.woolMetadata == event.updated.block.getMetaFromState(event.updated) } ?: return
+        currentLivid = Livid.entries.find { livid -> livid.woolMetadata == event.updated.getValue(BlockStainedGlass.COLOR).metadata } ?: return
         modMessage("Found Livid: §${currentLivid.colorCode}${currentLivid.entityName}")
     }
 
     @SubscribeEvent
     fun onPostMetaData(event: PostEntityMetadata) {
         if (!DungeonUtils.inBoss || !DungeonUtils.isFloor(5)) return
-        currentLivid.entity = (mc.theWorld?.getEntityByID(event.packet.entityId) as? EntityOtherPlayerMP)?.takeIf { it.name == "${currentLivid.entityName} Livid" } ?: return
+        runIn(mc.thePlayer?.getActivePotionEffect(Potion.blindness)?.duration ?: 0) {
+            currentLivid.entity = (mc.theWorld?.getEntityByID(event.packet.entityId) as? EntityOtherPlayerMP)?.takeIf { it.name == "${currentLivid.entityName} Livid" } ?: return@runIn
+        }
     }
 
     private enum class Livid(val entityName: String, val colorCode: Char, val color: Color, val woolMetadata: Int) {
