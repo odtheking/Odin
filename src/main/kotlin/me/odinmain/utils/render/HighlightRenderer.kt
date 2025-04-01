@@ -16,7 +16,7 @@ object HighlightRenderer {
     enum class HighlightType {
         Outline, Boxes, Box2d, Overlay
     }
-    data class HighlightEntity(val entity: Entity, val color: Color, val thickness: Float, val depth: Boolean, val boxStyle: Int = 0)
+    data class HighlightEntity(val entity: Entity, val color: Color, val thickness: Float, val depth: Boolean, val boxStyle: Int = 0, val tracer: Boolean = false, tracerWidth: Float = 2f)
     const val HIGHLIGHT_MODE_DEFAULT = "Outline"
 
     val highlightModeList = arrayListOf("Outline", "Boxes", "Box 2D", "Overlay")
@@ -48,7 +48,7 @@ object HighlightRenderer {
         entities[HighlightType.Boxes]?.forEach {
             if (!it.entity.isEntityAlive) return@forEach
             Renderer.drawStyledBox(it.entity.renderBoundingBox, it.color, it.boxStyle, it.thickness, it.depth)
-            Renderer.drawTracer(it.entity.getPositionVector(), it.color, 2f, it.depth)
+            if (it.tracer) Renderer.drawTracer(it.entity.getPositionVector(), it.color, it.tracerWidth, it.depth)
         }
     }
 
