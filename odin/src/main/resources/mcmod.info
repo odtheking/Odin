@@ -2,7 +2,7 @@
   {
 	"modid": "od",
 	"name": "Odin",
-	"description": "OdinClient is a Forge mod for Hypixel Skyblock, offering features designed to enhance your gameplay.",
+	"description": "Odin is a Forge mod for Hypixel Skyblock, offering features designed to enhance your gameplay.",
 	"version": "${version}",
 	"mcversion": "1.8.9",
 	"url": "https://odtheking.github.io/Odin/",
