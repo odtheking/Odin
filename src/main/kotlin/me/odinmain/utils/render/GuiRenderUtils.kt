@@ -1,10 +1,12 @@
 package me.odinmain.utils.render
 
-import gg.essential.universal.UMatrixStack
 import me.odinmain.OdinMain.mc
 import me.odinmain.font.OdinFont
 import me.odinmain.ui.clickgui.util.ColorUtil
-import me.odinmain.ui.util.shader.RoundedRect
+import me.odinmain.ui.util.shader.CircleShader
+import me.odinmain.ui.util.shader.DropShadowShader
+import me.odinmain.ui.util.shader.HSBBoxShader
+import me.odinmain.ui.util.shader.RoundedRectangleShader
 import me.odinmain.utils.*
 import me.odinmain.utils.render.RenderUtils.drawTexturedModalRect
 import me.odinmain.utils.render.TextAlign.Left
@@ -14,7 +16,6 @@ import net.minecraft.client.renderer.texture.DynamicTexture
 import org.lwjgl.opengl.Display
 import org.lwjgl.opengl.GL11
 
-val matrix = UMatrixStack.Compat
 val scaleFactor get() = ScaledResolution(mc).scaleFactor.toFloat()
 
 data class Box(var x: Number, var y: Number, var w: Number, var h: Number)
@@ -33,27 +34,24 @@ fun roundedRectangle(
     borderThickness: Number, topL: Number, topR: Number, botL: Number, botR: Number, edgeSoftness: Number,
     color2: Color = color, gradientDir: Int = 0, shadowSoftness: Float = 0f
 ) {
-    matrix.runLegacyMethod(matrix.get()) {
-        RoundedRect.drawRectangle(
-            matrix.get(),
-            x.toFloat(),
-            y.toFloat(),
-            w.toFloat(),
-            h.toFloat(),
-            color,
-            borderColor,
-            shadowColor,
-            borderThickness.toFloat(),
-            topL.toFloat(),
-            topR.toFloat(),
-            botL.toFloat(),
-            botR.toFloat(),
-            edgeSoftness.toFloat(),
-            color2,
-            gradientDir,
-            shadowSoftness
-        )
-    }
+    RoundedRectangleShader.drawRectangle(
+        x.toFloat(),
+        y.toFloat(),
+        w.toFloat(),
+        h.toFloat(),
+        color,
+        borderColor,
+        shadowColor,
+        borderThickness.toFloat(),
+        topL.toFloat(),
+        topR.toFloat(),
+        botL.toFloat(),
+        botR.toFloat(),
+        edgeSoftness.toFloat(),
+        color2,
+        gradientDir,
+        shadowSoftness
+    )
 }
 
 fun roundedRectangle(x: Number, y: Number, w: Number, h: Number, color: Color, radius: Number = 0f, edgeSoftness: Number = 0.5f) =
@@ -79,31 +77,25 @@ fun gradientRect(x: Float, y: Float, w: Float, h: Float, color1: Color, color2: 
 }
 
 fun drawHSBBox(x: Float, y: Float, w: Float, h: Float, color: Color) {
-    matrix.runLegacyMethod(matrix.get()) {
-        RoundedRect.drawHSBBox(
-            matrix.get(),
-            x,
-            y,
-            w,
-            h,
-            color,
-        )
-    }
+    HSBBoxShader.drawHSBBox(
+        x,
+        y,
+        w,
+        h,
+        color
+    )
     rectangleOutline(x-1, y-1, w+2, h+2, Color(38, 38, 38), 3f, 2f)
 }
 
 fun circle(x: Number, y: Number, radius: Number, color: Color, borderColor: Color = color, borderThickness: Number = 0f) {
-    matrix.runLegacyMethod(matrix.get()) {
-        RoundedRect.drawCircle(
-            matrix.get(),
-            x.toFloat(),
-            y.toFloat(),
-            radius.toFloat(),
-            color,
-            borderColor,
-            borderThickness.toFloat()
-        )
-    }
+    CircleShader.drawCircle(
+        x.toFloat(),
+        y.toFloat(),
+        radius.toFloat(),
+        color,
+        borderColor,
+        borderThickness.toFloat()
+    )
 }
 
 fun text(text: String, x: Number, y: Number, color: Color, size: Number, type: Int = OdinFont.REGULAR, align: TextAlign = Left, verticalAlign: TextPos = TextPos.Middle, shadow: Boolean = false) {
@@ -145,21 +137,18 @@ fun scale(x: Number, y: Number, z: Number = 1f) = GlStateManager.scale(x.toDoubl
 fun dropShadow(x: Number, y: Number, w: Number, h: Number, shadowColor: Color, shadowSoftness: Number, topL: Number, topR: Number, botL: Number, botR: Number) {
     translate(0f, 0f, -100f)
 
-    matrix.runLegacyMethod(matrix.get()) {
-        RoundedRect.drawDropShadow(
-            matrix.get(),
-            (x - shadowSoftness / 2).toFloat(),
-            (y - shadowSoftness / 2).toFloat(),
-            (w + shadowSoftness).toFloat(),
-            (h + shadowSoftness).toFloat(),
-            shadowColor,
-            topL.toFloat(),
-            topR.toFloat(),
-            botL.toFloat(),
-            botR.toFloat(),
-            shadowSoftness.toFloat()
-        )
-    }
+    DropShadowShader.drawShadow(
+        (x - shadowSoftness / 2).toFloat(),
+        (y - shadowSoftness / 2).toFloat(),
+        (w + shadowSoftness).toFloat(),
+        (h + shadowSoftness).toFloat(),
+        shadowColor,
+        topL.toFloat(),
+        topR.toFloat(),
+        botL.toFloat(),
+        botR.toFloat(),
+        shadowSoftness.toFloat()
+    )
 
     translate(0f, 0f, 100f)
 }

@@ -1,102 +1,97 @@
 package me.odinmain.ui.util.shader
 
-import me.odinmain.OdinMain.logger
+import net.minecraft.client.renderer.OpenGlHelper
 import org.apache.commons.io.IOUtils
-import org.lwjgl.opengl.*
+import org.lwjgl.opengl.ARBShaderObjects
+import org.lwjgl.opengl.ARBShaderObjects.glShaderSourceARB
+import org.lwjgl.opengl.ARBShaderObjects.glValidateProgramARB
+import org.lwjgl.opengl.GL20
 
-abstract class Shader(fragmentShader: String) {
-    private var programId: Int = 0
+abstract class Shader(vertexShader: String, fragmentShader: String) {
+    private var programId: Int = OpenGlHelper.glCreateProgram()
+    private var vertShader: Int = OpenGlHelper.glCreateShader(GL20.GL_VERTEX_SHADER)
+    private var fragShader: Int = OpenGlHelper.glCreateShader(GL20.GL_FRAGMENT_SHADER)
+    private var uniformsMap: HashMap<String, Int> = HashMap()
 
-    private var uniformsMap: MutableMap<String, Int>? = null
+    var usable = false
+        private set
 
     init {
-        var vertexShaderID = 0
-        var fragmentShaderID = 0
+        val vertexStream = javaClass.getResourceAsStream(vertexShader) ?: throw IllegalArgumentException("Vertex shader not found: $vertexShader")
+        val vertexSource = IOUtils.toString(vertexStream)
+        IOUtils.closeQuietly(vertexStream)
 
-        try {
-            val vertexStream = javaClass.getResourceAsStream("/shaders/source/entity/vertex.vsh")
-            vertexShaderID = createShader(IOUtils.toString(vertexStream), ARBVertexShader.GL_VERTEX_SHADER_ARB, "/shaders/source/entity/vertex.vsh")
-            IOUtils.closeQuietly(vertexStream)
+        val fragmentStream = javaClass.getResourceAsStream(fragmentShader) ?: throw IllegalArgumentException("Fragment shader not found: $fragmentShader")
+        val fragmentSource = IOUtils.toString(fragmentStream)
+        IOUtils.closeQuietly(fragmentStream)
 
-            val fragmentStream =
-                javaClass.getResourceAsStream("/shaders/$fragmentShader")
-            fragmentShaderID = createShader(IOUtils.toString(fragmentStream), ARBFragmentShader.GL_FRAGMENT_SHADER_ARB, "/shaders/$fragmentShader")
-            IOUtils.closeQuietly(fragmentStream)
-        } catch (e: Exception) {
-            logger.error("Error creating shader", e)
-        }
+        createShader(vertexSource, fragmentSource)
+    }
 
-        if (vertexShaderID != 0 && fragmentShaderID != 0) {
-            programId = ARBShaderObjects.glCreateProgramObjectARB()
-            if (programId != 0) {
-                ARBShaderObjects.glAttachObjectARB(programId, vertexShaderID)
-                ARBShaderObjects.glAttachObjectARB(programId, fragmentShaderID)
+    private fun createShader(vertexShader: String, fragmentShader: String) {
+        for ((shader, source) in listOf(vertShader to vertexShader, fragShader to fragmentShader)) {
+            if (OpenGlHelper.openGL21) GL20.glShaderSource(shader, source) else glShaderSourceARB(shader, source)
+            OpenGlHelper.glCompileShader(shader)
 
-                ARBShaderObjects.glLinkProgramARB(programId)
-                ARBShaderObjects.glValidateProgramARB(programId)
+            if (OpenGlHelper.glGetShaderi(shader, GL20.GL_COMPILE_STATUS) != 1) {
+                println(OpenGlHelper.glGetShaderInfoLog(shader, 32768))
+                return
             }
+
+            OpenGlHelper.glAttachShader(programId, shader)
+        }
+
+        OpenGlHelper.glLinkProgram(programId)
+
+        if (OpenGlHelper.openGL21) {
+            GL20.glDetachShader(programId, vertShader)
+            GL20.glDetachShader(programId, fragShader)
+            GL20.glDeleteShader(vertShader)
+            GL20.glDeleteShader(fragShader)
+        } else {
+            ARBShaderObjects.glDetachObjectARB(programId, vertShader)
+            ARBShaderObjects.glDetachObjectARB(programId, fragShader)
+            ARBShaderObjects.glDeleteObjectARB(vertShader)
+            ARBShaderObjects.glDeleteObjectARB(fragShader)
+        }
+
+        if (OpenGlHelper.glGetProgrami(programId, GL20.GL_LINK_STATUS) != 1) {
+            println(OpenGlHelper.glGetProgramInfoLog(programId, 32768))
+            return
+        }
+
+        if (OpenGlHelper.openGL21) GL20.glValidateProgram(programId) else glValidateProgramARB(programId)
+
+        if (OpenGlHelper.glGetProgrami(programId, GL20.GL_VALIDATE_STATUS) != 1) {
+            println(OpenGlHelper.glGetProgramInfoLog(programId, 32768))
+            return
+        }
+
+        usable = true
+    }
+
+    fun bind() {
+        OpenGlHelper.glUseProgram(programId)
+    }
+
+    fun unbind() {
+        OpenGlHelper.glUseProgram(0)
+    }
+
+    private fun getUniformLocation(uniformName: String): Int {
+        return uniformsMap.getOrPut(uniformName) {
+            val location = OpenGlHelper.glGetUniformLocation(programId, uniformName)
+            if (location == -1) println("Uniform $uniformName not found in shader")
+            location
         }
     }
 
-    fun startShader() {
-        GL11.glPushMatrix()
-        GL20.glUseProgram(programId)
+    fun getFloatUniform(name: String): FloatUniform =
+        FloatUniform(getUniformLocation(name))
 
-        if (uniformsMap == null) {
-            uniformsMap = HashMap()
-            setupUniforms()
-        }
+    fun getFloat2Uniform(name: String): Float2Uniform =
+        Float2Uniform(getUniformLocation(name))
 
-        updateUniforms()
-    }
-
-    fun stopShader() {
-        GL20.glUseProgram(0)
-        GL11.glPopMatrix()
-    }
-
-    abstract fun setupUniforms()
-
-    abstract fun updateUniforms()
-
-    private fun createShader(shaderSource: String, shaderType: Int, shaderName: String): Int {
-        var shader = 0
-
-        try {
-            shader = ARBShaderObjects.glCreateShaderObjectARB(shaderType)
-
-            if (shader == 0) return 0
-
-            ARBShaderObjects.glShaderSourceARB(shader, shaderSource)
-            ARBShaderObjects.glCompileShaderARB(shader)
-
-            if (ARBShaderObjects.glGetObjectParameteriARB(shader, ARBShaderObjects.GL_OBJECT_COMPILE_STATUS_ARB) == GL11.GL_FALSE)
-                throw RuntimeException("Error creating shader: " + getLogInfo(shader))
-            else println("Successfully created shader $shaderName")
-
-            return shader
-        } catch (e: Exception) {
-            ARBShaderObjects.glDeleteObjectARB(shader)
-            throw e
-        }
-    }
-
-    private fun getLogInfo(i: Int): String {
-        return ARBShaderObjects.glGetInfoLogARB(
-            i,
-            ARBShaderObjects.glGetObjectParameteriARB(i, ARBShaderObjects.GL_OBJECT_INFO_LOG_LENGTH_ARB)
-        )
-    }
-
-    private fun setUniform(uniformName: String, location: Int) {
-        uniformsMap!![uniformName] = location
-    }
-
-    fun setupUniform(uniformName: String) {
-        setUniform(uniformName, GL20.glGetUniformLocation(programId, uniformName))
-    }
-
-    fun getUniform(uniformName: String): Int {
-        return uniformsMap!![uniformName]!!
-    }
+    fun getFloat4Uniform(name: String): Float4Uniform =
+        Float4Uniform(getUniformLocation(name))
 }

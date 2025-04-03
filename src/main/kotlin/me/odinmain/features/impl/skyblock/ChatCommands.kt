@@ -17,21 +17,8 @@ import net.minecraft.event.ClickEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
-import kotlin.collections.MutableList
-import kotlin.collections.any
 import kotlin.collections.component1
 import kotlin.collections.component2
-import kotlin.collections.filterValues
-import kotlin.collections.find
-import kotlin.collections.groupBy
-import kotlin.collections.indices
-import kotlin.collections.joinToString
-import kotlin.collections.listOf
-import kotlin.collections.mapOf
-import kotlin.collections.mutableListOf
-import kotlin.collections.none
-import kotlin.collections.random
-import kotlin.collections.toMutableList
 import kotlin.math.floor
 import kotlin.random.Random
 
@@ -62,8 +49,8 @@ object ChatCommands : Module(
     private val tps by BooleanSetting(name = "TPS", default = true, description = "Sends the server's current TPS.").withDependency { showSettings }
     private val fps by BooleanSetting(name = "FPS", default = true, description = "Sends your current FPS.").withDependency { showSettings }
     private val dt by BooleanSetting(name = "DT", default = true, description = "Sets a reminder for the end of the run.").withDependency { showSettings }
-    private val invite by BooleanSetting(name = "invite", default = true, description = "Invites the player to your party.").withDependency { showSettings }
-    private val racism by BooleanSetting(name = "Racism", default = true, description = "Sends a random racism percentage.").withDependency { showSettings }
+    private val invite by BooleanSetting(name = "Invite", default = true, description = "Invites the player to your party.").withDependency { showSettings }
+    private val racism by BooleanSetting(name = "Racism", default = false, description = "Sends a random racism percentage.").withDependency { showSettings }
     private val queInstance by BooleanSetting(name = "Queue instance cmds", default = true, description = "Queue dungeons commands.").withDependency { showSettings }
     private val time by BooleanSetting(name = "Time", default = false, description = "Sends the current time.").withDependency { showSettings }
     private val demote by BooleanSetting(name = "Demote", default = false, description = "Executes the /party demote command.").withDependency { showSettings }

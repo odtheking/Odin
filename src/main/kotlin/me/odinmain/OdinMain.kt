@@ -12,7 +12,6 @@ import me.odinmain.features.impl.render.DevPlayers
 import me.odinmain.features.impl.render.WaypointManager
 import me.odinmain.font.OdinFont
 import me.odinmain.ui.clickgui.ClickGUI
-import me.odinmain.ui.util.shader.RoundedRect
 import me.odinmain.utils.ServerUtils
 import me.odinmain.utils.SplitsManager
 import me.odinmain.utils.clock.Executor
@@ -78,7 +77,6 @@ object OdinMain {
             }.join() // Ensure Config.load() and version checks are complete before proceeding
         }
         ClickGUI.init()
-        RoundedRect.initShaders()
 
         val name = mc.session?.username?.takeIf { !it.matches(Regex("Player\\d{2,3}")) } ?: return
         scope.launch(Dispatchers.IO) {

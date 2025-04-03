@@ -22,7 +22,7 @@ public abstract class MixinItemRenderer {
 
     @Inject(method = "transformFirstPersonItem", at = @At("HEAD"), cancellable = true)
     public void onTransformFirstPersonItem(float equipProgress, float swingProgress, CallbackInfo ci) {
-        if (Animations.INSTANCE.itemTransferHook(equipProgress, swingProgress)) ci.cancel();
+        if (Animations.itemTransferHook(equipProgress, swingProgress)) ci.cancel();
     }
 
     @Redirect(method = "renderItemInFirstPerson", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/ItemRenderer;transformFirstPersonItem(FF)V", ordinal = 0))

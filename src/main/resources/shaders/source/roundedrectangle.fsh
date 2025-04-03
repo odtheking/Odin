@@ -21,60 +21,39 @@ varying vec2 f_Position;
   * @param Size Vec2 containing the width and height of a rounded rectangle
   * @param Radius Vec4 of all the radii in the rounded rectangle
 */
-float roundedBoxSDF(vec2 CenterPosition, vec2 Size, vec4 Radius) {
-    Radius.xy = (CenterPosition.x > 0.0) ? Radius.xy : Radius.zw;
-    Radius.x  = (CenterPosition.y > 0.0) ? Radius.x  : Radius.y;
-
-    vec2 q = abs(CenterPosition)-Size+Radius.x;
-    return min(max(q.x,q.y),0.0) + length(max(q,0.0)) - Radius.x;
+float roundedBoxSDF(vec2 position, vec2 halfSize, vec4 radii) {
+    vec2 q = abs(position) - halfSize + radii.x;
+    return min(max(q.x, q.y), 0.0) + length(max(q, 0.0)) - radii.x;
 }
 
 void main() {
-    vec2 uv = (f_Position - u_rectCenter) / u_rectSize;
-    vec2 strength = vec2(uv.x * u_gradientDirectionVector.x, uv.y * u_gradientDirectionVector.y);
-    // Interpolate colors based on the distance
-    vec4 gradientColor = mix(u_colorRect, u_colorRect2, (strength.x == 0.0) ? strength.y + 0.5 : strength.x + 0.5);
+    vec2 halfSize = u_rectSize * 0.5;
+    vec2 position = f_Position - u_rectCenter;
 
-    float u_borderSoftness  = 2.0; // How soft the (internal) border should be (in pixels)
-    vec2  u_shadowOffset   = vec2(0.0, 0.0); // The pixel-space shadow offset from rectangle center
-    vec4  u_colorBg     = vec4(0.0); // The color of background
-    vec2 halfSize = (u_rectSize / 2.0); // Rectangle extents (half of the size)
+    // Calculate gradient
+    vec2 uv = position / u_rectSize;
+    float gradientFactor = dot(uv, u_gradientDirectionVector) + 0.5;
+    vec4 gradientColor = mix(u_colorRect, u_colorRect2, gradientFactor);
 
-
-    // Calculate distance to edge.
-    float distance = roundedBoxSDF(f_Position.xy - u_rectCenter, halfSize, u_Radii);
-    // Smooth the result (free antialiasing).
+    // Distance calculations
+    float distance = roundedBoxSDF(position, halfSize, u_Radii);
     float smoothedAlpha = 1.0 - smoothstep(0.0, u_edgeSoftness, distance);
 
-    float borderAlpha   = 1.0 - smoothstep(u_borderThickness - u_borderSoftness, u_borderThickness, abs(distance));
+    // Border calculation
+    float borderSoftness = 2.0;
+    float borderAlpha = 1.0 - smoothstep(u_borderThickness - borderSoftness, u_borderThickness, abs(distance));
 
-    // Apply a drop shadow effect.
+    // Shadow calculation - only compute if shadow is visible
+    vec4 backgroundColor = vec4(0.0);
+    vec4 shadowColor = backgroundColor;
 
-    float shadowDistance  = roundedBoxSDF(f_Position.xy - u_rectCenter + u_shadowOffset, halfSize, u_Radii);
-    float shadowAlpha 	  = 1.0 - smoothstep(-u_shadowSoftness, u_shadowSoftness, shadowDistance);
+    if (u_shadowSoftness > 0.0) {
+        float shadowDistance = roundedBoxSDF(position + vec2(0.0, 0.0), halfSize, u_Radii);
+        float shadowAlpha = 1.0 - smoothstep(-u_shadowSoftness, u_shadowSoftness, shadowDistance);
+        shadowColor = mix(backgroundColor, vec4(u_colorShadow.rgb, shadowAlpha), shadowAlpha);
+    }
 
-
-    // Blend background with shadow
-    vec4 res_shadow_color =
-        mix(
-            u_colorBg,
-            vec4(u_colorShadow.rgb, shadowAlpha),
-            shadowAlpha
-        );
-
-    // Blend (background+shadow) with rect
-    //   Note:
-    //     - Used 'min(gradientColor.a, smoothedAlpha)' instead of 'smoothedAlpha'
-    //       to enable rectangle color transparency
-    vec4 res_shadow_with_rect_color =
-        mix(
-            res_shadow_color,
-            gradientColor,
-            min(gradientColor.a, smoothedAlpha)
-        );
-
-    vec4 combinedColor = mix(gradientColor, u_colorBorder, borderAlpha);
-    vec4 finalColor = mix(res_shadow_color, combinedColor, smoothedAlpha);
-
-    gl_FragColor = finalColor;
+    // Combine colors efficiently
+    vec4 rectangleWithBorder = mix(gradientColor, u_colorBorder, borderAlpha);
+    gl_FragColor = mix(shadowColor, rectangleWithBorder, min(gradientColor.a, smoothedAlpha));
 }

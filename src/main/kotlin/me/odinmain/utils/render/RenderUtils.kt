@@ -1,7 +1,5 @@
 package me.odinmain.utils.render
 
-import gg.essential.universal.shader.BlendState
-import gg.essential.universal.shader.UShader
 import me.odinmain.OdinMain
 import me.odinmain.OdinMain.mc
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.DungeonWaypoint
@@ -20,9 +18,7 @@ import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.EventPriority
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import org.lwjgl.BufferUtils
 import org.lwjgl.opengl.GL11
-import org.lwjgl.opengl.GL13
 import org.lwjgl.util.glu.Cylinder
 import java.awt.image.BufferedImage
 import kotlin.math.cos
@@ -497,61 +493,6 @@ object RenderUtils {
         GlStateManager.popMatrix()
     }
 
-    private val BUF_FLOAT_4 = BufferUtils.createFloatBuffer(4)
-    var isRenderingOutlinedEntities = false
-        private set
-
-    fun enableOutlineMode() {
-        isRenderingOutlinedEntities = true
-        GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL11.GL_TEXTURE_ENV_MODE, GL13.GL_COMBINE)
-        GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_COMBINE_RGB, GL11.GL_REPLACE)
-        GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_SOURCE0_RGB, GL13.GL_CONSTANT)
-        GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_OPERAND0_RGB, GL11.GL_SRC_COLOR)
-        GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_COMBINE_ALPHA, GL11.GL_REPLACE)
-        GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_SOURCE0_ALPHA, GL11.GL_TEXTURE)
-        GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_OPERAND0_ALPHA, GL11.GL_SRC_ALPHA)
-    }
-
-    fun disableOutlineMode() {
-        GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL11.GL_TEXTURE_ENV_MODE, GL11.GL_MODULATE)
-        GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_COMBINE_RGB, GL11.GL_MODULATE)
-        GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_SOURCE0_RGB, GL11.GL_TEXTURE)
-        GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_OPERAND0_RGB, GL11.GL_SRC_COLOR)
-        GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_COMBINE_ALPHA, GL11.GL_MODULATE)
-        GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_SOURCE0_ALPHA, GL11.GL_TEXTURE)
-        GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_OPERAND0_ALPHA, GL11.GL_SRC_ALPHA)
-        isRenderingOutlinedEntities = false
-    }
-
-    fun outlineColor(color: Color) {
-        BUF_FLOAT_4.put(0, color.redFloat)
-        BUF_FLOAT_4.put(1, color.greenFloat)
-        BUF_FLOAT_4.put(2, color.blueFloat)
-        BUF_FLOAT_4.put(3, color.alphaFloat)
-        GL11.glTexEnv(GL11.GL_TEXTURE_ENV, GL11.GL_TEXTURE_ENV_COLOR, BUF_FLOAT_4)
-    }
-
-    /**
-     * Creates a shader from a vertex shader, fragment shader, and a blend state
-     *
-     * @param vertName The name of the vertex shader's file.
-     * @param fragName The name of the fragment shader's file.
-     * @param blendState The blend state for the shader
-     */
-    fun createLegacyShader(vertName: String, fragName: String, blendState: BlendState) =
-        UShader.fromLegacyShader(readShader(vertName, "vsh"), readShader(fragName, "fsh"), blendState)
-
-    /**
-     * Reads a shader file as a text file, and returns the contents
-     *
-     * @param name The name of the shader file
-     * @param ext The file extension of the shader file (usually fsh or vsh)
-     *
-     * @return The contents of the shader file at the given path.
-     */
-    private fun readShader(name: String, ext: String): String =
-        OdinMain::class.java.getResource("/shaders/source/$name.$ext")?.readText() ?: ""
-
     /**
      * Loads a BufferedImage from a path to a resource in the project
      *
@@ -695,5 +636,28 @@ object RenderUtils {
             pos((x + width).toDouble(), (y + 0).toDouble(), 0.0).color(red, green, blue, alpha).endVertex()
         }
         tessellator.draw()
+    }
+
+    fun drawLine(x: Int, y: Int, x2: Int, y2: Int, color: Color, lineWidth: Float) {
+        GlStateManager.pushMatrix()
+        GlStateManager.enableBlend()
+        GlStateManager.disableTexture2D()
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
+        GL11.glEnable(GL11.GL_LINE_SMOOTH)
+        GL11.glLineWidth(lineWidth)
+        color.bind()
+
+        worldRenderer {
+            begin(GL11.GL_LINES, DefaultVertexFormats.POSITION);
+            pos(x.toDouble(), y.toDouble(), 0.0).color(color.r, color.g, color.b, color.a).endVertex()
+            pos(x2.toDouble(), y2.toDouble(), 0.0).color(color.r, color.g, color.b, color.a).endVertex()
+        }
+        tessellator.draw()
+
+        GL11.glLineWidth(1f)
+        GlStateManager.enableTexture2D()
+        GlStateManager.disableBlend()
+        GL11.glDisable(GL11.GL_LINE_SMOOTH)
+        GlStateManager.popMatrix()
     }
 }
