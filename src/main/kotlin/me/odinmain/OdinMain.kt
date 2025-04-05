@@ -5,6 +5,7 @@ import me.odinmain.commands.CommandRegistry
 import me.odinmain.config.Config
 import me.odinmain.config.DungeonWaypointConfig
 import me.odinmain.config.PBConfig
+import me.odinmain.config.SlotBindsConfig
 import me.odinmain.events.EventDispatcher
 import me.odinmain.features.ModuleManager
 import me.odinmain.features.impl.render.ClickGUIModule
@@ -65,7 +66,10 @@ object OdinMain {
 
     fun postInit() {
         File(mc.mcDataDir, "config/odin").takeIf { !it.exists() }?.mkdirs()
-        scope.launch(Dispatchers.IO) { DungeonWaypointConfig.loadConfig() }
+        scope.launch(Dispatchers.IO) {
+            DungeonWaypointConfig.loadConfig()
+            SlotBindsConfig.loadConfig()
+        }
     }
 
     fun loadComplete() {

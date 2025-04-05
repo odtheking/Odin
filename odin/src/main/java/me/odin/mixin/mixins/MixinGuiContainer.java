@@ -52,4 +52,9 @@ public abstract class MixinGuiContainer {
             }
         }
     }
+
+    @Inject(method = "drawGuiContainerForegroundLayer", at = @At("TAIL"), cancellable = true)
+    private void onDrawGuiContainerForegroundLayer(int mouseX, int mouseY, CallbackInfo ci) {
+        if (postAndCatch(new GuiEvent.DrawGuiForeground(odinMod$gui, this.xSize, this.ySize, guiLeft, guiTop, mouseX, mouseY))) ci.cancel();
+    }
 }

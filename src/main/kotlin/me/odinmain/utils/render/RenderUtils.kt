@@ -648,9 +648,9 @@ object RenderUtils {
         color.bind()
 
         worldRenderer {
-            begin(GL11.GL_LINES, DefaultVertexFormats.POSITION);
-            pos(x.toDouble(), y.toDouble(), 0.0).color(color.r, color.g, color.b, color.a).endVertex()
-            pos(x2.toDouble(), y2.toDouble(), 0.0).color(color.r, color.g, color.b, color.a).endVertex()
+            begin(GL11.GL_LINES, DefaultVertexFormats.POSITION_COLOR)
+            pos(x.toDouble(), y.toDouble(), 0.0).color(color.r / 255f, color.g / 255f, color.b / 255f, color.a / 255f).endVertex()
+            pos(x2.toDouble(), y2.toDouble(), 0.0).color(color.r / 255f, color.g / 255f, color.b / 255f, color.a / 255f).endVertex()
         }
         tessellator.draw()
 

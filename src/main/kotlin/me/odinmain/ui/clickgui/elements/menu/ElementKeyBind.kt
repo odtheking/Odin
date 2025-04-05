@@ -3,7 +3,9 @@ package me.odinmain.ui.clickgui.elements.menu
 import me.odinmain.features.settings.impl.KeybindSetting
 import me.odinmain.font.OdinFont
 import me.odinmain.ui.clickgui.animations.impl.ColorAnimation
-import me.odinmain.ui.clickgui.elements.*
+import me.odinmain.ui.clickgui.elements.Element
+import me.odinmain.ui.clickgui.elements.ElementType
+import me.odinmain.ui.clickgui.elements.ModuleButton
 import me.odinmain.ui.clickgui.util.ColorUtil
 import me.odinmain.ui.clickgui.util.ColorUtil.brighter
 import me.odinmain.ui.clickgui.util.ColorUtil.clickGUIColor
@@ -41,8 +43,8 @@ class ElementKeyBind(parent: ModuleButton, setting: KeybindSetting) :
 
         roundedRectangle(x, y, w, h, elementBackground)
 
-            val width = getTextWidth(value, 12f)
-            hover.handle(x + w - 20 - width, y + 4, width + 12f, 22f)
+        val width = getTextWidth(value, 12f)
+        hover.handle(x + w - 20 - width, y + 4, width + 12f, 22f)
 
         roundedRectangle(x + w - 20 - width, y + 4, width + 12f, 22f, buttonColor, 5f)
         dropShadow(x + w - 20 - width, y + 4, width + 12f, 22f, 10f, 0.75f)
