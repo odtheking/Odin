@@ -3,13 +3,13 @@ package me.odinmain.features.impl.floor7.p3.termGUI
 import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.GuiEvent
 import me.odinmain.features.impl.floor7.p3.TerminalSolver
+import me.odinmain.features.impl.floor7.p3.TerminalSolver.hideClicked
 import me.odinmain.utils.postAndCatch
 import me.odinmain.utils.render.Box
 import me.odinmain.utils.render.isPointWithin
 import me.odinmain.utils.render.scale
 import me.odinmain.utils.render.translate
 import me.odinmain.utils.skyblock.ClickType
-import me.odinmain.utils.skyblock.PlayerUtils.windowClick
 import net.minecraft.client.gui.ScaledResolution
 
 object CustomTermGui {
@@ -34,7 +34,7 @@ abstract class TermGui {
         itemIndexMap.entries.find { it.value.isPointWithin(x, y) }?.let { (slot, _) ->
             TerminalSolver.currentTerm?.let {
                 if (System.currentTimeMillis() - it.timeOpened >= 300 && !GuiEvent.CustomTermGuiClick(slot, button).postAndCatch() && it.canClick(slot, button))
-                    it.click(slot, if (button == 0) ClickType.Middle else ClickType.Right, !it.isClicked)
+                    it.click(slot, if (button == 0) ClickType.Middle else ClickType.Right, hideClicked && !it.isClicked)
             }
         }
     }

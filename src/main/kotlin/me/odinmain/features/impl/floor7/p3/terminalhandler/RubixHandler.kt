@@ -9,7 +9,7 @@ import net.minecraft.network.play.server.S2FPacketSetSlot
 class RubixHandler: TerminalHandler(TerminalTypes.RUBIX) {
 
     override fun solve(packet: S2FPacketSetSlot): Boolean {
-        if (packet.func_149173_d() != type.windowSize - 1) return false
+        if (items.last() != null && packet.func_149173_d() != type.windowSize - 1) return false
         solution.clear()
         solution.addAll(solveRubix(items))
         return true
