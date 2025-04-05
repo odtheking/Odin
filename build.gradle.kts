@@ -1,4 +1,5 @@
 import dev.architectury.pack200.java.Pack200Adapter
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     idea
@@ -65,9 +66,14 @@ allprojects {
     java.toolchain.languageVersion.set(JavaLanguageVersion.of(8))
     kotlin.jvmToolchain(8)
 
-    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
+    tasks.withType<KotlinCompile> {
         kotlinOptions {
             freeCompilerArgs += "-Xlambdas=class"
         }
+    }
+
+    tasks.withType<JavaCompile> {
+        options.encoding = "UTF-8"
+        mustRunAfter(":processResources")
     }
 }
