@@ -9,7 +9,6 @@ import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.modMessage
-import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.client.gui.inventory.GuiInventory
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraftforge.client.event.GuiOpenEvent
@@ -29,7 +28,7 @@ object SlotBinds: Module (
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     fun onGuiClick(event: GuiEvent.MouseClick) {
         if (event.gui !is GuiInventory || !Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) return
-        val clickedSlot = hoveredPlayerSlot(event.gui) ?: return
+        val clickedSlot = event.gui.slotUnderMouse?.slotNumber?.takeIf { it in 5 until 45 } ?: return
         val boundSlot = SlotBindsConfig.slotBinds[clickedSlot] ?: return
 
         val (from, to) = when {
@@ -45,7 +44,7 @@ object SlotBinds: Module (
     @SubscribeEvent
     fun onGuiPress(event: GuiEvent.KeyPress) {
         if (event.gui !is GuiInventory || event.key != setNewSlotbind.key) return
-        val clickedSlot = hoveredPlayerSlot(event.gui) ?: return
+        val clickedSlot = event.gui.slotUnderMouse?.slotNumber?.takeIf { it in 5 until 45 } ?: return
 
         event.isCanceled = true
         previousSlot?.let { slot ->
@@ -68,11 +67,8 @@ object SlotBinds: Module (
 
     @SubscribeEvent
     fun onGuiDraw(event: GuiEvent.DrawGuiForeground) {
-        // if previous slot is set then render the line from previous slot to mouse position
-        // if previous slot is null and shift key is down and hovered item is inside slot binds then render from hovered item to the binded slot
-
         val gui = event.gui as? GuiInventory ?: return
-        val hoveredSlot = hoveredPlayerSlot(gui) ?: return
+        val hoveredSlot = gui.slotUnderMouse?.slotNumber?.takeIf { it in 5 until 45 } ?: return
         val boundSlotNumber = SlotBindsConfig.slotBinds[hoveredSlot]
         val (startX, startY) = gui.inventorySlots?.getSlot(previousSlot ?: hoveredSlot)?.let { slot ->
             slot.xDisplayPosition + event.guiLeft + 8 to slot.yDisplayPosition + event.guiTop + 8 } ?: return
@@ -90,7 +86,4 @@ object SlotBinds: Module (
     fun onGuiClose(event: GuiOpenEvent) {
         if (event.gui == null) previousSlot = null
     }
-
-    private fun hoveredPlayerSlot(container: GuiContainer): Int? =
-        container.slotUnderMouse?.slotNumber?.takeIf { it in 5 until 45 }
 }
