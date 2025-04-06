@@ -1,7 +1,7 @@
 package me.odinmain.ui.util.shader
 
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.RenderUtils
+import net.minecraft.client.gui.Gui
 
 object RoundedRectangleShader: Shader("/shaders/source/rectangle.vsh", "/shaders/source/roundedrectangle.fsh") {
     private val directionVecs = listOf(Pair(1f, 0f), Pair(0f, 1f), Pair(-1f, 0f), Pair(0f, -1f))
@@ -28,7 +28,7 @@ object RoundedRectangleShader: Shader("/shaders/source/rectangle.vsh", "/shaders
         getFloat4Uniform("u_colorShadow").setValue(shadowColor.r / 255f, shadowColor.g / 255f, shadowColor.b / 255f, shadowColor.alpha)
         getFloatUniform("u_shadowSoftness").setValue(shadowSoftness)
 
-        RenderUtils.drawRectangle(x.toInt(), y.toInt(), (x + width).toInt(), (y + height).toInt(), color)
+        Gui.drawRect(x.toInt(), y.toInt(), (x + width).toInt(), (y + height).toInt(), color.rgba)
 
         unbind()
     }
