@@ -596,8 +596,8 @@ object RenderUtils {
         depth(depth)
         GlStateManager.translate(pos.xCoord + 0.0f, pos.yCoord + 2.5f, pos.zCoord)
         GL11.glNormal3f(0.0f, 1.0f, 0.0f)
-        GlStateManager.rotate(-this.renderManager.playerViewY, 0.0f, 1.0f, 0.0f)
-        GlStateManager.rotate(this.renderManager.playerViewX, 1.0f, 0.0f, 0.0f)
+        GlStateManager.rotate(-renderManager.playerViewY, 0.0f, 1.0f, 0.0f)
+        GlStateManager.rotate(renderManager.playerViewX, 1.0f, 0.0f, 0.0f)
         GlStateManager.scale(-scale, -scale, scale)
         GlStateManager.disableLighting()
         GlStateManager.enableBlend()
@@ -618,24 +618,36 @@ object RenderUtils {
         GlStateManager.disableTexture2D()
         GlStateManager.disableAlpha()
         GlStateManager.disableBlend()
-        draw(x + 2, y + 13, 13, 2, 0, 0, 0, 255)
-        draw(x + 2, y + 13, 12, 1, (255 - barColorIndex) / 4, 64, 0, 255)
-        draw(x + 2, y + 13, (percent * 13.0).roundToInt(), 1, 255 - barColorIndex, barColorIndex, 0, 255)
+        draw(x + 2, y + 13, 13, 2, Color(0, 0, 0))
+        draw(x + 2, y + 13, 12, 1, Color((255 - barColorIndex) / 4, 64, 0))
+        draw(x + 2, y + 13, (percent * 13.0).roundToInt(), 1, Color(255 - barColorIndex, barColorIndex, 0))
         GlStateManager.enableAlpha()
         GlStateManager.enableTexture2D()
         GlStateManager.enableLighting()
         GlStateManager.enableDepth()
     }
 
-    private fun draw(x: Int, y: Int, width: Int, height: Int, red: Int, green: Int, blue: Int, alpha: Int) {
+    private fun draw(x: Int, y: Int, width: Int, height: Int, color: Color) {
         worldRenderer {
             begin(7, DefaultVertexFormats.POSITION_COLOR)
-            pos((x + 0).toDouble(), (y + 0).toDouble(), 0.0).color(red, green, blue, alpha).endVertex()
-            pos((x + 0).toDouble(), (y + height).toDouble(), 0.0).color(red, green, blue, alpha).endVertex()
-            pos((x + width).toDouble(), (y + height).toDouble(), 0.0).color(red, green, blue, alpha).endVertex()
-            pos((x + width).toDouble(), (y + 0).toDouble(), 0.0).color(red, green, blue, alpha).endVertex()
+            pos((x + 0).toDouble(), (y + 0).toDouble(), 0.0).color(color.r / 255f, color.g / 255f, color.b / 255f, color.a / 255f).endVertex()
+            pos((x + 0).toDouble(), (y + height).toDouble(), 0.0).color(color.r / 255f, color.g / 255f, color.b / 255f, color.a / 255f).endVertex()
+            pos((x + width).toDouble(), (y + height).toDouble(), 0.0).color(color.r / 255f, color.g / 255f, color.b / 255f, color.a / 255f).endVertex()
+            pos((x + width).toDouble(), (y + 0).toDouble(), 0.0).color(color.r / 255f, color.g / 255f, color.b / 255f, color.a / 255f).endVertex()
         }
         tessellator.draw()
+    }
+
+    fun drawRectangle(x: Int, y: Int, width: Int, height: Int, color: Color) {
+        GlStateManager.enableBlend()
+        GlStateManager.disableTexture2D()
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
+        color.bind()
+
+        draw(x, y, width, height, color)
+
+        GlStateManager.enableTexture2D()
+        GlStateManager.disableBlend()
     }
 
     fun drawLine(x: Int, y: Int, x2: Int, y2: Int, color: Color, lineWidth: Float) {

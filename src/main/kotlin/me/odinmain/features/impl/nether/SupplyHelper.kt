@@ -37,7 +37,7 @@ object SupplyHelper : Module(
             startRun = System.currentTimeMillis()
         }
 
-        onMessage(supplyPickUpRegex, { sendSupplyTime && enabled }) {
+        onMessage(supplyPickUpRegex) {
             if (!sendSupplyTime || !KuudraUtils.inKuudra || KuudraUtils.phase != 1) return@onMessage
             val (name, current, total) = it.destructured
             modMessage("§6$name §a§lrecovered a supply in ${formatTime((System.currentTimeMillis() - startRun))}! §r§8($current/$total)", "")

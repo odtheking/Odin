@@ -85,6 +85,5 @@ object Animations : Module(
             it.swingProgress = 0f
             it.swingProgressInt = -1
         }
-
     }
 }

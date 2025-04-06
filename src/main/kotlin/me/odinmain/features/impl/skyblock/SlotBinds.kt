@@ -19,7 +19,8 @@ import org.lwjgl.input.Keyboard
 object SlotBinds: Module (
     name = "Slot Binds",
     description = "Bind slots together for quick access.",
-    category = Category.SKYBLOCK
+    category = Category.SKYBLOCK,
+    key = null
 ) {
     private val setNewSlotbind by KeybindSetting("Bind set key", Keyboard.KEY_NONE, description = "Key to set new bindings.")
 
