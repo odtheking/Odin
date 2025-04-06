@@ -45,9 +45,6 @@ object Animations : Module(
     val shouldNoEquipReset get() = enabled && noEquipReset
 
     @JvmStatic
-    val shouldStopSwing get() = enabled && noSwing
-
-    @JvmStatic
     fun itemTransferHook(equipProgress: Float, swingProgress: Float): Boolean {
         if (!enabled) return false
         val newSize = 0.4f * exp(size)
@@ -79,8 +76,8 @@ object Animations : Module(
 
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
-        if (event.phase != TickEvent.Phase.END || !enabled || !noTermSwing && !isHolding("TERMINATOR")) return
-       mc.thePlayer?.let {
+        if (event.phase != TickEvent.Phase.END || !(noTermSwing && isHolding("TERMINATOR") || noSwing)) return
+        mc.thePlayer?.let {
             it.isSwingInProgress = false
             it.swingProgress = 0f
             it.swingProgressInt = -1
