@@ -60,6 +60,11 @@ class ElementKeyBind(parent: ModuleButton, setting: KeybindSetting) :
 
     override fun mouseClicked(mouseButton: Int): Boolean {
         if (mouseButton == 0 && isHovered) {
+            if (listening && setting.value.key != -100) {
+                setting.value.key = -100  // Set to mouse 0 (-100 + 0)
+                if (colorAnim.start()) listening = false
+                return true
+            }
             if (colorAnim.start()) listening = !listening
             return true
         } else if (listening) {

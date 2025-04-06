@@ -39,7 +39,7 @@ object WitherDragons : Module(
             getMCTextWidth("§5P §a4.5s")+ 2f to 33f
         } else {
             priorityDragon.takeIf { drag -> drag != WitherDragonsEnum.None }?.let { dragon ->
-                if (dragon.state != WitherDragonState.SPAWNING && dragon.timeToSpawn <= 0) return@HudSetting 0f to 0f
+                if (dragon.state != WitherDragonState.SPAWNING || dragon.timeToSpawn <= 0) return@HudSetting 0f to 0f
                 mcText("§${dragon.colorCode}${dragon.name.first()}: ${colorDragonTimer(dragon.timeToSpawn)}${dragon.timeToSpawn * 50}ms", 2, 5f, 1, Color.WHITE, center = false)
             }
             getMCTextWidth("§5P §a4.5s")+ 2f to 33f
@@ -56,7 +56,7 @@ object WitherDragons : Module(
     private val tracerThickness by NumberSetting("Tracer Width", 5f, 1f, 20f, 0.5, description = "The thickness of the tracers.").withDependency { dragonTracers && dragonTitleDropDown }
 
     private val dragonAlerts by DropdownSetting("Dragon Alerts Dropdown")
-    val sendNotification by BooleanSetting("Send Dragon Confirmation", true, description = "Sends a confirmation message when a dragon dies.").withDependency { dragonAlerts }
+    private val sendNotification by BooleanSetting("Send Dragon Confirmation", true, description = "Sends a confirmation message when a dragon dies.").withDependency { dragonAlerts }
     val sendTime by BooleanSetting("Send Dragon Time Alive", true, description = "Sends a message when a dragon dies with the time it was alive.").withDependency { dragonAlerts }
     val sendSpawning by BooleanSetting("Send Dragon Spawning", true, description = "Sends a message when a dragon is spawning.").withDependency { dragonAlerts }
     val sendSpawned by BooleanSetting("Send Dragon Spawned", true, description = "Sends a message when a dragon has spawned.").withDependency { dragonAlerts }
@@ -127,7 +127,7 @@ object WitherDragons : Module(
 
         onMessage(Regex("^\\[BOSS] Wither King: (Oh, this one hurts!|I have more of those\\.|My soul is disposable\\.)$"), { enabled && DungeonUtils.getF7Phase() == M7Phases.P5 } ) {
             WitherDragonsEnum.entries.find { lastDragonDeath == it && lastDragonDeath != WitherDragonsEnum.None }?.let {
-                if (sendNotification && WitherDragons.enabled) modMessage("§${it.colorCode}${it.name} dragon counts.")
+                if (sendNotification) modMessage("§${it.colorCode}${it.name} dragon counts.")
             }
         }
     }
@@ -143,8 +143,8 @@ object WitherDragons : Module(
         }
         if (dragonTimer) {
             WitherDragonsEnum.entries.forEach { dragon ->
-                if (dragon.state == WitherDragonState.SPAWNING) Renderer.drawStringInWorld(
-                    "§${dragon.colorCode}${dragon.name.first()}: ${colorDragonTimer(dragon.timeToSpawn)}${(dragon.timeToSpawn / 20f).toFixed()}", dragon.spawnPos,
+                if (dragon.state == WitherDragonState.SPAWNING && dragon.timeToSpawn > 0) Renderer.drawStringInWorld(
+                    "§${dragon.colorCode}${dragon.name.first()}: ${colorDragonTimer(dragon.timeToSpawn)}${dragon.timeToSpawn * 50}ms", dragon.spawnPos,
                     color = Color.WHITE, depth = false, scale = 0.16f
                 )
             }
