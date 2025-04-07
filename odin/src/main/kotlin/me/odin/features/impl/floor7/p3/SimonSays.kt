@@ -9,11 +9,12 @@ import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.features.settings.impl.SelectorSetting
 import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
-import me.odinmain.utils.*
-import me.odinmain.utils.clock.Clock
+import me.odinmain.utils.component1
+import me.odinmain.utils.component2
+import me.odinmain.utils.component3
+import me.odinmain.utils.floorVec
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
-import me.odinmain.utils.skyblock.devMessage
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.M7Phases
 import net.minecraft.block.BlockButtonStone
@@ -41,49 +42,39 @@ object SimonSays : Module(
 
     private val firstButton = BlockPos(110, 121, 91)
     private val clickInOrder = ArrayList<BlockPos>()
-    private val phaseClock = Clock(500)
-    private var currentPhase = 0
     private var clickNeeded = 0
 
     init {
         onWorldLoad {
             clickInOrder.clear()
-            currentPhase = 0
             clickNeeded = 0
         }
     }
 
     @SubscribeEvent
-    fun onBlockChange(event: BlockChangeEvent) {
+    fun onBlockChange(event: BlockChangeEvent) = with (event) {
         if (DungeonUtils.getF7Phase() != M7Phases.P3) return
-        val state = event.updated
-        val pos = event.pos
-        val old = event.old
 
-        if (pos == firstButton && state.block == Blocks.stone_button && state.getValue(BlockButtonStone.POWERED)) {
+        if (pos == firstButton && updated.block == Blocks.stone_button && updated.getValue(BlockButtonStone.POWERED)) {
             clickInOrder.clear()
-            currentPhase = 0
             clickNeeded = 0
             return
         }
 
         if (pos.y !in 120..123 || pos.z !in 92..95) return
 
-        if (pos.x == 111 && state.block == Blocks.sea_lantern && pos !in clickInOrder) clickInOrder.add(pos)
-        else if (pos.x == 110) {
-            if (state.block == Blocks.air) {
-                clickNeeded = 0
-                if (phaseClock.hasTimePassed()) {
-                    currentPhase++
-                    phaseClock.update()
-                }
-            } else if (state.block == Blocks.stone_button) {
-                if (old.block == Blocks.air && clickInOrder.size > currentPhase + 1) devMessage("was skipped!?!?!")
-                if (old.block == Blocks.stone_button && state.getValue(BlockButtonStone.POWERED)) {
+        when (pos.x) {
+            111 ->
+                if (updated.block == Blocks.obsidian && old.block == Blocks.sea_lantern && pos !in clickInOrder) clickInOrder.add(pos)
+
+            110 ->
+                if (updated.block == Blocks.air) {
+                    clickInOrder.clear()
+                    clickNeeded = 0
+                } else if (old.block == Blocks.stone_button && updated.getValue(BlockButtonStone.POWERED)) {
                     val index = clickInOrder.indexOf(pos.add(1, 0, 0)) + 1
                     clickNeeded = if (index >= clickInOrder.size) 0 else index
                 }
-            }
         }
     }
 

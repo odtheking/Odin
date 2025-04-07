@@ -76,7 +76,8 @@ object Animations : Module(
 
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
-        if (event.phase != TickEvent.Phase.END || !(noTermSwing && isHolding("TERMINATOR") || noSwing)) return
+        if (event.phase != TickEvent.Phase.END || !((noTermSwing && isHolding("TERMINATOR")) || noSwing)) return
+
         mc.thePlayer?.let {
             it.isSwingInProgress = false
             it.swingProgress = 0f
