@@ -6,7 +6,6 @@ import me.odinmain.features.impl.floor7.p3.termsim.TermSimGUI
 import me.odinmain.utils.postAndCatch
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
-import net.minecraft.inventory.ContainerChest
 import net.minecraft.network.play.client.C0EPacketClickWindow
 import net.minecraft.util.Vec3
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -62,7 +61,7 @@ object PlayerUtils {
     fun windowClick(slotId: Int, button: Int, mode: Int) {
         if (lastClickSent + 45 > System.currentTimeMillis()) return devMessage("§cIgnoring click on slot §9$slotId.")
         mc.thePlayer?.openContainer?.let {
-            if (it !is ContainerChest || slotId !in 0 until it.inventorySlots.size) return
+            if (slotId !in 0 until it.inventorySlots.size) return
             if (mc.currentScreen is TermSimGUI) {
                 PacketEvent.Send(C0EPacketClickWindow(-2, slotId, button, mode, it.inventorySlots[slotId].stack, 0)).postAndCatch()
                 return

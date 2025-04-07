@@ -1,7 +1,6 @@
 package me.odinmain.ui.clickgui.elements
 
 import me.odinmain.features.Module
-import me.odinmain.features.impl.render.ClickGUIModule
 import me.odinmain.features.settings.impl.*
 import me.odinmain.font.OdinFont
 import me.odinmain.ui.clickgui.ClickGUI
@@ -112,8 +111,6 @@ class ModuleButton(val module: Module, val panel: Panel) {
                 drawDynamicTexture(bannableIcon, x + width / 2 + textWidth / 2, y + 2f, 25f, 25f)
             } else if (module.tag == Module.TagType.FPSTAX) {
                 drawDynamicTexture(fpsHeavyIcon, x + width / 2 + textWidth / 2, y, 35f, 35f)
-            } else if (module.tag == Module.TagType.NEW && ClickGUIModule.firstTimeOnVersion) {
-                drawDynamicTexture(newFeatureIcon, x + width / 2 + textWidth / 2, y, 35f, 35f)
             }
         }
 

@@ -3,7 +3,9 @@ package me.odinmain.font
 import gg.essential.elementa.font.FontRenderer
 import gg.essential.elementa.font.data.Font
 import gg.essential.universal.UMatrixStack
-import me.odinmain.utils.render.*
+import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.TextAlign
+import me.odinmain.utils.render.TextPos
 import kotlin.math.max
 
 object OdinFont {
@@ -82,5 +84,4 @@ object OdinFont {
 
         return Pair(maxWidth, lines * getTextHeight(line, size + 3))
     }
-
 }

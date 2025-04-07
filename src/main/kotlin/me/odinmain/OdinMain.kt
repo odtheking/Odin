@@ -5,6 +5,7 @@ import me.odinmain.commands.CommandRegistry
 import me.odinmain.config.Config
 import me.odinmain.config.DungeonWaypointConfig
 import me.odinmain.config.PBConfig
+import me.odinmain.config.SlotBindsConfig
 import me.odinmain.events.EventDispatcher
 import me.odinmain.features.ModuleManager
 import me.odinmain.features.impl.render.ClickGUIModule
@@ -65,14 +66,16 @@ object OdinMain {
 
     fun postInit() {
         File(mc.mcDataDir, "config/odin").takeIf { !it.exists() }?.mkdirs()
-        scope.launch(Dispatchers.IO) { DungeonWaypointConfig.loadConfig() }
+        scope.launch(Dispatchers.IO) {
+            DungeonWaypointConfig.loadConfig()
+            SlotBindsConfig.loadConfig()
+        }
     }
 
     fun loadComplete() {
         runBlocking(Dispatchers.IO) {
             launch {
                 Config.load()
-                ClickGUIModule.firstTimeOnVersion = ClickGUIModule.lastSeenVersion != VERSION
                 ClickGUIModule.lastSeenVersion = VERSION
             }.join() // Ensure Config.load() and version checks are complete before proceeding
         }
@@ -80,6 +83,7 @@ object OdinMain {
 
         val name = mc.session?.username?.takeIf { !it.matches(Regex("Player\\d{2,3}")) } ?: return
         scope.launch(Dispatchers.IO) {
+            ClickGUIModule.latestVersionNumber = ClickGUIModule.checkNewerVersion(VERSION)
             sendDataToServer(body = """{"username": "$name", "version": "${if (isLegitVersion) "legit" else "cheater"} $VERSION"}""")
         }
     }
