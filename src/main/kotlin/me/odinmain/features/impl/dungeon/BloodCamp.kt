@@ -234,12 +234,12 @@ object BloodCamp : Module(
 
             val (currVector, endVector, endVecUpdated, speedVectors) = renderData
             val endPoint = calcEndVector(endVector, renderData.lastEndVector, min(currentTickTime - endVecUpdated, 100) / 100f)
-            val pingOffset = if (pingOffset) averagePing else manualOffset
+            val mobOffset = if (pingOffset) averagePing else manualOffset
 
             val pingPoint = Vec3(
-                entity.posX + speedVectors.xCoord * pingOffset,
-                entity.posY + speedVectors.yCoord * pingOffset,
-                entity.posZ + speedVectors.zCoord * pingOffset
+                entity.posX + speedVectors.xCoord * mobOffset,
+                entity.posY + speedVectors.yCoord * mobOffset,
+                entity.posZ + speedVectors.zCoord * mobOffset
             )
 
             renderData.lastEndPoint = endPoint
@@ -251,7 +251,7 @@ object BloodCamp : Module(
 
             val time = getTime(firstSpawn,  currentTickTime - started)
 
-            if (pingOffset < time) {
+            if (mobOffset < time) {
                 Renderer.drawBox(pingAABB, mboxColor, fillAlpha = 0f, outlineAlpha = mboxColor.alpha, depth = true)
                 Renderer.drawBox(endAABB, pboxColor, fillAlpha = 0f, outlineAlpha = pboxColor.alpha, depth = true)
             } else Renderer.drawBox(endAABB, fboxColor, fillAlpha = 0f, outlineAlpha = fboxColor.alpha, depth = true)
