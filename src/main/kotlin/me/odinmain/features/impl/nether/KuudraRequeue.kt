@@ -53,6 +53,5 @@ object KuudraRequeue : Module(
         onMessage(Regex("(\\[.+])? ?(.{1,16}) has disbanded the party.")) {
             disableRequeue = true
         }
-
     }
 }

@@ -76,7 +76,6 @@ object OdinMain {
         runBlocking(Dispatchers.IO) {
             launch {
                 Config.load()
-                ClickGUIModule.firstTimeOnVersion = ClickGUIModule.lastSeenVersion != VERSION
                 ClickGUIModule.lastSeenVersion = VERSION
             }.join() // Ensure Config.load() and version checks are complete before proceeding
         }
@@ -84,6 +83,7 @@ object OdinMain {
 
         val name = mc.session?.username?.takeIf { !it.matches(Regex("Player\\d{2,3}")) } ?: return
         scope.launch(Dispatchers.IO) {
+            ClickGUIModule.latestVersionNumber = ClickGUIModule.checkNewerVersion(VERSION)
             sendDataToServer(body = """{"username": "$name", "version": "${if (isLegitVersion) "legit" else "cheater"} $VERSION"}""")
         }
     }

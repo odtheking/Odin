@@ -1,5 +1,6 @@
 package me.odinmain.features.impl.render
 
+import com.google.gson.JsonParser
 import kotlinx.coroutines.launch
 import me.odinmain.OdinMain
 import me.odinmain.OdinMain.scope
@@ -11,6 +12,7 @@ import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
 import me.odinmain.ui.clickgui.ClickGUI
 import me.odinmain.ui.hud.EditHUDGui
+import me.odinmain.utils.fetchURLData
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.sendDataToServer
 import me.odinmain.utils.skyblock.LocationUtils
@@ -18,7 +20,6 @@ import me.odinmain.utils.skyblock.createClickStyle
 import me.odinmain.utils.skyblock.getChatBreak
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.event.ClickEvent
-import net.minecraft.util.ChatComponentText
 import org.lwjgl.input.Keyboard
 
 @AlwaysActive
@@ -45,7 +46,7 @@ object ClickGUIModule: Module(
     private var showHidden by DropdownSetting("Show Hidden", false).withDependency { DevPlayers.isDev }
     private val passcode by StringSetting("Passcode", "odin", description = "Passcode for dev features.").withDependency { DevPlayers.isDev && showHidden }
 
-    val reset by ActionSetting("Send Dev Data", description = "Sends dev data to the server.") {
+    private val reset by ActionSetting("Send Dev Data", description = "Sends dev data to the server.") {
         showHidden = false
         scope.launch {
             modMessage(sendDataToServer(body = "${mc.thePlayer.name}, [${devWingsColor.r},${devWingsColor.g},${devWingsColor.b}], [$devSizeX,$devSizeY,$devSizeZ], $devWings, $passcode", "https://tj4yzotqjuanubvfcrfo7h5qlq0opcyk.lambda-url.eu-north-1.on.aws/"))
@@ -53,13 +54,14 @@ object ClickGUIModule: Module(
         }
     }.withDependency { DevPlayers.isDev }
 
-    val action by ActionSetting("Open Example Hud", description = "Opens an example hud to allow configuration of huds.") {
+    private val action by ActionSetting("Open Example Hud", description = "Opens an example hud to allow configuration of huds.") {
         OdinMain.display = EditHUDGui
     }
 
+    var lastSeenVersion by StringSetting("Last seen version", "1.0.0", hidden = true, description = "")
     private var joined by BooleanSetting("First join", false, hidden = true, "")
-    var lastSeenVersion: String by StringSetting("Last seen version", "1.0.0", hidden = true, description = "")
-    var firstTimeOnVersion = false
+    private var hasSentUpdateMessage = false
+    var latestVersionNumber: String? = null
 
     val panelX = mutableMapOf<Category, NumberSetting<Float>>()
     val panelY = mutableMapOf<Category, NumberSetting<Float>>()
@@ -67,14 +69,37 @@ object ClickGUIModule: Module(
 
     init {
         execute(250) {
-            if (joined) destroyExecutor()
             if (!LocationUtils.isInSkyblock) return@execute
+
+            if (!hasSentUpdateMessage && latestVersionNumber != null) {
+                hasSentUpdateMessage = true
+
+                val link = "https://github.com/odtheking/Odin/releases/latest"
+
+                modMessage("""
+                ${getChatBreak()}
+                §d§kOdinClientOnBottomWeHateOdinClientLiterallyTheWorstMod
+                    
+                §3Update available: §f$latestVersionNumber
+                """.trimIndent(), "")
+
+                modMessage("§b$link", "", createClickStyle(ClickEvent.Action.OPEN_URL, link))
+
+                modMessage("""
+                
+                §d§kOdinClientOnBottomWeHateOdinClientLiterallyTheWorstMod
+                ${getChatBreak()}§r
+                
+                """.trimIndent(), "")
+            }
+
+            if (joined) destroyExecutor()
             joined = true
             Config.save()
 
             modMessage("""
             ${getChatBreak()}
-            §d§kOdinOnTopWeLoveOdinLiterallyTheBestModAAAAAAAAAAAAAAAA
+            §d§kOdinClientOnBottomWeHateOdinClientLiterallyTheWorstMod
             
             §7Thanks for installing §3Odin ${OdinMain.VERSION}§7!
 
@@ -83,19 +108,43 @@ object ClickGUIModule: Module(
              
             §7Join the discord for support and suggestions.
             """.trimIndent(), "")
-            mc.thePlayer.addChatMessage(
-                ChatComponentText(" §9https://discord.gg/2nCbC9hkxT")
-                    .setChatStyle(createClickStyle(ClickEvent.Action.OPEN_URL, "https://discord.gg/2nCbC9hkxT"))
-            )
+
+            modMessage("§9https://discord.gg/2nCbC9hkxT", "", createClickStyle(ClickEvent.Action.OPEN_URL, "https://discord.gg/2nCbC9hkxT"))
 
             modMessage("""
             
-            §d§kOdinOnTopWeLoveOdinLiterallyTheBestModAAAAAAAAAAAAAAAA
+            §d§kOdinClientOnBottomWeHateOdinClientLiterallyTheWorstMod
             ${getChatBreak()}
             
             """.trimIndent(), "")
         }
         resetPositions()
+    }
+
+    fun checkNewerVersion(currentVersion: String): String? {
+        val newestVersion = try {
+            JsonParser().parse(fetchURLData("https://api.github.com/repos/odtheking/Odin/releases/latest")).asJsonObject
+        } catch (e: Exception) { return null }
+
+        if (isSecondNewer(currentVersion, newestVersion.get("tag_name").asString)) return newestVersion.get("tag_name").asString.toString().replace("\"", "")
+        return null
+    }
+
+    private fun isSecondNewer(currentVersion: String, previousVersion: String?): Boolean {
+        if (currentVersion.isEmpty() || previousVersion.isNullOrEmpty()) return false
+
+        val (major, minor, patch) = currentVersion.split(".").mapNotNull { it.toIntOrNull() }
+        val (major2, minor2, patch2) = previousVersion.split(".").mapNotNull { it.toIntOrNull() }
+
+        return when {
+            major > major2 -> false
+            major < major2 -> true
+            minor > minor2 -> false
+            minor < minor2 -> true
+            patch > patch2 -> false
+            patch < patch2 -> true
+            else -> false // equal, or something went wrong, either way it's best to assume it's false.
+        }
     }
 
     fun resetPositions() {
