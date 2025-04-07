@@ -7,20 +7,18 @@ import me.odinmain.events.impl.ServerTickEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.features.settings.impl.ColorSetting
-import me.odinmain.features.settings.impl.DropdownSetting
-import me.odinmain.features.settings.impl.NumberSetting
+import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.*
 import me.odinmain.utils.ServerUtils.averagePing
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.RenderUtils.renderVec
 import me.odinmain.utils.render.Renderer
-import me.odinmain.utils.skyblock.devMessage
+import me.odinmain.utils.render.mcText
+import me.odinmain.utils.render.mcTextAndWidth
+import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.inBoss
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.inDungeons
-import me.odinmain.utils.skyblock.getSkullValue
 import net.minecraft.entity.boss.BossStatus
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.entity.monster.EntityZombie
@@ -32,6 +30,7 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.util.concurrent.ConcurrentHashMap
+import kotlin.math.ceil
 import kotlin.math.min
 import kotlin.math.roundToInt
 
@@ -40,22 +39,62 @@ object BloodCamp : Module(
     description = "Features for Blood Camping.",
     category = Category.DUNGEON
 ) {
-    private val bloodHelper by BooleanSetting("Blood Camp Assist", default = true, description = "Draws boxes to spawning mobs in the blood room. WARNING: not perfectly accurate. Mobs spawn randomly between 37 - 41 ticks, adjust offset to adjust between ticks.")
-    private val pboxColor by ColorSetting("Spawn Color", Color.RED, true, description = "Color for Spawn render box. Set alpha to 0 to disable.").withDependency { bloodHelper }
-    private val fboxColor by ColorSetting("Final Color", Color.CYAN, true, description = "Color for when Spawn and Mob boxes are merged. Set alpha to 0 to disable.").withDependency { bloodHelper }
-    private val mboxColor by ColorSetting("Position Color", Color.GREEN, true, description = "Color for current position box. Set alpha to 0 to disable.").withDependency { bloodHelper }
-    private val boxSize by NumberSetting("Box Size", default = 1.0, increment = 0.1, min = 0.1, max = 1.0, description = "The size of the boxes. Lower values may seem less accurate.").withDependency { bloodHelper }
-    private val drawLine by BooleanSetting("Line", default = true, description = "Line between Position box and Spawn box.").withDependency { bloodHelper }
-    private val drawTime by BooleanSetting("Time Left", default = true, description = "Time before the blood mob spawns. Adjust offset depending on accuracy. May be up to ~100ms off.").withDependency { bloodHelper }
-    private val advanced by DropdownSetting("Advanced", default = false).withDependency { bloodHelper }
-    private val offset by NumberSetting("Offset", default = 40, increment = 1, max = 100, min = -100, description = "Tick offset to adjust between ticks.").withDependency { advanced && bloodHelper }
-    private val tick by NumberSetting("Tick", default = 38, increment = 1, max = 41, min = 35, description = "Tick to assume spawn. Adjust offset to offset this value to the ms.").withDependency { advanced && bloodHelper}
-    private val interpolation by BooleanSetting("Interpolation", default = true, description = "Interpolates rendering boxes between ticks. Makes the jitter smoother, at the expense of some accuracy.").withDependency { advanced && bloodHelper}
+    private val predictionDropdown by DropdownSetting("Prediction Dropdown", default = true)
+    private val movePrediction by BooleanSetting("Move Prediction", default = true, description = "Predicts when watcher will move after its initial spawns. Only works on f7.").withDependency { predictionDropdown }
+    private val moveTime by BooleanSetting("Move Message", default = true, description = "Sends a message indicating when the watcher will move.").withDependency { movePrediction && predictionDropdown }
+    private val partyMoveTime by BooleanSetting("Party Move Message", default = false, description = "Sends a message indicating when the watcher will move to party members.").withDependency { movePrediction && predictionDropdown }
+    private val killTitle by BooleanSetting("Kill Title", default = true, description = "Shows a title for when to kill the initial spawns.").withDependency { movePrediction && predictionDropdown }
+
+    private val moveTimer by HudSetting("Move Hud", 10f, 10f, 1f, true) {
+        if (it) return@HudSetting mcTextAndWidth("Move Timer: 0.50s", 10, 0, 1f, Color.RED, center = false) to 10f
+        0f to 0f
+        finalTime?.let {
+            mcTextAndWidth("Move Timer: ${((it - normalTickTime) * 0.05).toFixed()}s", 10, 0, 1f, Color.RED, center = false) to 10f
+        } ?: return@HudSetting 0f to 0f
+    }.withDependency { movePrediction && predictionDropdown }
+
+    private val assistDropdown by DropdownSetting("Blood Assist Dropdown", default = true)
+    private val bloodAssist by BooleanSetting("Blood Camp Assist", default = true, description = "Draws boxes to spawning mobs in the blood room. WARNING: not perfectly accurate. Mobs spawn randomly between 37 - 41 ticks, adjust offset to adjust between ticks.").withDependency { assistDropdown }
+
+    private val timerHud by HudSetting("Timer Hud", 10f, 10f, 1f, true) {
+        if ((!bloodAssist || (!inDungeons || inBoss)) && !it) return@HudSetting 0f to 0f
+        if (it) {
+            mcText("1.15s", 10, 0, 1f, Color.RED)
+            mcText("2.15s", 10, 10, 1f, Color.GREEN)
+        } else {
+            renderDataMap.entries.sortedBy { it.value.time }.fold(0) { acc, data ->
+                val time = data.takeUnless { it.key.isDead }?.value?.time ?: return@fold acc
+                val color = when {
+                    time > 1.5 -> Color.GREEN
+                    time in 0.5..1.5 -> Color.ORANGE
+                    time in 0.0..0.5 -> Color.RED
+                    else -> Color.BLUE
+                }
+                mcText("${time.toFixed()}s", 10, 10 * acc, 1f, color, center = false)
+                acc + 1
+            }
+        }
+        20f to 20f
+    }.withDependency { bloodAssist && assistDropdown }
+
+    private val pboxColor by ColorSetting("Spawn Color", Color.RED, true, description = "Color for Spawn render box. Set alpha to 0 to disable.").withDependency { bloodAssist && assistDropdown}
+    private val fboxColor by ColorSetting("Final Color", Color.CYAN, true, description = "Color for when Spawn and Mob boxes are merged. Set alpha to 0 to disable.").withDependency { bloodAssist && assistDropdown }
+    private val mboxColor by ColorSetting("Position Color", Color.GREEN, true, description = "Color for current position box. Set alpha to 0 to disable.").withDependency { bloodAssist && assistDropdown }
+    private val boxSize by NumberSetting("Box Size", default = 1.0, increment = 0.1, min = 0.1, max = 1.0, description = "The size of the boxes. Lower values may seem less accurate.").withDependency { bloodAssist && assistDropdown }
+    private val drawLine by BooleanSetting("Line", default = true, description = "Line between Position box and Spawn box.").withDependency { bloodAssist && assistDropdown }
+    private val drawTime by BooleanSetting("Time Left", default = true, description = "Time before the blood mob spawns. Adjust offset depending on accuracy. May be up to ~100ms off.").withDependency { bloodAssist && assistDropdown }
+    private val advanced by DropdownSetting("Advanced", default = false).withDependency { bloodAssist && assistDropdown }
+    private val offset by NumberSetting("Offset", default = 40, increment = 1, max = 100, min = -100, description = "Tick offset to adjust between ticks.").withDependency { advanced && bloodAssist && assistDropdown }
+    private val tick by NumberSetting("Tick", default = 38, increment = 1, max = 41, min = 35, description = "Tick to assume spawn. Adjust offset to offset this value to the ms.").withDependency { advanced && bloodAssist && assistDropdown }
+    private val interpolation by BooleanSetting("Interpolation", default = true, description = "Interpolates rendering boxes between ticks. Makes the jitter smoother, at the expense of some accuracy.").withDependency { advanced && bloodAssist && assistDropdown}
+    private val pingOffset by BooleanSetting("Ping Offset", default = true, description = "Offsets the mob box by your ping.").withDependency { advanced && bloodAssist && assistDropdown }
+    private val manualOffset by NumberSetting("Mob Box Offset", default = 0.0, increment = 1.0, max = 300.0, min = 0.0, description = "Manually offsets the mob box.").withDependency { advanced && bloodAssist && assistDropdown && !pingOffset}
+
     private val watcherBar by BooleanSetting("Watcher Bar", default = true, description = "Shows the watcher's health.")
     private val watcherHighlight by BooleanSetting("Watcher Highlight", default = false, description = "Highlights the watcher.")
 
     init {
-        onPacket<S17PacketEntityLookMove> ({ bloodHelper && enabled }) { packet ->
+        onPacket<S17PacketEntityLookMove> ({ bloodAssist && enabled }) { packet ->
             if (!inDungeons || inBoss) return@onPacket
             val world = mc.theWorld ?: return@onPacket
             val entity = packet.getEntity(world) as? EntityArmorStand ?: return@onPacket
@@ -99,12 +138,48 @@ object BloodCamp : Module(
             firstSpawns = false
         }
 
+        onMessage(Regex("^\\[BOSS] The Watcher: Things feel a little more roomy now, eh\\?$"), { enabled && movePrediction } ) {
+            startTime = System.currentTimeMillis() to normalTickTime
+        }
+
+        onMessage(Regex("^\\[BOSS] The Watcher: Let's see how you can handle this\\.$"), { enabled && movePrediction }) {
+            val (startTime, startTick) = startTime ?: return@onMessage
+            val moveTicks = ((normalTickTime - startTick) * 0.05 + 0.1)
+
+            val predictionTicks = when (moveTicks) {
+                in 31.0..<34.0 -> 36
+                in 28.0..<31.0 -> 33
+                in 25.0..<28.0 -> 30
+                in 22.0..<25.0 -> 27
+                in 1.0..<22.0 -> 24
+                else -> null
+            }?.let { ticks ->
+                ticks + (ceil((System.currentTimeMillis() - startTime) / 1000.0) - moveTicks) / 2 - 0.6
+            }?.takeIf {
+                it in 20.0..40.0
+            } ?: return@onMessage
+
+            if (moveTime) modMessage("Watcher will move in ${(predictionTicks * 0.05).toFixed()}s.")
+            if (partyMoveTime) partyMessage("Watcher will move in ${(predictionTicks * 0.05).toFixed()}s.")
+
+            val moveTime = ((predictionTicks - moveTicks) * 20 - 3).toInt()
+            finalTime = normalTickTime + moveTime
+            modMessage("Current time: $normalTickTime, Move time: $moveTime, final time: $finalTime")
+
+            runIn(moveTime) {
+                if (killTitle) PlayerUtils.alert("Kill Mobs", 40, Color.RED)
+                finalTime = null
+            }
+        }
+
         onWorldLoad {
             currentWatcherEntity = null
             entityDataMap.clear()
             renderDataMap.clear()
             currentTickTime = 0
             firstSpawns = true
+            finalTime = null
+            startTime = null
         }
     }
 
@@ -115,12 +190,16 @@ object BloodCamp : Module(
         BossStatus.bossName += BossStatus.healthScale.takeIf { it >= 0.05 }?.let { " ${(amount * it).roundToInt()}/$amount" } ?: ""
     }
 
-    private var currentTickTime: Long = 0
+    private var startTime: Pair<Long, Long>? = null
+    private var finalTime: Long? = null
+    private var currentTickTime = 0L
+    private inline val normalTickTime get() = currentTickTime / 50
 
     private val renderDataMap = ConcurrentHashMap<EntityArmorStand, RenderEData>()
     private data class RenderEData(
         var currVector: Vec3, var endVector: Vec3, var endVecUpdated: Long, var speedVectors: Vec3,
         var lastEndVector: Vec3? = null, var lastPingPoint: Vec3? = null, var lastEndPoint: Vec3? = null,
+        var time: Float? = null,
     )
 
     private val entityDataMap = ConcurrentHashMap<EntityArmorStand, EntityData>()
@@ -131,7 +210,7 @@ object BloodCamp : Module(
 
     @SubscribeEvent
     fun onPostMetadata(event: PostEntityMetadata) {
-        if ((!bloodHelper && !watcherHighlight) || currentWatcherEntity != null) return
+        if ((!bloodAssist && !watcherHighlight) || currentWatcherEntity != null) return
         currentWatcherEntity = (mc.theWorld?.getEntityByID(event.packet.entityId) as? EntityZombie)?.takeIf { getSkullValue(it) in watcherSkulls } ?: return
         devMessage("Watcher found at ${currentWatcherEntity?.positionVector}")
     }
@@ -148,18 +227,19 @@ object BloodCamp : Module(
         if (watcherHighlight)
             currentWatcherEntity?.let { Renderer.drawBox(it.renderVec.toAABB(), Color.RED, 1f, depth = isLegitVersion, fillAlpha = 0) }
 
-        if (!bloodHelper) return
+        if (!bloodAssist) return
 
         renderDataMap.forEach { (entity, renderData) ->
             val (_, started, firstSpawn) = entityDataMap[entity]?.takeUnless { entity.isDead } ?: return@forEach
 
             val (currVector, endVector, endVecUpdated, speedVectors) = renderData
             val endPoint = calcEndVector(endVector, renderData.lastEndVector, min(currentTickTime - endVecUpdated, 100) / 100f)
+            val pingOffset = if (pingOffset) averagePing else manualOffset
 
             val pingPoint = Vec3(
-                entity.posX + speedVectors.xCoord * averagePing,
-                entity.posY + speedVectors.yCoord * averagePing,
-                entity.posZ + speedVectors.zCoord * averagePing
+                entity.posX + speedVectors.xCoord * pingOffset,
+                entity.posY + speedVectors.yCoord * pingOffset,
+                entity.posZ + speedVectors.zCoord * pingOffset
             )
 
             renderData.lastEndPoint = endPoint
@@ -171,7 +251,7 @@ object BloodCamp : Module(
 
             val time = getTime(firstSpawn,  currentTickTime - started)
 
-            if (averagePing < time) {
+            if (pingOffset < time) {
                 Renderer.drawBox(pingAABB, mboxColor, fillAlpha = 0f, outlineAlpha = mboxColor.alpha, depth = true)
                 Renderer.drawBox(endAABB, pboxColor, fillAlpha = 0f, outlineAlpha = pboxColor.alpha, depth = true)
             } else Renderer.drawBox(endAABB, fboxColor, fillAlpha = 0f, outlineAlpha = fboxColor.alpha, depth = true)
@@ -179,7 +259,7 @@ object BloodCamp : Module(
             if (drawLine)
                 Renderer.draw3DLine(listOf(currVector.addVec(y = 2.0), endPoint.addVec(y = 2.0)), color = Color.RED, depth = true)
 
-            val timeDisplay = (time.toFloat() - offset) / 1000
+            val timeDisplay = ((time.toFloat() - offset) / 1000).also { renderData.time = it }
             val colorTime = when {
                 timeDisplay > 1.5 -> Color.GREEN
                 timeDisplay in 0.5..1.5 -> Color.ORANGE
