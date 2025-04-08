@@ -3,7 +3,7 @@ package me.odinmain.ui.util.shader
 import me.odinmain.utils.render.Color
 import net.minecraft.client.gui.Gui
 
-object RoundedRectangleShader: Shader("/shaders/source/rectangle.vsh", "/shaders/source/roundedrectangle.fsh") {
+object RoundedRectangleShader: Shader("/shaders/rectangle.vsh", "/shaders/roundedrectangle.fsh") {
     private val directionVecs = listOf(Pair(1f, 0f), Pair(0f, 1f), Pair(-1f, 0f), Pair(0f, -1f))
 
     fun drawRectangle(

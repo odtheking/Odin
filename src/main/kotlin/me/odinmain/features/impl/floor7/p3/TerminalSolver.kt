@@ -145,7 +145,7 @@ object TerminalSolver : Module(
 
         execute(50) {
             if (System.currentTimeMillis() - lastClickTime >= 600) currentTerm?.let {
-                it.solve(S2FPacketSetSlot(mc.thePlayer?.openContainer?.windowId ?: return@execute, it.type.windowSize - 1, null))
+                it.handleSlotUpdate(S2FPacketSetSlot(mc.thePlayer?.openContainer?.windowId ?: return@execute, it.type.windowSize - 1, null))
                 it.isClicked = false
             }
         }
@@ -278,7 +278,10 @@ object TerminalSolver : Module(
             return
         }
 
-        if (hideClicked && !isClicked) simulateClick(slotIndex, if (event.button == 0) ClickType.Middle else ClickType.Right)
+        if (hideClicked && !isClicked) {
+            simulateClick(slotIndex, if (event.button == 0) ClickType.Middle else ClickType.Right)
+            isClicked = true
+        }
     }
 
     @SubscribeEvent

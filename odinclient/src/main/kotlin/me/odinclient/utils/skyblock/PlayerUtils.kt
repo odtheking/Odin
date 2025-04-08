@@ -3,7 +3,6 @@ package me.odinclient.utils.skyblock
 import me.odinmain.OdinMain.mc
 import me.odinmain.utils.runIn
 import net.minecraft.client.settings.KeyBinding
-import net.minecraft.util.Vec3
 
 
 object PlayerUtils {
@@ -28,13 +27,5 @@ object PlayerUtils {
 
     fun swapToIndex(index: Int) {
         KeyBinding.onTick(mc.gameSettings.keyBindsHotbar[index].keyCode)
-    }
-
-    fun clipTo(pos: Vec3) {
-        mc.thePlayer.setPosition(pos.xCoord + 0.5, pos.yCoord, pos.zCoord + 0.5)
-    }
-
-    fun clipTo(x: Double, y: Double, z: Double) {
-        mc.thePlayer.setPosition(x + 0.5, y, z + 0.5)
     }
 }

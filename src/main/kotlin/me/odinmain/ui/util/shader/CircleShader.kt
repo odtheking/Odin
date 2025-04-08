@@ -3,7 +3,7 @@ package me.odinmain.ui.util.shader
 import me.odinmain.utils.render.Color
 import net.minecraft.client.gui.Gui
 
-object CircleShader: Shader("/shaders/source/rectangle.vsh", "/shaders/source/circleFragment.fsh") {
+object CircleShader: Shader("/shaders/rectangle.vsh", "/shaders/circleFragment.fsh") {
 
     fun drawCircle(
         x: Float, y: Float, radius: Float,

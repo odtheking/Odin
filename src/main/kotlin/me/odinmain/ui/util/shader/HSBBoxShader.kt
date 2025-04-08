@@ -3,7 +3,7 @@ package me.odinmain.ui.util.shader
 import me.odinmain.utils.render.Color
 import net.minecraft.client.gui.Gui
 
-object HSBBoxShader: Shader("/shaders/source/rectangle.vsh", "/shaders/source/hsbbox.fsh") {
+object HSBBoxShader: Shader("/shaders/rectangle.vsh", "/shaders/hsbbox.fsh") {
 
     fun drawHSBBox(x: Float, y: Float, width: Float, height: Float, color: Color) {
         if (!usable) return

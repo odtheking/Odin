@@ -3,7 +3,7 @@ package me.odinmain.ui.util.shader
 import me.odinmain.utils.render.Color
 import net.minecraft.client.gui.Gui
 
-object DropShadowShader: Shader("/shaders/source/rectangle.vsh", "/shaders/source/dropShadow.fsh") {
+object DropShadowShader: Shader("/shaders/rectangle.vsh", "/shaders/dropShadow.fsh") {
 
     fun drawShadow(
         x: Float, y: Float, width: Float, height: Float,
