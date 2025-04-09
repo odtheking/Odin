@@ -19,7 +19,7 @@ class ColorSetting(
     description: String,
 ) : Setting<Color>(name, hidden, description), Saving {
 
-    override var value: Color = default
+    override var value: Color = default.copy()
 
     var hue: Float
         get() = value.hue

@@ -66,23 +66,23 @@ object TerminalSolver : Module(
     val textScale: Int by NumberSetting("Text Scale", 1, 1, 3, increment = 1, description = "Scale of the text in the custom gui.").withDependency { renderType == 3 }
 
     private val showColors by DropdownSetting("Color Settings")
-    private val backgroundColor by ColorSetting("Background Color", Color(45, 45, 45), true, description = "Background color of the terminal solver.").withDependency { renderType == 0 && showColors }
+    private val backgroundColor by ColorSetting("Background Color", Colors.MINECRAFT_DARK_GRAY, true, description = "Background color of the terminal solver.").withDependency { renderType == 0 && showColors }
 
     val customGuiColor by ColorSetting("Custom Gui Color", ColorUtil.moduleButtonColor.withAlpha(.8f), true, description = "Color of the custom gui.").withDependency { renderType == 3 && showColors }
-    val panesColor by ColorSetting("Panes Color", Color(0, 170, 170), true, description = "Color of the panes terminal solver.").withDependency { showColors }
+    val panesColor by ColorSetting("Panes Color", Colors.MINECRAFT_DARK_AQUA, true, description = "Color of the panes terminal solver.").withDependency { showColors }
 
-    val rubixColor1 by ColorSetting("Rubix Color 1", Color(0, 170, 170), true, description = "Color of the rubix terminal solver for 1 click.").withDependency { showColors }
+    val rubixColor1 by ColorSetting("Rubix Color 1", Colors.MINECRAFT_DARK_AQUA, true, description = "Color of the rubix terminal solver for 1 click.").withDependency { showColors }
     val rubixColor2 by ColorSetting("Rubix Color 2", Color(0, 100, 100), true, description = "Color of the rubix terminal solver for 2 click.").withDependency { showColors }
     val oppositeRubixColor1 by ColorSetting("Rubix Color -1", Color(170, 85, 0), true, description = "Color of the rubix terminal solver for -1 click.").withDependency { showColors }
     val oppositeRubixColor2 by ColorSetting("Rubix Color -2", Color(210, 85, 0), true, description = "Color of the rubix terminal solver for -2 click.").withDependency { showColors }
 
-    val orderColor by ColorSetting("Order Color 1", Color(0, 170, 170, 1f), true, description = "Color of the order terminal solver for 1st item.").withDependency { showColors }
-    val orderColor2 by ColorSetting("Order Color 2", Color(0, 100, 100, 1f), true, description = "Color of the order terminal solver for 2nd item.").withDependency { showColors }
-    val orderColor3 by ColorSetting("Order Color 3", Color(0, 65, 65, 1f), true, description = "Color of the order terminal solver for 3rd item.").withDependency { showColors }
+    val orderColor by ColorSetting("Order Color 1", Colors.MINECRAFT_DARK_AQUA, true, description = "Color of the order terminal solver for 1st item.").withDependency { showColors }
+    val orderColor2 by ColorSetting("Order Color 2", Color(0, 100, 100), true, description = "Color of the order terminal solver for 2nd item.").withDependency { showColors }
+    val orderColor3 by ColorSetting("Order Color 3", Color(0, 65, 65), true, description = "Color of the order terminal solver for 3rd item.").withDependency { showColors }
 
-    val startsWithColor by ColorSetting("Starts With Color", Color(0, 170, 170), true, description = "Color of the starts with terminal solver.").withDependency { showColors }
+    val startsWithColor by ColorSetting("Starts With Color", Colors.MINECRAFT_DARK_AQUA, true, description = "Color of the starts with terminal solver.").withDependency { showColors }
 
-    val selectColor by ColorSetting("Select Color", Color(0, 170, 170), true, description = "Color of the select terminal solver.").withDependency { showColors }
+    val selectColor by ColorSetting("Select Color", Colors.MINECRAFT_DARK_AQUA, true, description = "Color of the select terminal solver.").withDependency { showColors }
 
     val melodyColumColor by ColorSetting("Melody Column Color", Colors.MINECRAFT_DARK_PURPLE.withAlpha(0.75f), true, description = "Color of the colum indicator for melody.").withDependency { showColors && !cancelMelodySolver }
     val melodyRowColor by ColorSetting("Melody Row Color", Colors.MINECRAFT_GREEN.withAlpha(0.75f), true, description = "Color of the row indicator for melody.").withDependency { showColors && !cancelMelodySolver }

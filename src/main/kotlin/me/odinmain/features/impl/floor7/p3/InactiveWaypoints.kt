@@ -6,12 +6,12 @@ import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.features.settings.impl.SelectorSetting
 import me.odinmain.utils.*
-import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.M7Phases
 import me.odinmain.utils.ui.Colors
+import me.odinmain.utils.ui.clickgui.util.ColorUtil.withAlpha
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.util.Vec3
@@ -30,7 +30,7 @@ object InactiveWaypoints : Module(
     private val renderBox by BooleanSetting(name = "Render Box", default = true, description = "Renders a box around the inactive waypoint.")
     private val hideDefault by BooleanSetting(name = "Hide Default", default = true, description = "Hide the Hypixel names of Inactive Terminals.")
     private val style by SelectorSetting("Style", Renderer.DEFAULT_STYLE, Renderer.styles, description = Renderer.STYLE_DESCRIPTION)
-    private val color by ColorSetting("Color", Color(0, 0, 0, 0.4f), allowAlpha = true, description = "The color of the box.")
+    private val color by ColorSetting("Color", Colors.MINECRAFT_BLUE.withAlpha(.4f), allowAlpha = true, description = "The color of the box.")
     private val lineWidth by NumberSetting("Line Width", 2f, 0.1f, 10f, 0.1f, description = "The width of the box's lines.")
     private val depthCheck by BooleanSetting("Depth check", false, description = "Boxes show through walls.")
 

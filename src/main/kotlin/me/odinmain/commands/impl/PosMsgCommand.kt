@@ -3,10 +3,10 @@ package me.odinmain.commands.impl
 import com.github.stivais.commodore.Commodore
 import com.github.stivais.commodore.utils.GreedyString
 import me.odinmain.config.Config
-import me.odinmain.features.impl.dungeon.PosMessages
-import me.odinmain.features.impl.dungeon.PosMessages.findParser
-import me.odinmain.features.impl.dungeon.PosMessages.parsedStrings
-import me.odinmain.features.impl.dungeon.PosMessages.posMessageStrings
+import me.odinmain.features.impl.dungeon.PositionalMessages
+import me.odinmain.features.impl.dungeon.PositionalMessages.findParser
+import me.odinmain.features.impl.dungeon.PositionalMessages.parsedStrings
+import me.odinmain.features.impl.dungeon.PositionalMessages.posMessageStrings
 import me.odinmain.utils.round
 import me.odinmain.utils.skyblock.PlayerUtils.posX
 import me.odinmain.utils.skyblock.PlayerUtils.posY
@@ -19,7 +19,7 @@ val PosMsgCommand = Commodore("posmsg") {
             val saveData = "x: ${x}, y: ${y}, z: ${z}, delay: ${delay}, distance: ${distance}, message: \"${message}\""
             if (posMessageStrings.contains(saveData)) return@runs modMessage("This message already exists!")
             modMessage("Message \"${message}\" added at $x, $y, $z, with ${delay}ms delay, triggered up to $distance blocks away.")
-            parsedStrings.add(PosMessages.PosMessage(x, y, z, null, null, null, delay, distance, message.string))
+            parsedStrings.add(PositionalMessages.PosMessage(x, y, z, null, null, null, delay, distance, message.string))
             posMessageStrings.add(saveData)
             Config.save()
         }
@@ -27,7 +27,7 @@ val PosMsgCommand = Commodore("posmsg") {
             val saveData = "x: ${x}, y: ${y}, z: ${z}, x2: ${x2}, y2: ${y2}, z2: ${z2}, delay: ${delay}, message: \"${message}\""
             if (posMessageStrings.contains(saveData)) return@runs modMessage("This message already exists!")
             modMessage("Message \"${message}\" added in $x, $y, $z, $x2, $y2, $z2, with ${delay}ms delay.")
-            parsedStrings.add(PosMessages.PosMessage(x, y, z, x2, y2, z2, delay, null, message.string))
+            parsedStrings.add(PositionalMessages.PosMessage(x, y, z, x2, y2, z2, delay, null, message.string))
             posMessageStrings.add(saveData)
             Config.save()
         }
@@ -38,7 +38,7 @@ val PosMsgCommand = Commodore("posmsg") {
             val saveData = "x: ${x}, y: ${y}, z: ${z}, delay: ${delay}, distance: ${distance}, message: \"${message}\""
             if (posMessageStrings.contains(saveData)) return@runs modMessage("This message already exists!")
             modMessage("Message \"${message}\" added at ${x}, ${y}, ${z}, with ${delay}ms delay, triggered up to $distance blocks away.")
-            parsedStrings.add(PosMessages.PosMessage(x, y, z, null, null, null, delay, distance, message.string))
+            parsedStrings.add(PositionalMessages.PosMessage(x, y, z, null, null, null, delay, distance, message.string))
             posMessageStrings.add(saveData)
             Config.save()
         }

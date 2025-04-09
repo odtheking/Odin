@@ -14,7 +14,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.util.*
 import kotlin.concurrent.schedule
 
-object PosMessages : Module(
+object PositionalMessages : Module(
     name = "Positional Messages",
     description = "Sends a message when you're near a certain position. /posmsg"
 ) {
