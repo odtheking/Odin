@@ -2,11 +2,15 @@ package me.odinmain.utils.render
 
 import me.odinmain.OdinMain.mc
 import me.odinmain.font.OdinFont
-import me.odinmain.utils.*
+import me.odinmain.utils.div
+import me.odinmain.utils.minus
+import me.odinmain.utils.plus
 import me.odinmain.utils.render.RenderUtils.drawTexturedModalRect
 import me.odinmain.utils.render.TextAlign.Left
+import me.odinmain.utils.times
 import me.odinmain.utils.ui.Colors
 import me.odinmain.utils.ui.clickgui.util.ColorUtil
+import me.odinmain.utils.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.ui.util.shader.CircleShader
 import me.odinmain.utils.ui.util.shader.DropShadowShader
 import me.odinmain.utils.ui.util.shader.HSBBoxShader
@@ -107,11 +111,6 @@ fun mcText(text: String, x: Number, y: Number, scale: Number, color: Color, shad
     RenderUtils.drawText("$text§r", x.toFloat(), y.toFloat(), scale.toDouble(), color, shadow, center)
 }
 
-fun textAndWidth(text: String, x: Float, y: Float, color: Color, size: Float, type: Int = OdinFont.REGULAR, align: TextAlign = Left, verticalAlign: TextPos = TextPos.Middle, shadow: Boolean = false): Float {
-    text(text, x, y, color, size, type, align, verticalAlign, shadow)
-    return getTextWidth(text, size)
-}
-
 fun mcTextAndWidth(text: String, x: Number, y: Number, scale: Number, color: Color, shadow: Boolean = true, center: Boolean = true): Float {
     mcText(text, x, y, scale, color, shadow, center)
     return getMCTextWidth(text).toFloat()
@@ -122,8 +121,6 @@ fun getMCTextWidth(text: String) = mc.fontRendererObj.getStringWidth(text)
 fun getTextWidth(text: String, size: Float) = OdinFont.getTextWidth(text, size)
 
 fun getMCTextHeight() = mc.fontRendererObj.FONT_HEIGHT
-
-fun getTextHeight(text: String, size: Float) = OdinFont.getTextHeight(text, size)
 
 fun translate(x: Number, y: Number, z: Number = 1f) = GlStateManager.translate(x.toDouble(), y.toDouble(), z.toDouble())
 
@@ -202,4 +199,10 @@ enum class TextPos {
 
 enum class GradientDirection {
     Right, Down, Left, Up
+}
+
+fun Color.coerceAlpha(min: Float, max: Float): Color {
+    return if (this.alpha < min) this.withAlpha(min)
+    else if (this.alpha > max) this.withAlpha(max)
+    else this
 }
