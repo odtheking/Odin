@@ -22,7 +22,7 @@ import java.nio.FloatBuffer;
 public abstract class MixinRenderEntityItem {
 
     @Unique
-    protected FloatBuffer odinMod$brightnessBuffer = GLAllocation.createDirectFloatBuffer(4);
+    protected final FloatBuffer odinMod$brightnessBuffer = GLAllocation.createDirectFloatBuffer(4);
 
     @Unique
     private static final DynamicTexture odinMod$textureBrightness = new DynamicTexture(16, 16);
@@ -41,9 +41,7 @@ public abstract class MixinRenderEntityItem {
         if (highlightEntity != null) {
             odinMod$isHighlighting = true;
 
-            if (!highlightEntity.getDepth()) {
-                GlStateManager.disableDepth();
-            }
+            if (!highlightEntity.getDepth()) GlStateManager.disableDepth();
 
             GlStateManager.setActiveTexture(OpenGlHelper.defaultTexUnit);
             GlStateManager.enableTexture2D();
@@ -95,17 +93,10 @@ public abstract class MixinRenderEntityItem {
 
     @Inject(method = "doRender(Lnet/minecraft/entity/item/EntityItem;DDDFF)V", at = @At("RETURN"))
     private void doRenderInjectPost(EntityItem entity, double x, double y, double z, float entityYaw, float partialTicks, CallbackInfo ci) {
-        // Only reset if we actually applied highlighting
         if (odinMod$isHighlighting) {
             HighlightRenderer.HighlightEntity highlightEntity = odinMod$getHighlightEntity(entity);
-            if (highlightEntity != null && !highlightEntity.getDepth()) {
-                GlStateManager.enableDepth();
-            }
-
-            // Reset OpenGL state
+            if (highlightEntity != null && !highlightEntity.getDepth()) GlStateManager.enableDepth();
             odinMod$resetOpenGLState();
-
-            // Reset the highlighting flag
             odinMod$isHighlighting = false;
         }
     }

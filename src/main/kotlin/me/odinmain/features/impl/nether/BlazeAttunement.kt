@@ -1,15 +1,15 @@
 package me.odinmain.features.impl.nether
 
 import me.odinmain.events.impl.RenderEntityModelEvent
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.NumberSetting
-import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
-import me.odinmain.utils.*
+import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.OutlineUtils
 import me.odinmain.utils.render.RenderUtils.bind
+import me.odinmain.utils.ui.Colors
+import me.odinmain.utils.ui.clickgui.util.ColorUtil.withAlpha
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityArmorStand
@@ -21,7 +21,6 @@ import kotlin.collections.set
 
 object BlazeAttunement : Module(
     name = "Blaze Attunement",
-    category = Category.NETHER,
     description = "Displays what attunement a blaze boss currently requires."
 ) {
     private val overlay by BooleanSetting("Overlay Entities", false, description = "Overlay the entities with the color of the attunement.")
@@ -38,10 +37,10 @@ object BlazeAttunement : Module(
                 val name = entity.name.noControlCodes
 
                 val color = when {
-                    name.contains("CRYSTAL ♨") -> Color(85, 250, 236)
-                    name.contains("ASHEN ♨") -> Color(45, 45, 45)
-                    name.contains("AURIC ♨") -> Color(206, 219, 57)
-                    name.contains("SPIRIT ♨") -> Color(255, 255, 255)
+                    name.contains("CRYSTAL ♨") -> Colors.MINECRAFT_AQUA
+                    name.contains("ASHEN ♨") -> Colors.MINECRAFT_GRAY
+                    name.contains("AURIC ♨") -> Colors.MINECRAFT_YELLOW
+                    name.contains("SPIRIT ♨") -> Colors.WHITE
                     else -> return@forEach
                 }.withAlpha(.4f)
 

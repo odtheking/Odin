@@ -2,20 +2,19 @@ package me.odinmain.features.impl.skyblock
 
 import me.odinmain.OdinMain.isLegitVersion
 import me.odinmain.events.impl.ClickEvent
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
-import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.addVec
 import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.findNearestGrassBlock
-import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.runIn
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.DianaBurrowEstimate.activeBurrows
 import me.odinmain.utils.toVec3
+import me.odinmain.utils.ui.Colors
+import me.odinmain.utils.ui.clickgui.util.ColorUtil.withAlpha
 import net.minecraft.network.play.client.C07PacketPlayerDigging
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.server.S29PacketSoundEffect
@@ -28,13 +27,12 @@ import kotlin.math.roundToInt
 
 object DianaHelper : Module(
     name = "Diana Helper",
-    description = "Displays the location of the Diana guess and burrows.",
-    category = Category.SKYBLOCK
+    description = "Displays the location of the Diana guess and burrows."
 ) {
-    private val guessColor by ColorSetting("Guess Color", Color.WHITE, allowAlpha = true, description = "Color of the guess text.")
+    private val guessColor by ColorSetting("Guess Color", Colors.WHITE, allowAlpha = true, description = "Color of the guess text.")
     private val tracer by BooleanSetting("Tracer", default = true, description = "Draws a line from your position to the guess.")
     private val tracerWidth by NumberSetting("Tracer Width", default = 5f, min = 1f, max = 20f, description = "Width of the tracer line.").withDependency { tracer }
-    private val tracerColor by ColorSetting("Tracer Line Color", Color.WHITE, allowAlpha = true, description = "Color of the tracer line.").withDependency { tracer }
+    private val tracerColor by ColorSetting("Tracer Line Color", Colors.WHITE, allowAlpha = true, description = "Color of the tracer line.").withDependency { tracer }
     private val tracerBurrows by BooleanSetting("Tracer Burrows", default = true, description = "Draws a line from your position to the burrows.")
     private val style by SelectorSetting("Style", "Filled", arrayListOf("Filled", "Outline", "Filled Outline"), description = "Whether or not the box should be filled.")
     private val sendInqMsg by BooleanSetting("Send Inq Msg", default = true, description = "Sends your coordinates to the party chat when you dig out an inquisitor.")

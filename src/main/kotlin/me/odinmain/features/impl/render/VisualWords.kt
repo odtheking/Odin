@@ -1,15 +1,13 @@
 package me.odinmain.features.impl.render
 
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.MapSetting
 
 object VisualWords : Module(
     name = "Visual Words",
-    category = Category.RENDER,
     description = "Replaces words in the world with other words. (/visualwords)"
 ) {
-    val wordsMap: MutableMap<String, String> by MapSetting("wordsMap", mutableMapOf(), "")
+    val wordsMap by MapSetting("wordsMap", mutableMapOf<String, String>())
 
     @JvmStatic
     fun replaceText(text: String?): String? {

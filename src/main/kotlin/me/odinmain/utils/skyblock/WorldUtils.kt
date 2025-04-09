@@ -16,10 +16,6 @@ fun getBlockIdAt(blockPos: BlockPos): Int? {
     return Block.getIdFromBlock(getBlockStateAt(blockPos).block ?: return null)
 }
 
-fun getBlockIdAt(x: Double, y: Double, z: Double): Int? {
-    return getBlockIdAt(BlockPos(x, y, z))
-}
-
 /**
  * Checks if the block at the specified `BlockPos` is considered "air" in the Minecraft world.
  *

@@ -1,7 +1,6 @@
 package me.odinmain.features.impl.floor7
 
 import me.odinmain.events.impl.ServerTickEvent
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.DragonCheck.dragonSpawn
 import me.odinmain.features.impl.floor7.DragonCheck.dragonSprayed
@@ -12,15 +11,19 @@ import me.odinmain.features.impl.floor7.KingRelics.relicsOnMessage
 import me.odinmain.features.impl.floor7.KingRelics.relicsOnWorldLast
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
-import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.addVec
-import me.odinmain.utils.render.*
 import me.odinmain.utils.render.RenderUtils.renderVec
+import me.odinmain.utils.render.Renderer
+import me.odinmain.utils.render.getMCTextWidth
+import me.odinmain.utils.render.mcText
+import me.odinmain.utils.render.mcTextAndWidth
 import me.odinmain.utils.runIn
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.M7Phases
 import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.toFixed
+import me.odinmain.utils.ui.Colors
+import me.odinmain.utils.ui.clickgui.util.ColorUtil.withAlpha
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.server.*
 import net.minecraftforge.client.event.RenderWorldLastEvent
@@ -28,19 +31,18 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object WitherDragons : Module(
     name = "Wither Dragons",
-    description = "Tools for managing M7 dragons timers, boxes, priority, health, relics and alerts.",
-    category = Category.FLOOR7
+    description = "Tools for managing M7 dragons timers, boxes, priority, health, relics and alerts."
 ) {
     private val dragonTimerDropDown by DropdownSetting("Dragon Timer Dropdown")
     private val dragonTimer by BooleanSetting("Dragon Timer", true, description = "Displays a timer for when M7 dragons spawn.").withDependency { dragonTimerDropDown }
     private val hud by HudSetting("Dragon Timer HUD", 10f, 10f, 1f, true) {
         if (it) {
-            mcText("§5P §a4.5s", 2f, 5f, 1, Color.WHITE, center = false)
+            mcText("§5P §a4.5s", 2f, 5f, 1, Colors.WHITE, center = false)
             getMCTextWidth("§5P §a4.5s")+ 2f to 33f
         } else {
             priorityDragon.takeIf { drag -> drag != WitherDragonsEnum.None }?.let { dragon ->
                 if (dragon.state != WitherDragonState.SPAWNING || dragon.timeToSpawn <= 0) return@HudSetting 0f to 0f
-                mcText("§${dragon.colorCode}${dragon.name.first()}: ${colorDragonTimer(dragon.timeToSpawn)}${dragon.timeToSpawn * 50}ms", 2, 5f, 1, Color.WHITE, center = false)
+                mcText("§${dragon.colorCode}${dragon.name.first()}: ${colorDragonTimer(dragon.timeToSpawn)}${dragon.timeToSpawn * 50}ms", 2, 5f, 1, Colors.WHITE, center = false)
             }
             getMCTextWidth("§5P §a4.5s")+ 2f to 33f
         }
@@ -83,9 +85,9 @@ object WitherDragons : Module(
     private val cauldronHighlight by BooleanSetting("Cauldron Highlight", true, description = "Highlights the cauldron for held relic.").withDependency { relicDropDown }
 
     private val relicHud by HudSetting("Relic Hud", 10f, 10f, 1f, true) {
-        if (it) return@HudSetting mcTextAndWidth("§3Relics: 4.30s", 2, 5f, 1, Color.WHITE, center = false) + 2f to 16f
+        if (it) return@HudSetting mcTextAndWidth("§3Relics: 4.30s", 2, 5f, 1, Colors.WHITE, center = false) + 2f to 16f
         if (DungeonUtils.getF7Phase() != M7Phases.P5 || KingRelics.relicTicksToSpawn <= 0) return@HudSetting 0f to 0f
-        mcTextAndWidth("§3Relics: ${(KingRelics.relicTicksToSpawn / 20f).toFixed()}s", 2, 5f, 1, Color.WHITE, center = false) + 2f to 16f
+        mcTextAndWidth("§3Relics: ${(KingRelics.relicTicksToSpawn / 20f).toFixed()}s", 2, 5f, 1, Colors.WHITE, center = false) + 2f to 16f
     }.withDependency { relicDropDown }
 
     var priorityDragon = WitherDragonsEnum.None
@@ -138,14 +140,14 @@ object WitherDragons : Module(
 
         if (dragonHealth) {
             DragonCheck.dragonEntityList.forEach {
-                if (it.health > 0) Renderer.drawStringInWorld(colorHealth(it.health), it.renderVec.addVec(y = 1.5), Color.WHITE, depth = false, scale = 0.2f, shadow = true)
+                if (it.health > 0) Renderer.drawStringInWorld(colorHealth(it.health), it.renderVec.addVec(y = 1.5), Colors.WHITE, depth = false, scale = 0.2f, shadow = true)
             }
         }
         if (dragonTimer) {
             WitherDragonsEnum.entries.forEach { dragon ->
                 if (dragon.state == WitherDragonState.SPAWNING && dragon.timeToSpawn > 0) Renderer.drawStringInWorld(
                     "§${dragon.colorCode}${dragon.name.first()}: ${colorDragonTimer(dragon.timeToSpawn)}${dragon.timeToSpawn * 50}ms", dragon.spawnPos,
-                    color = Color.WHITE, depth = false, scale = 0.16f
+                    color = Colors.WHITE, depth = false, scale = 0.16f
                 )
             }
         }

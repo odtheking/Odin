@@ -9,6 +9,7 @@ import me.odinmain.features.impl.floor7.p3.TerminalSolver.orderColor2
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.orderColor3
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.textScale
 import me.odinmain.utils.render.*
+import me.odinmain.utils.ui.Colors
 
 object NumbersGui : TermGui() {
     override fun render() {
@@ -16,11 +17,11 @@ object NumbersGui : TermGui() {
         itemIndexMap.clear()
         roundedRectangle(-300, -125, 600, 225, TerminalSolver.customGuiColor, 10f, 1f)
         if (TerminalSolver.customGuiText == 0) {
-            text("Click in order!", -295, -113, Color.WHITE, 20, verticalAlign = TextPos.Top)
-            roundedRectangle(-298, -85, getTextWidth("Click in order!", 20f), 3, Color.WHITE, radius = 5f)
+            text("Click in order!", -295, -113, Colors.WHITE, 20, verticalAlign = TextPos.Top)
+            roundedRectangle(-298, -85, getTextWidth("Click in order!", 20f), 3, Colors.WHITE, radius = 5f)
         } else if (TerminalSolver.customGuiText == 1) {
-            text("Click in order!", 0, -113, Color.WHITE, 20, align = TextAlign.Middle, verticalAlign = TextPos.Top)
-            roundedRectangle(-getTextWidth("Click in order!", 20f) / 2, -85, getTextWidth("Click in order!", 20f), 3, Color.WHITE, radius = 5f)
+            text("Click in order!", 0, -113, Colors.WHITE, 20, align = TextAlign.Middle, verticalAlign = TextPos.Top)
+            roundedRectangle(-getTextWidth("Click in order!", 20f) / 2, -85, getTextWidth("Click in order!", 20f), 3, Colors.WHITE, radius = 5f)
         }
         with (TerminalSolver.currentTerm ?: return) {
             solution.forEach { pane ->
@@ -44,7 +45,7 @@ object NumbersGui : TermGui() {
                     box.h.toFloat() * customScale
                 )
 
-                if (TerminalSolver.showNumbers && index != -1) mcText(amount.toString(), -163 + col * 70 + 26f , -60 + row * 70 + (27f - (textScale * 3) - (gap * 0.5)), 2 + textScale, Color.WHITE)
+                if (TerminalSolver.showNumbers && index != -1) mcText(amount.toString(), -163 + col * 70 + 26f , -60 + row * 70 + (27f - (textScale * 3) - (gap * 0.5)), 2 + textScale, Colors.WHITE)
             }
         }
 

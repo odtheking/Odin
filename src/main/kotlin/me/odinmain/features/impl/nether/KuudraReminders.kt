@@ -1,6 +1,5 @@
 package me.odinmain.features.impl.nether
 
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
@@ -11,8 +10,7 @@ import me.odinmain.utils.skyblock.partyMessage
 
 object KuudraReminders : Module(
     name = "Kuudra Reminders",
-    description = "Displays reminders about Kuudra.",
-    category = Category.NETHER
+    description = "Displays reminders about Kuudra."
 ) {
     private val displayText by BooleanSetting("Display Text", true, description = "Displays kuudra information in chat.")
     private val playSound by BooleanSetting("Play Sound", true, description = "Plays a sound when a kuudra event occurs.")

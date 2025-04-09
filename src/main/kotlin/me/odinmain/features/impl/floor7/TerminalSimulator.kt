@@ -1,6 +1,5 @@
 package me.odinmain.features.impl.floor7
 
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.p3.TerminalTypes
 import me.odinmain.features.impl.floor7.p3.termsim.*
@@ -10,8 +9,7 @@ import me.odinmain.utils.skyblock.sendCommand
 
 object TerminalSimulator : Module(
     name = "Terminal Simulator",
-    description = "Simulates a floor 7 terminal from phase 3.",
-    category = Category.FLOOR7
+    description = "Simulates a floor 7 terminal from phase 3."
 ) {
     private val ping by NumberSetting("Ping", 0, 0, 500, description = "Ping of the terminal.")
 

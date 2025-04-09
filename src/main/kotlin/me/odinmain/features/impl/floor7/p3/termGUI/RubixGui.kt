@@ -7,6 +7,7 @@ import me.odinmain.features.impl.floor7.p3.TerminalSolver.customScale
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.gap
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.textScale
 import me.odinmain.utils.render.*
+import me.odinmain.utils.ui.Colors
 
 object RubixGui : TermGui() {
     override fun render() {
@@ -14,11 +15,11 @@ object RubixGui : TermGui() {
         itemIndexMap.clear()
         roundedRectangle(-300, -175, 600, 300, TerminalSolver.customGuiColor, 10f, 1f)
         if (TerminalSolver.customGuiText == 0) {
-            text("Change all to same color!", -295, -163, Color.WHITE, 20, verticalAlign = TextPos.Top)
-            roundedRectangle(-298, -135, getTextWidth("Change all to same color!", 20f), 3, Color.WHITE, radius = 5f)
+            text("Change all to same color!", -295, -163, Colors.WHITE, 20, verticalAlign = TextPos.Top)
+            roundedRectangle(-298, -135, getTextWidth("Change all to same color!", 20f), 3, Colors.WHITE, radius = 5f)
         } else if (TerminalSolver.customGuiText == 1) {
-            text("Change all to same color!", 0, -163, Color.WHITE, 20, align = TextAlign.Middle, verticalAlign = TextPos.Top)
-            roundedRectangle(-getTextWidth("Change all to same color!", 20f) / 2, -135, getTextWidth("Change all to same color!", 20f), 3, Color.WHITE, radius = 5f)
+            text("Change all to same color!", 0, -163, Colors.WHITE, 20, align = TextAlign.Middle, verticalAlign = TextPos.Top)
+            roundedRectangle(-getTextWidth("Change all to same color!", 20f) / 2, -135, getTextWidth("Change all to same color!", 20f), 3, Colors.WHITE, radius = 5f)
         }
         currentTerm?.solution?.distinct()?.forEach { pane ->
             val needed = currentTerm?.solution?.count { it == pane } ?: return@forEach
@@ -36,7 +37,7 @@ object RubixGui : TermGui() {
                     else -> TerminalSolver.oppositeRubixColor1
                 }
                 roundedRectangle(box, color)
-                mcText(text.toString(), -168 + col * 70 + 26f , -110 + row * 70 + (27f - (textScale * 3) - (gap * 0.5)), 2 + textScale, Color.WHITE)
+                mcText(text.toString(), -168 + col * 70 + 26f , -110 + row * 70 + (27f - (textScale * 3) - (gap * 0.5)), 2 + textScale, Colors.WHITE)
             }
             
             itemIndexMap[pane] = Box(

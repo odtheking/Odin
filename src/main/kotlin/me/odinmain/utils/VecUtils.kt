@@ -7,7 +7,6 @@ import me.odinmain.OdinMain.mc
 import me.odinmain.OdinMain.scope
 import me.odinmain.utils.render.RenderUtils.outlineBounds
 import me.odinmain.utils.skyblock.dungeon.tiles.Rotations
-import net.minecraft.entity.Entity
 import net.minecraft.init.Blocks
 import net.minecraft.network.play.server.S29PacketSoundEffect
 import net.minecraft.network.play.server.S2APacketParticles

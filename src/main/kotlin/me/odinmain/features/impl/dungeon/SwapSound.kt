@@ -1,7 +1,6 @@
 package me.odinmain.features.impl.dungeon
 
 import me.odinmain.events.impl.ClickEvent
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
@@ -14,7 +13,6 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 
 object SwapSound : Module(
     name = "Swap Sound",
-    category = Category.DUNGEON,
     description = "Plays a sound when you successfully stonk swap."
 ) {
     private val onlyBlock by BooleanSetting("Only Over Block", default = false, description = "Only plays a sound when you're looking at a block.")

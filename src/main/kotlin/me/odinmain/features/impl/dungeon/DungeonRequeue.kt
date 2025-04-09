@@ -1,6 +1,5 @@
 package me.odinmain.features.impl.dungeon
 
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.NumberSetting
@@ -10,8 +9,7 @@ import me.odinmain.utils.skyblock.sendCommand
 
 object DungeonRequeue : Module(
     name = "Dungeon Requeue",
-    description = "Automatically starts a new dungeon at the end of a dungeon.",
-    category = Category.DUNGEON
+    description = "Automatically starts a new dungeon at the end of a dungeon."
 ) {
     private val delay by NumberSetting("Delay", 2, 0, 30, 1, description = "The delay in seconds before requeuing.", unit = "s")
     private val type by BooleanSetting("Type", true, description = "The type of command to execute to fulfill the requeue request. (true for Normal, false for Requeue)")

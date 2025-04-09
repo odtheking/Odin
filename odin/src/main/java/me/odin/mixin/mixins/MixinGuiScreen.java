@@ -27,6 +27,7 @@ public class MixinGuiScreen {
     private void injectMouseClick(CallbackInfo ci, int mouseX, int mouseY, int mouseButton) {
         if (postAndCatch(new GuiEvent.MouseClick(odin$gui, mouseButton, mouseX, mouseY))) ci.cancel();
     }
+
     @Inject(method = "handleKeyboardInput", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiScreen;keyTyped(CI)V"), cancellable = true)
     private void injectKeyboardClick(CallbackInfo ci) {
         if (postAndCatch(new GuiEvent.KeyPress(odin$gui, Keyboard.getEventKey(), Keyboard.getEventCharacter()))) ci.cancel();

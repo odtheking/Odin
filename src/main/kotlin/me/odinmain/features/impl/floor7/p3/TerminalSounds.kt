@@ -3,7 +3,6 @@ package me.odinmain.features.impl.floor7.p3
 import me.odinmain.events.impl.GuiEvent
 import me.odinmain.events.impl.PacketEvent
 import me.odinmain.events.impl.TerminalEvent
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
@@ -15,7 +14,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object TerminalSounds : Module(
     name = "Terminal Sounds",
-    category = Category.FLOOR7,
     description = "Plays a sound whenever you click a correct item in a terminal."
 ){
     private val defaultSounds = arrayListOf("mob.blaze.hit", "random.pop", "random.orb", "random.break", "mob.guardian.land.hit", "Custom")

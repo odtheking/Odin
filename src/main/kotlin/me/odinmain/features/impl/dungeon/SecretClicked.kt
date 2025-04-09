@@ -1,19 +1,18 @@
 package me.odinmain.features.impl.dungeon
 
 import me.odinmain.events.impl.SecretPickupEvent
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
-import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.positionVector
-import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.runIn
 import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.toAABB
 import me.odinmain.utils.toBlockPos
+import me.odinmain.utils.ui.Colors
+import me.odinmain.utils.ui.clickgui.util.ColorUtil.withAlpha
 import net.minecraft.util.BlockPos
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -21,16 +20,15 @@ import java.util.concurrent.CopyOnWriteArrayList
 
 object SecretClicked : Module(
     name = "Secret Clicked",
-    category = Category.DUNGEON,
     description = "Provides both audio and visual feedback when a secret is clicked."
 ) {
     private val boxesDropdown by DropdownSetting("Secret Boxes Dropdown")
     private val boxes by BooleanSetting("Secret Boxes", true, description = "Whether or not to render boxes around clicked secrets.").withDependency { boxesDropdown }
     private val style by SelectorSetting("Style", Renderer.DEFAULT_STYLE, Renderer.styles, description = Renderer.STYLE_DESCRIPTION).withDependency { boxesDropdown && boxes }
-    private val color by ColorSetting("Color", Color.ORANGE.withAlpha(.4f), allowAlpha = true, description = "The color of the box.").withDependency { boxesDropdown && boxes }
+    private val color by ColorSetting("Color", Colors.MINECRAFT_GOLD.withAlpha(.4f), allowAlpha = true, description = "The color of the box.").withDependency { boxesDropdown && boxes }
     private val lineWidth by NumberSetting("Line Width", 2f, 0.1f, 10f, 0.1f, description = "The width of the box's lines.").withDependency { boxesDropdown && boxes }
     private val depthCheck by BooleanSetting("Depth check", false, description = "Boxes show through walls.").withDependency { boxesDropdown && boxes }
-    private val lockedColor by ColorSetting("Locked Color", Color.RED.withAlpha(.4f), allowAlpha = true, description = "The color of the box when the chest is locked.").withDependency { boxesDropdown && boxes }
+    private val lockedColor by ColorSetting("Locked Color", Colors.MINECRAFT_RED.withAlpha(.4f), allowAlpha = true, description = "The color of the box when the chest is locked.").withDependency { boxesDropdown && boxes }
     private val timeToStay by NumberSetting("Time To Stay", 7, 1, 20, 0.2, description = "The time the chests should remain highlighted.", unit = "s").withDependency { boxesDropdown && boxes }
     private val useRealSize by BooleanSetting("Use Real Size", true, description = "Whether or not to use the real size of the block.").withDependency { boxesDropdown && boxes }
     private val boxInBoss by BooleanSetting("Box In Boss", false, description = "Highlight clicks in boss.").withDependency { boxesDropdown && boxes }

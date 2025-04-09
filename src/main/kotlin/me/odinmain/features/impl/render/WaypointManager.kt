@@ -6,6 +6,7 @@ import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.Island
 import me.odinmain.utils.skyblock.LocationUtils.currentArea
 import me.odinmain.utils.skyblock.modMessage
+import me.odinmain.utils.ui.Colors
 import net.minecraft.util.Vec3
 import net.minecraft.util.Vec3i
 import net.minecraftforge.client.event.RenderWorldLastEvent
@@ -30,8 +31,8 @@ object WaypointManager {
     }
 
     private val colors = listOf(
-        Color.ORANGE, Color.GREEN, Color.PINK, Color.CYAN, Color.YELLOW, Color.DARK_RED, Color.WHITE,
-        Color.PURPLE, Color.YELLOW, Color.RED, Color.PINK, Color.DARK_GREEN, Color.BLUE
+        Colors.MINECRAFT_GOLD, Colors.MINECRAFT_GREEN, Colors.MINECRAFT_LIGHT_PURPLE, Colors.MINECRAFT_DARK_AQUA, Colors.MINECRAFT_YELLOW, Colors.MINECRAFT_DARK_RED, Colors.WHITE,
+        Colors.MINECRAFT_DARK_PURPLE, Colors.MINECRAFT_YELLOW, Colors.MINECRAFT_RED, Colors.MINECRAFT_LIGHT_PURPLE, Colors.MINECRAFT_DARK_GREEN, Colors.MINECRAFT_BLUE
     )
 
     fun addTempWaypoint(name: String = "§fWaypoint", vec3: Vec3i) {
@@ -60,8 +61,6 @@ object WaypointManager {
         var color: Color,
         var shouldShow: Boolean = true,
     ) {
-        constructor(name: String, vec3: Vec3i, color: Color) : this(name, vec3.x, vec3.y, vec3.z, color, true)
-
         fun renderBeacon() = Renderer.drawCustomBeacon(name, Vec3(x.toDouble(), y.toDouble(), z.toDouble()), color)
     }
 }

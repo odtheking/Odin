@@ -1,4 +1,3 @@
-@file:Suppress("FunctionName")
 @file:JvmName("Utils")
 
 package me.odinmain.utils
@@ -7,11 +6,11 @@ import me.odinmain.OdinMain
 import me.odinmain.OdinMain.logger
 import me.odinmain.OdinMain.mc
 import me.odinmain.features.ModuleManager
-import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.skyblock.sendCommand
 import me.odinmain.utils.skyblock.skyblockID
+import me.odinmain.utils.ui.clickgui.util.ColorUtil.withAlpha
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.SharedMonsterAttributes
@@ -24,8 +23,6 @@ import net.minecraft.util.ChatComponentText
 import net.minecraft.util.ChatStyle
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.eventhandler.Event
-import org.lwjgl.opengl.GL11
-import org.lwjgl.util.glu.GLU
 import java.util.*
 import kotlin.math.pow
 import kotlin.math.round
@@ -92,7 +89,6 @@ inline val Container.name: String
 
 operator fun Number.div(number: Number): Number =
     this.toDouble() / number.toDouble()
-
 
 operator fun Number.times(number: Number): Number =
     this.toDouble() * number.toDouble()
@@ -208,16 +204,6 @@ fun formatTime(time: Long, decimalPlaces: Int = 2): String {
 
 inline val Char.isHexaDecimal
     get() = isDigit() || lowercase().equalsOneOf("a","b","c","d","e","f")
-
-fun checkGLError(message: String) {
-    var i: Int
-    if ((GL11.glGetError().also { i = it }) != 0) {
-        val s = GLU.gluErrorString(i)
-        println("########## GL ERROR ##########")
-        println("@ $message")
-        println("$i: $s")
-    }
-}
 
 /**
  * Writes the given text to the clipboard.

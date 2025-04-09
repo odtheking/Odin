@@ -1,7 +1,6 @@
 package me.odinclient.features.impl.skyblock
 
 import me.odinmain.events.impl.GuiEvent
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.NumberSetting
@@ -19,7 +18,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object AutoExperiments : Module(
     name = "Auto Experiments",
-    category = Category.SKYBLOCK,
     description = "Automatically click on the Chronomatron and Ultrasequencer experiments."
 ){
     private val delay by NumberSetting("Click Delay", 200, 0, 1000, 10, unit = "ms", description = "Time in ms between automatic test clicks.")

@@ -1,16 +1,14 @@
 package me.odinmain.features.impl.render
 
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.features.settings.impl.HudSetting
-import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
-import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.RenderUtils.bind
 import me.odinmain.utils.render.getTextWidth
 import me.odinmain.utils.render.mcText
 import me.odinmain.utils.render.text
+import me.odinmain.utils.ui.Colors
+import me.odinmain.utils.ui.clickgui.util.ColorUtil.withAlpha
 import net.minecraft.client.gui.Gui.drawRect
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
@@ -23,7 +21,6 @@ import kotlin.math.max
 
 object Sidebar : Module(
     name = "Sidebar",
-    category = Category.RENDER,
     description = "Various settings to change the look of the minecraft sidebar."
 ) {
     private var variableScoreObjective: ScoreObjective? = null
@@ -59,13 +56,12 @@ object Sidebar : Module(
             }
         }
         GlStateManager.resetColor()
-        Color.WHITE.bind()
         width.toFloat() to (scoreList.size + 1) * mc.fontRendererObj.FONT_HEIGHT.toFloat()
     }
     private val customFont by BooleanSetting("Custom Font", false, description = "Whether to use a custom font for the sidebar.")
     private val textShadow by BooleanSetting("Text Shadow", true, description = "Whether to render a shadow behind the text.")
     private val redNumbers by BooleanSetting("Show Red Numbers", true, description = "Whether to show the numbers in red.")
-    private val backgroundColor by ColorSetting("Background Color", Color.GRAY.withAlpha(.5f), allowAlpha = true, description = "The color of the sidebar background.")
+    private val backgroundColor by ColorSetting("Background Color", Colors.MINECRAFT_GRAY.withAlpha(.5f), allowAlpha = true, description = "The color of the sidebar background.")
 
     @JvmStatic
     fun renderSidebar(scoreObjective: ScoreObjective, scaledResolution: ScaledResolution): Boolean {
@@ -75,9 +71,9 @@ object Sidebar : Module(
 
     private fun drawString(str: String, x: Int, y: Int) {
         if (customFont)
-            text(str, x - 1, y + 3, Color.WHITE, 7, shadow = textShadow)
+            text(str, x - 1, y + 3, Colors.WHITE, 7, shadow = textShadow)
         else
-            mcText(str, x, y, 1, Color.WHITE, shadow = textShadow, center = false)
+            mcText(str, x, y, 1, Colors.WHITE, shadow = textShadow, center = false)
     }
 
     private fun getStringWidth(str: String): Int {

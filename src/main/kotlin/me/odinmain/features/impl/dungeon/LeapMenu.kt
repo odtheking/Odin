@@ -2,15 +2,11 @@ package me.odinmain.features.impl.dungeon
 
 import io.github.moulberry.notenoughupdates.NEUApi
 import me.odinmain.events.impl.GuiEvent
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.dungeon.LeapHelper.leapHelperBossChatEvent
 import me.odinmain.features.impl.dungeon.LeapHelper.worldLoad
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
-import me.odinmain.ui.clickgui.animations.impl.EaseInOut
-import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
-import me.odinmain.ui.util.MouseUtils.getQuadrant
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.name
 import me.odinmain.utils.render.*
@@ -23,6 +19,10 @@ import me.odinmain.utils.skyblock.dungeon.DungeonUtils.leapTeammates
 import me.odinmain.utils.skyblock.getItemIndexInContainerChest
 import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.skyblock.partyMessage
+import me.odinmain.utils.ui.Colors
+import me.odinmain.utils.ui.clickgui.animations.impl.EaseInOut
+import me.odinmain.utils.ui.clickgui.util.ColorUtil.withAlpha
+import me.odinmain.utils.ui.util.MouseUtils.getQuadrant
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.inventory.ContainerChest
@@ -35,13 +35,12 @@ import org.lwjgl.opengl.Display
 
 object LeapMenu : Module(
     name = "Leap Menu",
-    description = "Renders a custom leap menu when in the Spirit Leap gui.",
-    category = Category.DUNGEON
+    description = "Renders a custom leap menu when in the Spirit Leap gui."
 ) {
     val type by SelectorSetting("Sorting", "Odin Sorting", arrayListOf("Odin Sorting", "A-Z Class (BetterMap)", "A-Z Name", "Custom sorting", "No Sorting"), description = "How to sort the leap menu. /od leaporder to configure custom sorting.")
     private val onlyClass by BooleanSetting("Only Classes", false, description = "Renders classes instead of names.")
     private val colorStyle by BooleanSetting("Color Style", false, description = "Which color style to use.")
-    private val backgroundColor by ColorSetting("Background Color", Color.DARK_GRAY.withAlpha(0.75f), allowAlpha = true, description = "Color of the background of the leap menu.").withDependency { !colorStyle }
+    private val backgroundColor by ColorSetting("Background Color", Colors.MINECRAFT_DARK_GRAY.withAlpha(0.75f), allowAlpha = true, description = "Color of the background of the leap menu.").withDependency { !colorStyle }
     private val roundedRect by BooleanSetting("Rounded Rect", true, description = "Toggles the rounded rect for the gui.")
     private val useNumberKeys by BooleanSetting("Use Number Keys", false, description = "Use keyboard keys to leap to the player you want, going from left to right, top to bottom.")
     private val topLeftKeybind by KeybindSetting("Top Left", Keyboard.KEY_1, "Used to click on the first person in the leap menu.").withDependency { useNumberKeys }
@@ -50,7 +49,7 @@ object LeapMenu : Module(
     private val bottomRightKeybind by KeybindSetting("Bottom right", Keyboard.KEY_4, "Used to click on the fourth person in the leap menu.").withDependency { useNumberKeys }
     private val size by NumberSetting("Scale Factor", 1.0f, 0.5f, 2.0f, 0.1f, description = "Scale factor for the leap menu.")
     private val leapHelperToggle by BooleanSetting("Leap Helper", false, description = "Highlights the leap helper player in the leap menu.")
-    private val leapHelperColor by ColorSetting("Leap Helper Color", Color.WHITE, description = "Color of the Leap Helper highlight.").withDependency { leapHelperToggle }
+    private val leapHelperColor by ColorSetting("Leap Helper Color", Colors.WHITE, description = "Color of the Leap Helper highlight.").withDependency { leapHelperToggle }
     val delay by NumberSetting("Reset Leap Helper Delay", 30, 10.0, 120.0, 1.0, description = "Delay for clearing the leap helper highlight.").withDependency { leapHelperToggle }
     private val leapAnnounce by BooleanSetting("Leap Announce", false, description = "Announces when you leap to a player.")
     private val hoveredAnims = List(4) { EaseInOut(200L) }
@@ -99,13 +98,13 @@ object LeapMenu : Module(
                 roundedRectangle(x - 25, y - 25, boxWidth + 50, boxHeight + 50, leapHelperColor, if (roundedRect) 12f else 0f)
 
             val box = Box(x, y, boxWidth, boxHeight).expand(hoveredAnims.getOrNull(index)?.get(0f, 15f, hoveredQuadrant - 1 != index) ?: 0f)
-            dropShadow(box, 10f, 15f, if (getQuadrant() - 1 != index) backgroundColor else Color.WHITE)
+            dropShadow(box, 10f, 15f, if (getQuadrant() - 1 != index) backgroundColor else Colors.WHITE)
             roundedRectangle(box, color, if (roundedRect) 12f else 0f)
 
             drawTexturedModalRect(x + 30, y + 30, 240, 240,8f, 8f, 8, 8, 64f, 64f)
 
             text(if (!onlyClass) it.name else it.clazz.name, x + 265f, y + 155f, if (!colorStyle) it.clazz.color else backgroundColor, 48f)
-            if (!onlyClass || it.isDead) text(if (it.isDead) "§cDEAD" else it.clazz.name, x + 270f, y + 210f, Color.WHITE, 30f, shadow = true)
+            if (!onlyClass || it.isDead) text(if (it.isDead) "§cDEAD" else it.clazz.name, x + 270f, y + 210f, Colors.WHITE, 30f, shadow = true)
             rectangleOutline(x + 30, y + 30, 240, 240, color, 25f, 15f, 100f)
             GlStateManager.disableAlpha()
             GlStateManager.popMatrix()

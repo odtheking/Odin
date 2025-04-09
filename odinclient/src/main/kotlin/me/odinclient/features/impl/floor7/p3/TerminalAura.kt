@@ -2,10 +2,8 @@ package me.odinclient.features.impl.floor7.p3
 
 import me.odinmain.events.impl.PacketEvent
 import me.odinmain.events.impl.PostEntityMetadata
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.p3.TerminalSolver
-import me.odinmain.features.impl.floor7.p3.TerminalTypes
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.addVec
@@ -23,7 +21,6 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 
 object TerminalAura : Module(
     name = "Terminal Aura",
-    category = Category.FLOOR7,
     description = "Automatically interacts with inactive terminals.",
     tag = TagType.RISKY
 ) {

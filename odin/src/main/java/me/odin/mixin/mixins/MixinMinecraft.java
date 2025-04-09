@@ -2,7 +2,6 @@ package me.odin.mixin.mixins;
 
 import me.odinmain.events.impl.ClickEvent;
 import me.odinmain.events.impl.InputEvent;
-import me.odinmain.features.impl.render.CPSDisplay;
 import net.minecraft.client.Minecraft;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
@@ -29,12 +28,10 @@ public class MixinMinecraft {
     @Inject(method = "rightClickMouse", at = @At("HEAD"), cancellable = true)
     private void rightClickMouse(CallbackInfo ci) {
         if (postAndCatch(new ClickEvent.Right())) ci.cancel();
-        CPSDisplay.onRightClick();
     }
 
     @Inject(method = "clickMouse", at = @At("HEAD"), cancellable = true)
     private void clickMouse(CallbackInfo ci) {
         if (postAndCatch(new ClickEvent.Left())) ci.cancel();
-        CPSDisplay.onLeftClick();
     }
 }

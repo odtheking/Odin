@@ -31,22 +31,21 @@ class ModCore {
         MinecraftForge.EVENT_BUS.register(this)
     }
 
-    @SubscribeEvent
-    fun onTick(event: TickEvent.ClientTickEvent) {
-        if (event.phase != TickEvent.Phase.START) return
-        OdinMain.onTick()
-    }
-
     @EventHandler
     fun postInit(event: FMLPostInitializationEvent) {
+        ModuleManager.addModules(SimonSays, ArrowsDevice, EtherWarpHelper, Camera, HidePlayers)
         OdinMain.postInit()
     }
 
     @EventHandler
     fun loadComplete(event: FMLLoadCompleteEvent) {
-        ModuleManager.addModules(SimonSays, ArrowsDevice, EtherWarpHelper, Camera, HidePlayers)
-
         OdinMain.loadComplete()
+    }
+
+    @SubscribeEvent
+    fun onTick(event: TickEvent.ClientTickEvent) {
+        if (event.phase != TickEvent.Phase.START) return
+        OdinMain.onTick()
     }
 
     companion object {

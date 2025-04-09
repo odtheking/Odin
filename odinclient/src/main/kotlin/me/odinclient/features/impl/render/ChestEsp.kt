@@ -1,19 +1,18 @@
 package me.odinclient.features.impl.render
 
 import me.odinmain.events.impl.RenderChestEvent
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.features.settings.impl.SelectorSetting
 import me.odinmain.utils.equalsOneOf
-import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.Island
 import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.getBlockAt
 import me.odinmain.utils.toAABB
+import me.odinmain.utils.ui.Colors
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.init.Blocks
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
@@ -24,14 +23,13 @@ import org.lwjgl.opengl.GL11
 
 object ChestEsp : Module(
     name = "Chest Esp",
-    category = Category.RENDER,
     description = "Displays chests through walls."
 ) {
     private val onlyDungeon by BooleanSetting(name = "Only Dungeon", description = "Only show chests in dungeons.")
     private val onlyCH by BooleanSetting(name = "Only Crystal Hollows", description = "Only show chests in Crystal Hollows.")
     private val hideClicked by BooleanSetting(name = "Hide Clicked", description = "Hide chests that have been clicked.")
     private val renderMode by SelectorSetting(name = "Render Mode", "Chams", arrayListOf("Chams", "Outline"), description = "The rendering mode.")
-    private val color by ColorSetting(name = "Color", Color.RED, allowAlpha = true, description = "The color of the chest ESP.")
+    private val color by ColorSetting(name = "Color", Colors.MINECRAFT_RED, allowAlpha = true, description = "The color of the chest ESP.")
 
     private val clickedChests = mutableSetOf<BlockPos>()
     private var chests = mutableSetOf<BlockPos>()

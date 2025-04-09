@@ -23,11 +23,19 @@ import kotlin.reflect.full.hasAnnotation
 abstract class Module(
     val name: String,
     key: Int? = Keyboard.KEY_NONE,
-    @Transient val category: Category = Category.RENDER,
     @Transient var description: String,
     @Transient val tag: TagType = TagType.NONE,
     toggled: Boolean = false,
 ) {
+
+    /**
+     * Category for this module.
+     *
+     * It is defined by the package of the module. (For example: me.odin.features.impl.render == [Category.RENDER]).
+     * If it is in an invalid package, it will use [Category.RENDER] as a default
+     */
+    @Transient
+    val category: Category = getCategory(this::class.java) ?: Category.RENDER
 
     var enabled: Boolean = toggled
         private set
@@ -53,6 +61,7 @@ abstract class Module(
 
     init {
         if (alwaysActive) {
+            @Suppress("LeakingThis")
             MinecraftForge.EVENT_BUS.register(this)
         }
     }
@@ -158,5 +167,19 @@ abstract class Module(
 
     enum class TagType {
         NONE, NEW, RISKY, FPSTAX
+    }
+
+    private companion object {
+        private fun getCategory(clazz: Class<out Module>): Category? {
+            val `package` = clazz.`package`.name
+            return when {
+                `package`.contains("dungeon") -> Category.DUNGEON
+                `package`.contains("floor7") -> Category.FLOOR7
+                `package`.contains("render") -> Category.RENDER
+                `package`.contains("skyblock") -> Category.SKYBLOCK
+                `package`.contains("nether") -> Category.NETHER
+                else -> null
+            }
+        }
     }
 }

@@ -1,7 +1,6 @@
 package me.odinclient.features.impl.floor7.p3
 
 import me.odinclient.utils.skyblock.PlayerUtils.rightClick
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
@@ -16,8 +15,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object LightsDevice : Module(
     name = "Lights Device",
-    description = "Features to help with the lights device.",
-    category = Category.FLOOR7
+    description = "Features to help with the lights device."
 ) {
     private val triggerBot by BooleanSetting("Triggerbot", false, description = "Toggles correct levers automatically when you look at them.")
     private val delay by NumberSetting("Delay", 200L, 70, 500, unit = "ms", description = "The delay between each click.").withDependency { triggerBot }

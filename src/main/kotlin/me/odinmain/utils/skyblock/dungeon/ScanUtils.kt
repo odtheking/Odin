@@ -85,7 +85,7 @@ object ScanUtils {
             return
         } // We want to use cached rooms instead of scanning it again if we have already passed through it and if we are already in it we don't want to trigger the event
 
-        scanRoom(roomCenter)?.let { room -> if (room.rotation != Rotations.NONE) RoomEnterEvent(room).postAndCatch() } ?: devMessage("${getCore(roomCenter)} at $roomCenter is not a registered room core (last registered visited room is ${currentRoom?.data?.name})")
+        scanRoom(roomCenter)?.let { room -> if (room.rotation != Rotations.NONE) RoomEnterEvent(room).postAndCatch() }
     }
 
     private fun updateRotation(room: Room) {

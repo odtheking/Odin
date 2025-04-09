@@ -2,7 +2,6 @@ package me.odinmain.config
 
 import com.google.gson.*
 import com.google.gson.reflect.TypeToken
-import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import me.odinmain.OdinMain.logger
@@ -58,7 +57,6 @@ object DungeonWaypointConfig {
         }
     }
 
-    @OptIn(DelicateCoroutinesApi::class)
     fun saveConfig() {
         scope.launch(Dispatchers.IO) {
             try {

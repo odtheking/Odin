@@ -6,6 +6,7 @@ import me.odinmain.features.impl.floor7.p3.termsim.TermSimGUI
 import me.odinmain.utils.postAndCatch
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
+import me.odinmain.utils.ui.Colors
 import net.minecraft.network.play.client.C0EPacketClickWindow
 import net.minecraft.util.Vec3
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -38,7 +39,7 @@ object PlayerUtils {
      *
      * @author Odtheking, Bonsai
      */
-    fun alert(title: String, time: Int = 20, color: Color = Color.WHITE, playSound: Boolean = true, displayText: Boolean = true) {
+    fun alert(title: String, time: Int = 20, color: Color = Colors.WHITE, playSound: Boolean = true, displayText: Boolean = true) {
         if (playSound) playLoudSound("note.pling", 100f, 1f)
         if (displayText) Renderer.displayTitle(title , time, color = color)
     }

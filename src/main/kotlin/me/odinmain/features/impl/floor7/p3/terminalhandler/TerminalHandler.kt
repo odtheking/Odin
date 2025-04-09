@@ -25,7 +25,7 @@ open class TerminalHandler(val type: TerminalTypes, val timeOpened: Long = Syste
             is S2FPacketSetSlot -> {
                 if (func_149173_d() !in 0 until type.windowSize) return@with
                 items[func_149173_d()] = func_149174_e()
-                if (solve(this)) TerminalEvent.Updated(this@TerminalHandler).postAndCatch()
+                if (handleSlotUpdate(this)) TerminalEvent.Updated(this@TerminalHandler).postAndCatch()
             }
             is S2DPacketOpenWindow -> {
                 items.fill(null)
@@ -35,10 +35,11 @@ open class TerminalHandler(val type: TerminalTypes, val timeOpened: Long = Syste
     }
 
     init {
+        @Suppress("LeakingThis")
         MinecraftForge.EVENT_BUS.register(this)
     }
 
-    open fun solve(packet: S2FPacketSetSlot): Boolean = false
+    open fun handleSlotUpdate(packet: S2FPacketSetSlot): Boolean = false
 
     open fun simulateClick(slotIndex: Int, clickType: ClickType) {}
 

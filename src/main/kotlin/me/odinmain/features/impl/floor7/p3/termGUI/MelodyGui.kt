@@ -11,6 +11,7 @@ import me.odinmain.features.impl.floor7.p3.TerminalSolver.melodyPressColumColor
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.melodyRowColor
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.render.*
+import me.odinmain.utils.ui.Colors
 import net.minecraft.item.Item
 import kotlin.math.ceil
 
@@ -20,11 +21,11 @@ object MelodyGui : TermGui() {
         itemIndexMap.clear()
         roundedRectangle(-325, -250, 650, 500, TerminalSolver.customGuiColor, 10f, 1f)
         if (TerminalSolver.customGuiText == 0) {
-            text("Click the button on time!", -320, -238, Color.WHITE, 20, verticalAlign = TextPos.Top)
-            roundedRectangle(-248, -210, getTextWidth("Click the button on time!", 20f), 3, Color.WHITE, radius = 5f)
+            text("Click the button on time!", -320, -238, Colors.WHITE, 20, verticalAlign = TextPos.Top)
+            roundedRectangle(-248, -210, getTextWidth("Click the button on time!", 20f), 3, Colors.WHITE, radius = 5f)
         } else if (TerminalSolver.customGuiText == 1) {
-            text("Click the button on time!", 0, -238, Color.WHITE, 20, align = TextAlign.Middle, verticalAlign = TextPos.Top)
-            roundedRectangle(-getTextWidth("Click the button on time!", 20f) / 2, -210, getTextWidth("Click the button on time!", 20f), 3, Color.WHITE, radius = 5f)
+            text("Click the button on time!", 0, -238, Colors.WHITE, 20, align = TextAlign.Middle, verticalAlign = TextPos.Top)
+            roundedRectangle(-getTextWidth("Click the button on time!", 20f) / 2, -210, getTextWidth("Click the button on time!", 20f), 3, Colors.WHITE, radius = 5f)
         }
 
         TerminalSolver.currentTerm?.solution?.forEach { pane ->

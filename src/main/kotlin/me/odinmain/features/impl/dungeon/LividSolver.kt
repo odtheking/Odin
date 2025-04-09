@@ -3,7 +3,6 @@ package me.odinmain.features.impl.dungeon
 import me.odinmain.OdinMain
 import me.odinmain.events.impl.BlockChangeEvent
 import me.odinmain.events.impl.PostEntityMetadata
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
@@ -17,6 +16,7 @@ import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.runIn
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.modMessage
+import me.odinmain.utils.ui.Colors
 import net.minecraft.block.BlockStainedGlass
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.init.Blocks
@@ -27,8 +27,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object LividSolver : Module(
     name = "Livid Solver",
-    description = "Provides a visual cue for the correct Livid's location in the boss fight.",
-    category = Category.DUNGEON
+    description = "Provides a visual cue for the correct Livid's location in the boss fight."
 ) {
     private val mode by SelectorSetting("Mode", HighlightRenderer.HIGHLIGHT_MODE_DEFAULT, HighlightRenderer.highlightModeList, description = HighlightRenderer.HIGHLIGHT_MODE_DESCRIPTION)
     private val thickness by NumberSetting("Line Width", 1f, .1f, 4f, .1f, description = "The line width of Outline / Boxes/ 2D Boxes.").withDependency { mode != HighlightRenderer.HighlightType.Overlay.ordinal }
@@ -74,15 +73,15 @@ object LividSolver : Module(
     }
 
     private enum class Livid(val entityName: String, val colorCode: Char, val color: Color, val woolMetadata: Int) {
-        VENDETTA("Vendetta", 'f', Color.WHITE, 0),
-        CROSSED("Crossed", 'd', Color.PURPLE, 2),
-        ARCADE("Arcade", 'e', Color.YELLOW, 4),
-        SMILE("Smile", 'a', Color.GREEN, 5),
-        DOCTOR("Doctor", '7', Color.GRAY, 7),
-        PURPLE("Purple", '5', Color.PURPLE, 10),
-        SCREAM("Scream", '9', Color.BLUE, 11),
-        FROG("Frog", '2', Color.DARK_GREEN, 13),
-        HOCKEY("Hockey", 'c', Color.RED, 14);
+        VENDETTA("Vendetta", 'f', Colors.WHITE, 0),
+        CROSSED("Crossed", 'd', Colors.MINECRAFT_DARK_PURPLE, 2),
+        ARCADE("Arcade", 'e', Colors.MINECRAFT_YELLOW, 4),
+        SMILE("Smile", 'a', Colors.MINECRAFT_GREEN, 5),
+        DOCTOR("Doctor", '7', Colors.MINECRAFT_GRAY, 7),
+        PURPLE("Purple", '5', Colors.MINECRAFT_DARK_PURPLE, 10),
+        SCREAM("Scream", '9', Colors.MINECRAFT_BLUE, 11),
+        FROG("Frog", '2', Colors.MINECRAFT_DARK_GREEN, 13),
+        HOCKEY("Hockey", 'c', Colors.MINECRAFT_RED, 14);
 
         var entity: EntityOtherPlayerMP? = null
     }

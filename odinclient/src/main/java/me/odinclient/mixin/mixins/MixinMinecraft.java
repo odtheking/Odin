@@ -3,7 +3,6 @@ package me.odinclient.mixin.mixins;
 import me.odinclient.features.impl.skyblock.CancelInteract;
 import me.odinmain.events.impl.ClickEvent;
 import me.odinmain.events.impl.InputEvent;
-import me.odinmain.features.impl.render.CPSDisplay;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.multiplayer.WorldClient;
@@ -37,13 +36,11 @@ public class MixinMinecraft {
     @Inject(method = "rightClickMouse", at = @At("HEAD"), cancellable = true)
     private void rightClickMouse(CallbackInfo ci) {
         if (postAndCatch(new ClickEvent.Right())) ci.cancel();
-        CPSDisplay.onRightClick();
     }
 
     @Inject(method = "clickMouse", at = @At("HEAD"), cancellable = true)
     private void clickMouse(CallbackInfo ci) {
         if (postAndCatch(new ClickEvent.Left())) ci.cancel();
-        CPSDisplay.onLeftClick();
     }
 
     @Redirect(method = {"rightClickMouse"}, at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/WorldClient;isAirBlock(Lnet/minecraft/util/BlockPos;)Z"))

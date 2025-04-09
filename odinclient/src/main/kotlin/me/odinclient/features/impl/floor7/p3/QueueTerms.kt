@@ -2,7 +2,6 @@ package me.odinclient.features.impl.floor7.p3
 
 import me.odinmain.events.impl.GuiEvent
 import me.odinmain.events.impl.TerminalEvent
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.p3.TerminalSolver
 import me.odinmain.features.impl.floor7.p3.TerminalTypes
@@ -16,7 +15,6 @@ import java.util.*
 
 object QueueTerms : Module(
     name = "Queue Terms",
-    category = Category.FLOOR7,
     description = "Queues clicks in terminals to ensure every click is registered (only works in custom term gui).",
     tag = TagType.RISKY
 ) {

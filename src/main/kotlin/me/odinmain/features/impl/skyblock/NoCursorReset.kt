@@ -1,6 +1,5 @@
 package me.odinmain.features.impl.skyblock
 
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.utils.clock.Clock
 import net.minecraft.client.gui.inventory.GuiChest
@@ -12,7 +11,6 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 object NoCursorReset : Module(
     name = "No Cursor Reset",
     description = "Makes your cursor stop resetting between guis.",
-    category = Category.SKYBLOCK
 ) {
     private val clock = Clock(150)
     private var wasNotNull = false

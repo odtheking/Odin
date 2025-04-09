@@ -1,8 +1,8 @@
 package me.odinmain.features.settings.impl
 
 import me.odinmain.features.settings.Setting
-import me.odinmain.ui.hud.HudElement
-import me.odinmain.ui.hud.Render
+import me.odinmain.utils.ui.hud.HudElement
+import me.odinmain.utils.ui.hud.Render
 
 /**
  * @author Stivais, Bonsai

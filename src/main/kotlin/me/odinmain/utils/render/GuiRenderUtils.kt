@@ -2,14 +2,15 @@ package me.odinmain.utils.render
 
 import me.odinmain.OdinMain.mc
 import me.odinmain.font.OdinFont
-import me.odinmain.ui.clickgui.util.ColorUtil
-import me.odinmain.ui.util.shader.CircleShader
-import me.odinmain.ui.util.shader.DropShadowShader
-import me.odinmain.ui.util.shader.HSBBoxShader
-import me.odinmain.ui.util.shader.RoundedRectangleShader
 import me.odinmain.utils.*
 import me.odinmain.utils.render.RenderUtils.drawTexturedModalRect
 import me.odinmain.utils.render.TextAlign.Left
+import me.odinmain.utils.ui.Colors
+import me.odinmain.utils.ui.clickgui.util.ColorUtil
+import me.odinmain.utils.ui.util.shader.CircleShader
+import me.odinmain.utils.ui.util.shader.DropShadowShader
+import me.odinmain.utils.ui.util.shader.HSBBoxShader
+import me.odinmain.utils.ui.util.shader.RoundedRectangleShader
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.texture.DynamicTexture
@@ -66,13 +67,13 @@ fun <T: Number> roundedRectangle(box: BoxWithClass<T>, color: Color, radius: Num
 
 
 fun rectangleOutline(x: Number, y: Number, w: Number, h: Number, color: Color, radius: Number = 0f, thickness: Number, edgeSoftness: Number = 1f) {
-    roundedRectangle(x, y, w, h, Color.TRANSPARENT, color, Color.TRANSPARENT, thickness, radius, radius, radius, radius, edgeSoftness)
+    roundedRectangle(x, y, w, h, Colors.TRANSPARENT, color, Colors.TRANSPARENT, thickness, radius, radius, radius, radius, edgeSoftness)
 }
 
-fun gradientRect(x: Float, y: Float, w: Float, h: Float, color1: Color, color2: Color, radius: Float, direction: GradientDirection = GradientDirection.Right, borderColor: Color = Color.TRANSPARENT, borderThickness: Number = 0f) {
+fun gradientRect(x: Float, y: Float, w: Float, h: Float, color1: Color, color2: Color, radius: Float, direction: GradientDirection = GradientDirection.Right, borderColor: Color = Colors.TRANSPARENT, borderThickness: Number = 0f) {
     if (color1.isTransparent && color2.isTransparent) return
     roundedRectangle(
-        x, y, w, h, color1.coerceAlpha(.1f, 1f), borderColor, Color.TRANSPARENT, borderThickness, radius, radius, radius, radius, 3, color2.coerceAlpha(.1f, 1f), direction.ordinal
+        x, y, w, h, color1.coerceAlpha(.1f, 1f), borderColor, Colors.TRANSPARENT, borderThickness, radius, radius, radius, radius, 3, color2.coerceAlpha(.1f, 1f), direction.ordinal
     )
 }
 

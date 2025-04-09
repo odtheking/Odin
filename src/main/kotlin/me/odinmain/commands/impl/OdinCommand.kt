@@ -10,12 +10,12 @@ import me.odinmain.features.impl.render.ClickGUIModule
 import me.odinmain.features.impl.render.ServerHud.colorizeFPS
 import me.odinmain.features.impl.render.ServerHud.colorizePing
 import me.odinmain.features.impl.render.ServerHud.colorizeTps
-import me.odinmain.ui.clickgui.ClickGUI
-import me.odinmain.ui.hud.EditHUDGui
 import me.odinmain.utils.ServerUtils
 import me.odinmain.utils.fillItemFromSack
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.ui.clickgui.ClickGUI
+import me.odinmain.utils.ui.hud.EditHUDGui
 import me.odinmain.utils.writeToClipboard
 import kotlin.math.round
 
@@ -118,7 +118,7 @@ val mainCommand = Commodore("od", "odin") {
     // i.e. when a command fails it will show:
     // /od <floor> and /od <kuudra tier>
     runs { floor: Floors -> sendCommand("joininstance ${floor.instance()}") }
-    runs { `kuudra tier`: KuudraTier -> sendCommand("joininstance ${`kuudra tier`.instance()}") }
+    runs { tier: KuudraTier -> sendCommand("joininstance ${tier.instance()}") }
 
     literal("leaporder").runs { player1: String?, player2: String?, player3: String?, player4: String? ->
         val players = listOfNotNull(player1, player2, player3, player4)

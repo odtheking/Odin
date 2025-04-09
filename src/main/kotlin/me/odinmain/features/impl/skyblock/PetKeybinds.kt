@@ -1,7 +1,6 @@
 package me.odinmain.features.impl.skyblock
 
 import me.odinmain.events.impl.GuiEvent
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
@@ -19,8 +18,7 @@ import org.lwjgl.input.Keyboard
 
 object PetKeybinds : Module(
     name = "Pet Keybinds",
-    description = "Keybinds for the pets menu. (/petkeys)",
-    category = Category.SKYBLOCK
+    description = "Keybinds for the pets menu. (/petkeys)"
 ) {
     private val unequipKeybind by KeybindSetting("Unequip Keybind", Keyboard.KEY_NONE, "Unequips the current Pet.")
     private val nextPageKeybind by KeybindSetting("Next Page Keybind", Keyboard.KEY_NONE, "Goes to the next page.")
@@ -42,7 +40,7 @@ object PetKeybinds : Module(
     private val petsRegex = Regex("Pets(?: \\((\\d)/(\\d)\\))?")
     private val clickCoolDown = Clock(delay)
 
-    val petList: MutableList<String> by ListSetting("List", mutableListOf())
+    val petList by ListSetting("List", mutableListOf<String>())
 
     @SubscribeEvent
     fun onGuiMouseClick(event: GuiEvent.MouseClick) {

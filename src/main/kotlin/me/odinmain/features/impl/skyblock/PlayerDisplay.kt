@@ -1,13 +1,12 @@
 package me.odinmain.features.impl.skyblock
 
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
-import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.mcTextAndWidth
 import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.SkyblockPlayer
+import me.odinmain.utils.ui.Colors
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.text.DecimalFormat
@@ -16,8 +15,7 @@ import java.util.*
 
 object PlayerDisplay : Module(
     name = "Player Display",
-    description = "Allows to customize the player stat displays (health, strength and more).",
-    category = Category.SKYBLOCK,
+    description = "Allows to customize the player stat displays (health, strength and more)."
 ) {
     private val hideElements by DropdownSetting("Hide Elements")
     private val hideArmor by BooleanSetting("Hide Armor", true, description = "Hides the armor bar.").withDependency { hideElements }
@@ -46,7 +44,7 @@ object PlayerDisplay : Module(
 
         return@HudSetting mcTextAndWidth(text, 2, 2, 2, healthColor, center = false) * 2f + 2f to 20f
     }
-    private val healthColor by ColorSetting("Health Color", Color.RED, true, description = "The color of the health text.")
+    private val healthColor by ColorSetting("Health Color", Colors.MINECRAFT_RED, true, description = "The color of the health text.")
 
     private val manaHud by HudSetting("Mana Hud", 10f, 10f, 1f, true) { example ->
         val text = if (example)
@@ -59,7 +57,7 @@ object PlayerDisplay : Module(
 
         return@HudSetting mcTextAndWidth(text, 2, 2, 2, manaColor, center = false) * 2f + 2f to 20f
     }
-    private val manaColor by ColorSetting("Mana Color", Color.BLUE, true, description = "The color of the mana text.")
+    private val manaColor by ColorSetting("Mana Color", Colors.MINECRAFT_BLUE, true, description = "The color of the mana text.")
 
     private val overflowManaHud by HudSetting("Overflow Mana Hud", 10f, 10f, 1f, true) { example ->
         val text = if (example) generateText(333, "ʬ", hideZeroSF)
@@ -70,7 +68,7 @@ object PlayerDisplay : Module(
 
         return@HudSetting mcTextAndWidth(text, 2, 2, 2, overflowManaColor, center = false) * 2f + 2f to 20f
     }
-    private val overflowManaColor by ColorSetting("Overflow Mana Color", Color.CYAN, true, description = "The color of the overflow mana text.")
+    private val overflowManaColor by ColorSetting("Overflow Mana Color", Colors.MINECRAFT_DARK_AQUA, true, description = "The color of the overflow mana text.")
 
     private val defenseHud by HudSetting("Defense Hud", 10f, 10f, 1f, true) { example ->
         val text = if (example) generateText(1000, "❈", true)
@@ -82,7 +80,7 @@ object PlayerDisplay : Module(
 
         return@HudSetting mcTextAndWidth(text, 2, 2, 2, defenseColor, center = false) * 2f + 2f to 20f
     }
-    private val defenseColor by ColorSetting("Defense Color", Color.GREEN, true, description = "The color of the defense text.")
+    private val defenseColor by ColorSetting("Defense Color", Colors.MINECRAFT_GREEN, true, description = "The color of the defense text.")
 
     private val eHPHud by HudSetting("EffectiveHealth Hud", 10f, 10f, 1f, true) { example ->
         val text = if (example) generateText(1000000, "", true)
@@ -92,7 +90,7 @@ object PlayerDisplay : Module(
 
         return@HudSetting mcTextAndWidth(text, 2, 2, 2, ehpColor, center = false) * 2f + 2f to 20f
     }
-    private val ehpColor by ColorSetting("EffectiveHealth Color", Color.DARK_GREEN, true, description = "The color of the effective health text.")
+    private val ehpColor by ColorSetting("EffectiveHealth Color", Colors.MINECRAFT_DARK_GREEN, true, description = "The color of the effective health text.")
 
     @JvmStatic
     fun modifyText(text: String): String {

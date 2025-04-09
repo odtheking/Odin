@@ -10,8 +10,6 @@ import me.odinmain.features.Module
 import me.odinmain.features.settings.AlwaysActive
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
-import me.odinmain.ui.clickgui.ClickGUI
-import me.odinmain.ui.hud.EditHUDGui
 import me.odinmain.utils.fetchURLData
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.sendDataToServer
@@ -19,6 +17,9 @@ import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.createClickStyle
 import me.odinmain.utils.skyblock.getChatBreak
 import me.odinmain.utils.skyblock.modMessage
+import me.odinmain.utils.ui.Colors
+import me.odinmain.utils.ui.clickgui.ClickGUI
+import me.odinmain.utils.ui.hud.EditHUDGui
 import net.minecraft.event.ClickEvent
 import org.lwjgl.input.Keyboard
 
@@ -26,7 +27,6 @@ import org.lwjgl.input.Keyboard
 object ClickGUIModule: Module(
     name = "Click Gui",
     Keyboard.KEY_RSHIFT,
-    category = Category.RENDER,
     description = "Allows you to customize the GUI."
 ) {
     val blur by BooleanSetting("Blur", false, description = "Toggles the background blur for the gui.")
@@ -39,7 +39,7 @@ object ClickGUIModule: Module(
     val devMessages by BooleanSetting("Dev Message", false, description = "Enables dev messages in chat.")
     val devSize by BooleanSetting("Dev Size", true, description = "Toggles client side dev size.").withDependency { DevPlayers.isDev }
     private val devWings by BooleanSetting("Dev Wings", false, description = "Toggles client side dev wings.").withDependency { DevPlayers.isDev }
-    private val devWingsColor by ColorSetting("Dev Wings Color", Color(255, 255, 255), description = "Color of the dev wings.").withDependency { DevPlayers.isDev }
+    private val devWingsColor by ColorSetting("Dev Wings Color", Colors.WHITE, description = "Color of the dev wings.").withDependency { DevPlayers.isDev }
     private val devSizeX by NumberSetting("Dev Size X", 1f, -1f, 3f, 0.1, description = "X scale of the dev size.").withDependency { DevPlayers.isDev && devSize }
     private val devSizeY by NumberSetting("Dev Size Y", 1f, -1f, 3f, 0.1, description = "Y scale of the dev size.").withDependency { DevPlayers.isDev && devSize }
     private val devSizeZ by NumberSetting("Dev Size Z", 1f, -1f, 3f, 0.1, description = "Z scale of the dev size.").withDependency { DevPlayers.isDev && devSize }

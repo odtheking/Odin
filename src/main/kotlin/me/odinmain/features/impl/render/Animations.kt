@@ -1,6 +1,5 @@
 package me.odinmain.features.impl.render
 
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.ActionSetting
@@ -20,7 +19,6 @@ import kotlin.math.sqrt
  */
 object Animations : Module(
     name = "Animations",
-    category = Category.RENDER,
     description = "Changes the appearance of the first-person view model."
 ) {
     private val size by NumberSetting("Size", 0.0f, -1.5, 1.5, 0.05, description = "Scales the size of your currently held item. Default: 0")

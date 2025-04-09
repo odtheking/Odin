@@ -3,13 +3,11 @@ package me.odinclient.features.impl.floor7.p3
 import me.odinclient.utils.skyblock.PlayerUtils.rightClick
 import me.odinmain.events.impl.BlockChangeEvent
 import me.odinmain.events.impl.ServerTickEvent
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.*
 import me.odinmain.utils.clock.Clock
-import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.RenderUtils.renderX
 import me.odinmain.utils.render.RenderUtils.renderY
 import me.odinmain.utils.render.RenderUtils.renderZ
@@ -18,6 +16,7 @@ import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonClass
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.M7Phases
+import me.odinmain.utils.ui.Colors
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.client.settings.KeyBinding
 import net.minecraft.entity.item.EntityArmorStand
@@ -34,13 +33,12 @@ import kotlin.math.sqrt
 object ArrowsDevice : Module(
     name = "Arrows Device",
     description = "Different features for the Sharp Shooter puzzle in floor 7.",
-    category = Category.FLOOR7,
-    tag = TagType.RISKY,
+    tag = TagType.RISKY
 ) {
     private val solverDropdown by DropdownSetting("Solver")
     private val solver by BooleanSetting("Solver Enabled", default = true, description = "Automatically solve the puzzle.").withDependency { solverDropdown }
-    private val markedPositionColor by ColorSetting("Marked Position", Color.RED, description = "Color of the marked position.").withDependency { solver && solverDropdown }
-    private val targetPositionColor by ColorSetting("Target Position", Color.GREEN, description = "Color of the target position.").withDependency { solver && solverDropdown }
+    private val markedPositionColor by ColorSetting("Marked Position", Colors.MINECRAFT_RED, description = "Color of the marked position.").withDependency { solver && solverDropdown }
+    private val targetPositionColor by ColorSetting("Target Position", Colors.MINECRAFT_GREEN, description = "Color of the target position.").withDependency { solver && solverDropdown }
     private val resetKey by KeybindSetting("Reset", Keyboard.KEY_NONE, description = "Resets the solver.").onPress {
         markedPositions.clear()
         autoState = AutoState.Stopped
@@ -296,7 +294,7 @@ object ArrowsDevice : Module(
 
         if (alertOnDeviceComplete) {
             modMessage("§aSharp shooter device complete")
-            PlayerUtils.alert("Device Complete", color = Color.GREEN)
+            PlayerUtils.alert("Device Complete", color = Colors.MINECRAFT_GREEN)
         }
 
         autoState = AutoState.Stopped

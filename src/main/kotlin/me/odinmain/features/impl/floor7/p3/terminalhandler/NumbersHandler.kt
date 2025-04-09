@@ -8,7 +8,7 @@ import net.minecraft.network.play.server.S2FPacketSetSlot
 
 class NumbersHandler: TerminalHandler(TerminalTypes.NUMBERS) {
 
-    override fun solve(packet: S2FPacketSetSlot): Boolean {
+    override fun handleSlotUpdate(packet: S2FPacketSetSlot): Boolean {
         if (packet.func_149173_d() != type.windowSize - 1) return false
         solution.clear()
         solution.addAll(solveNumbers(items))

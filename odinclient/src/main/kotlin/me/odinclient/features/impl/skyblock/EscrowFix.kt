@@ -1,15 +1,13 @@
 package me.odinclient.features.impl.skyblock
 
 import me.odinmain.events.impl.ChatPacketEvent
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.utils.skyblock.sendCommand
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object EscrowFix : Module(
     name = "Escrow Fix",
-    description = "Automatically reopens the ah/bz when it gets closed by escrow.",
-    category = Category.SKYBLOCK
+    description = "Automatically reopens the ah/bz when it gets closed by escrow."
 ) {
     private val messages = mapOf(
         "There was an error with the auction house! (AUCTION_EXPIRED_OR_NOT_FOUND)" to "ah",

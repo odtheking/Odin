@@ -1,23 +1,22 @@
 package me.odinmain.features.impl.render
 
+import me.odinmain.events.impl.ClickEvent
 import me.odinmain.events.impl.PacketEvent
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
-import me.odinmain.ui.clickgui.animations.impl.EaseInOut
-import me.odinmain.ui.clickgui.util.ColorUtil.brighter
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.dropShadow
 import me.odinmain.utils.render.mcText
 import me.odinmain.utils.render.roundedRectangle
+import me.odinmain.utils.ui.clickgui.animations.impl.EaseInOut
+import me.odinmain.utils.ui.clickgui.util.ColorUtil.brighter
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object CPSDisplay : Module(
     name = "CPS Display",
-    description = "Displays your clicks per second.",
-    category = Category.RENDER
+    description = "Displays your clicks per second."
 ) {
     private val countPackets by BooleanSetting("Count Packets", false, description = "Counts packets sent outside of the rightclickmouse method, this will be better at detecting other mods' auto clickers, but might show inaccurate values.")
     private val advanced by DropdownSetting("Show Settings", false)
@@ -70,14 +69,14 @@ object CPSDisplay : Module(
     private val leftClicks = mutableListOf<Long>()
     private val rightClicks = mutableListOf<Long>()
 
-    @JvmStatic
-    fun onLeftClick() {
+    @SubscribeEvent
+    fun onLeftClick(event: ClickEvent.Right) {
         leftClicks.add(System.currentTimeMillis())
         leftAnim.start(true)
     }
 
-    @JvmStatic
-    fun onRightClick() {
+    @SubscribeEvent
+    fun onRightClick(event: ClickEvent.Left) {
         rightClicks.add(System.currentTimeMillis())
         rightAnim.start(true)
     }
@@ -86,6 +85,6 @@ object CPSDisplay : Module(
     fun onSendPacket(event: PacketEvent.Send) { // This is for any block placement packet that gets sent outside the rightclickmouse method :eyes:
         if (event.packet !is C08PacketPlayerBlockPlacement || !countPackets) return
         if (rightClicks.any { System.currentTimeMillis() - it < 5 }) return
-        onRightClick()
+        onRightClick(ClickEvent.Left())
     }
 }

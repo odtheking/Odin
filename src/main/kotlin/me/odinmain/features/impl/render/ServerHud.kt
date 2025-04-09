@@ -1,15 +1,17 @@
 package me.odinmain.features.impl.render
 
-import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.features.settings.impl.*
-import me.odinmain.utils.*
+import me.odinmain.features.settings.impl.BooleanSetting
+import me.odinmain.features.settings.impl.HudSetting
+import me.odinmain.features.settings.impl.SelectorSetting
+import me.odinmain.utils.ServerUtils
 import me.odinmain.utils.render.*
+import me.odinmain.utils.round
+import me.odinmain.utils.ui.Colors
 import org.apache.commons.lang3.math.IEEE754rUtils.max
 
 object ServerHud : Module(
     name = "Server Hud",
-    category = Category.RENDER,
     description = "Displays your current ping, FPS and server's TPS."
 ) {
     private val ping by BooleanSetting("Ping", true, description = "Displays your current ping.")
@@ -35,9 +37,9 @@ object ServerHud : Module(
                 }
                 width + 6f to if (ping || tps || fps) getMCTextHeight() * 2 + 6f else 0f
             } else {
-                if (ping) mcText("§6Ping: §a60ms", 1f, 9f, 2, Color.WHITE, shadow = true, center = false)
-                if (tps) mcText("§3TPS: §a20.0", 1f, 26f, 2, Color.WHITE, shadow = true, center = false)
-                if (fps) mcText("§dFPS: §a240", 1f, 43f, 2, Color.WHITE, shadow = true, center = false)
+                if (ping) mcText("§6Ping: §a60ms", 1f, 9f, 2, Colors.WHITE, shadow = true, center = false)
+                if (tps) mcText("§3TPS: §a20.0", 1f, 26f, 2, Colors.WHITE, shadow = true, center = false)
+                if (fps) mcText("§dFPS: §a240", 1f, 43f, 2, Colors.WHITE, shadow = true, center = false)
                 max(
                     if (ping) getTextWidth("Ping: 60ms", 12f) else 0f,
                     if (tps) getTextWidth("TPS: 20.0", 12f) else 0f,
@@ -58,9 +60,9 @@ object ServerHud : Module(
                     width += mcTextAndWidth(pingText, 5f + (if (tps) getMCTextWidth(tpsText) * 2f else 0f) + (if (fps) getMCTextWidth(fpsText) * 2f + 5f else 0f), 5f, 2, ClickGUIModule.color, shadow = true, center = false) * 1.5f
                 width + 2f to if (ping || tps || fps) getMCTextWidth("A") + 6f else 0f
             } else {
-                if (ping) mcText("§6Ping: §a${ServerUtils.averagePing.toInt()}ms", 1f, 9f, 2, Color.WHITE, shadow = true, center = false)
-                if (tps) mcText("§3TPS: §a${ServerUtils.averageTps.round(1)}", 1f, 26f, 2, Color.WHITE, shadow = true, center = false)
-                if (fps) mcText("§dFPS: §a${mc.debug.split(" ")[0].toIntOrNull() ?: 0}", 1f, 43f, 2, Color.WHITE, shadow = true, center = false)
+                if (ping) mcText("§6Ping: §a${ServerUtils.averagePing.toInt()}ms", 1f, 9f, 2, Colors.WHITE, shadow = true, center = false)
+                if (tps) mcText("§3TPS: §a${ServerUtils.averageTps.round(1)}", 1f, 26f, 2, Colors.WHITE, shadow = true, center = false)
+                if (fps) mcText("§dFPS: §a${mc.debug.split(" ")[0].toIntOrNull() ?: 0}", 1f, 43f, 2, Colors.WHITE, shadow = true, center = false)
                 max(
                     if (ping) getTextWidth("§ePing: ${colorizePing(ServerUtils.averagePing.toInt())}ms", 12f) else 0f,
                     if (tps) getTextWidth("§ePing: ${colorizePing(ServerUtils.averagePing.toInt())}ms", 12f) else 0f,

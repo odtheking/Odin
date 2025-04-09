@@ -1,7 +1,6 @@
 package me.odinmain.features.impl.dungeon
 
 import me.odinmain.events.impl.PacketEvent
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.ListSetting
@@ -17,13 +16,12 @@ import kotlin.concurrent.schedule
 
 object PosMessages : Module(
     name = "Positional Messages",
-    category = Category.DUNGEON,
     description = "Sends a message when you're near a certain position. /posmsg"
 ) {
     private val onlyDungeons by BooleanSetting("Only in Dungeons", true, description = "Only sends messages when you're in a dungeon.")
 
     data class PosMessage(val x: Double, val y: Double, val z: Double, val x2: Double?, val y2: Double?, val z2: Double?, val delay: Long, val distance: Double?, val message: String)
-    val posMessageStrings: MutableList<String> by ListSetting("Pos Messages Strings", mutableListOf())
+    val posMessageStrings by ListSetting("Pos Messages Strings", mutableListOf<String>())
     private val sentMessages = mutableMapOf<PosMessage, Boolean>()
 
     val parsedStrings: MutableList<PosMessage> = mutableListOf()

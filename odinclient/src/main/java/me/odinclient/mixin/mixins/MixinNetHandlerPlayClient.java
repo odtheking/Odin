@@ -13,6 +13,6 @@ public class MixinNetHandlerPlayClient {
 
     @Inject(method = "handleChunkData", at = @At("TAIL"))
     private void onChunkDataUpdate(S21PacketChunkData packetIn, CallbackInfo ci) {
-        GhostBlocks.INSTANCE.postChunkData(packetIn);
+        GhostBlocks.postChunkData(packetIn);
     }
 }

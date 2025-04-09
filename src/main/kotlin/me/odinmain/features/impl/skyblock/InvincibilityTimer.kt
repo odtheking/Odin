@@ -3,32 +3,33 @@ package me.odinmain.features.impl.skyblock
 import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.events.impl.GuiEvent.DrawSlotOverlay
 import me.odinmain.events.impl.ServerTickEvent
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.HudSetting
-import me.odinmain.utils.render.*
+import me.odinmain.utils.render.RenderUtils
+import me.odinmain.utils.render.getMCTextWidth
+import me.odinmain.utils.render.mcText
 import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.partyMessage
 import me.odinmain.utils.skyblock.skyblockID
+import me.odinmain.utils.ui.Colors
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object InvincibilityTimer : Module(
     name = "Invincibility Timer",
-    description = "Timer to show how long you have left Invincible.",
-    category = Category.SKYBLOCK
+    description = "Timer to show how long you have left Invincible."
 )  {
     private val showCooldown by BooleanSetting("Show Cooldown", default = true, description = "Shows the cooldown of the mask.")
     private val invincibilityAnnounce by BooleanSetting("Announce Invincibility", default = true, description = "Announces when you get invincibility.")
     private val hud by HudSetting("Timer Hud", 10f, 10f, 1f, true) {
         if (it) {
-            mcText("${if(showPrefix) "§bBonzo§f: " else ""}59t", 1f, 1f, 1, Color.WHITE, center = false)
+            mcText("${if(showPrefix) "§bBonzo§f: " else ""}59t", 1f, 1f, 1, Colors.WHITE, center = false)
             getMCTextWidth("Bonzo: 59t") + 2f to 10f
         } else {
             if (invincibilityTime.time <= 0) return@HudSetting 0f to 0f
             val invincibilityType = if (invincibilityTime.type == "Bonzo") "§bBonzo§f:" else if (invincibilityTime.type == "Phoenix") "§6Phoenix§f:" else "§5Spirit§f:"
 
-            mcText("${if (showPrefix) invincibilityType else ""} ${invincibilityTime.time}t", 1f, 1f, 1, Color.WHITE, center = false)
+            mcText("${if (showPrefix) invincibilityType else ""} ${invincibilityTime.time}t", 1f, 1f, 1, Colors.WHITE, center = false)
             getMCTextWidth("Bonzo: 59t") + 2f to 1f
         }
     }

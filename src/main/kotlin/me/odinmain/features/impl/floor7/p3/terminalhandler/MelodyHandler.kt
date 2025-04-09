@@ -7,7 +7,7 @@ import net.minecraft.network.play.server.S2FPacketSetSlot
 
 class MelodyHandler: TerminalHandler(TerminalTypes.MELODY) {
 
-    override fun solve(packet: S2FPacketSetSlot): Boolean {
+    override fun handleSlotUpdate(packet: S2FPacketSetSlot): Boolean {
         return packet.func_149174_e()?.let {
             solution.clear()
             solution.addAll(solveMelody(items))
