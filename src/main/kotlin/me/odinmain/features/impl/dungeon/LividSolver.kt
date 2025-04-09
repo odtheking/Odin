@@ -48,13 +48,15 @@ object LividSolver : Module(
     fun onBlockChange(event: BlockChangeEvent) {
         if (!DungeonUtils.inBoss || !DungeonUtils.isFloor(5) || event.updated.block != Blocks.wool || event.pos != woolLocation) return
         currentLivid = Livid.entries.find { livid -> livid.woolMetadata == event.updated.getValue(BlockStainedGlass.COLOR).metadata } ?: return
-        modMessage("Found Livid: §${currentLivid.colorCode}${currentLivid.entityName}")
+        runIn((mc.thePlayer?.getActivePotionEffect(Potion.blindness)?.duration ?: 0) - 20) {
+            modMessage("Found Livid: §${currentLivid.colorCode}${currentLivid.entityName}")
+        }
     }
 
     @SubscribeEvent
     fun onPostMetaData(event: PostEntityMetadata) {
         if (!DungeonUtils.inBoss || !DungeonUtils.isFloor(5)) return
-        runIn(mc.thePlayer?.getActivePotionEffect(Potion.blindness)?.duration ?: 0) {
+        runIn((mc.thePlayer?.getActivePotionEffect(Potion.blindness)?.duration ?: 0) - 20) {
             currentLivid.entity = (mc.theWorld?.getEntityByID(event.packet.entityId) as? EntityOtherPlayerMP)?.takeIf { it.name == "${currentLivid.entityName} Livid" } ?: return@runIn
         }
     }

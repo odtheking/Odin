@@ -70,13 +70,13 @@ object CPSDisplay : Module(
     private val rightClicks = mutableListOf<Long>()
 
     @SubscribeEvent
-    fun onLeftClick(event: ClickEvent.Right) {
+    fun onLeftClick(event: ClickEvent.Left) {
         leftClicks.add(System.currentTimeMillis())
         leftAnim.start(true)
     }
 
     @SubscribeEvent
-    fun onRightClick(event: ClickEvent.Left) {
+    fun onRightClick(event: ClickEvent.Right) {
         rightClicks.add(System.currentTimeMillis())
         rightAnim.start(true)
     }
@@ -85,6 +85,6 @@ object CPSDisplay : Module(
     fun onSendPacket(event: PacketEvent.Send) { // This is for any block placement packet that gets sent outside the rightclickmouse method :eyes:
         if (event.packet !is C08PacketPlayerBlockPlacement || !countPackets) return
         if (rightClicks.any { System.currentTimeMillis() - it < 5 }) return
-        onRightClick(ClickEvent.Left())
+        onRightClick(ClickEvent.Right())
     }
 }
