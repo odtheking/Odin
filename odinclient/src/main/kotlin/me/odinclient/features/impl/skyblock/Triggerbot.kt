@@ -2,7 +2,6 @@ package me.odinclient.features.impl.skyblock
 
 import me.odinclient.utils.skyblock.PlayerUtils
 import me.odinclient.utils.skyblock.PlayerUtils.leftClick
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.p3.ArrowAlign.clicksRemaining
 import me.odinmain.features.impl.floor7.p3.ArrowAlign.currentFrameRotations
@@ -32,8 +31,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 
 object Triggerbot : Module(
     name = "Triggerbot",
-    description = "Provides triggerbots for Blood, Spirit Bear, Crystal Triggerbot, Secret Triggerbot, Relic Triggerbot.",
-    category = Category.DUNGEON
+    description = "Provides triggerbots for Blood, Spirit Bear, Crystal Triggerbot, Secret Triggerbot, Relic Triggerbot."
 ) {
     private val bloodDropDown by DropdownSetting("Blood Dropdown", false)
     private val blood by BooleanSetting("Blood Mobs", default = false, description = "Automatically clicks blood mobs.").withDependency { bloodDropDown }

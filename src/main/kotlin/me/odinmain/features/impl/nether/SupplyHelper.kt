@@ -1,17 +1,16 @@
 package me.odinmain.features.impl.nether
 
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.nether.NoPre.missing
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.utils.formatTime
-import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.KuudraUtils
 import me.odinmain.utils.skyblock.KuudraUtils.SupplyPickUpSpot
 import me.odinmain.utils.skyblock.modMessage
+import me.odinmain.utils.ui.Colors
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.ClientChatReceivedEvent
 import net.minecraftforge.client.event.RenderWorldLastEvent
@@ -21,11 +20,10 @@ import kotlin.math.sin
 
 object SupplyHelper : Module(
     name = "Supply Helper",
-    description = "Provides visual aid for supply drops in Kuudra.",
-    category = Category.NETHER
+    description = "Provides visual aid for supply drops in Kuudra."
 ) {
     private val suppliesWaypoints by BooleanSetting("Supplies Waypoints", true, description = "Renders the supply waypoints.")
-    private val supplyWaypointColor by ColorSetting("Supply Waypoint Color", Color.YELLOW, true, description = "Color of the supply waypoints.").withDependency { suppliesWaypoints }
+    private val supplyWaypointColor by ColorSetting("Supply Waypoint Color", Colors.MINECRAFT_YELLOW, true, description = "Color of the supply waypoints.").withDependency { suppliesWaypoints }
     private val supplyDropWaypoints by BooleanSetting("Supply Drop Waypoints", true, description = "Renders the supply drop waypoints.")
     private val sendSupplyTime by BooleanSetting("Send Supply Time", true, description = "Sends a message when a supply is collected.")
 
@@ -56,7 +54,7 @@ object SupplyHelper : Module(
         if (supplyDropWaypoints) {
             locations.forEachIndexed { index, (position, name) ->
                 if (!KuudraUtils.supplies[index]) return@forEachIndexed
-                Renderer.drawCustomBeacon("", position, if (missing == name) Color.GREEN else Color.RED, increase = false)
+                Renderer.drawCustomBeacon("", position, if (missing == name) Colors.MINECRAFT_GREEN else Colors.MINECRAFT_RED, increase = false)
             }
         }
 

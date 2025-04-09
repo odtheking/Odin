@@ -17,12 +17,11 @@ import me.odinmain.features.impl.render.*
 import me.odinmain.features.impl.render.ClickGUIModule.hudChat
 import me.odinmain.features.impl.skyblock.*
 import me.odinmain.features.settings.impl.KeybindSetting
-import me.odinmain.ui.hud.EditHUDGui
-import me.odinmain.ui.hud.HudElement
-import me.odinmain.utils.capitalizeFirst
 import me.odinmain.utils.logError
 import me.odinmain.utils.profile
 import me.odinmain.utils.render.getTextWidth
+import me.odinmain.utils.ui.hud.EditHUDGui
+import me.odinmain.utils.ui.hud.HudElement
 import net.minecraft.network.Packet
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.event.world.WorldEvent
@@ -175,8 +174,7 @@ object ModuleManager {
         val featureList = StringBuilder()
 
         for ((category, modulesInCategory) in sortedCategories) {
-            val displayName = category.name.lowercase().capitalizeFirst()
-            featureList.appendLine("Category: ${if (displayName == "Floor7") "Floor 7" else displayName}")
+            featureList.appendLine("Category: ${category.displayName}")
             for (module in modulesInCategory) {
                 featureList.appendLine("- ${module.name}: ${module.description}")
             }

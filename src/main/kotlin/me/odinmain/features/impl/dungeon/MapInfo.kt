@@ -1,19 +1,18 @@
 package me.odinmain.features.impl.dungeon
 
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
-import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
-import me.odinmain.ui.hud.HudElement
 import me.odinmain.utils.render.*
 import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.modMessage
+import me.odinmain.utils.ui.Colors
+import me.odinmain.utils.ui.clickgui.util.ColorUtil.withAlpha
+import me.odinmain.utils.ui.hud.HudElement
 
 object MapInfo : Module(
     name = "Map Info",
-    category = Category.DUNGEON,
     description = "Displays stats about the dungeon such as score, secrets, and deaths."
 ) {
     private val disableInBoss by BooleanSetting("Disable in boss", default = true, description = "Disables the information display when you're in boss.")
@@ -39,12 +38,12 @@ object MapInfo : Module(
         if (fullBackground) roundedRectangle(-fullMargin, 0, fullWidth + (fullMargin * 2), 19, fullColor, 0, 0)
         val brWidth = getMCTextWidth(brText)
         val trWidth = getMCTextWidth(trText)
-        mcText(secretText, 1, 1, 1f, Color.WHITE, center = false)
-        mcText(trText, fullWidth-1 - trWidth, 1, 1f, Color.WHITE, center = false)
-        val unknownWidth = mcTextAndWidth(unknownSecretsText, 1, 10, 1f, Color.WHITE, center = false)
+        mcText(secretText, 1, 1, 1f, Colors.WHITE, center = false)
+        mcText(trText, fullWidth-1 - trWidth, 1, 1f, Colors.WHITE, center = false)
+        val unknownWidth = mcTextAndWidth(unknownSecretsText, 1, 10, 1f, Colors.WHITE, center = false)
         val centerX = (unknownWidth+1+(fullWidth-1-unknownWidth-brWidth)/2) - getMCTextWidth(mimicText)/2
-        mcText(mimicText, centerX, 10, 1f, Color.WHITE, center = false)
-        mcText(brText, fullWidth-1 - brWidth, 10, 1f, Color.WHITE, center = false)
+        mcText(mimicText, centerX, 10, 1f, Colors.WHITE, center = false)
+        mcText(brText, fullWidth-1 - brWidth, 10, 1f, Colors.WHITE, center = false)
         fullWidth to 19f
     }
 
@@ -55,7 +54,7 @@ object MapInfo : Module(
     private val unknown by SelectorSetting("Deaths", "Deaths", options = arrayListOf("Deaths", "Unfound"), description = "Display deaths or unfound secrets. (Unknown secrets are secrets in rooms that haven't been discovered yet. May not be helpful in full party runs.)").withDependency { fullHud.enabled }
     private val fullBackground by BooleanSetting("Hud Background", default = false, description = "Render a background behind the score info.").withDependency { fullHud.enabled }
     private val fullMargin by NumberSetting("Hud Margin", default = 0f, min = 0f, max = 5f, increment = 1f, description = "The margin around the hud.").withDependency { fullBackground && fullHud.enabled }
-    private val fullColor by ColorSetting("Hud Background Color", default = Color.DARK_GRAY.withAlpha(0.5f), true, description = "The color of the background.").withDependency { fullBackground && fullHud.enabled }
+    private val fullColor by ColorSetting("Hud Background Color", default = Colors.MINECRAFT_DARK_GRAY.withAlpha(0.5f), true, description = "The color of the background.").withDependency { fullBackground && fullHud.enabled }
 
     private val compactSecrets by HudSetting("Compact Secrets", 10f, 10f, 1f, true) {
         if ((!DungeonUtils.inDungeons || (disableInBoss && DungeonUtils.inBoss)) && !it) return@HudSetting 0f to 0f
@@ -65,7 +64,7 @@ object MapInfo : Module(
                 "§7-§c${DungeonUtils.totalSecrets}"
         val width = getMCTextWidth(secretText)
         if (compactSecretBackground) roundedRectangle(-compactSecretMargin, 0, width + 2 + (compactSecretMargin * 2), 9, compactSecretColor, 0, 0)
-        mcText(secretText, 1, 1, 1f, Color.WHITE, center = false)
+        mcText(secretText, 1, 1, 1f, Colors.WHITE, center = false)
         width.toFloat() to 9f
     }
 
@@ -73,20 +72,20 @@ object MapInfo : Module(
     private val compactRemaining: Int by SelectorSetting("Min Secrets", "Minimum", options = arrayListOf("Minimum", "Remaining"), description = "Display minimum secrets or secrets until s+.").withDependency { !compactAddRemaining && compactSecrets.enabled }
     private val compactSecretBackground: Boolean by BooleanSetting("Secret Background", default = false, description = "Render a background behind the score info.").withDependency { compactSecrets.enabled }
     private val compactSecretMargin: Float by NumberSetting("Secret Margin", default = 0f, min = 0f, max = 5f, increment = 1f, description = "The margin around the hud.").withDependency { compactSecretBackground && compactSecrets.enabled }
-    private val compactSecretColor: Color by ColorSetting("Secret Background Color", default = Color.DARK_GRAY.withAlpha(0.5f), true, description = "The color of the background.").withDependency { compactSecretBackground && compactSecrets.enabled }
+    private val compactSecretColor: Color by ColorSetting("Secret Background Color", default = Colors.MINECRAFT_DARK_GRAY.withAlpha(0.5f), true, description = "The color of the background.").withDependency { compactSecretBackground && compactSecrets.enabled }
 
     private val compactScore by HudSetting("Compact Score", 10f, 10f, 1f, true) {
         if ((!DungeonUtils.inDungeons || (disableInBoss && DungeonUtils.inBoss)) && !it) return@HudSetting 0f to 0f
         val scoreText = "§7Score: ${colorizeScore(DungeonUtils.score)}" + if (!DungeonUtils.mimicKilled) " §7(§6+2?§7)" else ""
         val width = getMCTextWidth(scoreText)
         if (compactScoreBackground) roundedRectangle(-compactScoreMargin, 0, width + 2 + (compactScoreMargin * 2), 9, compactScoreColor, 0, 0)
-        mcText(scoreText, 1, 1, 1f, Color.WHITE, center = false)
+        mcText(scoreText, 1, 1, 1f, Colors.WHITE, center = false)
         width.toFloat() to 9f
     }
 
     private val compactScoreBackground: Boolean by BooleanSetting("Score Background", default = false, description = "Render a background behind the score info.").withDependency { compactScore.enabled }
     private val compactScoreMargin: Float by NumberSetting("Score Margin", default = 0f, min = 0f, max = 5f, increment = 1f, description = "The margin around the hud.").withDependency { compactScoreBackground && compactScore.enabled }
-    private val compactScoreColor: Color by ColorSetting("Score Background Color", default = Color.DARK_GRAY.withAlpha(0.5f), true, description = "The color of the background.").withDependency { compactScoreBackground && compactScore.enabled }
+    private val compactScoreColor: Color by ColorSetting("Score Background Color", default = Colors.MINECRAFT_DARK_GRAY.withAlpha(0.5f), true, description = "The color of the background.").withDependency { compactScoreBackground && compactScore.enabled }
 
     var shownTitle = false
 

@@ -1,6 +1,5 @@
 package me.odinclient.features.impl.floor7
 
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.component1
@@ -17,7 +16,6 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 
 object RelicAura : Module(
     name = "Relic Aura",
-    category = Category.FLOOR7,
     description = "Automatically picks up relics in the Wither King boss.",
     tag = TagType.RISKY
 ){

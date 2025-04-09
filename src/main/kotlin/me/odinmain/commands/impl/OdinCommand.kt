@@ -10,12 +10,12 @@ import me.odinmain.features.impl.render.ClickGUIModule
 import me.odinmain.features.impl.render.ServerHud.colorizeFPS
 import me.odinmain.features.impl.render.ServerHud.colorizePing
 import me.odinmain.features.impl.render.ServerHud.colorizeTps
-import me.odinmain.ui.clickgui.ClickGUI
-import me.odinmain.ui.hud.EditHUDGui
 import me.odinmain.utils.ServerUtils
 import me.odinmain.utils.fillItemFromSack
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.ui.clickgui.ClickGUI
+import me.odinmain.utils.ui.hud.EditHUDGui
 import me.odinmain.utils.writeToClipboard
 import kotlin.math.round
 

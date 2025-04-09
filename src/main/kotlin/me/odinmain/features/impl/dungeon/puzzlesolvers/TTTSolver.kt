@@ -3,10 +3,10 @@ package me.odinmain.features.impl.dungeon.puzzlesolvers
 import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.PostEntityMetadata
 import me.odinmain.events.impl.RoomEnterEvent
-import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.toAABB
+import me.odinmain.utils.ui.Colors
 import net.minecraft.entity.item.EntityItemFrame
 import net.minecraft.init.Items
 import net.minecraft.util.BlockPos
@@ -61,9 +61,9 @@ object TTTSolver {
     fun tttRenderWorld() {
         board.forEach { slot ->
             val color = when (slot.state) {
-                State.X -> Color.RED
-                State.O -> Color.BLUE
-                else -> Color.WHITE
+                State.X -> Colors.MINECRAFT_RED
+                State.O -> Colors.MINECRAFT_BLUE
+                else -> Colors.WHITE
             }
             Renderer.drawBox(slot.location.toAABB(), color, 1f, fillAlpha = 0f)
         }

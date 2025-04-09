@@ -1,6 +1,5 @@
 package me.odinmain.features.impl.render
 
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
@@ -15,7 +14,6 @@ import org.lwjgl.input.Keyboard
 
 object Waypoints : Module(
     name = "Waypoints",
-    category = Category.RENDER,
     description = "Allows to render waypoints based on coordinates in chat."
 ) {
     private val fromParty by BooleanSetting("From Party Chat", true, description = "Adds waypoints from party chat.")

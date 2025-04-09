@@ -3,7 +3,6 @@ package me.odinclient.features.impl.dungeon
 import me.odinclient.utils.skyblock.PlayerUtils.leftClick
 import me.odinclient.utils.skyblock.PlayerUtils.swapToIndex
 import me.odinmain.events.impl.BlockChangeEvent
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
@@ -33,7 +32,6 @@ import org.lwjgl.input.Keyboard
 object GhostBlocks : Module(
     name = "Ghost Blocks",
     description = "Creates ghost blocks by key, tools, swap stonk, stonk delay and pre configured.",
-    category = Category.DUNGEON,
     key = null,
 ) {
     // gkey

@@ -7,6 +7,7 @@ import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.RenderUtils.bind
 import me.odinmain.utils.render.scale
 import me.odinmain.utils.render.translate
+import me.odinmain.utils.ui.Colors
 import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.RenderHelper
@@ -140,15 +141,15 @@ enum class ItemRarity(
     val colorCode: String,
     val color: Color
 ) {
-    COMMON("COMMON", "§f", Color.WHITE),
-    UNCOMMON("UNCOMMON", "§2", Color.GREEN),
-    RARE("RARE", "§9", Color.BLUE),
-    EPIC("EPIC", "§5", Color.PURPLE),
-    LEGENDARY("LEGENDARY", "§6", Color.ORANGE),
-    MYTHIC("MYTHIC", "§d", Color.PINK),
-    DIVINE("DIVINE", "§b", Color.CYAN),
-    SPECIAL("SPECIAL", "§c", Color.RED),
-    VERY_SPECIAL("VERY SPECIAL", "§c", Color.RED);
+    COMMON("COMMON", "§f", Colors.WHITE),
+    UNCOMMON("UNCOMMON", "§2", Colors.MINECRAFT_GREEN),
+    RARE("RARE", "§9", Colors.MINECRAFT_BLUE),
+    EPIC("EPIC", "§5", Colors.MINECRAFT_DARK_PURPLE),
+    LEGENDARY("LEGENDARY", "§6", Colors.MINECRAFT_GOLD),
+    MYTHIC("MYTHIC", "§d", Colors.MINECRAFT_LIGHT_PURPLE),
+    DIVINE("DIVINE", "§b", Colors.MINECRAFT_DARK_AQUA),
+    SPECIAL("SPECIAL", "§c", Colors.MINECRAFT_RED),
+    VERY_SPECIAL("VERY SPECIAL", "§c", Colors.MINECRAFT_RED);
 }
 
 private val rarityRegex = Regex("§l(?<rarity>${ItemRarity.entries.joinToString("|") { it.loreName }}) ?(?<type>[A-Z ]+)?(?:§[0-9a-f]§l§ka)?$")
@@ -216,7 +217,7 @@ fun ItemStack.drawItem(x: Float = 0f, y: Float = 0f, scale: Float = 1f, z: Float
     GlStateManager.pushMatrix()
     scale(scale, scale, 1f)
     translate(x / scale, y / scale, 0f)
-    Color.WHITE.bind()
+    Colors.WHITE.bind()
 
     RenderHelper.enableStandardItemLighting()
     RenderHelper.enableGUIStandardItemLighting()

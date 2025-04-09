@@ -1,6 +1,5 @@
 package me.odinclient.features.impl.floor7.p3
 
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.p3.TerminalSolver
 import me.odinmain.features.impl.floor7.p3.TerminalTypes
@@ -13,7 +12,6 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 object AutoTerms : Module(
     name = "Auto Terms",
     description = "Automatically solves terminals.",
-    category = Category.FLOOR7,
     tag = TagType.RISKY
 ) {
     private val autoDelay by NumberSetting("Delay", 170L, 130, 300, unit = "ms", description = "Delay between clicks.")

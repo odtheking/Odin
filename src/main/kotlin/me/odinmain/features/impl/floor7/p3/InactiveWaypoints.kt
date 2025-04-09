@@ -1,12 +1,17 @@
 package me.odinmain.features.impl.floor7.p3
 
-import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.features.settings.impl.*
+import me.odinmain.features.settings.impl.BooleanSetting
+import me.odinmain.features.settings.impl.ColorSetting
+import me.odinmain.features.settings.impl.NumberSetting
+import me.odinmain.features.settings.impl.SelectorSetting
 import me.odinmain.utils.*
-import me.odinmain.utils.render.*
+import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.RenderUtils
+import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.M7Phases
+import me.odinmain.utils.ui.Colors
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.util.Vec3
@@ -15,7 +20,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object InactiveWaypoints : Module(
     name = "Inactive Waypoints",
-    category = Category.FLOOR7,
     description = "Shows inactive terminals, devices and levers."
 ) {
     private val showTerminals by BooleanSetting(name = "Show Terminals", default = true, description = "Shows inactive terminals.")
@@ -53,7 +57,7 @@ object InactiveWaypoints : Module(
                     if (renderBox)
                         Renderer.drawStyledBox(it.positionVector.addVec(-0.5, z = -0.5).toAABB(), color, style, lineWidth, depthCheck)
                     if (renderText)
-                        Renderer.drawStringInWorld(name, it.positionVector.add(Vec3(0.0, 2.0, 0.0)), depth = false, color = Color.WHITE, scale = 0.05f)
+                        Renderer.drawStringInWorld(name, it.positionVector.add(Vec3(0.0, 2.0, 0.0)), depth = false, color = Colors.WHITE, scale = 0.05f)
                     if (renderBeacon)
                         RenderUtils.drawBeaconBeam(it.positionVector.addVec(-0.5, z = -0.5), color, true)
                 }

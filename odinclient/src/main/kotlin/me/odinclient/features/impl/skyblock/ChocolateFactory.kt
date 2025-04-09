@@ -1,15 +1,17 @@
 package me.odinclient.features.impl.skyblock
 
 import me.odinmain.events.impl.GuiEvent
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.NumberSetting
-import me.odinmain.utils.*
+import me.odinmain.utils.equalsOneOf
+import me.odinmain.utils.name
+import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.PlayerUtils.windowClick
+import me.odinmain.utils.ui.Colors
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.inventory.Container
 import net.minecraft.inventory.ContainerChest
@@ -20,8 +22,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object ChocolateFactory : Module(
     name = "Chocolate Factory",
-    description = "Automates the Chocolate Factory.",
-    category = Category.SKYBLOCK
+    description = "Automates the Chocolate Factory."
 ) {
     private val clickFactory by BooleanSetting("Click Factory", false, description = "Click the cookie in the Chocolate Factory menu.")
     private val autoUpgrade by BooleanSetting("Auto Upgrade", false, description = "Automatically upgrade the worker.")
@@ -115,9 +116,9 @@ object ChocolateFactory : Module(
     private enum class ChocolateEggs(
         val texture: String, val type: String, val color: Color
     ) {
-        Breakfast(BunnyEggTextures.BREAKFAST_EGG_TEXTURE, "§6Breakfast Egg", Color.ORANGE),
-        Lunch(BunnyEggTextures.LUNCH_EGG_TEXTURE, "§9Lunch Egg ", Color.BLUE),
-        Dinner(BunnyEggTextures.DINNER_EGG_TEXTURE, "§aDinner Egg", Color.GREEN),
+        Breakfast(BunnyEggTextures.BREAKFAST_EGG_TEXTURE, "§6Breakfast Egg", Colors.MINECRAFT_GOLD),
+        Lunch(BunnyEggTextures.LUNCH_EGG_TEXTURE, "§9Lunch Egg ", Colors.MINECRAFT_BLUE),
+        Dinner(BunnyEggTextures.DINNER_EGG_TEXTURE, "§aDinner Egg", Colors.MINECRAFT_GREEN),
     }
 
     private data class Egg(val entity: EntityArmorStand, val renderName: String, val color: Color, var isFound: Boolean = false)

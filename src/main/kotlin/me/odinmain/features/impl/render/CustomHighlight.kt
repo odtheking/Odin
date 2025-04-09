@@ -1,16 +1,15 @@
 package me.odinmain.features.impl.render
 
 import me.odinmain.OdinMain.isLegitVersion
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
-import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.isOtherPlayer
-import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.HighlightRenderer
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.ui.Colors
+import me.odinmain.utils.ui.clickgui.util.ColorUtil.withAlpha
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.entity.Entity
 import net.minecraft.entity.boss.EntityWither
@@ -18,7 +17,6 @@ import net.minecraft.entity.item.EntityArmorStand
 
 object CustomHighlight : Module(
     name = "Custom Highlight",
-    category = Category.RENDER,
     tag = TagType.FPSTAX,
     description = "Allows you to highlight selected mobs. (/highlight)"
 ) {
@@ -26,7 +24,7 @@ object CustomHighlight : Module(
     private val shadowAssassin by BooleanSetting("Shadow Assassin", false, description = "Highlights Shadow Assassins.").withDependency { !isLegitVersion }
     private val mode by SelectorSetting("Mode", HighlightRenderer.HIGHLIGHT_MODE_DEFAULT, HighlightRenderer.highlightModeList, description = HighlightRenderer.HIGHLIGHT_MODE_DESCRIPTION)
 
-    private val color by ColorSetting("Color", Color.WHITE.withAlpha(0.75f), true, description = "The color of the highlight.")
+    private val color by ColorSetting("Color", Colors.WHITE.withAlpha(0.75f), true, description = "The color of the highlight.")
     private val thickness by NumberSetting("Line Width", 2f, 1f, 6f, .1f, description = "The line width of Outline / Boxes/ 2D Boxes.").withDependency { mode != HighlightRenderer.HighlightType.Overlay.ordinal }
     private val style by SelectorSetting("Style", Renderer.DEFAULT_STYLE, Renderer.styles, description = Renderer.STYLE_DESCRIPTION).withDependency { mode == HighlightRenderer.HighlightType.Boxes.ordinal }
     private val scanDelay by NumberSetting("Scan Delay", 100L, 20L, 2000L, 20L, description = "The delay between entity scans.", unit = "ms")
@@ -34,7 +32,7 @@ object CustomHighlight : Module(
     private val xray by BooleanSetting("Depth Check", false, description = "Highlights entities through walls.").withDependency { !isLegitVersion }
     private val showInvisible by BooleanSetting("Show Invisible", false, description = "Highlights invisible entities.").withDependency { !isLegitVersion }
 
-    val highlightList: MutableList<String> by ListSetting("List", mutableListOf())
+    val highlightList by ListSetting("List", mutableListOf<String>())
     private inline val depthCheck get() = if (isLegitVersion) true else xray
     private var currentEntities = mutableSetOf<Entity>()
 

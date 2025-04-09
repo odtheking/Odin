@@ -1,6 +1,5 @@
 package me.odinclient.features.impl.skyblock
 
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.utils.containsOneOf
@@ -22,7 +21,6 @@ import net.minecraft.util.BlockPos
  */
 object CancelInteract : Module(
     name = "Cancel Interact",
-    category = Category.SKYBLOCK,
     description = "Cancels the interaction with certain blocks, so that the item can be used instead."
 ){
     private val cancelInteract by BooleanSetting("Cancel Interact", true, description = "Cancels the interaction with certain blocks, so that the item can be used instead.")

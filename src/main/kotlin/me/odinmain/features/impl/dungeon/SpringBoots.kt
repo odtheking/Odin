@@ -1,6 +1,5 @@
 package me.odinmain.features.impl.dungeon
 
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.ColorSetting
@@ -9,13 +8,13 @@ import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.addVec
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.getSafe
-import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.render.getTextWidth
 import me.odinmain.utils.render.mcText
 import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.skyblockID
 import me.odinmain.utils.toAABB
+import me.odinmain.utils.ui.Colors
 import net.minecraft.network.play.server.S29PacketSoundEffect
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
@@ -24,21 +23,20 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 
 object SpringBoots : Module(
     name = "Spring Boots",
-    description = "Shows the current jump height of your spring boots.",
-    category = Category.DUNGEON
+    description = "Shows the current jump height of your spring boots."
 ) {
     private val hud by HudSetting("Display", 10f, 10f, 1f, true) {
         if (it) {
-            mcText("Jump: 6.5", 1f, 1f, 1, Color.WHITE)
+            mcText("Jump: 6.5", 1f, 1f, 1, Colors.WHITE)
             getTextWidth("Jump: 6.5", 12f) to 12f
         } else {
             val blockAmount = blocksList.getSafe(pitchCounts.sum()).takeIf { it != 0.0 } ?: return@HudSetting 0f to 0f
-            mcText("Jump: ${colorHud(blockAmount)}", 1f, 1f, 1, Color.WHITE)
+            mcText("Jump: ${colorHud(blockAmount)}", 1f, 1f, 1, Colors.WHITE)
             getTextWidth("Jump: ${colorHud(blockAmount)}", 12f) to 12f
         }
     }
     private val renderGoal by BooleanSetting("Render Goal", true, description = "Render the goal block.")
-    private val goalColor by ColorSetting("Goal Color", Color.GREEN, description = "Color of the goal block.")
+    private val goalColor by ColorSetting("Goal Color", Colors.MINECRAFT_GREEN, description = "Color of the goal block.")
     private val offset by NumberSetting("Offset", 0.0, -10.0, 10.0, 0.1, description = "The offset of the goal block.")
 
     private val blocksList: List<Double> = listOf(

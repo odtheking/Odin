@@ -8,7 +8,6 @@ import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.Dunge
 import me.odinmain.utils.Vec2
 import net.minecraft.util.BlockPos
 import java.lang.reflect.Type
-import kotlin.collections.orEmpty
 
 data class Room(
     var rotation: Rotations = Rotations.NONE,

@@ -4,7 +4,6 @@ import me.odinmain.config.DungeonWaypointConfig
 import me.odinmain.events.impl.ClickEvent
 import me.odinmain.events.impl.RoomEnterEvent
 import me.odinmain.events.impl.SecretPickupEvent
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.SecretWaypoints.onEtherwarp
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.SecretWaypoints.onLocked
@@ -13,7 +12,6 @@ import me.odinmain.features.impl.dungeon.dungeonwaypoints.SecretWaypoints.resetS
 import me.odinmain.features.impl.render.DevPlayers
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
-import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.*
 import me.odinmain.utils.render.*
 import me.odinmain.utils.render.RenderUtils.outlineBounds
@@ -23,6 +21,8 @@ import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.getRealCoords
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.getRelativeCoords
 import me.odinmain.utils.skyblock.dungeon.tiles.Room
+import me.odinmain.utils.ui.Colors
+import me.odinmain.utils.ui.clickgui.util.ColorUtil.withAlpha
 import net.minecraft.block.BlockSign
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiScreen
@@ -47,9 +47,7 @@ import kotlin.math.sign
  */
 object DungeonWaypoints : Module(
     name = "Dungeon Waypoints",
-    description = "Custom Waypoints for Dungeon Rooms.",
-    category = Category.DUNGEON,
-    tag = TagType.NEW
+    description = "Custom Waypoints for Dungeon Rooms."
 ) {
     private var allowEdits by BooleanSetting("Allow Edits", false, description = "Allows you to edit waypoints.")
     private var allowMidair by BooleanSetting("Allow Midair", default = false, description = "Allows waypoints to be placed midair if they reach the end of distance without hitting a block.").withDependency { allowEdits }
@@ -63,7 +61,7 @@ object DungeonWaypoints : Module(
     private val settingsDropDown by DropdownSetting("Next Waypoint Settings")
     var waypointType: Int by SelectorSetting("Waypoint Type", WaypointType.NONE.displayName, WaypointType.getArrayList(), description = "The type of waypoint you want to place.").withDependency { settingsDropDown }
     private val colorPallet by SelectorSetting("Color pallet", "None", arrayListOf("None", "Aqua", "Magenta", "Yellow", "Lime", "Red"), description = "The color pallet of the next waypoint you place.").withDependency { settingsDropDown }
-    var color by ColorSetting("Color", Color.GREEN, description = "The color of the next waypoint you place.", allowAlpha = true).withDependency { colorPallet == 0 && settingsDropDown }
+    var color by ColorSetting("Color", Colors.MINECRAFT_GREEN, description = "The color of the next waypoint you place.", allowAlpha = true).withDependency { colorPallet == 0 && settingsDropDown }
     var filled by BooleanSetting("Filled", false, description = "If the next waypoint you place should be 'filled'.").withDependency { settingsDropDown }
     var throughWalls by BooleanSetting("Through walls", false, description = "If the next waypoint you place should be visible through walls.").withDependency { settingsDropDown }
     var useBlockSize by BooleanSetting("Use block size", true, description = "Use the size of the block you click for waypoint size.").withDependency { settingsDropDown }
@@ -85,11 +83,11 @@ object DungeonWaypoints : Module(
 
     private inline val selectedColor get() = when (colorPallet) {
         0 -> color
-        1 -> Color.CYAN
-        2 -> Color.PURPLE
-        3 -> Color.YELLOW
-        4 -> Color.GREEN
-        5 -> Color.RED
+        1 -> Colors.MINECRAFT_DARK_AQUA
+        2 -> Colors.MINECRAFT_DARK_PURPLE
+        3 -> Colors.MINECRAFT_YELLOW
+        4 -> Colors.MINECRAFT_GREEN
+        5 -> Colors.MINECRAFT_RED
         else -> color
     }
 
@@ -187,7 +185,7 @@ object DungeonWaypoints : Module(
 
         if (debugWaypoint) {
             room.roomComponents.forEach {
-                Renderer.drawBox(Vec3(it.x.toDouble(), 70.0, it.z.toDouble()).toAABB(), Color.GREEN, fillAlpha = 0)
+                Renderer.drawBox(Vec3(it.x.toDouble(), 70.0, it.z.toDouble()).toAABB(), Colors.MINECRAFT_GREEN, fillAlpha = 0)
             }
         }
         endProfile()
@@ -215,7 +213,7 @@ object DungeonWaypoints : Module(
         } ?: ("" to "Editing Waypoints")
 
         scale(2f / sr.scaleFactor, 2f / sr.scaleFactor, 1f)
-        mcText(editText, mc.displayWidth / 4, mc.displayHeight  / 4 + 10, 1f, Color.WHITE.withAlpha(.8f))
+        mcText(editText, mc.displayWidth / 4, mc.displayHeight  / 4 + 10, 1f, Colors.WHITE.withAlpha(.8f))
         mcText(text,mc.displayWidth / 4,  mc.displayHeight / 4 + 20, 1f, selectedColor)
         scale(sr.scaleFactor / 2f, sr.scaleFactor / 2f, 1f)
     }

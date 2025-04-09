@@ -3,7 +3,7 @@ package me.odinmain.utils.render
 import me.odinmain.OdinMain
 import me.odinmain.OdinMain.mc
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.DungeonWaypoint
-import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
+import me.odinmain.utils.ui.Colors
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.WorldRenderer
@@ -219,7 +219,7 @@ object RenderUtils {
     fun drawStringInWorld(
         text: String,
         vec3: Vec3,
-        color: Color = Color.WHITE.withAlpha(1f),
+        color: Color = Colors.WHITE,
         depthTest: Boolean = true,
         scale: Float = 0.3f,
         shadow: Boolean = false
@@ -297,7 +297,7 @@ object RenderUtils {
     ) {
         val f = 1.0f / tileWidth
         val g = 1.0f / tileHeight
-        Color.WHITE.bind()
+        Colors.WHITE.bind()
         worldRenderer {
             begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX)
             pos(x.toDouble(), (y + height).toDouble(), 0.0).tex((u * f).toDouble(), ((v + vHeight.toFloat()) * g).toDouble()).endVertex()
@@ -313,7 +313,7 @@ object RenderUtils {
         x: Float,
         y: Float,
         scale: Double = 1.0,
-        color: Color = Color.WHITE,
+        color: Color = Colors.WHITE,
         shadow: Boolean = true,
         center: Boolean = false
     ) {
@@ -591,7 +591,7 @@ object RenderUtils {
         }
     }
 
-    fun drawMinecraftLabel(str: String, pos: Vec3, scale: Double, depth: Boolean = true, color: Color = Color.WHITE) {
+    fun drawMinecraftLabel(str: String, pos: Vec3, scale: Double, depth: Boolean = true, color: Color = Colors.WHITE) {
         GlStateManager.pushMatrix()
         depth(depth)
         GlStateManager.translate(pos.xCoord + 0.0f, pos.yCoord + 2.5f, pos.zCoord)

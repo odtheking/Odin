@@ -1,33 +1,31 @@
 package me.odinmain.features.impl.skyblock
 
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.features.settings.impl.NumberSetting
-import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.clock.Clock
-import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.EtherWarpHelper
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.getAbilityCooldown
 import me.odinmain.utils.skyblock.isAir
 import me.odinmain.utils.skyblock.isHolding
 import me.odinmain.utils.toVec3
+import me.odinmain.utils.ui.Colors
+import me.odinmain.utils.ui.clickgui.util.ColorUtil.withAlpha
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object GyroWand : Module(
     name = "Gyro Wand",
-    description = "Shows area of effect and cooldown of the Gyrokinetic Wand.",
-    category = Category.SKYBLOCK
+    description = "Shows area of effect and cooldown of the Gyrokinetic Wand."
 ) {
-    private val color by ColorSetting("Color", Color.PURPLE.withAlpha(0.5f), allowAlpha = true, description = "The color of the Gyrokinetic Wand range.")
+    private val color by ColorSetting("Color", Colors.MINECRAFT_DARK_PURPLE.withAlpha(0.5f), allowAlpha = true, description = "The color of the Gyrokinetic Wand range.")
     private val thickness by NumberSetting("Thickness", 0.4f, 0, 10, 0.05f, description = "The thickness of the Gyrokinetic Wand range.")
     private val steps by NumberSetting("Smoothness", 40, 20, 80, 1, description = "The amount of steps to use when rendering the Gyrokinetic Wand range.")
     private val showCooldown by BooleanSetting("Show Cooldown", true, description = "Shows the cooldown of the Gyrokinetic Wand.")
-    private val cooldownColor by ColorSetting("Cooldown Color", Color.RED.withAlpha(0.5f), allowAlpha = true, description = "The color of the cooldown of the Gyrokinetic Wand.").withDependency { showCooldown }
+    private val cooldownColor by ColorSetting("Cooldown Color", Colors.MINECRAFT_RED.withAlpha(0.5f), allowAlpha = true, description = "The color of the cooldown of the Gyrokinetic Wand.").withDependency { showCooldown }
 
     private val gyroCooldown = Clock(30_000L)
 

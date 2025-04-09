@@ -6,6 +6,7 @@ import me.odinmain.features.impl.floor7.p3.TerminalSolver.currentTerm
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.customScale
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.gap
 import me.odinmain.utils.render.*
+import me.odinmain.utils.ui.Colors
 
 object PanesGui : TermGui() {
     override fun render() {
@@ -13,11 +14,11 @@ object PanesGui : TermGui() {
         itemIndexMap.clear()
         roundedRectangle(-300, -150, 600, 300, TerminalSolver.customGuiColor, 10f, 1f)
         if (TerminalSolver.customGuiText == 0) {
-            text("Correct All the Panes", -295, -138, Color.WHITE, 20, verticalAlign = TextPos.Top)
-            roundedRectangle(-298, -110, getTextWidth("Correct All the Panes", 20f), 3, Color.WHITE, radius = 5f)
+            text("Correct All the Panes", -295, -138, Colors.WHITE, 20, verticalAlign = TextPos.Top)
+            roundedRectangle(-298, -110, getTextWidth("Correct All the Panes", 20f), 3, Colors.WHITE, radius = 5f)
         } else if (TerminalSolver.customGuiText == 1) {
-            text("Correct All the Panes", 0, -138, Color.WHITE, 20, align = TextAlign.Middle, verticalAlign = TextPos.Top)
-            roundedRectangle(-getTextWidth("Correct All the Panes", 20f) / 2, -110, getTextWidth("Correct All the Panes", 20f), 3, Color.WHITE, radius = 5f)
+            text("Correct All the Panes", 0, -138, Colors.WHITE, 20, align = TextAlign.Middle, verticalAlign = TextPos.Top)
+            roundedRectangle(-getTextWidth("Correct All the Panes", 20f) / 2, -110, getTextWidth("Correct All the Panes", 20f), 3, Colors.WHITE, radius = 5f)
         }
         currentTerm?.solution?.forEach { pane ->
             val row = pane / 9 - 1

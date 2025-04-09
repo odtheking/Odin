@@ -2,23 +2,21 @@ package me.odinmain.features.impl.render
 
 import me.odinmain.events.impl.ClickEvent
 import me.odinmain.events.impl.PacketEvent
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
-import me.odinmain.ui.clickgui.animations.impl.EaseInOut
-import me.odinmain.ui.clickgui.util.ColorUtil.brighter
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.dropShadow
 import me.odinmain.utils.render.mcText
 import me.odinmain.utils.render.roundedRectangle
+import me.odinmain.utils.ui.clickgui.animations.impl.EaseInOut
+import me.odinmain.utils.ui.clickgui.util.ColorUtil.brighter
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object CPSDisplay : Module(
     name = "CPS Display",
-    description = "Displays your clicks per second.",
-    category = Category.RENDER
+    description = "Displays your clicks per second."
 ) {
     private val countPackets by BooleanSetting("Count Packets", false, description = "Counts packets sent outside of the rightclickmouse method, this will be better at detecting other mods' auto clickers, but might show inaccurate values.")
     private val advanced by DropdownSetting("Show Settings", false)

@@ -11,6 +11,7 @@ import me.odinmain.utils.skyblock.getBlockAt
 import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.toFixed
 import me.odinmain.utils.toVec3
+import me.odinmain.utils.ui.Colors
 import net.minecraft.init.Blocks
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.util.BlockPos
@@ -93,7 +94,7 @@ object WaterSolver {
                     openedWaterTicks == -1 -> "§e${time}s"
                     else ->
                         (openedWaterTicks + timeInTicks - tickCounter).takeIf { it > 0 }?.let { "§e${(it / 20.0).toFixed()}s" } ?: "§a§lCLICK ME!"
-                }, lever.leverPos.addVector(0.5, (index + lever.i) * 0.5 + 1.5, 0.5), Color.WHITE, scale = 0.04f)
+                }, lever.leverPos.addVector(0.5, (index + lever.i) * 0.5 + 1.5, 0.5), Colors.WHITE, scale = 0.04f)
             }
         }
     }

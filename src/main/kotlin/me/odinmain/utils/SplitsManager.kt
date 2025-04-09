@@ -3,7 +3,10 @@ package me.odinmain.utils
 import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.features.impl.skyblock.Splits
 import me.odinmain.features.impl.skyblock.Splits.sendSplits
-import me.odinmain.utils.skyblock.*
+import me.odinmain.utils.skyblock.Island
+import me.odinmain.utils.skyblock.LocationUtils
+import me.odinmain.utils.skyblock.PersonalBest
+import me.odinmain.utils.skyblock.modMessage
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 

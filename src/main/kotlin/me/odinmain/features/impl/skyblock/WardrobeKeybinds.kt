@@ -1,7 +1,6 @@
 package me.odinmain.features.impl.skyblock
 
 import me.odinmain.events.impl.GuiEvent
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
@@ -21,8 +20,7 @@ import org.lwjgl.input.Keyboard
 
 object WardrobeKeybinds : Module(
     name = "Wardrobe Keybinds",
-    description = "Keybinds for wardrobe equipping and unequipping.",
-    category = Category.SKYBLOCK
+    description = "Keybinds for wardrobe equipping and unequipping."
 ) {
     private val unequipKeybind by KeybindSetting("Unequip Keybind", Keyboard.KEY_NONE, "Unequips the current armor.")
     private val nextPageKeybind by KeybindSetting("Next Page Keybind", Keyboard.KEY_NONE, "Goes to the next page.")

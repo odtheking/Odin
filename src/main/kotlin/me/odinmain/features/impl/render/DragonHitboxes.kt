@@ -1,6 +1,5 @@
 package me.odinmain.features.impl.render
 
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.ColorSetting
@@ -18,7 +17,6 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 
 object DragonHitboxes : Module(
     name = "Dragon Hitboxes",
-    category = Category.RENDER,
     description = "Draws dragon's correct hitboxes around them."
 ) {
     private val onlyM7 by BooleanSetting(name = "Only M7", default = true, description = "Only render hitboxes in floor 7.")

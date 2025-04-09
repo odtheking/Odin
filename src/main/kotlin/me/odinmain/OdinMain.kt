@@ -5,14 +5,12 @@ import me.odinmain.commands.CommandRegistry
 import me.odinmain.config.Config
 import me.odinmain.config.DungeonWaypointConfig
 import me.odinmain.config.PBConfig
-import me.odinmain.config.SlotBindsConfig
 import me.odinmain.events.EventDispatcher
 import me.odinmain.features.ModuleManager
 import me.odinmain.features.impl.render.ClickGUIModule
 import me.odinmain.features.impl.render.DevPlayers
 import me.odinmain.features.impl.render.WaypointManager
 import me.odinmain.font.OdinFont
-import me.odinmain.ui.clickgui.ClickGUI
 import me.odinmain.utils.ServerUtils
 import me.odinmain.utils.SplitsManager
 import me.odinmain.utils.clock.Executor
@@ -27,6 +25,7 @@ import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.SkyblockPlayer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.ScanUtils
+import me.odinmain.utils.ui.clickgui.ClickGUI
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
 import net.minecraftforge.common.MinecraftForge
@@ -66,10 +65,7 @@ object OdinMain {
 
     fun postInit() {
         File(mc.mcDataDir, "config/odin").takeIf { !it.exists() }?.mkdirs()
-        scope.launch(Dispatchers.IO) {
-            DungeonWaypointConfig.loadConfig()
-            SlotBindsConfig.loadConfig()
-        }
+        scope.launch(Dispatchers.IO) { DungeonWaypointConfig.loadConfig() }
     }
 
     fun loadComplete() {

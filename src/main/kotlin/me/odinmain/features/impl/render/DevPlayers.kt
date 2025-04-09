@@ -10,6 +10,7 @@ import me.odinmain.features.impl.render.ClickGUIModule.devSize
 import me.odinmain.utils.downloadFile
 import me.odinmain.utils.getDataFromServer
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.ui.Colors
 import net.minecraft.client.entity.AbstractClientPlayer
 import net.minecraft.client.model.ModelBase
 import net.minecraft.client.model.ModelRenderer
@@ -36,7 +37,7 @@ object DevPlayers {
     val isDev get() = devs.containsKey(mc.session?.username)
 
     data class DevPlayer(val xScale: Float = 1f, val yScale: Float = 1f, val zScale: Float = 1f,
-                         val wings: Boolean = false, val wingsColor: Color = Color(255, 255, 255), var capeLocation: ResourceLocation? = null)
+                         val wings: Boolean = false, val wingsColor: Color = Colors.WHITE, var capeLocation: ResourceLocation? = null)
     data class DevData(val devName: String, val wingsColor: Triple<Int, Int, Int>, val size: Triple<Float, Float, Float>, val wings: Boolean)
 
     @Suppress("UNCHECKED_CAST")

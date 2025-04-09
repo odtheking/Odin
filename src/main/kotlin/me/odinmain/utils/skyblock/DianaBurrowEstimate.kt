@@ -3,9 +3,12 @@ package me.odinmain.utils.skyblock
 import me.odinmain.features.impl.skyblock.DianaHelper
 import me.odinmain.utils.*
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.ui.Colors
 import net.minecraft.network.play.server.S29PacketSoundEffect
 import net.minecraft.network.play.server.S2APacketParticles
-import net.minecraft.util.*
+import net.minecraft.util.BlockPos
+import net.minecraft.util.EnumParticleTypes
+import net.minecraft.util.Vec3
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.*
 
@@ -246,9 +249,9 @@ object DianaBurrowEstimate {
     )
 
     enum class BurrowType(val text: String, val color: Color) {
-        START("§aStart", Color.GREEN),
-        MOB("§cMob", Color.RED),
-        TREASURE("§6Treasure", Color.ORANGE),
-        UNKNOWN("§fUnknown?!", Color.WHITE),
+        START("§aStart", Colors.MINECRAFT_GREEN),
+        MOB("§cMob", Colors.MINECRAFT_RED),
+        TREASURE("§6Treasure", Colors.MINECRAFT_GOLD),
+        UNKNOWN("§fUnknown?!", Colors.WHITE),
     }
 }

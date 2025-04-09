@@ -4,7 +4,6 @@ import me.odinmain.OdinMain.isLegitVersion
 import me.odinmain.events.impl.EntityLeaveWorldEvent
 import me.odinmain.events.impl.PostEntityMetadata
 import me.odinmain.events.impl.ServerTickEvent
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
@@ -13,7 +12,6 @@ import me.odinmain.features.settings.impl.DropdownSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.*
 import me.odinmain.utils.ServerUtils.averagePing
-import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.RenderUtils.renderVec
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.devMessage
@@ -21,6 +19,7 @@ import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.inBoss
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.inDungeons
 import me.odinmain.utils.skyblock.getSkullValue
+import me.odinmain.utils.ui.Colors
 import net.minecraft.entity.boss.BossStatus
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.entity.monster.EntityZombie
@@ -37,13 +36,12 @@ import kotlin.math.roundToInt
 
 object BloodCamp : Module(
     name = "Blood Camp",
-    description = "Features for Blood Camping.",
-    category = Category.DUNGEON
+    description = "Features for Blood Camping."
 ) {
     private val bloodHelper by BooleanSetting("Blood Camp Assist", default = true, description = "Draws boxes to spawning mobs in the blood room. WARNING: not perfectly accurate. Mobs spawn randomly between 37 - 41 ticks, adjust offset to adjust between ticks.")
-    private val pboxColor by ColorSetting("Spawn Color", Color.RED, true, description = "Color for Spawn render box. Set alpha to 0 to disable.").withDependency { bloodHelper }
-    private val fboxColor by ColorSetting("Final Color", Color.CYAN, true, description = "Color for when Spawn and Mob boxes are merged. Set alpha to 0 to disable.").withDependency { bloodHelper }
-    private val mboxColor by ColorSetting("Position Color", Color.GREEN, true, description = "Color for current position box. Set alpha to 0 to disable.").withDependency { bloodHelper }
+    private val pboxColor by ColorSetting("Spawn Color", Colors.MINECRAFT_RED, true, description = "Color for Spawn render box. Set alpha to 0 to disable.").withDependency { bloodHelper }
+    private val fboxColor by ColorSetting("Final Color", Colors.MINECRAFT_DARK_AQUA, true, description = "Color for when Spawn and Mob boxes are merged. Set alpha to 0 to disable.").withDependency { bloodHelper }
+    private val mboxColor by ColorSetting("Position Color", Colors.MINECRAFT_GREEN, true, description = "Color for current position box. Set alpha to 0 to disable.").withDependency { bloodHelper }
     private val boxSize by NumberSetting("Box Size", default = 1.0, increment = 0.1, min = 0.1, max = 1.0, description = "The size of the boxes. Lower values may seem less accurate.").withDependency { bloodHelper }
     private val drawLine by BooleanSetting("Line", default = true, description = "Line between Position box and Spawn box.").withDependency { bloodHelper }
     private val drawTime by BooleanSetting("Time Left", default = true, description = "Time before the blood mob spawns. Adjust offset depending on accuracy. May be up to ~100ms off.").withDependency { bloodHelper }
@@ -146,7 +144,7 @@ object BloodCamp : Module(
         if (!inDungeons || inBoss) return
 
         if (watcherHighlight)
-            currentWatcherEntity?.let { Renderer.drawBox(it.renderVec.toAABB(), Color.RED, 1f, depth = isLegitVersion, fillAlpha = 0) }
+            currentWatcherEntity?.let { Renderer.drawBox(it.renderVec.toAABB(), Colors.MINECRAFT_RED, 1f, depth = isLegitVersion, fillAlpha = 0) }
 
         if (!bloodHelper) return
 
@@ -177,14 +175,14 @@ object BloodCamp : Module(
             } else Renderer.drawBox(endAABB, fboxColor, fillAlpha = 0f, outlineAlpha = fboxColor.alpha, depth = true)
 
             if (drawLine)
-                Renderer.draw3DLine(listOf(currVector.addVec(y = 2.0), endPoint.addVec(y = 2.0)), color = Color.RED, depth = true)
+                Renderer.draw3DLine(listOf(currVector.addVec(y = 2.0), endPoint.addVec(y = 2.0)), color = Colors.MINECRAFT_RED, depth = true)
 
             val timeDisplay = (time.toFloat() - offset) / 1000
             val colorTime = when {
-                timeDisplay > 1.5 -> Color.GREEN
-                timeDisplay in 0.5..1.5 -> Color.ORANGE
-                timeDisplay in 0.0..0.5 -> Color.RED
-                else -> Color.BLUE
+                timeDisplay > 1.5 -> Colors.MINECRAFT_GREEN
+                timeDisplay in 0.5..1.5 -> Colors.MINECRAFT_GOLD
+                timeDisplay in 0.0..0.5 -> Colors.MINECRAFT_RED
+                else -> Colors.MINECRAFT_BLUE
             }
             if (drawTime) Renderer.drawStringInWorld("${timeDisplay.toFixed()}s", endPoint.addVec(y = 2), colorTime, depth = true, scale = 0.03f)
         }

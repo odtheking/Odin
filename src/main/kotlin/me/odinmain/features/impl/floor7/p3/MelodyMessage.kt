@@ -1,7 +1,6 @@
 package me.odinmain.features.impl.floor7.p3
 
 import me.odinmain.events.impl.TerminalEvent
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.p3.termsim.TermSimGUI
 import me.odinmain.features.settings.Setting.Companion.withDependency
@@ -17,8 +16,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object MelodyMessage : Module(
     name = "Melody Message",
-    description = "Helpful messages for the melody terminal in floor 7.",
-    category = Category.FLOOR7
+    description = "Helpful messages for the melody terminal in floor 7."
 ) {
     private val sendMelodyMessage by BooleanSetting("Send Melody Message", true, description = "Sends a message when the melody terminal opens.")
     private val melodyMessage by StringSetting("Melody Message", "Melody Terminal start!", 128, description = "Message sent when the melody terminal opens.").withDependency { sendMelodyMessage }

@@ -1,6 +1,7 @@
 package me.odinmain.utils.render
 
 import com.google.gson.*
+import me.odinmain.utils.ui.Colors
 import java.awt.Color.HSBtoRGB
 import java.awt.Color.RGBtoHSB
 import java.lang.reflect.Type
@@ -116,52 +117,6 @@ class Color(hue: Float, saturation: Float, brightness: Float, alpha: Float = 1f)
     fun copy(): Color = Color(this.rgba)
 
     companion object {
-
-        @JvmField
-        val TRANSPARENT = Color(0, 0, 0, 0f)
-
-        @JvmField
-        val WHITE = Color(255, 255, 255)
-
-        @JvmField
-        val BLACK = Color(0, 0, 0)
-
-        @JvmField
-        val PURPLE = Color(170, 0, 170)
-
-        @JvmField
-        val ORANGE = Color(255, 170, 0)
-
-        @JvmField
-        val GREEN = Color(0, 255, 0)
-
-        @JvmField
-        val DARK_GREEN = Color(0, 170, 0)
-
-        @JvmField
-        val DARK_RED = Color(170, 0, 0)
-
-        @JvmField
-        val RED = Color(255, 0, 0)
-
-        @JvmField
-        val GRAY = Color(170, 170, 170)
-
-        @JvmField
-        val DARK_GRAY = Color(35, 35, 35)
-
-        @JvmField
-        val BLUE = Color(85, 255,255)
-
-        @JvmField
-        val PINK = Color(255, 85, 255)
-
-        @JvmField
-        val YELLOW = Color(253, 218, 13)
-
-        @JvmField
-        val CYAN = Color(0, 170, 170)
-       
         inline val Int.red get() = this shr 16 and 0xFF
         inline val Int.green get() = this shr 8 and 0xFF
         inline val Int.blue get() = this and 0xFF
@@ -170,7 +125,7 @@ class Color(hue: Float, saturation: Float, brightness: Float, alpha: Float = 1f)
 
     class ColorSerializer : JsonSerializer<Color>, JsonDeserializer<Color> {
         override fun serialize(src: Color?, typeOfSrc: Type?, context: JsonSerializationContext?): JsonElement {
-            return JsonPrimitive("#${src?.hex ?: BLACK.hex}")
+            return JsonPrimitive("#${src?.hex ?: Colors.BLACK.hex}")
         }
 
         override fun deserialize(json: JsonElement?, typeOfT: Type?, context: JsonDeserializationContext?): Color {

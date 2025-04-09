@@ -1,6 +1,5 @@
 package me.odinmain.features.impl.skyblock
 
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
@@ -9,8 +8,7 @@ import net.minecraft.network.play.server.S29PacketSoundEffect
 
 object RagnarockAxe : Module(
     name = "Rag Axe",
-    description = "Provides alerts about ragnarock axe's state.",
-    category = Category.SKYBLOCK
+    description = "Provides alerts about ragnarock axe's state."
 ) {
     private val alert by BooleanSetting("Alert", true, description = "Alerts you when you start casting rag axe.")
     private val alertCancelled by BooleanSetting("Alert Cancelled", true, description = "Alerts you when your rag axe is cancelled.")

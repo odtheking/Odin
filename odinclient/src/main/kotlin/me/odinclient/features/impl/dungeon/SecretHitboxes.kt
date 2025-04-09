@@ -1,6 +1,5 @@
 package me.odinclient.features.impl.dungeon
 
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.WITHER_ESSENCE_ID
@@ -13,8 +12,7 @@ import java.util.*
  */
 object SecretHitboxes : Module(
     name = "Secret Hitboxes",
-    description = "Extends the hitboxes of secret blocks to a full block.",
-    category = Category.DUNGEON
+    description = "Extends the hitboxes of secret blocks to a full block."
 ) {
     val lever by BooleanSetting("Lever", default = false, description = "Extends the lever hitbox.")
     val button by BooleanSetting("Button", default = false, description = "Extends the button hitbox.")

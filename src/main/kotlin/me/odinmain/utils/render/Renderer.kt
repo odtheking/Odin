@@ -1,8 +1,6 @@
 package me.odinmain.utils.render
 
 import me.odinmain.OdinMain.mc
-import me.odinmain.ui.clickgui.util.ColorUtil.multiplyAlpha
-import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.addVec
 import me.odinmain.utils.fastEyeHeight
 import me.odinmain.utils.render.RenderUtils.drawBeaconBeam
@@ -10,6 +8,9 @@ import me.odinmain.utils.render.RenderUtils.outlineBounds
 import me.odinmain.utils.render.RenderUtils.renderVec
 import me.odinmain.utils.skyblock.getBlockAt
 import me.odinmain.utils.toAABB
+import me.odinmain.utils.ui.Colors
+import me.odinmain.utils.ui.clickgui.util.ColorUtil.multiplyAlpha
+import me.odinmain.utils.ui.clickgui.util.ColorUtil.withAlpha
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.entity.Entity
 import net.minecraft.util.AxisAlignedBB
@@ -172,7 +173,7 @@ object Renderer {
     fun drawStringInWorld(
         text: String,
         vec3: Vec3,
-        color: Color = Color.WHITE,
+        color: Color = Colors.WHITE,
         depth: Boolean = false,
         scale: Float = 0.03f,
         shadow: Boolean = true
@@ -209,9 +210,9 @@ object Renderer {
 
     private var displayTitle = ""
     private var titleTicks = 0
-    private var displayColor = Color.WHITE
+    private var displayColor = Colors.WHITE
 
-    fun displayTitle(title: String, ticks: Int, color: Color = Color.WHITE) {
+    fun displayTitle(title: String, ticks: Int, color: Color = Colors.WHITE) {
         displayTitle = title
         titleTicks = ticks
         displayColor = color

@@ -2,7 +2,6 @@ package me.odinmain.features.impl.dungeon
 
 import me.odinmain.events.impl.BlockChangeEvent
 import me.odinmain.events.impl.ServerTickEvent
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.utils.addVec
 import me.odinmain.utils.equal
@@ -11,6 +10,7 @@ import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.toFixed
 import me.odinmain.utils.toVec3
+import me.odinmain.utils.ui.Colors
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -18,8 +18,7 @@ import java.util.concurrent.CopyOnWriteArrayList
 
 object TerracottaTimer : Module(
     name = "Terracotta Timer",
-    description = "Displays the time until the terracotta respawns.",
-    category = Category.DUNGEON
+    description = "Displays the time until the terracotta respawns."
 ) {
     private var terracottaSpawning = CopyOnWriteArrayList<Terracotta>()
     private data class Terracotta(val pos: Vec3, var time: Double)
@@ -48,9 +47,9 @@ object TerracottaTimer : Module(
 
     private fun getColor(time: Double): Color {
         return when {
-            time > 5.0 -> Color.DARK_GREEN
-            time > 2.0 -> Color.ORANGE
-            else -> Color.DARK_RED
+            time > 5.0 -> Colors.MINECRAFT_DARK_GREEN
+            time > 2.0 -> Colors.MINECRAFT_GOLD
+            else -> Colors.MINECRAFT_DARK_RED
         }
     }
 }

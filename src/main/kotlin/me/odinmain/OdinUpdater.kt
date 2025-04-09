@@ -3,11 +3,17 @@ package me.odinmain
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import me.odinmain.features.impl.render.ClickGUIModule
-import me.odinmain.ui.OdinGuiButton
 import me.odinmain.utils.downloadFile
 import me.odinmain.utils.fetchURLData
-import me.odinmain.utils.render.*
-import net.minecraft.client.gui.*
+import me.odinmain.utils.render.RenderUtils
+import me.odinmain.utils.render.drawDynamicTexture
+import me.odinmain.utils.render.text
+import me.odinmain.utils.ui.Colors
+import me.odinmain.utils.ui.OdinGuiButton
+import net.minecraft.client.gui.GuiButton
+import net.minecraft.client.gui.GuiMainMenu
+import net.minecraft.client.gui.GuiScreen
+import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.texture.DynamicTexture
 import net.minecraft.event.ClickEvent
@@ -103,11 +109,11 @@ object OdinUpdater : GuiScreen() {
                 "Outdated Java (${System.getProperty("java.version")}). Update to fix issues.",
                 centerX,
                 450f,
-                Color.RED,
+                Colors.MINECRAFT_RED,
                 18f
             )
         } else {
-            text("New version available: $latestTag", centerX, 450f, Color.WHITE, 18f)
+            text("New version available: $latestTag", centerX, 450f, Colors.WHITE, 18f)
             text(
                 "Current: ${OdinMain.VERSION}",
                 centerX,

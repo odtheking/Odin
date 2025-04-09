@@ -1,11 +1,9 @@
 package me.odinmain.features.impl.dungeon
 
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.HudSetting
 import me.odinmain.font.OdinFont
-import me.odinmain.ui.clickgui.animations.impl.EaseInOut
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.render.getTextWidth
@@ -14,6 +12,8 @@ import me.odinmain.utils.runIn
 import me.odinmain.utils.skyblock.getBlockAt
 import me.odinmain.utils.skyblock.getBlockStateAt
 import me.odinmain.utils.toVec3
+import me.odinmain.utils.ui.Colors
+import me.odinmain.utils.ui.clickgui.animations.impl.EaseInOut
 import net.minecraft.block.BlockStairs
 import net.minecraft.block.properties.IProperty
 import net.minecraft.block.state.IBlockState
@@ -27,13 +27,12 @@ import kotlin.math.abs
 
 object CanClip : Module(
     name = "Can Clip",
-    description = "Tells you if you are currently able to clip through a stair under you.",
-    category = Category.DUNGEON
+    description = "Tells you if you are currently able to clip through a stair under you."
 ) {
     private val line by BooleanSetting("Line", true, description = "Draws a line where you can clip.")
     private val hud by HudSetting("Display", 10f, 10f, 1f, true) {
         if (it) {
-            text("Can Clip", 1f, 9f, Color.WHITE, 12f, OdinFont.REGULAR)
+            text("Can Clip", 1f, 9f, Colors.WHITE, 12f, OdinFont.REGULAR)
             getTextWidth("Can Clip", 12f) to 12f
         } else {
             text("Can Clip", 1f, 9f, Color(0, 255, 0, animation.get(0f, 1f, !canClip)), 12f, OdinFont.REGULAR)
@@ -105,7 +104,7 @@ object CanClip : Module(
                 else -> return
             }
 
-            if (line) Renderer.draw3DLine(listOf(pos1, pos2), color = Color.RED, depth = true)
+            if (line) Renderer.draw3DLine(listOf(pos1, pos2), color = Colors.MINECRAFT_RED, depth = true)
         }
     }
 

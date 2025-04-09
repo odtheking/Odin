@@ -1,7 +1,6 @@
 package me.odinmain.features.impl.skyblock
 
 import me.odinmain.events.impl.MessageSentEvent
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.dungeon.DungeonRequeue.disableRequeue
 import me.odinmain.features.settings.Setting.Companion.withDependency
@@ -24,7 +23,6 @@ import kotlin.random.Random
 
 object ChatCommands : Module(
     name = "Chat Commands",
-    category = Category.SKYBLOCK,
     description = "Type !help in the corresponding channel for cmd list. Use /chatclist.",
 ) {
     private val chatEmotes by BooleanSetting(name = "Chat Emotes", default = true, description = "Replaces chat emotes with their corresponding emojis.")

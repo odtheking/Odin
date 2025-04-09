@@ -1,6 +1,5 @@
 package me.odinmain.features.impl.nether
 
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
@@ -14,8 +13,7 @@ import net.minecraft.util.Vec3
 
 object NoPre : Module(
     name = "Pre-Spot Alert",
-    description = "Alerts the party if a pre spot is missing.",
-    category = Category.NETHER
+    description = "Alerts the party if a pre spot is missing."
 ) {
     private val showCratePriority by BooleanSetting("Show Crate Priority", false, description = "Shows the crate priority alert.")
     private val cratePriorityTitleTime by NumberSetting("Title Time", 30, 1, 60, description = "The time the crate priority alert will be displayed for.").withDependency { showCratePriority }
