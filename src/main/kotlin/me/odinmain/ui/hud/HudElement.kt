@@ -11,7 +11,10 @@ import me.odinmain.ui.clickgui.util.HoverHandler
 import me.odinmain.ui.hud.EditHUDGui.dragging
 import me.odinmain.ui.util.MouseUtils.isAreaHovered
 import me.odinmain.utils.endProfile
-import me.odinmain.utils.render.*
+import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.rectangleOutline
+import me.odinmain.utils.render.scale
+import me.odinmain.utils.render.translate
 import me.odinmain.utils.startProfile
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
@@ -27,10 +30,10 @@ import kotlin.math.max
 open class HudElement(
     x: Float = 0f,
     y: Float = 0f,
-    val displayToggle: Boolean,
+    private val displayToggle: Boolean,
     defaultScale: Float = 2f,
     val render: Render = { 0f to 0f },
-    val settingName: String
+    settingName: String
 ) {
 
     private var parentModule: Module? = null

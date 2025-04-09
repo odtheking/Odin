@@ -10,7 +10,6 @@ import me.odinmain.utils.name
 import me.odinmain.utils.skyblock.unformattedName
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import org.lwjgl.input.Mouse
 
 object RemovePerks : Module(
     name = "Remove Perks",

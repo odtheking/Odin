@@ -30,7 +30,7 @@ object SkyblockPlayer {
     var maxHealth: Int = 0
     var currentMana: Int = 0
     var maxMana: Int = 0
-    var currentSpeed: Int = 0
+    private var currentSpeed: Int = 0
     var currentDefense: Int = 0
     var overflowMana: Int = 0
     var effectiveHP: Int = 0
@@ -40,7 +40,7 @@ object SkyblockPlayer {
         if (event.packet !is S02PacketChat || event.packet.type != 2.toByte()) return
         val msg = event.packet.chatComponent.unformattedText.noControlCodes
 
-        HEALTH_REGEX.find(msg)?.destructured?.let { (currentHp, maxHp) ->
+        HEALTH_REGEX.find(msg)?.destructured?.let { (_, maxHp) ->
             maxHealth = maxHp.replace(",", "").toIntOrNull() ?: maxHealth
         }
 

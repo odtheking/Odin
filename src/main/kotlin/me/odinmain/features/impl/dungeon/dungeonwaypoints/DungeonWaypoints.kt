@@ -116,7 +116,7 @@ object DungeonWaypoints : Module(
         companion object{
             fun getType() = if (waypointType.equalsOneOf(0, 1, 5)) null else getByInt(timerSetting)
             fun getArrayList() = ArrayList(TimerType.entries.map { it.displayName })
-            fun getByInt(i: Int) = TimerType.entries.getOrNull(i).takeIf { it != NONE }
+            private fun getByInt(i: Int) = TimerType.entries.getOrNull(i).takeIf { it != NONE }
             fun getByName(name: String): TimerType? = TimerType.entries.find { it.name == name.uppercase() }
         }
     }
@@ -203,9 +203,9 @@ object DungeonWaypoints : Module(
         if (mc.currentScreen != null || event.type != RenderGameOverlayEvent.ElementType.ALL || !allowEdits) return
         val sr = ScaledResolution(mc)
         val pos = reachPosition
-        val (text, editText) = pos?.add(offset)?.let {
+        val (text, editText) = pos?.add(offset)?.let { position ->
             val room = DungeonUtils.currentRoom ?: return
-            val vec = room.getRelativeCoords(it.add(offset).toVec3())
+            val vec = room.getRelativeCoords(position.add(offset).toVec3())
             val waypoint = getWaypoints(room).find { it.toVec3().equal(vec) }
 
             val text = waypoint?.let {"§fType: §5${waypoint.type?.displayName ?: "None"}${waypoint.timer?.let { "§7, §fTimer: §a${it.displayName}" } ?: ""}, §r#${waypoint.color.hex}§7" }

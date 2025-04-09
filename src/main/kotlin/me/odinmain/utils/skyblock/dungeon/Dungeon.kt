@@ -89,8 +89,8 @@ class Dungeon(val floor: Floor) {
         if (expectingBloodRegex.matches(message)) expectingBloodUpdate = true
         doorOpenRegex.find(message)?.let { dungeonStats.doorOpener = it.groupValues[1] }
         deathRegex.find(message)?.let { match ->
-            dungeonTeammates.find {
-                it.name == (match.groupValues[1].takeUnless { it == "You" } ?: mc.thePlayer?.name)
+            dungeonTeammates.find { teammate ->
+                teammate.name == (match.groupValues[1].takeUnless { it == "You" } ?: mc.thePlayer?.name)
             }?.deaths?.inc()
         }
         val partyMessage = partyMessageRegex.find(message)?.groupValues?.get(1)?.lowercase() ?: return
@@ -184,7 +184,7 @@ class Dungeon(val floor: Floor) {
                 0 -> ArrayList(odinSorting(dungeonTeammatesNoSelf.sortedBy { it.clazz.priority }).toList())
                 1 -> ArrayList(dungeonTeammatesNoSelf.sortedWith(compareBy({ it.clazz.ordinal }, { it.name })))
                 2 -> ArrayList(dungeonTeammatesNoSelf.sortedBy { it.name })
-                3 -> ArrayList(dungeonTeammatesNoSelf.sortedBy { DungeonUtils.customLeapOrder.indexOf(it.name.lowercase()).takeIf { it != -1 } ?: Int.MAX_VALUE })
+                3 -> ArrayList(dungeonTeammatesNoSelf.sortedBy { DungeonUtils.customLeapOrder.indexOf(it.name.lowercase()).takeIf { index -> index != -1 } ?: Int.MAX_VALUE })
                 else -> dungeonTeammatesNoSelf
             }
     }

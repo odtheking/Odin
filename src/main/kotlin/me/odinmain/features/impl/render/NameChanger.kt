@@ -1,11 +1,9 @@
 package me.odinmain.features.impl.render
 
-import me.odinmain.features.*
+import me.odinmain.features.Category
+import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.StringSetting
 
-/**
- * @see me.odinclient.mixin.mixins.MixinFontRenderer
- */
 object NameChanger : Module(
     name = "Name Changer",
     category = Category.RENDER,

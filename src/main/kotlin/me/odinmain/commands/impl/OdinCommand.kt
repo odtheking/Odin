@@ -118,7 +118,7 @@ val mainCommand = Commodore("od", "odin") {
     // i.e. when a command fails it will show:
     // /od <floor> and /od <kuudra tier>
     runs { floor: Floors -> sendCommand("joininstance ${floor.instance()}") }
-    runs { `kuudra tier`: KuudraTier -> sendCommand("joininstance ${`kuudra tier`.instance()}") }
+    runs { tier: KuudraTier -> sendCommand("joininstance ${tier.instance()}") }
 
     literal("leaporder").runs { player1: String?, player2: String?, player3: String?, player4: String? ->
         val players = listOfNotNull(player1, player2, player3, player4)

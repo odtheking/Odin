@@ -1,5 +1,6 @@
 package me.odinmain.features.impl.render
 
+import me.odinmain.events.impl.ClickEvent
 import me.odinmain.events.impl.PacketEvent
 import me.odinmain.features.Category
 import me.odinmain.features.Module
@@ -70,14 +71,14 @@ object CPSDisplay : Module(
     private val leftClicks = mutableListOf<Long>()
     private val rightClicks = mutableListOf<Long>()
 
-    @JvmStatic
-    fun onLeftClick() {
+    @SubscribeEvent
+    fun onLeftClick(event: ClickEvent.Right) {
         leftClicks.add(System.currentTimeMillis())
         leftAnim.start(true)
     }
 
-    @JvmStatic
-    fun onRightClick() {
+    @SubscribeEvent
+    fun onRightClick(event: ClickEvent.Left) {
         rightClicks.add(System.currentTimeMillis())
         rightAnim.start(true)
     }
@@ -86,6 +87,6 @@ object CPSDisplay : Module(
     fun onSendPacket(event: PacketEvent.Send) { // This is for any block placement packet that gets sent outside the rightclickmouse method :eyes:
         if (event.packet !is C08PacketPlayerBlockPlacement || !countPackets) return
         if (rightClicks.any { System.currentTimeMillis() - it < 5 }) return
-        onRightClick()
+        onRightClick(ClickEvent.Left())
     }
 }

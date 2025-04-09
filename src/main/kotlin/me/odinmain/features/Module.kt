@@ -53,6 +53,7 @@ abstract class Module(
 
     init {
         if (alwaysActive) {
+            @Suppress("LeakingThis")
             MinecraftForge.EVENT_BUS.register(this)
         }
     }

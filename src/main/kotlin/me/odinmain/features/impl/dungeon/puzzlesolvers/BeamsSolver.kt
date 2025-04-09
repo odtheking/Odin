@@ -45,9 +45,9 @@ object BeamsSolver {
         if (this?.data?.name != "Creeper Beams") return reset()
 
         currentLanternPairs.clear()
-        lanternPairs.forEach {
-            val pos = getRealCoords(it[0], it[1], it[2]).takeIf { getBlockIdAt(it) == 169 } ?: return@forEach
-            val pos2 = getRealCoords(it[3], it[4], it[5]).takeIf { getBlockIdAt(it) == 169 } ?: return@forEach
+        lanternPairs.forEach { list ->
+            val pos = getRealCoords(list[0], list[1], list[2]).takeIf { getBlockIdAt(it) == 169 } ?: return@forEach
+            val pos2 = getRealCoords(list[3], list[4], list[5]).takeIf { getBlockIdAt(it) == 169 } ?: return@forEach
 
             currentLanternPairs[pos] = pos2 to colors[currentLanternPairs.size]
         }

@@ -87,7 +87,7 @@ object ModuleManager {
     @SubscribeEvent(receiveCanceled = true)
     fun onTick(event: TickEvent.ClientTickEvent) {
         if (event.phase != TickEvent.Phase.START) return
-        tickTaskTick()
+        tickTaskTick(false)
     }
 
     @SubscribeEvent(receiveCanceled = true)

@@ -167,6 +167,7 @@ object GhostBlocks : Module(
         blocksToReset.forEach { it.reset() }
     }
 
+    @JvmStatic
     fun postChunkData(packet: S21PacketChunkData) {
         if (!enabled || !stonkDelayToggle || (sdOnlySB && !LocationUtils.isInSkyblock)) return
         sdBlocks.forEach {

@@ -35,6 +35,7 @@ open class TerminalHandler(val type: TerminalTypes, val timeOpened: Long = Syste
     }
 
     init {
+        @Suppress("LeakingThis")
         MinecraftForge.EVENT_BUS.register(this)
     }
 

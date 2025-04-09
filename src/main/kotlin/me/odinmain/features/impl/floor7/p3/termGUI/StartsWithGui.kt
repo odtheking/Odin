@@ -6,7 +6,6 @@ import me.odinmain.features.impl.floor7.p3.TerminalSolver.currentTerm
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.customScale
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.gap
 import me.odinmain.utils.render.*
-import me.odinmain.utils.skyblock.modMessage
 
 object StartsWithGui : TermGui() {
     override fun render() {

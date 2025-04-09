@@ -196,7 +196,7 @@ object DevPlayers {
     fun preloadCapes() {
         if (!capeFolder.exists()) capeFolder.toPath().createDirectories()
 
-        capeData = fetchCapeData("https://odtheking.github.io/Odin/capes/capes.json")
+        capeData = fetchCapeData()
         capeData.forEach { (capeFileName, _) ->
             val capeFile = File(capeFolder, capeFileName)
             val capeUrl = "https://odtheking.github.io/Odin/capes/$capeFileName"
@@ -212,7 +212,7 @@ object DevPlayers {
         }
     }
 
-    private fun fetchCapeData(manifestUrl: String): Map<String, List<String>> {
+    private fun fetchCapeData(manifestUrl: String = "https://odtheking.github.io/Odin/capes/capes.json"): Map<String, List<String>> {
         return try {
             val json = URL(manifestUrl).readText()
             val manifest = Gson().fromJson(json, Capes::class.java)
