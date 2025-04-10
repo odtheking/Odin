@@ -53,13 +53,6 @@ object EtherWarpHelper : Module(
     private val soundPitch by NumberSetting("Pitch", 2f, 0, 2, .01f, description = "Pitch of the sound.").withDependency { sounds && dropdown }
     private val reset by ActionSetting("Play sound", description = "Plays the selected sound.") { playLoudSound(if (sound == defaultSounds.size - 1) customSound else defaultSounds[sound], soundVolume, soundPitch) }.withDependency { sounds && dropdown }
 
-    private val invalidBlocks = BitSet().apply {
-        setOf(
-            Blocks.hopper, Blocks.chest, Blocks.ender_chest, Blocks.furnace, Blocks.crafting_table,
-            Blocks.enchanting_table, Blocks.dispenser, Blocks.dropper, Blocks.brewing_stand, Blocks.trapdoor,
-        ).forEach { set(getIdFromBlock(it)) }
-    }
-
     @SubscribeEvent
     fun onRenderWorldLast(event: RenderWorldLastEvent) {
         if (mc.thePlayer?.usingEtherWarp == false || !render) return
@@ -72,7 +65,7 @@ object EtherWarpHelper : Module(
 
         etherPos = EtherWarpHelper.getEtherPos(positionLook)
         val succeeded =
-            etherPos.succeeded && (etherPos.state?.block?.let { invalidBlocks.get(getIdFromBlock(it)) } != true || !interactBlocks || mc.objectMouseOver?.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK)
+            etherPos.succeeded && (!interactBlocks || etherPos.state?.block?.let { invalidBlocks.get(getIdFromBlock(it)) } != true || mc.objectMouseOver?.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK)
 
         if (succeeded || renderFail)
             if (!fullBlock)
@@ -86,5 +79,12 @@ object EtherWarpHelper : Module(
         if (this !is S29PacketSoundEffect || soundName != "mob.enderdragon.hit" || !sounds || volume != 1f || pitch != 0.53968257f || customSound == "mob.enderdragon.hit") return
         playLoudSound(if (sound == defaultSounds.size - 1) customSound else defaultSounds[sound], soundVolume, soundPitch, positionVector)
         event.isCanceled = true
+    }
+
+    private val invalidBlocks = BitSet().apply {
+        setOf(
+            Blocks.hopper, Blocks.chest, Blocks.ender_chest, Blocks.furnace, Blocks.crafting_table,
+            Blocks.enchanting_table, Blocks.dispenser, Blocks.dropper, Blocks.brewing_stand, Blocks.trapdoor,
+        ).forEach { set(getIdFromBlock(it)) }
     }
 }

@@ -142,22 +142,22 @@ object BloodCamp : Module(
 
         onMessage(Regex("^\\[BOSS] The Watcher: Let's see how you can handle this\\.$"), { enabled && movePrediction }) {
             val (startTime, startTick) = startTime ?: return@onMessage
-            val moveTicks = ((normalTickTime - startTick) * 0.05 + 0.1)
+            val moveTicks = ((normalTickTime - startTick) * 0.05f + 0.1f)
 
             val predictionTicks = when (moveTicks) {
-                in 31.0..<34.0 -> 36
-                in 28.0..<31.0 -> 33
-                in 25.0..<28.0 -> 30
-                in 22.0..<25.0 -> 27
-                in 1.0..<22.0 -> 24
+                in 31f..<34f -> 36
+                in 28f..<31f -> 33
+                in 25f..<28f -> 30
+                in 22f..<25f -> 27
+                in 1f..<22f -> 24
                 else -> return@onMessage
-            } + (ceil((System.currentTimeMillis() - startTime) / 1000.0) - moveTicks) / 2 - 0.6
-            if (predictionTicks !in 20.0..40.0) return@onMessage
+            } + (ceil((System.currentTimeMillis() - startTime) / 1000f) - moveTicks) / 2f - 0.6f
+            if (predictionTicks !in 20f..40f) return@onMessage
 
             if (partyMoveTime)
-                partyMessage("Watcher will move in ${(predictionTicks * 0.05).toFixed()}s.")
+                partyMessage("Watcher will move in ${(predictionTicks * 0.05f).toFixed()}s.")
             if (moveTime)
-                modMessage("Watcher will move in ${(predictionTicks * 0.05).toFixed()}s.")
+                modMessage("Watcher will move in ${(predictionTicks * 0.05f).toFixed()}s.")
 
             val moveTime = ((predictionTicks - moveTicks) * 20 - 3).toInt()
             finalTime = normalTickTime + moveTime

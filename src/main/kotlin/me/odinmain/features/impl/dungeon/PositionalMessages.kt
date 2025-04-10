@@ -54,14 +54,13 @@ object PositionalMessages : Module(
             } else {
                 val aabb = AxisAlignedBB(message.x, message.y, message.z, message.x2 ?: return@forEach, message.y2 ?: return@forEach,message.z2  ?: return@forEach)
                 Renderer.drawBox(aabb, message.color, boxThickness, fillAlpha = 0f, depth = depthCheck)
-                if (displayMessage) {
-                    val center = Vec3(
-                        (message.x + message.x2) / 2,
-                        (message.y + message.y2) / 2,
-                        (message.z + message.z2) / 2
-                    )
-                    Renderer.drawStringInWorld(message.message, center, Colors.WHITE, depthCheck, 0.03f * messageSize)
-                }
+                if (!displayMessage) return@forEach
+                val center = Vec3(
+                    (message.x + message.x2) / 2,
+                    (message.y + message.y2) / 2,
+                    (message.z + message.z2) / 2
+                )
+                Renderer.drawStringInWorld(message.message, center, Colors.WHITE, depthCheck, 0.03f * messageSize)
             }
         }
     }
