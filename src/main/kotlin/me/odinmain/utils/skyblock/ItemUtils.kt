@@ -5,8 +5,6 @@ import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.RenderUtils.bind
-import me.odinmain.utils.render.scale
-import me.odinmain.utils.render.translate
 import me.odinmain.utils.ui.Colors
 import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.client.renderer.GlStateManager
@@ -215,8 +213,8 @@ fun ItemStack.setLoreWidth(lines: List<String>, width: Int): ItemStack {
 
 fun ItemStack.drawItem(x: Float = 0f, y: Float = 0f, scale: Float = 1f, z: Float = 200f) {
     GlStateManager.pushMatrix()
-    scale(scale, scale, 1f)
-    translate(x / scale, y / scale, 0f)
+    GlStateManager.scale(scale, scale, 1f)
+    GlStateManager.translate(x / scale, y / scale, 0f)
     Colors.WHITE.bind()
 
     RenderHelper.enableStandardItemLighting()

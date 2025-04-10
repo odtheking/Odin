@@ -13,6 +13,7 @@ import me.odinmain.utils.ui.clickgui.util.ColorUtil
 import me.odinmain.utils.ui.util.MouseUtils.isAreaHovered
 import me.odinmain.utils.ui.util.MouseUtils.mouseX
 import me.odinmain.utils.ui.util.MouseUtils.mouseY
+import net.minecraft.client.renderer.GlStateManager
 import kotlin.math.floor
 
 /**
@@ -59,7 +60,7 @@ class Panel(
 
         scrollOffset = scrollAnimation.get(scrollOffset, scrollTarget).round(0).toFloat()
         var startY = scrollOffset + HEIGHT
-        scale(1f / scaleFactor, 1f / scaleFactor, 1f)
+        GlStateManager.scale(1f / scaleFactor, 1f / scaleFactor, 1f)
         dropShadow(x, y, WIDTH, if (extended) (length + 5f).coerceAtLeast(HEIGHT) else 40f, ColorUtil.moduleButtonColor, 15f, 10f, 10f, 10f, 10f)
         roundedRectangle(x, y, WIDTH, HEIGHT, ColorUtil.moduleButtonColor, ColorUtil.moduleButtonColor, ColorUtil.moduleButtonColor, 0f, 15f, 15f, 0f, 0f, 0f)
 
@@ -79,7 +80,7 @@ class Panel(
             else ColorUtil.moduleButtonColor
         roundedRectangle(x, y + startY, WIDTH, 10f, lastColor, lastColor, lastColor, 0f, 0f, 0f, 10f, 10f, 4f)
         resetScissor(s)
-        scale(scaleFactor, scaleFactor, 1f)
+        GlStateManager.scale(scaleFactor, scaleFactor, 1f)
     }
 
     fun handleScroll(amount: Int): Boolean {

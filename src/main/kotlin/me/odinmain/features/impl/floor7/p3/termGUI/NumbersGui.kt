@@ -45,7 +45,8 @@ object NumbersGui : TermGui() {
                     box.h.toFloat() * customScale
                 )
 
-                if (TerminalSolver.showNumbers && index != -1) mcText(amount.toString(), -163 + col * 70 + 26f , -60 + row * 70 + (27f - (textScale * 3) - (gap * 0.5)), 2 + textScale, Colors.WHITE)
+                if (TerminalSolver.showNumbers && index != -1)
+                    RenderUtils.drawText(amount.toString(), -163 + col * 70 + 26f , -60f + row * 70f + (27f - (textScale * 3f) - (gap * 0.5f)), 2.0 + textScale, Colors.WHITE, center = true)
             }
         }
 

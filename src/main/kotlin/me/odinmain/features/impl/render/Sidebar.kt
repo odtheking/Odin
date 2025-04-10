@@ -4,8 +4,8 @@ import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.features.settings.impl.HudSetting
+import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.render.getTextWidth
-import me.odinmain.utils.render.mcText
 import me.odinmain.utils.render.text
 import me.odinmain.utils.ui.Colors
 import me.odinmain.utils.ui.clickgui.util.ColorUtil.withAlpha
@@ -73,7 +73,7 @@ object Sidebar : Module(
         if (customFont)
             text(str, x - 1, y + 3, Colors.WHITE, 7, shadow = textShadow)
         else
-            mcText(str, x, y, 1, Colors.WHITE, shadow = textShadow, center = false)
+            RenderUtils.drawText(str, x.toFloat(), y.toFloat(), 1.0, Colors.WHITE, shadow = textShadow, center = false)
     }
 
     private fun getStringWidth(str: String): Int {

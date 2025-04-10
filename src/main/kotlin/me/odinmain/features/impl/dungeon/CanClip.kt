@@ -4,7 +4,6 @@ import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.HudSetting
 import me.odinmain.font.OdinFont
-import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.render.getTextWidth
 import me.odinmain.utils.render.text
@@ -35,7 +34,7 @@ object CanClip : Module(
             text("Can Clip", 1f, 9f, Colors.WHITE, 12f, OdinFont.REGULAR)
             getTextWidth("Can Clip", 12f) to 12f
         } else {
-            text("Can Clip", 1f, 9f, Color(0, 255, 0, animation.get(0f, 1f, !canClip)), 12f, OdinFont.REGULAR)
+            text("Can Clip", 1f, 9f, Colors.MINECRAFT_GREEN, 12f, OdinFont.REGULAR)
             getTextWidth("Can Clip", 12f) to 12f
         }
     }

@@ -6,14 +6,13 @@ import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.HudSetting
 import me.odinmain.utils.equalsOneOf
-import me.odinmain.utils.render.mcText
+import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.render.mcTextAndWidth
 import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.isHolding
 import me.odinmain.utils.skyblock.skyblockID
 import me.odinmain.utils.toFixed
 import me.odinmain.utils.ui.Colors
-import me.odinmain.utils.ui.hud.HudElement
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.server.S29PacketSoundEffect
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -23,10 +22,10 @@ object AbilityTimers : Module(
     name = "Ability Timers",
     description = "Provides timers for Wither Impact, Tactical Insertion, and Enrage."
 ) {
-    private val witherHud: HudElement by HudSetting("Wither Impact Hud", 10f, 10f, 1f, true) {
+    private val witherHud by HudSetting("Wither Impact Hud", 10f, 10f, 1f, true) {
         if (witherImpactTicks <= 0 && (hideWhenDone || !LocationUtils.isInSkyblock) && !it) return@HudSetting 0f to 0f
         val width = if (compact) 6f else 65f
-        mcText(witherImpactText, width/2f, 0f, 1f, Colors.WHITE, shadow = true)
+        RenderUtils.drawText(witherImpactText, width / 2f, 0f, 1.0, Colors.WHITE, shadow = true, center = true)
         width to 10f
     }
     private val compact: Boolean by BooleanSetting("Compact Mode", default = true, description = "Compacts the Hud to just one character wide.").withDependency { witherHud.enabled }

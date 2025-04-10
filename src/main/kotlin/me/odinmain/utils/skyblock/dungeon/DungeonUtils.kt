@@ -21,6 +21,7 @@ import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
 import net.minecraftforge.event.entity.EntityJoinWorldEvent
 import net.minecraftforge.event.world.WorldEvent
+import net.minecraftforge.fml.common.eventhandler.EventPriority
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import kotlin.math.ceil
 import kotlin.math.floor
@@ -186,7 +187,7 @@ object DungeonUtils {
         if (inDungeons) currentDungeon?.onPacket(event)
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
     fun onRoomEnter(event: RoomEnterEvent) {
         if (inDungeons) currentDungeon?.enterDungeonRoom(event)
     }

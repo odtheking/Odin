@@ -38,12 +38,12 @@ object MapInfo : Module(
         if (fullBackground) roundedRectangle(-fullMargin, 0, fullWidth + (fullMargin * 2), 19, fullColor, 0, 0)
         val brWidth = getMCTextWidth(brText)
         val trWidth = getMCTextWidth(trText)
-        mcText(secretText, 1, 1, 1f, Colors.WHITE, center = false)
-        mcText(trText, fullWidth-1 - trWidth, 1, 1f, Colors.WHITE, center = false)
+        RenderUtils.drawText(secretText, 1f, 1f, 1.0, Colors.WHITE, center = false)
+        RenderUtils.drawText(trText, fullWidth - 1f - trWidth, 1f, 1.0, Colors.WHITE, center = false)
         val unknownWidth = mcTextAndWidth(unknownSecretsText, 1, 10, 1f, Colors.WHITE, center = false)
-        val centerX = (unknownWidth+1+(fullWidth-1-unknownWidth-brWidth)/2) - getMCTextWidth(mimicText)/2
-        mcText(mimicText, centerX, 10, 1f, Colors.WHITE, center = false)
-        mcText(brText, fullWidth-1 - brWidth, 10, 1f, Colors.WHITE, center = false)
+        val centerX = (unknownWidth + 1 + (fullWidth - 1 - unknownWidth - brWidth) / 2) - getMCTextWidth(mimicText) / 2
+        RenderUtils.drawText(mimicText, centerX, 10f, 1.0, Colors.WHITE, center = false)
+        RenderUtils.drawText(brText, fullWidth - 1 - brWidth, 10f, 1.0, Colors.WHITE, center = false)
         fullWidth to 19f
     }
 
@@ -64,7 +64,7 @@ object MapInfo : Module(
                 "§7-§c${DungeonUtils.totalSecrets}"
         val width = getMCTextWidth(secretText)
         if (compactSecretBackground) roundedRectangle(-compactSecretMargin, 0, width + 2 + (compactSecretMargin * 2), 9, compactSecretColor, 0, 0)
-        mcText(secretText, 1, 1, 1f, Colors.WHITE, center = false)
+        RenderUtils.drawText(secretText, 1f, 1f, 1.0, Colors.WHITE, center = false)
         width.toFloat() to 9f
     }
 
@@ -79,7 +79,7 @@ object MapInfo : Module(
         val scoreText = "§7Score: ${colorizeScore(DungeonUtils.score)}" + if (!DungeonUtils.mimicKilled) " §7(§6+2?§7)" else ""
         val width = getMCTextWidth(scoreText)
         if (compactScoreBackground) roundedRectangle(-compactScoreMargin, 0, width + 2 + (compactScoreMargin * 2), 9, compactScoreColor, 0, 0)
-        mcText(scoreText, 1, 1, 1f, Colors.WHITE, center = false)
+        RenderUtils.drawText(scoreText, 1f, 1f, 1.0, Colors.WHITE, center = false)
         width.toFloat() to 9f
     }
 

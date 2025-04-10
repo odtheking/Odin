@@ -8,7 +8,6 @@ import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.HudSetting
 import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.render.getMCTextWidth
-import me.odinmain.utils.render.mcText
 import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.partyMessage
 import me.odinmain.utils.skyblock.skyblockID
@@ -23,13 +22,13 @@ object InvincibilityTimer : Module(
     private val invincibilityAnnounce by BooleanSetting("Announce Invincibility", default = true, description = "Announces when you get invincibility.")
     private val hud by HudSetting("Timer Hud", 10f, 10f, 1f, true) {
         if (it) {
-            mcText("${if(showPrefix) "§bBonzo§f: " else ""}59t", 1f, 1f, 1, Colors.WHITE, center = false)
+            RenderUtils.drawText("${if(showPrefix) "§bBonzo§f: " else ""}59t", 1f, 1f, 1.0, Colors.WHITE, center = false)
             getMCTextWidth("Bonzo: 59t") + 2f to 10f
         } else {
             if (invincibilityTime.time <= 0) return@HudSetting 0f to 0f
             val invincibilityType = if (invincibilityTime.type == "Bonzo") "§bBonzo§f:" else if (invincibilityTime.type == "Phoenix") "§6Phoenix§f:" else "§5Spirit§f:"
 
-            mcText("${if (showPrefix) invincibilityType else ""} ${invincibilityTime.time}t", 1f, 1f, 1, Colors.WHITE, center = false)
+            RenderUtils.drawText("${if (showPrefix) invincibilityType else ""} ${invincibilityTime.time}t", 1f, 1f, 1.0, Colors.WHITE, center = false)
             getMCTextWidth("Bonzo: 59t") + 2f to 1f
         }
     }

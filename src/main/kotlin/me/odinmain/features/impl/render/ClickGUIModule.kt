@@ -112,7 +112,7 @@ object ClickGUIModule: Module(
             modMessage("§9https://discord.gg/2nCbC9hkxT", "", createClickStyle(ClickEvent.Action.OPEN_URL, "https://discord.gg/2nCbC9hkxT"))
 
             modMessage("""
-            
+            §7Odin tracks your IGN and mod version.
             §d§kOdinClientOnBottomWeHateOdinClientLiterallyTheWorstMod
             ${getChatBreak()}
             

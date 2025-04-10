@@ -229,7 +229,7 @@ object Renderer {
         mc.entityRenderer.setupOverlayRendering()
         val sr = ScaledResolution(mc)
 
-        mcText(
+        RenderUtils.drawText(
             text = displayTitle, x = sr.scaledWidth / 2f,
             y = sr.scaledHeight / 2.5f, scale = 4.0,
             color = displayColor, center = true

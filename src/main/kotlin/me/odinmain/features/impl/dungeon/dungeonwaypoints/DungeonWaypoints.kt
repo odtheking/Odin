@@ -13,9 +13,12 @@ import me.odinmain.features.impl.render.DevPlayers
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.*
-import me.odinmain.utils.render.*
+import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.render.RenderUtils.outlineBounds
 import me.odinmain.utils.render.RenderUtils.renderVec
+import me.odinmain.utils.render.Renderer
+import me.odinmain.utils.render.getMCTextHeight
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.getRealCoords
@@ -28,6 +31,7 @@ import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.GuiTextField
 import net.minecraft.client.gui.ScaledResolution
+import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
 import net.minecraft.network.play.client.C03PacketPlayer.C06PacketPlayerPosLook
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
@@ -212,10 +216,10 @@ object DungeonWaypoints : Module(
             text to "§fEditing Waypoints §8|§f ${waypoint?.let { "Viewing" } ?: "Placing"}"
         } ?: ("" to "Editing Waypoints")
 
-        scale(2f / sr.scaleFactor, 2f / sr.scaleFactor, 1f)
-        mcText(editText, mc.displayWidth / 4, mc.displayHeight  / 4 + 10, 1f, Colors.WHITE.withAlpha(.8f))
-        mcText(text,mc.displayWidth / 4,  mc.displayHeight / 4 + 20, 1f, selectedColor)
-        scale(sr.scaleFactor / 2f, sr.scaleFactor / 2f, 1f)
+        GlStateManager.scale(2f / sr.scaleFactor, 2f / sr.scaleFactor, 1f)
+        RenderUtils.drawText(editText, mc.displayWidth / 4f, mc.displayHeight  / 4f + 10, 1.0, Colors.WHITE.withAlpha(.8f), center = true)
+        RenderUtils.drawText(text, mc.displayWidth / 4f,  mc.displayHeight / 4f + 20, 1.0, selectedColor, center = true)
+        GlStateManager.scale(sr.scaleFactor / 2f, sr.scaleFactor / 2f, 1f)
     }
 
     @SubscribeEvent

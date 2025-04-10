@@ -94,11 +94,11 @@ object RenderUtils2D {
             val width = getMCTextWidth(text) + padding.toDouble()
             val height = getMCTextHeight() + padding.toDouble()
             GlStateManager.pushMatrix()
-            translate(it.xCoord, it.yCoord, 0)
-            scale(scale, scale, scale)
+            GlStateManager.translate(it.xCoord, it.yCoord, 0.0)
+            GlStateManager.scale(scale, scale, scale)
             roundedRectangle(-width / 2, -height / 2, width, height * 0.9, backgroundColor)
             roundedRectangle(-width / 2, -height / 2 + height * 0.9, width, height * 0.1, accentColor)
-            mcText(text, 0, -getMCTextHeight() / 2,  1f, textColor, shadow = shadow)
+            RenderUtils.drawText(text, 0f, 0f,  1.0, textColor, shadow = shadow, center = true)
             GlStateManager.popMatrix()
         }
     }

@@ -5,7 +5,10 @@ import me.odinmain.config.Config
 import me.odinmain.features.Category
 import me.odinmain.features.impl.render.ClickGUIModule
 import me.odinmain.font.OdinFont
-import me.odinmain.utils.render.*
+import me.odinmain.utils.render.roundedRectangle
+import me.odinmain.utils.render.scaleFactor
+import me.odinmain.utils.render.wrappedText
+import me.odinmain.utils.render.wrappedTextBounds
 import me.odinmain.utils.ui.Colors
 import me.odinmain.utils.ui.Screen
 import me.odinmain.utils.ui.clickgui.animations.impl.EaseInOut
@@ -47,7 +50,7 @@ object ClickGUI : Screen() {
     }
     override fun draw() {
         GlStateManager.pushMatrix()
-        translate(0f, 0f, 200f)
+        GlStateManager.translate(0f, 0f, 200f)
         if (anim.isAnimating()) {
             //translate(0f, floor(anim.get(-10f, 0f, !open)))
             val alpha = anim.get(0.7f, 1f, !open)
@@ -68,7 +71,7 @@ object ClickGUI : Screen() {
             ColorUtil.clickGUIColor.alpha = 1f
             Colors.WHITE.alpha = 1f
         }
-        translate(0f, 0f, -200f)
+        GlStateManager.translate(0f, 0f, -200f)
         GlStateManager.popMatrix()
     }
 
@@ -173,7 +176,7 @@ object ClickGUI : Screen() {
         fun render() {
             if (!shouldRender) return
             val area = wrappedTextBounds(text!!, 300f, 12f)
-            scale(1f / scaleFactor, 1f / scaleFactor, 1f)
+            GlStateManager.scale(1f / scaleFactor, 1f / scaleFactor, 1f)
             roundedRectangle(
                 x, y, area.first + 7, area.second + 9,
                 buttonColor.withAlpha((hoverHandler!!.percent() / 100f).coerceIn(0f, 0.8f)), 5f
@@ -183,7 +186,7 @@ object ClickGUI : Screen() {
                 text = null
                 hoverHandler = null
             }
-            scale(scaleFactor, scaleFactor, 1f)
+            GlStateManager.scale(scaleFactor, scaleFactor, 1f)
         }
     }
 }

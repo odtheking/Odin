@@ -74,14 +74,13 @@ object LeapMenu : Module(
             if (it == EMPTY) return@forEachIndexed
             GlStateManager.pushMatrix()
             GlStateManager.enableAlpha()
-            scale(1f / scaleFactor,  1f / scaleFactor)
+            GlStateManager.scale(1f / scaleFactor,  1f / scaleFactor, 0f)
 
             val displayWidth = Display.getWidth()
             val displayHeight = Display.getHeight()
-            translate(displayWidth / 2f, displayHeight / 2f, 0f)
-            scale(size, size, 1f)
-            translate(-displayWidth / 2f, -displayHeight / 2f, 0f)
-            translate(displayWidth / 2, displayHeight / 2)
+            GlStateManager.translate(displayWidth / 2f, displayHeight / 2f, 0f)
+            GlStateManager.scale(size, size, 1f)
+            GlStateManager.translate(-displayWidth / 2f, -displayHeight / 2f, 0f)
             val boxWidth = 800
             val boxHeight = 300
             val x = when (index) {

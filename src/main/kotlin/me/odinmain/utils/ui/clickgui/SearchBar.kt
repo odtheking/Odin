@@ -22,9 +22,9 @@ object SearchBar {
 
     fun draw() {
         GlStateManager.pushMatrix()
-        scale(1f / scaleFactor, 1f / scaleFactor, 1f)
+        GlStateManager.scale(1f / scaleFactor, 1f / scaleFactor, 1f)
 
-        translate(mc.displayWidth / 2f, mc.displayHeight - 100f)
+        GlStateManager.translate(mc.displayWidth / 2f, mc.displayHeight - 100f, 0f)
         roundedRectangle(-200f, 0f, 400f, 30f, ColorUtil.moduleButtonColor, 9f)
         if (listening || colorAnim.isAnimating()) {
             val color = colorAnim.get(ColorUtil.clickGUIColor, buttonColor, listening)
@@ -33,8 +33,8 @@ object SearchBar {
         if (currentSearch.isEmpty()) {
             text("Search here...", 0f, 18f, Colors.WHITE.withAlpha(0.5f), 18f, OdinFont.REGULAR, TextAlign.Middle)
         } else text(currentSearch, 0f, 12f, Colors.WHITE, 18f, OdinFont.REGULAR, TextAlign.Middle)
-        translate(-mc.displayWidth / 4f, -mc.displayHeight / 4f + 200f)
-        scale(scaleFactor, scaleFactor, 1f)
+        GlStateManager.translate(-mc.displayWidth / 4f, -mc.displayHeight / 4f + 200f, 0f)
+        GlStateManager.scale(scaleFactor, scaleFactor, 1f)
         GlStateManager.popMatrix()
     }
 
