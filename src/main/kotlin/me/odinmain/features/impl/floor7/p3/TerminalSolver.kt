@@ -13,8 +13,7 @@ import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.postAndCatch
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.render.getMCTextWidth
-import me.odinmain.utils.render.mcText
+import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.skyblock.ClickType
 import me.odinmain.utils.skyblock.devMessage
 import me.odinmain.utils.skyblock.modMessage
@@ -217,7 +216,7 @@ object TerminalSolver : Module(
                     event.isCanceled = true
                 }
                 val amount = event.slot.stack?.stackSize?.toString() ?: ""
-                if (showNumbers) mcText(amount, event.x + 8.5f - getMCTextWidth(amount) / 2, event.y + 4.5f, 1, Colors.WHITE, center = false)
+                if (showNumbers) RenderUtils.drawText(amount, event.x + 8.5f, event.y + 4.5f, 1.0, Colors.WHITE, center = true)
             }
 
             TerminalTypes.RUBIX -> {
@@ -232,7 +231,7 @@ object TerminalSolver : Module(
                     }
 
                     if (renderType != 1) Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, color.rgba)
-                    mcText(text.toString(), event.x + 8f - getMCTextWidth(text.toString()) / 2, event.y + 4.5, 1, Colors.WHITE, center = false)
+                    RenderUtils.drawText(text.toString(), event.x + 8f, event.y + 4.5f, 1.0, Colors.WHITE, center = true)
                 }
             }
 

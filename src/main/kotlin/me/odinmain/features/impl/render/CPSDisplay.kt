@@ -6,8 +6,8 @@ import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.render.dropShadow
-import me.odinmain.utils.render.mcText
 import me.odinmain.utils.render.roundedRectangle
 import me.odinmain.utils.ui.clickgui.animations.impl.EaseInOut
 import me.odinmain.utils.ui.clickgui.util.ColorUtil.brighter
@@ -44,21 +44,21 @@ object CPSDisplay : Module(
 
         if (mouseText) {
             if (button == 2) {
-                mcText("LMB", 15f, 1f, 1, textColor, center = false)
-                mcText(leftClicks.size.toString(), 20f, 15f, 2, textColor, center = false)
+                RenderUtils.drawText("LMB", 15f, 1f, 1.0, textColor, center = false)
+                RenderUtils.drawText(leftClicks.size.toString(), 20f, 15f, 2.0, textColor, center = false)
 
-                mcText("RMB", 65f, 1f, 1, textColor, center = false)
-                mcText(rightClicks.size.toString(), 70f, 15f, 2, textColor, center = false)
+                RenderUtils.drawText("RMB", 65f, 1f, 1.0, textColor, center = false)
+                RenderUtils.drawText(rightClicks.size.toString(), 70f, 15f, 2.0, textColor, center = false)
             } else {
                 val text = if (button == 0) "LMB" else "RMB"
-                mcText(text, 15f, 1f, 1, textColor, center = false)
-                mcText(value, 20f, 15f, 2, textColor, center = false)
+                RenderUtils.drawText(text, 15f, 1f, 1.0, textColor, center = false)
+                RenderUtils.drawText(value, 20f, 15f, 2.0, textColor, center = false)
             }
         } else {
             if (button == 2) {
-                mcText(leftClicks.size.toString(), 15f, 10f, 2, textColor, center = false)
-                mcText(rightClicks.size.toString(), 65f, 10f, 2, textColor, center = false)
-            } else mcText(value, 20f, 10f, 2, textColor, center = false)
+                RenderUtils.drawText(leftClicks.size.toString(), 15f, 10f, 2.0, textColor, center = false)
+                RenderUtils.drawText(rightClicks.size.toString(), 65f, 10f, 2.0, textColor, center = false)
+            } else RenderUtils.drawText(value, 20f, 10f, 2.0, textColor, center = false)
         }
         if (button == 2) 100f to 38f else 50f to 38f
     }

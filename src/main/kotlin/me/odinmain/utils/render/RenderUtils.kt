@@ -102,7 +102,7 @@ object RenderUtils {
         GlStateManager.disableLighting()
         if (disableTexture2D) GlStateManager.disableTexture2D() else GlStateManager.enableTexture2D()
         GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
-        translate(-renderManager.viewerPosX, -renderManager.viewerPosY, -renderManager.viewerPosZ)
+        GlStateManager.translate(-renderManager.viewerPosX, -renderManager.viewerPosY, -renderManager.viewerPosZ)
     }
 
     private fun postDraw() {
@@ -320,8 +320,8 @@ object RenderUtils {
         GlStateManager.pushMatrix()
         GlStateManager.enableBlend()
         GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
-        translate(x, y, 0f)
-        scale(scale, scale, scale)
+        GlStateManager.translate(x, y, 0f)
+        GlStateManager.scale(scale, scale, scale)
         mc.fontRendererObj.drawString("${text}§r", if (center) mc.fontRendererObj.getStringWidth(text) / -2f else 0f, 0f, color.rgba, shadow)
         GlStateManager.resetColor()
         GlStateManager.disableBlend()
@@ -417,7 +417,7 @@ object RenderUtils {
         GlStateManager.tryBlendFuncSeparate(770, 1, 1, 0)
         GlStateManager.enableBlend()
         GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
-        translate(-renderManager.viewerPosX, -renderManager.viewerPosY, -renderManager.viewerPosZ)
+        GlStateManager.translate(-renderManager.viewerPosX, -renderManager.viewerPosY, -renderManager.viewerPosZ)
 
         val time: Double = mc.theWorld.worldTime.toDouble() + partialTicks
         val x = vec3.xCoord

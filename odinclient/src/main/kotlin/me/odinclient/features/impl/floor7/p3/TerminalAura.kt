@@ -49,7 +49,7 @@ object TerminalAura : Module(
     fun onPacketSent(event: PacketEvent.Send) {
         (event.packet as? C02PacketUseEntity)?.getEntityFromWorld(mc.theWorld)?.let {
             if (it.name.noControlCodes != "Inactive Terminal") return
-            if (!interactClock.hasTimePassed() || TerminalSolver.currentTerm?.type != null) event.isCanceled = true else interactClock.update()
+            if (!interactClock.hasTimePassed() || TerminalSolver.currentTerm != null) event.isCanceled = true else interactClock.update()
         }
     }
 

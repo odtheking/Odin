@@ -8,9 +8,9 @@ import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.addVec
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.getSafe
+import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.render.getTextWidth
-import me.odinmain.utils.render.mcText
 import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.skyblockID
 import me.odinmain.utils.toAABB
@@ -25,13 +25,13 @@ object SpringBoots : Module(
     name = "Spring Boots",
     description = "Shows the current jump height of your spring boots."
 ) {
-    private val hud by HudSetting("Display", 10f, 10f, 1f, true) {
-        if (it) {
-            mcText("Jump: 6.5", 1f, 1f, 1, Colors.WHITE)
+    private val hud by HudSetting("Display", 10f, 10f, 1f, true) { example ->
+        if (example) {
+            RenderUtils.drawText("Jump: 6.5", 1f, 1f, 1.0, Colors.WHITE, center = true)
             getTextWidth("Jump: 6.5", 12f) to 12f
         } else {
             val blockAmount = blocksList.getSafe(pitchCounts.sum()).takeIf { it != 0.0 } ?: return@HudSetting 0f to 0f
-            mcText("Jump: ${colorHud(blockAmount)}", 1f, 1f, 1, Colors.WHITE)
+            RenderUtils.drawText("Jump: ${colorHud(blockAmount)}", 1f, 1f, 1.0, Colors.WHITE, center = true)
             getTextWidth("Jump: ${colorHud(blockAmount)}", 12f) to 12f
         }
     }
@@ -51,12 +51,12 @@ object SpringBoots : Module(
     private var blockPos: Vec3? = null
 
     init {
-        onPacket<S29PacketSoundEffect> {
+        onPacket<S29PacketSoundEffect> { packet ->
             if (!LocationUtils.isInSkyblock) return@onPacket
-            when (it.soundName) {
-                "random.eat", "fireworks.launch" -> if (it.pitch.equalsOneOf(0.0952381f, 1.6984127f)) pitchCounts.fill(0)
+            when (packet.soundName) {
+                "random.eat", "fireworks.launch" -> if (packet.pitch.equalsOneOf(0.0952381f, 1.6984127f)) pitchCounts.fill(0)
                 "note.pling" -> if (mc.thePlayer?.isSneaking == true && mc.thePlayer?.getCurrentArmor(0)?.skyblockID == "SPRING_BOOTS") {
-                    when (it.pitch) {
+                    when (packet.pitch) {
                         0.6984127f -> pitchCounts[0] = (pitchCounts[0] + 1).takeIf { it <= 2 } ?: 0
                         0.82539684f, 0.8888889f, 0.93650794f, 1.0476191f, 1.1746032f, 1.3174603f, 1.7777778f -> pitchCounts[1]++
                     }

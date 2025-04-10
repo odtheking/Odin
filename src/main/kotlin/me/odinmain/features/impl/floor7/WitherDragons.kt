@@ -12,10 +12,10 @@ import me.odinmain.features.impl.floor7.KingRelics.relicsOnWorldLast
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.addVec
+import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.render.RenderUtils.renderVec
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.render.getMCTextWidth
-import me.odinmain.utils.render.mcText
 import me.odinmain.utils.render.mcTextAndWidth
 import me.odinmain.utils.runIn
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
@@ -37,12 +37,12 @@ object WitherDragons : Module(
     private val dragonTimer by BooleanSetting("Dragon Timer", true, description = "Displays a timer for when M7 dragons spawn.").withDependency { dragonTimerDropDown }
     private val hud by HudSetting("Dragon Timer HUD", 10f, 10f, 1f, true) {
         if (it) {
-            mcText("§5P §a4.5s", 2f, 5f, 1, Colors.WHITE, center = false)
+            RenderUtils.drawText("§5P §a4.5s", 2f, 5f, 1.0, Colors.WHITE, center = false)
             getMCTextWidth("§5P §a4.5s")+ 2f to 33f
         } else {
             priorityDragon.takeIf { drag -> drag != WitherDragonsEnum.None }?.let { dragon ->
                 if (dragon.state != WitherDragonState.SPAWNING || dragon.timeToSpawn <= 0) return@HudSetting 0f to 0f
-                mcText("§${dragon.colorCode}${dragon.name.first()}: ${colorDragonTimer(dragon.timeToSpawn)}${dragon.timeToSpawn * 50}ms", 2, 5f, 1, Colors.WHITE, center = false)
+                RenderUtils.drawText("§${dragon.colorCode}${dragon.name.first()}: ${colorDragonTimer(dragon.timeToSpawn)}${dragon.timeToSpawn * 50}ms", 2f, 5f, 1.0, Colors.WHITE, center = false)
             }
             getMCTextWidth("§5P §a4.5s")+ 2f to 33f
         }

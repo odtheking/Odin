@@ -3,7 +3,6 @@ package me.odinmain.commands.impl
 import com.github.stivais.commodore.Commodore
 import com.github.stivais.commodore.utils.GreedyString
 import kotlinx.coroutines.launch
-import me.odinmain.OdinMain
 import me.odinmain.OdinMain.VERSION
 import me.odinmain.OdinMain.mc
 import me.odinmain.OdinMain.scope
@@ -100,8 +99,7 @@ val devCommand = Commodore("oddev") {
 
     literal("debug").runs {
         modMessage("""
-            ${getChatBreak()}
-            |Version: $VERSION, legit: ${OdinMain.isLegitVersion}
+            |Version: $VERSION
             |Hypixel: ${LocationUtils.isOnHypixel}${if (ClickGUIModule.forceHypixel) " (forced)" else ""}
             ${
                 when {
@@ -141,7 +139,6 @@ val devCommand = Commodore("oddev") {
                     """.trimIndent()
                 }
             }
-            ${getChatBreak()}
         """.trimIndent(), "")
     }
 

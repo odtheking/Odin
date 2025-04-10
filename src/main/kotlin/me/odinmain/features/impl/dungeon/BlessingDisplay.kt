@@ -6,8 +6,8 @@ import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.features.settings.impl.HudSetting
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.render.getMCTextWidth
-import me.odinmain.utils.render.mcText
 import me.odinmain.utils.skyblock.dungeon.Blessing
 import me.odinmain.utils.ui.Colors
 
@@ -39,7 +39,7 @@ object BlessingDisplay : Module(
         (0..5).reduce { acc, index ->
             val blessing = blessings[index - 1].takeIf { it.enabled.invoke() } ?: return@reduce acc
             val level = if (example) 19 else if (blessing.type.current > 0) blessing.type.current else return@reduce acc
-            mcText("${blessing.type.displayString} §a$level§r", 0, 10 * acc, 1, blessing.color.invoke(), center = false)
+            RenderUtils.drawText("${blessing.type.displayString} §a$level§r", 0f, 10f * acc, 1.0, blessing.color.invoke(), center = false)
             acc + 1
         }.let { getMCTextWidth("Power: 19").toFloat() to 10f * it }
     }

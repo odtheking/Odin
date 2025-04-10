@@ -4,8 +4,8 @@ import me.odinmain.events.impl.PostEntityMetadata
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.HudSetting
 import me.odinmain.utils.noControlCodes
+import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.render.getMCTextWidth
-import me.odinmain.utils.render.mcText
 import me.odinmain.utils.skyblock.drawItem
 import me.odinmain.utils.skyblock.getSkullValue
 import me.odinmain.utils.ui.Colors
@@ -21,8 +21,8 @@ object DeployableTimer : Module(
     private val firework = Item.getByNameOrId("minecraft:fireworks")
     private val hud by HudSetting("Display", 10f, 10f, 1f, false) {
         if (it) {
-            mcText("§l§5SOS Flare", 40, 10, 1.35, Colors.WHITE, center = false)
-            mcText("§e179s", 40, 25, 1.2, Colors.WHITE, center = false)
+            RenderUtils.drawText("§l§5SOS Flare", 40f, 10f, 1.35, Colors.WHITE, center = false)
+            RenderUtils.drawText("§e179s", 40f, 25f, 1.2, Colors.WHITE, center = false)
             ItemStack(firework).drawItem(x= -10f, y= -4f, scale = 3.5f)
             getMCTextWidth("SOS Flare") + 45f to 52f
         } else {
@@ -34,8 +34,8 @@ object DeployableTimer : Module(
                 activeDeployables.sortByDescending { dep -> dep.deployable.priority }
                 return@HudSetting 0f to 0f
             }
-            mcText(activeDeployable.deployable.displayName, 40, 10, 1.35 ,Colors.WHITE, center = false)
-            mcText("§e${timeLeft}s", 40, 25, 1.2 ,Colors.WHITE, center = false)
+            RenderUtils.drawText(activeDeployable.deployable.displayName, 40f, 10f, 1.35 ,Colors.WHITE, center = false)
+            RenderUtils.drawText("§e${timeLeft}s", 40f, 25f, 1.2 ,Colors.WHITE, center = false)
             activeDeployable.entity.inventory?.get(4)?.drawItem(x= -10f, y= -4f, scale = 3.5f)
             getMCTextWidth(activeDeployable.deployable.displayName.noControlCodes) + 45f to 52f
         }

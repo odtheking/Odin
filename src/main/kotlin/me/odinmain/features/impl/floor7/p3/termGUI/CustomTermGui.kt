@@ -7,21 +7,20 @@ import me.odinmain.features.impl.floor7.p3.TerminalSolver.hideClicked
 import me.odinmain.utils.postAndCatch
 import me.odinmain.utils.render.Box
 import me.odinmain.utils.render.isPointWithin
-import me.odinmain.utils.render.scale
-import me.odinmain.utils.render.translate
 import me.odinmain.utils.skyblock.ClickType
 import net.minecraft.client.gui.ScaledResolution
+import net.minecraft.client.renderer.GlStateManager
 
 object CustomTermGui {
     fun render() {
         val sr = ScaledResolution(mc)
-        scale(1f / sr.scaleFactor, 1f / sr.scaleFactor)
-        translate(mc.displayWidth / 2, mc.displayHeight / 2)
-        scale(TerminalSolver.customScale, TerminalSolver.customScale)
+        GlStateManager.scale(1f / sr.scaleFactor, 1f / sr.scaleFactor, 0f)
+        GlStateManager.translate(mc.displayWidth / 2f, mc.displayHeight / 2f, 0f)
+        GlStateManager.scale(TerminalSolver.customScale, TerminalSolver.customScale, 0f)
         TerminalSolver.currentTerm?.type?.gui?.render()
-        scale(1f / TerminalSolver.customScale, 1f / TerminalSolver.customScale)
-        translate(-mc.displayWidth / 2, -mc.displayHeight / 2)
-        scale(sr.scaleFactor, sr.scaleFactor)
+        GlStateManager.scale(1f / TerminalSolver.customScale, 1f / TerminalSolver.customScale, 0f)
+        GlStateManager.translate(-mc.displayWidth / 2f, -mc.displayHeight / 2f, 0f)
+        GlStateManager.scale(sr.scaleFactor.toDouble(), sr.scaleFactor.toDouble(), 0.0)
     }
 
     fun mouseClicked(x: Int, y: Int, button: Int) = TerminalSolver.currentTerm?.type?.gui?.mouseClicked(x, y, button)

@@ -43,12 +43,12 @@ object EditHUDGui : Screen() {
             it.y = MouseUtils.mouseY - startY
         }
         GlStateManager.pushMatrix()
-        scale(mc.displayWidth / 1920f, mc.displayHeight / 1080f)
-        scale(1f / scaleFactor, 1f / scaleFactor, 1f)
+        GlStateManager.scale(mc.displayWidth / 1920f, mc.displayHeight / 1080f, 0f)
+        GlStateManager.scale(1f / scaleFactor, 1f / scaleFactor, 1f)
 
         if (openAnim.isAnimating()) {
             val animVal = openAnim.get(0f, 1f, !open)
-            scale(animVal, animVal)
+            GlStateManager.scale(animVal, animVal, 0f)
         }
         hoverHandler.handle(Display.getWidth() / 2 - 75f, Display.getHeight() * .86f - 30, 150f, 40f)
 
@@ -59,9 +59,9 @@ object EditHUDGui : Screen() {
 
         if (openAnim.isAnimating()) {
             val animVal = openAnim.get(0f, 1f, !open)
-            scale(1 / animVal, 1 / animVal)
+            GlStateManager.scale(1f / animVal, 1f / animVal, 0f)
         }
-        scale(scaleFactor, scaleFactor, 1f)
+        GlStateManager.scale(scaleFactor, scaleFactor, 1f)
 
         GlStateManager.popMatrix()
 

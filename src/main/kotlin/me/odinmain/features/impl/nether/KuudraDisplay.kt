@@ -7,10 +7,10 @@ import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.features.settings.impl.HudSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.addVec
+import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.render.RenderUtils.renderBoundingBox
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.render.getMCTextWidth
-import me.odinmain.utils.render.mcText
 import me.odinmain.utils.round
 import me.odinmain.utils.skyblock.KuudraUtils
 import me.odinmain.utils.skyblock.KuudraUtils.kuudraEntity
@@ -35,12 +35,12 @@ object KuudraDisplay : Module(
     private val scaledHealth by BooleanSetting("Use Scaled", true, description = "Use scaled health display.").withDependency { kuudraHPDisplay }
     private val hud by HudSetting("Health Display", 10f, 10f, 1f, true) {
         if (it) {
-            mcText("§a99.975M/240M", 1f, 1f, 1, Colors.WHITE, center = false)
+            RenderUtils.drawText("§a99.975M/240M", 1f, 1f, 1.0, Colors.WHITE, center = false)
             getMCTextWidth("99.975k/100k") + 2f to 10f
         } else {
             if (!KuudraUtils.inKuudra) return@HudSetting 0f to 0f
 
-            mcText(getCurrentHealthDisplay(), 1f, 1f, 1, Colors.WHITE, center = false)
+            RenderUtils.drawText(getCurrentHealthDisplay(), 1f, 1f, 1.0, Colors.WHITE, center = false)
             getMCTextWidth("99.975k/100k") + 2f to 10f
         }
     }

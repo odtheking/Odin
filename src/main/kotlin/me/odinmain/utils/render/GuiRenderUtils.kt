@@ -82,13 +82,7 @@ fun gradientRect(x: Float, y: Float, w: Float, h: Float, color1: Color, color2: 
 }
 
 fun drawHSBBox(x: Float, y: Float, w: Float, h: Float, color: Color) {
-    HSBBoxShader.drawHSBBox(
-        x,
-        y,
-        w,
-        h,
-        color
-    )
+    HSBBoxShader.drawHSBBox(x, y, w, h, color)
     rectangleOutline(x-1, y-1, w+2, h+2, Color(38, 38, 38), 3f, 2f)
 }
 
@@ -122,18 +116,14 @@ fun getTextWidth(text: String, size: Float) = OdinFont.getTextWidth(text, size)
 
 fun getMCTextHeight() = mc.fontRendererObj.FONT_HEIGHT
 
-fun translate(x: Number, y: Number, z: Number = 1f) = GlStateManager.translate(x.toDouble(), y.toDouble(), z.toDouble())
-
 fun rotate(degrees: Float, xPos: Float, yPos: Float, zPos: Float, xAxis: Float, yAxis: Float, zAxis: Float) {
-    translate(xPos, yPos, zPos)
+    GlStateManager.translate(xPos, yPos, zPos)
     GlStateManager.rotate(degrees, xAxis, yAxis, zAxis)
-    translate(-xPos, -yPos, -zPos)
+    GlStateManager.translate(-xPos, -yPos, -zPos)
 }
 
-fun scale(x: Number, y: Number, z: Number = 1f) = GlStateManager.scale(x.toDouble(), y.toDouble(), z.toDouble())
-
 fun dropShadow(x: Number, y: Number, w: Number, h: Number, shadowColor: Color, shadowSoftness: Number, topL: Number, topR: Number, botL: Number, botR: Number) {
-    translate(0f, 0f, -100f)
+    GlStateManager.translate(0f, 0f, -100f)
 
     DropShadowShader.drawShadow(
         (x - shadowSoftness / 2).toFloat(),
@@ -148,7 +138,7 @@ fun dropShadow(x: Number, y: Number, w: Number, h: Number, shadowColor: Color, s
         shadowSoftness.toFloat()
     )
 
-    translate(0f, 0f, 100f)
+    GlStateManager.translate(0f, 0f, 100f)
 }
 
 fun dropShadow(x: Number, y: Number, w: Number, h: Number,  radius: Number, shadowSoftness: Number = 1f, shadowColor: Color = ColorUtil.moduleButtonColor) {

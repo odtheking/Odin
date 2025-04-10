@@ -4,8 +4,8 @@ import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.HudSetting
 import me.odinmain.features.settings.impl.StringSetting
+import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.render.getMCTextWidth
-import me.odinmain.utils.render.mcText
 import me.odinmain.utils.ui.Colors
 import net.minecraft.network.play.server.S29PacketSoundEffect
 
@@ -22,10 +22,10 @@ object ArrowHit : Module(
 
     private val hud by HudSetting("Display", 10f, 10f, 2f, false) {
         if (it) {
-            mcText("156", 0f, 2f, 1f, Colors.WHITE, center = false)
+            RenderUtils.drawText("156", 0f, 2f, 1.0, Colors.WHITE, center = false)
             getMCTextWidth("156").toFloat() to 12f
         } else {
-            mcText("$arrowCount", 0f, 2f, 1f, Colors.WHITE, center = false)
+            RenderUtils.drawText("$arrowCount", 0f, 2f, 1.0, Colors.WHITE, center = false)
             getMCTextWidth("$arrowCount").toFloat() to 12f
         }
     }
