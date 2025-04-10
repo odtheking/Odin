@@ -45,10 +45,10 @@ object BloodCamp : Module(
     private val killTitle by BooleanSetting("Kill Title", default = true, description = "Shows a title for when to kill the initial spawns.").withDependency { movePrediction && predictionDropdown }
 
     private val moveTimer by HudSetting("Move Hud", 10f, 10f, 1f, true) {
-        if (it) return@HudSetting mcTextAndWidth("Move Timer: 0.50s", 10, 0, 1f, Color.RED, center = false) to 10f
+        if (it) return@HudSetting mcTextAndWidth("Move Timer: 0.50s", 10, 0, 1f, Colors.MINECRAFT_RED, center = false) to 10f
         0f to 0f
         finalTime?.let {
-            mcTextAndWidth("Move Timer: ${((it - normalTickTime) * 0.05).toFixed()}s", 10, 0, 1f, Color.RED, center = false) to 10f
+            mcTextAndWidth("Move Timer: ${((it - normalTickTime) * 0.05).toFixed()}s", 10, 0, 1f, Colors.MINECRAFT_RED, center = false) to 10f
         } ?: return@HudSetting 0f to 0f
     }.withDependency { movePrediction && predictionDropdown }
 
@@ -58,16 +58,16 @@ object BloodCamp : Module(
     private val timerHud by HudSetting("Timer Hud", 10f, 10f, 1f, true) {
         if ((!bloodAssist || (!inDungeons || inBoss)) && !it) return@HudSetting 0f to 0f
         if (it) {
-            mcText("1.15s", 10, 0, 1f, Color.RED)
-            mcText("2.15s", 10, 10, 1f, Color.GREEN)
+            mcText("1.15s", 10, 0, 1f, Colors.MINECRAFT_RED)
+            mcText("2.15s", 10, 10, 1f, Colors.MINECRAFT_GREEN)
         } else {
             renderDataMap.entries.sortedBy { it.value.time }.fold(0) { acc, data ->
                 val time = data.takeUnless { it.key.isDead }?.value?.time ?: return@fold acc
                 val color = when {
-                    time > 1.5 -> Color.GREEN
-                    time in 0.5..1.5 -> Color.ORANGE
-                    time in 0.0..0.5 -> Color.RED
-                    else -> Color.BLUE
+                    time > 1.5 -> Colors.MINECRAFT_GREEN
+                    time in 0.5..1.5 -> Colors.MINECRAFT_GOLD
+                    time in 0.0..0.5 -> Colors.MINECRAFT_RED
+                    else -> Colors.MINECRAFT_AQUA
                 }
                 mcText("${time.toFixed()}s", 10, 10 * acc, 1f, color, center = false)
                 acc + 1
@@ -150,22 +150,20 @@ object BloodCamp : Module(
                 in 25.0..<28.0 -> 30
                 in 22.0..<25.0 -> 27
                 in 1.0..<22.0 -> 24
-                else -> null
-            }?.let { ticks ->
-                ticks + (ceil((System.currentTimeMillis() - startTime) / 1000.0) - moveTicks) / 2 - 0.6
-            }?.takeIf {
-                it in 20.0..40.0
-            } ?: return@onMessage
+                else -> return@onMessage
+            } + (ceil((System.currentTimeMillis() - startTime) / 1000.0) - moveTicks) / 2 - 0.6
+            if (predictionTicks !in 20.0..40.0) return@onMessage
 
-            if (moveTime) modMessage("Watcher will move in ${(predictionTicks * 0.05).toFixed()}s.")
-            if (partyMoveTime) partyMessage("Watcher will move in ${(predictionTicks * 0.05).toFixed()}s.")
+            if (partyMoveTime)
+                partyMessage("Watcher will move in ${(predictionTicks * 0.05).toFixed()}s.")
+            if (moveTime)
+                modMessage("Watcher will move in ${(predictionTicks * 0.05).toFixed()}s.")
 
             val moveTime = ((predictionTicks - moveTicks) * 20 - 3).toInt()
             finalTime = normalTickTime + moveTime
-            modMessage("Current time: $normalTickTime, Move time: $moveTime, final time: $finalTime")
 
             runIn(moveTime) {
-                if (killTitle) PlayerUtils.alert("Kill Mobs", 40, Color.RED)
+                if (killTitle) PlayerUtils.alert("Kill Mobs", 40, Colors.MINECRAFT_RED)
                 finalTime = null
             }
         }

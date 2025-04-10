@@ -2,14 +2,20 @@ package me.odinmain.features.impl.dungeon
 
 import me.odinmain.events.impl.PacketEvent
 import me.odinmain.features.Module
+import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.ListSetting
+import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.isVecInAABB
+import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
-import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.skyblock.partyMessage
+import me.odinmain.utils.ui.Colors
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
 import net.minecraft.util.AxisAlignedBB
+import net.minecraft.util.Vec3
+import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.util.*
 import kotlin.concurrent.schedule
@@ -19,37 +25,45 @@ object PosMessages : Module(
     description = "Sends a message when you're near a certain position. /posmsg"
 ) {
     private val onlyDungeons by BooleanSetting("Only in Dungeons", true, description = "Only sends messages when you're in a dungeon.")
+    private val showPositions by BooleanSetting("Show Positions", default = true, description = "Draws boxes/lines around the positions.")
+    private val cylinderHeight by NumberSetting("Height", 0.2, 0.1, 5.0, 0.1, description = "Height of the cylinder for in messages.").withDependency { showPositions }
+    private val boxThickness by NumberSetting("Box line width", 1f, 0.1f, 5f, 0.1f, description = "Line width of the box for at messages.").withDependency { showPositions }
+    private val depthCheck by BooleanSetting("Depth Check", true, description = "Whether or not the boxes should be seen through walls. False = Through walls.").withDependency { showPositions }
+    private val displayMessage by BooleanSetting("Show Message", true, description = "Whether or not to display the message in the box.").withDependency { showPositions }
+    private val messageSize by NumberSetting("Message Size", 1f, min = 0.1f, increment = 0.1f, max = 4f, description = "Whether or not to display the message size in the box.").withDependency { showPositions && displayMessage }
 
-    data class PosMessage(val x: Double, val y: Double, val z: Double, val x2: Double?, val y2: Double?, val z2: Double?, val delay: Long, val distance: Double?, val message: String)
-    val posMessageStrings by ListSetting("Pos Messages Strings", mutableListOf<String>())
+    data class PosMessage(val x: Double, val y: Double, val z: Double, val x2: Double?, val y2: Double?, val z2: Double?, val delay: Long, val distance: Double?, val color: Color, val message: String)
+    val posMessageStrings by ListSetting("Pos Messages Strings", mutableListOf<PosMessage>())
     private val sentMessages = mutableMapOf<PosMessage, Boolean>()
-
-    val parsedStrings: MutableList<PosMessage> = mutableListOf()
 
     @SubscribeEvent
     fun posMessageSend(event: PacketEvent.Send) {
         if (event.packet !is C04PacketPlayerPosition || (onlyDungeons && !DungeonUtils.inDungeons)) return
-        parsedStrings.forEach { message ->
+        posMessageStrings.forEach {  message ->
             message.x2?.let { handleInString(message) } ?: handleAtString(message)
         }
     }
 
-    private var parsed = false
-
-    init {
-        onWorldLoad {
-            if (parsed) return@onWorldLoad
-            posMessageStrings.forEach { findParser(it, true) }
-            parsed = true
+    @SubscribeEvent
+    fun onRenderWorldLast(event: RenderWorldLastEvent) {
+        if (!showPositions || (onlyDungeons && !DungeonUtils.inDungeons)) return
+        posMessageStrings.forEach { message ->
+            if (message.distance != null) {
+                Renderer.drawCylinder(Vec3(message.x, message.y, message.z), message.distance, message.distance, cylinderHeight, 40f, 1f, 0f, 90f, 90f, message.color, depthCheck)
+                if (displayMessage) Renderer.drawStringInWorld(message.message, Vec3(message.x, message.y + 0.5, message.z), Colors.WHITE, depthCheck, 0.03f * messageSize)
+            } else {
+                val aabb = AxisAlignedBB(message.x, message.y, message.z, message.x2 ?: return@forEach, message.y2 ?: return@forEach,message.z2  ?: return@forEach)
+                Renderer.drawBox(aabb, message.color, boxThickness, fillAlpha = 0f, depth = depthCheck)
+                if (displayMessage) {
+                    val center = Vec3(
+                        (message.x + message.x2) / 2,
+                        (message.y + message.y2) / 2,
+                        (message.z + message.z2) / 2
+                    )
+                    Renderer.drawStringInWorld(message.message, center, Colors.WHITE, depthCheck, 0.03f * messageSize)
+                }
+            }
         }
-    }
-
-    private val atRegex = Regex("x: (.*), y: (.*), z: (.*), delay: (.*), distance: (.*), message: \"(.*)\"")
-
-    fun findParser(posMessageString: String, addToList: Boolean): PosMessage? {
-        val message = if (posMessageString.matches(atRegex)) parseAtString(posMessageString) else parseInString(posMessageString)
-        if (addToList) message?.let { parsedStrings.add(it) }
-        return message
     }
 
     private fun handleAtString(posMessage: PosMessage) {
@@ -72,31 +86,5 @@ object PosMessages : Module(
             }
             sentMessages[posMessage] = true
         } else sentMessages[posMessage] = false
-    }
-
-    private fun parseAtString(posMessageString: String): PosMessage? {
-        val regex = Regex("x: (.*), y: (.*), z: (.*), delay: (.*), distance: (.*), message: \"(.*)\"")
-        val matchResult = regex.matchEntire(posMessageString) ?: return null
-        val (x, y, z, delay, distance, message) = matchResult.destructured
-        val xDouble = x.toDoubleOrNull() ?: return null.also { modMessage("Failed to parse x: $x") }
-        val yDouble = y.toDoubleOrNull() ?: return null.also { modMessage("Failed to parse y: $y") }
-        val zDouble = z.toDoubleOrNull() ?: return null.also { modMessage("Failed to parse z: $z") }
-        val delayLong = delay.toLongOrNull() ?: return null.also { modMessage("Failed to parse delay: $delay") }
-        val distanceDouble = distance.toDoubleOrNull() ?: return null.also { modMessage("Failed to parse distance: $distance")}
-        return PosMessage(xDouble, yDouble, zDouble, null, null, null, delayLong, distanceDouble, message)
-    }
-
-    private fun parseInString(posMessageString: String): PosMessage? {
-        val inRegex = Regex("x: (.*), y: (.*), z: (.*), x2: (.*), y2: (.*), z2: (.*), delay: (.*), message: \"(.*)\"")
-        val matchResult = inRegex.matchEntire(posMessageString) ?: return null
-        val (x, y, z, x2, y2, z2, delay, message) = matchResult.destructured
-        val xDouble = x.toDoubleOrNull() ?: return null.also { modMessage("Failed to parse x: $x") }
-        val yDouble = y.toDoubleOrNull() ?: return null.also { modMessage("Failed to parse y: $y") }
-        val zDouble = z.toDoubleOrNull() ?: return null.also { modMessage("Failed to parse z: $z") }
-        val x2Double = x2.toDoubleOrNull() ?: return null.also { modMessage("Failed to parse x2: $x2") }
-        val y2Double = y2.toDoubleOrNull() ?: return null.also { modMessage("Failed to parse y2: $y2") }
-        val z2Double = z2.toDoubleOrNull() ?: return null.also { modMessage("Failed to parse z2: $z2") }
-        val delayLong = delay.toLongOrNull() ?: return null.also { modMessage("Failed to parse delay: $delay") }
-        return PosMessage(xDouble, yDouble, zDouble, x2Double, y2Double, z2Double, delayLong, null, message)
     }
 }

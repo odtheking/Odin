@@ -14,13 +14,16 @@ import me.odinmain.utils.skyblock.EtherWarpHelper.etherPos
 import me.odinmain.utils.skyblock.PlayerUtils.playLoudSound
 import me.odinmain.utils.skyblock.usingEtherWarp
 import me.odinmain.utils.toAABB
+import net.minecraft.block.Block.getIdFromBlock
 import net.minecraft.init.Blocks
 import me.odinmain.utils.ui.Colors
 import me.odinmain.utils.ui.clickgui.util.ColorUtil.withAlpha
 import net.minecraft.network.play.server.S29PacketSoundEffect
+import net.minecraft.util.MovingObjectPosition
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import java.util.*
 
 object EtherWarpHelper : Module(
     name = "Etherwarp Helper",
@@ -50,10 +53,12 @@ object EtherWarpHelper : Module(
     private val soundPitch by NumberSetting("Pitch", 2f, 0, 2, .01f, description = "Pitch of the sound.").withDependency { sounds && dropdown }
     private val reset by ActionSetting("Play sound", description = "Plays the selected sound.") { playLoudSound(if (sound == defaultSounds.size - 1) customSound else defaultSounds[sound], soundVolume, soundPitch) }.withDependency { sounds && dropdown }
 
-    private val invalidBlocks = setOf(
-        Blocks.hopper, Blocks.chest, Blocks.ender_chest, Blocks.furnace, Blocks.crafting_table,
-        Blocks.enchanting_table, Blocks.dispenser, Blocks.dropper, Blocks.brewing_stand, Blocks.trapdoor,
-    )
+    private val invalidBlocks = BitSet().apply {
+        setOf(
+            Blocks.hopper, Blocks.chest, Blocks.ender_chest, Blocks.furnace, Blocks.crafting_table,
+            Blocks.enchanting_table, Blocks.dispenser, Blocks.dropper, Blocks.brewing_stand, Blocks.trapdoor,
+        ).forEach { set(getIdFromBlock(it)) }
+    }
 
     @SubscribeEvent
     fun onRenderWorldLast(event: RenderWorldLastEvent) {
@@ -66,7 +71,8 @@ object EtherWarpHelper : Module(
                 PositionLook(mc.thePlayer.renderVec, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch)
 
         etherPos = EtherWarpHelper.getEtherPos(positionLook)
-        val succeeded = etherPos.succeeded && (mc.objectMouseOver?.blockPos?.let { mc.theWorld.getBlockState(it).block in invalidBlocks } != true || !interactBlocks)
+        val succeeded =
+            etherPos.succeeded && (etherPos.state?.block?.let { invalidBlocks.get(getIdFromBlock(it)) } != true || !interactBlocks || mc.objectMouseOver?.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK)
 
         if (succeeded || renderFail)
             if (!fullBlock)

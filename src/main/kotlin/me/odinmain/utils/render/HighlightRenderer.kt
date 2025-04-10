@@ -65,7 +65,7 @@ object HighlightRenderer {
         }
     }
 
-    fun EntityPlayerSP.isEntitySeen(entityIn: Entity): Boolean {
+    private fun EntityPlayerSP.isEntitySeen(entityIn: Entity): Boolean {
         return mc.theWorld?.rayTraceBlocks(
             Vec3(this.posX, this.posY + this.getEyeHeight(), this.posZ),
             Vec3(entityIn.posX, entityIn.posY + entityIn.eyeHeight.toDouble(), entityIn.posZ), false, true, false

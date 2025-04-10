@@ -5,13 +5,10 @@ import me.odinmain.events.impl.BlockChangeEvent
 import me.odinmain.events.impl.PostEntityMetadata
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.features.settings.impl.SelectorSetting
-import me.odinmain.utils.addVec
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.HighlightRenderer
-import me.odinmain.utils.render.HighlightRenderer.isEntitySeen
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.runIn
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
@@ -22,7 +19,6 @@ import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.init.Blocks
 import net.minecraft.potion.Potion
 import net.minecraft.util.BlockPos
-import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object LividSolver : Module(
@@ -32,9 +28,6 @@ object LividSolver : Module(
     private val mode by SelectorSetting("Mode", HighlightRenderer.HIGHLIGHT_MODE_DEFAULT, HighlightRenderer.highlightModeList, description = HighlightRenderer.HIGHLIGHT_MODE_DESCRIPTION)
     private val thickness by NumberSetting("Line Width", 1f, .1f, 4f, .1f, description = "The line width of Outline / Boxes/ 2D Boxes.").withDependency { mode != HighlightRenderer.HighlightType.Overlay.ordinal }
     private val style by SelectorSetting("Style", Renderer.DEFAULT_STYLE, Renderer.styles, description = Renderer.STYLE_DESCRIPTION).withDependency { mode == HighlightRenderer.HighlightType.Boxes.ordinal }
-
-    private val tracers by BooleanSetting("Tracers", false, description = "Draws a line to the Livid.")
-    private val tracerWidth by NumberSetting("Width", 1f, .1f, 4f, .1f, description = "The width of the tracers.").withDependency { tracers }
 
     private val woolLocation = BlockPos(5, 108, 43)
     private var currentLivid = Livid.HOCKEY
@@ -49,12 +42,6 @@ object LividSolver : Module(
             currentLivid = Livid.HOCKEY
             currentLivid.entity = null
         }
-    }
-
-    @SubscribeEvent
-    fun onRenderWorld(event: RenderWorldLastEvent) {
-        if (!tracers || mc.thePlayer.isPotionActive(Potion.blindness)) return
-        currentLivid.entity?.takeIf { mc.thePlayer.isEntitySeen(it) && it.isEntityAlive }?.let { Renderer.drawTracer(it.positionVector.addVec(0, 1.5, 0), currentLivid.color, tracerWidth) }
     }
 
     @SubscribeEvent
