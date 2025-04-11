@@ -22,13 +22,13 @@ object PersonalDragon : Module(
     name = "Personal Dragon",
     description = "Spawns your own personal dragon."
 ) {
-    private val onlyF5 by BooleanSetting(name = "Only F5", default = true, description = "Only render the dragon when in F5 mode.")
-    private val scale by NumberSetting(name = "Scale", 0.5f, 0f, 1f, 0.01f, description = "The scale of the dragon.")
-    private val horizontal by NumberSetting(name = "Horizontal", -1f, -10f, 10f, 0.1f, description = "The horizontal offset of the dragon.")
-    private val vertical by NumberSetting(name = "Vertical", 0f, -10f, 10f, 0.1f, description = "The vertical offset of the dragon.")
-    private val degrees by NumberSetting(name = "Degrees", 0f, -180f, 180f, 1f, description = "The degrees of the dragon.")
-    private val animationSpeed by NumberSetting(name = "Animation Speed", 0.5f, 0.0f, 1f, 0.01f, description = "The speed of the dragon's animation.")
-    private val color by ColorSetting(name = "Color", Colors.WHITE, description = "The color of the dragon.")
+    private val onlyF5 by BooleanSetting("Only F5", true, description = "Only render the dragon when in F5 mode.")
+    private val scale by NumberSetting("Scale", 0.5f, 0f, 1f, 0.01f, description = "The scale of the dragon.")
+    private val horizontal by NumberSetting("Horizontal", -1f, -10f, 10f, 0.1f, description = "The horizontal offset of the dragon.")
+    private val vertical by NumberSetting("Vertical", 0f, -10f, 10f, 0.1f, description = "The vertical offset of the dragon.")
+    private val degrees by NumberSetting("Degrees", 0f, -180f, 180f, 1f, description = "The degrees of the dragon.")
+    private val animationSpeed by NumberSetting("Animation Speed", 0.5f, 0.0f, 1f, 0.01f, description = "The speed of the dragon's animation.")
+    private val color by ColorSetting("Color", Colors.WHITE, description = "The color of the dragon.")
 
     var dragon: EntityDragon? = null
 

@@ -18,9 +18,9 @@ class NumberSetting<E>(
         min: Number = -10000,
         max: Number = 10000,
         increment: Number = 1,
-        hidden: Boolean = false,
         description: String,
         val unit: String = "",
+        hidden: Boolean = false
 ) : Setting<E>(name, hidden, description), Saving where E : Number, E : Comparable<E> {
 
     override var value: E = default

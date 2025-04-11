@@ -15,9 +15,9 @@ object HidePlayers : Module(
     name = "Hide Players",
     description = "Hides players in your vicinity."
 ) {
-    private val hideAll by BooleanSetting("Hide all", default = false, false, "Hides all players, regardless of distance.")
-    private val distance by NumberSetting("distance", 3.0, 0.0, 32.0, .5, false, "The number of blocks away to hide players.", unit = "blocks").withDependency { !hideAll }
-    private val onlyDevs by BooleanSetting("only at Devs", default = false, false, "Only hides players when standing at ss or fourth device.")
+    private val hideAll by BooleanSetting("Hide all", false, description = "Hides all players, regardless of distance.")
+    private val distance by NumberSetting("distance", 3.0, 0.0, 32.0, .5, "The number of blocks away to hide players.", unit = "blocks").withDependency { !hideAll }
+    private val onlyDevs by BooleanSetting("only at Devs", false, description = "Only hides players when standing at ss or fourth device.")
 
     @SubscribeEvent
     fun onRenderEntity(event: RenderPlayerEvent.Pre) {

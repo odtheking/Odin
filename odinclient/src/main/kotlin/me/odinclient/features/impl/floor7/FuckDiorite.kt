@@ -30,11 +30,11 @@ object FuckDiorite : Module(
     private val STONE = Blocks.stone
     private val glassStates = Array(16) { STAINED_GLASS.getStateFromMeta(it) }
 
-    private val pillarBasedColor by BooleanSetting("Pillar Based", default = true, description = "Swaps the diorite in the pillar to a corresponding color.").withDependency { !schitzo }
+    private val pillarBasedColor by BooleanSetting("Pillar Based", true, description = "Swaps the diorite in the pillar to a corresponding color.").withDependency { !schitzo }
     private val colorIndex by SelectorSetting("Color", "None", arrayListOf("NONE", "WHITE", "ORANGE", "MAGENTA", "LIGHT_BLUE", "YELLOW", "LIME", "PINK",
             "GRAY", "LIGHT_GRAY", "CYAN", "PURPLE", "BLUE", "BROWN", "GREEN", "RED", "BLACK"), description = "Color for the stained glass.").withDependency { !pillarBasedColor && !schitzo }
     private val schitzo by BooleanSetting("Schitzo mode", false, description = "Schtizoing.")
-    val action by ActionSetting("Force Glass", description = "Replaces all pillars with glass.") {
+    private val action by ActionSetting("Force Glass", description = "Replaces all pillars with glass.") {
         if ((DungeonUtils.inBoss && isFloor(7)) || LocationUtils.currentArea.isArea(Island.SinglePlayer)) replaceDiorite(true)
         else modMessage("§cYou must be in F7/M7 boss room to use this feature.")
     }

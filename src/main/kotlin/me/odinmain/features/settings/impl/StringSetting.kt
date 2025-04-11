@@ -14,8 +14,8 @@ class StringSetting(
     name: String,
     override val default: String = "",
     var length: Int = 20,
-    hidden: Boolean = false,
     description: String,
+    hidden: Boolean = false
 ) : Setting<String>(name, hidden, description), Saving {
 
     override var value: String = default

@@ -35,7 +35,7 @@ object Animations : Module(
     private val noSwing by BooleanSetting("No Swing", false, description = "Prevents your item from visually swinging forward.")
     private val noTermSwing by BooleanSetting("No Terminator Swing", false, description = "Prevents your Terminator from swinging.")
 
-    val reset by ActionSetting("Reset", description = "Resets the settings to their default values.") {
+    private val reset by ActionSetting("Reset", description = "Resets the settings to their default values.") {
         settings.forEach { it.reset() }
     }
 

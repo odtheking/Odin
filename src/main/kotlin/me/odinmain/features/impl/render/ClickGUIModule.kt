@@ -58,8 +58,8 @@ object ClickGUIModule: Module(
         OdinMain.display = EditHUDGui
     }
 
-    var lastSeenVersion by StringSetting("Last seen version", "1.0.0", hidden = true, description = "")
-    private var joined by BooleanSetting("First join", false, hidden = true, "")
+    var lastSeenVersion by StringSetting("Last seen version", "1.0.0", description = "", hidden = true)
+    private var joined by BooleanSetting("First join", false, "", hidden = true)
     private var hasSentUpdateMessage = false
     var latestVersionNumber: String? = null
 
@@ -150,9 +150,9 @@ object ClickGUIModule: Module(
     fun resetPositions() {
         Category.entries.forEach {
             val incr = 10f + 260f * it.ordinal
-            panelX.getOrPut(it) { +NumberSetting(it.name + ",x", default = incr, hidden = true, description = "") }.value = incr
-            panelY.getOrPut(it) { +NumberSetting(it.name + ",y", default = 10f, hidden = true, description = "") }.value = 10f
-            panelExtended.getOrPut(it) { +BooleanSetting(it.name + ",extended", default = true, hidden = true, description = "") }.enabled = true
+            panelX.getOrPut(it) { +NumberSetting(it.name + ",x", default = incr, description = "", hidden = true) }.value = incr
+            panelY.getOrPut(it) { +NumberSetting(it.name + ",y", default = 10f, description = "", hidden = true) }.value = 10f
+            panelExtended.getOrPut(it) { +BooleanSetting(it.name + ",extended", default = true, description = "", hidden = true) }.enabled = true
         }
     }
 

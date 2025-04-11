@@ -29,7 +29,7 @@ object ArrowsDevice : Module(
     name = "Arrows Device",
     description = "Shows a solution for the Sharp Shooter puzzle in floor 7."
 ) {
-    private val solver by BooleanSetting("Solver", default = true, description = "Enables the solver.")
+    private val solver by BooleanSetting("Solver", description = "Enables the solver.")
     private val markedPositionColor by ColorSetting("Marked Position", Colors.MINECRAFT_RED, description = "Color of the marked position.").withDependency { solver }
     private val targetPositionColor by ColorSetting("Target Position", Colors.MINECRAFT_GREEN, description = "Color of the target position.").withDependency { solver }
     private val resetKey by KeybindSetting("Reset", Keyboard.KEY_NONE, description = "Resets the solver.").onPress {
@@ -39,7 +39,7 @@ object ArrowsDevice : Module(
     private val reset by ActionSetting("Reset", description = "Resets the solver.") {
         markedPositions.clear()
     }.withDependency { solver }
-    private val alertOnDeviceComplete by BooleanSetting("Device complete alert", default = true, description = "Send an alert when device is complete.")
+    private val alertOnDeviceComplete by BooleanSetting("Device complete alert", true, description = "Send an alert when device is complete.")
 
     private val markedPositions = mutableSetOf<BlockPos>()
     private var targetPosition: BlockPos? = null

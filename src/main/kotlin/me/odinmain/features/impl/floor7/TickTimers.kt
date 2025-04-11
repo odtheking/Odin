@@ -14,9 +14,9 @@ object TickTimers : Module(
     name = "Tick Timers",
     description = "Displays timers for Necron, Goldor, and Storm."
 ) {
-    private val displayInTicks by BooleanSetting("Display in Ticks", default = false, description = "Display the timers in ticks instead of seconds.")
-    private val symbolDisplay: Boolean by BooleanSetting("Display Symbol", default = true, description = "Displays s or t after the timers.")
-    private val showPrefix: Boolean by BooleanSetting("Show Prefix", default = true, description = "Shows the prefix of the timers.")
+    private val displayInTicks by BooleanSetting("Display in Ticks", false, description = "Display the timers in ticks instead of seconds.")
+    private val symbolDisplay: Boolean by BooleanSetting("Display Symbol", true, description = "Displays s or t after the timers.")
+    private val showPrefix: Boolean by BooleanSetting("Show Prefix", true, description = "Shows the prefix of the timers.")
 
     private val necronHud by HudSetting("Necron Hud", 10f, 10f, 1f, true) {
         if (it)                   mcTextAndWidth(formatTimer(35, 60, "§4Necron dropping in"), 1f, 1f, 2, Colors.MINECRAFT_DARK_RED, shadow = true, center = false) * 2 + 2f to 16f
@@ -33,7 +33,7 @@ object TickTimers : Module(
             mcTextAndWidth(formatTimer(time, max, prefix), 1f, 1f, 2, Colors.MINECRAFT_DARK_RED, shadow = true ,center = false) * 2 + 2f to 16f
         } else 0f to 0f
     }
-    private val startTimer: Boolean by BooleanSetting("Start timer", default = false, description = "Displays a timer counting down until devices/terms are able to be activated/completed.").withDependency { goldorHud.enabled }
+    private val startTimer: Boolean by BooleanSetting("Start timer", false, description = "Displays a timer counting down until devices/terms are able to be activated/completed.").withDependency { goldorHud.enabled }
 
     private var goldorTickTime: Int = -1
     private var goldorStartTime: Int = -1

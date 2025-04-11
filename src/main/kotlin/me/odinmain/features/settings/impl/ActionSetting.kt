@@ -9,8 +9,8 @@ import me.odinmain.features.settings.Setting
  */
 class ActionSetting(
     name: String,
-    hidden: Boolean = false,
     description: String,
+    hidden: Boolean = false,
     override val default: () -> Unit = {}
 ) : Setting<() -> Unit>(name, hidden, description) {
 

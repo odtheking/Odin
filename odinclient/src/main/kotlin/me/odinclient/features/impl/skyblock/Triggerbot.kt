@@ -34,19 +34,19 @@ object Triggerbot : Module(
     description = "Provides triggerbots for Blood, Spirit Bear, Crystal Triggerbot, Secret Triggerbot, Relic Triggerbot."
 ) {
     private val bloodDropDown by DropdownSetting("Blood Dropdown", false)
-    private val blood by BooleanSetting("Blood Mobs", default = false, description = "Automatically clicks blood mobs.").withDependency { bloodDropDown }
-    private val bloodClickType by BooleanSetting("Blood Click Type", default = false, description = "What button to click for blood mobs.").withDependency { blood && bloodDropDown }
+    private val blood by BooleanSetting("Blood Mobs", false, description = "Automatically clicks blood mobs.").withDependency { bloodDropDown }
+    private val bloodClickType by BooleanSetting("Blood Click Type", false, description = "What button to click for blood mobs.").withDependency { blood && bloodDropDown }
 
     private val spiritBearDropDown by DropdownSetting("Spirit Bear Dropdown", false)
-    private val spiritBear by BooleanSetting("Spirit Bear", default = false, description = "Automatically clicks the spirit bear.").withDependency { spiritBearDropDown }
+    private val spiritBear by BooleanSetting("Spirit Bear", false, description = "Automatically clicks the spirit bear.").withDependency { spiritBearDropDown }
 
     private val crystalDropDown by DropdownSetting("Crystal Dropdown", false)
-    private val crystal by BooleanSetting("Crystal Triggerbot", default = false, description = "Automatically takes and places crystals.").withDependency { crystalDropDown }
-    private val take by BooleanSetting("Take", default = true, description = "Takes crystals.").withDependency { crystal && crystalDropDown }
-    private val place by BooleanSetting("Place", default = true, description = "Places crystals.").withDependency { crystal && crystalDropDown }
+    private val crystal by BooleanSetting("Crystal Triggerbot", false, description = "Automatically takes and places crystals.").withDependency { crystalDropDown }
+    private val take by BooleanSetting("Take", true, description = "Takes crystals.").withDependency { crystal && crystalDropDown }
+    private val place by BooleanSetting("Place", true, description = "Places crystals.").withDependency { crystal && crystalDropDown }
 
     private val secretTriggerbotDropDown by DropdownSetting("Secret Triggerbot Dropdown", false)
-    private val secretTriggerbot by BooleanSetting("Secret Triggerbot", default = false, description = "Automatically clicks secret buttons.").withDependency { secretTriggerbotDropDown }
+    private val secretTriggerbot by BooleanSetting("Secret Triggerbot", false, description = "Automatically clicks secret buttons.").withDependency { secretTriggerbotDropDown }
     private val stbDelay by NumberSetting("Delay", 200L, 0, 1000, unit = "ms", description = "The delay between each click.").withDependency { secretTriggerbot && secretTriggerbotDropDown }
 
     private val stbCH by BooleanSetting("Crystal Hollows Chests", true, description = "Opens chests in crystal hollows when looking at them.").withDependency { secretTriggerbot && secretTriggerbotDropDown }
@@ -55,7 +55,7 @@ object Triggerbot : Module(
     private val alignTriggerBotDropDown by DropdownSetting("Arrow Align Dropdown", false)
     private val alignTriggerbot: Boolean by BooleanSetting("Align Triggerbot", false, description = "Automatically clicks the correct arrow in the arrow align device.").withDependency { alignTriggerBotDropDown }
     private val sneakToDisableTriggerbot: Boolean by BooleanSetting("Sneak to disable", false, description = "Disables triggerbot when you are sneaking").withDependency { alignTriggerbot && alignTriggerBotDropDown }
-    private val alignDelay: Long by NumberSetting("Align Delay", 200L, 70, 500, description = "The delay between each click.", unit = "ms").withDependency { alignTriggerbot && alignTriggerBotDropDown }
+    private val alignDelay by NumberSetting("Align Delay", 200L, 70, 500, description = "The delay between each click.", unit = "ms").withDependency { alignTriggerbot && alignTriggerBotDropDown }
 
     private val triggerBotClock = Clock(stbDelay)
     private var clickedPositions = mapOf<BlockPos, Long>()

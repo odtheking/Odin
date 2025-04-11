@@ -23,8 +23,8 @@ object TerminalTimes : Module(
         modMessage("§6Terminal PBs §fhave been reset.")
     }
 
-    private val terminalSplits by BooleanSetting("Terminal Splits", default = true, description = "Adds the time when a term was completed to its message, and sends the total term time after terms are done.")
-    private val useRealTime by BooleanSetting("Use Real Time", default = true, description = "Use real time rather than server ticks.")
+    private val terminalSplits by BooleanSetting("Terminal Splits", true, description = "Adds the time when a term was completed to its message, and sends the total term time after terms are done.")
+    private val useRealTime by BooleanSetting("Use Real Time", true, description = "Use real time rather than server ticks.")
 
     private val terminalPBs = PersonalBest("Terminals", 7)
 
