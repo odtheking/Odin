@@ -69,6 +69,7 @@ body {
     color: #ffffff;
     transition: font-size 0.2s ease;
     font-family: Inter, serif;
+    user-select: none;
 }
 
 .module-name:hover {
