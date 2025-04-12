@@ -15,7 +15,7 @@
   <meta name="keywords" content="skyblock,cheat, mod, forge, client, legit, feature, hypixel, Odin">
 
   <title>Odin Features - Official Website</title>
-  <link rel="icon" type="image/png" href="assets/od.webp">
+  <link rel="icon" href="assets/od.webp">
 
   <!-- Stylesheets -->
   <link rel="stylesheet" href="home_style.css">
@@ -58,7 +58,7 @@
         <ol>
 
           <li>Download the latest mod release from <a href="https://github.com/odtheking/Odin">https://github.com/odtheking/Odin</a>.
-            <br>If it says this file may harm your computer, click Allow anyway as all Java files will be suspect to
+            <br>If it says this file may harm your computer, click Allow anyways as all Java files will be suspect to
             this from the Windows firewall.
           </li>
           <li>Add the Odin mod:
@@ -78,6 +78,15 @@
     body {
       color: white;
       text-align: center; /* Center-align the content within the body */
+    }
+
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(20%, 0.1fr)); /* Adjust the percentage as needed */
+      justify-content: center;
+      padding: 1em;
+      gap: 2em;
+      margin-bottom: 12.8em;
     }
 
     h2 {
@@ -109,6 +118,14 @@
 
     li {
       min-height: 40px;
+    }
+
+    @media screen and (max-width: 768px) {
+      .grid-container {
+        display: grid;
+        grid-template-columns: 1fr; /* Adjust the percentage as needed */
+        justify-content: center;
+      }
     }
   </style>
 </html>
