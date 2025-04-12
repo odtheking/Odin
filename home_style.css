@@ -50,19 +50,33 @@ body {
     color: #8b8b8b;
 }
 
-.centered-text p {
+.centered-text h1 {
     text-align: center;
     font-size: 70px;
     color: white;
     font-weight: lighter;
     text-shadow: 0 0 15px #fff;
     user-select: none;
-    padding-bottom: 0.3em;
+}
+
+.typing-animation {
+    display: inline-block;
+    overflow: hidden;
+    white-space: nowrap;
+    width: 0;
+    position: relative;
+    animation: typing 3s steps(50, end) 0.25s forwards;
+}
+
+@keyframes typing {
+    from { width: 0 }
+    to { width: 100% }
 }
 
 .download-container {
     text-align: center;
-    padding-bottom: 0.4em;
+    margin-top: -2vh;
+    margin-bottom: 1em;
 }
 
 .download {

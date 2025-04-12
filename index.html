@@ -25,101 +25,115 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
+<header>
     <div id="navbar-placeholder"></div>
 
     <div class="version-container">
         <div class="legit active" id="legit">Legit</div>
         <div class="cheater" id="cheater">Cheat</div>
     </div>
+</header>
 
+<main>
     <!-- Legit Version Content -->
-    <div id="legit-content" class="content-section active">
-        <div class="centered-text"><h1>Introducing Odin</h1></div>
+    <section id="legit-content" class="content-section active">
+        <div class="centered-text">
+            <h1><span class="typing-animation">Introducing Odin</span></h1>
+        </div>
+
         <div class="download-container">
-            <a class="download" href="https://github.com/odtheking/Odin/releases" target="_blank"><h2>Download →</h2></a>
+            <a class="download" href="https://github.com/odtheking/Odin/releases" target="_blank">
+                <h2>Download →</h2>
+            </a>
         </div>
 
         <div class="grid-container">
-            <div class="rounded-rectangle">
+            <article class="rounded-rectangle">
                 <img class="rubix module-image" src="assets/rubix.webp" alt="rubix">
-                <span class="Module">Terminal Simulator</span>
-                <span class="text">Simulates an F7 terminal for practice.</span>
-            </div>
-            <div class="rounded-rectangle">
+                <h3 class="Module">Terminal Simulator</h3>
+                <p class="text">Allows simulation of catacombs floor 7 terminals for practice.</p>
+            </article>
+            <article class="rounded-rectangle">
                 <img class="firework module-image" src="assets/firework.webp" alt="firework">
-                <span class="Module">Deployable Timer</span>
-                <span class="text">Displays the active deployable near you.</span>
-            </div>
-            <div class="rounded-rectangle">
+                <h3 class="Module">Deployable Timer</h3>
+                <p class="text">Provides visual feedback for the current active deployable.</p>
+            </article>
+            <article class="rounded-rectangle">
                 <img class="shovel module-image" src="assets/shovel.webp" alt="shovel">
-                <span class="Module">Diana Helper</span>
-                <span class="text">Multiple features to make Diana more enjoyable.</span>
-            </div>
-            <div class="rounded-rectangle">
+                <h3 class="Module">Diana Helper</h3>
+                <p class="text">Displays diana burrow location for mythological creatures.</p>
+            </article>
+            <article class="rounded-rectangle">
                 <img class="esp module-image" src="assets/esp.webp" alt="esp">
-                <span class="Module">Highlight</span>
-                <span class="text">Highlight any mob! Customizable rendering.</span>
-            </div>
-            <div class="rounded-rectangle">
+                <h3 class="Module">Highlight</h3>
+                <p class="text">Highlight various mobs with customizable rendering options.</p>
+            </article>
+            <article class="rounded-rectangle">
                 <img class="blessing module-image" src="assets/blessing.webp" alt="blessing">
-                <span class="Module">Blessing Display</span>
-                <span class="text">Displays the dungeon's current blessings to your liking.</span>
-            </div>
-            <div class="rounded-rectangle">
+                <h3 class="Module">Blessing Display</h3>
+                <p class="text">Configurable display for all dungeon blessings in a HUD.</p>
+            </article>
+            <article class="rounded-rectangle">
                 <img class="dragon module-image" src="assets/dragon.webp" alt="dragon">
-                <span class="Module">Dragon QOL</span>
-                <span class="text">Dragon Timer<br>Dragon Boxes<br>Dragon Kill Timer</span>
-            </div>
+                <h3 class="Module">Wither Dragons</h3>
+                <p class="text">Dragon Timer<br>Dragon Boxes<br>Dragon Kill Timer<br>And much more!</p>
+            </article>
         </div>
-    </div>
+    </section>
 
     <!-- Cheat Version Content -->
-    <div id="cheater-content" class="content-section">
-        <div class="centered-text"><h1>Introducing OdinClient</h1></div>
+    <section id="cheater-content" class="content-section">
+        <div class="centered-text">
+            <h1><span class="typing-animation">Introducing OdinClient</span></h1>
+        </div>
+
         <div class="download-container">
-            <a class="download" href="https://github.com/odtheking/Odin/releases" target="_blank"><h2>Download →</h2></a>
+            <a class="download" href="https://github.com/odtheking/Odin/releases" target="_blank">
+                <h2>Download →</h2>
+            </a>
         </div>
 
         <div class="grid-container">
-            <div class="rounded-rectangle">
+            <article class="rounded-rectangle">
                 <img class="ghostpick module-image" src="assets/ghostpick.webp" alt="ghostpick">
-                <span class="Module">Ghostpick</span>
-                <span class="text">Creates a ghostpick when you press a keybind.</span>
-            </div>
-            <div class="rounded-rectangle">
+                <h3 class="Module">Ghostpick</h3>
+                <p class="text">Allows the creation of a ghost pickaxe on demand.</p>
+            </article>
+            <article class="rounded-rectangle">
                 <div class="image-container">
                     <img class="diorite module-image" src="assets/diorite.webp" alt="fuckdiorite">
                     <img class="glass module-image" src="assets/glass.webp" alt="fuckglass">
                 </div>
-                <span class="Module">Fuck Diorite</span>
-                <span class="text">Replaces storm's pillars with glass.</span>
-            </div>
-            <div class="rounded-rectangle">
+                <h3 class="Module">Fuck Diorite</h3>
+                <p class="text">Replaces storm's diorite pillars with glass.</p>
+            </article>
+            <article class="rounded-rectangle">
                 <img class="cookie module-image" src="assets/cookie.webp" alt="cookie">
-                <span class="Module">Cookie Clicker</span>
-                <span class="text">Automatically clicks in the cookie clicker minigame.</span>
-            </div>
-            <div class="rounded-rectangle">
+                <h3 class="Module">Chocolate Factory</h3>
+                <p class="text">Automatic upgrades, clicks and an ESP for eggs.</p>
+            </article>
+            <article class="rounded-rectangle">
                 <img class="ghost module-image" src="assets/ghost.webp" alt="ghost">
-                <span class="Module">Ghost QOL</span>
-                <span class="text">Show Ghosts<br>Show Nametag<br>Hide Charged Layer</span>
-            </div>
-            <div class="rounded-rectangle">
+                <h3 class="Module">Ghost QOL</h3>
+                <p class="text">Show Ghosts<br>Show Nametag<br>Hide Charged Layer</p>
+            </article>
+            <article class="rounded-rectangle">
                 <img class="tnt module-image" src="assets/tnt.webp" alt="tnt">
-                <span class="Module">Superboom</span>
-                <span class="text">Places TNT when you left click on a block which can blow up.</span>
-            </div>
-            <div class="rounded-rectangle">
+                <h3 class="Module">Superboom</h3>
+                <p class="text">Places TNT when you left click on a block which can blow up.</p>
+            </article>
+            <article class="rounded-rectangle">
                 <img class="bow module-image" src="assets/bow.webp" alt="bow">
-                <span class="Module">Arrow Trajectory</span>
-                <span class="text">Displays arrow trajectory of shortbows.</span>
-            </div>
+                <h3 class="Module">Arrow Trajectory</h3>
+                <p class="text">Displays projectile trajectory for bows, ender pearls and short bows</p>
+            </article>
         </div>
-    </div>
+    </section>
+</main>
 
-    <div id="footer-placeholder"></div>
+<div id="footer-placeholder"></div>
 
-    <script src="components/script.js"></script>
+<script src="components/script.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const legitButton = document.getElementById('legit')
