@@ -32,7 +32,7 @@ object SecretClicked : Module(
     private val timeToStay by NumberSetting("Time To Stay", 7, 1, 20, 0.2, description = "The time the chests should remain highlighted.", unit = "s").withDependency { boxesDropdown && boxes }
     private val useRealSize by BooleanSetting("Use Real Size", true, description = "Whether or not to use the real size of the block.").withDependency { boxesDropdown && boxes }
     private val boxInBoss by BooleanSetting("Box In Boss", false, description = "Highlight clicks in boss.").withDependency { boxesDropdown && boxes }
-    private val toggleItems by BooleanSetting("Item Boxes", default = true, description = "Render boxes for collected items.").withDependency { boxesDropdown && boxes }
+    private val toggleItems by BooleanSetting("Item Boxes", true, description = "Render boxes for collected items.").withDependency { boxesDropdown && boxes }
 
     private val chimeDropdownSetting by DropdownSetting("Secret Chime Dropdown")
     private val chime by BooleanSetting("Secret Chime", true, description = "Whether or not to play a sound when a secret is clicked.").withDependency { chimeDropdownSetting }
@@ -43,7 +43,7 @@ object SecretClicked : Module(
     ).withDependency { sound == defaultSounds.size - 1 && chimeDropdownSetting && chime}
     private val volume by NumberSetting("Volume", 1f, 0, 1, .01f, description = "Volume of the sound.").withDependency { chimeDropdownSetting && chime }
     private val pitch by NumberSetting("Pitch", 2f, 0, 2, .01f, description = "Pitch of the sound.").withDependency { chimeDropdownSetting && chime }
-    val reset by ActionSetting("Play Sound", description = "Plays the sound with the current settings.") {
+    private val reset by ActionSetting("Play Sound", description = "Plays the sound with the current settings.") {
         PlayerUtils.playLoudSound(if (sound == defaultSounds.size - 1) customSound else defaultSounds[sound], volume, pitch)
     }.withDependency { chimeDropdownSetting && chime }
     private val chimeInBoss by BooleanSetting("Chime In Boss", false, description = "Prevent playing the sound if in boss room.").withDependency { chimeDropdownSetting && chime }

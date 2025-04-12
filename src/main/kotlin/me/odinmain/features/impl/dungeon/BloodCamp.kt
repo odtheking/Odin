@@ -53,7 +53,7 @@ object BloodCamp : Module(
     }.withDependency { movePrediction && predictionDropdown }
 
     private val assistDropdown by DropdownSetting("Blood Assist Dropdown", default = true)
-    private val bloodAssist by BooleanSetting("Blood Camp Assist", default = true, description = "Draws boxes to spawning mobs in the blood room. WARNING: not perfectly accurate. Mobs spawn randomly between 37 - 41 ticks, adjust offset to adjust between ticks.").withDependency { assistDropdown }
+    private val bloodAssist by BooleanSetting("Blood Camp Assist", true, description = "Draws boxes to spawning mobs in the blood room. WARNING: not perfectly accurate. Mobs spawn randomly between 37 - 41 ticks, adjust offset to adjust between ticks.").withDependency { assistDropdown }
 
     private val timerHud by HudSetting("Timer Hud", 10f, 10f, 1f, true) {
         if ((!bloodAssist || (!inDungeons || inBoss)) && !it) return@HudSetting 0f to 0f
@@ -79,17 +79,17 @@ object BloodCamp : Module(
     private val pboxColor by ColorSetting("Spawn Color", Colors.MINECRAFT_RED, true, description = "Color for Spawn render box. Set alpha to 0 to disable.").withDependency { bloodAssist && assistDropdown}
     private val fboxColor by ColorSetting("Final Color", Colors.MINECRAFT_DARK_AQUA, true, description = "Color for when Spawn and Mob boxes are merged. Set alpha to 0 to disable.").withDependency { bloodAssist && assistDropdown }
     private val mboxColor by ColorSetting("Position Color", Colors.MINECRAFT_GREEN, true, description = "Color for current position box. Set alpha to 0 to disable.").withDependency { bloodAssist && assistDropdown }
-    private val boxSize by NumberSetting("Box Size", default = 1.0, increment = 0.1, min = 0.1, max = 1.0, description = "The size of the boxes. Lower values may seem less accurate.").withDependency { bloodAssist && assistDropdown }
-    private val drawLine by BooleanSetting("Line", default = true, description = "Line between Position box and Spawn box.").withDependency { bloodAssist && assistDropdown }
-    private val drawTime by BooleanSetting("Time Left", default = true, description = "Time before the blood mob spawns. Adjust offset depending on accuracy. May be up to ~100ms off.").withDependency { bloodAssist && assistDropdown }
-    private val advanced by DropdownSetting("Advanced", default = false).withDependency { bloodAssist && assistDropdown }
-    private val offset by NumberSetting("Offset", default = 40, increment = 1, max = 100, min = -100, description = "Tick offset to adjust between ticks.").withDependency { advanced && bloodAssist && assistDropdown }
-    private val tick by NumberSetting("Tick", default = 38, increment = 1, max = 41, min = 35, description = "Tick to assume spawn. Adjust offset to offset this value to the ms.").withDependency { advanced && bloodAssist && assistDropdown }
-    private val interpolation by BooleanSetting("Interpolation", default = true, description = "Interpolates rendering boxes between ticks. Makes the jitter smoother, at the expense of some accuracy.").withDependency { advanced && bloodAssist && assistDropdown}
+    private val boxSize by NumberSetting("Box Size", 1.0, increment = 0.1, min = 0.1, max = 1.0, description = "The size of the boxes. Lower values may seem less accurate.").withDependency { bloodAssist && assistDropdown }
+    private val drawLine by BooleanSetting("Line", true, description = "Line between Position box and Spawn box.").withDependency { bloodAssist && assistDropdown }
+    private val drawTime by BooleanSetting("Time Left", true, description = "Time before the blood mob spawns. Adjust offset depending on accuracy. May be up to ~100ms off.").withDependency { bloodAssist && assistDropdown }
+    private val advanced by DropdownSetting("Advanced", false).withDependency { bloodAssist && assistDropdown }
+    private val offset by NumberSetting("Offset", 40, increment = 1, max = 100, min = -100, description = "Tick offset to adjust between ticks.").withDependency { advanced && bloodAssist && assistDropdown }
+    private val tick by NumberSetting("Tick", 38, increment = 1, max = 41, min = 35, description = "Tick to assume spawn. Adjust offset to offset this value to the ms.").withDependency { advanced && bloodAssist && assistDropdown }
+    private val interpolation by BooleanSetting("Interpolation", true, description = "Interpolates rendering boxes between ticks. Makes the jitter smoother, at the expense of some accuracy.").withDependency { advanced && bloodAssist && assistDropdown}
     private val pingOffset by BooleanSetting("Ping Offset", default = true, description = "Offsets the mob box by your ping.").withDependency { advanced && bloodAssist && assistDropdown }
     private val manualOffset by NumberSetting("Mob Box Offset", default = 0.0, increment = 1.0, max = 300.0, min = 0.0, description = "Manually offsets the mob box.").withDependency { advanced && bloodAssist && assistDropdown && !pingOffset}
-    private val watcherBar by BooleanSetting("Watcher Bar", default = true, description = "Shows the watcher's health.")
-    private val watcherHighlight by BooleanSetting("Watcher Highlight", default = false, description = "Highlights the watcher.")
+    private val watcherBar by BooleanSetting("Watcher Bar", true, description = "Shows the watcher's health.")
+    private val watcherHighlight by BooleanSetting("Watcher Highlight", false, description = "Highlights the watcher.")
 
     init {
         onPacket<S17PacketEntityLookMove> ({ bloodAssist && enabled }) { packet ->

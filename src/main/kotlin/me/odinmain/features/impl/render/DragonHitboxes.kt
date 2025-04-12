@@ -19,9 +19,9 @@ object DragonHitboxes : Module(
     name = "Dragon Hitboxes",
     description = "Draws dragon's correct hitboxes around them."
 ) {
-    private val onlyM7 by BooleanSetting(name = "Only M7", default = true, description = "Only render hitboxes in floor 7.")
-    private val color by ColorSetting(name = "Hitbox Color", Colors.MINECRAFT_AQUA, description = "The color of the hitboxes.")
-    private val lineWidth by NumberSetting(name = "Line Thickness", default = 3f, min = 0f, max = 10f, increment = 0.1f, description = "The thickness of the lines.")
+    private val onlyM7 by BooleanSetting("Only M7", true, description = "Only render hitboxes in floor 7.")
+    private val color by ColorSetting("Hitbox Color", Colors.MINECRAFT_AQUA, description = "The color of the hitboxes.")
+    private val lineWidth by NumberSetting("Line Thickness", 3f, min = 0f, max = 10f, increment = 0.1f, description = "The thickness of the lines.")
 
     private val entityPositions = mutableMapOf<Int, DoubleArray>()
     private var dragonRenderQueue: List<EntityDragon> = emptyList()

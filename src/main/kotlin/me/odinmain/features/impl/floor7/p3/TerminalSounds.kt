@@ -18,7 +18,7 @@ object TerminalSounds : Module(
 ){
     private val defaultSounds = arrayListOf("mob.blaze.hit", "random.pop", "random.orb", "random.break", "mob.guardian.land.hit", "Custom")
 
-    val clickSounds by BooleanSetting("Click Sounds", default = true, description = "Replaces the click sounds in terminals.")
+    val clickSounds by BooleanSetting("Click Sounds", true, description = "Replaces the click sounds in terminals.")
     private val sound by SelectorSetting("Click Sound", "mob.blaze.hit", defaultSounds, description = "Which sound to play when you click in a terminal.").withDependency { clickSounds }
     private val customSound by StringSetting("Custom Click Sound", "mob.blaze.hit",
         description = "Name of a custom sound to play. This is used when Custom is selected in the Sound setting.", length = 32
@@ -28,8 +28,8 @@ object TerminalSounds : Module(
     private val reset by ActionSetting("Play click sound", description = "Plays the sound with the current settings.") {
         PlayerUtils.playLoudSound(if (sound == defaultSounds.size - 1) customSound else defaultSounds[sound], clickVolume, clickPitch)
     }
-    private val completeSounds by BooleanSetting("Complete Sounds", default = false, description = "Plays a sound when you complete a terminal.")
-    private val cancelLastClick by BooleanSetting("Cancel Last Click", default = false, description = "Cancels the last click sound instead of playing both click and completion sound.").withDependency { clickSounds && completeSounds }
+    private val completeSounds by BooleanSetting("Complete Sounds", false, description = "Plays a sound when you complete a terminal.")
+    private val cancelLastClick by BooleanSetting("Cancel Last Click", false, description = "Cancels the last click sound instead of playing both click and completion sound.").withDependency { clickSounds && completeSounds }
     private val completedSound by SelectorSetting("Sound", "mob.blaze.hit", defaultSounds, description = "Which sound to play when you complete the terminal.").withDependency { completeSounds }
     private val customCompleteSound by StringSetting("Custom Completion Sound", "mob.blaze.hit",
         description = "Name of a custom sound to play. This is used when Custom is selected in the Sound setting.", length = 32

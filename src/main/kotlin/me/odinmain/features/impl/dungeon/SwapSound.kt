@@ -15,7 +15,7 @@ object SwapSound : Module(
     name = "Swap Sound",
     description = "Plays a sound when you successfully stonk swap."
 ) {
-    private val onlyBlock by BooleanSetting("Only Over Block", default = false, description = "Only plays a sound when you're looking at a block.")
+    private val onlyBlock by BooleanSetting("Only Over Block", false, description = "Only plays a sound when you're looking at a block.")
     private val defaultSounds = arrayListOf("mob.blaze.hit", "fire.ignite", "random.orb", "random.break", "mob.guardian.land.hit", "note.pling", "Custom")
     private val sound by SelectorSetting("Sound", "mob.blaze.hit", defaultSounds, description = "Which sound to play when you successfully stonk swap.")
     private val customSound by StringSetting("Custom Sound", "mob.blaze.hit",
@@ -23,7 +23,7 @@ object SwapSound : Module(
     ).withDependency { sound == defaultSounds.size - 1 }
     private val volume by NumberSetting("Volume", 1f, 0, 1, .01f, description = "Volume of the sound.")
     private val pitch by NumberSetting("Pitch", 2f, 0, 2, .01f, description = "Pitch of the sound.")
-    val reset by ActionSetting("Play sound", description = "Plays the sound with the current settings.") {
+    private val reset by ActionSetting("Play sound", description = "Plays the sound with the current settings.") {
         PlayerUtils.playLoudSound(if (sound == defaultSounds.size - 1) customSound else defaultSounds[sound], volume, pitch)
     }
 

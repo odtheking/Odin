@@ -15,9 +15,9 @@ object Ghosts : Module(
     name = "Ghosts",
     description = "Adds visual changes to ghosts."
 ) {
-    private var showGhostNametag by BooleanSetting(name = "Show Ghost Nametag", description = "Show the ghost's name tag.")
-    private var showGhosts by BooleanSetting(name = "Hide Ghosts", description = "Hide ghosts.")
-    private var hideChargedLayer by BooleanSetting(name = "Hide Charged Layer", description = "Hide the charged layer of the ghost.")
+    private var showGhostNametag by BooleanSetting("Show Ghost Nametag", description = "Show the ghost's name tag.")
+    private var showGhosts by BooleanSetting("Hide Ghosts", description = "Hide ghosts.")
+    private var hideChargedLayer by BooleanSetting("Hide Charged Layer", description = "Hide the charged layer of the ghost.")
 
     private var creeperList = mutableSetOf<EntityCreeper>()
 

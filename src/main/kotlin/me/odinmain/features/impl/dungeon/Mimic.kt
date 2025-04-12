@@ -22,9 +22,9 @@ object Mimic : Module(
     name = "Mimic",
     description = "Highlights and announces mimic kills in dungeons."
 ) {
-    private val mimicMessageToggle by BooleanSetting("Toggle Mimic Message", default = true, description = "Toggles the mimic killed message.")
+    private val mimicMessageToggle by BooleanSetting("Toggle Mimic Message", true, description = "Toggles the mimic killed message.")
     val mimicMessage by StringSetting("Mimic Message", "Mimic Killed!", 128, description = "Message sent when mimic is detected as killed.").withDependency { mimicMessageToggle }
-    val reset by ActionSetting("Mimic Killed", description = "Sends Mimic killed message in party chat.") { mimicKilled() }
+    private val reset by ActionSetting("Mimic Killed", description = "Sends Mimic killed message in party chat.") { mimicKilled() }
     private val mimicBox by BooleanSetting("Mimic Box", true, description = "Draws a box around the mimic chest.")
     private val style by SelectorSetting("Style", Renderer.DEFAULT_STYLE, Renderer.styles, description = Renderer.STYLE_DESCRIPTION).withDependency { mimicBox }
     private val color by ColorSetting("Color", Colors.MINECRAFT_RED.withAlpha(0.5f), allowAlpha = true, description = "The color of the box.").withDependency { mimicBox }

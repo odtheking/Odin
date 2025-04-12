@@ -30,12 +30,12 @@ object DianaHelper : Module(
     description = "Displays the location of the Diana guess and burrows."
 ) {
     private val guessColor by ColorSetting("Guess Color", Colors.WHITE, allowAlpha = true, description = "Color of the guess text.")
-    private val tracer by BooleanSetting("Tracer", default = true, description = "Draws a line from your position to the guess.")
-    private val tracerWidth by NumberSetting("Tracer Width", default = 5f, min = 1f, max = 20f, description = "Width of the tracer line.").withDependency { tracer }
+    private val tracer by BooleanSetting("Tracer", true, description = "Draws a line from your position to the guess.")
+    private val tracerWidth by NumberSetting("Tracer Width", 5f, 1f, 20f, description = "Width of the tracer line.").withDependency { tracer }
     private val tracerColor by ColorSetting("Tracer Line Color", Colors.WHITE, allowAlpha = true, description = "Color of the tracer line.").withDependency { tracer }
-    private val tracerBurrows by BooleanSetting("Tracer Burrows", default = true, description = "Draws a line from your position to the burrows.")
+    private val tracerBurrows by BooleanSetting("Tracer Burrows", true, description = "Draws a line from your position to the burrows.")
     private val style by SelectorSetting("Style", "Filled", arrayListOf("Filled", "Outline", "Filled Outline"), description = "Whether or not the box should be filled.")
-    private val sendInqMsg by BooleanSetting("Send Inq Msg", default = true, description = "Sends your coordinates to the party chat when you dig out an inquisitor.")
+    private val sendInqMsg by BooleanSetting("Send Inq Msg", true, description = "Sends your coordinates to the party chat when you dig out an inquisitor.")
     private val showWarpSettings by DropdownSetting("Show Warp Settings")
     private val castle by BooleanSetting("Castle Warp", description = "Warp to the castle.").withDependency { showWarpSettings }
     private val crypt by BooleanSetting("Crypt Warp", description = "Warp to the crypt.").withDependency { showWarpSettings }

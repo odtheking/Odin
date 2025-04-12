@@ -13,8 +13,8 @@ import me.odinmain.features.settings.Setting
 class BooleanSetting (
     name: String,
     override val default: Boolean = false,
-    hidden: Boolean = false,
     description: String,
+    hidden: Boolean = false
 ): Setting<Boolean>(name, hidden, description), Saving {
 
     override var value: Boolean = default

@@ -180,7 +180,7 @@ val devCommand = Commodore("oddev") {
         modMessage("Players: ${playerEntities.joinToString { it.name ?: "Unknown" }}")
     }
 
-    literal("generatereadme").runs {
+    literal("generatefeaturelist").runs {
         writeToClipboard(generateFeatureList())
     }
 }

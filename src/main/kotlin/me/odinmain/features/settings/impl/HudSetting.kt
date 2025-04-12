@@ -11,8 +11,8 @@ class HudSetting( // todo redo
     name: String,
     hud: HudElement,
     val displayToggle: Boolean = false,
-    hidden: Boolean = false,
     description: String = "",
+    hidden: Boolean = false
 ) : Setting<HudElement>(name, hidden, description) {
 
     constructor(name: String, x: Float, y: Float, scale: Float = 1f, toggleable: Boolean, draw: Render) :

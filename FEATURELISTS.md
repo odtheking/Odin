@@ -2,8 +2,8 @@ Legit Feature List:
 
 Category: Dungeon
 - Positional Messages: Sends a message when you're near a certain position. /posmsg
-- Dungeon Waypoints: Custom Waypoints for Dungeon Rooms.
 - Teammate Highlight: Enhances visibility of your dungeon teammates and their name tags.
+- Dungeon Waypoints: Custom Waypoints for Dungeon Rooms.
 - Dungeon Requeue: Automatically starts a new dungeon at the end of a dungeon.
 - Terracotta Timer: Displays the time until the terracotta respawns.
 - Blessing Display: Displays the current active blessings of the dungeon.
@@ -26,13 +26,13 @@ Category: Floor 7
 - Terminal Simulator: Simulates a floor 7 terminal from phase 3.
 - Melody Message: Helpful messages for the melody terminal in floor 7.
 - Terminal Sounds: Plays a sound whenever you click a correct item in a terminal.
-- Wither Dragons: Tools for managing M7 dragons timers, boxes, priority, health, relics and alerts.
 - Terminal Solver: Renders solution for terminals in floor 7.
+- Wither Dragons: Tools for managing M7 dragons timers, boxes, priority, health, relics and alerts.
 - Terminal Times: Records the time taken to complete terminals in floor 7.
 - Arrows Device: Shows a solution for the Sharp Shooter puzzle in floor 7.
-- Arrow Align: Shows the solution for the Arrow Align device.
 - Tick Timers: Displays timers for Necron, Goldor, and Storm.
 - Simon Says: Shows a solution for the Simon Says device.
+- Arrow Align: Shows the solution for the Arrow Align device.
 
 Category: Render
 - Etherwarp Helper: Provides configurable visual and audio feedback for etherwarp.
@@ -47,8 +47,8 @@ Category: Render
 - CPS Display: Displays your clicks per second.
 - BPS Display: Displays how many blocks per second you're breaking.
 - Hide Armor: Hide armor pieces.
-- Animations: Changes the appearance of the first-person view model.
 - Server Hud: Displays your current ping, FPS and server's TPS.
+- Animations: Changes the appearance of the first-person view model.
 - Waypoints: Allows to render waypoints based on coordinates in chat.
 - Click Gui: Allows you to customize the GUI.
 - Camera: Allows you to change camera settings.
@@ -58,8 +58,8 @@ Category: Render
 Category: Skyblock
 - Command Keybinds: Various keybinds for common skyblock commands.
 - Wardrobe Keybinds: Keybinds for wardrobe equipping and unequipping.
-- Invincibility Timer: Timer to show how long you have left Invincible.
 - Deployable Timer: Displays the active deployable remaining time.
+- Invincibility Timer: Timer to show how long you have left Invincible.
 - Chat Commands: Type !help in the corresponding channel for cmd list. Use /chatclist.
 - No Cursor Reset: Makes your cursor stop resetting between guis.
 - Player Display: Allows to customize the player stat displays (health, strength and more).

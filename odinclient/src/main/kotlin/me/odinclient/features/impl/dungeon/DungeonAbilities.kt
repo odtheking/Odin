@@ -12,7 +12,7 @@ object DungeonAbilities : Module(
     name = "Dungeon Abilities",
     description = "Automatically uses your ability in dungeons."
 ) {
-    private val autoUlt by BooleanSetting("Auto Ult", default = false, description = "Automatically uses your ultimate ability whenever needed.")
+    private val autoUlt by BooleanSetting("Auto Ult", false, description = "Automatically uses your ultimate ability whenever needed.")
     private val abilityKeybind by KeybindSetting("Ability Keybind", Keyboard.KEY_NONE, description = "Keybind to use your ability.").onPress {
         if (!DungeonUtils.inDungeons || !enabled) return@onPress
         dropItem(dropAll = true)

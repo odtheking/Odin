@@ -65,7 +65,7 @@ object EtherWarpHelper : Module(
     private val maxRot by NumberSetting("Max Rotation", 90f, 0f, 360f, 1f, description = "Max rotation difference to rotate to a waypoint.").withDependency { etherWarpHelper && etherwarpTBDropDown }
 
     private val dropdown by DropdownSetting("Sounds", false)
-    private val sounds by BooleanSetting("Custom Sounds", default = false, description = "Plays the selected custom sound when you etherwarp.").withDependency { dropdown }
+    private val sounds by BooleanSetting("Custom Sounds", false, description = "Plays the selected custom sound when you etherwarp.").withDependency { dropdown }
     private val defaultSounds = arrayListOf("mob.blaze.hit", "fire.ignite", "random.orb", "random.break", "mob.guardian.land.hit", "note.pling", "Custom")
     private val sound by SelectorSetting("Sound", "mob.blaze.hit", defaultSounds, description = "Which sound to play when you etherwarp.").withDependency { sounds && dropdown }
     private val customSound by StringSetting("Custom Sound", "mob.blaze.hit",
