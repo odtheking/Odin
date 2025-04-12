@@ -1,0 +1,108 @@
+<div class="navBar">
+  <div class="logo">
+    <a href="https://odtheking.github.io/Odin/legit">
+      <img src="/assets/OdinLogo.webp" alt="Odin Logo">
+    </a>
+  </div>
+
+  <div class="links">
+    <a href="https://discord.gg/2nCbC9hkxT">
+      <div class="tooltip">
+        <i class="fa fa-discord" aria-hidden="true"></i>
+        <span class="tooltiptext">Discord</span>
+      </div>
+    </a>
+    <a href="https://github.com/odtheking/Odin">
+      <div class="tooltip">
+        <i class="fa fa-github" aria-hidden="true"></i>
+        <span class="tooltiptext">GitHub</span>
+      </div>
+    </a>
+  </div>
+</div>
+<div class="container-divider"></div>
+
+<style>
+  .navBar {
+    z-index: 2;
+    display: grid;
+    grid-template-columns: [start] 1.5fr [logo-end] 5fr [social-start] auto [social-end];
+    grid-template-rows: 60px;
+    padding: 1em;
+    color: white;
+  }
+
+  .logo {
+    z-index: 2;
+    align-self: center;
+    grid-column: start/logo-end;
+    padding-top: 3em;
+    margin-bottom: 3em;
+    padding-bottom: -2em;
+    width: 200px; /* Added a missing semicolon */
+  }
+
+  .links {
+    display: flex;
+    grid-column: social-start/social-end;
+    align-items: center;
+    justify-content: center;
+    gap: 25px;
+    font-size: 60px;
+  }
+
+  .tooltip {
+    position: relative;
+    display: inline-block;
+  }
+
+  .tooltip i {
+    color: white;
+  }
+
+  .tooltip .tooltiptext {
+    visibility: hidden;
+    width: 120px;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 2px 0;
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -60px;
+    font-size: 20px;
+    opacity: 0;
+    transition: opacity 0.5s;
+  }
+
+  .tooltip:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
+  }
+
+  .container-divider {
+    background-color: white;
+    height: 1px;
+    box-shadow: 0 0 10px white;
+    opacity: 0.25;
+  }
+
+  @media (max-width: 768px) {
+    .logo {
+      grid-column: 1;
+      justify-self: center;
+      width: 150px;
+    }
+
+    .links {
+      font-size: 50px;
+      margin-top: -0.2em;
+      gap: 12px;
+    }
+
+    .tooltip .tooltiptext {
+      display: none;
+    }
+  }
+</style>
