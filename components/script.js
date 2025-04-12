@@ -60,11 +60,12 @@ const adjustFooterPaths = () => {
 
 const loadCatImage = () => {
     const catElement = document.getElementById('cat')
+    if (!catElement) return console.warn("Cat image element not found")
+
     catElement.addEventListener("click", () => {
         console.log("Cat image clicked")
         loadCatImage()
     })
-    if (!catElement) return console.warn("Cat image element not found")
 
     fetch('https://api.thecatapi.com/v1/images/search')
         .then(response => response.json())
