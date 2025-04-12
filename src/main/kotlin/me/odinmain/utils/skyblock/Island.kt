@@ -3,7 +3,7 @@ package me.odinmain.utils.skyblock
 enum class Island(val displayName: String) {
     SinglePlayer("Singleplayer"),
     PrivateIsland("Private Island"),
-    Garden("The Garden"),
+    Garden("Garden"),
     SpiderDen("Spider's Den"),
     CrimsonIsle("Crimson Isle"),
     TheEnd("The End"),

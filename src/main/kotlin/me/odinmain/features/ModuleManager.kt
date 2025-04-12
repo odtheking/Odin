@@ -168,14 +168,11 @@ object ModuleManager {
     fun getModuleByName(name: String?): Module? = modules.firstOrNull { it.name.equals(name, true) }
 
     fun generateFeatureList(): String {
-        val sortedCategories = modules.sortedByDescending { getTextWidth(it.name, 18f) }.groupBy { it.category }.entries
-            .sortedBy{ Category.entries.associateWith { it.ordinal }[it.key] }
-
         val featureList = StringBuilder()
 
-        for ((category, modulesInCategory) in sortedCategories) {
+        for ((category, modulesInCategory) in modules.groupBy { it.category }.entries) {
             featureList.appendLine("Category: ${category.displayName}")
-            for (module in modulesInCategory) {
+            for (module in modulesInCategory.sortedByDescending { getTextWidth(it.name, 18f) }) {
                 featureList.appendLine("- ${module.name}: ${module.description}")
             }
             featureList.appendLine()
