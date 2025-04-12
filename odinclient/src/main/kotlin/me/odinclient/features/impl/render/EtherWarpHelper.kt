@@ -30,7 +30,7 @@ import net.minecraft.network.play.client.C0BPacketEntityAction
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
 import net.minecraft.network.play.server.S29PacketSoundEffect
 import net.minecraft.util.MathHelper
-import net.minecraft.util.MovingObjectPosition
+import net.minecraft.util.MovingObjectPosition.MovingObjectType
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -101,7 +101,7 @@ object EtherWarpHelper : Module(
 
         etherPos = EtherWarpHelper.getEtherPos(positionLook)
         val succeeded =
-            etherPos.succeeded && (!interactBlocks || etherPos.state?.block?.let { invalidBlocks.get(getIdFromBlock(it)) } != true || mc.objectMouseOver?.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK)
+            etherPos.succeeded && (!interactBlocks || mc.objectMouseOver?.typeOfHit != MovingObjectType.BLOCK || etherPos.state?.block?.let { invalidBlocks.get(getIdFromBlock(it)) } != true)
 
         if (succeeded || renderFail)
             if (!fullBlock)
