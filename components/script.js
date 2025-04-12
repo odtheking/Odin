@@ -1,4 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
+    loadNavbar()
+    loadFooter()
 })
 
 const loadNavbar = () => {
