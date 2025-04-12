@@ -1,11 +1,10 @@
 document.addEventListener("DOMContentLoaded", () => {
-
 })
 
 const loadNavbar = () => {
     const navbarPlaceholder = document.getElementById('navbar-placeholder')
 
-    fetch('/components/navbar.html')
+    fetch('components/navbar.html')
         .then(response => response.text())
         .then(data => {
             navbarPlaceholder.innerHTML = data
@@ -28,7 +27,7 @@ const adjustNavbarPaths = () => {
 const loadFooter = () => {
     const footerPlaceholder = document.getElementById('footer-placeholder')
 
-    fetch('/components/footer.html')
+    fetch('components/footer.html')
         .then(response => response.text())
         .then(data => {
             footerPlaceholder.innerHTML = data
