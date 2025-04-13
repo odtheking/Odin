@@ -81,6 +81,7 @@ object LeapMenu : Module(
             GlStateManager.translate(displayWidth / 2f, displayHeight / 2f, 0f)
             GlStateManager.scale(size, size, 1f)
             GlStateManager.translate(-displayWidth / 2f, -displayHeight / 2f, 0f)
+            GlStateManager.translate(displayWidth / 2f, displayHeight / 2f, 0f)
             val boxWidth = 800
             val boxHeight = 300
             val x = when (index) {
