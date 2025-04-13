@@ -29,8 +29,8 @@ object Waypoints : Module(
             if (sendPingedLocation) sendCommand("odinwaypoint share ${pos.x} ${pos.y} ${pos.z}", true)
         }
     }.withDependency { pingLocationToggle && pingLocationDropDown }
-    private val sendPingedLocation: Boolean by BooleanSetting("Send Pinged Location", false, description = "Sends the location you are looking at as coords in chat for waypoints.").withDependency { pingLocationToggle && pingLocationDropDown }
-    private val pingWaypointTime by NumberSetting("Ping Waypoint Time", 15000L, 0L, 128000L, 1000L, description = "Time to wait before sending the waypoint command.").withDependency { pingLocationToggle && pingLocationDropDown }
+    private val sendPingedLocation by BooleanSetting("Send Pinged Location", false, description = "Sends the location you are looking at as coords in chat for waypoints.").withDependency { pingLocationToggle && pingLocationDropDown }
+    private val pingWaypointTime by NumberSetting("Ping Waypoint Time", 15000L, 0L, 128000L, 1000L, unit = "ms", description = "Time to wait before sending the waypoint command.").withDependency { pingLocationToggle && pingLocationDropDown }
     private val pingDistance by NumberSetting("Ping Distance", 64.0, 1, 128, 1, description = "Distance to ping location.").withDependency { pingLocationToggle && pingLocationDropDown }
 
     init {
