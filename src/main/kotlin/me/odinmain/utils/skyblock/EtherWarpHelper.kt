@@ -4,6 +4,7 @@ import me.odinmain.OdinMain.mc
 import me.odinmain.utils.*
 import me.odinmain.utils.render.RenderUtils.renderVec
 import net.minecraft.block.Block
+import net.minecraft.block.state.BlockState
 import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
 import java.util.*
@@ -12,10 +13,10 @@ import kotlin.math.max
 import kotlin.math.sign
 
 object EtherWarpHelper {
-    data class EtherPos(val succeeded: Boolean, val pos: BlockPos?) {
+    data class EtherPos(val succeeded: Boolean, val pos: BlockPos?, val state: BlockState?) {
         inline val vec: Vec3? get() = pos?.let { Vec3(it) }
         companion object {
-            val NONE = EtherPos(false, null)
+            val NONE = EtherPos(false, null, null)
         }
     }
     var etherPos: EtherPos = EtherPos.NONE
@@ -34,7 +35,7 @@ object EtherWarpHelper {
         val startPos: Vec3 = getPositionEyes(pos)
         val endPos = getLook(yaw = yaw, pitch = pitch).normalize().multiply(factor = distance).add(startPos)
 
-        return traverseVoxels(startPos, endPos).takeUnless { it == EtherPos.NONE && returnEnd } ?: EtherPos(true, endPos.toBlockPos())
+        return traverseVoxels(startPos, endPos).takeUnless { it == EtherPos.NONE && returnEnd } ?: EtherPos(true, endPos.toBlockPos(), null)
     }
 
     fun getEtherPos(positionLook: PositionLook = PositionLook(mc.thePlayer.renderVec, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch), distance: Double =  56.0 + mc.thePlayer.heldItem.getTunerBonus): EtherPos {
@@ -74,18 +75,19 @@ object EtherWarpHelper {
 
         repeat(1000) {
             val chunk = mc.theWorld?.chunkProvider?.provideChunk(x.toInt() shr 4, z.toInt() shr 4) ?: return EtherPos.NONE
-            val currentBlock = Block.getIdFromBlock(chunk.getBlock(BlockPos(x, y, z)))
+            val currentBlock = chunk.getBlock(BlockPos(x, y, z))
+            val currentBlockId = Block.getIdFromBlock(currentBlock)
 
-            if (currentBlock != 0) {
-                if (validEtherwarpFeetIds.get(currentBlock)) return EtherPos(false, BlockPos(x, y, z))
+            if (currentBlockId != 0) {
+                if (validEtherwarpFeetIds.get(currentBlockId)) return EtherPos(false, BlockPos(x, y, z), currentBlock.blockState)
 
                 val footBlockId = Block.getIdFromBlock(chunk.getBlock(BlockPos(x, y + 1, z)))
-                if (!validEtherwarpFeetIds.get(footBlockId)) return EtherPos(false, BlockPos(x, y, z))
+                if (!validEtherwarpFeetIds.get(footBlockId)) return EtherPos(false, BlockPos(x, y, z), currentBlock.blockState)
 
                 val headBlockId = Block.getIdFromBlock(chunk.getBlock(BlockPos(x, y + 2, z)))
-                if (!validEtherwarpFeetIds.get(headBlockId)) return EtherPos(false, BlockPos(x, y, z))
+                if (!validEtherwarpFeetIds.get(headBlockId)) return EtherPos(false, BlockPos(x, y, z), currentBlock.blockState)
 
-                return EtherPos(true, BlockPos(x, y, z))
+                return EtherPos(true, BlockPos(x, y, z), currentBlock.blockState)
             }
 
             if (x == endX && y == endY && z == endZ) return EtherPos.NONE

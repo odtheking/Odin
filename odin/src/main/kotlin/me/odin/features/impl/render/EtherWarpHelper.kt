@@ -14,12 +14,17 @@ import me.odinmain.utils.skyblock.EtherWarpHelper.etherPos
 import me.odinmain.utils.skyblock.PlayerUtils.playLoudSound
 import me.odinmain.utils.skyblock.usingEtherWarp
 import me.odinmain.utils.toAABB
+import net.minecraft.block.Block.getIdFromBlock
+import net.minecraft.init.Blocks
 import me.odinmain.utils.ui.Colors
 import me.odinmain.utils.ui.clickgui.util.ColorUtil.withAlpha
 import net.minecraft.network.play.server.S29PacketSoundEffect
+import net.minecraft.util.MovingObjectPosition
+import net.minecraft.util.MovingObjectPosition.MovingObjectType
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import java.util.*
 
 object EtherWarpHelper : Module(
     name = "Etherwarp Helper",
@@ -36,6 +41,7 @@ object EtherWarpHelper : Module(
     private val fullBlock by BooleanSetting("Full Block", false, description = "If the box should be a full block.").withDependency { render }
     private val expand by NumberSetting("Expand", 0.0, -1, 1, 0.01, description = "Expands the box by this amount.").withDependency { render }
     private val useServerPosition by BooleanSetting("Use Server Position", true, description = "If etherwarp guess should use your server position or real position.").withDependency { render }
+    private val interactBlocks by BooleanSetting("Fail on Interactable", true, description = "If the guess should fail if you are looking at an interactable block.").withDependency { render }
 
     private val dropdown by DropdownSetting("Sounds", false)
     private val sounds by BooleanSetting("Custom Sounds", false, description = "Plays the selected custom sound when you etherwarp.").withDependency { dropdown }
@@ -59,11 +65,14 @@ object EtherWarpHelper : Module(
                 PositionLook(mc.thePlayer.renderVec, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch)
 
         etherPos = EtherWarpHelper.getEtherPos(positionLook)
-        if (etherPos.succeeded || renderFail)
+        val succeeded =
+            etherPos.succeeded && (!interactBlocks || mc.objectMouseOver?.typeOfHit != MovingObjectType.BLOCK || etherPos.state?.block?.let { invalidBlocks.get(getIdFromBlock(it)) } != true)
+
+        if (succeeded || renderFail)
             if (!fullBlock)
-                Renderer.drawStyledBlock(etherPos.pos ?: return, if (etherPos.succeeded) color else wrongColor, style, lineWidth, depthCheck, true, expand)
+                Renderer.drawStyledBlock(etherPos.pos ?: return, if (succeeded) color else wrongColor, style, lineWidth, depthCheck, true, expand)
             else
-                Renderer.drawStyledBox(etherPos.pos?.toAABB()?.expand(expand, expand, expand) ?: return, if (etherPos.succeeded) color else wrongColor, style, lineWidth, depthCheck)
+                Renderer.drawStyledBox(etherPos.pos?.toAABB()?.expand(expand, expand, expand) ?: return, if (succeeded) color else wrongColor, style, lineWidth, depthCheck)
     }
 
     @SubscribeEvent
@@ -71,5 +80,12 @@ object EtherWarpHelper : Module(
         if (this !is S29PacketSoundEffect || soundName != "mob.enderdragon.hit" || !sounds || volume != 1f || pitch != 0.53968257f || customSound == "mob.enderdragon.hit") return
         playLoudSound(if (sound == defaultSounds.size - 1) customSound else defaultSounds[sound], soundVolume, soundPitch, positionVector)
         event.isCanceled = true
+    }
+
+    private val invalidBlocks = BitSet().apply {
+        setOf(
+            Blocks.hopper, Blocks.chest, Blocks.ender_chest, Blocks.furnace, Blocks.crafting_table,
+            Blocks.enchanting_table, Blocks.dispenser, Blocks.dropper, Blocks.brewing_stand, Blocks.trapdoor,
+        ).forEach { set(getIdFromBlock(it)) }
     }
 }

@@ -37,7 +37,7 @@ object LeapMenu : Module(
     name = "Leap Menu",
     description = "Renders a custom leap menu when in the Spirit Leap gui."
 ) {
-    val type by SelectorSetting("Sorting", "Odin Sorting", arrayListOf("Odin Sorting", "A-Z Class (BetterMap)", "A-Z Name", "Custom sorting", "No Sorting"), description = "How to sort the leap menu.")
+    val type by SelectorSetting("Sorting", "Odin Sorting", arrayListOf("Odin Sorting", "A-Z Class (BetterMap)", "A-Z Name", "Custom sorting", "No Sorting"), description = "How to sort the leap menu. /od leaporder to configure custom sorting.")
     private val onlyClass by BooleanSetting("Only Classes", false, description = "Renders classes instead of names.")
     private val colorStyle by BooleanSetting("Color Style", false, description = "Which color style to use.")
     private val backgroundColor by ColorSetting("Background Color", Colors.MINECRAFT_DARK_GRAY.withAlpha(0.75f), allowAlpha = true, description = "Color of the background of the leap menu.").withDependency { !colorStyle }

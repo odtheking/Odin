@@ -20,7 +20,9 @@ import me.odinmain.utils.skyblock.PlayerUtils.playLoudSound
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.ui.Colors
 import me.odinmain.utils.ui.clickgui.util.ColorUtil.withAlpha
+import net.minecraft.block.Block.getIdFromBlock
 import net.minecraft.client.entity.EntityPlayerSP
+import net.minecraft.init.Blocks
 import net.minecraft.network.play.client.C03PacketPlayer.C05PacketPlayerLook
 import net.minecraft.network.play.client.C03PacketPlayer.C06PacketPlayerPosLook
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
@@ -28,9 +30,11 @@ import net.minecraft.network.play.client.C0BPacketEntityAction
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
 import net.minecraft.network.play.server.S29PacketSoundEffect
 import net.minecraft.util.MathHelper
+import net.minecraft.util.MovingObjectPosition.MovingObjectType
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import java.util.*
 import kotlin.math.abs
 import kotlin.math.absoluteValue
 
@@ -51,6 +55,7 @@ object EtherWarpHelper : Module(
     private val fullBlock by BooleanSetting("Full Block", false, description = "If the box should be a full block.").withDependency { render }
     private val expand by NumberSetting("Expand", 0.0, -1, 1, 0.01, description = "Expands the box by this amount.").withDependency { render }
     private val useServerPosition by BooleanSetting("Use Server Position", true, description = "If etherwarp guess should use your server position or real position.").withDependency { render }
+    private val interactBlocks by BooleanSetting("Fail on Interactable", true, description = "If the guess should fail if you are looking at an interactable block.").withDependency { render }
 
     private val etherwarpTBDropDown by DropdownSetting("Trigger Bot")
     private val etherWarpTriggerBot by BooleanSetting("Trigger Bot", false, description = "Uses Dungeon Waypoints to trigger bot to the closest waypoint.").withDependency { etherwarpTBDropDown }
@@ -92,12 +97,17 @@ object EtherWarpHelper : Module(
             else
                 PositionLook(mc.thePlayer.renderVec, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch)
 
+        if (!render) return
+
         etherPos = EtherWarpHelper.getEtherPos(positionLook)
-        if (render && (etherPos.succeeded || renderFail))
+        val succeeded =
+            etherPos.succeeded && (!interactBlocks || mc.objectMouseOver?.typeOfHit != MovingObjectType.BLOCK || etherPos.state?.block?.let { invalidBlocks.get(getIdFromBlock(it)) } != true)
+
+        if (succeeded || renderFail)
             if (!fullBlock)
-                Renderer.drawStyledBlock(etherPos.pos ?: return, if (etherPos.succeeded) color else wrongColor, style, lineWidth, depthCheck, true, expand)
+                Renderer.drawStyledBlock(etherPos.pos ?: return, if (succeeded) color else wrongColor, style, lineWidth, depthCheck, true, expand)
             else
-                Renderer.drawStyledBox(etherPos.pos?.toAABB()?.expand(expand, expand, expand) ?: return, if (etherPos.succeeded) color else wrongColor, style, lineWidth, depthCheck)
+                Renderer.drawStyledBox(etherPos.pos?.toAABB()?.expand(expand, expand, expand) ?: return, if (succeeded) color else wrongColor, style, lineWidth, depthCheck)
     }
 
     @SubscribeEvent
@@ -203,4 +213,11 @@ object EtherWarpHelper : Module(
 
     private fun EntityPlayerSP.isHoldingEtherwarp(): Boolean =
         heldItem?.skyblockID == "ETHERWARP_CONDUIT" || heldItem?.extraAttributes?.getBoolean("ethermerge") == true
+
+    private val invalidBlocks = BitSet().apply {
+        setOf(
+            Blocks.hopper, Blocks.chest, Blocks.ender_chest, Blocks.furnace, Blocks.crafting_table,
+            Blocks.enchanting_table, Blocks.dispenser, Blocks.dropper, Blocks.brewing_stand, Blocks.trapdoor,
+        ).forEach { set(getIdFromBlock(it)) }
+    }
 }
