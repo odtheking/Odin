@@ -55,7 +55,7 @@ object EtherWarpHelper : Module(
     private val fullBlock by BooleanSetting("Full Block", false, description = "If the box should be a full block.").withDependency { render }
     private val expand by NumberSetting("Expand", 0.0, -1, 1, 0.01, description = "Expands the box by this amount.").withDependency { render }
     private val useServerPosition by BooleanSetting("Use Server Position", true, description = "If etherwarp guess should use your server position or real position.").withDependency { render }
-    private val interactBlocks by BooleanSetting("Fail on Interactable", default = true, description = "If the guess should fail if you are looking at an interactable block.").withDependency { render }
+    private val interactBlocks by BooleanSetting("Fail on Interactable", true, description = "If the guess should fail if you are looking at an interactable block.").withDependency { render }
 
     private val etherwarpTBDropDown by DropdownSetting("Trigger Bot")
     private val etherWarpTriggerBot by BooleanSetting("Trigger Bot", false, description = "Uses Dungeon Waypoints to trigger bot to the closest waypoint.").withDependency { etherwarpTBDropDown }

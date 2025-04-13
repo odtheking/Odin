@@ -25,12 +25,12 @@ object PositionalMessages : Module(
     description = "Sends a message when you're near a certain position. /posmsg"
 ) {
     private val onlyDungeons by BooleanSetting("Only in Dungeons", true, description = "Only sends messages when you're in a dungeon.")
-    private val showPositions by BooleanSetting("Show Positions", default = true, description = "Draws boxes/lines around the positions.")
+    private val showPositions by BooleanSetting("Show Positions", true, description = "Draws boxes/lines around the positions.")
     private val cylinderHeight by NumberSetting("Height", 0.2, 0.1, 5.0, 0.1, description = "Height of the cylinder for in messages.").withDependency { showPositions }
     private val boxThickness by NumberSetting("Box line width", 1f, 0.1f, 5f, 0.1f, description = "Line width of the box for at messages.").withDependency { showPositions }
     private val depthCheck by BooleanSetting("Depth Check", true, description = "Whether or not the boxes should be seen through walls. False = Through walls.").withDependency { showPositions }
     private val displayMessage by BooleanSetting("Show Message", true, description = "Whether or not to display the message in the box.").withDependency { showPositions }
-    private val messageSize by NumberSetting("Message Size", 1f, min = 0.1f, increment = 0.1f, max = 4f, description = "Whether or not to display the message size in the box.").withDependency { showPositions && displayMessage }
+    private val messageSize by NumberSetting("Message Size", 1f, 0.1f, 4f, 0.1f, description = "Whether or not to display the message size in the box.").withDependency { showPositions && displayMessage }
 
     data class PosMessage(val x: Double, val y: Double, val z: Double, val x2: Double?, val y2: Double?, val z2: Double?, val delay: Long, val distance: Double?, val color: Color, val message: String)
     val posMessageStrings by ListSetting("Pos Messages Strings", mutableListOf<PosMessage>())
