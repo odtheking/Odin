@@ -33,7 +33,7 @@ object PositionalMessages : Module(
     private val messageSize by NumberSetting("Message Size", 1f, 0.1f, 4f, 0.1f, description = "Whether or not to display the message size in the box.").withDependency { showPositions && displayMessage }
 
     data class PosMessage(val x: Double, val y: Double, val z: Double, val x2: Double?, val y2: Double?, val z2: Double?, val delay: Long, val distance: Double?, val color: Color, val message: String)
-    val posMessageStrings by ListSetting("Pos Messages Strings", mutableListOf<PosMessage>())
+    val posMessageStrings by ListSetting("Pos Messages", mutableListOf<PosMessage>())
     private val sentMessages = mutableMapOf<PosMessage, Boolean>()
 
     @SubscribeEvent
