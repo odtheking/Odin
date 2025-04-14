@@ -62,7 +62,7 @@ object LeapMenu : Module(
     @SubscribeEvent
     fun onDrawScreen(event: GuiEvent.DrawGuiBackground) {
         val chest = (event.gui as? GuiChest)?.inventorySlots ?: return
-        if (chest !is ContainerChest || chest.name != "Spirit Leap" || leapTeammates.isEmpty() || leapTeammates.all { it == EMPTY }) return
+        if (chest !is ContainerChest || !chest.name.equalsOneOf("Spirit Leap", "Teleport to Player") || leapTeammates.isEmpty() || leapTeammates.all { it == EMPTY }) return
         hoveredQuadrant = getQuadrant()
         if (hoveredQuadrant != previouslyHoveredQuadrant && previouslyHoveredQuadrant != -1) {
             hoveredAnims[hoveredQuadrant - 1].start()
@@ -115,14 +115,14 @@ object LeapMenu : Module(
     @SubscribeEvent
     fun guiOpen(event: GuiOpenEvent) {
         val chest = (event.gui as? GuiChest)?.inventorySlots ?: return
-        if (chest !is ContainerChest || chest.name != "Spirit Leap" || leapTeammates.isEmpty() || leapTeammates.all { it == EMPTY }) return
+        if (chest !is ContainerChest || !chest.name.equalsOneOf("Spirit Leap", "Teleport to Player") || leapTeammates.isEmpty() || leapTeammates.all { it == EMPTY }) return
         if (Loader.instance().activeModList.any { it.modId == "notenoughupdates" }) NEUApi.setInventoryButtonsToDisabled()
     }
 
     @SubscribeEvent
     fun mouseClicked(event: GuiEvent.MouseClick) {
         val gui = (event.gui as? GuiChest)?.inventorySlots as? ContainerChest ?: return
-        if (gui.name != "Spirit Leap" || leapTeammates.isEmpty())  return
+        if (!gui.name.equalsOneOf("Spirit Leap", "Teleport to Player") || leapTeammates.isEmpty())  return
 
         val quadrant = getQuadrant()
         if ((type.equalsOneOf(1,2,3)) && leapTeammates.size < quadrant) return
@@ -139,7 +139,7 @@ object LeapMenu : Module(
     @SubscribeEvent
     fun keyTyped(event: GuiEvent.KeyPress) {
         val gui = (event.gui as? GuiChest)?.inventorySlots as? ContainerChest ?: return
-        if (!useNumberKeys || gui.name != "Spirit Leap" || keybindList.none { it.key == event.key } || leapTeammates.isEmpty()) return
+        if (!useNumberKeys || !gui.name.equalsOneOf("Spirit Leap", "Teleport to Player") || keybindList.none { it.key == event.key } || leapTeammates.isEmpty()) return
 
         val index = keybindList.indexOfFirst { it.key == event.key }
         val playerToLeap = if (index + 1 > leapTeammates.size) return else leapTeammates[index]
