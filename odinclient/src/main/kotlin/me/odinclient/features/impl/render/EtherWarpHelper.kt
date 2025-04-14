@@ -216,7 +216,7 @@ object EtherWarpHelper : Module(
 
     private val invalidBlocks = BitSet().apply {
         setOf(
-            Blocks.hopper, Blocks.chest, Blocks.ender_chest, Blocks.furnace, Blocks.crafting_table,
+            Blocks.hopper, Blocks.chest, Blocks.ender_chest, Blocks.furnace, Blocks.crafting_table, Blocks.cauldron,
             Blocks.enchanting_table, Blocks.dispenser, Blocks.dropper, Blocks.brewing_stand, Blocks.trapdoor,
         ).forEach { set(getIdFromBlock(it)) }
     }

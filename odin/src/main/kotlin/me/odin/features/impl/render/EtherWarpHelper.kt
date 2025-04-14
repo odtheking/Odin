@@ -14,12 +14,11 @@ import me.odinmain.utils.skyblock.EtherWarpHelper.etherPos
 import me.odinmain.utils.skyblock.PlayerUtils.playLoudSound
 import me.odinmain.utils.skyblock.usingEtherWarp
 import me.odinmain.utils.toAABB
-import net.minecraft.block.Block.getIdFromBlock
-import net.minecraft.init.Blocks
 import me.odinmain.utils.ui.Colors
 import me.odinmain.utils.ui.clickgui.util.ColorUtil.withAlpha
+import net.minecraft.block.Block.getIdFromBlock
+import net.minecraft.init.Blocks
 import net.minecraft.network.play.server.S29PacketSoundEffect
-import net.minecraft.util.MovingObjectPosition
 import net.minecraft.util.MovingObjectPosition.MovingObjectType
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
@@ -84,7 +83,7 @@ object EtherWarpHelper : Module(
 
     private val invalidBlocks = BitSet().apply {
         setOf(
-            Blocks.hopper, Blocks.chest, Blocks.ender_chest, Blocks.furnace, Blocks.crafting_table,
+            Blocks.hopper, Blocks.chest, Blocks.ender_chest, Blocks.furnace, Blocks.crafting_table, Blocks.cauldron,
             Blocks.enchanting_table, Blocks.dispenser, Blocks.dropper, Blocks.brewing_stand, Blocks.trapdoor,
         ).forEach { set(getIdFromBlock(it)) }
     }
