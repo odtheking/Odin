@@ -76,7 +76,7 @@ enum class DungeonClass(
     Archer(Colors.MINECRAFT_GOLD, '6', 0, 2),
     Berserk(Colors.MINECRAFT_DARK_RED, '4', 1, 0),
     Healer(Colors.MINECRAFT_LIGHT_PURPLE, 'd', 2, 2),
-    Mage(Colors.MINECRAFT_BLUE, 'b', 3, 2),
+    Mage(Colors.MINECRAFT_AQUA, 'b', 3, 2),
     Tank(Colors.MINECRAFT_DARK_GREEN, '2', 3, 1),
     Unknown(Colors.WHITE, 'f', 0, 0)
 }

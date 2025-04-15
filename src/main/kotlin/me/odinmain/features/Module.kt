@@ -14,7 +14,6 @@ import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.network.Packet
 import net.minecraftforge.common.MinecraftForge
 import org.lwjgl.input.Keyboard
-import kotlin.reflect.full.hasAnnotation
 
 /**
  * Class that represents a module. And handles all the settings.
@@ -57,7 +56,7 @@ abstract class Module(
      * which keeps the module registered to the eventbus, even if disabled
      */
     @Transient
-    val alwaysActive = this::class.hasAnnotation<AlwaysActive>()
+    val alwaysActive = this::class.java.isAnnotationPresent(AlwaysActive::class.java)
 
     init {
         if (alwaysActive) {
@@ -166,20 +165,11 @@ abstract class Module(
     }
 
     enum class TagType {
-        NONE, NEW, RISKY, FPSTAX
+        NONE, RISKY, FPSTAX
     }
 
     private companion object {
-        private fun getCategory(clazz: Class<out Module>): Category? {
-            val `package` = clazz.`package`.name
-            return when {
-                `package`.contains("dungeon") -> Category.DUNGEON
-                `package`.contains("floor7") -> Category.FLOOR7
-                `package`.contains("render") -> Category.RENDER
-                `package`.contains("skyblock") -> Category.SKYBLOCK
-                `package`.contains("nether") -> Category.NETHER
-                else -> null
-            }
-        }
+        private fun getCategory(clazz: Class<out Module>): Category? =
+            Category.entries.find { clazz.`package`.name.contains(it.name, true) }
     }
 }

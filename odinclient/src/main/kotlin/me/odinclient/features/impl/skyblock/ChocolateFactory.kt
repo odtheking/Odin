@@ -4,6 +4,7 @@ import me.odinmain.events.impl.GuiEvent
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.NumberSetting
+import me.odinmain.utils.containsOneOf
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.name
 import me.odinmain.utils.noControlCodes
@@ -37,7 +38,7 @@ object ChocolateFactory : Module(
     private val indexToName = mapOf(28 to "Bro", 29 to "Cousin", 30 to "Sis", 31 to "Daddy", 32 to "Granny", 33 to "Uncle", 34 to "Dog")
     private val possibleLocations = arrayOf(
         Island.SpiderDen, Island.CrimsonIsle, Island.TheEnd, Island.GoldMine, Island.DeepCaverns, Island.DwarvenMines,
-        Island.CrystalHollows, Island.FarmingIsland, Island.ThePark, Island.DungeonHub, Island.Hub
+        Island.CrystalHollows, Island.FarmingIsland, Island.ThePark, Island.DungeonHub, Island.Hub, Island.BackwaterBayou
     )
 
     init {
@@ -48,7 +49,7 @@ object ChocolateFactory : Module(
             if (clickFactory) windowClick(13, ClickType.Right)
             
             if (!claimStray) return@execute
-            val found = (mc.thePlayer?.openContainer as? ContainerChest)?.inventorySlots?.find { it.stack?.displayName?.contains("CLICK ME!") == true } ?: return@execute
+            val found = (mc.thePlayer?.openContainer as? ContainerChest)?.inventorySlots?.find { it.stack?.displayName?.containsOneOf("CLICK ME!", "Golden Rabbit") == true } ?: return@execute
             windowClick(found.slotNumber, ClickType.Left)
         }
 

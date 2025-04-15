@@ -9,6 +9,7 @@ import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.positionVector
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.runIn
+import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.ui.Colors
 import net.minecraft.network.play.server.S2APacketParticles
 import net.minecraft.util.EnumParticleTypes
@@ -34,7 +35,7 @@ object MageBeam: Module (
 
     @SubscribeEvent
     fun onPacketReceive(event: PacketEvent.Receive) = with(event.packet) {
-        if (this !is S2APacketParticles || particleType != EnumParticleTypes.FIREWORKS_SPARK || particleCount != 1 || particleSpeed != 0f || !isLongDistance ||
+        if (!DungeonUtils.inDungeons || this !is S2APacketParticles || particleType != EnumParticleTypes.FIREWORKS_SPARK || particleCount != 1 || particleSpeed != 0f || !isLongDistance ||
             xOffset != 0f || yOffset != 0f || zOffset != 0f) return
 
         val recentBeam = activeBeams.lastOrNull()
@@ -61,6 +62,7 @@ object MageBeam: Module (
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
+        if (!DungeonUtils.inDungeons) return
         for (beam in activeBeams) {
             if (beam.points.size < 2 || beam.points.size > 500) continue
             Renderer.draw3DLine(beam.points, color, lineWidth, depth)
