@@ -46,6 +46,6 @@ public abstract class MixinItemRenderer {
 
     @Inject(method = "doItemUsedTransformations", at = @At("HEAD"), cancellable = true)
     public void useTransform(float swingProgress, CallbackInfo ci) {
-        if (Animations.scaledSwing(swingProgress)) ci.cancel();
+        if (Animations.getShouldStopSwing() || Animations.scaledSwing(swingProgress)) ci.cancel();
     }
 }

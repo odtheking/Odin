@@ -33,7 +33,7 @@ object Animations : Module(
     val ignoreHaste by BooleanSetting("Ignore Haste", false, description = "Makes the chosen speed override haste modifiers.")
     private val noEquipReset by BooleanSetting("No Equip Reset", false, description = "Disables the equipping animation when switching items.")
     private val noSwing by BooleanSetting("No Swing", false, description = "Prevents your item from visually swinging forward.")
-    private val noTermSwing by BooleanSetting("No Terminator Swing", false, description = "Prevents your Terminator from swinging.").withDependency { !noSwing }
+    private val noTermSwing by BooleanSetting("No Terminator Swing", false, description = "Prevents your Terminator from swinging.")
 
     private val reset by ActionSetting("Reset", description = "Resets the settings to their default values.") {
         settings.forEach { it.reset() }
@@ -41,6 +41,9 @@ object Animations : Module(
 
     @JvmStatic
     val shouldNoEquipReset get() = enabled && noEquipReset
+
+    @JvmStatic
+    val shouldStopSwing get() = enabled && noSwing
 
     @JvmStatic
     fun itemTransferHook(equipProgress: Float, swingProgress: Float): Boolean {
@@ -74,7 +77,7 @@ object Animations : Module(
 
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
-        if (event.phase != TickEvent.Phase.END || !((noTermSwing && isHolding("TERMINATOR")) || noSwing)) return
+        if (event.phase != TickEvent.Phase.END || !(noTermSwing && isHolding("TERMINATOR"))) return
 
         mc.thePlayer?.let {
             it.isSwingInProgress = false
