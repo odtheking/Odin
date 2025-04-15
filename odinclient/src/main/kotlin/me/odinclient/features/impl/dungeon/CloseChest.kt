@@ -16,9 +16,9 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object CloseChest : Module(
     name = "Close Chest",
-    description = "Allows you to instantly close chests with any key or automatically."
+    desc = "Allows you to instantly close chests with any key or automatically."
 ) {
-    private val mode by SelectorSetting("Mode", "Auto", arrayListOf("Auto", "Any Key"), description = "The mode to use, auto will automatically close the chest, any key will make any key input close the chest.")
+    private val mode by SelectorSetting("Mode", "Auto", arrayListOf("Auto", "Any Key"), desc = "The mode to use, auto will automatically close the chest, any key will make any key input close the chest.")
 
     @SubscribeEvent
     fun onOpenWindow(event: PacketEvent.Receive) {

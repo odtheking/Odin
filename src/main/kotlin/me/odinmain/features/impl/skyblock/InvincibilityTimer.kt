@@ -16,10 +16,10 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object InvincibilityTimer : Module(
     name = "Invincibility Timer",
-    description = "Timer to show how long you have left Invincible."
+    desc = "Timer to show how long you have left Invincible."
 )  {
-    private val showCooldown by BooleanSetting("Show Cooldown", true, description = "Shows the cooldown of the mask.")
-    private val invincibilityAnnounce by BooleanSetting("Announce Invincibility", true, description = "Announces when you get invincibility.")
+    private val showCooldown by BooleanSetting("Show Cooldown", true, desc = "Shows the cooldown of the mask.")
+    private val invincibilityAnnounce by BooleanSetting("Announce Invincibility", true, desc = "Announces when you get invincibility.")
     private val hud by HudSetting("Timer Hud", 10f, 10f, 1f, true) {
         if (it) {
             RenderUtils.drawText("${if(showPrefix) "§bBonzo§f: " else ""}59t", 1f, 1f, 1.0, Colors.WHITE, center = false)
@@ -32,7 +32,7 @@ object InvincibilityTimer : Module(
             getMCTextWidth("Bonzo: 59t") + 2f to 1f
         }
     }
-    private val showPrefix by BooleanSetting("Show Prefix", true, description = "Shows the prefix of the timer.")
+    private val showPrefix by BooleanSetting("Show Prefix", true, desc = "Shows the prefix of the timer.")
 
     private data class Timer(var time: Int, var type: String)
     private var invincibilityTime = Timer(0, "")

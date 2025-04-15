@@ -32,39 +32,39 @@ import kotlin.math.sqrt
 
 object ArrowsDevice : Module(
     name = "Arrows Device",
-    description = "Different features for the Sharp Shooter puzzle in floor 7.",
+    desc = "Different features for the Sharp Shooter puzzle in floor 7.",
     tag = TagType.RISKY
 ) {
     private val solverDropdown by DropdownSetting("Solver")
-    private val solver by BooleanSetting("Solver Enabled", true, description = "Automatically solve the puzzle.").withDependency { solverDropdown }
-    private val markedPositionColor by ColorSetting("Marked Position", Colors.MINECRAFT_RED, description = "Color of the marked position.").withDependency { solver && solverDropdown }
-    private val targetPositionColor by ColorSetting("Target Position", Colors.MINECRAFT_GREEN, description = "Color of the target position.").withDependency { solver && solverDropdown }
+    private val solver by BooleanSetting("Solver Enabled", true, desc = "Automatically solve the puzzle.").withDependency { solverDropdown }
+    private val markedPositionColor by ColorSetting("Marked Position", Colors.MINECRAFT_RED, desc = "Color of the marked position.").withDependency { solver && solverDropdown }
+    private val targetPositionColor by ColorSetting("Target Position", Colors.MINECRAFT_GREEN, desc = "Color of the target position.").withDependency { solver && solverDropdown }
     private val resetKey by KeybindSetting("Reset", Keyboard.KEY_NONE, description = "Resets the solver.").onPress {
         markedPositions.clear()
         autoState = AutoState.Stopped
         actionQueue.clear()
     }.withDependency { solver && solverDropdown }
-    private val depthCheck by BooleanSetting("Depth check", true, description = "Marked positions show through walls.").withDependency { solver && solverDropdown }
-    private val reset by ActionSetting("Reset", description = "Resets the solver.") {
+    private val depthCheck by BooleanSetting("Depth check", true, desc = "Marked positions show through walls.").withDependency { solver && solverDropdown }
+    private val reset by ActionSetting("Reset", desc = "Resets the solver.") {
         markedPositions.clear()
         autoState = AutoState.Stopped
         actionQueue.clear()
     }.withDependency { solver && solverDropdown }
-    private val alertOnDeviceComplete by BooleanSetting("Device complete alert", true, description = "Send an alert when device is complete.").withDependency { solverDropdown }
+    private val alertOnDeviceComplete by BooleanSetting("Device complete alert", true, desc = "Send an alert when device is complete.").withDependency { solverDropdown }
 
     private val autoDropdown by DropdownSetting("Auto Device")
-    private val auto by BooleanSetting("Auto Enabled", description = "Automatically complete device.").withDependency { autoDropdown }
-    private val autoShoot by BooleanSetting("Auto Shoot", description = "Automatically aim and shoot at targets.").withDependency { auto && autoDropdown }
-    private val autoPhoenix by BooleanSetting("Auto Phoenix",true, description = "Automatically swap to phoenix pet using cast rod pet rules, must be set up correctly.").withDependency { auto && autoDropdown }
-    private val autoLeap by BooleanSetting("Auto Leap", true, description = "Automatically leap once device is done.").withDependency { auto && autoDropdown }
-    private val autoLeapClass by SelectorSetting("Leap to", "Mage", arrayListOf("Archer", "Berserk", "Healer", "Mage", "Tank"), description = "Who to leap to.").withDependency { autoLeap && auto && autoDropdown }
-    private val autoLeapOnlyPre by BooleanSetting("Only leap on pre", true, description = "Only auto leap when doing i4.").withDependency { autoLeap && auto && autoDropdown }
-    private val delay by NumberSetting("Auto Delay", 150L, 80, 300, description = "Delay between actions.").withDependency { auto && autoDropdown }
-    private val aimingTime by NumberSetting("Aiming Duration", 100L, 80, 200, description = "Time taken to aim at a target.").withDependency { auto && autoDropdown }
+    private val auto by BooleanSetting("Auto Enabled", desc = "Automatically complete device.").withDependency { autoDropdown }
+    private val autoShoot by BooleanSetting("Auto Shoot", desc = "Automatically aim and shoot at targets.").withDependency { auto && autoDropdown }
+    private val autoPhoenix by BooleanSetting("Auto Phoenix",true, desc = "Automatically swap to phoenix pet using cast rod pet rules, must be set up correctly.").withDependency { auto && autoDropdown }
+    private val autoLeap by BooleanSetting("Auto Leap", true, desc = "Automatically leap once device is done.").withDependency { auto && autoDropdown }
+    private val autoLeapClass by SelectorSetting("Leap to", "Mage", arrayListOf("Archer", "Berserk", "Healer", "Mage", "Tank"), desc = "Who to leap to.").withDependency { autoLeap && auto && autoDropdown }
+    private val autoLeapOnlyPre by BooleanSetting("Only leap on pre", true, desc = "Only auto leap when doing i4.").withDependency { autoLeap && auto && autoDropdown }
+    private val delay by NumberSetting("Auto Delay", 150L, 80, 300, desc = "Delay between actions.").withDependency { auto && autoDropdown }
+    private val aimingTime by NumberSetting("Aiming Duration", 100L, 80, 200, desc = "Time taken to aim at a target.").withDependency { auto && autoDropdown }
 
     private val triggerBotDropdown by DropdownSetting("Trigger Bot")
-    private val triggerBot by BooleanSetting("Trigger Bot Enabled", description = "Automatically shoot targets.").withDependency { triggerBotDropdown }
-    private val triggerBotDelay by NumberSetting("Trigger Bot Delay", 250L, 50L, 1000L, 10L, unit = "ms", description = "The delay between each click.").withDependency { triggerBotDropdown }
+    private val triggerBot by BooleanSetting("Trigger Bot Enabled", desc = "Automatically shoot targets.").withDependency { triggerBotDropdown }
+    private val triggerBotDelay by NumberSetting("Trigger Bot Delay", 250L, 50L, 1000L, 10L, unit = "ms", desc = "The delay between each click.").withDependency { triggerBotDropdown }
     private val triggerBotClock = Clock(triggerBotDelay)
 
     private val markedPositions = mutableSetOf<BlockPos>()

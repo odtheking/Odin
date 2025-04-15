@@ -20,12 +20,12 @@ import kotlin.math.sin
 
 object SupplyHelper : Module(
     name = "Supply Helper",
-    description = "Provides visual aid for supply drops in Kuudra."
+    desc = "Provides visual aid for supply drops in Kuudra."
 ) {
-    private val suppliesWaypoints by BooleanSetting("Supplies Waypoints", true, description = "Renders the supply waypoints.")
-    private val supplyWaypointColor by ColorSetting("Supply Waypoint Color", Colors.MINECRAFT_YELLOW, true, description = "Color of the supply waypoints.").withDependency { suppliesWaypoints }
-    private val supplyDropWaypoints by BooleanSetting("Supply Drop Waypoints", true, description = "Renders the supply drop waypoints.")
-    private val sendSupplyTime by BooleanSetting("Send Supply Time", true, description = "Sends a message when a supply is collected.")
+    private val suppliesWaypoints by BooleanSetting("Supplies Waypoints", true, desc = "Renders the supply waypoints.")
+    private val supplyWaypointColor by ColorSetting("Supply Waypoint Color", Colors.MINECRAFT_YELLOW, true, desc = "Color of the supply waypoints.").withDependency { suppliesWaypoints }
+    private val supplyDropWaypoints by BooleanSetting("Supply Drop Waypoints", true, desc = "Renders the supply drop waypoints.")
+    private val sendSupplyTime by BooleanSetting("Send Supply Time", true, desc = "Sends a message when a supply is collected.")
 
     private var startRun = 0L
     private val supplyPickUpRegex = Regex("(?:\\[[^]]*])? ?(\\w{1,16}) recovered one of Elle's supplies! \\((\\d)/(\\d)\\)")

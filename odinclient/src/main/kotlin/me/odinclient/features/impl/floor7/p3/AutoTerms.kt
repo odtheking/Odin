@@ -11,13 +11,13 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 
 object AutoTerms : Module(
     name = "Auto Terms",
-    description = "Automatically solves terminals.",
+    desc = "Automatically solves terminals.",
     tag = TagType.RISKY
 ) {
-    private val autoDelay by NumberSetting("Delay", 170L, 130, 300, unit = "ms", description = "Delay between clicks.")
-    private val firstClickDelay by NumberSetting("First Click Delay", 350L, 300, 500, unit = "ms", description = "Delay before first click.")
-    private val breakThreshold by NumberSetting("Break Threshold", 500L, 350L, 1000L, 10L, unit = "ms", description = "Time before breaking the click.")
-    private val disableMelody by BooleanSetting("Disable Melody", false, description = "Disables melody terminals.")
+    private val autoDelay by NumberSetting("Delay", 170L, 130, 300, unit = "ms", desc = "Delay between clicks.")
+    private val firstClickDelay by NumberSetting("First Click Delay", 350L, 300, 500, unit = "ms", desc = "Delay before first click.")
+    private val breakThreshold by NumberSetting("Break Threshold", 500L, 350L, 1000L, 10L, unit = "ms", desc = "Time before breaking the click.")
+    private val disableMelody by BooleanSetting("Disable Melody", false, desc = "Disables melody terminals.")
     private var lastClickTime = 0L
     private var firstClick = true
 

@@ -21,12 +21,12 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object BuildHelper : Module(
     name = "Build Helper",
-    description = "Displays various information about the current state of the ballista build."
+    desc = "Displays various information about the current state of the ballista build."
 ) {
-    private val buildHelperDraw by BooleanSetting("Render on Ballista", false, description = "Draws the build helper.")
-    private val unfinishedWaypoints by BooleanSetting("Unfinished Waypoints", true, description = "Renders the unfinished piles waypoints.")
-    private val fadeWaypoints by BooleanSetting("Fade Waypoints", true, description = "Fades the waypoints when close to them.")
-    private val buildHelperColor by ColorSetting("Build Helper Color", Colors.MINECRAFT_GOLD, description = "Color of the build helper.")
+    private val buildHelperDraw by BooleanSetting("Render on Ballista", false, desc = "Draws the build helper.")
+    private val unfinishedWaypoints by BooleanSetting("Unfinished Waypoints", true, desc = "Renders the unfinished piles waypoints.")
+    private val fadeWaypoints by BooleanSetting("Fade Waypoints", true, desc = "Fades the waypoints when close to them.")
+    private val buildHelperColor by ColorSetting("Build Helper Color", Colors.MINECRAFT_GOLD, desc = "Color of the build helper.")
     private val hud by HudSetting("Build helper HUD", 10f, 10f, 1f, true) {
         if (it) {
             text("Build §c50§8%", 1f, 9f, buildHelperColor, 12f, OdinFont.REGULAR, shadow = true)
@@ -43,8 +43,8 @@ object BuildHelper : Module(
             getTextWidth("4Build 50%", 12f) + 2f to 42f
         }
     }
-    private val stunNotification by BooleanSetting("Stun Notification", true, description = "Notifies you when to go to stun.")
-    private val stunNotificationNumber by NumberSetting("Stun Percent", 93, 0.0, 100.0, description = "The build % to notify at.", unit = "%").withDependency { stunNotification }
+    private val stunNotification by BooleanSetting("Stun Notification", true, desc = "Notifies you when to go to stun.")
+    private val stunNotificationNumber by NumberSetting("Stun Percent", 93, 0.0, 100.0, desc = "The build % to notify at.", unit = "%").withDependency { stunNotification }
 
     @SubscribeEvent
     fun renderWorldEvent(event: RenderWorldLastEvent) {

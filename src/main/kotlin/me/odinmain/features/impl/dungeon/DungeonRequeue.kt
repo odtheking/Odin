@@ -9,11 +9,11 @@ import me.odinmain.utils.skyblock.sendCommand
 
 object DungeonRequeue : Module(
     name = "Dungeon Requeue",
-    description = "Automatically starts a new dungeon at the end of a dungeon."
+    desc = "Automatically starts a new dungeon at the end of a dungeon."
 ) {
-    private val delay by NumberSetting("Delay", 2, 0, 30, 1, description = "The delay in seconds before requeuing.", unit = "s")
-    private val type by BooleanSetting("Type", true, description = "The type of command to execute to fulfill the requeue request. (true for Normal, false for Requeue)")
-    private val disablePartyLeave by BooleanSetting("Disable on leave/kick", true, description = "Disables the requeue on party leave message.")
+    private val delay by NumberSetting("Delay", 2, 0, 30, 1, desc = "The delay in seconds before requeuing.", unit = "s")
+    private val type by BooleanSetting("Type", true, desc = "The type of command to execute to fulfill the requeue request. (true for Normal, false for Requeue)")
+    private val disablePartyLeave by BooleanSetting("Disable on leave/kick", true, desc = "Disables the requeue on party leave message.")
 
     var disableRequeue = false
     init {

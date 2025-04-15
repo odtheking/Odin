@@ -27,30 +27,30 @@ import kotlin.math.roundToInt
 
 object DianaHelper : Module(
     name = "Diana Helper",
-    description = "Displays the location of the Diana guess and burrows."
+    desc = "Displays the location of the Diana guess and burrows."
 ) {
-    private val guessColor by ColorSetting("Guess Color", Colors.WHITE, allowAlpha = true, description = "Color of the guess text.")
-    private val tracer by BooleanSetting("Tracer", true, description = "Draws a line from your position to the guess.")
-    private val tracerWidth by NumberSetting("Tracer Width", 5f, 1f, 20f, description = "Width of the tracer line.").withDependency { tracer }
-    private val tracerColor by ColorSetting("Tracer Line Color", Colors.WHITE, allowAlpha = true, description = "Color of the tracer line.").withDependency { tracer }
-    private val tracerBurrows by BooleanSetting("Tracer Burrows", true, description = "Draws a line from your position to the burrows.")
-    private val style by SelectorSetting("Style", "Filled", arrayListOf("Filled", "Outline", "Filled Outline"), description = "Whether or not the box should be filled.")
-    private val sendInqMsg by BooleanSetting("Send Inq Msg", true, description = "Sends your coordinates to the party chat when you dig out an inquisitor.")
+    private val guessColor by ColorSetting("Guess Color", Colors.WHITE, allowAlpha = true, desc = "Color of the guess text.")
+    private val tracer by BooleanSetting("Tracer", true, desc = "Draws a line from your position to the guess.")
+    private val tracerWidth by NumberSetting("Tracer Width", 5f, 1f, 20f, desc = "Width of the tracer line.").withDependency { tracer }
+    private val tracerColor by ColorSetting("Tracer Line Color", Colors.WHITE, allowAlpha = true, desc = "Color of the tracer line.").withDependency { tracer }
+    private val tracerBurrows by BooleanSetting("Tracer Burrows", true, desc = "Draws a line from your position to the burrows.")
+    private val style by SelectorSetting("Style", "Filled", arrayListOf("Filled", "Outline", "Filled Outline"), desc = "Whether or not the box should be filled.")
+    private val sendInqMsg by BooleanSetting("Send Inq Msg", true, desc = "Sends your coordinates to the party chat when you dig out an inquisitor.")
     private val showWarpSettings by DropdownSetting("Show Warp Settings")
-    private val castle by BooleanSetting("Castle Warp", description = "Warp to the castle.").withDependency { showWarpSettings }
-    private val crypt by BooleanSetting("Crypt Warp", description = "Warp to the crypt.").withDependency { showWarpSettings }
-    private val stonks by BooleanSetting("Stonks Warp", description = "Warp to the stonks.").withDependency { showWarpSettings }
-    private val darkAuction by BooleanSetting("DA Warp", description = "Warp to the dark auction.").withDependency { showWarpSettings }
-    private val museum by BooleanSetting("Museum Warp", description = "Warp to the museum.").withDependency { showWarpSettings }
-    private val wizard by BooleanSetting("Wizard Warp", description = "Warp to the wizard.").withDependency { showWarpSettings }
+    private val castle by BooleanSetting("Castle Warp", desc = "Warp to the castle.").withDependency { showWarpSettings }
+    private val crypt by BooleanSetting("Crypt Warp", desc = "Warp to the crypt.").withDependency { showWarpSettings }
+    private val stonks by BooleanSetting("Stonks Warp", desc = "Warp to the stonks.").withDependency { showWarpSettings }
+    private val darkAuction by BooleanSetting("DA Warp", desc = "Warp to the dark auction.").withDependency { showWarpSettings }
+    private val museum by BooleanSetting("Museum Warp", desc = "Warp to the museum.").withDependency { showWarpSettings }
+    private val wizard by BooleanSetting("Wizard Warp", desc = "Warp to the wizard.").withDependency { showWarpSettings }
     private val warpKeybind by KeybindSetting("Warp Keybind", Keyboard.KEY_NONE, description = "Keybind to warp to the nearest warp location.").onPress {
         if (!cmdCooldown.hasTimePassed()) return@onPress
         sendCommand("warp ${warpLocation?.name ?: return@onPress}")
         warpLocation = null
     }
-    private val autoWarp by BooleanSetting("Auto Warp", description = "Automatically warps you to the nearest warp location after you activate the spade ability.").withDependency { !isLegitVersion }
-    private val autoWarpWaitTime by NumberSetting("Auto Warp Wait Time", 2f, 0.2, 10.0, 0.1, unit = "s", description = "Time to wait before warping.").withDependency { autoWarp }
-    private val resetBurrows by ActionSetting("Reset Burrows", description = "Removes all the current burrows.") { activeBurrows.clear() }
+    private val autoWarp by BooleanSetting("Auto Warp", desc = "Automatically warps you to the nearest warp location after you activate the spade ability.").withDependency { !isLegitVersion }
+    private val autoWarpWaitTime by NumberSetting("Auto Warp Wait Time", 2f, 0.2, 10.0, 0.1, unit = "s", desc = "Time to wait before warping.").withDependency { autoWarp }
+    private val resetBurrows by ActionSetting("Reset Burrows", desc = "Removes all the current burrows.") { activeBurrows.clear() }
     private var warpLocation: WarpPoint? = null
 
     private var isDoingDiana: Boolean = false

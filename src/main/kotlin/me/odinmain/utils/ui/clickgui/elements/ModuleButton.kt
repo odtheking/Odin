@@ -99,7 +99,7 @@ class ModuleButton(val module: Module, val panel: Panel) {
         hover.handle(x, y, width, height - 1)
 
         if (hoverHandler.percent() > 0) {
-            ClickGUI.setDescription(module.description, x + width + 10f, y, hoverHandler)
+            ClickGUI.setDescription(module.desc, x + width + 10f, y, hoverHandler)
         }
 
         roundedRectangle(x, y, width, height, color)

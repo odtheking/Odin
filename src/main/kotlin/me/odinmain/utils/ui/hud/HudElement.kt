@@ -165,11 +165,11 @@ open class HudElement(
     /** Used for smooth resetting animations */
     internal var resetScale: Float = 0f
 
-    private val xHud = NumberSetting("$settingName x", x, min = 0f, max = Float.MAX_VALUE, description = "", hidden = true)
-    private val yHud = NumberSetting("$settingName y", y, min = 0f, max = Float.MAX_VALUE, description = "", hidden = true)
+    private val xHud = NumberSetting("$settingName x", x, min = 0f, max = Float.MAX_VALUE, desc = "", hidden = true)
+    private val yHud = NumberSetting("$settingName y", y, min = 0f, max = Float.MAX_VALUE, desc = "", hidden = true)
 
     init {
-        val scaleHud = NumberSetting("$settingName scale", defaultScale, 1f, 8.0f, 0.01f, description = "", hidden = true)
+        val scaleHud = NumberSetting("$settingName scale", defaultScale, 1f, 8.0f, 0.01f, desc = "", hidden = true)
 
         this.xSetting = xHud
         this.ySetting = yHud

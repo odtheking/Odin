@@ -23,7 +23,7 @@ import kotlin.reflect.full.hasAnnotation
 abstract class Module(
     val name: String,
     key: Int? = Keyboard.KEY_NONE,
-    @Transient var description: String,
+    @Transient var desc: String,
     @Transient val tag: TagType = TagType.NONE,
     toggled: Boolean = false,
 ) {

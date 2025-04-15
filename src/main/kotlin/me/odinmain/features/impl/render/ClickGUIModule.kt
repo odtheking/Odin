@@ -27,26 +27,26 @@ import org.lwjgl.input.Keyboard
 object ClickGUIModule: Module(
     name = "Click Gui",
     Keyboard.KEY_RSHIFT,
-    description = "Allows you to customize the GUI."
+    desc = "Allows you to customize the GUI."
 ) {
-    val blur by BooleanSetting("Blur", false, description = "Toggles the background blur for the gui.")
-    val enableNotification by BooleanSetting("Enable notifications", true, description = "Shows you a notification in chat when you toggle an option with a keybind.")
-    val color by ColorSetting("Gui Color", Color(50, 150, 220), allowAlpha = false, description = "Color theme in the gui.")
-    val switchType by BooleanSetting("Switch Type", true, description = "Switches the type of the settings in the gui.")
-    val hudChat by BooleanSetting("Shows HUDs in GUIs", true, description = "Shows HUDs in GUIs.")
-    val forceHypixel by BooleanSetting("Force Hypixel", false, description = "Forces the hypixel check to be on (not recommended).")
+    val blur by BooleanSetting("Blur", false, desc = "Toggles the background blur for the gui.")
+    val enableNotification by BooleanSetting("Enable notifications", true, desc = "Shows you a notification in chat when you toggle an option with a keybind.")
+    val color by ColorSetting("Gui Color", Color(50, 150, 220), allowAlpha = false, desc = "Color theme in the gui.")
+    val switchType by BooleanSetting("Switch Type", true, desc = "Switches the type of the settings in the gui.")
+    val hudChat by BooleanSetting("Shows HUDs in GUIs", true, desc = "Shows HUDs in GUIs.")
+    val forceHypixel by BooleanSetting("Force Hypixel", false, desc = "Forces the hypixel check to be on (not recommended).")
 
-    val devMessages by BooleanSetting("Dev Message", false, description = "Enables dev messages in chat.")
-    val devSize by BooleanSetting("Dev Size", true, description = "Toggles client side dev size.").withDependency { DevPlayers.isDev }
-    private val devWings by BooleanSetting("Dev Wings", false, description = "Toggles client side dev wings.").withDependency { DevPlayers.isDev }
-    private val devWingsColor by ColorSetting("Dev Wings Color", Colors.WHITE, description = "Color of the dev wings.").withDependency { DevPlayers.isDev }
-    private val devSizeX by NumberSetting("Dev Size X", 1f, -1f, 3f, 0.1, description = "X scale of the dev size.").withDependency { DevPlayers.isDev && devSize }
-    private val devSizeY by NumberSetting("Dev Size Y", 1f, -1f, 3f, 0.1, description = "Y scale of the dev size.").withDependency { DevPlayers.isDev && devSize }
-    private val devSizeZ by NumberSetting("Dev Size Z", 1f, -1f, 3f, 0.1, description = "Z scale of the dev size.").withDependency { DevPlayers.isDev && devSize }
+    val devMessages by BooleanSetting("Dev Message", false, desc = "Enables dev messages in chat.")
+    val devSize by BooleanSetting("Dev Size", true, desc = "Toggles client side dev size.").withDependency { DevPlayers.isDev }
+    private val devWings by BooleanSetting("Dev Wings", false, desc = "Toggles client side dev wings.").withDependency { DevPlayers.isDev }
+    private val devWingsColor by ColorSetting("Dev Wings Color", Colors.WHITE, desc = "Color of the dev wings.").withDependency { DevPlayers.isDev }
+    private val devSizeX by NumberSetting("Dev Size X", 1f, -1f, 3f, 0.1, desc = "X scale of the dev size.").withDependency { DevPlayers.isDev && devSize }
+    private val devSizeY by NumberSetting("Dev Size Y", 1f, -1f, 3f, 0.1, desc = "Y scale of the dev size.").withDependency { DevPlayers.isDev && devSize }
+    private val devSizeZ by NumberSetting("Dev Size Z", 1f, -1f, 3f, 0.1, desc = "Z scale of the dev size.").withDependency { DevPlayers.isDev && devSize }
     private var showHidden by DropdownSetting("Show Hidden", false).withDependency { DevPlayers.isDev }
-    private val passcode by StringSetting("Passcode", "odin", description = "Passcode for dev features.").withDependency { DevPlayers.isDev && showHidden }
+    private val passcode by StringSetting("Passcode", "odin", desc = "Passcode for dev features.").withDependency { DevPlayers.isDev && showHidden }
 
-    private val reset by ActionSetting("Send Dev Data", description = "Sends dev data to the server.") {
+    private val reset by ActionSetting("Send Dev Data", desc = "Sends dev data to the server.") {
         showHidden = false
         scope.launch {
             modMessage(sendDataToServer(body = "${mc.thePlayer.name}, [${devWingsColor.r},${devWingsColor.g},${devWingsColor.b}], [$devSizeX,$devSizeY,$devSizeZ], $devWings, $passcode", "https://tj4yzotqjuanubvfcrfo7h5qlq0opcyk.lambda-url.eu-north-1.on.aws/"))
@@ -54,11 +54,11 @@ object ClickGUIModule: Module(
         }
     }.withDependency { DevPlayers.isDev }
 
-    private val action by ActionSetting("Open Example Hud", description = "Opens an example hud to allow configuration of huds.") {
+    private val action by ActionSetting("Open Example Hud", desc = "Opens an example hud to allow configuration of huds.") {
         OdinMain.display = EditHUDGui
     }
 
-    var lastSeenVersion by StringSetting("Last seen version", "1.0.0", description = "", hidden = true)
+    var lastSeenVersion by StringSetting("Last seen version", "1.0.0", desc = "", hidden = true)
     private var joined by BooleanSetting("First join", false, "", hidden = true)
     private var hasSentUpdateMessage = false
     var latestVersionNumber: String? = null
@@ -150,9 +150,9 @@ object ClickGUIModule: Module(
     fun resetPositions() {
         Category.entries.forEach {
             val incr = 10f + 260f * it.ordinal
-            panelX.getOrPut(it) { +NumberSetting(it.name + ",x", default = incr, description = "", hidden = true) }.value = incr
-            panelY.getOrPut(it) { +NumberSetting(it.name + ",y", default = 10f, description = "", hidden = true) }.value = 10f
-            panelExtended.getOrPut(it) { +BooleanSetting(it.name + ",extended", default = true, description = "", hidden = true) }.enabled = true
+            panelX.getOrPut(it) { +NumberSetting(it.name + ",x", default = incr, desc = "", hidden = true) }.value = incr
+            panelY.getOrPut(it) { +NumberSetting(it.name + ",y", default = 10f, desc = "", hidden = true) }.value = 10f
+            panelExtended.getOrPut(it) { +BooleanSetting(it.name + ",extended", default = true, desc = "", hidden = true) }.enabled = true
         }
     }
 

@@ -19,11 +19,11 @@ import org.lwjgl.input.Keyboard
 
 object SlotBinds: Module (
     name = "Slot Binds",
-    description = "Bind slots together for quick access.",
+    desc = "Bind slots together for quick access.",
     key = null
 ) {
     private val setNewSlotbind by KeybindSetting("Bind set key", Keyboard.KEY_NONE, description = "Key to set new bindings.")
-    private val lineColor by ColorSetting("LineColor", Colors.MINECRAFT_GOLD, description = "Color of the line drawn between slots.")
+    private val lineColor by ColorSetting("LineColor", Colors.MINECRAFT_GOLD, desc = "Color of the line drawn between slots.")
     private val slotBinds by MapSetting("slotBinds", mutableMapOf<Int, Int>())
 
     private var previousSlot: Int? = null

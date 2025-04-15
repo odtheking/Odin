@@ -27,19 +27,19 @@ import org.lwjgl.input.Keyboard
 
 object ArrowsDevice : Module(
     name = "Arrows Device",
-    description = "Shows a solution for the Sharp Shooter puzzle in floor 7."
+    desc = "Shows a solution for the Sharp Shooter puzzle in floor 7."
 ) {
-    private val solver by BooleanSetting("Solver", description = "Enables the solver.")
-    private val markedPositionColor by ColorSetting("Marked Position", Colors.MINECRAFT_RED, description = "Color of the marked position.").withDependency { solver }
-    private val targetPositionColor by ColorSetting("Target Position", Colors.MINECRAFT_GREEN, description = "Color of the target position.").withDependency { solver }
+    private val solver by BooleanSetting("Solver", desc = "Enables the solver.")
+    private val markedPositionColor by ColorSetting("Marked Position", Colors.MINECRAFT_RED, desc = "Color of the marked position.").withDependency { solver }
+    private val targetPositionColor by ColorSetting("Target Position", Colors.MINECRAFT_GREEN, desc = "Color of the target position.").withDependency { solver }
     private val resetKey by KeybindSetting("Reset", Keyboard.KEY_NONE, description = "Resets the solver.").onPress {
         markedPositions.clear()
     }.withDependency { solver }
-    private val depthCheck by BooleanSetting("Depth check", true, description = "Marked positions show through walls.").withDependency { solver }
-    private val reset by ActionSetting("Reset", description = "Resets the solver.") {
+    private val depthCheck by BooleanSetting("Depth check", true, desc = "Marked positions show through walls.").withDependency { solver }
+    private val reset by ActionSetting("Reset", desc = "Resets the solver.") {
         markedPositions.clear()
     }.withDependency { solver }
-    private val alertOnDeviceComplete by BooleanSetting("Device complete alert", true, description = "Send an alert when device is complete.")
+    private val alertOnDeviceComplete by BooleanSetting("Device complete alert", true, desc = "Send an alert when device is complete.")
 
     private val markedPositions = mutableSetOf<BlockPos>()
     private var targetPosition: BlockPos? = null

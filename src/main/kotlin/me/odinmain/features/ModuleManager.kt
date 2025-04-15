@@ -46,7 +46,7 @@ object ModuleManager {
     val modules: ArrayList<Module> = arrayListOf(
         // dungeon
         DungeonRequeue, BlessingDisplay, PositionalMessages, ExtraStats, KeyHighlight, Mimic, TeammatesHighlight,
-        TerracottaTimer, BloodCamp, SecretClicked, DungeonWaypoints, LeapMenu, PuzzleSolvers,
+        TerracottaTimer, BloodCamp, SecretClicked, DungeonWaypoints, LeapMenu, PuzzleSolvers, MageBeam,
         WarpCooldown, MapInfo, SwapSound, LividSolver,
 
         // floor 7
@@ -173,7 +173,7 @@ object ModuleManager {
         for ((category, modulesInCategory) in modules.groupBy { it.category }.entries) {
             featureList.appendLine("Category: ${category.displayName}")
             for (module in modulesInCategory.sortedByDescending { getTextWidth(it.name, 18f) }) {
-                featureList.appendLine("- ${module.name}: ${module.description}")
+                featureList.appendLine("- ${module.name}: ${module.desc}")
             }
             featureList.appendLine()
         }

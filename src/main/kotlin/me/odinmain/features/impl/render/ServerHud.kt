@@ -12,12 +12,12 @@ import org.apache.commons.lang3.math.IEEE754rUtils.max
 
 object ServerHud : Module(
     name = "Server Hud",
-    description = "Displays your current ping, FPS and server's TPS."
+    desc = "Displays your current ping, FPS and server's TPS."
 ) {
-    private val ping by BooleanSetting("Ping", true, description = "Displays your current ping.")
-    private val tps by BooleanSetting("TPS", true, description = "Displays the server's TPS.")
-    private val fps by BooleanSetting("FPS", false, description = "Displays your current FPS.")
-    private val style by SelectorSetting("Style", "Row", arrayListOf("Row", "Stacked"), description = "The style of the server hud.")
+    private val ping by BooleanSetting("Ping", true, desc = "Displays your current ping.")
+    private val tps by BooleanSetting("TPS", true, desc = "Displays the server's TPS.")
+    private val fps by BooleanSetting("FPS", false, desc = "Displays your current FPS.")
+    private val style by SelectorSetting("Style", "Row", arrayListOf("Row", "Stacked"), desc = "The style of the server hud.")
 
     val hud by HudSetting("Display", 10f, 10f, 1f, false) {
         if (it) {

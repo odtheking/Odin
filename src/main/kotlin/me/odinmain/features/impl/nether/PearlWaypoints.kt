@@ -16,9 +16,9 @@ import java.util.*
 
 object PearlWaypoints : Module(
     name = "Pearl Waypoints",
-    description = "Renders waypoints for pearls in Kuudra."
+    desc = "Renders waypoints for pearls in Kuudra."
 ) {
-    private val hideFarWaypoints by BooleanSetting("Hide Far Waypoints", true, description = "Hides the waypoints that are not the closest to you.")
+    private val hideFarWaypoints by BooleanSetting("Hide Far Waypoints", true, desc = "Hides the waypoints that are not the closest to you.")
 
     private val pearlLineups: Map<Lineup, Color> = mapOf(
         // Triangle

@@ -15,11 +15,11 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object LightsDevice : Module(
     name = "Lights Device",
-    description = "Features to help with the lights device."
+    desc = "Features to help with the lights device."
 ) {
-    private val triggerBot by BooleanSetting("Triggerbot", false, description = "Toggles correct levers automatically when you look at them.")
-    private val delay by NumberSetting("Delay", 200L, 70, 500, unit = "ms", description = "The delay between each click.").withDependency { triggerBot }
-    val bigLevers by BooleanSetting("Big Levers", false, description = "Makes the levers you want to toggle a 1x1x1 hitbox so they are easier to hit.")
+    private val triggerBot by BooleanSetting("Triggerbot", false, desc = "Toggles correct levers automatically when you look at them.")
+    private val delay by NumberSetting("Delay", 200L, 70, 500, unit = "ms", desc = "The delay between each click.").withDependency { triggerBot }
+    val bigLevers by BooleanSetting("Big Levers", false, desc = "Makes the levers you want to toggle a 1x1x1 hitbox so they are easier to hit.")
     private val triggerBotClock = Clock(delay)
 
     val levers = setOf(

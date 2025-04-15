@@ -7,9 +7,9 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 
 object Camera : Module(
     name = "Camera",
-    description = "Allows you to change camera settings."
+    desc = "Allows you to change camera settings."
 ) {
-    private val frontCamera by BooleanSetting("No Front Camera", description = "Disables the front camera.")
+    private val frontCamera by BooleanSetting("No Front Camera", desc = "Disables the front camera.")
 
     @SubscribeEvent
     fun onTick(event: TickEvent.ClientTickEvent) {

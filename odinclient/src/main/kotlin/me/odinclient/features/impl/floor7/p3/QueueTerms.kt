@@ -15,10 +15,10 @@ import java.util.*
 
 object QueueTerms : Module(
     name = "Queue Terms",
-    description = "Queues clicks in terminals to ensure every click is registered (only works in custom term gui).",
+    desc = "Queues clicks in terminals to ensure every click is registered (only works in custom term gui).",
     tag = TagType.RISKY
 ) {
-    private val dispatchDelay by NumberSetting("Dispatch Delay", 140L, 140L, 300L, unit = "ms", description = "The delay between each click.")
+    private val dispatchDelay by NumberSetting("Dispatch Delay", 140L, 140L, 300L, unit = "ms", desc = "The delay between each click.")
     private data class Click(val slot: Int, val button: Int)
     private val queue: Queue<Click> = LinkedList()
     private var lastClickTime = 0L

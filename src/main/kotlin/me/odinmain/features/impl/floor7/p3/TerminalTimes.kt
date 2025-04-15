@@ -15,16 +15,16 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object TerminalTimes : Module(
     name = "Terminal Times",
-    description = "Records the time taken to complete terminals in floor 7."
+    desc = "Records the time taken to complete terminals in floor 7."
 ) {
-    private val sendMessage by BooleanSetting("Send Message", false, description = "Send a message when a terminal is completed.")
-    private val reset by ActionSetting("Reset pbs", description = "Resets the terminal PBs.") {
+    private val sendMessage by BooleanSetting("Send Message", false, desc = "Send a message when a terminal is completed.")
+    private val reset by ActionSetting("Reset pbs", desc = "Resets the terminal PBs.") {
         repeat(6) { i -> terminalPBs.set(i, 999.0) }
         modMessage("§6Terminal PBs §fhave been reset.")
     }
 
-    private val terminalSplits by BooleanSetting("Terminal Splits", true, description = "Adds the time when a term was completed to its message, and sends the total term time after terms are done.")
-    private val useRealTime by BooleanSetting("Use Real Time", true, description = "Use real time rather than server ticks.")
+    private val terminalSplits by BooleanSetting("Terminal Splits", true, desc = "Adds the time when a term was completed to its message, and sends the total term time after terms are done.")
+    private val useRealTime by BooleanSetting("Use Real Time", true, desc = "Use real time rather than server ticks.")
 
     private val terminalPBs = PersonalBest("Terminals", 7)
 

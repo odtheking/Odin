@@ -6,7 +6,7 @@ import net.minecraft.block.Block
 
 object FarmingHitboxes : Module(
     name = "Farming Hitboxes",
-    description = "Expands the hitbox of some crops to a full block."
+    desc = "Expands the hitbox of some crops to a full block."
 ) {
     fun setFullBlock(block: Block) {
         val accessor = (block as IBlockAccessor)

@@ -23,38 +23,38 @@ import kotlin.random.Random
 
 object ChatCommands : Module(
     name = "Chat Commands",
-    description = "Type !help in the corresponding channel for cmd list. Use /chatclist.",
+    desc = "Type !help in the corresponding channel for cmd list. Use /chatclist.",
 ) {
-    private val chatEmotes by BooleanSetting("Chat Emotes", true, description = "Replaces chat emotes with their corresponding emojis.")
-    private val party by BooleanSetting("Party commands", true, description = "Toggles chat commands in party chat.")
-    private val guild by BooleanSetting("Guild commands", true, description = "Toggles chat commands in guild chat.")
-    private val private by BooleanSetting("Private commands", true, description = "Toggles chat commands in private chat.")
-    private val whitelistOnly by BooleanSetting("Whitelist Only", false, description = "Whether the list should act like a whitelist or a blacklist.")
+    private val chatEmotes by BooleanSetting("Chat Emotes", true, desc = "Replaces chat emotes with their corresponding emojis.")
+    private val party by BooleanSetting("Party commands", true, desc = "Toggles chat commands in party chat.")
+    private val guild by BooleanSetting("Guild commands", true, desc = "Toggles chat commands in guild chat.")
+    private val private by BooleanSetting("Private commands", true, desc = "Toggles chat commands in private chat.")
+    private val whitelistOnly by BooleanSetting("Whitelist Only", false, desc = "Whether the list should act like a whitelist or a blacklist.")
     private val showSettings by DropdownSetting("Show Settings", false)
 
-    private val warp by BooleanSetting("Warp", true, description = "Executes the /party warp commnad.").withDependency { showSettings }
-    private val warptransfer by BooleanSetting("Warp & pt (warptransfer)", true, description = "Executes the /party warp and /party transfer commands.").withDependency { showSettings }
-    private val coords by BooleanSetting("Coords (coords)", true, description = "Sends your current coordinates.").withDependency { showSettings }
-    private val allinvite by BooleanSetting("Allinvite", true, description = "Executes the /party settings allinvite command.").withDependency { showSettings }
-    private val odin by BooleanSetting("Odin", true, description = "Sends the odin discord link.").withDependency { showSettings }
-    private val boop by BooleanSetting("Boop", true, description = "Executes the /boop command.").withDependency { showSettings }
-    private val kick by BooleanSetting("Kick", true, description = "Executes the /p kick command.").withDependency { showSettings }
-    private val cf by BooleanSetting("Coinflip (cf)", true, description = "Sends the result of a coinflip..").withDependency { showSettings }
-    private val eightball by BooleanSetting("Eightball", true, description = "Sends a random 8ball response.").withDependency { showSettings }
-    private val dice by BooleanSetting("Dice", true, description = "Rolls a dice.").withDependency { showSettings }
-    private val pt by BooleanSetting("Party transfer (pt)", false, description = "Executes the /party transfer command.").withDependency { showSettings }
-    private val ping by BooleanSetting("Ping", true, description = "Sends your current ping.").withDependency { showSettings }
-    private val tps by BooleanSetting("TPS", true, description = "Sends the server's current TPS.").withDependency { showSettings }
-    private val fps by BooleanSetting("FPS", true, description = "Sends your current FPS.").withDependency { showSettings }
-    private val dt by BooleanSetting("DT", true, description = "Sets a reminder for the end of the run.").withDependency { showSettings }
-    private val invite by BooleanSetting("Invite", true, description = "Invites the player to your party.").withDependency { showSettings }
-    private val racism by BooleanSetting("Racism", false, description = "Sends a random racism percentage.").withDependency { showSettings }
-    private val queInstance by BooleanSetting("Queue instance cmds", true, description = "Queue dungeons commands.").withDependency { showSettings }
-    private val time by BooleanSetting("Time", false, description = "Sends the current time.").withDependency { showSettings }
-    private val demote by BooleanSetting("Demote", false, description = "Executes the /party demote command.").withDependency { showSettings }
-    private val promote by BooleanSetting("Promote", false, description = "Executes the /party promote command.").withDependency { showSettings }
-    private val location by BooleanSetting("Location", true, description = "Sends your current location.").withDependency { showSettings }
-    private val holding by BooleanSetting("Holding", true, description = "Sends the item you are holding.").withDependency { showSettings }
+    private val warp by BooleanSetting("Warp", true, desc = "Executes the /party warp commnad.").withDependency { showSettings }
+    private val warptransfer by BooleanSetting("Warp & pt (warptransfer)", true, desc = "Executes the /party warp and /party transfer commands.").withDependency { showSettings }
+    private val coords by BooleanSetting("Coords (coords)", true, desc = "Sends your current coordinates.").withDependency { showSettings }
+    private val allinvite by BooleanSetting("Allinvite", true, desc = "Executes the /party settings allinvite command.").withDependency { showSettings }
+    private val odin by BooleanSetting("Odin", true, desc = "Sends the odin discord link.").withDependency { showSettings }
+    private val boop by BooleanSetting("Boop", true, desc = "Executes the /boop command.").withDependency { showSettings }
+    private val kick by BooleanSetting("Kick", true, desc = "Executes the /p kick command.").withDependency { showSettings }
+    private val cf by BooleanSetting("Coinflip (cf)", true, desc = "Sends the result of a coinflip..").withDependency { showSettings }
+    private val eightball by BooleanSetting("Eightball", true, desc = "Sends a random 8ball response.").withDependency { showSettings }
+    private val dice by BooleanSetting("Dice", true, desc = "Rolls a dice.").withDependency { showSettings }
+    private val pt by BooleanSetting("Party transfer (pt)", false, desc = "Executes the /party transfer command.").withDependency { showSettings }
+    private val ping by BooleanSetting("Ping", true, desc = "Sends your current ping.").withDependency { showSettings }
+    private val tps by BooleanSetting("TPS", true, desc = "Sends the server's current TPS.").withDependency { showSettings }
+    private val fps by BooleanSetting("FPS", true, desc = "Sends your current FPS.").withDependency { showSettings }
+    private val dt by BooleanSetting("DT", true, desc = "Sets a reminder for the end of the run.").withDependency { showSettings }
+    private val invite by BooleanSetting("Invite", true, desc = "Invites the player to your party.").withDependency { showSettings }
+    private val racism by BooleanSetting("Racism", false, desc = "Sends a random racism percentage.").withDependency { showSettings }
+    private val queInstance by BooleanSetting("Queue instance cmds", true, desc = "Queue dungeons commands.").withDependency { showSettings }
+    private val time by BooleanSetting("Time", false, desc = "Sends the current time.").withDependency { showSettings }
+    private val demote by BooleanSetting("Demote", false, desc = "Executes the /party demote command.").withDependency { showSettings }
+    private val promote by BooleanSetting("Promote", false, desc = "Executes the /party promote command.").withDependency { showSettings }
+    private val location by BooleanSetting("Location", true, desc = "Sends your current location.").withDependency { showSettings }
+    private val holding by BooleanSetting("Holding", true, desc = "Sends the item you are holding.").withDependency { showSettings }
 
     private val dtReason = mutableListOf<Pair<String, String>>()
     val blacklist: MutableList<String> by ListSetting("Blacklist", mutableListOf())

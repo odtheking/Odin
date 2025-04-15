@@ -17,12 +17,12 @@ import me.odinmain.utils.ui.Colors
 
 object FreshTimer : Module(
     name = "Fresh Timer",
-    description = "Shows the time until fresh timer."
+    desc = "Shows the time until fresh timer."
 ){
-    private val notifyFresh by BooleanSetting("Notify Fresh", true, description = "Notifies your party when you get fresh timer.")
-    val highlightFresh by BooleanSetting("Highlight Fresh", true, description = "Highlights fresh timer users.")
-    val highlightFreshColor by ColorSetting("Highlight Fresh Color", Colors.MINECRAFT_YELLOW, true, description = "Color of the highlight.").withDependency { highlightFresh }
-    private val freshTimerHUDColor by ColorSetting("Fresh Timer Color", Colors.MINECRAFT_GOLD, true, description = "Color of the fresh timer HUD.")
+    private val notifyFresh by BooleanSetting("Notify Fresh", true, desc = "Notifies your party when you get fresh timer.")
+    val highlightFresh by BooleanSetting("Highlight Fresh", true, desc = "Highlights fresh timer users.")
+    val highlightFreshColor by ColorSetting("Highlight Fresh Color", Colors.MINECRAFT_YELLOW, true, desc = "Color of the highlight.").withDependency { highlightFresh }
+    private val freshTimerHUDColor by ColorSetting("Fresh Timer Color", Colors.MINECRAFT_GOLD, true, desc = "Color of the fresh timer HUD.")
     private val hud by HudSetting("Fresh timer HUD", 10f, 10f, 1f, true) { example ->
         if (example) {
             text("Fresh§f: 9s", 1f, 9f, freshTimerHUDColor, 12f, OdinFont.REGULAR, shadow = true)

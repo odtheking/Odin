@@ -20,19 +20,19 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object InactiveWaypoints : Module(
     name = "Inactive Waypoints",
-    description = "Shows inactive terminals, devices and levers."
+    desc = "Shows inactive terminals, devices and levers."
 ) {
-    private val showTerminals by BooleanSetting("Show Terminals", true, description = "Shows inactive terminals.")
-    private val showDevices by BooleanSetting("Show Devices", true, description = "Shows inactive devices.")
-    private val showLevers by BooleanSetting("Show Levers", true, description = "Shows inactive levers.")
-    private val renderText by BooleanSetting("Render Text", true, description = "Renders the name of the inactive waypoint.")
-    private val renderBeacon by BooleanSetting("Render Beacon", true, description = "Renders a beacon beam on the inactive waypoint.")
-    private val renderBox by BooleanSetting("Render Box", true, description = "Renders a box around the inactive waypoint.")
-    private val hideDefault by BooleanSetting("Hide Default", true, description = "Hide the Hypixel names of Inactive Terminals.")
-    private val style by SelectorSetting("Style", Renderer.DEFAULT_STYLE, Renderer.styles, description = Renderer.STYLE_DESCRIPTION)
-    private val color by ColorSetting("Color", Colors.MINECRAFT_BLUE.withAlpha(.4f), allowAlpha = true, description = "The color of the box.")
-    private val lineWidth by NumberSetting("Line Width", 2f, 0.1f, 10f, 0.1f, description = "The width of the box's lines.")
-    private val depthCheck by BooleanSetting("Depth check", false, description = "Boxes show through walls.")
+    private val showTerminals by BooleanSetting("Show Terminals", true, desc = "Shows inactive terminals.")
+    private val showDevices by BooleanSetting("Show Devices", true, desc = "Shows inactive devices.")
+    private val showLevers by BooleanSetting("Show Levers", true, desc = "Shows inactive levers.")
+    private val renderText by BooleanSetting("Render Text", true, desc = "Renders the name of the inactive waypoint.")
+    private val renderBeacon by BooleanSetting("Render Beacon", true, desc = "Renders a beacon beam on the inactive waypoint.")
+    private val renderBox by BooleanSetting("Render Box", true, desc = "Renders a box around the inactive waypoint.")
+    private val hideDefault by BooleanSetting("Hide Default", true, desc = "Hide the Hypixel names of Inactive Terminals.")
+    private val style by SelectorSetting("Style", Renderer.DEFAULT_STYLE, Renderer.styles, desc = Renderer.STYLE_DESCRIPTION)
+    private val color by ColorSetting("Color", Colors.MINECRAFT_BLUE.withAlpha(.4f), allowAlpha = true, desc = "The color of the box.")
+    private val lineWidth by NumberSetting("Line Width", 2f, 0.1f, 10f, 0.1f, desc = "The width of the box's lines.")
+    private val depthCheck by BooleanSetting("Depth check", false, desc = "Boxes show through walls.")
 
     private var inactiveList = setOf<Entity>()
 

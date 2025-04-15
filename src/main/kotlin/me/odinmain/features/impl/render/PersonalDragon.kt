@@ -20,15 +20,15 @@ import kotlin.math.sin
 
 object PersonalDragon : Module(
     name = "Personal Dragon",
-    description = "Spawns your own personal dragon."
+    desc = "Spawns your own personal dragon."
 ) {
-    private val onlyF5 by BooleanSetting("Only F5", true, description = "Only render the dragon when in F5 mode.")
-    private val scale by NumberSetting("Scale", 0.5f, 0f, 1f, 0.01f, description = "The scale of the dragon.")
-    private val horizontal by NumberSetting("Horizontal", -1f, -10f, 10f, 0.1f, description = "The horizontal offset of the dragon.")
-    private val vertical by NumberSetting("Vertical", 0f, -10f, 10f, 0.1f, description = "The vertical offset of the dragon.")
-    private val degrees by NumberSetting("Degrees", 0f, -180f, 180f, 1f, description = "The degrees of the dragon.")
-    private val animationSpeed by NumberSetting("Animation Speed", 0.5f, 0.0f, 1f, 0.01f, description = "The speed of the dragon's animation.")
-    private val color by ColorSetting("Color", Colors.WHITE, description = "The color of the dragon.")
+    private val onlyF5 by BooleanSetting("Only F5", true, desc = "Only render the dragon when in F5 mode.")
+    private val scale by NumberSetting("Scale", 0.5f, 0f, 1f, 0.01f, desc = "The scale of the dragon.")
+    private val horizontal by NumberSetting("Horizontal", -1f, -10f, 10f, 0.1f, desc = "The horizontal offset of the dragon.")
+    private val vertical by NumberSetting("Vertical", 0f, -10f, 10f, 0.1f, desc = "The vertical offset of the dragon.")
+    private val degrees by NumberSetting("Degrees", 0f, -180f, 180f, 1f, desc = "The degrees of the dragon.")
+    private val animationSpeed by NumberSetting("Animation Speed", 0.5f, 0.0f, 1f, 0.01f, desc = "The speed of the dragon's animation.")
+    private val color by ColorSetting("Color", Colors.WHITE, desc = "The color of the dragon.")
 
     var dragon: EntityDragon? = null
 

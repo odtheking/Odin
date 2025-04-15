@@ -22,16 +22,16 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object ChocolateFactory : Module(
     name = "Chocolate Factory",
-    description = "Automates the Chocolate Factory."
+    desc = "Automates the Chocolate Factory."
 ) {
-    private val clickFactory by BooleanSetting("Click Factory", false, description = "Click the cookie in the Chocolate Factory menu.")
-    private val autoUpgrade by BooleanSetting("Auto Upgrade", false, description = "Automatically upgrade the worker.")
-    private val delay by NumberSetting("Delay", 150L, 50, 1500, 5, unit = "ms", description = "Delay between actions.")
-    private val upgradeDelay by NumberSetting("Upgrade delay", 500L, 300, 2000, 100, unit = "ms", description = "Delay between upgrades.")
-    private val claimStray by BooleanSetting("Claim Strays", false, description = "Claim stray rabbits in the Chocolate Factory menu.")
-    private val cancelSound by BooleanSetting("Cancel Sound", false, description = "Cancels the eating sound in the Chocolate Factory.")
-    private val upgradeMessage by BooleanSetting("Odin Upgrade Message", false, description = "Prints a message when upgrading.")
-    private val eggEsp by BooleanSetting("Egg ESP", false, description = "Shows the location of the egg.")
+    private val clickFactory by BooleanSetting("Click Factory", false, desc = "Click the cookie in the Chocolate Factory menu.")
+    private val autoUpgrade by BooleanSetting("Auto Upgrade", false, desc = "Automatically upgrade the worker.")
+    private val delay by NumberSetting("Delay", 150L, 50, 1500, 5, unit = "ms", desc = "Delay between actions.")
+    private val upgradeDelay by NumberSetting("Upgrade delay", 500L, 300, 2000, 100, unit = "ms", desc = "Delay between upgrades.")
+    private val claimStray by BooleanSetting("Claim Strays", false, desc = "Claim stray rabbits in the Chocolate Factory menu.")
+    private val cancelSound by BooleanSetting("Cancel Sound", false, desc = "Cancels the eating sound in the Chocolate Factory.")
+    private val upgradeMessage by BooleanSetting("Odin Upgrade Message", false, desc = "Prints a message when upgrading.")
+    private val eggEsp by BooleanSetting("Egg ESP", false, desc = "Shows the location of the egg.")
     private var chocolate = 0L
 
     private val indexToName = mapOf(28 to "Bro", 29 to "Cousin", 30 to "Sis", 31 to "Daddy", 32 to "Granny", 33 to "Uncle", 34 to "Dog")

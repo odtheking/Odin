@@ -16,7 +16,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object DeployableTimer : Module(
     name = "Deployable Timer",
-    description = "Displays the active deployable remaining time."
+    desc = "Displays the active deployable remaining time."
 ) {
     private val firework = Item.getByNameOrId("minecraft:fireworks")
     private val hud by HudSetting("Display", 10f, 10f, 1f, false) {

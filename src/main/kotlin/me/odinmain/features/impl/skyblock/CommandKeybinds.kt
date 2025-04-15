@@ -7,7 +7,7 @@ import org.lwjgl.input.Keyboard
 
 object CommandKeybinds : Module(
     name = "Command Keybinds",
-    description = "Various keybinds for common skyblock commands.",
+    desc = "Various keybinds for common skyblock commands.",
     key = null
 ) {
     private val pets by KeybindSetting("Pets", Keyboard.KEY_NONE, description = "Opens the pets menu.").onPress {

@@ -10,17 +10,17 @@ import me.odinmain.utils.skyblock.partyMessage
 
 object KuudraReminders : Module(
     name = "Kuudra Reminders",
-    description = "Displays reminders about Kuudra."
+    desc = "Displays reminders about Kuudra."
 ) {
-    private val displayText by BooleanSetting("Display Text", true, description = "Displays kuudra information in chat.")
-    private val playSound by BooleanSetting("Play Sound", true, description = "Plays a sound when a kuudra event occurs.")
-    private val keyReminder by BooleanSetting("Key Reminder", true, description = "Reminds you to bring a key.")
-    private val buyUpgrades by BooleanSetting("Buy Upgrades", true, description = "Reminds you to buy upgrades.")
-    private val pickUpSupplies by BooleanSetting("Pick Up Supplies", true, description = "Reminds you to pick up supplies.")
-    private val buildBallista by BooleanSetting("Build Ballista", true, description = "Reminds you to build the ballista.")
-    private val freshTools by BooleanSetting("Fresh Tools", true, description = "Reminds you to use fresh tools.")
-    private val manaDrain by BooleanSetting("Mana Drain", true, description = "Notifies your party when you use mana on them.")
-    private val onlyKuudra by BooleanSetting("Notify in Kuudra Only", true, description = "Notify of mana drain only when in Kuudra.").withDependency { manaDrain }
+    private val displayText by BooleanSetting("Display Text", true, desc = "Displays kuudra information in chat.")
+    private val playSound by BooleanSetting("Play Sound", true, desc = "Plays a sound when a kuudra event occurs.")
+    private val keyReminder by BooleanSetting("Key Reminder", true, desc = "Reminds you to bring a key.")
+    private val buyUpgrades by BooleanSetting("Buy Upgrades", true, desc = "Reminds you to buy upgrades.")
+    private val pickUpSupplies by BooleanSetting("Pick Up Supplies", true, desc = "Reminds you to pick up supplies.")
+    private val buildBallista by BooleanSetting("Build Ballista", true, desc = "Reminds you to build the ballista.")
+    private val freshTools by BooleanSetting("Fresh Tools", true, desc = "Reminds you to use fresh tools.")
+    private val manaDrain by BooleanSetting("Mana Drain", true, desc = "Notifies your party when you use mana on them.")
+    private val onlyKuudra by BooleanSetting("Notify in Kuudra Only", true, desc = "Notify of mana drain only when in Kuudra.").withDependency { manaDrain }
 
     private data class Reminder(val regex: Regex, val shouldRun: () -> Boolean, val alert: String)
     private val reminders = listOf(

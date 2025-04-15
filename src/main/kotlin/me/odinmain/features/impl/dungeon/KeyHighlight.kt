@@ -23,13 +23,13 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object KeyHighlight : Module(
     name = "Key Highlight",
-    description = "Highlights wither and blood keys in dungeons."
+    desc = "Highlights wither and blood keys in dungeons."
 ) {
-    private val announceKeySpawn by BooleanSetting("Announce Key Spawn", true, description = "Announces when a key is spawned.")
-    private val style by SelectorSetting("Style", Renderer.DEFAULT_STYLE, Renderer.styles, description = Renderer.STYLE_DESCRIPTION)
-    private val witherColor by ColorSetting("Wither Color", Colors.BLACK.withAlpha(0.8f), allowAlpha = true, description = "The color of the box.")
-    private val bloodColor by ColorSetting("Blood Color", Colors.MINECRAFT_RED.withAlpha(0.8f), allowAlpha = true, description = "The color of the box.")
-    private val lineWidth by NumberSetting("Line Width", 2f, 0.1f, 10f, 0.1f, description = "The width of the box's lines.")
+    private val announceKeySpawn by BooleanSetting("Announce Key Spawn", true, desc = "Announces when a key is spawned.")
+    private val style by SelectorSetting("Style", Renderer.DEFAULT_STYLE, Renderer.styles, desc = Renderer.STYLE_DESCRIPTION)
+    private val witherColor by ColorSetting("Wither Color", Colors.BLACK.withAlpha(0.8f), allowAlpha = true, desc = "The color of the box.")
+    private val bloodColor by ColorSetting("Blood Color", Colors.MINECRAFT_RED.withAlpha(0.8f), allowAlpha = true, desc = "The color of the box.")
+    private val lineWidth by NumberSetting("Line Width", 2f, 0.1f, 10f, 0.1f, desc = "The width of the box's lines.")
     private data class KeyInfo(val entity: Entity, val color: Color)
     private var currentKey: KeyInfo? = null
 

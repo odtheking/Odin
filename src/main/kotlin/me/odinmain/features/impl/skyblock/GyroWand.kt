@@ -19,13 +19,13 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object GyroWand : Module(
     name = "Gyro Wand",
-    description = "Shows area of effect and cooldown of the Gyrokinetic Wand."
+    desc = "Shows area of effect and cooldown of the Gyrokinetic Wand."
 ) {
-    private val color by ColorSetting("Color", Colors.MINECRAFT_DARK_PURPLE.withAlpha(0.5f), allowAlpha = true, description = "The color of the Gyrokinetic Wand range.")
-    private val thickness by NumberSetting("Thickness", 0.4f, 0, 10, 0.05f, description = "The thickness of the Gyrokinetic Wand range.")
-    private val steps by NumberSetting("Smoothness", 40, 20, 80, 1, description = "The amount of steps to use when rendering the Gyrokinetic Wand range.")
-    private val showCooldown by BooleanSetting("Show Cooldown", true, description = "Shows the cooldown of the Gyrokinetic Wand.")
-    private val cooldownColor by ColorSetting("Cooldown Color", Colors.MINECRAFT_RED.withAlpha(0.5f), allowAlpha = true, description = "The color of the cooldown of the Gyrokinetic Wand.").withDependency { showCooldown }
+    private val color by ColorSetting("Color", Colors.MINECRAFT_DARK_PURPLE.withAlpha(0.5f), allowAlpha = true, desc = "The color of the Gyrokinetic Wand range.")
+    private val thickness by NumberSetting("Thickness", 0.4f, 0, 10, 0.05f, desc = "The thickness of the Gyrokinetic Wand range.")
+    private val steps by NumberSetting("Smoothness", 40, 20, 80, 1, desc = "The amount of steps to use when rendering the Gyrokinetic Wand range.")
+    private val showCooldown by BooleanSetting("Show Cooldown", true, desc = "Shows the cooldown of the Gyrokinetic Wand.")
+    private val cooldownColor by ColorSetting("Cooldown Color", Colors.MINECRAFT_RED.withAlpha(0.5f), allowAlpha = true, desc = "The color of the cooldown of the Gyrokinetic Wand.").withDependency { showCooldown }
 
     private val gyroCooldown = Clock(30_000L)
 

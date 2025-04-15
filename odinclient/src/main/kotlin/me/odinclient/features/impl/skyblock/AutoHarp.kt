@@ -20,7 +20,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
  */
 object AutoHarp : Module(
     name = "Auto Harp",
-    description = "Automatically Completes Melody's Harp."
+    desc = "Automatically Completes Melody's Harp."
 ){
     private var lastInv = 0
 

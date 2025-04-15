@@ -12,7 +12,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 
 object BPSDisplay : Module(
     name = "BPS Display",
-    description = "Displays how many blocks per second you're breaking."
+    desc = "Displays how many blocks per second you're breaking."
 ) {
     private var startTime: Long = 0
     private var isBreaking: Boolean = false

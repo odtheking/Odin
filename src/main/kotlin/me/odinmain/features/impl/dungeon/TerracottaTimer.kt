@@ -18,7 +18,7 @@ import java.util.concurrent.CopyOnWriteArrayList
 
 object TerracottaTimer : Module(
     name = "Terracotta Timer",
-    description = "Displays the time until the terracotta respawns."
+    desc = "Displays the time until the terracotta respawns."
 ) {
     private var terracottaSpawning = CopyOnWriteArrayList<Terracotta>()
     private data class Terracotta(val pos: Vec3, var time: Double)

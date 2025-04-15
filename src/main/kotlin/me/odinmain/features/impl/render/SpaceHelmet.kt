@@ -13,9 +13,9 @@ import java.util.*
 
 object SpaceHelmet : Module(
     name = "Space Helmet",
-    description = "Equips you with a space helmet."
+    desc = "Equips you with a space helmet."
 ) {
-    private val speed by NumberSetting("Speed", 250L, 100, 1000, 10, description = "The speed at which the color changes.", unit = "ms")
+    private val speed by NumberSetting("Speed", 250L, 100, 1000, 10, desc = "The speed at which the color changes.", unit = "ms")
     private var edition = 0
     private val values = listOf(14, 1, 4, 5, 13, 9, 11, 10, 6)
     private var currentIndex = 0

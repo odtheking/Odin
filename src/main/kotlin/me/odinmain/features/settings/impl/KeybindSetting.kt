@@ -10,9 +10,9 @@ import org.lwjgl.input.Mouse
 class KeybindSetting(
     name: String,
     override val default: Keybinding,
-    description: String,
+    desc: String,
     hidden: Boolean = false
-) : Setting<Keybinding>(name, hidden, description), Saving {
+) : Setting<Keybinding>(name, hidden, desc), Saving {
 
     constructor(name: String, key: Int, description: String, hidden: Boolean = false) : this(name, Keybinding(key), description, hidden)
 

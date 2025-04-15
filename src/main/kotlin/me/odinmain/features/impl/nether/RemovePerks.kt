@@ -12,9 +12,9 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object RemovePerks : Module(
     name = "Remove Perks",
-    description = "Removes certain perks from the perk menu."
+    desc = "Removes certain perks from the perk menu."
 ) {
-    private val renderStun by BooleanSetting("Show Stun", false, description = "Shows the stun role perks.")
+    private val renderStun by BooleanSetting("Show Stun", false, desc = "Shows the stun role perks.")
 
     @SubscribeEvent
     fun renderSlot(event: GuiEvent.DrawSlot) {

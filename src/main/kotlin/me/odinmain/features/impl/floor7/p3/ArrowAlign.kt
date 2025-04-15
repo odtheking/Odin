@@ -21,10 +21,10 @@ import kotlin.collections.set
 
 object ArrowAlign : Module(
     name = "Arrow Align",
-    description = "Shows the solution for the Arrow Align device."
+    desc = "Shows the solution for the Arrow Align device."
 ) {
-    private val blockWrong by BooleanSetting("Block Wrong Clicks", false, description = "Blocks wrong clicks, shift will override this.")
-    private val invertSneak by BooleanSetting("Invert Sneak", false, description = "Only block wrong clicks whilst sneaking, instead of whilst standing").withDependency { blockWrong }
+    private val blockWrong by BooleanSetting("Block Wrong Clicks", false, desc = "Blocks wrong clicks, shift will override this.")
+    private val invertSneak by BooleanSetting("Invert Sneak", false, desc = "Only block wrong clicks whilst sneaking, instead of whilst standing").withDependency { blockWrong }
 
     private val frameGridCorner = Vec3(-2.0, 120.0, 75.0)
     private val recentClickTimestamps = mutableMapOf<Int, Long>()

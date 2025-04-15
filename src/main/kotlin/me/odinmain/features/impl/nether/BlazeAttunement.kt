@@ -21,10 +21,10 @@ import kotlin.collections.set
 
 object BlazeAttunement : Module(
     name = "Blaze Attunement",
-    description = "Displays what attunement a blaze boss currently requires."
+    desc = "Displays what attunement a blaze boss currently requires."
 ) {
-    private val overlay by BooleanSetting("Overlay Entities", false, description = "Overlay the entities with the color of the attunement.")
-    private val thickness by NumberSetting("Outline Thickness", 5f, 5f, 20f, 0.5f, description = "The thickness of the outline.")
+    private val overlay by BooleanSetting("Overlay Entities", false, desc = "Overlay the entities with the color of the attunement.")
+    private val thickness by NumberSetting("Outline Thickness", 5f, 5f, 20f, 0.5f, desc = "The thickness of the outline.")
 
     private var currentBlazes = hashMapOf<Entity, Color>()
 

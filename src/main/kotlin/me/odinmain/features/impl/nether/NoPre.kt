@@ -13,11 +13,11 @@ import net.minecraft.util.Vec3
 
 object NoPre : Module(
     name = "Pre-Spot Alert",
-    description = "Alerts the party if a pre spot is missing."
+    desc = "Alerts the party if a pre spot is missing."
 ) {
-    private val showCratePriority by BooleanSetting("Show Crate Priority", false, description = "Shows the crate priority alert.")
-    private val cratePriorityTitleTime by NumberSetting("Title Time", 30, 1, 60, description = "The time the crate priority alert will be displayed for.").withDependency { showCratePriority }
-    private val advanced by BooleanSetting("Advanced Mode", false, description = "Enables pro mode for the crate priority alert.").withDependency { showCratePriority }
+    private val showCratePriority by BooleanSetting("Show Crate Priority", false, desc = "Shows the crate priority alert.")
+    private val cratePriorityTitleTime by NumberSetting("Title Time", 30, 1, 60, desc = "The time the crate priority alert will be displayed for.").withDependency { showCratePriority }
+    private val advanced by BooleanSetting("Advanced Mode", false, desc = "Enables pro mode for the crate priority alert.").withDependency { showCratePriority }
 
     private var preSpot = SupplyPickUpSpot.None
     var missing = SupplyPickUpSpot.None

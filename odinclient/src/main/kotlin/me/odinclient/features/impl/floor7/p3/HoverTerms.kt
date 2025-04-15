@@ -14,11 +14,11 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object HoverTerms : Module(
     name = "Hover Terms",
-    description = "Clicks the hovered item in a terminal if it is correct.",
+    desc = "Clicks the hovered item in a terminal if it is correct.",
     tag = TagType.RISKY
 ) {
-    private val triggerDelay by NumberSetting("Delay", 200L, 50, 800, unit = "ms", description = "Delay between clicks.")
-    private val firstClickDelay by NumberSetting("First Click Delay", 200L, 50, 500, unit = "ms", description = "Delay before first click.")
+    private val triggerDelay by NumberSetting("Delay", 200L, 50, 800, unit = "ms", desc = "Delay between clicks.")
+    private val firstClickDelay by NumberSetting("First Click Delay", 200L, 50, 500, unit = "ms", desc = "Delay before first click.")
     private val triggerBotClock = Clock(triggerDelay)
 
     @SubscribeEvent(receiveCanceled = true)

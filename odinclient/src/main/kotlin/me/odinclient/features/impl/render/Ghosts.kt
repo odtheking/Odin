@@ -13,11 +13,11 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object Ghosts : Module(
     name = "Ghosts",
-    description = "Adds visual changes to ghosts."
+    desc = "Adds visual changes to ghosts."
 ) {
-    private var showGhostNametag by BooleanSetting("Show Ghost Nametag", description = "Show the ghost's name tag.")
-    private var showGhosts by BooleanSetting("Hide Ghosts", description = "Hide ghosts.")
-    private var hideChargedLayer by BooleanSetting("Hide Charged Layer", description = "Hide the charged layer of the ghost.")
+    private var showGhostNametag by BooleanSetting("Show Ghost Nametag", desc = "Show the ghost's name tag.")
+    private var showGhosts by BooleanSetting("Hide Ghosts", desc = "Hide ghosts.")
+    private var hideChargedLayer by BooleanSetting("Hide Charged Layer", desc = "Hide the charged layer of the ghost.")
 
     private var creeperList = mutableSetOf<EntityCreeper>()
 

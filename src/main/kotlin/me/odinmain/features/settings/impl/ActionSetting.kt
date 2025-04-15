@@ -9,10 +9,10 @@ import me.odinmain.features.settings.Setting
  */
 class ActionSetting(
     name: String,
-    description: String,
+    desc: String,
     hidden: Boolean = false,
     override val default: () -> Unit = {}
-) : Setting<() -> Unit>(name, hidden, description) {
+) : Setting<() -> Unit>(name, hidden, desc) {
 
     override var value: () -> Unit = default
 

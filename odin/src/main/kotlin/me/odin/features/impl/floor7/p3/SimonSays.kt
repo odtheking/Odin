@@ -28,15 +28,15 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object SimonSays : Module(
     name = "Simon Says",
-    description = "Shows a solution for the Simon Says device."
+    desc = "Shows a solution for the Simon Says device."
 ) {
-    private val firstColor by ColorSetting("First Color", Colors.MINECRAFT_GREEN.withAlpha(0.5f), allowAlpha = true, description = "The color of the first button.")
-    private val secondColor by ColorSetting("Second Color", Colors.MINECRAFT_GOLD.withAlpha(0.5f), allowAlpha = true, description = "The color of the second button.")
-    private val thirdColor by ColorSetting("Third Color", Colors.MINECRAFT_RED.withAlpha(0.5f), allowAlpha = true, description = "The color of the buttons after the second.")
-    private val style by SelectorSetting("Style", Renderer.DEFAULT_STYLE, Renderer.styles, description = Renderer.STYLE_DESCRIPTION)
-    private val lineWidth by NumberSetting("Line Width", 2f, 0.1f, 10f, 0.1f, description = "The width of the box's lines.")
-    private val depthCheck by BooleanSetting("Depth check", false, description = "Boxes show through walls.")
-    private val blockWrong by BooleanSetting("Block Wrong Clicks", false, description = "Blocks wrong clicks, shift will override this.")
+    private val firstColor by ColorSetting("First Color", Colors.MINECRAFT_GREEN.withAlpha(0.5f), allowAlpha = true, desc = "The color of the first button.")
+    private val secondColor by ColorSetting("Second Color", Colors.MINECRAFT_GOLD.withAlpha(0.5f), allowAlpha = true, desc = "The color of the second button.")
+    private val thirdColor by ColorSetting("Third Color", Colors.MINECRAFT_RED.withAlpha(0.5f), allowAlpha = true, desc = "The color of the buttons after the second.")
+    private val style by SelectorSetting("Style", Renderer.DEFAULT_STYLE, Renderer.styles, desc = Renderer.STYLE_DESCRIPTION)
+    private val lineWidth by NumberSetting("Line Width", 2f, 0.1f, 10f, 0.1f, desc = "The width of the box's lines.")
+    private val depthCheck by BooleanSetting("Depth check", false, desc = "Boxes show through walls.")
+    private val blockWrong by BooleanSetting("Block Wrong Clicks", false, desc = "Blocks wrong clicks, shift will override this.")
 
     private val firstButton = BlockPos(110, 121, 91)
     private val clickInOrder = ArrayList<BlockPos>()

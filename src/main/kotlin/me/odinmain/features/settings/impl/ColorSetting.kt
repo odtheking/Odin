@@ -15,9 +15,9 @@ class ColorSetting(
     name: String,
     override val default: Color,
     var allowAlpha: Boolean = false,
-    description: String,
+    desc: String,
     hidden: Boolean = false
-) : Setting<Color>(name, hidden, description), Saving {
+) : Setting<Color>(name, hidden, desc), Saving {
 
     override var value: Color = default.copy()
 

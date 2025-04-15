@@ -10,16 +10,16 @@ import me.odinmain.utils.skyblock.skyblockID
 
 object AutoGFS : Module(
     name = "Auto GFS",
-    description = "Automatically refills certain items from your sacks."
+    desc = "Automatically refills certain items from your sacks."
 ) {
-    private val inKuudra by BooleanSetting("In Kuudra", true, description = "Only gfs in Kuudra.")
-    private val inDungeon by BooleanSetting("In Dungeon", true, description = "Only gfs in Dungeons.")
-    private val refillOnDungeonStart by BooleanSetting("Refill on Dungeon Start", true, description = "Refill when a dungeon starts.")
-    private val refillPearl by BooleanSetting("Refill Pearl", true, description = "Refill ender pearls.")
-    private val refillJerry by BooleanSetting("Refill Jerry", true, description = "Refill inflatable jerrys.")
-    private val refillTNT by BooleanSetting("Refill TNT", true, description = "Refill superboom tnt.")
-    private val refillOnTimer by BooleanSetting("Refill on Timer", true, description = "Refill on a 5s intervals.")
-    private val timerIncrements by NumberSetting("Timer Increments", 5L, 1, 60, description = "The interval in which to refill.", unit = "s")
+    private val inKuudra by BooleanSetting("In Kuudra", true, desc = "Only gfs in Kuudra.")
+    private val inDungeon by BooleanSetting("In Dungeon", true, desc = "Only gfs in Dungeons.")
+    private val refillOnDungeonStart by BooleanSetting("Refill on Dungeon Start", true, desc = "Refill when a dungeon starts.")
+    private val refillPearl by BooleanSetting("Refill Pearl", true, desc = "Refill ender pearls.")
+    private val refillJerry by BooleanSetting("Refill Jerry", true, desc = "Refill inflatable jerrys.")
+    private val refillTNT by BooleanSetting("Refill TNT", true, desc = "Refill superboom tnt.")
+    private val refillOnTimer by BooleanSetting("Refill on Timer", true, desc = "Refill on a 5s intervals.")
+    private val timerIncrements by NumberSetting("Timer Increments", 5L, 1, 60, desc = "The interval in which to refill.", unit = "s")
 
     init {
         execute({ timerIncrements * 1000 }) {

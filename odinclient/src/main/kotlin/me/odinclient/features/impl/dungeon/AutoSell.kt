@@ -16,12 +16,12 @@ import net.minecraft.inventory.ContainerChest
 
 object AutoSell : Module(
     name = "Auto Sell",
-    description = "Automatically sell items in trades and cookie menus. (/autosell)"
+    desc = "Automatically sell items in trades and cookie menus. (/autosell)"
 ) {
     val sellList by ListSetting("Sell list", mutableSetOf<String>())
-    private val delay by NumberSetting("Delay", 100L, 75L, 300L, 5L, description = "The delay between each sell action.", unit = "ms")
-    private val clickType by SelectorSetting("Click Type", "Shift", arrayListOf("Shift", "Middle", "Left"), description = "The type of click to use when selling items.")
-    private val addDefaults by ActionSetting("Add defaults", description = "Add default dungeon items to the auto sell list.") {
+    private val delay by NumberSetting("Delay", 100L, 75L, 300L, 5L, desc = "The delay between each sell action.", unit = "ms")
+    private val clickType by SelectorSetting("Click Type", "Shift", arrayListOf("Shift", "Middle", "Left"), desc = "The type of click to use when selling items.")
+    private val addDefaults by ActionSetting("Add defaults", desc = "Add default dungeon items to the auto sell list.") {
         sellList.addAll(defaultItems)
         modMessage("§aAdded default items to auto sell list")
         Config.save()

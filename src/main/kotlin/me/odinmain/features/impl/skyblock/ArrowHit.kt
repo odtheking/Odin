@@ -11,12 +11,12 @@ import net.minecraft.network.play.server.S29PacketSoundEffect
 
 object ArrowHit : Module(
     name = "Arrow hit",
-    description = "Counts how many arrows you hit in certain time periods."
+    desc = "Counts how many arrows you hit in certain time periods."
 ) {
-    private val resetOnNumber by BooleanSetting("Reset on number", false, description = "Reset the arrow count after a certain number of arrows.")
-    private val resetCount by StringSetting("Reset count", 999999.toString(), 16, description = "The amount of arrows to hit before resetting the count.")
-    private val resetOnWorldLoad by BooleanSetting("Reset on world load", true, description = "Reset the arrow count when you join a world.")
-    val resetOnDragons by BooleanSetting("Reset on dragon spawn", true, description = "Reset the arrow count when a m7 dragon has spawned.")
+    private val resetOnNumber by BooleanSetting("Reset on number", false, desc = "Reset the arrow count after a certain number of arrows.")
+    private val resetCount by StringSetting("Reset count", 999999.toString(), 16, desc = "The amount of arrows to hit before resetting the count.")
+    private val resetOnWorldLoad by BooleanSetting("Reset on world load", true, desc = "Reset the arrow count when you join a world.")
+    val resetOnDragons by BooleanSetting("Reset on dragon spawn", true, desc = "Reset the arrow count when a m7 dragon has spawned.")
 
     private var arrowCount = 0
 

@@ -13,9 +13,9 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 
 object NoBlock : Module(
     name = "No Block",
-    description = "Prevents you from blocking with items that have an ability, this is effectively NoSlow."
+    desc = "Prevents you from blocking with items that have an ability, this is effectively NoSlow."
 ) {
-    private val onlyBoss by BooleanSetting("Only Boss", false, description = "Only prevent blocking in boss fights.")
+    private val onlyBoss by BooleanSetting("Only Boss", false, desc = "Only prevent blocking in boss fights.")
     private var isRightClickKeyDown = false
 
     @SubscribeEvent

@@ -23,7 +23,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 
 object SpringBoots : Module(
     name = "Spring Boots",
-    description = "Shows the current jump height of your spring boots."
+    desc = "Shows the current jump height of your spring boots."
 ) {
     private val hud by HudSetting("Display", 10f, 10f, 1f, true) { example ->
         if (example) {
@@ -35,9 +35,9 @@ object SpringBoots : Module(
             getTextWidth("Jump: ${colorHud(blockAmount)}", 12f) to 12f
         }
     }
-    private val renderGoal by BooleanSetting("Render Goal", true, description = "Render the goal block.")
-    private val goalColor by ColorSetting("Goal Color", Colors.MINECRAFT_GREEN, description = "Color of the goal block.")
-    private val offset by NumberSetting("Offset", 0.0, -10.0, 10.0, 0.1, description = "The offset of the goal block.")
+    private val renderGoal by BooleanSetting("Render Goal", true, desc = "Render the goal block.")
+    private val goalColor by ColorSetting("Goal Color", Colors.MINECRAFT_GREEN, desc = "Color of the goal block.")
+    private val offset by NumberSetting("Offset", 0.0, -10.0, 10.0, 0.1, desc = "The offset of the goal block.")
 
     private val blocksList: List<Double> = listOf(
         0.0, 3.0, 6.5, 9.0, 11.5, 13.5, 16.0, 18.0, 19.0,

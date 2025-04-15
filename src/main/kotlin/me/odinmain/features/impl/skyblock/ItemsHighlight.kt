@@ -20,17 +20,17 @@ import net.minecraft.entity.item.EntityItem
 
 object ItemsHighlight : Module(
     name = "Item Highlight",
-    description = "Highlights items on the ground."
+    desc = "Highlights items on the ground."
 ) {
-    private val mode by SelectorSetting("Mode", "Overlay", arrayListOf("Boxes", "Box 2D", "Overlay"), description = HighlightRenderer.HIGHLIGHT_MODE_DESCRIPTION)
-    private val onlySecrets by BooleanSetting("Only Secrets", false, description = "Only highlights secret drops in dungeons.")
-    private val thickness by NumberSetting("Line Width", 1f, .1f, 4f, .1f, description = "The line width of Outline / Boxes/ 2D Boxes.").withDependency { mode != HighlightRenderer.HighlightType.Overlay.ordinal }
-    private val style by SelectorSetting("Style", Renderer.DEFAULT_STYLE, Renderer.styles, description = Renderer.STYLE_DESCRIPTION).withDependency { mode == HighlightRenderer.HighlightType.Boxes.ordinal }
-    private val depthCheck by BooleanSetting("Depth check", false, description = "Boxes show through walls.")
+    private val mode by SelectorSetting("Mode", "Overlay", arrayListOf("Boxes", "Box 2D", "Overlay"), desc = HighlightRenderer.HIGHLIGHT_MODE_DESCRIPTION)
+    private val onlySecrets by BooleanSetting("Only Secrets", false, desc = "Only highlights secret drops in dungeons.")
+    private val thickness by NumberSetting("Line Width", 1f, .1f, 4f, .1f, desc = "The line width of Outline / Boxes/ 2D Boxes.").withDependency { mode != HighlightRenderer.HighlightType.Overlay.ordinal }
+    private val style by SelectorSetting("Style", Renderer.DEFAULT_STYLE, Renderer.styles, desc = Renderer.STYLE_DESCRIPTION).withDependency { mode == HighlightRenderer.HighlightType.Boxes.ordinal }
+    private val depthCheck by BooleanSetting("Depth check", false, desc = "Boxes show through walls.")
     private val colorList = arrayListOf("Rarity", "Distance", "Custom")
-    private val colorStyle by SelectorSetting("Color Style", "Rarity", colorList, description = "Which color style to use.")
-    private val rarityAlpha by NumberSetting("Rarity Alpha", 1f, 0f, 1f, .1f, description = "The alpha of the rarity color.").withDependency { colorStyle == 0 }
-    private val customColor by ColorSetting("Custom Color", Colors.WHITE.withAlpha(1f), true, description = "The custom color to use.").withDependency { colorStyle == 2 }
+    private val colorStyle by SelectorSetting("Color Style", "Rarity", colorList, desc = "Which color style to use.")
+    private val rarityAlpha by NumberSetting("Rarity Alpha", 1f, 0f, 1f, .1f, desc = "The alpha of the rarity color.").withDependency { colorStyle == 0 }
+    private val customColor by ColorSetting("Custom Color", Colors.WHITE.withAlpha(1f), true, desc = "The custom color to use.").withDependency { colorStyle == 2 }
 
     private var currentEntityItems = mutableSetOf<EntityItem>()
 

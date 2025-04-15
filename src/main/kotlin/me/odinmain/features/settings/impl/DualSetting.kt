@@ -15,9 +15,9 @@ class DualSetting (
     val left: String,
     val right: String,
     override val default: Boolean = false,
-    description: String,
+    desc: String,
     hidden: Boolean = false
-): Setting<Boolean>(name, hidden, description), Saving {
+): Setting<Boolean>(name, hidden, desc), Saving {
 
     override var value: Boolean = default
 

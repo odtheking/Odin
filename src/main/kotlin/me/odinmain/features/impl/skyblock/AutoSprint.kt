@@ -7,7 +7,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 
 object AutoSprint : Module(
     name = "Auto Sprint",
-    description = "Automatically makes you sprint."
+    desc = "Automatically makes you sprint."
 ) {
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {

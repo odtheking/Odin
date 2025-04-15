@@ -31,25 +31,25 @@ import org.lwjgl.input.Keyboard
 
 object GhostBlocks : Module(
     name = "Ghost Blocks",
-    description = "Creates ghost blocks by key, tools, swap stonk, stonk delay and pre configured.",
+    desc = "Creates ghost blocks by key, tools, swap stonk, stonk delay and pre configured.",
     key = null,
 ) {
     // gkey
     private val gkeyDropDown by DropdownSetting("Gkey Dropdown", false)
     private val ghostBlockKey by KeybindSetting("Ghost block Keybind", Keyboard.KEY_NONE, "Makes blocks you're looking at disappear.").withDependency { gkeyDropDown }
-    private val ghostBlockSpeed by NumberSetting("Speed", 50L, 0.0, 300.0, 10.0, unit = "ms", description = "The speed at which ghost blocks are created.").withDependency { gkeyDropDown }
-    private val ghostBlockSkulls by BooleanSetting("Ghost Skulls", true, description = "If enabled skulls will also be turned into ghost blocks.").withDependency { gkeyDropDown }
-    private val ghostBlockRange by NumberSetting("Range", 8.0, 4.5, 80.0, 0.5, description = "Maximum range at which ghost blocks will be created.").withDependency { gkeyDropDown }
-    private val onlyDungeon by BooleanSetting("Only In Dungeon", false, description = "Will only work inside of a dungeon.").withDependency { gkeyDropDown }
+    private val ghostBlockSpeed by NumberSetting("Speed", 50L, 0.0, 300.0, 10.0, unit = "ms", desc = "The speed at which ghost blocks are created.").withDependency { gkeyDropDown }
+    private val ghostBlockSkulls by BooleanSetting("Ghost Skulls", true, desc = "If enabled skulls will also be turned into ghost blocks.").withDependency { gkeyDropDown }
+    private val ghostBlockRange by NumberSetting("Range", 8.0, 4.5, 80.0, 0.5, desc = "Maximum range at which ghost blocks will be created.").withDependency { gkeyDropDown }
+    private val onlyDungeon by BooleanSetting("Only In Dungeon", false, desc = "Will only work inside of a dungeon.").withDependency { gkeyDropDown }
 
     // pre blocks
-    private val preGhostBlock by BooleanSetting("F7 Ghost blocks", false, description = "Will adjust specific blocks in the boss room.")
+    private val preGhostBlock by BooleanSetting("F7 Ghost blocks", false, desc = "Will adjust specific blocks in the boss room.")
 
     // ghost pickaxe
     private val ghostPickDropDown by DropdownSetting("Ghost Tools Dropdown", false)
-    private val slot by NumberSetting("Ghost tool slot", 1, 1.0, 9.0, 1.0, description = "The slot at which the ghost tool will spawn.").withDependency { ghostPickDropDown }
-    private val level by NumberSetting("Efficiency level", 10, 1.0, 100.0, 1.0, description = "The efficiency level the ghost tool will spawn with.").withDependency { ghostPickDropDown }
-    private val delay by NumberSetting("Delay to Create", 0, 0, 1000, 10, unit = "ms", description = "The delay between clicking to the spawning of the ghost tool.").withDependency { ghostPickDropDown }
+    private val slot by NumberSetting("Ghost tool slot", 1, 1.0, 9.0, 1.0, desc = "The slot at which the ghost tool will spawn.").withDependency { ghostPickDropDown }
+    private val level by NumberSetting("Efficiency level", 10, 1.0, 100.0, 1.0, desc = "The efficiency level the ghost tool will spawn with.").withDependency { ghostPickDropDown }
+    private val delay by NumberSetting("Delay to Create", 0, 0, 1000, 10, unit = "ms", desc = "The delay between clicking to the spawning of the ghost tool.").withDependency { ghostPickDropDown }
     private val pickaxeKey by KeybindSetting("Pickaxe Keybind", Keyboard.KEY_NONE, description = "Press this keybind to create a ghost pickaxe.").onPress { giveItem(278) }.withDependency { ghostPickDropDown }
     private val axeKey by KeybindSetting("Axe Keybind", Keyboard.KEY_NONE, description = "Press this keybind to create a ghost axe.").onPress { giveItem(279) }.withDependency { ghostPickDropDown }
 
@@ -66,9 +66,9 @@ object GhostBlocks : Module(
 
     // swap stonk
     private val swapStonkDropDown by DropdownSetting("Swap Stonk Dropdown", false)
-    private val swapStonk by BooleanSetting("Swap Stonk", false, description = "Does a swap stonk when you press the keybind.").withDependency { swapStonkDropDown }
-    private val pickaxe by SelectorSetting("Type", "Pickaxe", arrayListOf("Pickaxe", "Stonk"), description = "The type of pickaxe to use.").withDependency { swapStonk && swapStonkDropDown }
-    private val speed by NumberSetting("Swap back speed", 2, 1, 5, description = "Delay between swapping back.", unit = " ticks").withDependency { swapStonk &&  swapStonkDropDown}
+    private val swapStonk by BooleanSetting("Swap Stonk", false, desc = "Does a swap stonk when you press the keybind.").withDependency { swapStonkDropDown }
+    private val pickaxe by SelectorSetting("Type", "Pickaxe", arrayListOf("Pickaxe", "Stonk"), desc = "The type of pickaxe to use.").withDependency { swapStonk && swapStonkDropDown }
+    private val speed by NumberSetting("Swap back speed", 2, 1, 5, desc = "Delay between swapping back.", unit = " ticks").withDependency { swapStonk &&  swapStonkDropDown}
     private val swapStonkKey by KeybindSetting("Swap Stonk Keybind", Keyboard.KEY_NONE, "Press to perform a swap stonk.").withDependency { swapStonkDropDown }
         .onPress {
             if (!enabled) return@onPress
@@ -120,9 +120,9 @@ object GhostBlocks : Module(
 
     // stonk delay
     private val stonkDelayDropDown by DropdownSetting("Stonk Delay Dropdown", false)
-    private val stonkDelayToggle by BooleanSetting("Stonk Delay Toggle", description = "Delay mined blocks reset time.").withDependency { stonkDelayDropDown }
-    private val sdOnlySB by BooleanSetting("SD Only In SB", true, description = "Disables Stonk Delay when outside of Skyblock.").withDependency { stonkDelayToggle && stonkDelayDropDown }
-    private val stonkDelay by NumberSetting("Stonk Delay Time", 200L, 50L, 10000L, 10L, unit = "ms", description = "The time before blocks reset.").withDependency { stonkDelayToggle && stonkDelayDropDown }
+    private val stonkDelayToggle by BooleanSetting("Stonk Delay Toggle", desc = "Delay mined blocks reset time.").withDependency { stonkDelayDropDown }
+    private val sdOnlySB by BooleanSetting("SD Only In SB", true, desc = "Disables Stonk Delay when outside of Skyblock.").withDependency { stonkDelayToggle && stonkDelayDropDown }
+    private val stonkDelay by NumberSetting("Stonk Delay Time", 200L, 50L, 10000L, 10L, unit = "ms", desc = "The time before blocks reset.").withDependency { stonkDelayToggle && stonkDelayDropDown }
 
     private data class BlockData(val pos: BlockPos, var state: IBlockState, val time: Long, var serverReplaced: Boolean)
     private val sdBlocks = mutableListOf<BlockData>()

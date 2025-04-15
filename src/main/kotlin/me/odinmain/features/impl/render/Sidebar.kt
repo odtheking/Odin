@@ -21,7 +21,7 @@ import kotlin.math.max
 
 object Sidebar : Module(
     name = "Sidebar",
-    description = "Various settings to change the look of the minecraft sidebar."
+    desc = "Various settings to change the look of the minecraft sidebar."
 ) {
     private var variableScoreObjective: ScoreObjective? = null
     private val hud by HudSetting("Hud", 500f, 500f, 2f, false) {
@@ -58,10 +58,10 @@ object Sidebar : Module(
         GlStateManager.resetColor()
         width.toFloat() to (scoreList.size + 1) * mc.fontRendererObj.FONT_HEIGHT.toFloat()
     }
-    private val customFont by BooleanSetting("Custom Font", false, description = "Whether to use a custom font for the sidebar.")
-    private val textShadow by BooleanSetting("Text Shadow", true, description = "Whether to render a shadow behind the text.")
-    private val redNumbers by BooleanSetting("Show Red Numbers", true, description = "Whether to show the numbers in red.")
-    private val backgroundColor by ColorSetting("Background Color", Colors.MINECRAFT_GRAY.withAlpha(.5f), allowAlpha = true, description = "The color of the sidebar background.")
+    private val customFont by BooleanSetting("Custom Font", false, desc = "Whether to use a custom font for the sidebar.")
+    private val textShadow by BooleanSetting("Text Shadow", true, desc = "Whether to render a shadow behind the text.")
+    private val redNumbers by BooleanSetting("Show Red Numbers", true, desc = "Whether to show the numbers in red.")
+    private val backgroundColor by ColorSetting("Background Color", Colors.MINECRAFT_GRAY.withAlpha(.5f), allowAlpha = true, desc = "The color of the sidebar background.")
 
     @JvmStatic
     fun renderSidebar(scoreObjective: ScoreObjective, scaledResolution: ScaledResolution): Boolean {

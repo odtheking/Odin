@@ -14,7 +14,7 @@ import me.odinmain.utils.ui.Colors
 
 object Splits : Module(
     name = "Splits",
-    description = "Provides visual timers for Kuudra and Dungeons."
+    desc = "Provides visual timers for Kuudra and Dungeons."
 ) {
     private val hud by HudSetting("Splits Display HUD", 10f, 10f, 1f, true) { example ->
         if (example) {
@@ -38,8 +38,8 @@ object Splits : Module(
         }
         getMCTextWidth("Split 0: 0h 00m 00s") + 2f to 80f
     }
-    private val bossEntrySplit by BooleanSetting("Boss Entry Split", true, description = "Split for boss entry.")
-    val sendSplits by BooleanSetting("Send Splits", true, description = "Send splits to chat.")
-    val sendOnlyPB by BooleanSetting("Send Only PB", false, description = "Send only personal bests.")
-    private val numbersAfterDecimal by NumberSetting("Numbers After Decimal", 2, 0, 5, 1, description = "Numbers after decimal in time.")
+    private val bossEntrySplit by BooleanSetting("Boss Entry Split", true, desc = "Split for boss entry.")
+    val sendSplits by BooleanSetting("Send Splits", true, desc = "Send splits to chat.")
+    val sendOnlyPB by BooleanSetting("Send Only PB", false, desc = "Send only personal bests.")
+    private val numbersAfterDecimal by NumberSetting("Numbers After Decimal", 2, 0, 5, 1, desc = "Numbers after decimal in time.")
 }

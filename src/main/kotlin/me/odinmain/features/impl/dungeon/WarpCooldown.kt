@@ -15,10 +15,10 @@ import me.odinmain.utils.ui.Colors
 
 object WarpCooldown : Module(
     name = "Warp Cooldown",
-    description = "Displays the time until you can warp into a new dungeon."
+    desc = "Displays the time until you can warp into a new dungeon."
 ) {
-    private val announceKick: Boolean by BooleanSetting("Announce Kick", false, description = "Announce when you get kicked from skyblock.")
-    private val kickText: String by StringSetting("Kick Text", "Kicked!", description = "The text sent in party chat when you get kicked from skyblock.").withDependency { announceKick }
+    private val announceKick: Boolean by BooleanSetting("Announce Kick", false, desc = "Announce when you get kicked from skyblock.")
+    private val kickText: String by StringSetting("Kick Text", "Kicked!", desc = "The text sent in party chat when you get kicked from skyblock.").withDependency { announceKick }
     private val hud by HudSetting("Warp Timer Hud", 10f, 10f, 1f, true) {
         if (it) {
             text("§eWarp: §a30s", 1f, 9f, Colors.WHITE, 12f, OdinFont.REGULAR, shadow = true)

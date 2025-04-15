@@ -20,7 +20,7 @@ import kotlin.math.ceil
 
 object AbilityTimers : Module(
     name = "Ability Timers",
-    description = "Provides timers for Wither Impact, Tactical Insertion, and Enrage."
+    desc = "Provides timers for Wither Impact, Tactical Insertion, and Enrage."
 ) {
     private val witherHud by HudSetting("Wither Impact Hud", 10f, 10f, 1f, true) {
         if (witherImpactTicks <= 0 && (hideWhenDone || !LocationUtils.isInSkyblock) && !it) return@HudSetting 0f to 0f
@@ -28,8 +28,8 @@ object AbilityTimers : Module(
         RenderUtils.drawText(witherImpactText, width / 2f, 0f, 1.0, Colors.WHITE, shadow = true, center = true)
         width to 10f
     }
-    private val compact: Boolean by BooleanSetting("Compact Mode", true, description = "Compacts the Hud to just one character wide.").withDependency { witherHud.enabled }
-    private val hideWhenDone: Boolean by BooleanSetting("Hide When Ready", true, description = "Hides the hud when the cooldown is over.").withDependency { witherHud.enabled }
+    private val compact: Boolean by BooleanSetting("Compact Mode", true, desc = "Compacts the Hud to just one character wide.").withDependency { witherHud.enabled }
+    private val hideWhenDone: Boolean by BooleanSetting("Hide When Ready", true, desc = "Hides the hud when the cooldown is over.").withDependency { witherHud.enabled }
 
     private val tacHud by HudSetting("Tactical Insertion Hud", 10f, 10f, 1f, true) {
         if (tacTimer == 0 && !it) return@HudSetting 0f to 0f

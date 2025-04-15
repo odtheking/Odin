@@ -10,10 +10,10 @@ import me.odinmain.utils.skyblock.sendCommand
 
 object KuudraRequeue : Module(
     name = "Kuudra Requeue",
-    description = "Automatically starts a new kuudra at the end of a kuudra."
+    desc = "Automatically starts a new kuudra at the end of a kuudra."
 ) {
-    private val delay by NumberSetting("Delay", 10, 0, 30, 1, description = "The delay in seconds before requeuing.", unit = "s")
-    private val disablePartyLeave by BooleanSetting("Disable Party Leave", false, description = "Disables the requeue on party leave message.")
+    private val delay by NumberSetting("Delay", 10, 0, 30, 1, desc = "The delay in seconds before requeuing.", unit = "s")
+    private val disablePartyLeave by BooleanSetting("Disable Party Leave", false, desc = "Disables the requeue on party leave message.")
 
     init {
         onMessage(Regex("^\\[NPC] Elle: Good job everyone. A hard fought battle come to an end. Let's get out of here before we run into any more trouble!\$")) {

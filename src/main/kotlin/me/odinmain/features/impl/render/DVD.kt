@@ -17,15 +17,15 @@ import java.awt.Color.getHSBColor
 
 object DVD : Module(
     name = "DVD",
-    description = "No further explanation."
+    desc = "No further explanation."
 ) {
-    private val boxWidth by NumberSetting("Box Width", 50f, 0, 150, 1, description = "Width of the DVD box.")
-    private val boxHeight by NumberSetting("Box Height", 50f, 0, 150, 1, description = "Height of the DVD box.")
-    private val roundedCorners by BooleanSetting("Rounded Corners", true, description = "Whether the DVD box should have rounded corners.")
+    private val boxWidth by NumberSetting("Box Width", 50f, 0, 150, 1, desc = "Width of the DVD box.")
+    private val boxHeight by NumberSetting("Box Height", 50f, 0, 150, 1, desc = "Height of the DVD box.")
+    private val roundedCorners by BooleanSetting("Rounded Corners", true, desc = "Whether the DVD box should have rounded corners.")
 
-    private val speed by NumberSetting("Speed", 1, .1, 2, .1, description = "Speed of the DVD box.")
-    private val text by StringSetting("Text", "ODVD", description = "Text to display on the DVD box.")
-    private val textScale by NumberSetting("Text Scale", 1.5, 0.1, 2, 0.1, description = "Scale of the text.")
+    private val speed by NumberSetting("Speed", 1, .1, 2, .1, desc = "Speed of the DVD box.")
+    private val text by StringSetting("Text", "ODVD", desc = "Text to display on the DVD box.")
+    private val textScale by NumberSetting("Text Scale", 1.5, 0.1, 2, 0.1, desc = "Scale of the text.")
 
     private var lastUpdateTime = System.nanoTime()
     private var color = Colors.WHITE.copy()

@@ -21,11 +21,11 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 
 object TerminalAura : Module(
     name = "Terminal Aura",
-    description = "Automatically interacts with inactive terminals.",
+    desc = "Automatically interacts with inactive terminals.",
     tag = TagType.RISKY
 ) {
-    private val onGround by BooleanSetting("On Ground", true, description = "Only click when on the ground.")
-    private val distance by NumberSetting("Distance", 3.5, 1.0, 4.5, 0.1, description = "The distance to click the terminal.")
+    private val onGround by BooleanSetting("On Ground", true, desc = "Only click when on the ground.")
+    private val distance by NumberSetting("Distance", 3.5, 1.0, 4.5, 0.1, desc = "The distance to click the terminal.")
 
     private val clickClock = Clock(1000)
     private val interactClock = Clock(500)

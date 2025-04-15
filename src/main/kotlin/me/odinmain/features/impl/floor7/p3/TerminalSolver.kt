@@ -41,53 +41,53 @@ import org.lwjgl.input.Keyboard
 @AlwaysActive // So it can be used in other modules
 object TerminalSolver : Module(
     name = "Terminal Solver",
-    description = "Renders solution for terminals in floor 7."
+    desc = "Renders solution for terminals in floor 7."
 ) {
-    val renderType by SelectorSetting("Mode", "Odin", arrayListOf("Odin", "Skytils", "SBE", "Custom GUI"), description = "How the terminal solver should render.")
-    val customGuiText by SelectorSetting("Custom Gui Title", "Top Left", arrayListOf("Top Left", "Middle", "Disabled"), description = "Where the custom gui text should be rendered.").withDependency { renderType == 3 }
-    val customScale by NumberSetting("Custom Scale", 1f, .8f, 2.5f, .1f, description = "Size of the Custom Terminal Gui.").withDependency { renderType == 3 }
-    private val cancelToolTip by BooleanSetting("Stop Tooltips", true, description = "Stops rendering tooltips in terminals.").withDependency { renderType != 3 }
-    val hideClicked by BooleanSetting("Hide Clicked", false, description = "Visually hides your first click before a gui updates instantly to improve perceived response time. Does not affect actual click time.")
-    private val middleClickGUI by BooleanSetting("Middle Click GUI", true, description = "Replaces right click with middle click in terminals.").withDependency { renderType != 3 }
-    private val blockIncorrectClicks by BooleanSetting("Block Incorrect Clicks", true, description = "Blocks incorrect clicks in terminals.").withDependency { renderType != 3 }
-    private val cancelMelodySolver by BooleanSetting("Stop Melody Solver", false, description = "Stops rendering the melody solver.")
-    val showNumbers by BooleanSetting("Show Numbers", true, description = "Shows numbers in the order terminal.")
+    val renderType by SelectorSetting("Mode", "Odin", arrayListOf("Odin", "Skytils", "SBE", "Custom GUI"), desc = "How the terminal solver should render.")
+    val customGuiText by SelectorSetting("Custom Gui Title", "Top Left", arrayListOf("Top Left", "Middle", "Disabled"), desc = "Where the custom gui text should be rendered.").withDependency { renderType == 3 }
+    val customScale by NumberSetting("Custom Scale", 1f, .8f, 2.5f, .1f, desc = "Size of the Custom Terminal Gui.").withDependency { renderType == 3 }
+    private val cancelToolTip by BooleanSetting("Stop Tooltips", true, desc = "Stops rendering tooltips in terminals.").withDependency { renderType != 3 }
+    val hideClicked by BooleanSetting("Hide Clicked", false, desc = "Visually hides your first click before a gui updates instantly to improve perceived response time. Does not affect actual click time.")
+    private val middleClickGUI by BooleanSetting("Middle Click GUI", true, desc = "Replaces right click with middle click in terminals.").withDependency { renderType != 3 }
+    private val blockIncorrectClicks by BooleanSetting("Block Incorrect Clicks", true, desc = "Blocks incorrect clicks in terminals.").withDependency { renderType != 3 }
+    private val cancelMelodySolver by BooleanSetting("Stop Melody Solver", false, desc = "Stops rendering the melody solver.")
+    val showNumbers by BooleanSetting("Show Numbers", true, desc = "Shows numbers in the order terminal.")
 
     private val showRemoveWrongSettings by DropdownSetting("Render Wrong Settings").withDependency { renderType == 1 }
-    private val removeWrong by BooleanSetting("Stop Rendering Wrong", true, description = "Main toggle for stopping the rendering of incorrect items in terminals.").withDependency { renderType == 1 && showRemoveWrongSettings }
-    private val removeWrongPanes by BooleanSetting("Stop Panes", true, description = "Stops rendering wrong panes in the panes terminal.").withDependency { renderType == 1 && showRemoveWrongSettings && removeWrong }
-    private val removeWrongRubix by BooleanSetting("Stop Rubix", true, description = "Stops rendering wrong colors in the rubix terminal.").withDependency { renderType == 1 && showRemoveWrongSettings && removeWrong }
-    private val removeWrongStartsWith by BooleanSetting("Stop Starts With", true, description = "Stops rendering wrong items in the starts with terminal.").withDependency { renderType == 1 && showRemoveWrongSettings && removeWrong }
-    private val removeWrongSelect by BooleanSetting("Stop Select", true, description = "Stops rendering wrong items in the select terminal.").withDependency { renderType == 1 && showRemoveWrongSettings && removeWrong }
-    private val removeWrongMelody by BooleanSetting("Stop Melody", true, description = "Stops rendering wrong items in the melody terminal.").withDependency { renderType == 1 && showRemoveWrongSettings && removeWrong }
+    private val removeWrong by BooleanSetting("Stop Rendering Wrong", true, desc = "Main toggle for stopping the rendering of incorrect items in terminals.").withDependency { renderType == 1 && showRemoveWrongSettings }
+    private val removeWrongPanes by BooleanSetting("Stop Panes", true, desc = "Stops rendering wrong panes in the panes terminal.").withDependency { renderType == 1 && showRemoveWrongSettings && removeWrong }
+    private val removeWrongRubix by BooleanSetting("Stop Rubix", true, desc = "Stops rendering wrong colors in the rubix terminal.").withDependency { renderType == 1 && showRemoveWrongSettings && removeWrong }
+    private val removeWrongStartsWith by BooleanSetting("Stop Starts With", true, desc = "Stops rendering wrong items in the starts with terminal.").withDependency { renderType == 1 && showRemoveWrongSettings && removeWrong }
+    private val removeWrongSelect by BooleanSetting("Stop Select", true, desc = "Stops rendering wrong items in the select terminal.").withDependency { renderType == 1 && showRemoveWrongSettings && removeWrong }
+    private val removeWrongMelody by BooleanSetting("Stop Melody", true, desc = "Stops rendering wrong items in the melody terminal.").withDependency { renderType == 1 && showRemoveWrongSettings && removeWrong }
 
     val gap by NumberSetting("Gap", 10, 0, 20, 1, "Gap between items for the custom gui.").withDependency { renderType == 3 }
-    val textScale by NumberSetting("Text Scale", 1, 1, 3, increment = 1, description = "Scale of the text in the custom gui.").withDependency { renderType == 3 }
+    val textScale by NumberSetting("Text Scale", 1, 1, 3, increment = 1, desc = "Scale of the text in the custom gui.").withDependency { renderType == 3 }
 
     private val showColors by DropdownSetting("Color Settings")
-    private val backgroundColor by ColorSetting("Background Color", Colors.MINECRAFT_DARK_GRAY, true, description = "Background color of the terminal solver.").withDependency { renderType == 0 && showColors }
+    private val backgroundColor by ColorSetting("Background Color", Colors.MINECRAFT_DARK_GRAY, true, desc = "Background color of the terminal solver.").withDependency { renderType == 0 && showColors }
 
-    val customGuiColor by ColorSetting("Custom Gui Color", ColorUtil.moduleButtonColor.withAlpha(.8f), true, description = "Color of the custom gui.").withDependency { renderType == 3 && showColors }
-    val panesColor by ColorSetting("Panes Color", Colors.MINECRAFT_DARK_AQUA, true, description = "Color of the panes terminal solver.").withDependency { showColors }
+    val customGuiColor by ColorSetting("Custom Gui Color", ColorUtil.moduleButtonColor.withAlpha(.8f), true, desc = "Color of the custom gui.").withDependency { renderType == 3 && showColors }
+    val panesColor by ColorSetting("Panes Color", Colors.MINECRAFT_DARK_AQUA, true, desc = "Color of the panes terminal solver.").withDependency { showColors }
 
-    val rubixColor1 by ColorSetting("Rubix Color 1", Colors.MINECRAFT_DARK_AQUA, true, description = "Color of the rubix terminal solver for 1 click.").withDependency { showColors }
-    val rubixColor2 by ColorSetting("Rubix Color 2", Color(0, 100, 100), true, description = "Color of the rubix terminal solver for 2 click.").withDependency { showColors }
-    val oppositeRubixColor1 by ColorSetting("Rubix Color -1", Color(170, 85, 0), true, description = "Color of the rubix terminal solver for -1 click.").withDependency { showColors }
-    val oppositeRubixColor2 by ColorSetting("Rubix Color -2", Color(210, 85, 0), true, description = "Color of the rubix terminal solver for -2 click.").withDependency { showColors }
+    val rubixColor1 by ColorSetting("Rubix Color 1", Colors.MINECRAFT_DARK_AQUA, true, desc = "Color of the rubix terminal solver for 1 click.").withDependency { showColors }
+    val rubixColor2 by ColorSetting("Rubix Color 2", Color(0, 100, 100), true, desc = "Color of the rubix terminal solver for 2 click.").withDependency { showColors }
+    val oppositeRubixColor1 by ColorSetting("Rubix Color -1", Color(170, 85, 0), true, desc = "Color of the rubix terminal solver for -1 click.").withDependency { showColors }
+    val oppositeRubixColor2 by ColorSetting("Rubix Color -2", Color(210, 85, 0), true, desc = "Color of the rubix terminal solver for -2 click.").withDependency { showColors }
 
-    val orderColor by ColorSetting("Order Color 1", Colors.MINECRAFT_DARK_AQUA, true, description = "Color of the order terminal solver for 1st item.").withDependency { showColors }
-    val orderColor2 by ColorSetting("Order Color 2", Color(0, 100, 100), true, description = "Color of the order terminal solver for 2nd item.").withDependency { showColors }
-    val orderColor3 by ColorSetting("Order Color 3", Color(0, 65, 65), true, description = "Color of the order terminal solver for 3rd item.").withDependency { showColors }
+    val orderColor by ColorSetting("Order Color 1", Colors.MINECRAFT_DARK_AQUA, true, desc = "Color of the order terminal solver for 1st item.").withDependency { showColors }
+    val orderColor2 by ColorSetting("Order Color 2", Color(0, 100, 100), true, desc = "Color of the order terminal solver for 2nd item.").withDependency { showColors }
+    val orderColor3 by ColorSetting("Order Color 3", Color(0, 65, 65), true, desc = "Color of the order terminal solver for 3rd item.").withDependency { showColors }
 
-    val startsWithColor by ColorSetting("Starts With Color", Colors.MINECRAFT_DARK_AQUA, true, description = "Color of the starts with terminal solver.").withDependency { showColors }
+    val startsWithColor by ColorSetting("Starts With Color", Colors.MINECRAFT_DARK_AQUA, true, desc = "Color of the starts with terminal solver.").withDependency { showColors }
 
-    val selectColor by ColorSetting("Select Color", Colors.MINECRAFT_DARK_AQUA, true, description = "Color of the select terminal solver.").withDependency { showColors }
+    val selectColor by ColorSetting("Select Color", Colors.MINECRAFT_DARK_AQUA, true, desc = "Color of the select terminal solver.").withDependency { showColors }
 
-    val melodyColumColor by ColorSetting("Melody Column Color", Colors.MINECRAFT_DARK_PURPLE.withAlpha(0.75f), true, description = "Color of the colum indicator for melody.").withDependency { showColors && !cancelMelodySolver }
-    val melodyRowColor by ColorSetting("Melody Row Color", Colors.MINECRAFT_GREEN.withAlpha(0.75f), true, description = "Color of the row indicator for melody.").withDependency { showColors && !cancelMelodySolver }
-    val melodyPressColumColor by ColorSetting("Melody Press Column Color", Colors.MINECRAFT_YELLOW.withAlpha(0.75f), true, description = "Color of the location for pressing for melody.").withDependency { showColors && !cancelMelodySolver }
-    val melodyPressColor by ColorSetting("Melody Press Color", Colors.MINECRAFT_DARK_AQUA.withAlpha(0.75f), true, description = "Color of the location for pressing for melody.").withDependency { showColors && !cancelMelodySolver }
-    val melodyCorrectRowColor by ColorSetting("Melody Correct Row Color", Colors.WHITE.withAlpha(0.75f), true, description = "Color of the whole row for melody.").withDependency { showColors && !cancelMelodySolver }
+    val melodyColumColor by ColorSetting("Melody Column Color", Colors.MINECRAFT_DARK_PURPLE.withAlpha(0.75f), true, desc = "Color of the colum indicator for melody.").withDependency { showColors && !cancelMelodySolver }
+    val melodyRowColor by ColorSetting("Melody Row Color", Colors.MINECRAFT_GREEN.withAlpha(0.75f), true, desc = "Color of the row indicator for melody.").withDependency { showColors && !cancelMelodySolver }
+    val melodyPressColumColor by ColorSetting("Melody Press Column Color", Colors.MINECRAFT_YELLOW.withAlpha(0.75f), true, desc = "Color of the location for pressing for melody.").withDependency { showColors && !cancelMelodySolver }
+    val melodyPressColor by ColorSetting("Melody Press Color", Colors.MINECRAFT_DARK_AQUA.withAlpha(0.75f), true, desc = "Color of the location for pressing for melody.").withDependency { showColors && !cancelMelodySolver }
+    val melodyCorrectRowColor by ColorSetting("Melody Correct Row Color", Colors.WHITE.withAlpha(0.75f), true, desc = "Color of the whole row for melody.").withDependency { showColors && !cancelMelodySolver }
 
     var currentTerm: TerminalHandler? = null
         private set

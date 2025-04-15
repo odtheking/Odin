@@ -26,9 +26,9 @@ import kotlin.math.abs
 
 object CanClip : Module(
     name = "Can Clip",
-    description = "Tells you if you are currently able to clip through a stair under you."
+    desc = "Tells you if you are currently able to clip through a stair under you."
 ) {
-    private val line by BooleanSetting("Line", true, description = "Draws a line where you can clip.")
+    private val line by BooleanSetting("Line", true, desc = "Draws a line where you can clip.")
     private val hud by HudSetting("Display", 10f, 10f, 1f, true) {
         if (it) {
             text("Can Clip", 1f, 9f, Colors.WHITE, 12f, OdinFont.REGULAR)
