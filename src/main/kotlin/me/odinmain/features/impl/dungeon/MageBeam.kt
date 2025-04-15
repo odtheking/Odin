@@ -20,7 +20,7 @@ import java.util.concurrent.CopyOnWriteArrayList
 
 object MageBeam: Module (
     name = "Mage Beam",
-    desc = "Allows you to see the beam of the mage boss in dungeons."
+    desc = "Allows you to customizable the mage beam ability rendering."
 ) {
     private val duration by NumberSetting("Duration", 40, 1, 100, 1, unit = "ticks", desc = "The duration of the beam in ticks.")
     private val color by ColorSetting("Color", Colors.MINECRAFT_DARK_RED, true, desc = "The color of the beam.")
