@@ -19,7 +19,7 @@ object RelicAura : Module(
     desc = "Automatically picks up relics in the Wither King boss.",
     tag = TagType.RISKY
 ){
-    private val distance by NumberSetting("Distance", 3.0, 1.0, 6.0, 0.1, desc = "The distance to the relic to pick it up.")
+    private val distance by NumberSetting("Distance", 3f, 1.0, 6.0, 0.1, desc = "The distance to the relic to pick it up.")
 
     @SubscribeEvent
     fun onTick(event: TickEvent.ClientTickEvent) {

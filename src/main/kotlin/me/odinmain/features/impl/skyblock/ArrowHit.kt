@@ -22,10 +22,10 @@ object ArrowHit : Module(
 
     private val hud by HudSetting("Display", 10f, 10f, 2f, false) {
         if (it) {
-            RenderUtils.drawText("156", 0f, 2f, 1.0, Colors.WHITE, center = false)
+            RenderUtils.drawText("156", 0f, 2f, 1f, Colors.WHITE, center = false)
             getMCTextWidth("156").toFloat() to 12f
         } else {
-            RenderUtils.drawText("$arrowCount", 0f, 2f, 1.0, Colors.WHITE, center = false)
+            RenderUtils.drawText("$arrowCount", 0f, 2f, 1f, Colors.WHITE, center = false)
             getMCTextWidth("$arrowCount").toFloat() to 12f
         }
     }

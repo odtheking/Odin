@@ -215,7 +215,7 @@ object TerminalSolver : Module(
                     event.isCanceled = true
                 }
                 val amount = event.slot.stack?.stackSize?.toString() ?: ""
-                if (showNumbers) RenderUtils.drawText(amount, event.x + 8.5f, event.y + 4.5f, 1.0, Colors.WHITE, center = true)
+                if (showNumbers) RenderUtils.drawText(amount, event.x + 8.5f, event.y + 4.5f, 1f, Colors.WHITE, center = true)
             }
 
             TerminalTypes.RUBIX -> {
@@ -230,7 +230,7 @@ object TerminalSolver : Module(
                     }
 
                     if (renderType != 1) Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, color.rgba)
-                    RenderUtils.drawText(text.toString(), event.x + 8f, event.y + 4.5f, 1.0, Colors.WHITE, center = true)
+                    RenderUtils.drawText(text.toString(), event.x + 8f, event.y + 4.5f, 1f, Colors.WHITE, center = true)
                 }
             }
 

@@ -28,17 +28,17 @@ object BuildHelper : Module(
     private val buildHelperColor by ColorSetting("Build Helper Color", Colors.MINECRAFT_GOLD, desc = "Color of the build helper.")
     private val hud by HudSetting("Build helper HUD", 10f, 10f, 1f, true) {
         if (it) {
-            RenderUtils.drawText("Build §c50§8%", 1f, 1f, 1.0, buildHelperColor, shadow = true)
-            RenderUtils.drawText("Builders §e2", 1f, 12f, 1.0, buildHelperColor, shadow = true)
-            RenderUtils.drawText("Freshers: §e1", 1f, 24f, 1.0, buildHelperColor, shadow = true)
+            RenderUtils.drawText("Build §c50§8%", 1f, 1f, 1f, buildHelperColor, shadow = true)
+            RenderUtils.drawText("Builders §e2", 1f, 12f, 1f, buildHelperColor, shadow = true)
+            RenderUtils.drawText("Freshers: §e1", 1f, 24f, 1f, buildHelperColor, shadow = true)
 
             getMCTextWidth("Freshers: 1") + 2f to 36f
         } else {
             if (KuudraUtils.phase != 2) return@HudSetting 0f to 0f
 
-            RenderUtils.drawText("Build ${colorBuild(KuudraUtils.buildDonePercentage)}§8%", 1f,1f, 1.0, buildHelperColor, shadow = true)
-            RenderUtils.drawText("Builders ${colorBuilders(KuudraUtils.playersBuildingAmount)}", 1f, 12f, 1.0, buildHelperColor, shadow = true)
-            RenderUtils.drawText("Freshers: ${colorBuilders(KuudraUtils.kuudraTeammates.count { teammate -> teammate.eatFresh })}", 1f, 24f, 1.0, buildHelperColor, shadow = true)
+            RenderUtils.drawText("Build ${colorBuild(KuudraUtils.buildDonePercentage)}§8%", 1f,1f, 1f, buildHelperColor, shadow = true)
+            RenderUtils.drawText("Builders ${colorBuilders(KuudraUtils.playersBuildingAmount)}", 1f, 12f, 1f, buildHelperColor, shadow = true)
+            RenderUtils.drawText("Freshers: ${colorBuilders(KuudraUtils.kuudraTeammates.count { teammate -> teammate.eatFresh })}", 1f, 24f, 1f, buildHelperColor, shadow = true)
             getMCTextWidth("4Build 50%") + 2f to 36f
         }
     }

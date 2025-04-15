@@ -102,7 +102,7 @@ fun text(text: String, x: Number, y: Number, color: Color, size: Number, type: I
 }
 
 fun mcText(text: String, x: Number, y: Number, scale: Number, color: Color, shadow: Boolean = true, center: Boolean = true) {
-    RenderUtils.drawText("$text§r", x.toFloat(), y.toFloat(), scale.toDouble(), color, shadow, center)
+    RenderUtils.drawText("$text§r", x.toFloat(), y.toFloat(), scale.toFloat(), color, shadow, center)
 }
 
 fun mcTextAndWidth(text: String, x: Number, y: Number, scale: Number, color: Color, shadow: Boolean = true, center: Boolean = true): Float {

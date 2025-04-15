@@ -25,8 +25,8 @@ object AbilityTimers : Module(
     private val witherHud by HudSetting("Wither Impact Hud", 10f, 10f, 1f, true) {
         if (witherImpactTicks <= 0 && (hideWhenDone || !LocationUtils.isInSkyblock) && !it) return@HudSetting 0f to 0f
         val width = if (compact) 6f else 65f
-        RenderUtils.drawText(witherImpactText, width / 2f, 0f, 1.0, Colors.WHITE, shadow = true, center = true)
-        width to 10f
+        RenderUtils.drawText(witherImpactText, width / 2f, 0f, 1f, Colors.WHITE, shadow = true, center = true)
+        width to 12f
     }
     private val compact: Boolean by BooleanSetting("Compact Mode", true, desc = "Compacts the Hud to just one character wide.").withDependency { witherHud.enabled }
     private val hideWhenDone: Boolean by BooleanSetting("Hide When Ready", true, desc = "Hides the hud when the cooldown is over.").withDependency { witherHud.enabled }

@@ -16,7 +16,7 @@ object HidePlayers : Module(
     desc = "Hides players in your vicinity."
 ) {
     private val hideAll by BooleanSetting("Hide all", false, desc = "Hides all players, regardless of distance.")
-    private val distance by NumberSetting("distance", 3.0, 0.0, 32.0, .5, "The number of blocks away to hide players.", unit = "blocks").withDependency { !hideAll }
+    private val distance by NumberSetting("distance", 3f, 0.0, 32.0, .5, "The number of blocks away to hide players.", unit = "blocks").withDependency { !hideAll }
     private val onlyDevs by BooleanSetting("only at Devs", false, desc = "Only hides players when standing at ss or fourth device.")
 
     @SubscribeEvent

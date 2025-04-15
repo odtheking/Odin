@@ -231,7 +231,7 @@ object Renderer {
 
         RenderUtils.drawText(
             text = displayTitle, x = sr.scaledWidth / 2f,
-            y = sr.scaledHeight / 2.5f, scale = 4.0,
+            y = sr.scaledHeight / 2.5f, scale = 4f,
             color = displayColor, center = true
         )
     }

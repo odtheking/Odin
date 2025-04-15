@@ -312,7 +312,7 @@ object RenderUtils {
         text: String,
         x: Float,
         y: Float,
-        scale: Double = 1.0,
+        scale: Float = 1f,
         color: Color = Colors.WHITE,
         shadow: Boolean = true,
         center: Boolean = false

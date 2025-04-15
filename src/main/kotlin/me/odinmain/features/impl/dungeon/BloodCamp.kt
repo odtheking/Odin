@@ -43,8 +43,8 @@ object BloodCamp : Module(
     private val partyMoveTime by BooleanSetting("Party Move Message", false, desc = "Sends a message indicating when the watcher will move to party members.").withDependency { movePrediction && predictionDropdown }
     private val killTitle by BooleanSetting("Kill Title", true, desc = "Shows a title for when to kill the initial spawns.").withDependency { movePrediction && predictionDropdown }
 
-    private val moveTimer by HudSetting("Move Hud", 10f, 10f, 1f, true) {
-        if (it) return@HudSetting mcTextAndWidth("Move Timer: 0.50s", 10, 0, 1f, Colors.MINECRAFT_RED, center = false) to 10f
+    private val moveTimer by HudSetting("Move Hud", 10f, 10f, 1f, true) { example ->
+        if (example) return@HudSetting mcTextAndWidth("Move Timer: 0.50s", 10, 0, 1f, Colors.MINECRAFT_RED, center = false) to 10f
         0f to 0f
         finalTime?.let {
             mcTextAndWidth("Move Timer: ${((it - normalTickTime) * 0.05).toFixed()}s", 10, 0, 1f, Colors.MINECRAFT_RED, center = false) to 10f
@@ -54,9 +54,9 @@ object BloodCamp : Module(
     private val assistDropdown by DropdownSetting("Blood Assist Dropdown", true)
     private val bloodAssist by BooleanSetting("Blood Camp Assist", true, desc = "Draws boxes to spawning mobs in the blood room. WARNING: not perfectly accurate. Mobs spawn randomly between 37 - 41 ticks, adjust offset to adjust between ticks.").withDependency { assistDropdown }
 
-    private val timerHud by HudSetting("Timer Hud", 10f, 10f, 1f, true) {
-        if ((!bloodAssist || (!inDungeons || inBoss)) && !it) return@HudSetting 0f to 0f
-        if (it) {
+    private val timerHud by HudSetting("Timer Hud", 10f, 10f, 1f, true) { example ->
+        if ((!bloodAssist || (!inDungeons || inBoss)) && !example) return@HudSetting 0f to 0f
+        if (example) {
             mcText("1.15s", 10, 0, 1f, Colors.MINECRAFT_RED)
             mcText("2.15s", 10, 10, 1f, Colors.MINECRAFT_GREEN)
         } else {
@@ -240,9 +240,9 @@ object BloodCamp : Module(
             renderData.lastEndPoint = endPoint
             renderData.lastPingPoint = pingPoint
 
-            val boxOffset = Vec3(boxSize / -2, 1.5, boxSize / -2)
-            val pingAABB = AxisAlignedBB(boxSize,boxSize,boxSize, 0.0, 0.0, 0.0).offset(boxOffset + calcEndVector(pingPoint, renderData.lastPingPoint, event.partialTicks, !interpolation))
-            val endAABB = AxisAlignedBB(boxSize,boxSize,boxSize, 0.0, 0.0, 0.0).offset(boxOffset + calcEndVector(endPoint, renderData.lastEndPoint, event.partialTicks, !interpolation))
+            val boxOffset = Vec3(boxSize / -2.0, 1.5, boxSize / -2.0)
+            val pingAABB = AxisAlignedBB(boxSize, boxSize, boxSize, 0.0, 0.0, 0.0).offset(boxOffset + calcEndVector(pingPoint, renderData.lastPingPoint, event.partialTicks, !interpolation))
+            val endAABB = AxisAlignedBB(boxSize, boxSize, boxSize, 0.0, 0.0, 0.0).offset(boxOffset + calcEndVector(endPoint, renderData.lastEndPoint, event.partialTicks, !interpolation))
 
             val time = getTime(firstSpawn,  currentTickTime - started)
 

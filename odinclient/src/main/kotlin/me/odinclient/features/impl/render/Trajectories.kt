@@ -234,7 +234,7 @@ object Trajectories : Module(
             }
             else -> return
         }
-        RenderUtils.drawFilledAABB(AxisAlignedBB(vec1.xCoord, vec1.yCoord, vec1.zCoord, vec2.xCoord, vec2.yCoord, vec2.zCoord), color.multiplyAlpha(-2f), false)
+        RenderUtils.drawFilledAABB(AxisAlignedBB(vec1.xCoord, vec1.yCoord, vec1.zCoord, vec2.xCoord, vec2.yCoord, vec2.zCoord), color.multiplyAlpha(0.5f), false)
     }
 
     private fun drawPearlCollisionBox() {

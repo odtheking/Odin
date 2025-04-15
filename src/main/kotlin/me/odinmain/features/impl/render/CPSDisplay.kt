@@ -40,21 +40,21 @@ object CPSDisplay : Module(
 
         if (mouseText) {
             if (button == 2) {
-                RenderUtils.drawText("LMB", 15f, 1f, 1.0, textColor, center = false)
-                RenderUtils.drawText(leftClicks.size.toString(), 20f, 15f, 2.0, textColor, center = false)
+                RenderUtils.drawText("LMB", 15f, 1f, 1f, textColor, center = false)
+                RenderUtils.drawText(leftClicks.size.toString(), 20f, 15f, 2f, textColor, center = false)
 
-                RenderUtils.drawText("RMB", 65f, 1f, 1.0, textColor, center = false)
-                RenderUtils.drawText(rightClicks.size.toString(), 70f, 15f, 2.0, textColor, center = false)
+                RenderUtils.drawText("RMB", 65f, 1f, 1f, textColor, center = false)
+                RenderUtils.drawText(rightClicks.size.toString(), 70f, 15f, 2f, textColor, center = false)
             } else {
                 val text = if (button == 0) "LMB" else "RMB"
-                RenderUtils.drawText(text, 15f, 1f, 1.0, textColor, center = false)
-                RenderUtils.drawText(value, 20f, 15f, 2.0, textColor, center = false)
+                RenderUtils.drawText(text, 15f, 1f, 1f, textColor, center = false)
+                RenderUtils.drawText(value, 20f, 15f, 2f, textColor, center = false)
             }
         } else {
             if (button == 2) {
-                RenderUtils.drawText(leftClicks.size.toString(), 15f, 10f, 2.0, textColor, center = false)
-                RenderUtils.drawText(rightClicks.size.toString(), 65f, 10f, 2.0, textColor, center = false)
-            } else RenderUtils.drawText(value, 20f, 10f, 2.0, textColor, center = false)
+                RenderUtils.drawText(leftClicks.size.toString(), 15f, 10f, 2f, textColor, center = false)
+                RenderUtils.drawText(rightClicks.size.toString(), 65f, 10f, 2f, textColor, center = false)
+            } else RenderUtils.drawText(value, 20f, 10f, 2f, textColor, center = false)
         }
         if (button == 2) 100f to 38f else 50f to 38f
     }

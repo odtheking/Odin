@@ -29,10 +29,10 @@ object CanClip : Module(
     private val line by BooleanSetting("Line", true, desc = "Draws a line where you can clip.")
     private val hud by HudSetting("Display", 10f, 10f, 1f, true) {
         if (it) {
-            RenderUtils.drawText("Can Clip", 1f, 1f, 1.0, Colors.WHITE, shadow = true)
+            RenderUtils.drawText("Can Clip", 1f, 1f, 1f, Colors.WHITE, shadow = true)
             getMCTextWidth("Can Clip").toFloat() to 12f
         } else {
-            RenderUtils.drawText("Can Clip", 1f, 1f, 1.0, Colors.WHITE, shadow = true)
+            RenderUtils.drawText("Can Clip", 1f, 1f, 1f, Colors.WHITE, shadow = true)
             getMCTextWidth("Can Clip").toFloat() to 12f
         }
     }

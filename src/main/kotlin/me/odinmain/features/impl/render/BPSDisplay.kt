@@ -22,11 +22,11 @@ object BPSDisplay : Module(
 
     private val hud by HudSetting("Display", 10f, 10f, 2f, false) {
         if (it) { // example
-            RenderUtils.drawText("§7BPS: §r17.8", 1f, 1f, 1.0, Colors.WHITE, center = false)
+            RenderUtils.drawText("§7BPS: §r17.8", 1f, 1f, 1f, Colors.WHITE, center = false)
         } else {
-            RenderUtils.drawText("§7BPS: §r${bps.round(1)}", 1f, 1f, 1.0, Colors.WHITE, center = false)
+            RenderUtils.drawText("§7BPS: §r${bps.round(1)}", 1f, 1f, 1f, Colors.WHITE, center = false)
         }
-        getMCTextWidth("BPS: 17.5") + 2f to 10f
+        getMCTextWidth("BPS: 17.5") + 2f to 12f
     }
 
     init {

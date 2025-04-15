@@ -35,13 +35,13 @@ object KuudraDisplay : Module(
     private val scaledHealth by BooleanSetting("Use Scaled", true, desc = "Use scaled health display.").withDependency { kuudraHPDisplay }
     private val hud by HudSetting("Health Display", 10f, 10f, 1f, true) {
         if (it) {
-            RenderUtils.drawText("§a99.975M/240M", 1f, 1f, 1.0, Colors.WHITE, center = false)
-            getMCTextWidth("99.975k/100k") + 2f to 10f
+            RenderUtils.drawText("§a99.975M/240M", 1f, 1f, 1f, Colors.WHITE, center = false)
+            getMCTextWidth("99.975k/100k") + 2f to 12f
         } else {
             if (!KuudraUtils.inKuudra) return@HudSetting 0f to 0f
 
-            RenderUtils.drawText(getCurrentHealthDisplay(), 1f, 1f, 1.0, Colors.WHITE, center = false)
-            getMCTextWidth("99.975k/100k") + 2f to 10f
+            RenderUtils.drawText(getCurrentHealthDisplay(), 1f, 1f, 1f, Colors.WHITE, center = false)
+            getMCTextWidth("99.975k/100k") + 2f to 12f
         }
     }
 

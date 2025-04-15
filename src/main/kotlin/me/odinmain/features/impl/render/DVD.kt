@@ -25,7 +25,7 @@ object DVD : Module(
 
     private val speed by NumberSetting("Speed", 1, .1, 2, .1, desc = "Speed of the DVD box.")
     private val text by StringSetting("Text", "ODVD", desc = "Text to display on the DVD box.")
-    private val textScale by NumberSetting("Text Scale", 1.5, 0.1, 2, 0.1, desc = "Scale of the text.")
+    private val textScale by NumberSetting("Text Scale", 1.5f, 0.1, 2, 0.1, desc = "Scale of the text.")
 
     private var lastUpdateTime = System.nanoTime()
     private var color = Colors.WHITE.copy()
@@ -51,7 +51,7 @@ object DVD : Module(
         if (event.type != RenderGameOverlayEvent.ElementType.ALL) return
         updatePosition()
         roundedRectangle(x, y, boxWidth, boxHeight, color, if (roundedCorners) 12f else 0f)
-        RenderUtils.drawText(text, x + boxWidth / 2, y + boxHeight / 2f - getMCTextHeight() * textScale.toFloat() / 2f , textScale, color, true, center = true)
+        RenderUtils.drawText(text, x + boxWidth / 2, y + boxHeight / 2f - getMCTextHeight() * textScale / 2f , textScale, color, true, center = true)
     }
 
     private fun updatePosition() {

@@ -26,21 +26,21 @@ object ServerHud : Module(
                 var width = 0f
                 if (tps) {
                     width += getMCTextWidth("§rTPS: §f20") * 1.5f
-                    RenderUtils.drawText("§rTPS: §f20", 1f, 5f, 2.0, ClickGUIModule.color, shadow = true, center = false)
+                    RenderUtils.drawText("§rTPS: §f20", 1f, 5f, 2f, ClickGUIModule.color, shadow = true, center = false)
                 }
                 if (fps) {
                     width += getMCTextWidth("§rFPS: §f240") * 1.5f
-                    RenderUtils.drawText("§rFPS: §f240", 5f + if (tps) getMCTextWidth("§rTPS: §f20") * 2f else 0f, 5f, 2.0, ClickGUIModule.color, shadow = true, center = false)
+                    RenderUtils.drawText("§rFPS: §f240", 5f + if (tps) getMCTextWidth("§rTPS: §f20") * 2f else 0f, 5f, 2f, ClickGUIModule.color, shadow = true, center = false)
                 }
                 if (ping) {
                     width += getMCTextWidth("§rPing: §f60") * 1.5f
-                    RenderUtils.drawText("§rPing: §f60", 5f + if (tps) getMCTextWidth("§rTPS: §f20") * 4.5f else 0f + if (fps) getMCTextWidth("§rFPS: §f240") * 3f + 5f else 0f, 5f, 2.0, ClickGUIModule.color, shadow = true, center = false)
+                    RenderUtils.drawText("§rPing: §f60", 5f + if (tps) getMCTextWidth("§rTPS: §f20") * 4.5f else 0f + if (fps) getMCTextWidth("§rFPS: §f240") * 3f + 5f else 0f, 5f, 2f, ClickGUIModule.color, shadow = true, center = false)
                 }
                 width + 6f to if (ping || tps || fps) getMCTextHeight() * 2 + 6f else 0f
             } else {
-                if (ping) RenderUtils.drawText("§6Ping: §a60ms", 1f, 9f, 2.0, Colors.WHITE, shadow = true, center = false)
-                if (tps) RenderUtils.drawText("§3TPS: §a20.0", 1f, 26f, 2.0, Colors.WHITE, shadow = true, center = false)
-                if (fps) RenderUtils.drawText("§dFPS: §a240", 1f, 43f, 2.0, Colors.WHITE, shadow = true, center = false)
+                if (ping) RenderUtils.drawText("§6Ping: §a60ms", 1f, 9f, 2f, Colors.WHITE, shadow = true, center = false)
+                if (tps) RenderUtils.drawText("§3TPS: §a20.0", 1f, 26f, 2f, Colors.WHITE, shadow = true, center = false)
+                if (fps) RenderUtils.drawText("§dFPS: §a240", 1f, 43f, 2f, Colors.WHITE, shadow = true, center = false)
                 max(
                     if (ping) getTextWidth("Ping: 60ms", 12f) else 0f,
                     if (tps) getTextWidth("TPS: 20.0", 12f) else 0f,
@@ -61,9 +61,9 @@ object ServerHud : Module(
                     width += mcTextAndWidth(pingText, 5f + (if (tps) getMCTextWidth(tpsText) * 2f else 0f) + (if (fps) getMCTextWidth(fpsText) * 2f + 5f else 0f), 5f, 2, ClickGUIModule.color, shadow = true, center = false) * 1.5f
                 width + 2f to if (ping || tps || fps) getMCTextWidth("A") + 6f else 0f
             } else {
-                if (ping) RenderUtils.drawText("§6Ping: §a${ServerUtils.averagePing.toInt()}ms", 1f, 9f, 2.0, Colors.WHITE, shadow = true, center = false)
-                if (tps) RenderUtils.drawText("§3TPS: §a${ServerUtils.averageTps.round(1)}", 1f, 26f, 2.0, Colors.WHITE, shadow = true, center = false)
-                if (fps) RenderUtils.drawText("§dFPS: §a${mc.debug.split(" ")[0].toIntOrNull() ?: 0}", 1f, 43f, 2.0, Colors.WHITE, shadow = true, center = false)
+                if (ping) RenderUtils.drawText("§6Ping: §a${ServerUtils.averagePing.toInt()}ms", 1f, 9f, 2f, Colors.WHITE, shadow = true, center = false)
+                if (tps) RenderUtils.drawText("§3TPS: §a${ServerUtils.averageTps.round(1)}", 1f, 26f, 2f, Colors.WHITE, shadow = true, center = false)
+                if (fps) RenderUtils.drawText("§dFPS: §a${mc.debug.split(" ")[0].toIntOrNull() ?: 0}", 1f, 43f, 2f, Colors.WHITE, shadow = true, center = false)
                 max(
                     if (ping) getTextWidth("§ePing: ${colorizePing(ServerUtils.averagePing.toInt())}ms", 12f) else 0f,
                     if (tps) getTextWidth("§ePing: ${colorizePing(ServerUtils.averagePing.toInt())}ms", 12f) else 0f,

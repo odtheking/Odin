@@ -25,7 +25,7 @@ object TerminalAura : Module(
     tag = TagType.RISKY
 ) {
     private val onGround by BooleanSetting("On Ground", true, desc = "Only click when on the ground.")
-    private val distance by NumberSetting("Distance", 3.5, 1.0, 4.5, 0.1, desc = "The distance to click the terminal.")
+    private val distance by NumberSetting("Distance", 3.5f, 1.0, 4.5, 0.1, desc = "The distance to click the terminal.")
 
     private val clickClock = Clock(1000)
     private val interactClock = Clock(500)

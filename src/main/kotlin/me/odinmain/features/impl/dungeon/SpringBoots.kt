@@ -27,11 +27,11 @@ object SpringBoots : Module(
 ) {
     private val hud by HudSetting("Display", 10f, 10f, 1f, true) { example ->
         if (example) {
-            RenderUtils.drawText("Jump: 6.5", 1f, 1f, 1.0, Colors.WHITE, center = true)
+            RenderUtils.drawText("Jump: 6.5", 1f, 1f, 1f, Colors.WHITE, center = true)
             getTextWidth("Jump: 6.5", 12f) to 12f
         } else {
             val blockAmount = blocksList.getSafe(pitchCounts.sum()).takeIf { it != 0.0 } ?: return@HudSetting 0f to 0f
-            RenderUtils.drawText("Jump: ${colorHud(blockAmount)}", 1f, 1f, 1.0, Colors.WHITE, center = true)
+            RenderUtils.drawText("Jump: ${colorHud(blockAmount)}", 1f, 1f, 1f, Colors.WHITE, center = true)
             getTextWidth("Jump: ${colorHud(blockAmount)}", 12f) to 12f
         }
     }

@@ -217,8 +217,8 @@ object DungeonWaypoints : Module(
         } ?: ("" to "Editing Waypoints")
 
         GlStateManager.scale(2f / sr.scaleFactor, 2f / sr.scaleFactor, 1f)
-        RenderUtils.drawText(editText, mc.displayWidth / 4f, mc.displayHeight  / 4f + 10, 1.0, Colors.WHITE.withAlpha(.8f), center = true)
-        RenderUtils.drawText(text, mc.displayWidth / 4f,  mc.displayHeight / 4f + 20, 1.0, selectedColor, center = true)
+        RenderUtils.drawText(editText, mc.displayWidth / 4f, mc.displayHeight  / 4f + 10, 1f, Colors.WHITE.withAlpha(.8f), center = true)
+        RenderUtils.drawText(text, mc.displayWidth / 4f,  mc.displayHeight / 4f + 20, 1f, selectedColor, center = true)
         GlStateManager.scale(sr.scaleFactor / 2f, sr.scaleFactor / 2f, 1f)
     }
 

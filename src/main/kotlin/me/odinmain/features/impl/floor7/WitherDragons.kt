@@ -37,14 +37,14 @@ object WitherDragons : Module(
     private val dragonTimer by BooleanSetting("Dragon Timer", true, desc = "Displays a timer for when M7 dragons spawn.").withDependency { dragonTimerDropDown }
     private val hud by HudSetting("Dragon Timer HUD", 10f, 10f, 1f, true) {
         if (it) {
-            RenderUtils.drawText("§5P §a4.5s", 2f, 5f, 1.0, Colors.WHITE, center = false)
-            getMCTextWidth("§5P §a4.5s")+ 2f to 33f
+            RenderUtils.drawText("§5P §a4.5s", 1f, 1f, 1f, Colors.WHITE, center = false)
+            getMCTextWidth("§5P §a4.5s")+ 2f to 12f
         } else {
             priorityDragon.takeIf { drag -> drag != WitherDragonsEnum.None }?.let { dragon ->
                 if (dragon.state != WitherDragonState.SPAWNING || dragon.timeToSpawn <= 0) return@HudSetting 0f to 0f
-                RenderUtils.drawText("§${dragon.colorCode}${dragon.name.first()}: ${colorDragonTimer(dragon.timeToSpawn)}${dragon.timeToSpawn * 50}ms", 2f, 5f, 1.0, Colors.WHITE, center = false)
+                RenderUtils.drawText("§${dragon.colorCode}${dragon.name.first()}: ${colorDragonTimer(dragon.timeToSpawn)}${dragon.timeToSpawn * 50}ms", 1f, 1f, 1f, Colors.WHITE, center = false)
             }
-            getMCTextWidth("§5P §a4.5s")+ 2f to 33f
+            getMCTextWidth("§5P §a4.5s")+ 2f to 12f
         }
     }.withDependency { dragonTimerDropDown }
 
@@ -70,8 +70,8 @@ object WitherDragons : Module(
 
     private val dragonPriorityDropDown by DropdownSetting("Dragon Priority Dropdown")
     val dragonPriorityToggle by BooleanSetting("Dragon Priority", false, desc = "Displays the priority of dragons spawning.").withDependency { dragonPriorityDropDown }
-    val normalPower by NumberSetting("Normal Power", 22.0, 0.0, 32.0, desc = "Power needed to split.").withDependency { dragonPriorityToggle && dragonPriorityDropDown }
-    val easyPower by NumberSetting("Easy Power", 19.0, 0.0, 32.0, desc = "Power needed when its Purple and another dragon.").withDependency { dragonPriorityToggle && dragonPriorityDropDown }
+    val normalPower by NumberSetting("Normal Power", 22.0f, 0.0, 32.0, desc = "Power needed to split.").withDependency { dragonPriorityToggle && dragonPriorityDropDown }
+    val easyPower by NumberSetting("Easy Power", 19.0f, 0.0, 32.0, desc = "Power needed when its Purple and another dragon.").withDependency { dragonPriorityToggle && dragonPriorityDropDown }
     val soloDebuff by SelectorSetting("Purple Solo Debuff", "Tank", arrayListOf("Tank", "Healer"), desc = "Displays the debuff of the config. The class that solo debuffs purple, the other class helps b/m.").withDependency { dragonPriorityToggle && dragonPriorityDropDown }
     val soloDebuffOnAll by BooleanSetting("Solo Debuff on All Splits", true, desc = "Same as Purple Solo Debuff but for all dragons (A will only have 1 debuff).").withDependency { dragonPriorityToggle && dragonPriorityDropDown }
     val paulBuff by BooleanSetting("Paul Buff", false, desc = "Multiplies the power in your run by 1.25.").withDependency { dragonPriorityToggle && dragonPriorityDropDown }

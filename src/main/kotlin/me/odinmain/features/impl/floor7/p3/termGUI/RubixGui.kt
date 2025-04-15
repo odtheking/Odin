@@ -37,7 +37,7 @@ object RubixGui : TermGui() {
                     else -> TerminalSolver.oppositeRubixColor1
                 }
                 roundedRectangle(box, color)
-                RenderUtils.drawText(text.toString(), -168 + col * 70 + 26f , -110f + row * 70f + (27f - (textScale * 3f) - (gap * 0.5f)), 2.0 + textScale, Colors.WHITE, center = true)
+                RenderUtils.drawText(text.toString(), -168 + col * 70 + 26f , -110f + row * 70f + (27f - (textScale * 3f) - (gap * 0.5f)), 2f + textScale, Colors.WHITE, center = true)
             }
             
             itemIndexMap[pane] = Box(

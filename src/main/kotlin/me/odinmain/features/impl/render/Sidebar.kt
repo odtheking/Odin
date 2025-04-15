@@ -73,7 +73,7 @@ object Sidebar : Module(
         if (customFont)
             text(str, x - 1, y + 3, Colors.WHITE, 7, shadow = textShadow)
         else
-            RenderUtils.drawText(str, x.toFloat(), y.toFloat(), 1.0, Colors.WHITE, shadow = textShadow, center = false)
+            RenderUtils.drawText(str, x.toFloat(), y.toFloat(), 1f, Colors.WHITE, shadow = textShadow, center = false)
     }
 
     private fun getStringWidth(str: String): Int {
