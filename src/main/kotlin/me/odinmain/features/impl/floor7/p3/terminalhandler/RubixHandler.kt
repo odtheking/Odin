@@ -9,7 +9,7 @@ import net.minecraft.network.play.server.S2FPacketSetSlot
 class RubixHandler: TerminalHandler(TerminalTypes.RUBIX) {
 
     override fun handleSlotUpdate(packet: S2FPacketSetSlot): Boolean {
-        if (items.last() != null && packet.func_149173_d() != type.windowSize - 1) return false
+        if (items.last() == null || packet.func_149173_d() != type.windowSize - 1) return false
         solution.clear()
         solution.addAll(solveRubix(items))
         return true
@@ -35,16 +35,14 @@ class RubixHandler: TerminalHandler(TerminalTypes.RUBIX) {
         var temp = List(100) { i -> i }
         if (lastRubixSolution != null) {
             temp = panes.flatMap { pane ->
-                if (pane.metadata != lastRubixSolution) {
-                    Array(dist(rubixColorOrder.indexOf(pane.metadata), rubixColorOrder.indexOf(lastRubixSolution))) { pane }.toList()
-                } else emptyList()
+                if (pane.metadata != lastRubixSolution) List(dist(rubixColorOrder.indexOf(pane.metadata), rubixColorOrder.indexOf(lastRubixSolution))) { pane }
+                else emptyList()
             }.map { items.indexOf(it) }
         } else {
             for (color in rubixColorOrder) {
                 val temp2 = panes.flatMap { pane ->
-                    if (pane.metadata != color) {
-                        Array(dist(rubixColorOrder.indexOf(pane.metadata), rubixColorOrder.indexOf(color))) { pane }.toList()
-                    } else emptyList()
+                    if (pane.metadata != color) List(dist(rubixColorOrder.indexOf(pane.metadata), rubixColorOrder.indexOf(color))) { pane }
+                    else emptyList()
                 }.map { items.indexOf(it) }
                 if (getRealSize(temp2) < getRealSize(temp)) {
                     temp = temp2

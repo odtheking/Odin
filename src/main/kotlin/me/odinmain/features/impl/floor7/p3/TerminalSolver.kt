@@ -140,7 +140,7 @@ object TerminalSolver : Module(
         }
 
         execute(50) {
-            if (System.currentTimeMillis() - lastClickTime >= 600) currentTerm?.let {
+            if (System.currentTimeMillis() - lastClickTime >= 600 && currentTerm?.isClicked == true) currentTerm?.let {
                 it.handleSlotUpdate(S2FPacketSetSlot(mc.thePlayer?.openContainer?.windowId ?: return@execute, it.type.windowSize - 1, null))
                 it.isClicked = false
             }

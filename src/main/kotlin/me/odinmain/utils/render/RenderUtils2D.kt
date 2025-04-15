@@ -98,7 +98,7 @@ object RenderUtils2D {
             GlStateManager.scale(scale, scale, scale)
             roundedRectangle(-width / 2, -height / 2, width, height * 0.9, backgroundColor)
             roundedRectangle(-width / 2, -height / 2 + height * 0.9, width, height * 0.1, accentColor)
-            RenderUtils.drawText(text, 0f, -6f, 1f, textColor, shadow = shadow)
+            RenderUtils.drawText(text, 0f, -4.5f, 1f, textColor, shadow = shadow)
             GlStateManager.popMatrix()
         }
     }
