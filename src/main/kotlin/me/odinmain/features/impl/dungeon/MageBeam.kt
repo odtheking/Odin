@@ -26,6 +26,7 @@ object MageBeam: Module (
     private val color by ColorSetting("Color", Colors.MINECRAFT_DARK_RED, true, desc = "The color of the beam.")
     private val lineWidth by NumberSetting("Line Width", 2f, 1f, 10f, 0.1f, desc = "The width of the beam line.")
     private val depth by BooleanSetting("Depth Check", true, desc = "Whether or not to depth check the beam.")
+    private val hideParticles by BooleanSetting("Hide Particles", true, desc = "Whether or not to hide the particles.")
 
     private data class MageBeam(val points: CopyOnWriteArrayList<Vec3> = CopyOnWriteArrayList(), var lastUpdateTick: Int = 0)
 
@@ -41,7 +42,7 @@ object MageBeam: Module (
         val recentBeam = activeBeams.lastOrNull()
         val newPoint = positionVector
 
-        if (recentBeam != null && (currentTick - recentBeam.lastUpdateTick) < NEW_BEAM_GAP_TICKS) {
+        if (recentBeam != null && (currentTick - recentBeam.lastUpdateTick) < NEW_BEAM_GAP_TICKS && isPointInBeamDirection(recentBeam.points, newPoint)) {
             recentBeam.points.add(newPoint)
             recentBeam.lastUpdateTick = currentTick
         } else {
@@ -52,7 +53,18 @@ object MageBeam: Module (
             }
         }
 
-        event.isCanceled = true
+        if (hideParticles) event.isCanceled = true
+    }
+
+    private fun isPointInBeamDirection(points: List<Vec3>, newPoint: Vec3): Boolean {
+        if (points.size <= 1) return true
+
+        val lastPoint = points.last()
+        val beamDirection = lastPoint.subtract(points[0]).normalize()
+        val newDirection = newPoint.subtract(lastPoint).normalize()
+
+
+        return (beamDirection.xCoord * newDirection.xCoord + beamDirection.yCoord * newDirection.yCoord + beamDirection.zCoord * newDirection.zCoord) > 0.97
     }
 
     @SubscribeEvent
@@ -64,7 +76,7 @@ object MageBeam: Module (
     fun onRenderWorld(event: RenderWorldLastEvent) {
         if (!DungeonUtils.inDungeons) return
         for (beam in activeBeams) {
-            if (beam.points.size < 2 || beam.points.size > 500) continue
+            if (beam.points.size < 5) continue
             Renderer.draw3DLine(beam.points, color, lineWidth, depth)
         }
     }
