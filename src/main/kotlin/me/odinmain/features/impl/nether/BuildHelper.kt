@@ -6,11 +6,10 @@ import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.features.settings.impl.HudSetting
 import me.odinmain.features.settings.impl.NumberSetting
-import me.odinmain.font.OdinFont
 import me.odinmain.utils.addVec
+import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.render.Renderer
-import me.odinmain.utils.render.getTextWidth
-import me.odinmain.utils.render.text
+import me.odinmain.utils.render.getMCTextWidth
 import me.odinmain.utils.skyblock.KuudraUtils
 import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.PlayerUtils
@@ -29,18 +28,18 @@ object BuildHelper : Module(
     private val buildHelperColor by ColorSetting("Build Helper Color", Colors.MINECRAFT_GOLD, desc = "Color of the build helper.")
     private val hud by HudSetting("Build helper HUD", 10f, 10f, 1f, true) {
         if (it) {
-            text("Build §c50§8%", 1f, 9f, buildHelperColor, 12f, OdinFont.REGULAR, shadow = true)
-            text("Builders §e2", 1f, 24f, buildHelperColor, 12f, OdinFont.REGULAR, shadow = true)
-            text("Freshers: §e1", 1f, 39f, buildHelperColor, 12f, OdinFont.REGULAR, shadow = true)
+            RenderUtils.drawText("Build §c50§8%", 1f, 1f, 1.0, buildHelperColor, shadow = true)
+            RenderUtils.drawText("Builders §e2", 1f, 12f, 1.0, buildHelperColor, shadow = true)
+            RenderUtils.drawText("Freshers: §e1", 1f, 24f, 1.0, buildHelperColor, shadow = true)
 
-            getTextWidth("4Build 50%", 12f) + 2f to 48f
+            getMCTextWidth("Freshers: 1") + 2f to 36f
         } else {
             if (KuudraUtils.phase != 2) return@HudSetting 0f to 0f
 
-            text("Build ${colorBuild(KuudraUtils.buildDonePercentage)}§8%", 1f, 9f, buildHelperColor, 12f, OdinFont.REGULAR, shadow = true)
-            text("Builders ${colorBuilders(KuudraUtils.playersBuildingAmount)}", 1f,  24f, buildHelperColor, 12f, OdinFont.REGULAR, shadow = true)
-            text("Freshers: ${colorBuilders(KuudraUtils.kuudraTeammates.count { teammate -> teammate.eatFresh })}", 1f, 39f, buildHelperColor, 12f, OdinFont.REGULAR, shadow = true)
-            getTextWidth("4Build 50%", 12f) + 2f to 42f
+            RenderUtils.drawText("Build ${colorBuild(KuudraUtils.buildDonePercentage)}§8%", 1f,1f, 1.0, buildHelperColor, shadow = true)
+            RenderUtils.drawText("Builders ${colorBuilders(KuudraUtils.playersBuildingAmount)}", 1f, 12f, 1.0, buildHelperColor, shadow = true)
+            RenderUtils.drawText("Freshers: ${colorBuilders(KuudraUtils.kuudraTeammates.count { teammate -> teammate.eatFresh })}", 1f, 24f, 1.0, buildHelperColor, shadow = true)
+            getMCTextWidth("4Build 50%") + 2f to 36f
         }
     }
     private val stunNotification by BooleanSetting("Stun Notification", true, desc = "Notifies you when to go to stun.")

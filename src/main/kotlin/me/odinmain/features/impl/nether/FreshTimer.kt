@@ -5,14 +5,13 @@ import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.features.settings.impl.HudSetting
-import me.odinmain.font.OdinFont
-import me.odinmain.utils.render.getTextWidth
-import me.odinmain.utils.render.text
-import me.odinmain.utils.round
+import me.odinmain.utils.render.RenderUtils
+import me.odinmain.utils.render.getMCTextWidth
 import me.odinmain.utils.runIn
 import me.odinmain.utils.skyblock.KuudraUtils
 import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.skyblock.partyMessage
+import me.odinmain.utils.toFixed
 import me.odinmain.utils.ui.Colors
 
 object FreshTimer : Module(
@@ -25,15 +24,15 @@ object FreshTimer : Module(
     private val freshTimerHUDColor by ColorSetting("Fresh Timer Color", Colors.MINECRAFT_GOLD, true, desc = "Color of the fresh timer HUD.")
     private val hud by HudSetting("Fresh timer HUD", 10f, 10f, 1f, true) { example ->
         if (example) {
-            text("Fresh§f: 9s", 1f, 9f, freshTimerHUDColor, 12f, OdinFont.REGULAR, shadow = true)
-            getTextWidth("Fresh: 10s", 12f) + 2f to 16f
+            RenderUtils.drawText("Fresh§f: 9s", 1f, 1f, 1.0, freshTimerHUDColor, shadow = true)
+            getMCTextWidth("Fresh: 9s") + 2f to 12f
         } else {
             val player = KuudraUtils.kuudraTeammates.find { teammate -> teammate.playerName == mc.thePlayer.name } ?: return@HudSetting 0f to 0f
             val timeLeft = (10000L - (System.currentTimeMillis() - player.eatFreshTime)).takeIf { it > 0 } ?: return@HudSetting 0f to 0f
             if (player.eatFresh && KuudraUtils.phase == 2)
-                text("Fresh§f: ${(timeLeft / 1000.0).round(2)}s", 1f, 9f, freshTimerHUDColor,12f, OdinFont.REGULAR, shadow = true)
+                RenderUtils.drawText("Fresh§f: ${(timeLeft / 1000f).toFixed()}s", 1f, 1f, 1.0, highlightFreshColor, shadow = true)
 
-            getTextWidth("Fresh: 10s", 12f) + 2f to 12f
+            getMCTextWidth("Fresh: 10s") + 2f to 12f
         }
     }
 

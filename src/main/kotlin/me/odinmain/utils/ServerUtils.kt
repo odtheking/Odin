@@ -30,7 +30,6 @@ object ServerUtils {
     var averagePing = 0.0
     private var isPinging = false
     private var pingStartTime = 0L
-    inline val fps get() = mc.debug.split(" ")[0].toIntOrNull() ?: 0
 
     @SubscribeEvent
     fun onWorldLoad(event: WorldEvent.Load) {

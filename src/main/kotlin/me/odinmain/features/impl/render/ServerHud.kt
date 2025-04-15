@@ -1,5 +1,6 @@
 package me.odinmain.features.impl.render
 
+import me.odinmain.OdinMain
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.HudSetting
@@ -48,7 +49,7 @@ object ServerHud : Module(
             }
         } else {
             if (style == 0) {
-                val fpsText = "§rFPS: §f${ServerUtils.fps}"
+                val fpsText = "§rFPS: §f${OdinMain.mc.debug.split(" ")[0].toIntOrNull() ?: 0}"
                 val pingText = "§rPing: §f${ServerUtils.averagePing.toInt()}"
                 val tpsText = "§rTPS: §f${if (ServerUtils.averageTps > 19.3) 20 else ServerUtils.averageTps.toInt()}"
                 var width = 0f

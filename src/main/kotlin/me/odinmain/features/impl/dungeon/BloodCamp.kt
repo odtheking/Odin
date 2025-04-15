@@ -247,9 +247,9 @@ object BloodCamp : Module(
             val time = getTime(firstSpawn,  currentTickTime - started)
 
             if (mobOffset < time) {
-                Renderer.drawBox(pingAABB, mboxColor, fillAlpha = 0f, outlineAlpha = mboxColor.alpha, depth = true)
-                Renderer.drawBox(endAABB, pboxColor, fillAlpha = 0f, outlineAlpha = pboxColor.alpha, depth = true)
-            } else Renderer.drawBox(endAABB, fboxColor, fillAlpha = 0f, outlineAlpha = fboxColor.alpha, depth = true)
+                Renderer.drawBox(pingAABB, mboxColor, fillAlpha = 0f, outlineAlpha = mboxColor.alphaFloat, depth = true)
+                Renderer.drawBox(endAABB, pboxColor, fillAlpha = 0f, outlineAlpha = pboxColor.alphaFloat, depth = true)
+            } else Renderer.drawBox(endAABB, fboxColor, fillAlpha = 0f, outlineAlpha = fboxColor.alphaFloat, depth = true)
 
             if (drawLine)
                 Renderer.draw3DLine(listOf(currVector.addVec(y = 2.0), endPoint.addVec(y = 2.0)), color = Colors.MINECRAFT_RED, depth = true)

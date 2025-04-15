@@ -54,9 +54,9 @@ object ClickGUI : Screen() {
         if (anim.isAnimating()) {
             //translate(0f, floor(anim.get(-10f, 0f, !open)))
             val alpha = anim.get(0.7f, 1f, !open)
-            ColorUtil.moduleButtonColor.alpha = alpha
-            ColorUtil.clickGUIColor.alpha = alpha
-            Colors.WHITE.alpha = alpha
+            ColorUtil.moduleButtonColor.alphaFloat = alpha
+            ColorUtil.clickGUIColor.alphaFloat = alpha
+            Colors.WHITE.alphaFloat = alpha
         }
 
         for (i in 0 until panels.size) {
@@ -67,9 +67,9 @@ object ClickGUI : Screen() {
         desc.render()
 
         if (anim.isAnimating()) {
-            ColorUtil.moduleButtonColor.alpha = 1f
-            ColorUtil.clickGUIColor.alpha = 1f
-            Colors.WHITE.alpha = 1f
+            ColorUtil.moduleButtonColor.alphaFloat = 1f
+            ColorUtil.clickGUIColor.alphaFloat = 1f
+            Colors.WHITE.alphaFloat = 1f
         }
         GlStateManager.translate(0f, 0f, -200f)
         GlStateManager.popMatrix()

@@ -6,6 +6,7 @@ import com.github.stivais.commodore.Commodore
 import com.github.stivais.commodore.parsers.CommandParsable
 import com.github.stivais.commodore.utils.GreedyString
 import me.odinmain.OdinMain.display
+import me.odinmain.OdinMain.mc
 import me.odinmain.features.impl.render.ClickGUIModule
 import me.odinmain.features.impl.render.ServerHud.colorizeFPS
 import me.odinmain.features.impl.render.ServerHud.colorizePing
@@ -107,7 +108,7 @@ val mainCommand = Commodore("od", "odin") {
     }
 
     literal("fps").runs {
-        modMessage(colorizeFPS(ServerUtils.fps))
+        modMessage(colorizeFPS(mc.debug.split(" ")[0].toIntOrNull() ?: 0))
     }
 
     literal("tps").runs {

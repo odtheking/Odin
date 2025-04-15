@@ -3,16 +3,14 @@ package me.odinmain.features.impl.dungeon
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.HudSetting
-import me.odinmain.font.OdinFont
+import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.render.Renderer
-import me.odinmain.utils.render.getTextWidth
-import me.odinmain.utils.render.text
+import me.odinmain.utils.render.getMCTextWidth
 import me.odinmain.utils.runIn
 import me.odinmain.utils.skyblock.getBlockAt
 import me.odinmain.utils.skyblock.getBlockStateAt
 import me.odinmain.utils.toVec3
 import me.odinmain.utils.ui.Colors
-import me.odinmain.utils.ui.clickgui.animations.impl.EaseInOut
 import net.minecraft.block.BlockStairs
 import net.minecraft.block.properties.IProperty
 import net.minecraft.block.state.IBlockState
@@ -31,15 +29,14 @@ object CanClip : Module(
     private val line by BooleanSetting("Line", true, desc = "Draws a line where you can clip.")
     private val hud by HudSetting("Display", 10f, 10f, 1f, true) {
         if (it) {
-            text("Can Clip", 1f, 9f, Colors.WHITE, 12f, OdinFont.REGULAR)
-            getTextWidth("Can Clip", 12f) to 12f
+            RenderUtils.drawText("Can Clip", 1f, 1f, 1.0, Colors.WHITE, shadow = true)
+            getMCTextWidth("Can Clip").toFloat() to 12f
         } else {
-            text("Can Clip", 1f, 9f, Colors.MINECRAFT_GREEN, 12f, OdinFont.REGULAR)
-            getTextWidth("Can Clip", 12f) to 12f
+            RenderUtils.drawText("Can Clip", 1f, 1f, 1.0, Colors.WHITE, shadow = true)
+            getMCTextWidth("Can Clip").toFloat() to 12f
         }
     }
 
-    private val animation = EaseInOut(300)
     private var canClip = false
 
     private val ranges = listOf(0.235..0.265, 0.735..0.765)
@@ -49,16 +46,11 @@ object CanClip : Module(
         val player = mc.thePlayer ?: return
 
         if (player.isSneaking) {
-            if (canClip) {
-                animation.start()
-                canClip = false
-            }
+            if (canClip) canClip = false
             return
         }
 
-        val prev = canClip
         canClip = ranges.any { abs(player.posX % 1) in it || abs(player.posZ % 1) in it }
-        if (prev != canClip) animation.start()
     }
 
     private val blocks = mutableMapOf<Vec3, String>()

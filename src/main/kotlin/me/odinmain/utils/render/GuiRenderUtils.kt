@@ -192,7 +192,7 @@ enum class GradientDirection {
 }
 
 fun Color.coerceAlpha(min: Float, max: Float): Color {
-    return if (this.alpha < min) this.withAlpha(min)
-    else if (this.alpha > max) this.withAlpha(max)
+    return if (this.alphaFloat < min) this.withAlpha(min)
+    else if (this.alphaFloat > max) this.withAlpha(max)
     else this
 }

@@ -9,8 +9,6 @@ import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.render.dropShadow
 import me.odinmain.utils.render.roundedRectangle
-import me.odinmain.utils.ui.clickgui.animations.impl.EaseInOut
-import me.odinmain.utils.ui.clickgui.util.ColorUtil.brighter
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -30,15 +28,13 @@ object CPSDisplay : Module(
         rightClicks.removeAll { System.currentTimeMillis() - it > 1000 }
 
         val value = if (button == 0) "${leftClicks.size}" else "${rightClicks.size}"
-        val anim = if (button == 0) leftAnim else rightAnim
-        val color = color.brighter(leftAnim.get(1f, 1.5f, leftAnim.getPercent() >= 50))
         if (button == 2) {
             roundedRectangle(0f, 0f, 50f, 38f, color, color, color, 0f , 9f, 0f, 9f, 0f, 0f)
             roundedRectangle(50f, 0f, 50f, 38f, color, color, color, 0f , 0f, 9f, 0f, 9f, 0f)
 
             if (outline) dropShadow(0f, 0f, 100f, 36f, 10f)
         } else {
-            roundedRectangle(0f, 0f, 50f, 36f, color.brighter(anim.get(1f, 1.5f, anim.getPercent() >= 50)), 9f)
+            roundedRectangle(0f, 0f, 50f, 36f, color, 9f)
             if (outline) dropShadow(0f, 0f, 50f, 36f, 10f)
         }
 
@@ -63,22 +59,17 @@ object CPSDisplay : Module(
         if (button == 2) 100f to 38f else 50f to 38f
     }
 
-    private val leftAnim = EaseInOut(300)
-    private val rightAnim = EaseInOut(300)
-
     private val leftClicks = mutableListOf<Long>()
     private val rightClicks = mutableListOf<Long>()
 
     @SubscribeEvent
     fun onLeftClick(event: ClickEvent.Left) {
         leftClicks.add(System.currentTimeMillis())
-        leftAnim.start(true)
     }
 
     @SubscribeEvent
     fun onRightClick(event: ClickEvent.Right) {
         rightClicks.add(System.currentTimeMillis())
-        rightAnim.start(true)
     }
 
     @SubscribeEvent

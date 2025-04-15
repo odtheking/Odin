@@ -12,7 +12,7 @@ object HSBBoxShader: Shader("/shaders/rectangle.vsh", "/shaders/hsbbox.fsh") {
 
         getFloat2Uniform("u_rectCenter").setValue(x + (width / 2), y + (height / 2))
         getFloat2Uniform("u_rectSize").setValue(width, height)
-        getFloat4Uniform("u_colorRect").setValue(color.r / 255f, color.g / 255f, color.b / 255f, color.alpha)
+        getFloat4Uniform("u_colorRect").setValue(color.red / 255f, color.green / 255f, color.blue / 255f, color.alphaFloat)
 
         Gui.drawRect(x.toInt(), y.toInt(), (x + width).toInt(), (y + height).toInt(), color.rgba)
 

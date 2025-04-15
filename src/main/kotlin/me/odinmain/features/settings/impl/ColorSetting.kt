@@ -40,9 +40,9 @@ class ColorSetting(
         }
 
     var alpha: Float
-        get() = value.alpha
+        get() = value.alphaFloat
         set(value) {
-            this.value.alpha = value.coerceIn(0f, 1f)
+            this.value.alphaFloat = value.coerceIn(0f, 1f)
         }
 
     override fun read(element: JsonElement?) {

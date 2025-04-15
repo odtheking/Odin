@@ -18,7 +18,6 @@ import me.odinmain.utils.skyblock.ClickType
 import me.odinmain.utils.skyblock.devMessage
 import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.ui.Colors
-import me.odinmain.utils.ui.clickgui.util.ColorUtil
 import me.odinmain.utils.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.ui.util.MouseUtils
 import net.minecraft.client.gui.Gui
@@ -67,7 +66,7 @@ object TerminalSolver : Module(
     private val showColors by DropdownSetting("Color Settings")
     private val backgroundColor by ColorSetting("Background Color", Colors.MINECRAFT_DARK_GRAY, true, desc = "Background color of the terminal solver.").withDependency { renderType == 0 && showColors }
 
-    val customGuiColor by ColorSetting("Custom Gui Color", ColorUtil.moduleButtonColor.withAlpha(.8f), true, desc = "Color of the custom gui.").withDependency { renderType == 3 && showColors }
+    val customGuiColor by ColorSetting("Custom Gui Color", Colors.MINECRAFT_DARK_GRAY.withAlpha(.8f), true, desc = "Color of the custom gui.").withDependency { renderType == 3 && showColors }
     val panesColor by ColorSetting("Panes Color", Colors.MINECRAFT_DARK_AQUA, true, desc = "Color of the panes terminal solver.").withDependency { showColors }
 
     val rubixColor1 by ColorSetting("Rubix Color 1", Colors.MINECRAFT_DARK_AQUA, true, desc = "Color of the rubix terminal solver for 1 click.").withDependency { showColors }

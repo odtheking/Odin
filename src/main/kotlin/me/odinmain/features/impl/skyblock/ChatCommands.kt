@@ -114,7 +114,7 @@ object ChatCommands : Module(
             "racism" -> if (racism) channelMessage("$name is ${Random.nextInt(1, 101)}% racist. Racism is not allowed!", name, channel)
             "ping" -> if (ping) channelMessage("Current Ping: ${floor(ServerUtils.averagePing).toInt()}ms", name, channel)
             "tps" -> if (tps) channelMessage("Current TPS: ${floor(ServerUtils.averageTps)}", name, channel)
-            "fps" -> if (fps) channelMessage("Current FPS: ${ServerUtils.fps}", name, channel)
+            "fps" -> if (fps) channelMessage("Current FPS: ${mc.debug.split(" ")[0].toIntOrNull() ?: 0}", name, channel)
             "time" -> if (time) channelMessage("Current Time: ${ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss z"))}", name, channel)
             "location" -> if (location) channelMessage("Current Location: ${LocationUtils.currentArea.displayName}", name, channel)
             "holding" -> if (holding) channelMessage("Holding: ${mc.thePlayer?.heldItem?.displayName?.noControlCodes ?: "Nothing :("}", name, channel)

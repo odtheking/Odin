@@ -123,7 +123,7 @@ object RenderUtils {
 
     fun Color.bind() {
         GlStateManager.resetColor()
-        GlStateManager.color(r / 255f, g / 255f, b / 255f, a / 255f)
+        GlStateManager.color(red / 255f, green / 255f, blue / 255f, alpha / 255f)
     }
 
     /**
@@ -436,8 +436,8 @@ object RenderUtils {
         val d14 = -1 + d1
         val d15 = height * 2.5 + d14
 
-        fun WorldRenderer.color(alpha: Float = color.alpha) { // local function is used to simplify this.
-            this.color(color.r / 255f, color.g / 255f, color.b / 255f, alpha).endVertex()
+        fun WorldRenderer.color(alpha: Float = color.alphaFloat) { // local function is used to simplify this.
+            this.color(color.red / 255f, color.green / 255f, color.blue / 255f, alpha).endVertex()
         }
 
         worldRenderer {
@@ -464,7 +464,7 @@ object RenderUtils {
         GlStateManager.disableCull()
         val d12 = -1 + d1
         val d13 = height + d12
-        val alpha = color.alpha
+        val alpha = color.alphaFloat
         worldRenderer {
             begin(7, DefaultVertexFormats.POSITION_TEX_COLOR)
             pos(x + 0.2, y + topOffset, z + 0.2).tex(1.0, d13).color(.25f * alpha)
@@ -630,10 +630,10 @@ object RenderUtils {
     private fun draw(x: Int, y: Int, width: Int, height: Int, color: Color) {
         worldRenderer {
             begin(7, DefaultVertexFormats.POSITION_COLOR)
-            pos((x + 0).toDouble(), (y + 0).toDouble(), 0.0).color(color.r / 255f, color.g / 255f, color.b / 255f, color.a / 255f).endVertex()
-            pos((x + 0).toDouble(), (y + height).toDouble(), 0.0).color(color.r / 255f, color.g / 255f, color.b / 255f, color.a / 255f).endVertex()
-            pos((x + width).toDouble(), (y + height).toDouble(), 0.0).color(color.r / 255f, color.g / 255f, color.b / 255f, color.a / 255f).endVertex()
-            pos((x + width).toDouble(), (y + 0).toDouble(), 0.0).color(color.r / 255f, color.g / 255f, color.b / 255f, color.a / 255f).endVertex()
+            pos((x + 0).toDouble(), (y + 0).toDouble(), 0.0).color(color.red / 255f, color.green / 255f, color.blue / 255f, color.alpha / 255f).endVertex()
+            pos((x + 0).toDouble(), (y + height).toDouble(), 0.0).color(color.red / 255f, color.green / 255f, color.blue / 255f, color.alpha / 255f).endVertex()
+            pos((x + width).toDouble(), (y + height).toDouble(), 0.0).color(color.red / 255f, color.green / 255f, color.blue / 255f, color.alpha / 255f).endVertex()
+            pos((x + width).toDouble(), (y + 0).toDouble(), 0.0).color(color.red / 255f, color.green / 255f, color.blue / 255f, color.alpha / 255f).endVertex()
         }
         tessellator.draw()
     }
@@ -661,8 +661,8 @@ object RenderUtils {
 
         worldRenderer {
             begin(GL11.GL_LINES, DefaultVertexFormats.POSITION_COLOR)
-            pos(x.toDouble(), y.toDouble(), 0.0).color(color.r / 255f, color.g / 255f, color.b / 255f, color.a / 255f).endVertex()
-            pos(x2.toDouble(), y2.toDouble(), 0.0).color(color.r / 255f, color.g / 255f, color.b / 255f, color.a / 255f).endVertex()
+            pos(x.toDouble(), y.toDouble(), 0.0).color(color.red / 255f, color.green / 255f, color.blue / 255f, color.alpha / 255f).endVertex()
+            pos(x2.toDouble(), y2.toDouble(), 0.0).color(color.red / 255f, color.green / 255f, color.blue / 255f, color.alpha / 255f).endVertex()
         }
         tessellator.draw()
 

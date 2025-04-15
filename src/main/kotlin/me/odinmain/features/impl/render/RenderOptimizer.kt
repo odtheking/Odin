@@ -225,7 +225,7 @@ object RenderOptimizer : Module(
         worldRenderer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_COLOR)
         for (pair in renderList) {
             val color = pair.second
-            if (color.a < 0.1) continue
+            if (color.alpha < 0.1) continue
             val box = pair.first.renderBoundingBox
             drawEntityProxy(box, color)
         }
@@ -239,30 +239,30 @@ object RenderOptimizer : Module(
     }
 
     private fun drawEntityProxy(box: AxisAlignedBB, color: Color) {
-        worldRenderer.pos(box.maxX, box.minY, box.minZ).color(color.r, color.g, color.b, color.a).endVertex()
-        worldRenderer.pos(box.maxX, box.minY, box.maxZ).color(color.r, color.g, color.b, color.a).endVertex()
-        worldRenderer.pos(box.minX, box.minY, box.maxZ).color(color.r, color.g, color.b, color.a).endVertex()
-        worldRenderer.pos(box.minX, box.minY, box.minZ).color(color.r, color.g, color.b, color.a).endVertex()
-        worldRenderer.pos(box.minX, box.maxY, box.maxZ).color(color.r, color.g, color.b, color.a).endVertex()
-        worldRenderer.pos(box.maxX, box.maxY, box.maxZ).color(color.r, color.g, color.b, color.a).endVertex()
-        worldRenderer.pos(box.maxX, box.maxY, box.minZ).color(color.r, color.g, color.b, color.a).endVertex()
-        worldRenderer.pos(box.minX, box.maxY, box.minZ).color(color.r, color.g, color.b, color.a).endVertex()
-        worldRenderer.pos(box.maxX, box.minY, box.maxZ).color(color.r, color.g, color.b, color.a).endVertex()
-        worldRenderer.pos(box.maxX, box.maxY, box.maxZ).color(color.r, color.g, color.b, color.a).endVertex()
-        worldRenderer.pos(box.minX, box.maxY, box.maxZ).color(color.r, color.g, color.b, color.a).endVertex()
-        worldRenderer.pos(box.minX, box.minY, box.maxZ).color(color.r, color.g, color.b, color.a).endVertex()
-        worldRenderer.pos(box.minX, box.minY, box.minZ).color(color.r, color.g, color.b, color.a).endVertex()
-        worldRenderer.pos(box.minX, box.maxY, box.minZ).color(color.r, color.g, color.b, color.a).endVertex()
-        worldRenderer.pos(box.maxX, box.maxY, box.minZ).color(color.r, color.g, color.b, color.a).endVertex()
-        worldRenderer.pos(box.maxX, box.minY, box.minZ).color(color.r, color.g, color.b, color.a).endVertex()
-        worldRenderer.pos(box.minX, box.minY, box.maxZ).color(color.r, color.g, color.b, color.a).endVertex()
-        worldRenderer.pos(box.minX, box.maxY, box.maxZ).color(color.r, color.g, color.b, color.a).endVertex()
-        worldRenderer.pos(box.minX, box.maxY, box.minZ).color(color.r, color.g, color.b, color.a).endVertex()
-        worldRenderer.pos(box.minX, box.minY, box.minZ).color(color.r, color.g, color.b, color.a).endVertex()
-        worldRenderer.pos(box.maxX, box.minY, box.minZ).color(color.r, color.g, color.b, color.a).endVertex()
-        worldRenderer.pos(box.maxX, box.maxY, box.minZ).color(color.r, color.g, color.b, color.a).endVertex()
-        worldRenderer.pos(box.maxX, box.maxY, box.maxZ).color(color.r, color.g, color.b, color.a).endVertex()
-        worldRenderer.pos(box.maxX, box.minY, box.maxZ).color(color.r, color.g, color.b, color.a).endVertex()
+        worldRenderer.pos(box.maxX, box.minY, box.minZ).color(color.red, color.green, color.blue, color.alpha).endVertex()
+        worldRenderer.pos(box.maxX, box.minY, box.maxZ).color(color.red, color.green, color.blue, color.alpha).endVertex()
+        worldRenderer.pos(box.minX, box.minY, box.maxZ).color(color.red, color.green, color.blue, color.alpha).endVertex()
+        worldRenderer.pos(box.minX, box.minY, box.minZ).color(color.red, color.green, color.blue, color.alpha).endVertex()
+        worldRenderer.pos(box.minX, box.maxY, box.maxZ).color(color.red, color.green, color.blue, color.alpha).endVertex()
+        worldRenderer.pos(box.maxX, box.maxY, box.maxZ).color(color.red, color.green, color.blue, color.alpha).endVertex()
+        worldRenderer.pos(box.maxX, box.maxY, box.minZ).color(color.red, color.green, color.blue, color.alpha).endVertex()
+        worldRenderer.pos(box.minX, box.maxY, box.minZ).color(color.red, color.green, color.blue, color.alpha).endVertex()
+        worldRenderer.pos(box.maxX, box.minY, box.maxZ).color(color.red, color.green, color.blue, color.alpha).endVertex()
+        worldRenderer.pos(box.maxX, box.maxY, box.maxZ).color(color.red, color.green, color.blue, color.alpha).endVertex()
+        worldRenderer.pos(box.minX, box.maxY, box.maxZ).color(color.red, color.green, color.blue, color.alpha).endVertex()
+        worldRenderer.pos(box.minX, box.minY, box.maxZ).color(color.red, color.green, color.blue, color.alpha).endVertex()
+        worldRenderer.pos(box.minX, box.minY, box.minZ).color(color.red, color.green, color.blue, color.alpha).endVertex()
+        worldRenderer.pos(box.minX, box.maxY, box.minZ).color(color.red, color.green, color.blue, color.alpha).endVertex()
+        worldRenderer.pos(box.maxX, box.maxY, box.minZ).color(color.red, color.green, color.blue, color.alpha).endVertex()
+        worldRenderer.pos(box.maxX, box.minY, box.minZ).color(color.red, color.green, color.blue, color.alpha).endVertex()
+        worldRenderer.pos(box.minX, box.minY, box.maxZ).color(color.red, color.green, color.blue, color.alpha).endVertex()
+        worldRenderer.pos(box.minX, box.maxY, box.maxZ).color(color.red, color.green, color.blue, color.alpha).endVertex()
+        worldRenderer.pos(box.minX, box.maxY, box.minZ).color(color.red, color.green, color.blue, color.alpha).endVertex()
+        worldRenderer.pos(box.minX, box.minY, box.minZ).color(color.red, color.green, color.blue, color.alpha).endVertex()
+        worldRenderer.pos(box.maxX, box.minY, box.minZ).color(color.red, color.green, color.blue, color.alpha).endVertex()
+        worldRenderer.pos(box.maxX, box.maxY, box.minZ).color(color.red, color.green, color.blue, color.alpha).endVertex()
+        worldRenderer.pos(box.maxX, box.maxY, box.maxZ).color(color.red, color.green, color.blue, color.alpha).endVertex()
+        worldRenderer.pos(box.maxX, box.minY, box.maxZ).color(color.red, color.green, color.blue, color.alpha).endVertex()
     }
 
     private val entityColorMap = mapOf(

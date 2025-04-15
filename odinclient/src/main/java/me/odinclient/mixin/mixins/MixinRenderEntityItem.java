@@ -69,10 +69,10 @@ public abstract class MixinRenderEntityItem {
             GL11.glTexEnvi(8960, OpenGlHelper.GL_OPERAND0_ALPHA, 770);
             this.odinMod$brightnessBuffer.position(0);
             Color color = highlightEntity.getColor();
-            odinMod$brightnessBuffer.put(color.getR() / 255f);
-            odinMod$brightnessBuffer.put(color.getG() / 255f);
-            odinMod$brightnessBuffer.put(color.getB() / 255f);
-            odinMod$brightnessBuffer.put(color.getA() / 255f);
+            odinMod$brightnessBuffer.put(color.getRed() / 255f);
+            odinMod$brightnessBuffer.put(color.getGreen() / 255f);
+            odinMod$brightnessBuffer.put(color.getBlue() / 255f);
+            odinMod$brightnessBuffer.put(color.getAlpha() / 255f);
             this.odinMod$brightnessBuffer.flip();
             GL11.glTexEnv(8960, 8705, this.odinMod$brightnessBuffer);
             GlStateManager.setActiveTexture(OpenGlHelper.GL_TEXTURE2);

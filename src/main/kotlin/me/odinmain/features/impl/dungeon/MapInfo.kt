@@ -3,7 +3,10 @@ package me.odinmain.features.impl.dungeon
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
-import me.odinmain.utils.render.*
+import me.odinmain.utils.render.RenderUtils
+import me.odinmain.utils.render.getMCTextWidth
+import me.odinmain.utils.render.mcTextAndWidth
+import me.odinmain.utils.render.roundedRectangle
 import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.modMessage
@@ -56,7 +59,7 @@ object MapInfo : Module(
     private val fullMargin by NumberSetting("Hud Margin", 0f, min = 0f, max = 5f, increment = 1f, desc = "The margin around the hud.").withDependency { fullBackground && fullHud.enabled }
     private val fullColor by ColorSetting("Hud Background Color", Colors.MINECRAFT_DARK_GRAY.withAlpha(0.5f), true, desc = "The color of the background.").withDependency { fullBackground && fullHud.enabled }
 
-    private val compactSecrets by HudSetting("Compact Secrets", 10f, 10f, 1f, true) {
+    private val compactSecrets: HudElement by HudSetting("Compact Secrets", 10f, 10f, 1f, true) {
         if ((!DungeonUtils.inDungeons || (disableInBoss && DungeonUtils.inBoss)) && !it) return@HudSetting 0f to 0f
         val secretText = "§7Secrets: §b${DungeonUtils.secretCount}" +
                 (if (compactAddRemaining) "§7-§d${(DungeonUtils.neededSecretsAmount - DungeonUtils.secretCount).coerceAtLeast(0)}" else "") +
@@ -68,13 +71,13 @@ object MapInfo : Module(
         width.toFloat() to 9f
     }
 
-    private val compactAddRemaining: Boolean by BooleanSetting("Compact Include remaining", false, desc = "Adds remaining to the secrets display.").withDependency { compactSecrets.enabled }
-    private val compactRemaining: Int by SelectorSetting("Min Secrets", "Minimum", options = arrayListOf("Minimum", "Remaining"), desc = "Display minimum secrets or secrets until s+.").withDependency { !compactAddRemaining && compactSecrets.enabled }
-    private val compactSecretBackground: Boolean by BooleanSetting("Secret Background", false, desc = "Render a background behind the score info.").withDependency { compactSecrets.enabled }
-    private val compactSecretMargin: Float by NumberSetting("Secret Margin", 0f, min = 0f, max = 5f, increment = 1f, desc = "The margin around the hud.").withDependency { compactSecretBackground && compactSecrets.enabled }
-    private val compactSecretColor: Color by ColorSetting("Secret Background Color", Colors.MINECRAFT_DARK_GRAY.withAlpha(0.5f), true, desc = "The color of the background.").withDependency { compactSecretBackground && compactSecrets.enabled }
+    private val compactAddRemaining by BooleanSetting("Compact Include remaining", false, desc = "Adds remaining to the secrets display.").withDependency { compactSecrets.enabled }
+    private val compactRemaining by SelectorSetting("Min Secrets", "Minimum", options = arrayListOf("Minimum", "Remaining"), desc = "Display minimum secrets or secrets until s+.").withDependency { !compactAddRemaining && compactSecrets.enabled }
+    private val compactSecretBackground by BooleanSetting("Secret Background", false, desc = "Render a background behind the score info.").withDependency { compactSecrets.enabled }
+    private val compactSecretMargin by NumberSetting("Secret Margin", 0f, min = 0f, max = 5f, increment = 1f, desc = "The margin around the hud.").withDependency { compactSecretBackground && compactSecrets.enabled }
+    private val compactSecretColor by ColorSetting("Secret Background Color", Colors.MINECRAFT_DARK_GRAY.withAlpha(0.5f), true, desc = "The color of the background.").withDependency { compactSecretBackground && compactSecrets.enabled }
 
-    private val compactScore by HudSetting("Compact Score", 10f, 10f, 1f, true) {
+    private val compactScore: HudElement by HudSetting("Compact Score", 10f, 10f, 1f, true) {
         if ((!DungeonUtils.inDungeons || (disableInBoss && DungeonUtils.inBoss)) && !it) return@HudSetting 0f to 0f
         val scoreText = "§7Score: ${colorizeScore(DungeonUtils.score)}" + if (!DungeonUtils.mimicKilled) " §7(§6+2?§7)" else ""
         val width = getMCTextWidth(scoreText)
@@ -83,9 +86,9 @@ object MapInfo : Module(
         width.toFloat() to 9f
     }
 
-    private val compactScoreBackground: Boolean by BooleanSetting("Score Background", false, desc = "Render a background behind the score info.").withDependency { compactScore.enabled }
-    private val compactScoreMargin: Float by NumberSetting("Score Margin", 0f, min = 0f, max = 5f, increment = 1f, desc = "The margin around the hud.").withDependency { compactScoreBackground && compactScore.enabled }
-    private val compactScoreColor: Color by ColorSetting("Score Background Color", Colors.MINECRAFT_DARK_GRAY.withAlpha(0.5f), true, desc = "The color of the background.").withDependency { compactScoreBackground && compactScore.enabled }
+    private val compactScoreBackground by BooleanSetting("Score Background", false, desc = "Render a background behind the score info.").withDependency { compactScore.enabled }
+    private val compactScoreMargin by NumberSetting("Score Margin", 0f, min = 0f, max = 5f, increment = 1f, desc = "The margin around the hud.").withDependency { compactScoreBackground && compactScore.enabled }
+    private val compactScoreColor by ColorSetting("Score Background Color", Colors.MINECRAFT_DARK_GRAY.withAlpha(0.5f), true, desc = "The color of the background.").withDependency { compactScoreBackground && compactScore.enabled }
 
     var shownTitle = false
 

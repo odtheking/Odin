@@ -52,7 +52,7 @@ object ChestEsp : Module(
         if (hideClicked && event.chest.pos in clickedChests) return
         if ((onlyDungeon && DungeonUtils.inDungeons) || (onlyCH && LocationUtils.currentArea.isArea(Island.CrystalHollows)) || (!onlyDungeon && !onlyCH)) {
             GL11.glEnable(GL11.GL_POLYGON_OFFSET_FILL)
-            GlStateManager.color(1f, 1f, 1f, color.alpha)
+            GlStateManager.color(1f, 1f, 1f, color.alphaFloat)
             GlStateManager.enablePolygonOffset()
             GlStateManager.doPolygonOffset(1f, -1000000f)
         }

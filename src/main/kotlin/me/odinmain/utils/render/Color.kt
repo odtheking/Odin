@@ -41,14 +41,14 @@ class Color(hue: Float, saturation: Float, brightness: Float, alpha: Float = 1f)
             needsUpdate = true
         }
 
-    var alpha = alpha
+    var alphaFloat = alpha
         set(value) {
             field = value
             needsUpdate = true
         }
 
     // Only used in Window, because that rendering needs java.awt.Color
-    val javaColor get() = JavaColor(r, g, b, a)
+    val javaColor get() = JavaColor(red, green, blue, alpha)
 
     /**
      * Used to tell the [rgba] value to update when the HSBA values are changed.
@@ -66,21 +66,16 @@ class Color(hue: Float, saturation: Float, brightness: Float, alpha: Float = 1f)
     var rgba: Int = 0
         get() {
             if (needsUpdate) {
-                field = (HSBtoRGB(hue, saturation, brightness) and 0X00FFFFFF) or ((alpha * 255).toInt() shl 24)
+                field = (HSBtoRGB(hue, saturation, brightness) and 0X00FFFFFF) or ((this.alphaFloat * 255).toInt() shl 24)
                 needsUpdate = false
             }
             return field
         }
 
-    inline val r get() = rgba.red
-    inline val g get() = rgba.green
-    inline val b get() = rgba.blue
-    inline val a get() = rgba.alpha
-
-    inline val redFloat get() = r / 255f
-    inline val greenFloat get() = g / 255f
-    inline val blueFloat get() = b / 255f
-    inline val alphaFloat get() = this.alpha
+    inline val red get() = rgba.red
+    inline val green get() = rgba.green
+    inline val blue get() = rgba.blue
+    inline val alpha get() = rgba.alpha
 
     @OptIn(ExperimentalStdlibApi::class)
     val hex: String get() {
@@ -94,15 +89,15 @@ class Color(hue: Float, saturation: Float, brightness: Float, alpha: Float = 1f)
      * Main use is to prevent rendering when the color is invisible.
      */
     inline val isTransparent: Boolean
-        get() = alpha == 0f
+        get() = this.alphaFloat == 0f
 
-    override fun toString(): String = "Color(red=$r,green=$g,blue=$b,alpha=$a)"
+    override fun toString(): String = "Color(red=$red,green=$green,blue=$blue,alpha=$alpha)"
 
     override fun hashCode(): Int {
         var result = hue.toInt()
         result = 31 * result + saturation.toInt()
         result = 31 * result + brightness.toInt()
-        result = 31 * result + alpha.toInt()
+        result = 31 * result + this.alphaFloat.toInt()
         return result
     }
 

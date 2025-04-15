@@ -152,7 +152,7 @@ object DevPlayers {
                 GlStateManager.translate(0.0, 1.0, -0.5)
             }
 
-            GlStateManager.color(dev.wingsColor.r.toFloat()/255, dev.wingsColor.g.toFloat()/255, dev.wingsColor.b.toFloat()/255, 1f)
+            GlStateManager.color(dev.wingsColor.red.toFloat()/255, dev.wingsColor.green.toFloat()/255, dev.wingsColor.blue.toFloat()/255, 1f)
             mc.textureManager.bindTexture(dragonWingTextureLocation)
 
             for (j in 0..1) {

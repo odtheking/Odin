@@ -83,7 +83,7 @@ object PersonalDragon : Module(
             GlStateManager.pushMatrix()
             GlStateManager.translate(horizontal * cos(yawRadians), vertical.toDouble(), horizontal * sin(yawRadians))
             GlStateManager.scale(scale / 4, scale / 4, scale / 4)
-            GlStateManager.color(color.r / 255f, color.g / 255f, color.b / 255f)
+            GlStateManager.color(color.red / 255f, color.green / 255f, color.blue / 255f)
         }
     }
 

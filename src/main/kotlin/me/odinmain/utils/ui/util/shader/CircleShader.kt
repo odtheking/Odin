@@ -15,8 +15,8 @@ object CircleShader: Shader("/shaders/rectangle.vsh", "/shaders/circleFragment.f
 
         getFloat2Uniform("u_circleCenter").setValue(x, y)
         getFloatUniform("u_circleRadius").setValue(radius)
-        getFloat4Uniform("u_colorCircle").setValue(color.r / 255f, color.g / 255f, color.b / 255f, color.alpha)
-        getFloat4Uniform("u_colorBorder").setValue(borderColor.r / 255f, borderColor.g / 255f, borderColor.b / 255f, borderColor.alpha)
+        getFloat4Uniform("u_colorCircle").setValue(color.red / 255f, color.green / 255f, color.blue / 255f, color.alphaFloat)
+        getFloat4Uniform("u_colorBorder").setValue(borderColor.red / 255f, borderColor.green / 255f, borderColor.blue / 255f, borderColor.alphaFloat)
         getFloatUniform("u_borderThickness").setValue(borderThickness)
 
         Gui.drawRect((x - radius).toInt(), (y - radius).toInt(), (x + radius).toInt(), (y + radius).toInt(), color.rgba)

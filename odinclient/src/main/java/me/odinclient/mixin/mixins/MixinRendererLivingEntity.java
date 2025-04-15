@@ -72,10 +72,10 @@ public abstract class MixinRendererLivingEntity<T extends EntityLivingBase> {
             GL11.glTexEnvi(8960, OpenGlHelper.GL_OPERAND0_ALPHA, 770);
             this.brightnessBuffer.position(0);
             Color color = highlightEntity.getColor();
-            brightnessBuffer.put(color.getR() / 255f);
-            brightnessBuffer.put(color.getG() / 255f);
-            brightnessBuffer.put(color.getB() / 255f);
-            brightnessBuffer.put(color.getA() / 255f);
+            brightnessBuffer.put(color.getRed() / 255f);
+            brightnessBuffer.put(color.getGreen() / 255f);
+            brightnessBuffer.put(color.getBlue() / 255f);
+            brightnessBuffer.put(color.getAlpha() / 255f);
             this.brightnessBuffer.flip();
             GL11.glTexEnv(8960, 8705, this.brightnessBuffer);
             GlStateManager.setActiveTexture(OpenGlHelper.GL_TEXTURE2);

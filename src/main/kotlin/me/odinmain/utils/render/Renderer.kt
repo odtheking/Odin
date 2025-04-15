@@ -89,9 +89,9 @@ object Renderer {
         expand: Double = 0.0
     ) {
         when (style) {
-            0 -> drawBlock(pos, color, width, 0, color.alpha, depth, lineSmoothing, expand)
-            1 -> drawBlock(pos, color, width, color.alpha, 0, depth, lineSmoothing, expand)
-            2 -> drawBlock(pos, color, width, color.alpha, color.multiplyAlpha(.75f).alpha, depth, lineSmoothing, expand)
+            0 -> drawBlock(pos, color, width, 0, color.alphaFloat, depth, lineSmoothing, expand)
+            1 -> drawBlock(pos, color, width, color.alphaFloat, 0, depth, lineSmoothing, expand)
+            2 -> drawBlock(pos, color, width, color.alphaFloat, color.multiplyAlpha(.75f).alphaFloat, depth, lineSmoothing, expand)
         }
     }
 
@@ -103,9 +103,9 @@ object Renderer {
         depth: Boolean = false
     ) {
         when (style) {
-            0 -> drawBox(aabb, color, width, 0, color.alpha, depth)
-            1 -> drawBox(aabb, color, width, color.alpha, 0, depth)
-            2 -> drawBox(aabb, color, width, color.alpha, color.multiplyAlpha(.75f).alpha, depth)
+            0 -> drawBox(aabb, color, width, 0, color.alphaFloat, depth)
+            1 -> drawBox(aabb, color, width, color.alphaFloat, 0, depth)
+            2 -> drawBox(aabb, color, width, color.alphaFloat, color.multiplyAlpha(.75f).alphaFloat, depth)
         }
     }
 

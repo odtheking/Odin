@@ -22,7 +22,7 @@ import me.odinmain.utils.skyblock.isHolding
 import me.odinmain.utils.skyblock.isLeap
 import me.odinmain.utils.skyblock.isShortbow
 import me.odinmain.utils.ui.Colors
-import me.odinmain.utils.ui.clickgui.util.ColorUtil.withAlpha
+import me.odinmain.utils.ui.clickgui.util.ColorUtil.multiplyAlpha
 import net.minecraft.entity.Entity
 import net.minecraft.entity.boss.EntityWither
 import net.minecraft.entity.item.EntityArmorStand
@@ -234,7 +234,7 @@ object Trajectories : Module(
             }
             else -> return
         }
-        RenderUtils.drawFilledAABB(AxisAlignedBB(vec1.xCoord, vec1.yCoord, vec1.zCoord, vec2.xCoord, vec2.yCoord, vec2.zCoord), color.withAlpha(color.alpha / 2), false)
+        RenderUtils.drawFilledAABB(AxisAlignedBB(vec1.xCoord, vec1.yCoord, vec1.zCoord, vec2.xCoord, vec2.yCoord, vec2.zCoord), color.multiplyAlpha(-2f), false)
     }
 
     private fun drawPearlCollisionBox() {
