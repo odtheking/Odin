@@ -35,6 +35,8 @@ object WitherDragons : Module(
 ) {
     private val dragonTimerDropDown by DropdownSetting("Dragon Timer Dropdown")
     private val dragonTimer by BooleanSetting("Dragon Timer", true, desc = "Displays a timer for when M7 dragons spawn.").withDependency { dragonTimerDropDown }
+    private val dragonTimerStyle by SelectorSetting("Timer Style", "Milliseconds", arrayListOf("Milliseconds", "Seconds", "Ticks"), desc = "The style of the dragon timer.").withDependency { dragonTimer && dragonTimerDropDown }
+    private val showSymbol by BooleanSetting("Timer Symbol", true, desc = "Displays a symbol for the timer.").withDependency { dragonTimer && dragonTimerDropDown }
     private val hud by HudSetting("Dragon Timer HUD", 10f, 10f, 1f, true) {
         if (it) {
             RenderUtils.drawText("§5P §a4.5s", 1f, 1f, 1f, Colors.WHITE, center = false)
@@ -42,7 +44,7 @@ object WitherDragons : Module(
         } else {
             priorityDragon.takeIf { drag -> drag != WitherDragonsEnum.None }?.let { dragon ->
                 if (dragon.state != WitherDragonState.SPAWNING || dragon.timeToSpawn <= 0) return@HudSetting 0f to 0f
-                RenderUtils.drawText("§${dragon.colorCode}${dragon.name.first()}: ${colorDragonTimer(dragon.timeToSpawn)}${dragon.timeToSpawn * 50}ms", 1f, 1f, 1f, Colors.WHITE, center = false)
+                RenderUtils.drawText("§${dragon.colorCode}${dragon.name.first()}: ${getDragonTimer(dragon.timeToSpawn)}", 1f, 1f, 1f, Colors.WHITE, center = false)
             }
             getMCTextWidth("§5P §a4.5s")+ 2f to 12f
         }
@@ -146,7 +148,7 @@ object WitherDragons : Module(
         if (dragonTimer) {
             WitherDragonsEnum.entries.forEach { dragon ->
                 if (dragon.state == WitherDragonState.SPAWNING && dragon.timeToSpawn > 0) Renderer.drawStringInWorld(
-                    "§${dragon.colorCode}${dragon.name.first()}: ${colorDragonTimer(dragon.timeToSpawn)}${dragon.timeToSpawn * 50}ms", dragon.spawnPos,
+                    "§${dragon.colorCode}${dragon.name.first()}: ${getDragonTimer(dragon.timeToSpawn)}", dragon.spawnPos,
                     color = Colors.WHITE, depth = false, scale = 0.16f
                 )
             }
@@ -184,12 +186,14 @@ object WitherDragons : Module(
         }
     }
 
-    private fun colorDragonTimer(spawnTime: Int): String {
-        return when {
-            spawnTime <= 20 -> "§c"
-            spawnTime <= 60 -> "§e"
-            else -> "§a"
-        }
+    private fun getDragonTimer(spawnTime: Int): String = when {
+        spawnTime <= 20 -> "§c"
+        spawnTime <= 60 -> "§e"
+        else            -> "§a"
+    } + when (dragonTimerStyle) {
+        0    -> "${(spawnTime * 50)}${if (showSymbol) "ms" else ""}"
+        1    -> "${(spawnTime / 20f).toFixed()}${if (showSymbol) "s" else ""}"
+        else -> "${spawnTime}${if (showSymbol) "t" else ""}"
     }
 
     private fun colorHealth(health: Float): String {
