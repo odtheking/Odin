@@ -20,7 +20,7 @@ import java.util.concurrent.CopyOnWriteArrayList
 
 object MageBeam: Module (
     name = "Mage Beam",
-    desc = "Allows you to customizable the mage beam ability rendering."
+    desc = "Allows you to customize the rendering of the mage beam ability."
 ) {
     private val duration by NumberSetting("Duration", 40, 1, 100, 1, unit = "ticks", desc = "The duration of the beam in ticks.")
     private val color by ColorSetting("Color", Colors.MINECRAFT_DARK_RED, true, desc = "The color of the beam.")
@@ -31,7 +31,6 @@ object MageBeam: Module (
     private data class MageBeam(val points: CopyOnWriteArrayList<Vec3> = CopyOnWriteArrayList(), var lastUpdateTick: Int = 0)
 
     private val activeBeams = CopyOnWriteArrayList<MageBeam>()
-    private const val NEW_BEAM_GAP_TICKS = 4
     private var currentTick = 0
 
     @SubscribeEvent
@@ -42,7 +41,7 @@ object MageBeam: Module (
         val recentBeam = activeBeams.lastOrNull()
         val newPoint = positionVector
 
-        if (recentBeam != null && (currentTick - recentBeam.lastUpdateTick) < NEW_BEAM_GAP_TICKS && isPointInBeamDirection(recentBeam.points, newPoint)) {
+        if (recentBeam != null && (currentTick - recentBeam.lastUpdateTick) < 1 && isPointInBeamDirection(recentBeam.points, newPoint)) {
             recentBeam.points.add(newPoint)
             recentBeam.lastUpdateTick = currentTick
         } else {
@@ -63,8 +62,8 @@ object MageBeam: Module (
         val beamDirection = lastPoint.subtract(points[0]).normalize()
         val newDirection = newPoint.subtract(lastPoint).normalize()
 
-
-        return (beamDirection.xCoord * newDirection.xCoord + beamDirection.yCoord * newDirection.yCoord + beamDirection.zCoord * newDirection.zCoord) > 0.97
+        val dotProduct = beamDirection.xCoord * newDirection.xCoord + beamDirection.yCoord * newDirection.yCoord + beamDirection.zCoord * newDirection.zCoord
+        return dotProduct > 0.97 || dotProduct < -0.97
     }
 
     @SubscribeEvent

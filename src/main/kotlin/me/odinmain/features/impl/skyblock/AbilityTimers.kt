@@ -69,7 +69,7 @@ object AbilityTimers : Module(
     }
 
     private inline val witherImpactText: String get() =
-        if (compact) if (witherImpactTicks <= 0) "§aR" else "${witherImpactTicks.color(61, 21)}${ceil(witherImpactTicks / 20.0).toInt()}"
+        if (compact) if (witherImpactTicks <= 0) "§aR" else "${witherImpactTicks.color(61, 21)}${ceil(witherImpactTicks / 20f).toInt()}"
         else if (witherImpactTicks <= 0) "§6Shield: §aReady" else "§6Shield: ${witherImpactTicks.color(61, 21)}${(witherImpactTicks / 20f).toFixed()}s"
 
     private fun Int.color(compareFirst: Int, compareSecond: Int): String {
