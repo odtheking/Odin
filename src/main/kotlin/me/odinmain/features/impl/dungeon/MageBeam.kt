@@ -35,8 +35,7 @@ object MageBeam: Module (
 
     @SubscribeEvent
     fun onPacketReceive(event: PacketEvent.Receive) = with(event.packet) {
-        if (!DungeonUtils.inDungeons || this !is S2APacketParticles || particleType != EnumParticleTypes.FIREWORKS_SPARK || particleCount != 1 || particleSpeed != 0f || !isLongDistance ||
-            xOffset != 0f || yOffset != 0f || zOffset != 0f) return
+        if (!DungeonUtils.inDungeons || this !is S2APacketParticles || particleType != EnumParticleTypes.FIREWORKS_SPARK) return
 
         val recentBeam = activeBeams.lastOrNull()
         val newPoint = positionVector
@@ -59,11 +58,8 @@ object MageBeam: Module (
         if (points.size <= 1) return true
 
         val lastPoint = points.last()
-        val beamDirection = lastPoint.subtract(points[0]).normalize()
-        val newDirection = newPoint.subtract(lastPoint).normalize()
 
-        val dotProduct = beamDirection.xCoord * newDirection.xCoord + beamDirection.yCoord * newDirection.yCoord + beamDirection.zCoord * newDirection.zCoord
-        return dotProduct > 0.97 || dotProduct < -0.97
+        return lastPoint.subtract(points[0]).normalize().dotProduct(newPoint.subtract(lastPoint).normalize()) > 0.99
     }
 
     @SubscribeEvent
@@ -75,7 +71,7 @@ object MageBeam: Module (
     fun onRenderWorld(event: RenderWorldLastEvent) {
         if (!DungeonUtils.inDungeons) return
         for (beam in activeBeams) {
-            if (beam.points.size < 5) continue
+            if (beam.points.size < 8) continue
             Renderer.draw3DLine(beam.points, color, lineWidth, depth)
         }
     }
