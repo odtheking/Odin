@@ -2,6 +2,7 @@ package me.odinmain.features.impl.floor7.p3
 
 import io.github.moulberry.notenoughupdates.NEUApi
 import me.odinmain.events.impl.GuiEvent
+import me.odinmain.events.impl.PacketEvent
 import me.odinmain.events.impl.TerminalEvent
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.p3.termGUI.CustomTermGui
@@ -51,6 +52,7 @@ object TerminalSolver : Module(
     private val blockIncorrectClicks by BooleanSetting("Block Incorrect Clicks", true, desc = "Blocks incorrect clicks in terminals.").withDependency { renderType != 3 }
     private val cancelMelodySolver by BooleanSetting("Stop Melody Solver", false, desc = "Stops rendering the melody solver.")
     val showNumbers by BooleanSetting("Show Numbers", true, desc = "Shows numbers in the order terminal.")
+    private val terminalReloadThreshold by NumberSetting("Reload Threshold", 600, 300, 1000, 10, unit = "ms", desc = "The amount of time in seconds before the terminal reloads.")
 
     private val showRemoveWrongSettings by DropdownSetting("Render Wrong Settings").withDependency { renderType == 1 }
     private val removeWrong by BooleanSetting("Stop Rendering Wrong", true, desc = "Main toggle for stopping the rendering of incorrect items in terminals.").withDependency { renderType == 1 && showRemoveWrongSettings }
@@ -140,8 +142,8 @@ object TerminalSolver : Module(
         }
 
         execute(50) {
-            if (System.currentTimeMillis() - lastClickTime >= 500 && currentTerm?.isClicked == true) currentTerm?.let {
-                it.handleSlotUpdate(S2FPacketSetSlot(mc.thePlayer?.openContainer?.windowId ?: return@execute, it.type.windowSize - 1, null))
+            if (System.currentTimeMillis() - lastClickTime >= terminalReloadThreshold && currentTerm?.isClicked == true) currentTerm?.let {
+                PacketEvent.Receive(S2FPacketSetSlot(mc.thePlayer?.openContainer?.windowId ?: return@execute, it.type.windowSize - 1, null)).postAndCatch()
                 it.isClicked = false
             }
         }
