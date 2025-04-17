@@ -2,18 +2,13 @@ package me.odinmain.utils.ui.hud
 
 import me.odinmain.config.Config
 import me.odinmain.features.ModuleManager.huds
-import me.odinmain.font.OdinFont
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.clock.Executor.Companion.register
-import me.odinmain.utils.render.*
+import me.odinmain.utils.render.scaleFactor
 import me.odinmain.utils.ui.Screen
 import me.odinmain.utils.ui.clickgui.animations.impl.EaseInOut
-import me.odinmain.utils.ui.clickgui.util.ColorUtil.textColor
-import me.odinmain.utils.ui.clickgui.util.HoverHandler
 import me.odinmain.utils.ui.util.MouseUtils
-import me.odinmain.utils.ui.util.MouseUtils.isAreaHovered
 import net.minecraft.client.renderer.GlStateManager
-import org.lwjgl.opengl.Display
 import kotlin.math.sign
 
 /**
@@ -33,8 +28,6 @@ object EditHUDGui : Screen() {
     private val openAnim = EaseInOut(600)
     private val resetAnim = EaseInOut(1000)
 
-    private val hoverHandler = HoverHandler(150) // for reset button
-
     /** Code is horrible ngl but it looks nice */
     override fun draw() {
         mc.mcProfiler.startSection("Odin Example Hud")
@@ -50,12 +43,6 @@ object EditHUDGui : Screen() {
             val animVal = openAnim.get(0f, 1f, !open)
             GlStateManager.scale(animVal, animVal, 0f)
         }
-        hoverHandler.handle(Display.getWidth() / 2 - 75f, Display.getHeight() * .86f - 30, 150f, 40f)
-
-        //dropShadow(-100f, -25f, 200f, 50f, 10f, 1f)
-        roundedRectangle(Display.getWidth() / 2 - 75, Display.getHeight() * .86f - 30, 150f, 40f, color, 9f)
-
-        text("Reset", Display.getWidth() / 2f, Display.getHeight() * .86f, textColor, 18f, OdinFont.REGULAR, TextAlign.Middle, TextPos.Bottom)
 
         if (openAnim.isAnimating()) {
             val animVal = openAnim.get(0f, 1f, !open)
@@ -73,12 +60,6 @@ object EditHUDGui : Screen() {
         mc.mcProfiler.endSection()
     }
 
-    private val color = Color(0f, 0.75f, 0.75f,0.75f)
-        get() {
-            field.brightness = (0.75f + hoverHandler.percent() / 500f).coerceAtMost(1f)
-            return field
-        }
-
     override fun onScroll(amount: Int) {
         for (i in huds.size - 1 downTo 0) {
             if (huds[i].accept()) {
@@ -88,11 +69,6 @@ object EditHUDGui : Screen() {
     }
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
-        if (isAreaHovered(Display.getWidth() / 2 - 100f, Display.getHeight() * .875f - 25f, 200f, 50f)) {
-            resetHUDs()
-            return
-        }
-
         for (i in huds.size - 1 downTo 0) {
             if (huds[i].accept()) {
                 dragging = huds[i]

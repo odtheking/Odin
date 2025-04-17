@@ -93,7 +93,7 @@ object WaterSolver {
                     openedWaterTicks == -1 && timeInTicks == 0 -> "§a§lCLICK ME!"
                     openedWaterTicks == -1 -> "§e${time}s"
                     else ->
-                        (openedWaterTicks + timeInTicks - tickCounter).takeIf { it > 0 }?.let { "§e${(it / 20.0).toFixed()}s" } ?: "§a§lCLICK ME!"
+                        (openedWaterTicks + timeInTicks - tickCounter).takeIf { it > 0 }?.let { "§e${(it / 20f).toFixed()}s" } ?: "§a§lCLICK ME!"
                 }, lever.leverPos.addVector(0.5, (index + lever.i) * 0.5 + 1.5, 0.5), Colors.WHITE, scale = 0.04f)
             }
         }

@@ -58,6 +58,7 @@ object ClickGUIModule: Module(
         OdinMain.display = EditHUDGui
     }
 
+    var bypassLowestClickDelay by BooleanSetting("Bypass lowest click delay (not recommended)", false, desc = "Bypasses the lowest click delay in the game.", hidden = true)
     var lastSeenVersion by StringSetting("Last seen version", "1.0.0", desc = "", hidden = true)
     private var joined by BooleanSetting("First join", false, "", hidden = true)
     private var hasSentUpdateMessage = false

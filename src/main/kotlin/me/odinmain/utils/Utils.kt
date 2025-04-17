@@ -41,10 +41,7 @@ inline val String?.noControlCodes: String
  * @return `true` if the string contains at least one of the specified options, otherwise `false`.
  */
 fun String.containsOneOf(vararg options: String, ignoreCase: Boolean = false): Boolean =
-    options.any { this.contains(it, ignoreCase) }
-
-fun Number.toFixed(decimals: Int = 2): String =
-    "%.${decimals}f".format(Locale.US, this)
+    containsOneOf(options.toList(), ignoreCase)
 
 /**
  * Checks if the current string contains at least one of the specified strings.
@@ -55,6 +52,11 @@ fun Number.toFixed(decimals: Int = 2): String =
  */
 fun String.containsOneOf(options: Collection<String>, ignoreCase: Boolean = false): Boolean =
     options.any { this.contains(it, ignoreCase) }
+
+fun Number.toFixed(decimals: Int = 2): String =
+    "%.${decimals}f".format(Locale.US, this)
+
+
 
 fun String.startsWithOneOf(vararg options: String, ignoreCase: Boolean = false): Boolean =
     options.any { this.startsWith(it, ignoreCase) }
@@ -124,10 +126,8 @@ fun logError(throwable: Throwable, context: Any) {
  * @param func The function to execute after the specified number of
  */
 fun runIn(ticks: Int, server: Boolean = false, func: () -> Unit) {
-    if (ticks <= 0) {
-        func()
-        return
-    }
+    if (ticks <= 0)
+        return func()
     ModuleManager.tickTasks.add(ModuleManager.TickTask(ticks, server, func))
 }
 

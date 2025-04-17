@@ -9,6 +9,7 @@ import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.name
+import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.*
 import me.odinmain.utils.render.RenderUtils.drawTexturedModalRect
 import me.odinmain.utils.skyblock.ClickType
@@ -16,9 +17,9 @@ import me.odinmain.utils.skyblock.PlayerUtils.windowClick
 import me.odinmain.utils.skyblock.dungeon.DungeonClass
 import me.odinmain.utils.skyblock.dungeon.DungeonPlayer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.leapTeammates
-import me.odinmain.utils.skyblock.getItemIndexInContainerChest
 import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.skyblock.partyMessage
+import me.odinmain.utils.skyblock.unformattedName
 import me.odinmain.utils.ui.Colors
 import me.odinmain.utils.ui.clickgui.animations.impl.EaseInOut
 import me.odinmain.utils.ui.clickgui.util.ColorUtil.withAlpha
@@ -152,7 +153,9 @@ object LeapMenu : Module(
     }
 
     private fun leapTo(name: String, containerChest: ContainerChest) {
-        val index = getItemIndexInContainerChest(containerChest, name, 11..16) ?: return modMessage("Cant find player $name. This shouldn't be possible! are you nicked?")
+        val index = containerChest.inventorySlots.subList(11, 16).firstOrNull {
+            it.stack?.unformattedName?.noControlCodes?.substringAfter(' ')?.lowercase() == name.noControlCodes.lowercase()
+        }?.slotIndex ?: return modMessage("Can't find player $name. This shouldn't be possible! are you nicked?")
         modMessage("Teleporting to $name.")
         windowClick(index, ClickType.Middle)
     }
