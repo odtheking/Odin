@@ -5,8 +5,7 @@ import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.isOtherPlayer
-import me.odinmain.utils.render.HighlightRenderer
-import me.odinmain.utils.render.Renderer
+import me.odinmain.utils.render.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.ui.Colors
 import me.odinmain.utils.ui.clickgui.util.ColorUtil.withAlpha
@@ -32,9 +31,9 @@ object CustomHighlight : Module(
     private val xray by BooleanSetting("Depth Check", false, desc = "Highlights entities through walls.").withDependency { !isLegitVersion }
     private val showInvisible by BooleanSetting("Show Invisible", false, desc = "Highlights invisible entities.").withDependency { !isLegitVersion }
 
-    val highlightList by ListSetting("List", mutableListOf<String>())
+    val highlightList: MutableMap<String, Color?> by MapSetting("Map", mutableMapOf(), "")
     private inline val depthCheck get() = if (isLegitVersion) true else xray
-    private var currentEntities = mutableSetOf<Entity>()
+    val currentEntities = mutableSetOf<HighlightEntity>()
 
     init {
         execute({ scanDelay }) {
@@ -47,7 +46,9 @@ object CustomHighlight : Module(
 
         HighlightRenderer.addEntityGetter({ HighlightRenderer.HighlightType.entries[mode]}) {
             if (!enabled) emptyList()
-            else currentEntities.map { HighlightRenderer.HighlightEntity(it, color, thickness, depthCheck, style) }
+            else currentEntities.map {
+                HighlightRenderer.HighlightEntity(it.entity, it.color, thickness, depthCheck, style)
+            }
         }
     }
 
@@ -56,23 +57,24 @@ object CustomHighlight : Module(
             checkEntity(entity)
             if (starredMobESP) checkStarred(entity)
             if (shadowAssassin && !isLegitVersion) checkAssassin(entity)
-            if (showInvisible && entity.isInvisible && !isLegitVersion && entity in currentEntities) entity.isInvisible = false
+            if (showInvisible && entity.isInvisible && !isLegitVersion && currentEntities.any { it.entity == entity }) entity.isInvisible = false
         }
     }
 
     private fun checkEntity(entity: Entity) {
-        if (entity !is EntityArmorStand || highlightList.none { entity.name.contains(it, true) } || entity in currentEntities || !entity.alwaysRenderNameTag && !depthCheck) return
-        currentEntities.add(getMobEntity(entity) ?: return)
+        if (entity !is EntityArmorStand || highlightList.none { entity.name.contains(it.key, true) } || currentEntities.any { it.entity == entity}  || !entity.alwaysRenderNameTag && !depthCheck) return
+        val highlightColor = getColorFromList(entity.name)
+        currentEntities.add(HighlightEntity(getMobEntity(entity) ?: return, highlightColor))
     }
 
     private fun checkStarred(entity: Entity) {
-        if (entity !is EntityArmorStand || !entity.name.startsWith("§6✯ ") || !entity.name.endsWith("§c❤") || entity in currentEntities || (!entity.alwaysRenderNameTag && depthCheck)) return
-        currentEntities.add(getMobEntity(entity) ?: return)
+        if (entity !is EntityArmorStand || !entity.name.startsWith("§6✯ ") || !entity.name.endsWith("§c❤") || currentEntities.any { it.entity == entity} || (!entity.alwaysRenderNameTag && depthCheck)) return
+        currentEntities.add(HighlightEntity(getMobEntity(entity) ?: return, color))
     }
 
     private fun checkAssassin(entity: Entity) {
         if (entity !is EntityOtherPlayerMP || entity.name != "Shadow Assassin") return
-        currentEntities.add(entity)
+        currentEntities.add(HighlightEntity(entity, color))
     }
 
     private fun getMobEntity(entity: Entity): Entity? {
@@ -80,4 +82,10 @@ object CustomHighlight : Module(
             ?.filter { it !is EntityArmorStand && mc.thePlayer != it && !(it is EntityWither && it.isInvisible) && !(it is EntityOtherPlayerMP && it.isOtherPlayer()) }
             ?.minByOrNull { entity.getDistanceToEntity(it) }
     }
+
+    private fun getColorFromList(name: String): Color {
+        return highlightList.entries.firstOrNull { name.contains(it.key, true) }?.value ?: color
+    }
+
+    data class HighlightEntity(val entity: Entity, val color: Color)
 }
