@@ -37,6 +37,7 @@ object SimonSays : Module(
     private val lineWidth by NumberSetting("Line Width", 2f, 0.1f, 10f, 0.1f, desc = "The width of the box's lines.")
     private val depthCheck by BooleanSetting("Depth check", false, desc = "Boxes show through walls.")
     private val blockWrong by BooleanSetting("Block Wrong Clicks", false, desc = "Blocks wrong clicks, shift will override this.")
+    private val cycleClick by BooleanSetting("Cycle Next Click", false, desc = "Set the first button to the beginning one after the last one was clicked")
 
     private val firstButton = BlockPos(110, 121, 91)
     private val clickInOrder = ArrayList<BlockPos>()
@@ -71,7 +72,7 @@ object SimonSays : Module(
                     clickNeeded = 0
                 } else if (old.block == Blocks.stone_button && updated.getValue(BlockButtonStone.POWERED)) {
                     val index = clickInOrder.indexOf(pos.add(1, 0, 0)) + 1
-                    clickNeeded = if (index >= clickInOrder.size) 0 else index
+                    clickNeeded = if (cycleClick && index >= clickInOrder.size) 0 else index
                 }
         }
     }

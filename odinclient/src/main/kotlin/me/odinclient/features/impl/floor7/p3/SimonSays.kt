@@ -49,6 +49,7 @@ object SimonSays : Module(
     private val autoSSDelay by NumberSetting("Delay Between Clicks", 200L, 50, 500, unit = "ms", desc = "The delay between each click.").withDependency { autoSS }
     private val autoSSRotateTime by NumberSetting("Rotate Time", 150, 0, 400, unit = "ms", desc = "The time it takes to rotate to the correct button.").withDependency { autoSS }
     private val blockWrong by BooleanSetting("Block Wrong Clicks", false, desc = "Blocks Any Wrong Clicks (sneak to disable).")
+    private val cycleClick by BooleanSetting("Cycle Next Click", false, desc = "Set the first button to the beginning one after the last one was clicked")
 
     private val triggerBotClock = Clock(triggerBotDelay)
     private val firstClickClock = Clock(800)
@@ -105,7 +106,7 @@ object SimonSays : Module(
                     clickNeeded = 0
                 } else if (old.block == Blocks.stone_button && updated.getValue(BlockButtonStone.POWERED)) {
                     val index = clickInOrder.indexOf(pos.add(1, 0, 0)) + 1
-                    clickNeeded = if (index >= clickInOrder.size) 0 else index
+                    clickNeeded = if (cycleClick && index >= clickInOrder.size) 0 else index
                 }
         }
     }
@@ -122,7 +123,7 @@ object SimonSays : Module(
     private fun triggerBot() {
         if (!triggerBotClock.hasTimePassed(triggerBotDelay) || clickInOrder.isEmpty() || mc.currentScreen != null) return
         val pos = mc.objectMouseOver?.blockPos ?: return
-        if (clickInOrder[clickNeeded] != pos.east()) return
+        if (clickInOrder.getOrNull(clickNeeded) != pos.east()) return
         if (clickNeeded == 0) { // Stops spamming the first button and breaking the puzzle.
             if (!firstClickClock.hasTimePassed()) return
             firstClickClock.update()
