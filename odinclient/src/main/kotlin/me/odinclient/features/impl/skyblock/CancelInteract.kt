@@ -1,6 +1,5 @@
 package me.odinclient.features.impl.skyblock
 
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.utils.containsOneOf
@@ -22,12 +21,11 @@ import net.minecraft.util.BlockPos
  */
 object CancelInteract : Module(
     name = "Cancel Interact",
-    category = Category.SKYBLOCK,
-    description = "Cancels the interaction with certain blocks, so that the item can be used instead."
+    desc = "Cancels the interaction with certain blocks, so that the item can be used instead."
 ){
-    private val cancelInteract by BooleanSetting("Cancel Interact", true, description = "Cancels the interaction with certain blocks, so that the item can be used instead.")
-    private val onlyWithAbility by BooleanSetting("Only Ability", false, description = "Check whether the item has an ability before cancelling interactions.")
-    private val noBreakReset by BooleanSetting("No Break Reset", false, description = "Prevents lore updates from resetting your breaking progress.")
+    private val cancelInteract by BooleanSetting("Cancel Interact", true, desc = "Cancels the interaction with certain blocks, so that the item can be used instead.")
+    private val onlyWithAbility by BooleanSetting("Only Ability", false, desc = "Check whether the item has an ability before cancelling interactions.")
+    private val noBreakReset by BooleanSetting("No Break Reset", false, desc = "Prevents lore updates from resetting your breaking progress.")
 
     /**
      * Block which should always be interacted with.

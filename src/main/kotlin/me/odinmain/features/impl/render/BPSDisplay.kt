@@ -1,20 +1,18 @@
 package me.odinmain.features.impl.render
 
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.HudSetting
-import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.render.getMCTextWidth
-import me.odinmain.utils.render.mcText
 import me.odinmain.utils.round
+import me.odinmain.utils.ui.Colors
 import net.minecraft.network.play.client.C07PacketPlayerDigging
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 
 object BPSDisplay : Module(
     name = "BPS Display",
-    category = Category.RENDER,
-    description = "Displays how many blocks per second you're breaking."
+    desc = "Displays how many blocks per second you're breaking."
 ) {
     private var startTime: Long = 0
     private var isBreaking: Boolean = false
@@ -24,11 +22,11 @@ object BPSDisplay : Module(
 
     private val hud by HudSetting("Display", 10f, 10f, 2f, false) {
         if (it) { // example
-            mcText("§7BPS: §r17.8", 1f, 1f, 1, Color.WHITE, center = false)
+            RenderUtils.drawText("§7BPS: §r17.8", 1f, 1f, 1f, Colors.WHITE, center = false)
         } else {
-            mcText("§7BPS: §r${bps.round(1)}", 1f, 1f, 1, Color.WHITE, center = false)
+            RenderUtils.drawText("§7BPS: §r${bps.round(1)}", 1f, 1f, 1f, Colors.WHITE, center = false)
         }
-        getMCTextWidth("BPS: 17.5") + 2f to 10f
+        getMCTextWidth("BPS: 17.5") + 2f to 12f
     }
 
     init {

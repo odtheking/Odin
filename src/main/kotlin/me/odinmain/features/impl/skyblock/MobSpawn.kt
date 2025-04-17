@@ -1,23 +1,26 @@
 package me.odinmain.features.impl.skyblock
 
 import me.odinmain.events.impl.PostEntityMetadata
-import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.features.settings.impl.*
+import me.odinmain.features.settings.impl.BooleanSetting
+import me.odinmain.features.settings.impl.NumberSetting
+import me.odinmain.features.settings.impl.StringSetting
 import me.odinmain.utils.clock.Clock
-import me.odinmain.utils.skyblock.*
+import me.odinmain.utils.skyblock.PlayerUtils
+import me.odinmain.utils.skyblock.modMessage
+import me.odinmain.utils.skyblock.partyMessage
+import me.odinmain.utils.skyblock.sendChatMessage
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object MobSpawn: Module(
     name = "Mob Spawn",
-    category = Category.SKYBLOCK,
-    description = "Sends a message whenever a mob spawns."
+    desc = "Sends a message whenever a mob spawns."
 ) {
-    private val mobName by StringSetting("Mob Name", "MobName", 40, description = "Message sent when mob is detected as spawned.")
-    private val soundOnly by BooleanSetting("Sound Only", false, description = "Only plays sound when mob spawns.")
-    private val delay by NumberSetting("Time between alerts", 3000L, 10, 10000, 10, description = "Time between alerts.", unit = "ms")
-    private val ac by BooleanSetting("All Chat", false , description = "Send message in all chat.")
-    private val pc by BooleanSetting("Party Chat", false, description = "Send message in party chat.")
+    private val mobName by StringSetting("Mob Name", "MobName", 40, desc = "Message sent when mob is detected as spawned.")
+    private val soundOnly by BooleanSetting("Sound Only", false, desc = "Only plays sound when mob spawns.")
+    private val delay by NumberSetting("Time between alerts", 3000L, 10, 10000, 10, desc = "Time between alerts.", unit = "ms")
+    private val ac by BooleanSetting("All Chat", false , desc = "Send message in all chat.")
+    private val pc by BooleanSetting("Party Chat", false, desc = "Send message in party chat.")
 
     private val time = Clock(delay)
 

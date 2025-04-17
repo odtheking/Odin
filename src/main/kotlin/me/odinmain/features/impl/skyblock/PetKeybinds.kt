@@ -1,7 +1,6 @@
 package me.odinmain.features.impl.skyblock
 
 import me.odinmain.events.impl.GuiEvent
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
@@ -19,14 +18,13 @@ import org.lwjgl.input.Keyboard
 
 object PetKeybinds : Module(
     name = "Pet Keybinds",
-    description = "Keybinds for the pets menu. (/petkeys)",
-    category = Category.SKYBLOCK
+    desc = "Keybinds for the pets menu. (/petkeys)"
 ) {
     private val unequipKeybind by KeybindSetting("Unequip Keybind", Keyboard.KEY_NONE, "Unequips the current Pet.")
     private val nextPageKeybind by KeybindSetting("Next Page Keybind", Keyboard.KEY_NONE, "Goes to the next page.")
     private val previousPageKeybind by KeybindSetting("Previous Page Keybind", Keyboard.KEY_NONE, "Goes to the previous page.")
-    private val delay by NumberSetting("Delay", 0L, 0, 10000, 10, description = "The delay between each click.", unit = "ms")
-    private val nounequip by BooleanSetting("Disable Unequip", default = false, description = "Prevents using a pets keybind to unequip a pet. Does not prevent unequip keybind or normal clicking.")
+    private val delay by NumberSetting("Delay", 0L, 0, 10000, 10, desc = "The delay between each click.", unit = "ms")
+    private val nounequip by BooleanSetting("Disable Unequip", false, desc = "Prevents using a pets keybind to unequip a pet. Does not prevent unequip keybind or normal clicking.")
     private val advanced by DropdownSetting("Show Settings", false)
 
     private val pet1 by KeybindSetting("Pet 1", Keyboard.KEY_1, "Pet 1 on the list.").withDependency { advanced }
@@ -42,7 +40,7 @@ object PetKeybinds : Module(
     private val petsRegex = Regex("Pets(?: \\((\\d)/(\\d)\\))?")
     private val clickCoolDown = Clock(delay)
 
-    val petList: MutableList<String> by ListSetting("List", mutableListOf())
+    val petList by ListSetting("List", mutableListOf<String>())
 
     @SubscribeEvent
     fun onGuiMouseClick(event: GuiEvent.MouseClick) {

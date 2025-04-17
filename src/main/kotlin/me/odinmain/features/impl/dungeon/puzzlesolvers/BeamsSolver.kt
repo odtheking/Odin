@@ -6,7 +6,6 @@ import me.odinmain.OdinMain.logger
 import me.odinmain.events.impl.BlockChangeEvent
 import me.odinmain.events.impl.RoomEnterEvent
 import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers.onPuzzleComplete
-import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.addVec
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.render.Color
@@ -14,8 +13,9 @@ import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.getRealCoords
 import me.odinmain.utils.skyblock.getBlockIdAt
-import me.odinmain.utils.toAABB
 import me.odinmain.utils.toVec3
+import me.odinmain.utils.ui.Colors
+import me.odinmain.utils.ui.clickgui.util.ColorUtil.withAlpha
 import net.minecraft.init.Blocks
 import net.minecraft.util.BlockPos
 import java.io.InputStreamReader
@@ -46,9 +46,9 @@ object BeamsSolver {
         if (this?.data?.name != "Creeper Beams") return reset()
 
         currentLanternPairs.clear()
-        lanternPairs.forEach {
-            val pos = getRealCoords(it[0], it[1], it[2]).takeIf { getBlockIdAt(it) == 169 } ?: return@forEach
-            val pos2 = getRealCoords(it[3], it[4], it[5]).takeIf { getBlockIdAt(it) == 169 } ?: return@forEach
+        lanternPairs.forEach { list ->
+            val pos = getRealCoords(list[0], list[1], list[2]).takeIf { getBlockIdAt(it) == 169 } ?: return@forEach
+            val pos2 = getRealCoords(list[3], list[4], list[5]).takeIf { getBlockIdAt(it) == 169 } ?: return@forEach
 
             currentLanternPairs[pos] = pos2 to colors[currentLanternPairs.size]
         }
@@ -70,10 +70,10 @@ object BeamsSolver {
 
     fun onBlockChange(event: BlockChangeEvent) {
         if (DungeonUtils.currentRoomName != "Creeper Beams") return
-        if (event.pos == DungeonUtils.currentRoom?.getRealCoords(15, 69, 15) && event.old.block == Blocks.air && event.update.block == Blocks.chest) onPuzzleComplete("Creeper Beams")
+        if (event.pos == DungeonUtils.currentRoom?.getRealCoords(15, 69, 15) && event.old.block == Blocks.air && event.updated.block == Blocks.chest) onPuzzleComplete("Creeper Beams")
         currentLanternPairs.forEach { (key, value) ->
             if (event.pos.equalsOneOf(key, value.first) &&
-                event.update.block != Blocks.sea_lantern &&
+                event.updated.block != Blocks.sea_lantern &&
                 event.old.block == Blocks.sea_lantern) currentLanternPairs.remove(key)
         }
     }
@@ -83,6 +83,6 @@ object BeamsSolver {
         currentLanternPairs.clear()
     }
 
-    private val colors = listOf(Color.ORANGE, Color.GREEN, Color.PINK, Color.CYAN, Color.YELLOW, Color.DARK_RED, Color.WHITE, Color.PURPLE)
+    private val colors = listOf(Colors.MINECRAFT_GOLD, Colors.MINECRAFT_GREEN, Colors.MINECRAFT_LIGHT_PURPLE, Colors.MINECRAFT_DARK_AQUA, Colors.MINECRAFT_YELLOW, Colors.MINECRAFT_DARK_RED, Colors.WHITE, Colors.MINECRAFT_DARK_PURPLE)
 }
 

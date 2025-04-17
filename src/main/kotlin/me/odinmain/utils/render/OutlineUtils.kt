@@ -2,6 +2,7 @@ package me.odinmain.utils.render
 
 import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.RenderEntityModelEvent
+import me.odinmain.utils.ui.Colors
 import net.minecraft.client.renderer.OpenGlHelper
 import net.minecraft.client.shader.Framebuffer
 import org.lwjgl.opengl.EXTFramebufferObject
@@ -9,13 +10,12 @@ import org.lwjgl.opengl.EXTPackedDepthStencil
 import org.lwjgl.opengl.GL11.*
 
 /**
- * Modified from LiquidBounce under GPL-3.0
- * https://github.com/CCBlueX/LiquidBounce/blob/legacy/LICENSE
+ * Modified from Skyblock-Client
  */
 object OutlineUtils {
     fun outlineEntity(
         event: RenderEntityModelEvent,
-        color: Color = Color.WHITE,
+        color: Color = Colors.WHITE,
         lineWidth: Float = 2f,
         shouldCancelHurt: Boolean = true
     ) {
@@ -27,7 +27,7 @@ object OutlineUtils {
         glPushMatrix()
         glPushAttrib(GL_ALL_ATTRIB_BITS)
         checkSetupFBO()
-        glColor4d((color.r / 255f).toDouble(), (color.g / 255f).toDouble(), (color.b / 255f).toDouble(), (color.a / 255f).toDouble())
+        glColor4d((color.red / 255f).toDouble(), (color.green / 255f).toDouble(), (color.blue / 255f).toDouble(), (color.alpha / 255f).toDouble())
         renderOne(lineWidth)
         render(event)
         renderTwo()

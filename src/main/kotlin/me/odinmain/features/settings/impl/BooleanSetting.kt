@@ -13,9 +13,9 @@ import me.odinmain.features.settings.Setting
 class BooleanSetting (
     name: String,
     override val default: Boolean = false,
-    hidden: Boolean = false,
-    description: String,
-): Setting<Boolean>(name, hidden, description), Saving {
+    desc: String,
+    hidden: Boolean = false
+): Setting<Boolean>(name, hidden, desc), Saving {
 
     override var value: Boolean = default
 

@@ -2,7 +2,6 @@ package me.odin.features.impl.floor7.p3
 
 import me.odinmain.events.impl.BlockChangeEvent
 import me.odinmain.events.impl.ServerTickEvent
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.ActionSetting
@@ -10,13 +9,13 @@ import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.features.settings.impl.KeybindSetting
 import me.odinmain.utils.equalsOneOf
-import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.M7Phases
 import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.toVec3
+import me.odinmain.utils.ui.Colors
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.init.Blocks
 import net.minecraft.util.AxisAlignedBB
@@ -28,20 +27,19 @@ import org.lwjgl.input.Keyboard
 
 object ArrowsDevice : Module(
     name = "Arrows Device",
-    description = "Shows a solution for the Sharp Shooter puzzle in floor 7.",
-    category = Category.FLOOR7,
+    desc = "Shows a solution for the Sharp Shooter puzzle in floor 7."
 ) {
-    private val solver by BooleanSetting("Solver", default = true, description = "Enables the solver.")
-    private val markedPositionColor by ColorSetting("Marked Position", Color.RED, description = "Color of the marked position.").withDependency { solver }
-    private val targetPositionColor by ColorSetting("Target Position", Color.GREEN, description = "Color of the target position.").withDependency { solver }
+    private val solver by BooleanSetting("Solver", desc = "Enables the solver.")
+    private val markedPositionColor by ColorSetting("Marked Position", Colors.MINECRAFT_RED, desc = "Color of the marked position.").withDependency { solver }
+    private val targetPositionColor by ColorSetting("Target Position", Colors.MINECRAFT_GREEN, desc = "Color of the target position.").withDependency { solver }
     private val resetKey by KeybindSetting("Reset", Keyboard.KEY_NONE, description = "Resets the solver.").onPress {
         markedPositions.clear()
     }.withDependency { solver }
-    private val depthCheck by BooleanSetting("Depth check", true, description = "Marked positions show through walls.").withDependency { solver }
-    private val reset by ActionSetting("Reset", description = "Resets the solver.") {
+    private val depthCheck by BooleanSetting("Depth check", true, desc = "Marked positions show through walls.").withDependency { solver }
+    private val reset by ActionSetting("Reset", desc = "Resets the solver.") {
         markedPositions.clear()
     }.withDependency { solver }
-    private val alertOnDeviceComplete by BooleanSetting("Device complete alert", default = true, description = "Send an alert when device is complete.")
+    private val alertOnDeviceComplete by BooleanSetting("Device complete alert", true, desc = "Send an alert when device is complete.")
 
     private val markedPositions = mutableSetOf<BlockPos>()
     private var targetPosition: BlockPos? = null
@@ -103,7 +101,7 @@ object ArrowsDevice : Module(
 
         if (alertOnDeviceComplete) {
             modMessage("§aSharp shooter device complete")
-            PlayerUtils.alert("§aDevice Complete", color = Color.GREEN)
+            PlayerUtils.alert("§aDevice Complete", color = Colors.MINECRAFT_GREEN)
         }
     }
 
@@ -142,14 +140,14 @@ object ArrowsDevice : Module(
         if (!DungeonUtils.inDungeons || DungeonUtils.getF7Phase() != M7Phases.P3 || !positions.contains(event.pos)) return
 
         // Target was hit
-        if (event.old.block == Blocks.emerald_block && event.update.block == Blocks.stained_hardened_clay) {
+        if (event.old.block == Blocks.emerald_block && event.updated.block == Blocks.stained_hardened_clay) {
             markedPositions.add(event.pos)
             // This condition should always be true but im never sure with Hypixel
             if (targetPosition == event.pos) targetPosition = null
         }
 
         // New target appeared
-        if (event.old.block == Blocks.stained_hardened_clay && event.update.block == Blocks.emerald_block) {
+        if (event.old.block == Blocks.stained_hardened_clay && event.updated.block == Blocks.emerald_block) {
             // Can happen with resets
             markedPositions.remove(event.pos)
             targetPosition = event.pos

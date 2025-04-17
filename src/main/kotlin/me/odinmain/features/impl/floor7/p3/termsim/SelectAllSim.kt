@@ -14,7 +14,7 @@ import kotlin.math.floor
 
 class SelectAllSim(private val color: String = EnumDyeColor.entries.random().name.replace("_", " ").uppercase()) : TermSimGUI(
     "Select all the $color items!",
-    TerminalTypes.SELECT.size
+    TerminalTypes.SELECT.windowSize
 ) {
     private val correctMeta = EnumDyeColor.entries.find { it.name.replace("_", " ").uppercase() == color }?.metadata ?: 0
     private val correctDye = EnumDyeColor.byMetadata(correctMeta).dyeDamage
@@ -50,8 +50,7 @@ class SelectAllSim(private val color: String = EnumDyeColor.entries.random().nam
 
         createNewGui { if (it == slot) ItemStack(item, stackSize, metadata).apply { addEnchantment(Enchantment.infinity, 1) } else it.stack }
         playTermSimSound()
-        if (guiInventorySlots?.none {
-                it?.stack?.isItemEnchanted == false && it.stack?.item in items && if (it.stack?.item == dye) it.stack?.metadata == correctDye else it.stack?.metadata == correctMeta
-            } == true) TerminalEvent.Solved(TerminalSolver.lastTermOpened).postAndCatch()
+        if (guiInventorySlots.none { it?.stack?.isItemEnchanted == false && it.stack?.item in items && if (it.stack?.item == dye) it.stack?.metadata == correctDye else it.stack?.metadata == correctMeta })
+            TerminalSolver.lastTermOpened?.let { TerminalEvent.Solved(it).postAndCatch() }
     }
 }

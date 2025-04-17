@@ -1,21 +1,24 @@
 package me.odinmain.features.impl.render
 
-import me.odinmain.features.Category
+import me.odinmain.OdinMain
 import me.odinmain.features.Module
-import me.odinmain.features.settings.impl.*
-import me.odinmain.utils.*
+import me.odinmain.features.settings.impl.BooleanSetting
+import me.odinmain.features.settings.impl.HudSetting
+import me.odinmain.features.settings.impl.SelectorSetting
+import me.odinmain.utils.ServerUtils
 import me.odinmain.utils.render.*
+import me.odinmain.utils.round
+import me.odinmain.utils.ui.Colors
 import org.apache.commons.lang3.math.IEEE754rUtils.max
 
 object ServerHud : Module(
     name = "Server Hud",
-    category = Category.RENDER,
-    description = "Displays your current ping, FPS and server's TPS."
+    desc = "Displays your current ping, FPS and server's TPS."
 ) {
-    private val ping by BooleanSetting("Ping", true, description = "Displays your current ping.")
-    private val tps by BooleanSetting("TPS", true, description = "Displays the server's TPS.")
-    private val fps by BooleanSetting("FPS", false, description = "Displays your current FPS.")
-    private val style by SelectorSetting("Style", "Row", arrayListOf("Row", "Stacked"), description = "The style of the server hud.")
+    private val ping by BooleanSetting("Ping", true, desc = "Displays your current ping.")
+    private val tps by BooleanSetting("TPS", true, desc = "Displays the server's TPS.")
+    private val fps by BooleanSetting("FPS", false, desc = "Displays your current FPS.")
+    private val style by SelectorSetting("Style", "Row", arrayListOf("Row", "Stacked"), desc = "The style of the server hud.")
 
     val hud by HudSetting("Display", 10f, 10f, 1f, false) {
         if (it) {
@@ -23,21 +26,21 @@ object ServerHud : Module(
                 var width = 0f
                 if (tps) {
                     width += getMCTextWidth("§rTPS: §f20") * 1.5f
-                    mcText("§rTPS: §f20", 1f, 5f, 2, ClickGUIModule.color, shadow = true, center = false)
+                    RenderUtils.drawText("§rTPS: §f20", 1f, 5f, 2f, ClickGUIModule.color, shadow = true, center = false)
                 }
                 if (fps) {
                     width += getMCTextWidth("§rFPS: §f240") * 1.5f
-                    mcText("§rFPS: §f240", 5f + if (tps) getMCTextWidth("§rTPS: §f20") * 2f else 0f, 5f, 2, ClickGUIModule.color, shadow = true, center = false)
+                    RenderUtils.drawText("§rFPS: §f240", 5f + if (tps) getMCTextWidth("§rTPS: §f20") * 2f else 0f, 5f, 2f, ClickGUIModule.color, shadow = true, center = false)
                 }
                 if (ping) {
                     width += getMCTextWidth("§rPing: §f60") * 1.5f
-                    mcText("§rPing: §f60", 5f + if (tps) getMCTextWidth("§rTPS: §f20") * 4.5f else 0f + if (fps) getMCTextWidth("§rFPS: §f240") * 3f + 5f else 0f, 5f, 2, ClickGUIModule.color, shadow = true, center = false)
+                    RenderUtils.drawText("§rPing: §f60", 5f + if (tps) getMCTextWidth("§rTPS: §f20") * 4.5f else 0f + if (fps) getMCTextWidth("§rFPS: §f240") * 3f + 5f else 0f, 5f, 2f, ClickGUIModule.color, shadow = true, center = false)
                 }
                 width + 6f to if (ping || tps || fps) getMCTextHeight() * 2 + 6f else 0f
             } else {
-                if (ping) mcText("§6Ping: §a60ms", 1f, 9f, 2, Color.WHITE, shadow = true, center = false)
-                if (tps) mcText("§3TPS: §a20.0", 1f, 26f, 2, Color.WHITE, shadow = true, center = false)
-                if (fps) mcText("§dFPS: §a240", 1f, 43f, 2, Color.WHITE, shadow = true, center = false)
+                if (ping) RenderUtils.drawText("§6Ping: §a60ms", 1f, 9f, 2f, Colors.WHITE, shadow = true, center = false)
+                if (tps) RenderUtils.drawText("§3TPS: §a20.0", 1f, 26f, 2f, Colors.WHITE, shadow = true, center = false)
+                if (fps) RenderUtils.drawText("§dFPS: §a240", 1f, 43f, 2f, Colors.WHITE, shadow = true, center = false)
                 max(
                     if (ping) getTextWidth("Ping: 60ms", 12f) else 0f,
                     if (tps) getTextWidth("TPS: 20.0", 12f) else 0f,
@@ -46,7 +49,7 @@ object ServerHud : Module(
             }
         } else {
             if (style == 0) {
-                val fpsText = "§rFPS: §f${ServerUtils.fps}"
+                val fpsText = "§rFPS: §f${OdinMain.mc.debug.split(" ")[0].toIntOrNull() ?: 0}"
                 val pingText = "§rPing: §f${ServerUtils.averagePing.toInt()}"
                 val tpsText = "§rTPS: §f${if (ServerUtils.averageTps > 19.3) 20 else ServerUtils.averageTps.toInt()}"
                 var width = 0f
@@ -58,9 +61,9 @@ object ServerHud : Module(
                     width += mcTextAndWidth(pingText, 5f + (if (tps) getMCTextWidth(tpsText) * 2f else 0f) + (if (fps) getMCTextWidth(fpsText) * 2f + 5f else 0f), 5f, 2, ClickGUIModule.color, shadow = true, center = false) * 1.5f
                 width + 2f to if (ping || tps || fps) getMCTextWidth("A") + 6f else 0f
             } else {
-                if (ping) mcText("§6Ping: §a${ServerUtils.averagePing.toInt()}ms", 1f, 9f, 2, Color.WHITE, shadow = true, center = false)
-                if (tps) mcText("§3TPS: §a${ServerUtils.averageTps.round(1)}", 1f, 26f, 2, Color.WHITE, shadow = true, center = false)
-                if (fps) mcText("§dFPS: §a${mc.debug.split(" ")[0].toIntOrNull() ?: 0}", 1f, 43f, 2, Color.WHITE, shadow = true, center = false)
+                if (ping) RenderUtils.drawText("§6Ping: §a${ServerUtils.averagePing.toInt()}ms", 1f, 9f, 2f, Colors.WHITE, shadow = true, center = false)
+                if (tps) RenderUtils.drawText("§3TPS: §a${ServerUtils.averageTps.round(1)}", 1f, 26f, 2f, Colors.WHITE, shadow = true, center = false)
+                if (fps) RenderUtils.drawText("§dFPS: §a${mc.debug.split(" ")[0].toIntOrNull() ?: 0}", 1f, 43f, 2f, Colors.WHITE, shadow = true, center = false)
                 max(
                     if (ping) getTextWidth("§ePing: ${colorizePing(ServerUtils.averagePing.toInt())}ms", 12f) else 0f,
                     if (tps) getTextWidth("§ePing: ${colorizePing(ServerUtils.averagePing.toInt())}ms", 12f) else 0f,

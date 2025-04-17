@@ -47,16 +47,14 @@ fun modMessage(message: Any?, prefix: String = "§3Odin §8»§r ", chatStyle: C
     runOnMCThread { mc.thePlayer?.addChatMessage(chatComponent) }
 }
 
-
 /**
  * Sends a client-side message for developers only.
  *
  * @param message Message to be sent.
  */
 fun devMessage(message: Any?) {
-    if (!devMessages) return
+    if (!devMessages) return println("OdinDev » $message")
     modMessage(message, prefix = "§3Odin§bDev §8»§r ")
-    println("OdinDev » $message")
 }
 
 /**

@@ -1,4 +1,3 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group = "me.odinclient"
 
@@ -60,16 +59,5 @@ tasks {
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
         configurations = listOf(shadowImpl)
         mergeServiceFiles()
-    }
-
-    withType<JavaCompile> {
-        options.encoding = "UTF-8"
-        mustRunAfter(":processResources")
-    }
-
-    withType<KotlinCompile> {
-        kotlinOptions {
-            jvmTarget = "1.8"
-        }
     }
 }

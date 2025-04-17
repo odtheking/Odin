@@ -1,14 +1,13 @@
 package me.odinmain.features.impl.render
 
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.features.settings.impl.NumberSetting
-import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.RenderUtils.renderX
 import me.odinmain.utils.render.RenderUtils.renderY
 import me.odinmain.utils.render.RenderUtils.renderZ
+import me.odinmain.utils.ui.Colors
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.boss.EntityDragon
 import net.minecraftforge.client.event.RenderLivingEvent
@@ -21,16 +20,15 @@ import kotlin.math.sin
 
 object PersonalDragon : Module(
     name = "Personal Dragon",
-    category = Category.RENDER,
-    description = "Spawns your own personal dragon."
+    desc = "Spawns your own personal dragon."
 ) {
-    private val onlyF5 by BooleanSetting(name = "Only F5", default = true, description = "Only render the dragon when in F5 mode.")
-    private val scale by NumberSetting(name = "Scale", 0.5f, 0f, 1f, 0.01f, description = "The scale of the dragon.")
-    private val horizontal by NumberSetting(name = "Horizontal", -1f, -10f, 10f, 0.1f, description = "The horizontal offset of the dragon.")
-    private val vertical by NumberSetting(name = "Vertical", 0f, -10f, 10f, 0.1f, description = "The vertical offset of the dragon.")
-    private val degrees by NumberSetting(name = "Degrees", 0f, -180f, 180f, 1f, description = "The degrees of the dragon.")
-    private val animationSpeed by NumberSetting(name = "Animation Speed", 0.5f, 0.0f, 1f, 0.01f, description = "The speed of the dragon's animation.")
-    private val color by ColorSetting(name = "Color", Color.WHITE, description = "The color of the dragon.")
+    private val onlyF5 by BooleanSetting("Only F5", true, desc = "Only render the dragon when in F5 mode.")
+    private val scale by NumberSetting("Scale", 0.5f, 0f, 1f, 0.01f, desc = "The scale of the dragon.")
+    private val horizontal by NumberSetting("Horizontal", -1f, -10f, 10f, 0.1f, desc = "The horizontal offset of the dragon.")
+    private val vertical by NumberSetting("Vertical", 0f, -10f, 10f, 0.1f, desc = "The vertical offset of the dragon.")
+    private val degrees by NumberSetting("Degrees", 0f, -180f, 180f, 1f, desc = "The degrees of the dragon.")
+    private val animationSpeed by NumberSetting("Animation Speed", 0.5f, 0.0f, 1f, 0.01f, desc = "The speed of the dragon's animation.")
+    private val color by ColorSetting("Color", Colors.WHITE, desc = "The color of the dragon.")
 
     var dragon: EntityDragon? = null
 
@@ -85,7 +83,7 @@ object PersonalDragon : Module(
             GlStateManager.pushMatrix()
             GlStateManager.translate(horizontal * cos(yawRadians), vertical.toDouble(), horizontal * sin(yawRadians))
             GlStateManager.scale(scale / 4, scale / 4, scale / 4)
-            GlStateManager.color(color.r / 255f, color.g / 255f, color.b / 255f)
+            GlStateManager.color(color.red / 255f, color.green / 255f, color.blue / 255f)
         }
     }
 

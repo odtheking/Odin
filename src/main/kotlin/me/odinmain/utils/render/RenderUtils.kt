@@ -1,11 +1,9 @@
 package me.odinmain.utils.render
 
-import gg.essential.universal.shader.BlendState
-import gg.essential.universal.shader.UShader
 import me.odinmain.OdinMain
 import me.odinmain.OdinMain.mc
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.DungeonWaypoint
-import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
+import me.odinmain.utils.ui.Colors
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.WorldRenderer
@@ -20,9 +18,7 @@ import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.EventPriority
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import org.lwjgl.BufferUtils
 import org.lwjgl.opengl.GL11
-import org.lwjgl.opengl.GL13
 import org.lwjgl.util.glu.Cylinder
 import java.awt.image.BufferedImage
 import kotlin.math.cos
@@ -106,7 +102,7 @@ object RenderUtils {
         GlStateManager.disableLighting()
         if (disableTexture2D) GlStateManager.disableTexture2D() else GlStateManager.enableTexture2D()
         GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
-        translate(-renderManager.viewerPosX, -renderManager.viewerPosY, -renderManager.viewerPosZ)
+        GlStateManager.translate(-renderManager.viewerPosX, -renderManager.viewerPosY, -renderManager.viewerPosZ)
     }
 
     private fun postDraw() {
@@ -127,7 +123,7 @@ object RenderUtils {
 
     fun Color.bind() {
         GlStateManager.resetColor()
-        GlStateManager.color(r / 255f, g / 255f, b / 255f, a / 255f)
+        GlStateManager.color(red / 255f, green / 255f, blue / 255f, alpha / 255f)
     }
 
     /**
@@ -223,7 +219,7 @@ object RenderUtils {
     fun drawStringInWorld(
         text: String,
         vec3: Vec3,
-        color: Color = Color.WHITE.withAlpha(1f),
+        color: Color = Colors.WHITE,
         depthTest: Boolean = true,
         scale: Float = 0.3f,
         shadow: Boolean = false
@@ -301,7 +297,7 @@ object RenderUtils {
     ) {
         val f = 1.0f / tileWidth
         val g = 1.0f / tileHeight
-        Color.WHITE.bind()
+        Colors.WHITE.bind()
         worldRenderer {
             begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX)
             pos(x.toDouble(), (y + height).toDouble(), 0.0).tex((u * f).toDouble(), ((v + vHeight.toFloat()) * g).toDouble()).endVertex()
@@ -316,16 +312,16 @@ object RenderUtils {
         text: String,
         x: Float,
         y: Float,
-        scale: Double = 1.0,
-        color: Color = Color.WHITE,
+        scale: Float = 1f,
+        color: Color = Colors.WHITE,
         shadow: Boolean = true,
         center: Boolean = false
     ) {
         GlStateManager.pushMatrix()
         GlStateManager.enableBlend()
         GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
-        translate(x, y, 0f)
-        scale(scale, scale, scale)
+        GlStateManager.translate(x, y, 0f)
+        GlStateManager.scale(scale, scale, scale)
         mc.fontRendererObj.drawString("${text}§r", if (center) mc.fontRendererObj.getStringWidth(text) / -2f else 0f, 0f, color.rgba, shadow)
         GlStateManager.resetColor()
         GlStateManager.disableBlend()
@@ -421,7 +417,7 @@ object RenderUtils {
         GlStateManager.tryBlendFuncSeparate(770, 1, 1, 0)
         GlStateManager.enableBlend()
         GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
-        translate(-renderManager.viewerPosX, -renderManager.viewerPosY, -renderManager.viewerPosZ)
+        GlStateManager.translate(-renderManager.viewerPosX, -renderManager.viewerPosY, -renderManager.viewerPosZ)
 
         val time: Double = mc.theWorld.worldTime.toDouble() + partialTicks
         val x = vec3.xCoord
@@ -440,8 +436,8 @@ object RenderUtils {
         val d14 = -1 + d1
         val d15 = height * 2.5 + d14
 
-        fun WorldRenderer.color(alpha: Float = color.alpha) { // local function is used to simplify this.
-            this.color(color.r / 255f, color.g / 255f, color.b / 255f, alpha).endVertex()
+        fun WorldRenderer.color(alpha: Float = color.alphaFloat) { // local function is used to simplify this.
+            this.color(color.red / 255f, color.green / 255f, color.blue / 255f, alpha).endVertex()
         }
 
         worldRenderer {
@@ -468,7 +464,7 @@ object RenderUtils {
         GlStateManager.disableCull()
         val d12 = -1 + d1
         val d13 = height + d12
-        val alpha = color.alpha
+        val alpha = color.alphaFloat
         worldRenderer {
             begin(7, DefaultVertexFormats.POSITION_TEX_COLOR)
             pos(x + 0.2, y + topOffset, z + 0.2).tex(1.0, d13).color(.25f * alpha)
@@ -496,61 +492,6 @@ object RenderUtils {
         GlStateManager.enableCull()
         GlStateManager.popMatrix()
     }
-
-    private val BUF_FLOAT_4 = BufferUtils.createFloatBuffer(4)
-    var isRenderingOutlinedEntities = false
-        private set
-
-    fun enableOutlineMode() {
-        isRenderingOutlinedEntities = true
-        GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL11.GL_TEXTURE_ENV_MODE, GL13.GL_COMBINE)
-        GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_COMBINE_RGB, GL11.GL_REPLACE)
-        GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_SOURCE0_RGB, GL13.GL_CONSTANT)
-        GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_OPERAND0_RGB, GL11.GL_SRC_COLOR)
-        GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_COMBINE_ALPHA, GL11.GL_REPLACE)
-        GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_SOURCE0_ALPHA, GL11.GL_TEXTURE)
-        GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_OPERAND0_ALPHA, GL11.GL_SRC_ALPHA)
-    }
-
-    fun disableOutlineMode() {
-        GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL11.GL_TEXTURE_ENV_MODE, GL11.GL_MODULATE)
-        GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_COMBINE_RGB, GL11.GL_MODULATE)
-        GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_SOURCE0_RGB, GL11.GL_TEXTURE)
-        GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_OPERAND0_RGB, GL11.GL_SRC_COLOR)
-        GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_COMBINE_ALPHA, GL11.GL_MODULATE)
-        GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_SOURCE0_ALPHA, GL11.GL_TEXTURE)
-        GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_OPERAND0_ALPHA, GL11.GL_SRC_ALPHA)
-        isRenderingOutlinedEntities = false
-    }
-
-    fun outlineColor(color: Color) {
-        BUF_FLOAT_4.put(0, color.redFloat)
-        BUF_FLOAT_4.put(1, color.greenFloat)
-        BUF_FLOAT_4.put(2, color.blueFloat)
-        BUF_FLOAT_4.put(3, color.alphaFloat)
-        GL11.glTexEnv(GL11.GL_TEXTURE_ENV, GL11.GL_TEXTURE_ENV_COLOR, BUF_FLOAT_4)
-    }
-
-    /**
-     * Creates a shader from a vertex shader, fragment shader, and a blend state
-     *
-     * @param vertName The name of the vertex shader's file.
-     * @param fragName The name of the fragment shader's file.
-     * @param blendState The blend state for the shader
-     */
-    fun createLegacyShader(vertName: String, fragName: String, blendState: BlendState) =
-        UShader.fromLegacyShader(readShader(vertName, "vsh"), readShader(fragName, "fsh"), blendState)
-
-    /**
-     * Reads a shader file as a text file, and returns the contents
-     *
-     * @param name The name of the shader file
-     * @param ext The file extension of the shader file (usually fsh or vsh)
-     *
-     * @return The contents of the shader file at the given path.
-     */
-    private fun readShader(name: String, ext: String): String =
-        OdinMain::class.java.getResource("/shaders/source/$name.$ext")?.readText() ?: ""
 
     /**
      * Loads a BufferedImage from a path to a resource in the project
@@ -650,13 +591,13 @@ object RenderUtils {
         }
     }
 
-    fun drawMinecraftLabel(str: String, pos: Vec3, scale: Double, depth: Boolean = true, color: Color = Color.WHITE) {
+    fun drawMinecraftLabel(str: String, pos: Vec3, scale: Double, depth: Boolean = true, color: Color = Colors.WHITE) {
         GlStateManager.pushMatrix()
         depth(depth)
         GlStateManager.translate(pos.xCoord + 0.0f, pos.yCoord + 2.5f, pos.zCoord)
         GL11.glNormal3f(0.0f, 1.0f, 0.0f)
-        GlStateManager.rotate(-this.renderManager.playerViewY, 0.0f, 1.0f, 0.0f)
-        GlStateManager.rotate(this.renderManager.playerViewX, 1.0f, 0.0f, 0.0f)
+        GlStateManager.rotate(-renderManager.playerViewY, 0.0f, 1.0f, 0.0f)
+        GlStateManager.rotate(renderManager.playerViewX, 1.0f, 0.0f, 0.0f)
         GlStateManager.scale(-scale, -scale, scale)
         GlStateManager.disableLighting()
         GlStateManager.enableBlend()
@@ -677,23 +618,58 @@ object RenderUtils {
         GlStateManager.disableTexture2D()
         GlStateManager.disableAlpha()
         GlStateManager.disableBlend()
-        draw(x + 2, y + 13, 13, 2, 0, 0, 0, 255)
-        draw(x + 2, y + 13, 12, 1, (255 - barColorIndex) / 4, 64, 0, 255)
-        draw(x + 2, y + 13, (percent * 13.0).roundToInt(), 1, 255 - barColorIndex, barColorIndex, 0, 255)
+        draw(x + 2, y + 13, 13, 2, Color(0, 0, 0))
+        draw(x + 2, y + 13, 12, 1, Color((255 - barColorIndex) / 4, 64, 0))
+        draw(x + 2, y + 13, (percent * 13.0).roundToInt(), 1, Color(255 - barColorIndex, barColorIndex, 0))
         GlStateManager.enableAlpha()
         GlStateManager.enableTexture2D()
         GlStateManager.enableLighting()
         GlStateManager.enableDepth()
     }
 
-    private fun draw(x: Int, y: Int, width: Int, height: Int, red: Int, green: Int, blue: Int, alpha: Int) {
+    private fun draw(x: Int, y: Int, width: Int, height: Int, color: Color) {
         worldRenderer {
             begin(7, DefaultVertexFormats.POSITION_COLOR)
-            pos((x + 0).toDouble(), (y + 0).toDouble(), 0.0).color(red, green, blue, alpha).endVertex()
-            pos((x + 0).toDouble(), (y + height).toDouble(), 0.0).color(red, green, blue, alpha).endVertex()
-            pos((x + width).toDouble(), (y + height).toDouble(), 0.0).color(red, green, blue, alpha).endVertex()
-            pos((x + width).toDouble(), (y + 0).toDouble(), 0.0).color(red, green, blue, alpha).endVertex()
+            pos((x + 0).toDouble(), (y + 0).toDouble(), 0.0).color(color.red / 255f, color.green / 255f, color.blue / 255f, color.alpha / 255f).endVertex()
+            pos((x + 0).toDouble(), (y + height).toDouble(), 0.0).color(color.red / 255f, color.green / 255f, color.blue / 255f, color.alpha / 255f).endVertex()
+            pos((x + width).toDouble(), (y + height).toDouble(), 0.0).color(color.red / 255f, color.green / 255f, color.blue / 255f, color.alpha / 255f).endVertex()
+            pos((x + width).toDouble(), (y + 0).toDouble(), 0.0).color(color.red / 255f, color.green / 255f, color.blue / 255f, color.alpha / 255f).endVertex()
         }
         tessellator.draw()
+    }
+
+    fun drawRectangle(x: Int, y: Int, width: Int, height: Int, color: Color) {
+        GlStateManager.enableBlend()
+        GlStateManager.disableTexture2D()
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
+        color.bind()
+
+        draw(x, y, width, height, color)
+
+        GlStateManager.enableTexture2D()
+        GlStateManager.disableBlend()
+    }
+
+    fun drawLine(x: Int, y: Int, x2: Int, y2: Int, color: Color, lineWidth: Float) {
+        GlStateManager.pushMatrix()
+        GlStateManager.enableBlend()
+        GlStateManager.disableTexture2D()
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
+        GL11.glEnable(GL11.GL_LINE_SMOOTH)
+        GL11.glLineWidth(lineWidth)
+        color.bind()
+
+        worldRenderer {
+            begin(GL11.GL_LINES, DefaultVertexFormats.POSITION_COLOR)
+            pos(x.toDouble(), y.toDouble(), 0.0).color(color.red / 255f, color.green / 255f, color.blue / 255f, color.alpha / 255f).endVertex()
+            pos(x2.toDouble(), y2.toDouble(), 0.0).color(color.red / 255f, color.green / 255f, color.blue / 255f, color.alpha / 255f).endVertex()
+        }
+        tessellator.draw()
+
+        GL11.glLineWidth(1f)
+        GlStateManager.enableTexture2D()
+        GlStateManager.disableBlend()
+        GL11.glDisable(GL11.GL_LINE_SMOOTH)
+        GlStateManager.popMatrix()
     }
 }

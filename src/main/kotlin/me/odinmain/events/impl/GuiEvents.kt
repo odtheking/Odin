@@ -17,6 +17,9 @@ abstract class GuiEvent : Event() {
     class DrawGuiBackground(val gui: GuiContainer, val xSize: Int, val ySize: Int, val guiLeft: Int, val guiTop: Int) : GuiEvent()
 
     @Cancelable
+    class DrawGuiForeground(val gui: GuiContainer, val xSize: Int, val ySize: Int, val guiLeft: Int, val guiTop: Int, val mouseX: Int, val mouseY: Int) : GuiEvent()
+
+    @Cancelable
     class DrawSlot(val gui: GuiContainer, val slot: Slot, val x: Int, val y: Int) : GuiEvent()
 
     @Cancelable

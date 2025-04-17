@@ -1,7 +1,6 @@
 package me.odinmain.features.impl.skyblock
 
 import me.odinmain.events.impl.GuiEvent
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
@@ -21,14 +20,13 @@ import org.lwjgl.input.Keyboard
 
 object WardrobeKeybinds : Module(
     name = "Wardrobe Keybinds",
-    description = "Keybinds for wardrobe equipping and unequipping.",
-    category = Category.SKYBLOCK
+    desc = "Keybinds for wardrobe equipping and unequipping."
 ) {
     private val unequipKeybind by KeybindSetting("Unequip Keybind", Keyboard.KEY_NONE, "Unequips the current armor.")
     private val nextPageKeybind by KeybindSetting("Next Page Keybind", Keyboard.KEY_NONE, "Goes to the next page.")
     private val previousPageKeybind by KeybindSetting("Previous Page Keybind", Keyboard.KEY_NONE, "Goes to the previous page.")
-    private val delay by NumberSetting("Delay", 300L, 0L, 10000L, 10L, description = "The delay between each click.", unit = "ms")
-    private val disallowUnequippingEquipped by BooleanSetting("Disable Unequip", false, description = "Prevents unequipping equipped armor.")
+    private val delay by NumberSetting("Delay", 300L, 0L, 10000L, 10L, desc = "The delay between each click.", unit = "ms")
+    private val disallowUnequippingEquipped by BooleanSetting("Disable Unequip", false, desc = "Prevents unequipping equipped armor.")
 
     private val advanced by DropdownSetting("Show Settings", false)
     private val wardrobe1 by KeybindSetting("Wardrobe 1", Keyboard.KEY_1, "Wardrobe 1").withDependency { advanced }

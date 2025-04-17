@@ -2,7 +2,6 @@ package me.odinmain.features.impl.floor7.p3
 
 import me.odinmain.events.impl.ServerTickEvent
 import me.odinmain.events.impl.TerminalEvent
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.TerminalSimulator
 import me.odinmain.features.impl.floor7.p3.termsim.TermSimGUI
@@ -16,25 +15,23 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object TerminalTimes : Module(
     name = "Terminal Times",
-    description = "Records the time taken to complete terminals in floor 7.",
-    category = Category.FLOOR7
+    desc = "Records the time taken to complete terminals in floor 7."
 ) {
-    private val sendMessage by BooleanSetting("Send Message", false, description = "Send a message when a terminal is completed.")
-    private val reset by ActionSetting("Reset pbs", description = "Resets the terminal PBs.") {
+    private val sendMessage by BooleanSetting("Send Message", false, desc = "Send a message when a terminal is completed.")
+    private val reset by ActionSetting("Reset pbs", desc = "Resets the terminal PBs.") {
         repeat(6) { i -> terminalPBs.set(i, 999.0) }
         modMessage("§6Terminal PBs §fhave been reset.")
     }
 
-    private val terminalSplits by BooleanSetting("Terminal Splits", default = true, description = "Adds the time when a term was completed to its message, and sends the total term time after terms are done.")
-    private val useRealTime by BooleanSetting("Use Real Time", default = true, description = "Use real time rather than server ticks.")
+    private val terminalSplits by BooleanSetting("Terminal Splits", true, desc = "Adds the time when a term was completed to its message, and sends the total term time after terms are done.")
+    private val useRealTime by BooleanSetting("Use Real Time", true, desc = "Use real time rather than server ticks.")
 
     private val terminalPBs = PersonalBest("Terminals", 7)
 
     @SubscribeEvent
-    fun onTerminalClose(event: TerminalEvent.Solved) {
-        if (event.terminal.type == TerminalTypes.NONE) return
+    fun onTerminalSolved(event: TerminalEvent.Solved) {
         val pbs = if (mc.currentScreen is TermSimGUI) TerminalSimulator.termSimPBs else terminalPBs
-        pbs.time(event.terminal.type.ordinal, (System.currentTimeMillis() - event.terminal.timeOpened) / 1000.0, "s§7!", "§a${event.terminal.guiName}${if (mc.currentScreen is TermSimGUI) " §7(termsim)" else ""} §7solved in §6", addPBString = true, addOldPBString = true, sendOnlyPB = sendMessage)
+        pbs.time(event.terminal.type.ordinal, (System.currentTimeMillis() - event.terminal.timeOpened) / 1000.0, "s§7!", "§a${event.terminal.type.windowName}${if (mc.currentScreen is TermSimGUI) " §7(termsim)" else ""} §7solved in §6", addPBString = true, addOldPBString = true, sendOnlyPB = sendMessage)
     }
 
     private val terminalCompleteRegex = Regex("(.{1,16}) (activated|completed) a (terminal|lever|device)! \\((\\d)/(\\d)\\)")
@@ -61,7 +58,7 @@ object TerminalTimes : Module(
         }
 
         onMessage(terminalCompleteRegex, { enabled && terminalSplits }) {
-            val (name, activated, type, current, total) = terminalCompleteRegex.find(it)?.destructured ?: return@onMessage
+            val (name, activated, type, current, total) = it.destructured
             modMessage("§6$name §a$activated a $type! (§c${current}§a/${total}) §8(§7${sectionTimer.seconds}s §8| §7${phaseTimer.seconds}s§8)", "")
             if ((current == total && gateBlown) || (current.toIntOrNull() ?: return@onMessage) < completed.first) resetSection()
             else completed = Pair(current.toIntOrNull() ?: return@onMessage, total.toIntOrNull() ?: return@onMessage)

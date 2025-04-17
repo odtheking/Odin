@@ -1,9 +1,11 @@
 package me.odinclient.features.impl.render
 
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.*
+import me.odinmain.features.settings.impl.BooleanSetting
+import me.odinmain.features.settings.impl.DropdownSetting
+import me.odinmain.features.settings.impl.KeybindSetting
+import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.getPositionEyes
 import net.minecraft.util.MathHelper
 import net.minecraft.util.Vec3
@@ -16,21 +18,20 @@ import kotlin.math.sin
 
 object Camera : Module(
     name = "Camera",
-    category = Category.RENDER,
-    description = "Various camera improvements and settings."
+    desc = "Various camera improvements and settings."
 ) {
-    private val frontCamera by BooleanSetting("No Front Camera", false, description = "Disables front camera.")
-    private val cameraClip by BooleanSetting("Camera Clip", false, description = "Allows the camera to clip through blocks.")
-    private val cameraDist by NumberSetting("Distance", 4f, 3.0, 12.0, 0.1, description = "The distance of the camera from the player.")
-    private val customFOV by BooleanSetting("Custom FOV", description = "Allows you to change the FOV.")
-    private val fov by NumberSetting("FOV", mc.gameSettings.fovSetting, 1f, 180f, 1f, description = "The field of view of the camera.").withDependency { customFOV }
+    private val frontCamera by BooleanSetting("No Front Camera", false, desc = "Disables front camera.")
+    private val cameraClip by BooleanSetting("Camera Clip", false, desc = "Allows the camera to clip through blocks.")
+    private val cameraDist by NumberSetting("Distance", 4f, 3.0, 12.0, 0.1, desc = "The distance of the camera from the player.")
+    private val customFOV by BooleanSetting("Custom FOV", desc = "Allows you to change the FOV.")
+    private val fov by NumberSetting("FOV", mc.gameSettings.fovSetting, 1f, 180f, 1f, desc = "The field of view of the camera.").withDependency { customFOV }
     private val freelookDropdown by DropdownSetting("Freelook")
-    private val toggle by DualSetting("Type", "Hold", "Toggle", false, description = "The type of freelook (Hold/Toggle).").withDependency { freelookDropdown }
+    private val toggleMode by BooleanSetting("Toggle Mode", false, desc = "If enabled, toggle freelook. Otherwise, hold to use.").withDependency { freelookDropdown }
     private val freelookKeybind by KeybindSetting("Freelook Key", Keyboard.KEY_NONE, description = "Keybind to toggle/ hold for freelook.")
         .withDependency { freelookDropdown }
         .onPress {
             if (!freelookToggled && enabled) enable()
-            else if ((toggle || !enabled) && freelookToggled) disable()
+            else if ((toggleMode || !enabled) && freelookToggled) disable()
     }
     @JvmStatic
     var freelookToggled = false
@@ -69,7 +70,7 @@ object Camera : Module(
         if (frontCamera && mc.gameSettings.thirdPersonView == 2)
             mc.gameSettings.thirdPersonView = 0
 
-        if (!freelookKeybind.isDown() && freelookToggled && !toggle) disable()
+        if (!freelookKeybind.isDown() && freelookToggled && !toggleMode) disable()
     }
 
     private fun enable() {

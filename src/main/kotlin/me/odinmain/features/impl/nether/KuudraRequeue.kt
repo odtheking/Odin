@@ -1,6 +1,5 @@
 package me.odinmain.features.impl.nether
 
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.dungeon.DungeonRequeue.disableRequeue
 import me.odinmain.features.settings.impl.BooleanSetting
@@ -11,11 +10,10 @@ import me.odinmain.utils.skyblock.sendCommand
 
 object KuudraRequeue : Module(
     name = "Kuudra Requeue",
-    description = "Automatically starts a new kuudra at the end of a kuudra.",
-    category = Category.NETHER
+    desc = "Automatically starts a new kuudra at the end of a kuudra."
 ) {
-    private val delay by NumberSetting("Delay", 10, 0, 30, 1, description = "The delay in seconds before requeuing.", unit = "s")
-    private val disablePartyLeave by BooleanSetting("Disable Party Leave", false, description = "Disables the requeue on party leave message.")
+    private val delay by NumberSetting("Delay", 10, 0, 30, 1, desc = "The delay in seconds before requeuing.", unit = "s")
+    private val disablePartyLeave by BooleanSetting("Disable Party Leave", false, desc = "Disables the requeue on party leave message.")
 
     init {
         onMessage(Regex("^\\[NPC] Elle: Good job everyone. A hard fought battle come to an end. Let's get out of here before we run into any more trouble!\$")) {
@@ -25,9 +23,7 @@ object KuudraRequeue : Module(
             }
 
             runIn(delay * 20) {
-                if (!disableRequeue) {
-                    sendCommand("od t${LocationUtils.kuudraTier}", true)
-                }
+                if (!disableRequeue) sendCommand("od t${LocationUtils.kuudraTier}", true)
             }
         }
 
@@ -47,9 +43,11 @@ object KuudraRequeue : Module(
         onMessage(Regex("You have been kicked from the party by (\\[.+])? ?(.{1,16})")) {
             disableRequeue = true
         }
+
         onMessage(Regex("You left the party.")) {
             disableRequeue = true
         }
+
         onMessage(Regex("(\\[.+])? ?(.{1,16}) has disbanded the party.")) {
             disableRequeue = true
         }

@@ -2,6 +2,7 @@ package me.odinmain.utils.skyblock.dungeon
 
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.skyblock.PersonalBest
+import me.odinmain.utils.ui.Colors
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.ResourceLocation
 
@@ -72,12 +73,12 @@ enum class DungeonClass(
     val defaultQuadrant: Int,
     var priority: Int,
 ) {
-    Archer(Color.ORANGE, '6', 0, 2),
-    Berserk(Color.DARK_RED, '4', 1, 0),
-    Healer(Color.PINK, 'd', 2, 2),
-    Mage(Color.BLUE, 'b', 3, 2),
-    Tank(Color.DARK_GREEN, '2', 3, 1),
-    Unknown(Color.WHITE, 'f', 0, 0)
+    Archer(Colors.MINECRAFT_GOLD, '6', 0, 2),
+    Berserk(Colors.MINECRAFT_DARK_RED, '4', 1, 0),
+    Healer(Colors.MINECRAFT_LIGHT_PURPLE, 'd', 2, 2),
+    Mage(Colors.MINECRAFT_AQUA, 'b', 3, 2),
+    Tank(Colors.MINECRAFT_DARK_GREEN, '2', 3, 1),
+    Unknown(Colors.WHITE, 'f', 0, 0)
 }
 
 enum class Blessing(

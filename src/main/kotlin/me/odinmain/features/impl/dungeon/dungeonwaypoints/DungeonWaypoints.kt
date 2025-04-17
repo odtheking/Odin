@@ -4,7 +4,6 @@ import me.odinmain.config.DungeonWaypointConfig
 import me.odinmain.events.impl.ClickEvent
 import me.odinmain.events.impl.RoomEnterEvent
 import me.odinmain.events.impl.SecretPickupEvent
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.SecretWaypoints.onEtherwarp
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.SecretWaypoints.onLocked
@@ -13,21 +12,26 @@ import me.odinmain.features.impl.dungeon.dungeonwaypoints.SecretWaypoints.resetS
 import me.odinmain.features.impl.render.DevPlayers
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
-import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.*
-import me.odinmain.utils.render.*
+import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.render.RenderUtils.outlineBounds
 import me.odinmain.utils.render.RenderUtils.renderVec
+import me.odinmain.utils.render.Renderer
+import me.odinmain.utils.render.getMCTextHeight
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.getRealCoords
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.getRelativeCoords
 import me.odinmain.utils.skyblock.dungeon.tiles.Room
+import me.odinmain.utils.ui.Colors
+import me.odinmain.utils.ui.clickgui.util.ColorUtil.withAlpha
 import net.minecraft.block.BlockSign
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.GuiTextField
 import net.minecraft.client.gui.ScaledResolution
+import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
 import net.minecraft.network.play.client.C03PacketPlayer.C06PacketPlayerPosLook
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
@@ -47,30 +51,28 @@ import kotlin.math.sign
  */
 object DungeonWaypoints : Module(
     name = "Dungeon Waypoints",
-    description = "Custom Waypoints for Dungeon Rooms.",
-    category = Category.DUNGEON,
-    tag = TagType.NEW
+    desc = "Custom Waypoints for Dungeon Rooms."
 ) {
-    private var allowEdits by BooleanSetting("Allow Edits", false, description = "Allows you to edit waypoints.")
-    private var allowMidair by BooleanSetting("Allow Midair", default = false, description = "Allows waypoints to be placed midair if they reach the end of distance without hitting a block.").withDependency { allowEdits }
-    private var reachColor by ColorSetting("Reach Color", Color(0, 255, 213, 0.43f), description = "Color of the reach box highlight.", allowAlpha = true).withDependency { allowEdits }
-    private val allowTextEdit by BooleanSetting("Allow Text Edit", true, description = "Allows you to set the text of a waypoint while sneaking.")
+    private var allowEdits by BooleanSetting("Allow Edits", false, desc = "Allows you to edit waypoints.")
+    private var allowMidair by BooleanSetting("Allow Midair", false, desc = "Allows waypoints to be placed midair if they reach the end of distance without hitting a block.").withDependency { allowEdits }
+    private var reachColor by ColorSetting("Reach Color", Color(0, 255, 213, 0.43f), desc = "Color of the reach box highlight.", allowAlpha = true).withDependency { allowEdits }
+    private val allowTextEdit by BooleanSetting("Allow Text Edit", true, desc = "Allows you to set the text of a waypoint while sneaking.")
 
-    private val renderTitle by BooleanSetting("Render Title", true, description = "Renders the titles of waypoints")
-    private val titleScale by NumberSetting("Title Scale", 1f, 0.1f, 4f, increment = 0.1f, description = "The scale of the titles of waypoints.").withDependency { renderTitle }
-    private val disableDepth by BooleanSetting("Global Depth", false, description = "Disables depth testing for all waypoints.")
+    private val renderTitle by BooleanSetting("Render Title", true, desc = "Renders the titles of waypoints")
+    private val titleScale by NumberSetting("Title Scale", 1f, 0.1f, 4f, increment = 0.1f, desc = "The scale of the titles of waypoints.").withDependency { renderTitle }
+    private val disableDepth by BooleanSetting("Global Depth", false, desc = "Disables depth testing for all waypoints.")
 
     private val settingsDropDown by DropdownSetting("Next Waypoint Settings")
-    var waypointType: Int by SelectorSetting("Waypoint Type", WaypointType.NONE.displayName, WaypointType.getArrayList(), description = "The type of waypoint you want to place.").withDependency { settingsDropDown }
-    private val colorPallet by SelectorSetting("Color pallet", "None", arrayListOf("None", "Aqua", "Magenta", "Yellow", "Lime", "Red"), description = "The color pallet of the next waypoint you place.").withDependency { settingsDropDown }
-    var color by ColorSetting("Color", Color.GREEN, description = "The color of the next waypoint you place.", allowAlpha = true).withDependency { colorPallet == 0 && settingsDropDown }
-    var filled by BooleanSetting("Filled", false, description = "If the next waypoint you place should be 'filled'.").withDependency { settingsDropDown }
-    var throughWalls by BooleanSetting("Through walls", false, description = "If the next waypoint you place should be visible through walls.").withDependency { settingsDropDown }
-    var useBlockSize by BooleanSetting("Use block size", true, description = "Use the size of the block you click for waypoint size.").withDependency { settingsDropDown }
-    var size: Double by NumberSetting("Size", 1.0, .125, 1.0, increment = 0.01, description = "The size of the next waypoint you place.").withDependency { !useBlockSize && settingsDropDown }
-    var timerSetting: Int by SelectorSetting("Timer Type", TimerType.NONE.displayName, TimerType.getArrayList(), description = "Type of route timer you want to place.").withDependency { !waypointType.equalsOneOf(0, 1, 5) && settingsDropDown }
+    var waypointType by SelectorSetting("Waypoint Type", WaypointType.NONE.displayName, WaypointType.getArrayList(), desc = "The type of waypoint you want to place.").withDependency { settingsDropDown }
+    private val colorPallet by SelectorSetting("Color pallet", "None", arrayListOf("None", "Aqua", "Magenta", "Yellow", "Lime", "Red"), desc = "The color pallet of the next waypoint you place.").withDependency { settingsDropDown }
+    var color by ColorSetting("Color", Colors.MINECRAFT_GREEN, desc = "The color of the next waypoint you place.", allowAlpha = true).withDependency { colorPallet == 0 && settingsDropDown }
+    var filled by BooleanSetting("Filled", false, desc = "If the next waypoint you place should be 'filled'.").withDependency { settingsDropDown }
+    var throughWalls by BooleanSetting("Through walls", false, desc = "If the next waypoint you place should be visible through walls.").withDependency { settingsDropDown }
+    var useBlockSize by BooleanSetting("Use block size", true, desc = "Use the size of the block you click for waypoint size.").withDependency { settingsDropDown }
+    var size by NumberSetting("Size", 1.0, .125, 1.0, increment = 0.01, desc = "The size of the next waypoint you place.").withDependency { !useBlockSize && settingsDropDown }
+    var timerSetting by SelectorSetting("Timer Type", TimerType.NONE.displayName, TimerType.getArrayList(), desc = "Type of route timer you want to place.").withDependency { !waypointType.equalsOneOf(0, 1, 5) && settingsDropDown }
 
-    private val resetButton by ActionSetting("Reset Current Room", description = "Resets the waypoints for the current room.") {
+    private val resetButton by ActionSetting("Reset Current Room", desc = "Resets the waypoints for the current room.") {
         val room = DungeonUtils.currentRoom ?: return@ActionSetting modMessage("§cRoom not found!")
 
         val waypoints = DungeonWaypointConfig.waypoints.getOrPut(room.data.name) { mutableListOf() }
@@ -81,15 +83,15 @@ object DungeonWaypoints : Module(
         glList = -1
         modMessage("Successfully reset current room!")
     }
-    private val debugWaypoint by BooleanSetting("Debug Waypoint", false, description = "Shows a waypoint in the middle of every extra room.").withDependency { DevPlayers.isDev }
+    private val debugWaypoint by BooleanSetting("Debug Waypoint", false, desc = "Shows a waypoint in the middle of every extra room.").withDependency { DevPlayers.isDev }
 
     private inline val selectedColor get() = when (colorPallet) {
         0 -> color
-        1 -> Color.CYAN
-        2 -> Color.MAGENTA
-        3 -> Color.YELLOW
-        4 -> Color.GREEN
-        5 -> Color.RED
+        1 -> Colors.MINECRAFT_DARK_AQUA
+        2 -> Colors.MINECRAFT_DARK_PURPLE
+        3 -> Colors.MINECRAFT_YELLOW
+        4 -> Colors.MINECRAFT_GREEN
+        5 -> Colors.MINECRAFT_RED
         else -> color
     }
 
@@ -116,7 +118,7 @@ object DungeonWaypoints : Module(
         companion object{
             fun getType() = if (waypointType.equalsOneOf(0, 1, 5)) null else getByInt(timerSetting)
             fun getArrayList() = ArrayList(TimerType.entries.map { it.displayName })
-            fun getByInt(i: Int) = TimerType.entries.getOrNull(i).takeIf { it != NONE }
+            private fun getByInt(i: Int) = TimerType.entries.getOrNull(i).takeIf { it != NONE }
             fun getByName(name: String): TimerType? = TimerType.entries.find { it.name == name.uppercase() }
         }
     }
@@ -187,7 +189,7 @@ object DungeonWaypoints : Module(
 
         if (debugWaypoint) {
             room.roomComponents.forEach {
-                Renderer.drawBox(Vec3(it.x.toDouble(), 70.0, it.z.toDouble()).toAABB(), Color.GREEN, fillAlpha = 0)
+                Renderer.drawBox(Vec3(it.x.toDouble(), 70.0, it.z.toDouble()).toAABB(), Colors.MINECRAFT_GREEN, fillAlpha = 0)
             }
         }
         endProfile()
@@ -203,9 +205,9 @@ object DungeonWaypoints : Module(
         if (mc.currentScreen != null || event.type != RenderGameOverlayEvent.ElementType.ALL || !allowEdits) return
         val sr = ScaledResolution(mc)
         val pos = reachPosition
-        val (text, editText) = pos?.add(offset)?.let {
+        val (text, editText) = pos?.add(offset)?.let { position ->
             val room = DungeonUtils.currentRoom ?: return
-            val vec = room.getRelativeCoords(it.add(offset).toVec3())
+            val vec = room.getRelativeCoords(position.add(offset).toVec3())
             val waypoint = getWaypoints(room).find { it.toVec3().equal(vec) }
 
             val text = waypoint?.let {"§fType: §5${waypoint.type?.displayName ?: "None"}${waypoint.timer?.let { "§7, §fTimer: §a${it.displayName}" } ?: ""}, §r#${waypoint.color.hex}§7" }
@@ -214,10 +216,10 @@ object DungeonWaypoints : Module(
             text to "§fEditing Waypoints §8|§f ${waypoint?.let { "Viewing" } ?: "Placing"}"
         } ?: ("" to "Editing Waypoints")
 
-        scale(2f / sr.scaleFactor, 2f / sr.scaleFactor, 1f)
-        mcText(editText, mc.displayWidth / 4, mc.displayHeight  / 4 + 10, 1f, Color.WHITE.withAlpha(.8f))
-        mcText(text,mc.displayWidth / 4,  mc.displayHeight / 4 + 20, 1f, selectedColor)
-        scale(sr.scaleFactor / 2f, sr.scaleFactor / 2f, 1f)
+        GlStateManager.scale(2f / sr.scaleFactor, 2f / sr.scaleFactor, 1f)
+        RenderUtils.drawText(editText, mc.displayWidth / 4f, mc.displayHeight  / 4f + 10, 1f, Colors.WHITE.withAlpha(.8f), center = true)
+        RenderUtils.drawText(text, mc.displayWidth / 4f,  mc.displayHeight / 4f + 20, 1f, selectedColor, center = true)
+        GlStateManager.scale(sr.scaleFactor / 2f, sr.scaleFactor / 2f, 1f)
     }
 
     @SubscribeEvent

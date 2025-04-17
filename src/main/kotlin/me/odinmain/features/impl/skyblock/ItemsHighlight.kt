@@ -1,13 +1,11 @@
 package me.odinmain.features.impl.skyblock
 
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.features.settings.impl.SelectorSetting
-import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.containsOneOf
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.HighlightRenderer
@@ -16,22 +14,23 @@ import me.odinmain.utils.skyblock.dungeon.DungeonUtils.dungeonItemDrops
 import me.odinmain.utils.skyblock.getRarity
 import me.odinmain.utils.skyblock.lore
 import me.odinmain.utils.skyblock.unformattedName
+import me.odinmain.utils.ui.Colors
+import me.odinmain.utils.ui.clickgui.util.ColorUtil.withAlpha
 import net.minecraft.entity.item.EntityItem
 
 object ItemsHighlight : Module(
     name = "Item Highlight",
-    description = "Highlights items on the ground.",
-    category = Category.RENDER
+    desc = "Highlights items on the ground."
 ) {
-    private val mode by SelectorSetting("Mode", "Overlay", arrayListOf("Boxes", "Box 2D", "Overlay"), description = HighlightRenderer.HIGHLIGHT_MODE_DESCRIPTION)
-    private val onlySecrets by BooleanSetting("Only Secrets", default = false, description = "Only highlights secret drops in dungeons.")
-    private val thickness by NumberSetting("Line Width", 1f, .1f, 4f, .1f, description = "The line width of Outline / Boxes/ 2D Boxes.").withDependency { mode != HighlightRenderer.HighlightType.Overlay.ordinal }
-    private val style by SelectorSetting("Style", Renderer.DEFAULT_STYLE, Renderer.styles, description = Renderer.STYLE_DESCRIPTION).withDependency { mode == HighlightRenderer.HighlightType.Boxes.ordinal }
-    private val depthCheck by BooleanSetting("Depth check", false, description = "Boxes show through walls.")
+    private val mode by SelectorSetting("Mode", "Overlay", arrayListOf("Boxes", "Box 2D", "Overlay"), desc = HighlightRenderer.HIGHLIGHT_MODE_DESCRIPTION)
+    private val onlySecrets by BooleanSetting("Only Secrets", false, desc = "Only highlights secret drops in dungeons.")
+    private val thickness by NumberSetting("Line Width", 1f, .1f, 4f, .1f, desc = "The line width of Outline / Boxes/ 2D Boxes.").withDependency { mode != HighlightRenderer.HighlightType.Overlay.ordinal }
+    private val style by SelectorSetting("Style", Renderer.DEFAULT_STYLE, Renderer.styles, desc = Renderer.STYLE_DESCRIPTION).withDependency { mode == HighlightRenderer.HighlightType.Boxes.ordinal }
+    private val depthCheck by BooleanSetting("Depth check", false, desc = "Boxes show through walls.")
     private val colorList = arrayListOf("Rarity", "Distance", "Custom")
-    private val colorStyle by SelectorSetting("Color Style", "Rarity", colorList, false, description = "Which color style to use.")
-    private val rarityAlpha by NumberSetting("Rarity Alpha", 1f, 0f, 1f, .1f, description = "The alpha of the rarity color.").withDependency { colorStyle == 0 }
-    private val customColor by ColorSetting("Custom Color", Color.WHITE.withAlpha(1f), true, description = "The custom color to use.").withDependency { colorStyle == 2 }
+    private val colorStyle by SelectorSetting("Color Style", "Rarity", colorList, desc = "Which color style to use.")
+    private val rarityAlpha by NumberSetting("Rarity Alpha", 1f, 0f, 1f, .1f, desc = "The alpha of the rarity color.").withDependency { colorStyle == 0 }
+    private val customColor by ColorSetting("Custom Color", Colors.WHITE.withAlpha(1f), true, desc = "The custom color to use.").withDependency { colorStyle == 2 }
 
     private var currentEntityItems = mutableSetOf<EntityItem>()
 
@@ -52,11 +51,11 @@ object ItemsHighlight : Module(
 
     private fun getEntityOutlineColor(entity: EntityItem): Color {
         return when (colorStyle){
-            0 -> getRarity(entity.entityItem.lore)?.color?.withAlpha(rarityAlpha) ?: Color.WHITE
+            0 -> getRarity(entity.entityItem.lore)?.color?.withAlpha(rarityAlpha) ?: Colors.WHITE
             1 -> when {
-                entity.ticksExisted <= 11 -> Color.YELLOW
-                entity.getDistanceToEntity(mc.thePlayer) <= 3.5 -> Color.GREEN
-                else -> Color.RED
+                entity.ticksExisted <= 11 -> Colors.MINECRAFT_YELLOW
+                entity.getDistanceToEntity(mc.thePlayer) <= 3.5 -> Colors.MINECRAFT_GREEN
+                else -> Colors.MINECRAFT_RED
             }
             else -> customColor
         }

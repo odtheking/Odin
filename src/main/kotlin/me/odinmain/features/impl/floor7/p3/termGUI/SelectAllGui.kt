@@ -5,8 +5,8 @@ import me.odinmain.features.impl.floor7.p3.TerminalSolver
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.currentTerm
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.customScale
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.gap
-import me.odinmain.features.impl.floor7.p3.TerminalSolver.hideClicked
 import me.odinmain.utils.render.*
+import me.odinmain.utils.ui.Colors
 
 object SelectAllGui : TermGui() {
     override fun render() {
@@ -14,14 +14,13 @@ object SelectAllGui : TermGui() {
         itemIndexMap.clear()
         roundedRectangle(-300, -175, 600, 350, TerminalSolver.customGuiColor, 10f, 1f)
         if (TerminalSolver.customGuiText == 0) {
-            text("Select All the \"*\" Items!", -295, -163, Color.WHITE, 20, verticalAlign = TextPos.Top)
-            roundedRectangle(-298, -135, getTextWidth("Select All the \"*\" Items!", 20f), 3, Color.WHITE, radius = 5f)
+            text("Select All the \"*\" Items!", -295, -163, Colors.WHITE, 20, verticalAlign = TextPos.Top)
+            roundedRectangle(-298, -135, getTextWidth("Select All the \"*\" Items!", 20f), 3, Colors.WHITE, radius = 5f)
         } else if (TerminalSolver.customGuiText == 1) {
-            text("Select All the \"*\" Items!", 0, -163, Color.WHITE, 20, align = TextAlign.Middle, verticalAlign = TextPos.Top)
-            roundedRectangle(-getTextWidth("Select All the \"*\" Items!", 20f) / 2, -135, getTextWidth("Select All the \"*\" Items!", 20f), 3, Color.WHITE, radius = 5f)
+            text("Select All the \"*\" Items!", 0, -163, Colors.WHITE, 20, align = TextAlign.Middle, verticalAlign = TextPos.Top)
+            roundedRectangle(-getTextWidth("Select All the \"*\" Items!", 20f) / 2, -135, getTextWidth("Select All the \"*\" Items!", 20f), 3, Colors.WHITE, radius = 5f)
         }
-        currentTerm.solution.forEach { pane ->
-            if (hideClicked && pane == currentTerm.clickedSlot?.first) return@forEach
+        currentTerm?.solution?.forEach { pane ->
             val row = pane / 9 - 1
             val col = pane % 9 - 2
             val box = BoxWithClass((-168 + ((gap -20).unaryPlus() * 0.5)) + col * 70, -115 + row * 70, 70 - gap, 70 - gap)

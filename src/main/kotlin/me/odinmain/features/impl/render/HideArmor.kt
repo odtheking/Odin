@@ -1,6 +1,5 @@
 package me.odinmain.features.impl.render
 
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
@@ -12,23 +11,22 @@ import net.minecraft.entity.player.EntityPlayer
 
 object HideArmor : Module(
     name = "Hide Armor",
-    description = "Hide armor pieces.",
-    category = Category.SKYBLOCK
+    desc = "Hide armor pieces."
 ) {
-    private val hideOnlyPlayers by BooleanSetting("Hide Only Players", false, description = "Only hide armor on players.")
-    private val hideArmor by SelectorSetting("Hide Armor", "Self", options = arrayListOf("Self", "Others", "Both"), description = "Hide the armor of yourself, others, or both.")
+    private val hideOnlyPlayers by BooleanSetting("Hide Only Players", false, desc = "Only hide armor on players.")
+    private val hideArmor by SelectorSetting("Hide Armor", "Self", options = arrayListOf("Self", "Others", "Both"), desc = "Hide the armor of yourself, others, or both.")
     private val selfDropdown by DropdownSetting("Self").withDependency { hideArmor == 0 || hideArmor == 2 }
-    private val selfHelmet by BooleanSetting("Helmet", true, description = "Hide your helmet.").withDependency { selfDropdown }
-    private val selfChestplate by BooleanSetting("Self Chestplate", true, description = "Hide your chestplate.").withDependency { selfDropdown && hideArmor != 1 }
-    private val selfLeggings by BooleanSetting("Self Leggings", true, description = "Hide your leggings.").withDependency { selfDropdown && hideArmor != 1 }
-    private val selfBoots by BooleanSetting("Self Boots", true, description = "Hide your boots.").withDependency { selfDropdown && hideArmor != 1 }
-    private val selfSkull by BooleanSetting("Self Skull", true, description = "Hide your skull.").withDependency { selfDropdown && hideArmor != 1 }
+    private val selfHelmet by BooleanSetting("Helmet", true, desc = "Hide your helmet.").withDependency { selfDropdown }
+    private val selfChestplate by BooleanSetting("Self Chestplate", true, desc = "Hide your chestplate.").withDependency { selfDropdown && hideArmor != 1 }
+    private val selfLeggings by BooleanSetting("Self Leggings", true, desc = "Hide your leggings.").withDependency { selfDropdown && hideArmor != 1 }
+    private val selfBoots by BooleanSetting("Self Boots", true, desc = "Hide your boots.").withDependency { selfDropdown && hideArmor != 1 }
+    private val selfSkull by BooleanSetting("Self Skull", true, desc = "Hide your skull.").withDependency { selfDropdown && hideArmor != 1 }
     private val othersDropdown by DropdownSetting("Others").withDependency { hideArmor == 1 || hideArmor == 2 }
-    private val othersHelmet by BooleanSetting("Others Helmet", true, description = "Hide others' helmets.").withDependency { othersDropdown && hideArmor != 0 }
-    private val othersChestplate by BooleanSetting("Others Chestplate", true, description = "Hide others' chestplates.").withDependency { othersDropdown && hideArmor != 0 }
-    private val othersLeggings by BooleanSetting("Others Leggings", true, description = "Hide others' leggings.").withDependency { othersDropdown && hideArmor != 0 }
-    private val othersBoots by BooleanSetting("Others Boots", true, description = "Hide others' boots.").withDependency { othersDropdown && hideArmor != 0 }
-    private val othersSkull by BooleanSetting("Others Skull", true, description = "Hide others' skulls.").withDependency { othersDropdown && hideArmor != 0 }
+    private val othersHelmet by BooleanSetting("Others Helmet", true, desc = "Hide others' helmets.").withDependency { othersDropdown && hideArmor != 0 }
+    private val othersChestplate by BooleanSetting("Others Chestplate", true, desc = "Hide others' chestplates.").withDependency { othersDropdown && hideArmor != 0 }
+    private val othersLeggings by BooleanSetting("Others Leggings", true, desc = "Hide others' leggings.").withDependency { othersDropdown && hideArmor != 0 }
+    private val othersBoots by BooleanSetting("Others Boots", true, desc = "Hide others' boots.").withDependency { othersDropdown && hideArmor != 0 }
+    private val othersSkull by BooleanSetting("Others Skull", true, desc = "Hide others' skulls.").withDependency { othersDropdown && hideArmor != 0 }
 
     @JvmStatic
     fun shouldHideArmor(entityLivingBase: EntityLivingBase, piece: Int): Boolean {

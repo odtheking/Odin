@@ -1,4 +1,3 @@
-@file:Suppress("FunctionName")
 @file:JvmName("Utils")
 
 package me.odinmain.utils
@@ -7,8 +6,6 @@ import me.odinmain.OdinMain
 import me.odinmain.OdinMain.logger
 import me.odinmain.OdinMain.mc
 import me.odinmain.features.ModuleManager
-import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
-import me.odinmain.utils.render.Color
 import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.skyblock.sendCommand
 import me.odinmain.utils.skyblock.skyblockID
@@ -24,8 +21,6 @@ import net.minecraft.util.ChatComponentText
 import net.minecraft.util.ChatStyle
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.eventhandler.Event
-import org.lwjgl.opengl.GL11
-import org.lwjgl.util.glu.GLU
 import java.util.*
 import kotlin.math.pow
 import kotlin.math.round
@@ -73,9 +68,6 @@ fun String.startsWithOneOf(vararg options: String, ignoreCase: Boolean = false):
 fun Any?.equalsOneOf(vararg options: Any?): Boolean =
     options.any { this == it }
 
-fun String?.matchesOneOf(vararg options: Regex): Boolean =
-    options.any { it.matches(this ?: "") }
-
 /**
  * Rounds the current number to the specified number of decimals.
  * @param decimals The number of decimals to round to.
@@ -95,7 +87,6 @@ inline val Container.name: String
 
 operator fun Number.div(number: Number): Number =
     this.toDouble() / number.toDouble()
-
 
 operator fun Number.times(number: Number): Number =
     this.toDouble() * number.toDouble()
@@ -121,7 +112,7 @@ fun logError(throwable: Throwable, context: Any) {
     val message = "${OdinMain.VERSION} Caught an ${throwable::class.simpleName ?: "error"} at ${context::class.simpleName}."
     logger.error(message, throwable)
     val style = ChatStyle().apply {
-        chatClickEvent = ClickEvent(ClickEvent.Action.RUN_COMMAND, "/od copy $message \n``` ${throwable.message?.lineSequence()?.take(10)?.joinToString("\n")}```")
+        chatClickEvent = ClickEvent(ClickEvent.Action.RUN_COMMAND, "/od copy $message \n``` ${throwable.message} \n${throwable.stackTraceToString().lineSequence().take(10).joinToString("\n")}```")
         chatHoverEvent = HoverEvent(HoverEvent.Action.SHOW_TEXT, ChatComponentText("§6Click to copy the error to your clipboard."))
     }
     modMessage("$message §cPlease click this message to copy and send it in the Odin discord!", chatStyle = style)
@@ -172,12 +163,6 @@ fun endProfile() =
  */
 fun String.capitalizeFirst(): String = replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() }
 
-fun Color.coerceAlpha(min: Float, max: Float): Color {
-    return if (this.alpha < min) this.withAlpha(min)
-    else if (this.alpha > max) this.withAlpha(max)
-    else this
-}
-
 fun <T> Collection<T>.getSafe(index: Int?): T? {
     return try {
         this.toList()[index ?: return null]
@@ -206,21 +191,11 @@ fun formatTime(time: Long, decimalPlaces: Int = 2): String {
         remaining -= it * 60000
         if (it > 0) "${it}m " else ""
     }
-    return "$hours$minutes${(remaining / 1000f).toFixed()}s"
+    return "$hours$minutes${(remaining / 1000f).toFixed(decimalPlaces)}s"
 }
 
 inline val Char.isHexaDecimal
     get() = isDigit() || lowercase().equalsOneOf("a","b","c","d","e","f")
-
-fun checkGLError(message: String) {
-    var i: Int
-    if ((GL11.glGetError().also { i = it }) != 0) {
-        val s = GLU.gluErrorString(i)
-        println("########## GL ERROR ##########")
-        println("@ $message")
-        println("$i: $s")
-    }
-}
 
 /**
  * Writes the given text to the clipboard.

@@ -2,8 +2,8 @@ Legit Feature List:
 
 Category: Dungeon
 - Positional Messages: Sends a message when you're near a certain position. /posmsg
-- Dungeon Waypoints: Custom Waypoints for Dungeon Rooms.
 - Teammate Highlight: Enhances visibility of your dungeon teammates and their name tags.
+- Dungeon Waypoints: Custom Waypoints for Dungeon Rooms.
 - Dungeon Requeue: Automatically starts a new dungeon at the end of a dungeon.
 - Terracotta Timer: Displays the time until the terracotta respawns.
 - Blessing Display: Displays the current active blessings of the dungeon.
@@ -14,6 +14,7 @@ Category: Dungeon
 - Spring Boots: Shows the current jump height of your spring boots.
 - Swap Sound: Plays a sound when you successfully stonk swap.
 - Blood Camp: Features for Blood Camping.
+- Livid Solver: Provides a visual cue for the correct Livid's location in the boss fight.
 - Leap Menu: Renders a custom leap menu when in the Spirit Leap gui.
 - Extra Stats: Shows additional dungeon stats at the end of the run in chat.
 - Map Info: Displays stats about the dungeon such as score, secrets, and deaths.
@@ -25,13 +26,13 @@ Category: Floor 7
 - Terminal Simulator: Simulates a floor 7 terminal from phase 3.
 - Melody Message: Helpful messages for the melody terminal in floor 7.
 - Terminal Sounds: Plays a sound whenever you click a correct item in a terminal.
-- Wither Dragons: Tools for managing M7 dragons timers, boxes, priority, health, relics and alerts.
 - Terminal Solver: Renders solution for terminals in floor 7.
+- Wither Dragons: Tools for managing M7 dragons timers, boxes, priority, health, relics and alerts.
 - Terminal Times: Records the time taken to complete terminals in floor 7.
 - Arrows Device: Shows a solution for the Sharp Shooter puzzle in floor 7.
-- Arrow Align: Shows the solution for the Arrow Align device.
 - Tick Timers: Displays timers for Necron, Goldor, and Storm.
 - Simon Says: Shows a solution for the Simon Says device.
+- Arrow Align: Shows the solution for the Arrow Align device.
 
 Category: Render
 - Etherwarp Helper: Provides configurable visual and audio feedback for etherwarp.
@@ -40,14 +41,14 @@ Category: Render
 - Dragon Hitboxes: Draws dragon's correct hitboxes around them.
 - Personal Dragon: Spawns your own personal dragon.
 - Name Changer: Replaces your name with the given nick, color codes work (&).
-- Item Highlight: Highlights items on the ground.
 - Space Helmet: Equips you with a space helmet.
 - Block Overlay: Lets you customize the vanilla block overlay.
 - Visual Words: Replaces words in the world with other words. (/visualwords)
 - CPS Display: Displays your clicks per second.
 - BPS Display: Displays how many blocks per second you're breaking.
-- Animations: Changes the appearance of the first-person view model.
+- Hide Armor: Hide armor pieces.
 - Server Hud: Displays your current ping, FPS and server's TPS.
+- Animations: Changes the appearance of the first-person view model.
 - Waypoints: Allows to render waypoints based on coordinates in chat.
 - Click Gui: Allows you to customize the GUI.
 - Camera: Allows you to change camera settings.
@@ -57,20 +58,21 @@ Category: Render
 Category: Skyblock
 - Command Keybinds: Various keybinds for common skyblock commands.
 - Wardrobe Keybinds: Keybinds for wardrobe equipping and unequipping.
-- Invincibility Timer: Timer to show how long you have left Invincible.
 - Deployable Timer: Displays the active deployable remaining time.
+- Invincibility Timer: Timer to show how long you have left Invincible.
 - Chat Commands: Type !help in the corresponding channel for cmd list. Use /chatclist.
 - No Cursor Reset: Makes your cursor stop resetting between guis.
 - Player Display: Allows to customize the player stat displays (health, strength and more).
+- Item Highlight: Highlights items on the ground.
 - Ability Timers: Provides timers for Wither Impact, Tactical Insertion, and Enrage.
 - Pet Keybinds: Keybinds for the pets menu. (/petkeys)
 - Diana Helper: Displays the location of the Diana guess and burrows.
 - Hide Players: Hides players in your vicinity.
 - Mob Spawn: Sends a message whenever a mob spawns.
-- Hide Armor: Hide armor pieces.
 - Auto Sprint: Automatically makes you sprint.
 - Gyro Wand: Shows area of effect and cooldown of the Gyrokinetic Wand.
 - Farm Keys: Temporarily changes your minecraft keybind configuration for farming in Skyblock.
+- Slot Binds: Bind slots together for quick access.
 - Arrow hit: Counts how many arrows you hit in certain time periods.
 - Rag Axe: Provides alerts about ragnarock axe's state.
 - Splits: Provides visual timers for Kuudra and Dungeons.
@@ -109,9 +111,9 @@ Category: Dungeon
 - Swap Sound: Plays a sound when you successfully stonk swap.
 - Blood Camp: Features for Blood Camping.
 - Close Chest: Allows you to instantly close chests with any key or automatically.
+- Livid Solver: Provides a visual cue for the correct Livid's location in the boss fight.
 - Leap Menu: Renders a custom leap menu when in the Spirit Leap gui.
 - Extra Stats: Shows additional dungeon stats at the end of the run in chat.
-- Triggerbot: Provides triggerbots for Blood, Spirit Bear, Crystal Triggerbot, Secret Triggerbot, Relic Triggerbot.
 - Auto GFS: Automatically refills certain items from your sacks.
 - Auto Sell: Automatically sell items in trades and cookie menus. (/autosell)
 - Map Info: Displays stats about the dungeon such as score, secrets, and deaths.
@@ -147,12 +149,12 @@ Category: Render
 - Personal Dragon: Spawns your own personal dragon.
 - Name Changer: Replaces your name with the given nick, color codes work (&).
 - Space Helmet: Equips you with a space helmet.
-- Item Highlight: Highlights items on the ground.
 - Block Overlay: Lets you customize the vanilla block overlay.
 - Visual Words: Replaces words in the world with other words. (/visualwords)
 - CPS Display: Displays your clicks per second.
 - BPS Display: Displays how many blocks per second you're breaking.
 - Trajectories: Displays the trajectory of pearls and bows.
+- Hide Armor: Hide armor pieces.
 - Server Hud: Displays your current ping, FPS and server's TPS.
 - Animations: Changes the appearance of the first-person view model.
 - Waypoints: Allows to render waypoints based on coordinates in chat.
@@ -161,6 +163,7 @@ Category: Render
 - Click Gui: Allows you to customize the GUI.
 - Camera: Various camera improvements and settings.
 - Sidebar: Various settings to change the look of the minecraft sidebar.
+- Ghosts: Adds visual changes to ghosts.
 - DVD: No further explanation.
 
 Category: Skyblock
@@ -175,22 +178,23 @@ Category: Skyblock
 - No Cursor Reset: Makes your cursor stop resetting between guis.
 - Cancel Interact: Cancels the interaction with certain blocks, so that the item can be used instead.
 - Player Display: Allows to customize the player stat displays (health, strength and more).
+- Item Highlight: Highlights items on the ground.
 - Ability Timers: Provides timers for Wither Impact, Tactical Insertion, and Enrage.
 - Pet Keybinds: Keybinds for the pets menu. (/petkeys)
 - Diana Helper: Displays the location of the Diana guess and burrows.
 - Hide Players: Hides players in your vicinity.
 - Auto Clicker: Auto clicker with options for left-click, right-click, or both.
 - Mob Spawn: Sends a message whenever a mob spawns.
-- Hide Armor: Hide armor pieces.
 - Auto Sprint: Automatically makes you sprint.
 - Gyro Wand: Shows area of effect and cooldown of the Gyrokinetic Wand.
 - Escrow Fix: Automatically reopens the ah/bz when it gets closed by escrow.
+- Triggerbot: Provides triggerbots for Blood, Spirit Bear, Crystal Triggerbot, Secret Triggerbot, Relic Triggerbot.
 - Farm Keys: Temporarily changes your minecraft keybind configuration for farming in Skyblock.
 - Auto Harp: Automatically Completes Melody's Harp.
+- Slot Binds: Bind slots together for quick access.
 - Arrow hit: Counts how many arrows you hit in certain time periods.
 - No Block: Prevents you from blocking with items that have an ability, this is effectively NoSlow.
 - Rag Axe: Provides alerts about ragnarock axe's state.
-- Ghosts: Adds visual changes to ghosts.
 - Splits: Provides visual timers for Kuudra and Dungeons.
 
 Category: Nether

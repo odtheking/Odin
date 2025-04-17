@@ -2,7 +2,6 @@ package me.odinclient.features.impl.skyblock
 
 import me.odinclient.utils.skyblock.PlayerUtils
 import me.odinclient.utils.skyblock.PlayerUtils.leftClick
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.p3.ArrowAlign.clicksRemaining
 import me.odinmain.features.impl.floor7.p3.ArrowAlign.currentFrameRotations
@@ -32,32 +31,31 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 
 object Triggerbot : Module(
     name = "Triggerbot",
-    description = "Provides triggerbots for Blood, Spirit Bear, Crystal Triggerbot, Secret Triggerbot, Relic Triggerbot.",
-    category = Category.DUNGEON
+    desc = "Provides triggerbots for Blood, Spirit Bear, Crystal Triggerbot, Secret Triggerbot, Relic Triggerbot."
 ) {
     private val bloodDropDown by DropdownSetting("Blood Dropdown", false)
-    private val blood by BooleanSetting("Blood Mobs", default = false, description = "Automatically clicks blood mobs.").withDependency { bloodDropDown }
-    private val bloodClickType by BooleanSetting("Blood Click Type", default = false, description = "What button to click for blood mobs.").withDependency { blood && bloodDropDown }
+    private val blood by BooleanSetting("Blood Mobs", false, desc = "Automatically clicks blood mobs.").withDependency { bloodDropDown }
+    private val bloodClickType by BooleanSetting("Blood Click Type", false, desc = "What button to click for blood mobs.").withDependency { blood && bloodDropDown }
 
     private val spiritBearDropDown by DropdownSetting("Spirit Bear Dropdown", false)
-    private val spiritBear by BooleanSetting("Spirit Bear", default = false, description = "Automatically clicks the spirit bear.").withDependency { spiritBearDropDown }
+    private val spiritBear by BooleanSetting("Spirit Bear", false, desc = "Automatically clicks the spirit bear.").withDependency { spiritBearDropDown }
 
     private val crystalDropDown by DropdownSetting("Crystal Dropdown", false)
-    private val crystal by BooleanSetting("Crystal Triggerbot", default = false, description = "Automatically takes and places crystals.").withDependency { crystalDropDown }
-    private val take by BooleanSetting("Take", default = true, description = "Takes crystals.").withDependency { crystal && crystalDropDown }
-    private val place by BooleanSetting("Place", default = true, description = "Places crystals.").withDependency { crystal && crystalDropDown }
+    private val crystal by BooleanSetting("Crystal Triggerbot", false, desc = "Automatically takes and places crystals.").withDependency { crystalDropDown }
+    private val take by BooleanSetting("Take", true, desc = "Takes crystals.").withDependency { crystal && crystalDropDown }
+    private val place by BooleanSetting("Place", true, desc = "Places crystals.").withDependency { crystal && crystalDropDown }
 
     private val secretTriggerbotDropDown by DropdownSetting("Secret Triggerbot Dropdown", false)
-    private val secretTriggerbot by BooleanSetting("Secret Triggerbot", default = false, description = "Automatically clicks secret buttons.").withDependency { secretTriggerbotDropDown }
-    private val stbDelay by NumberSetting("Delay", 200L, 0, 1000, unit = "ms", description = "The delay between each click.").withDependency { secretTriggerbot && secretTriggerbotDropDown }
+    private val secretTriggerbot by BooleanSetting("Secret Triggerbot", false, desc = "Automatically clicks secret buttons.").withDependency { secretTriggerbotDropDown }
+    private val stbDelay by NumberSetting("Delay", 200L, 0, 1000, unit = "ms", desc = "The delay between each click.").withDependency { secretTriggerbot && secretTriggerbotDropDown }
 
-    private val stbCH by BooleanSetting("Crystal Hollows Chests", true, description = "Opens chests in crystal hollows when looking at them.").withDependency { secretTriggerbot && secretTriggerbotDropDown }
-    private val secretTBInBoss by BooleanSetting("In Boss", true, description = "Makes the triggerbot work in dungeon boss aswell.").withDependency { secretTriggerbot && secretTriggerbotDropDown }
+    private val stbCH by BooleanSetting("Crystal Hollows Chests", true, desc = "Opens chests in crystal hollows when looking at them.").withDependency { secretTriggerbot && secretTriggerbotDropDown }
+    private val secretTBInBoss by BooleanSetting("In Boss", true, desc = "Makes the triggerbot work in dungeon boss aswell.").withDependency { secretTriggerbot && secretTriggerbotDropDown }
 
     private val alignTriggerBotDropDown by DropdownSetting("Arrow Align Dropdown", false)
-    private val alignTriggerbot: Boolean by BooleanSetting("Align Triggerbot", false, description = "Automatically clicks the correct arrow in the arrow align device.").withDependency { alignTriggerBotDropDown }
-    private val sneakToDisableTriggerbot: Boolean by BooleanSetting("Sneak to disable", false, description = "Disables triggerbot when you are sneaking").withDependency { alignTriggerbot && alignTriggerBotDropDown }
-    private val alignDelay: Long by NumberSetting("Align Delay", 200L, 70, 500, description = "The delay between each click.", unit = "ms").withDependency { alignTriggerbot && alignTriggerBotDropDown }
+    private val alignTriggerbot: Boolean by BooleanSetting("Align Triggerbot", false, desc = "Automatically clicks the correct arrow in the arrow align device.").withDependency { alignTriggerBotDropDown }
+    private val sneakToDisableTriggerbot: Boolean by BooleanSetting("Sneak to disable", false, desc = "Disables triggerbot when you are sneaking").withDependency { alignTriggerbot && alignTriggerBotDropDown }
+    private val alignDelay by NumberSetting("Align Delay", 200L, 70, 500, desc = "The delay between each click.", unit = "ms").withDependency { alignTriggerbot && alignTriggerBotDropDown }
 
     private val triggerBotClock = Clock(stbDelay)
     private var clickedPositions = mapOf<BlockPos, Long>()
@@ -74,7 +72,7 @@ object Triggerbot : Module(
         "BLUE_KING_RELIC" to Vec2(59, 44)
     )
 
-    private val relicTriggerBot by BooleanSetting("Relic triggerbot", false, description = "Automatically clicks the correct relic in the cauldron.")
+    private val relicTriggerBot by BooleanSetting("Relic triggerbot", false, desc = "Automatically clicks the correct relic in the cauldron.")
     private val tbClock = Clock(1000)
 
     @SubscribeEvent

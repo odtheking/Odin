@@ -1,6 +1,5 @@
 package me.odinclient.features.impl.skyblock
 
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
@@ -14,13 +13,12 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object HidePlayers : Module(
     name = "Hide Players",
-    description = "Hides players in your vicinity.",
-    category = Category.SKYBLOCK
+    desc = "Hides players in your vicinity."
 ) {
-    private val hideAll by BooleanSetting("Hide all", default = false, false, "Hides all players, regardless of distance.")
-    private val distance by NumberSetting("distance", 3.0, 0.0, 32.0, .5, false, "The number of blocks away to hide players.").withDependency { !hideAll }
-    private val clickThrough by BooleanSetting("Click Through", default = false, false, "Allows clicking through players.")
-    private val onlyDevs by BooleanSetting("only at Devs", default = false, false, "Only hides players when standing at ss or fourth device.")
+    private val hideAll by BooleanSetting("Hide all", false, desc = "Hides all players, regardless of distance.")
+    private val distance by NumberSetting("distance", 3.0f, 0.0, 32.0, .5, "The number of blocks away to hide players.").withDependency { !hideAll }
+    private val clickThrough by BooleanSetting("Click Through", false, desc = "Allows clicking through players.")
+    private val onlyDevs by BooleanSetting("only at Devs", false, desc = "Only hides players when standing at ss or fourth device.")
 
     @SubscribeEvent
     fun onRenderEntity(event: RenderPlayerEvent.Pre) {

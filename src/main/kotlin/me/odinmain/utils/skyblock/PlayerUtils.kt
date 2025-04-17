@@ -2,9 +2,12 @@ package me.odinmain.utils.skyblock
 
 import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.PacketEvent
+import me.odinmain.features.impl.floor7.p3.termsim.TermSimGUI
+import me.odinmain.features.impl.render.ClickGUIModule
+import me.odinmain.utils.postAndCatch
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
-import net.minecraft.inventory.ContainerChest
+import me.odinmain.utils.ui.Colors
 import net.minecraft.network.play.client.C0EPacketClickWindow
 import net.minecraft.util.Vec3
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -37,7 +40,7 @@ object PlayerUtils {
      *
      * @author Odtheking, Bonsai
      */
-    fun alert(title: String, time: Int = 20, color: Color = Color.WHITE, playSound: Boolean = true, displayText: Boolean = true) {
+    fun alert(title: String, time: Int = 20, color: Color = Colors.WHITE, playSound: Boolean = true, displayText: Boolean = true) {
         if (playSound) playLoudSound("note.pling", 100f, 1f)
         if (displayText) Renderer.displayTitle(title , time, color = color)
     }
@@ -53,14 +56,20 @@ object PlayerUtils {
     @SubscribeEvent
     fun onPacketSend(event: PacketEvent.Send) {
         if (event.packet !is C0EPacketClickWindow) return
+        //modMessage(System.currentTimeMillis() - lastClickSent)
         lastClickSent = System.currentTimeMillis()
     }
 
     fun windowClick(slotId: Int, button: Int, mode: Int) {
-        if (lastClickSent + 45 > System.currentTimeMillis()) return devMessage("§cIgnoring click on slot §9$slotId.")
+        if (!ClickGUIModule.bypassLowestClickDelay && lastClickSent + 45 > System.currentTimeMillis()) return devMessage("§cIgnoring click on slot §9$slotId.")
         mc.thePlayer?.openContainer?.let {
-            if (it !is ContainerChest || slotId !in 0 until it.inventorySlots.size) return
-            mc.netHandler?.networkManager?.sendPacket(C0EPacketClickWindow(it.windowId, slotId, button, mode, it.inventory[slotId], it.getNextTransactionID(mc.thePlayer?.inventory)))
+            if (slotId !in 0 until it.inventorySlots.size) return
+            if (mc.currentScreen is TermSimGUI) {
+                PacketEvent.Send(C0EPacketClickWindow(-2, slotId, button, mode, it.inventorySlots[slotId].stack, 0)).postAndCatch()
+                return
+            }
+            mc.playerController?.windowClick(it.windowId, slotId, button, mode, mc.thePlayer)
+            //mc.netHandler?.networkManager?.sendPacket(C0EPacketClickWindow(it.windowId, slotId, button, mode, it.inventory[slotId], it.getNextTransactionID(mc.thePlayer?.inventory)))
         }
     }
 

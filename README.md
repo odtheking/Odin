@@ -19,4 +19,4 @@ We have an installation guide which you can access by clicking [here](https://od
 
 Suggestions and bug reports are welcome, please use the [Discord](https://discord.gg/2nCbC9hkxT) for that.
 
-For an organized feature list, check the website [here](https://odtheking.github.io/Odin/feature_list_legit).
+For an organized feature list, check the website [here](https://odtheking.github.io/Odin/feature_list).

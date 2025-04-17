@@ -1,6 +1,5 @@
 package me.odinmain.features.impl.nether
 
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.utils.render.Color
@@ -8,6 +7,7 @@ import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.KuudraUtils
 import me.odinmain.utils.skyblock.KuudraUtils.SupplyPickUpSpot
 import me.odinmain.utils.toAABB
+import me.odinmain.utils.ui.Colors
 import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3i
 import net.minecraftforge.client.event.RenderWorldLastEvent
@@ -16,31 +16,30 @@ import java.util.*
 
 object PearlWaypoints : Module(
     name = "Pearl Waypoints",
-    description = "Renders waypoints for pearls in Kuudra.",
-    category = Category.NETHER
+    desc = "Renders waypoints for pearls in Kuudra."
 ) {
-    private val hideFarWaypoints by BooleanSetting("Hide Far Waypoints", true, description = "Hides the waypoints that are not the closest to you.")
+    private val hideFarWaypoints by BooleanSetting("Hide Far Waypoints", true, desc = "Hides the waypoints that are not the closest to you.")
 
     private val pearlLineups: Map<Lineup, Color> = mapOf(
         // Triangle
         Lineup(
             startPos = setOf(BlockPos(-71, 79, -135), BlockPos(-86, 78, -129)),
             lineups = setOf(BlockPos(-97, 157, -114))
-        ) to Color(255, 0, 0),
+        ) to Colors.MINECRAFT_RED,
         // Triangle 2
         Lineup(
             startPos = setOf(BlockPos(-68, 77, -123)),
             lineups = setOf(BlockPos(-96, 161, -105))
-        ) to Color(255, 0, 255),
+        ) to Colors.MINECRAFT_LIGHT_PURPLE,
         // X
         Lineup(
             startPos = setOf(BlockPos(-135, 77, -139)),
             lineups = setOf(BlockPos(-102, 160, -110))
-        ) to Color(255, 255, 0),
+        ) to Colors.MINECRAFT_YELLOW,
         Lineup(
             startPos = setOf(BlockPos(-131, 79, -114)),
             lineups = setOf(BlockPos(-112, 155, -107))
-        ) to Color(255, 255, 255),
+        ) to Colors.WHITE,
         // Square
         Lineup(
             startPos = setOf(BlockPos(-141, 78, -91)),
@@ -52,17 +51,17 @@ object PearlWaypoints : Module(
                 BlockPos(-28, 128, -112), // equals
                 BlockPos(-106, 157, -99) // slash
             )
-        ) to Color(0, 255, 255),
+        ) to Colors.MINECRAFT_AQUA,
         // equals
         Lineup(
             startPos = setOf(BlockPos(-66, 76, -88)),
             lineups = setOf(BlockPos(-101, 160, -100))
-        ) to Color(0, 255, 0),
+        ) to Colors.MINECRAFT_GREEN,
         // slash
         Lineup(
             startPos = setOf(BlockPos(-114, 77, -69)),
             lineups = setOf(BlockPos(-106, 157, -99), BlockPos(-138, 145, -88))
-        ) to Color(0, 0, 255)
+        ) to Colors.MINECRAFT_BLUE
     )
 
     private val blockNameMap = hashMapOf(

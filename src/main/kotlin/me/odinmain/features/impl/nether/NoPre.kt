@@ -1,6 +1,5 @@
 package me.odinmain.features.impl.nether
 
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
@@ -14,17 +13,14 @@ import net.minecraft.util.Vec3
 
 object NoPre : Module(
     name = "Pre-Spot Alert",
-    description = "Alerts the party if a pre spot is missing.",
-    category = Category.NETHER
+    desc = "Alerts the party if a pre spot is missing."
 ) {
-    private val showCratePriority by BooleanSetting("Show Crate Priority", false, description = "Shows the crate priority alert.")
-    private val cratePriorityTitleTime by NumberSetting("Title Time", 30, 1, 60, description = "The time the crate priority alert will be displayed for.").withDependency { showCratePriority }
-    private val advanced by BooleanSetting("Advanced Mode", false, description = "Enables pro mode for the crate priority alert.").withDependency { showCratePriority }
+    private val showCratePriority by BooleanSetting("Show Crate Priority", false, desc = "Shows the crate priority alert.")
+    private val cratePriorityTitleTime by NumberSetting("Title Time", 30, 1, 60, desc = "The time the crate priority alert will be displayed for.").withDependency { showCratePriority }
+    private val advanced by BooleanSetting("Advanced Mode", false, desc = "Enables pro mode for the crate priority alert.").withDependency { showCratePriority }
 
     private var preSpot = SupplyPickUpSpot.None
     var missing = SupplyPickUpSpot.None
-
-    private val partyChatRegex = Regex("^Party > (\\[[^]]*?])? ?(\\w{1,16}): No ?(Triangle|X|Equals|Slash|xCannon|Square|Shop)!\$")
 
     init {
         onMessage(Regex("\\[NPC] Elle: Head over to the main platform, I will join you when I get a bite!")) {
@@ -67,8 +63,8 @@ object NoPre : Module(
             partyMessage(msg)
         }
 
-        onMessage(partyChatRegex) {
-            missing = SupplyPickUpSpot.valueOf(partyChatRegex.find(it)?.groupValues?.lastOrNull() ?: return@onMessage)
+        onMessage(Regex("^Party > (\\[[^]]*?])? ?(\\w{1,16}): No ?(Triangle|X|Equals|Slash|xCannon|Square|Shop)!\$")) {
+            missing = SupplyPickUpSpot.valueOf(it.groupValues.lastOrNull() ?: return@onMessage)
             if (!showCratePriority) return@onMessage
             val cratePriority = cratePriority(missing).ifEmpty { return@onMessage }
             PlayerUtils.alert(cratePriority, time = cratePriorityTitleTime)

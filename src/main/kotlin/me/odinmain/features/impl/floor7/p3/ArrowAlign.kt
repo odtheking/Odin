@@ -1,15 +1,14 @@
 package me.odinmain.features.impl.floor7.p3
 
 import me.odinmain.events.impl.PacketEvent
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.utils.*
-import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.M7Phases
+import me.odinmain.utils.ui.Colors
 import net.minecraft.entity.item.EntityItemFrame
 import net.minecraft.init.Items
 import net.minecraft.network.play.client.C02PacketUseEntity
@@ -22,11 +21,10 @@ import kotlin.collections.set
 
 object ArrowAlign : Module(
     name = "Arrow Align",
-    description = "Shows the solution for the Arrow Align device.",
-    category = Category.FLOOR7
+    desc = "Shows the solution for the Arrow Align device."
 ) {
-    private val blockWrong by BooleanSetting("Block Wrong Clicks", false, description = "Blocks wrong clicks, shift will override this.")
-    private val invertSneak by BooleanSetting("Invert Sneak", false, description = "Only block wrong clicks whilst sneaking, instead of whilst standing").withDependency { blockWrong }
+    private val blockWrong by BooleanSetting("Block Wrong Clicks", false, desc = "Blocks wrong clicks, shift will override this.")
+    private val invertSneak by BooleanSetting("Invert Sneak", false, desc = "Only block wrong clicks whilst sneaking, instead of whilst standing").withDependency { blockWrong }
 
     private val frameGridCorner = Vec3(-2.0, 120.0, 75.0)
     private val recentClickTimestamps = mutableMapOf<Int, Long>()
@@ -85,9 +83,9 @@ object ArrowAlign : Module(
         clicksRemaining.forEach { (index, clickNeeded) ->
             val color = when {
                 clickNeeded == 0 -> return@forEach
-                clickNeeded < 3 -> Color.DARK_GREEN
-                clickNeeded < 5 -> Color.ORANGE
-                else -> Color.RED
+                clickNeeded < 3 -> Colors.MINECRAFT_DARK_GREEN
+                clickNeeded < 5 -> Colors.MINECRAFT_GOLD
+                else -> Colors.MINECRAFT_RED
             }
             Renderer.drawStringInWorld(clickNeeded.toString(), getFramePositionFromIndex(index).addVec(y = 0.6, z = 0.5), color)
         }

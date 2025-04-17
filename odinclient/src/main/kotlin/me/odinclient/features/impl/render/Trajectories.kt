@@ -1,18 +1,15 @@
 package me.odinclient.features.impl.render
 
 import me.odinmain.events.impl.RenderEntityModelEvent
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.features.settings.impl.NumberSetting
-import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.addVec
 import me.odinmain.utils.component1
 import me.odinmain.utils.component2
 import me.odinmain.utils.component3
-import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.OutlineUtils
 import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.render.RenderUtils.renderVec
@@ -24,6 +21,8 @@ import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.isHolding
 import me.odinmain.utils.skyblock.isLeap
 import me.odinmain.utils.skyblock.isShortbow
+import me.odinmain.utils.ui.Colors
+import me.odinmain.utils.ui.clickgui.util.ColorUtil.multiplyAlpha
 import net.minecraft.entity.Entity
 import net.minecraft.entity.boss.EntityWither
 import net.minecraft.entity.item.EntityArmorStand
@@ -44,19 +43,18 @@ import kotlin.math.sqrt
 
 object Trajectories : Module(
     name = "Trajectories",
-    description = "Displays the trajectory of pearls and bows.",
-    category = Category.RENDER
+    desc = "Displays the trajectory of pearls and bows."
 ) {
-    private val bows by BooleanSetting("Bows", true, description = "Render trajectories of bow arrows.")
-    private val pearls by BooleanSetting("Pearls", true, description = "Render trajectories of ender pearls.")
-    private val plane by BooleanSetting("Show Plane", false, description = "Shows a flat square rotated relative to the predicted block that will be hit.")
-    private val boxes by BooleanSetting("Show Boxes", true, description = "Shows boxes displaying where arrows or pearls will hit, if this is disabled it will only highlight entities your arrows will hit.")
-    private val lines by BooleanSetting("Show Lines", true, description = "Shows the trajectory as a line.")
-    private val range by NumberSetting("Solver Range", 30, 1, 120, 1, description = "How many ticks are simulated, performance impact scales with this.")
-    private val width by NumberSetting("Line Width", 1f, 0.1f, 5.0, 0.1f, description = "The width of the line.")
-    private val planeSize by NumberSetting("Plane Size", 2f, 0.1f, 5.0, 0.1f, description = "The size of the plane.").withDependency { plane }
-    private val boxSize by NumberSetting("Box Size", 0.5f, 0.5f, 3.0f, 0.1f, description = "The size of the box.").withDependency { boxes }
-    private val color by ColorSetting("Color", Color.CYAN, true, description = "The color of the trajectory.")
+    private val bows by BooleanSetting("Bows", true, desc = "Render trajectories of bow arrows.")
+    private val pearls by BooleanSetting("Pearls", true, desc = "Render trajectories of ender pearls.")
+    private val plane by BooleanSetting("Show Plane", false, desc = "Shows a flat square rotated relative to the predicted block that will be hit.")
+    private val boxes by BooleanSetting("Show Boxes", true, desc = "Shows boxes displaying where arrows or pearls will hit, if this is disabled it will only highlight entities your arrows will hit.")
+    private val lines by BooleanSetting("Show Lines", true, desc = "Shows the trajectory as a line.")
+    private val range by NumberSetting("Solver Range", 30, 1, 120, 1, desc = "How many ticks are simulated, performance impact scales with this.")
+    private val width by NumberSetting("Line Width", 1f, 0.1f, 5.0, 0.1f, desc = "The width of the line.")
+    private val planeSize by NumberSetting("Plane Size", 2f, 0.1f, 5.0, 0.1f, desc = "The size of the plane.").withDependency { plane }
+    private val boxSize by NumberSetting("Box Size", 0.5f, 0.5f, 3.0f, 0.1f, desc = "The size of the box.").withDependency { boxes }
+    private val color by ColorSetting("Color", Colors.MINECRAFT_DARK_AQUA, true, desc = "The color of the trajectory.")
 
     private var boxRenderQueue: MutableList<AxisAlignedBB> = mutableListOf()
     private var entityRenderQueue = mutableListOf<Entity>()
@@ -236,7 +234,7 @@ object Trajectories : Module(
             }
             else -> return
         }
-        RenderUtils.drawFilledAABB(AxisAlignedBB(vec1.xCoord, vec1.yCoord, vec1.zCoord, vec2.xCoord, vec2.yCoord, vec2.zCoord), color.withAlpha(color.alpha / 2), false)
+        RenderUtils.drawFilledAABB(AxisAlignedBB(vec1.xCoord, vec1.yCoord, vec1.zCoord, vec2.xCoord, vec2.yCoord, vec2.zCoord), color.multiplyAlpha(0.5f), false)
     }
 
     private fun drawPearlCollisionBox() {

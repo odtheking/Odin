@@ -17,12 +17,11 @@ import me.odinmain.features.impl.render.*
 import me.odinmain.features.impl.render.ClickGUIModule.hudChat
 import me.odinmain.features.impl.skyblock.*
 import me.odinmain.features.settings.impl.KeybindSetting
-import me.odinmain.ui.hud.EditHUDGui
-import me.odinmain.ui.hud.HudElement
-import me.odinmain.utils.capitalizeFirst
 import me.odinmain.utils.logError
 import me.odinmain.utils.profile
 import me.odinmain.utils.render.getTextWidth
+import me.odinmain.utils.ui.hud.EditHUDGui
+import me.odinmain.utils.ui.hud.HudElement
 import net.minecraft.network.Packet
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.event.world.WorldEvent
@@ -34,21 +33,21 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
  * @author Aton, Bonsai
  */
 object ModuleManager {
-    data class PacketFunction<T : Packet<*>>(val type: Class<T>, val function: (T) -> Unit, val shouldRun: () -> Boolean)
-    data class MessageFunction(val filter: Regex, val shouldRun: () -> Boolean, val function: (String) -> Unit)
+    data class PacketFunction<T : Packet<*>>(val type: Class<T>, val shouldRun: () -> Boolean, val function: (T) -> Unit)
+    data class MessageFunction(val filter: Regex, val shouldRun: () -> Boolean, val function: (MatchResult) -> Unit)
     data class TickTask(var ticksLeft: Int, val server: Boolean, val function: () -> Unit)
 
-    val packetFunctions = mutableListOf<PacketFunction<Packet<*>>>()
-    val messageFunctions = mutableListOf<MessageFunction>()
-    val worldLoadFunctions = mutableListOf<() -> Unit>()
-    val tickTasks = mutableListOf<TickTask>()
+    val packetFunctions = arrayListOf<PacketFunction<Packet<*>>>()
+    val messageFunctions = arrayListOf<MessageFunction>()
+    val worldLoadFunctions = arrayListOf<() -> Unit>()
+    val tickTasks = arrayListOf<TickTask>()
     val huds = arrayListOf<HudElement>()
 
     val modules: ArrayList<Module> = arrayListOf(
         // dungeon
-        DungeonRequeue, BlessingDisplay, PosMessages, ExtraStats, KeyHighlight, Mimic, TeammatesHighlight,
-        TerracottaTimer, BloodCamp, SecretClicked, DungeonWaypoints, LeapMenu, PuzzleSolvers,
-        WarpCooldown, MapInfo, SwapSound,
+        DungeonRequeue, BlessingDisplay, PositionalMessages, ExtraStats, KeyHighlight, Mimic, TeammatesHighlight,
+        TerracottaTimer, BloodCamp, SecretClicked, DungeonWaypoints, LeapMenu, PuzzleSolvers, MageBeam,
+        WarpCooldown, MapInfo, SwapSound, LividSolver,
 
         // floor 7
         TerminalSolver, TerminalTimes, MelodyMessage, TickTimers, InactiveWaypoints, WitherDragons,
@@ -62,7 +61,7 @@ object ModuleManager {
         //skyblock
         NoCursorReset, AutoSprint, BlazeAttunement, ChatCommands, DeployableTimer, DianaHelper, ArrowHit,
         RagnarockAxe, MobSpawn, Splits, WardrobeKeybinds, InvincibilityTimer, ItemsHighlight, PlayerDisplay,
-        FarmKeys, PetKeybinds, CommandKeybinds, SpringBoots, AbilityTimers,
+        FarmKeys, PetKeybinds, CommandKeybinds, SpringBoots, AbilityTimers, SlotBinds,
 
         // kuudra
         BuildHelper, FreshTimer, KuudraDisplay, NoPre, PearlWaypoints, RemovePerks, SupplyHelper, TeamHighlight,
@@ -87,7 +86,7 @@ object ModuleManager {
     @SubscribeEvent(receiveCanceled = true)
     fun onTick(event: TickEvent.ClientTickEvent) {
         if (event.phase != TickEvent.Phase.START) return
-        tickTaskTick()
+        tickTaskTick(false)
     }
 
     @SubscribeEvent(receiveCanceled = true)
@@ -96,39 +95,35 @@ object ModuleManager {
     }
 
     private fun tickTaskTick(server: Boolean = false) {
-        runCatching {
-            tickTasks.removeAll {
-                if (it.server != server) return@removeAll false
-                if (it.ticksLeft <= 0) {
-                    it.function()
-                    return@removeAll true
-                }
-                it.ticksLeft--
-                false
+        tickTasks.removeAll { tickTask ->
+            if (tickTask.server != server) return@removeAll false
+            if (tickTask.ticksLeft <= 0) {
+                runCatching { tickTask.function() }.onFailure { logError(it, this) }
+                return@removeAll true
             }
-        }.onFailure {
-            logError(it, this)
+            tickTask.ticksLeft--
+            false
         }
     }
 
     @SubscribeEvent(receiveCanceled = true)
     fun onReceivePacket(event: PacketEvent.Receive) {
         packetFunctions.forEach {
-            if (it.type.isInstance(event.packet) && it.shouldRun.invoke()) it.function(event.packet)
+            if (it.shouldRun() && it.type.isInstance(event.packet)) it.function(event.packet)
         }
     }
 
     @SubscribeEvent(receiveCanceled = true)
     fun onSendPacket(event: PacketEvent.Send) {
         packetFunctions.forEach {
-            if (it.type.isInstance(event.packet) && it.shouldRun.invoke()) it.function(event.packet)
+            if (it.shouldRun() && it.type.isInstance(event.packet)) it.function(event.packet)
         }
     }
 
     @SubscribeEvent(receiveCanceled = true)
     fun onChatPacket(event: ChatPacketEvent) {
         messageFunctions.forEach {
-            if (event.message matches it.filter && it.shouldRun()) it.function(event.message)
+            if (it.shouldRun()) it.function(it.filter.find(event.message) ?: return@forEach)
         }
     }
 
@@ -173,16 +168,12 @@ object ModuleManager {
     fun getModuleByName(name: String?): Module? = modules.firstOrNull { it.name.equals(name, true) }
 
     fun generateFeatureList(): String {
-        val sortedCategories = modules.sortedByDescending { getTextWidth(it.name, 18f) }.groupBy { it.category }.entries
-            .sortedBy{ Category.entries.associateWith { it.ordinal }[it.key] }
-
         val featureList = StringBuilder()
 
-        for ((category, modulesInCategory) in sortedCategories) {
-            val displayName = category.name.lowercase().capitalizeFirst()
-            featureList.appendLine("Category: ${if (displayName == "Floor7") "Floor 7" else displayName}")
-            for (module in modulesInCategory) {
-                featureList.appendLine("- ${module.name}: ${module.description}")
+        for ((category, modulesInCategory) in modules.groupBy { it.category }.entries) {
+            featureList.appendLine("Category: ${category.displayName}")
+            for (module in modulesInCategory.sortedByDescending { getTextWidth(it.name, 18f) }) {
+                featureList.appendLine("- ${module.name}: ${module.desc}")
             }
             featureList.appendLine()
         }

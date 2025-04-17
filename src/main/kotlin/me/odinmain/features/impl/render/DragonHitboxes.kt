@@ -1,13 +1,12 @@
 package me.odinmain.features.impl.render
 
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.features.settings.impl.NumberSetting
-import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.ui.Colors
 import net.minecraft.entity.boss.EntityDragon
 import net.minecraft.util.AxisAlignedBB
 import net.minecraftforge.client.event.RenderWorldLastEvent
@@ -18,12 +17,11 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 
 object DragonHitboxes : Module(
     name = "Dragon Hitboxes",
-    category = Category.RENDER,
-    description = "Draws dragon's correct hitboxes around them."
+    desc = "Draws dragon's correct hitboxes around them."
 ) {
-    private val onlyM7 by BooleanSetting(name = "Only M7", default = true, description = "Only render hitboxes in floor 7.")
-    private val color by ColorSetting(name = "Hitbox Color", Color(0, 255, 255), description = "The color of the hitboxes.")
-    private val lineWidth by NumberSetting(name = "Line Thickness", default = 3f, min = 0f, max = 10f, increment = 0.1f, description = "The thickness of the lines.")
+    private val onlyM7 by BooleanSetting("Only M7", true, desc = "Only render hitboxes in floor 7.")
+    private val color by ColorSetting("Hitbox Color", Colors.MINECRAFT_AQUA, desc = "The color of the hitboxes.")
+    private val lineWidth by NumberSetting("Line Thickness", 3f, min = 0f, max = 10f, increment = 0.1f, desc = "The thickness of the lines.")
 
     private val entityPositions = mutableMapOf<Int, DoubleArray>()
     private var dragonRenderQueue: List<EntityDragon> = emptyList()

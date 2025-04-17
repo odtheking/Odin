@@ -2,10 +2,8 @@ package me.odinclient.features.impl.floor7.p3
 
 import me.odinmain.events.impl.PacketEvent
 import me.odinmain.events.impl.PostEntityMetadata
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.p3.TerminalSolver
-import me.odinmain.features.impl.floor7.p3.TerminalTypes
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.addVec
@@ -23,12 +21,11 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 
 object TerminalAura : Module(
     name = "Terminal Aura",
-    category = Category.FLOOR7,
-    description = "Automatically interacts with inactive terminals.",
+    desc = "Automatically interacts with inactive terminals.",
     tag = TagType.RISKY
 ) {
-    private val onGround by BooleanSetting("On Ground", true, description = "Only click when on the ground.")
-    private val distance by NumberSetting("Distance", 3.5, 1.0, 4.5, 0.1, description = "The distance to click the terminal.")
+    private val onGround by BooleanSetting("On Ground", true, desc = "Only click when on the ground.")
+    private val distance by NumberSetting("Distance", 3.5f, 1.0, 4.5, 0.1, desc = "The distance to click the terminal.")
 
     private val clickClock = Clock(1000)
     private val interactClock = Clock(500)
@@ -52,7 +49,7 @@ object TerminalAura : Module(
     fun onPacketSent(event: PacketEvent.Send) {
         (event.packet as? C02PacketUseEntity)?.getEntityFromWorld(mc.theWorld)?.let {
             if (it.name.noControlCodes != "Inactive Terminal") return
-            if (!interactClock.hasTimePassed() || TerminalSolver.currentTerm.type != TerminalTypes.NONE) event.isCanceled = true else interactClock.update()
+            if (!interactClock.hasTimePassed() || TerminalSolver.currentTerm != null) event.isCanceled = true else interactClock.update()
         }
     }
 

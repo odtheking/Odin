@@ -1,44 +1,34 @@
 package me.odinclient.features.impl.floor7.p3
 
 import me.odinmain.events.impl.GuiEvent
-import me.odinmain.events.impl.TerminalEvent
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.p3.TerminalSolver
-import me.odinmain.features.impl.floor7.p3.TerminalSolver.currentTerm
 import me.odinmain.features.impl.floor7.p3.TerminalTypes
 import me.odinmain.features.impl.floor7.p3.termGUI.TermGui
-import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.NumberSetting
-import me.odinmain.ui.util.MouseUtils.mouseX
-import me.odinmain.ui.util.MouseUtils.mouseY
 import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.skyblock.ClickType
-import me.odinmain.utils.skyblock.PlayerUtils.windowClick
-import net.minecraft.network.play.server.S2DPacketOpenWindow
+import me.odinmain.utils.ui.util.MouseUtils.mouseX
+import me.odinmain.utils.ui.util.MouseUtils.mouseY
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object HoverTerms : Module(
     name = "Hover Terms",
-    description = "Clicks the hovered item in a terminal if it is correct.",
-    category = Category.FLOOR7,
+    desc = "Clicks the hovered item in a terminal if it is correct.",
     tag = TagType.RISKY
 ) {
-    private val triggerDelay by NumberSetting("Delay", 200L, 50, 800, unit = "ms", description = "Delay between clicks.")
-    private val firstClickDelay by NumberSetting("First Click Delay", 200L, 50, 500, unit = "ms", description = "Delay before first click.")
-    private val middleClick by BooleanSetting("Middle Click", false, description = "Use middle click instead of left click.")
-    private val previouslyClicked = mutableSetOf<Int>()
+    private val triggerDelay by NumberSetting("Delay", 200L, 50, 800, unit = "ms", desc = "Delay between clicks.")
+    private val firstClickDelay by NumberSetting("First Click Delay", 200L, 50, 500, unit = "ms", desc = "Delay before first click.")
     private val triggerBotClock = Clock(triggerDelay)
-    private var clickedThisWindow = false
 
     @SubscribeEvent(receiveCanceled = true)
-    fun onDrawGuiContainer(event: GuiEvent.DrawGuiBackground) {
+    fun onDrawGuiContainer(event: GuiEvent.DrawGuiBackground) = with (TerminalSolver.currentTerm) {
         if (
-            TerminalSolver.currentTerm.type == TerminalTypes.NONE ||
-            TerminalSolver.currentTerm.solution.isEmpty() ||
+            this?.type == null ||
+            solution.isEmpty() ||
             !triggerBotClock.hasTimePassed(triggerDelay) ||
-            System.currentTimeMillis() - currentTerm.timeOpened <= firstClickDelay ||
-            clickedThisWindow
+            System.currentTimeMillis() - timeOpened <= firstClickDelay ||
+            isClicked
         ) return
 
         val hoveredItem =
@@ -50,52 +40,33 @@ object HoverTerms : Module(
                 }
             } ?: return
 
-        if (hoveredItem !in TerminalSolver.currentTerm.solution || hoveredItem in previouslyClicked) return
-
-        when (currentTerm.type) {
+        when (type) {
             TerminalTypes.RUBIX -> {
-                clickedThisWindow = true
-                windowClick(hoveredItem, if (TerminalSolver.currentTerm.solution.count { it == hoveredItem } >= 3) ClickType.Right else if (middleClick) ClickType.Middle else ClickType.Left)
+                val needed = solution.count { it == hoveredItem } >= 3
+                if (!canClick(hoveredItem, if (needed) 1 else 0)) return
+                click(hoveredItem, if (needed) ClickType.Right else ClickType.Middle)
                 triggerBotClock.update()
-                if (TerminalSolver.currentTerm.solution.count { it == hoveredItem } < 1) previouslyClicked += hoveredItem
             }
 
-            TerminalTypes.ORDER -> {
-                if (TerminalSolver.currentTerm.solution.first() == hoveredItem) {
-                    clickedThisWindow = true
-                    windowClick(hoveredItem, if (middleClick) ClickType.Middle else ClickType.Left)
+            TerminalTypes.NUMBERS ->
+                if (canClick(hoveredItem, 2)) {
+                    click(hoveredItem, ClickType.Middle)
                     triggerBotClock.update()
-                    previouslyClicked += hoveredItem
                 }
-            }
 
             TerminalTypes.MELODY ->
-                if (hoveredItem % 9 == 7) {
-                    clickedThisWindow = true
-                    windowClick(hoveredItem, if (middleClick) ClickType.Middle else ClickType.Left)
+                if (canClick(hoveredItem, 0)) {
+                    click(hoveredItem, ClickType.Left)
                     triggerBotClock.update()
-                    previouslyClicked += hoveredItem
                 }
 
             TerminalTypes.PANES, TerminalTypes.STARTS_WITH, TerminalTypes.SELECT -> {
-                clickedThisWindow = true
-                windowClick(hoveredItem, if (middleClick) ClickType.Middle else ClickType.Left)
-                triggerBotClock.update()
-                previouslyClicked += hoveredItem
+                if (canClick(hoveredItem, 2)) {
+                    click(hoveredItem, ClickType.Middle)
+                    triggerBotClock.update()
+                }
             }
             else -> return
-        }
-    }
-
-    @SubscribeEvent
-    fun onTerminalLeft(event: TerminalEvent.Closed) {
-        clickedThisWindow = false
-        previouslyClicked.clear()
-    }
-
-    init {
-        onPacket<S2DPacketOpenWindow> {
-            clickedThisWindow = false
         }
     }
 }

@@ -3,13 +3,11 @@ package me.odinclient.features.impl.floor7.p3
 import me.odinclient.utils.skyblock.PlayerUtils.rightClick
 import me.odinmain.events.impl.BlockChangeEvent
 import me.odinmain.events.impl.ServerTickEvent
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.*
 import me.odinmain.utils.clock.Clock
-import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.RenderUtils.renderX
 import me.odinmain.utils.render.RenderUtils.renderY
 import me.odinmain.utils.render.RenderUtils.renderZ
@@ -18,6 +16,7 @@ import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonClass
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.M7Phases
+import me.odinmain.utils.ui.Colors
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.client.settings.KeyBinding
 import net.minecraft.entity.item.EntityArmorStand
@@ -33,40 +32,39 @@ import kotlin.math.sqrt
 
 object ArrowsDevice : Module(
     name = "Arrows Device",
-    description = "Different features for the Sharp Shooter puzzle in floor 7.",
-    category = Category.FLOOR7,
-    tag = TagType.RISKY,
+    desc = "Different features for the Sharp Shooter puzzle in floor 7.",
+    tag = TagType.RISKY
 ) {
     private val solverDropdown by DropdownSetting("Solver")
-    private val solver by BooleanSetting("Solver Enabled", default = true, description = "Automatically solve the puzzle.").withDependency { solverDropdown }
-    private val markedPositionColor by ColorSetting("Marked Position", Color.RED, description = "Color of the marked position.").withDependency { solver && solverDropdown }
-    private val targetPositionColor by ColorSetting("Target Position", Color.GREEN, description = "Color of the target position.").withDependency { solver && solverDropdown }
+    private val solver by BooleanSetting("Solver Enabled", true, desc = "Automatically solve the puzzle.").withDependency { solverDropdown }
+    private val markedPositionColor by ColorSetting("Marked Position", Colors.MINECRAFT_RED, desc = "Color of the marked position.").withDependency { solver && solverDropdown }
+    private val targetPositionColor by ColorSetting("Target Position", Colors.MINECRAFT_GREEN, desc = "Color of the target position.").withDependency { solver && solverDropdown }
     private val resetKey by KeybindSetting("Reset", Keyboard.KEY_NONE, description = "Resets the solver.").onPress {
         markedPositions.clear()
         autoState = AutoState.Stopped
         actionQueue.clear()
     }.withDependency { solver && solverDropdown }
-    private val depthCheck by BooleanSetting("Depth check", true, description = "Marked positions show through walls.").withDependency { solver && solverDropdown }
-    private val reset by ActionSetting("Reset", description = "Resets the solver.") {
+    private val depthCheck by BooleanSetting("Depth check", true, desc = "Marked positions show through walls.").withDependency { solver && solverDropdown }
+    private val reset by ActionSetting("Reset", desc = "Resets the solver.") {
         markedPositions.clear()
         autoState = AutoState.Stopped
         actionQueue.clear()
     }.withDependency { solver && solverDropdown }
-    private val alertOnDeviceComplete by BooleanSetting("Device complete alert", default = true, description = "Send an alert when device is complete.").withDependency { solverDropdown }
+    private val alertOnDeviceComplete by BooleanSetting("Device complete alert", true, desc = "Send an alert when device is complete.").withDependency { solverDropdown }
 
     private val autoDropdown by DropdownSetting("Auto Device")
-    private val auto by BooleanSetting("Auto Enabled", description = "Automatically complete device.").withDependency { autoDropdown }
-    private val autoShoot by BooleanSetting("Auto Shoot", description = "Automatically aim and shoot at targets.").withDependency { auto && autoDropdown }
-    private val autoPhoenix by BooleanSetting("Auto Phoenix", default = true, description = "Automatically swap to phoenix pet using cast rod pet rules, must be set up correctly.").withDependency { auto && autoDropdown }
-    private val autoLeap by BooleanSetting("Auto Leap", default = true, description = "Automatically leap once device is done.").withDependency { auto && autoDropdown }
-    private val autoLeapClass by SelectorSetting("Leap to", "Mage", arrayListOf("Archer", "Berserk", "Healer", "Mage", "Tank"), description = "Who to leap to.").withDependency { autoLeap && auto && autoDropdown }
-    private val autoLeapOnlyPre by BooleanSetting("Only leap on pre", default = true, description = "Only auto leap when doing i4.").withDependency { autoLeap && auto && autoDropdown }
-    private val delay by NumberSetting("Auto Delay", 150L, 80, 300, description = "Delay between actions.").withDependency { auto && autoDropdown }
-    private val aimingTime by NumberSetting("Aiming Duration", 100L, 80, 200, description = "Time taken to aim at a target.").withDependency { auto && autoDropdown }
+    private val auto by BooleanSetting("Auto Enabled", desc = "Automatically complete device.").withDependency { autoDropdown }
+    private val autoShoot by BooleanSetting("Auto Shoot", desc = "Automatically aim and shoot at targets.").withDependency { auto && autoDropdown }
+    private val autoPhoenix by BooleanSetting("Auto Phoenix",true, desc = "Automatically swap to phoenix pet using cast rod pet rules, must be set up correctly.").withDependency { auto && autoDropdown }
+    private val autoLeap by BooleanSetting("Auto Leap", true, desc = "Automatically leap once device is done.").withDependency { auto && autoDropdown }
+    private val autoLeapClass by SelectorSetting("Leap to", "Mage", arrayListOf("Archer", "Berserk", "Healer", "Mage", "Tank"), desc = "Who to leap to.").withDependency { autoLeap && auto && autoDropdown }
+    private val autoLeapOnlyPre by BooleanSetting("Only leap on pre", true, desc = "Only auto leap when doing i4.").withDependency { autoLeap && auto && autoDropdown }
+    private val delay by NumberSetting("Auto Delay", 150L, 80, 300, desc = "Delay between actions.").withDependency { auto && autoDropdown }
+    private val aimingTime by NumberSetting("Aiming Duration", 100L, 80, 200, desc = "Time taken to aim at a target.").withDependency { auto && autoDropdown }
 
     private val triggerBotDropdown by DropdownSetting("Trigger Bot")
-    private val triggerBot by BooleanSetting("Trigger Bot Enabled", description = "Automatically shoot targets.").withDependency { triggerBotDropdown }
-    private val triggerBotDelay by NumberSetting("Trigger Bot Delay", 250L, 50L, 1000L, 10L, unit = "ms", description = "The delay between each click.").withDependency { triggerBotDropdown }
+    private val triggerBot by BooleanSetting("Trigger Bot Enabled", desc = "Automatically shoot targets.").withDependency { triggerBotDropdown }
+    private val triggerBotDelay by NumberSetting("Trigger Bot Delay", 250L, 50L, 1000L, 10L, unit = "ms", desc = "The delay between each click.").withDependency { triggerBotDropdown }
     private val triggerBotClock = Clock(triggerBotDelay)
 
     private val markedPositions = mutableSetOf<BlockPos>()
@@ -296,7 +294,7 @@ object ArrowsDevice : Module(
 
         if (alertOnDeviceComplete) {
             modMessage("§aSharp shooter device complete")
-            PlayerUtils.alert("Device Complete", color = Color.GREEN)
+            PlayerUtils.alert("Device Complete", color = Colors.MINECRAFT_GREEN)
         }
 
         autoState = AutoState.Stopped
@@ -384,7 +382,7 @@ object ArrowsDevice : Module(
         if (!DungeonUtils.inDungeons || DungeonUtils.getF7Phase() != M7Phases.P3 || !positions.contains(event.pos)) return
 
         // Target was hit
-        if (event.old.block == Blocks.emerald_block && event.update.block == Blocks.stained_hardened_clay) {
+        if (event.old.block == Blocks.emerald_block && event.updated.block == Blocks.stained_hardened_clay) {
             markedPositions.add(event.pos)
             // This condition should always be true but im never sure with Hypixel
             if (targetPosition == event.pos) {
@@ -395,7 +393,7 @@ object ArrowsDevice : Module(
         }
 
         // New target appeared
-        if (event.old.block == Blocks.stained_hardened_clay && event.update.block == Blocks.emerald_block) {
+        if (event.old.block == Blocks.stained_hardened_clay && event.updated.block == Blocks.emerald_block) {
             // Can happen with resets
             markedPositions.remove(event.pos)
             targetPosition = event.pos

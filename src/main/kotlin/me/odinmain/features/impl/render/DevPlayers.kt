@@ -1,6 +1,5 @@
 package me.odinmain.features.impl.render
 
-
 import com.google.gson.*
 import com.google.gson.annotations.SerializedName
 import com.mojang.authlib.GameProfile
@@ -11,6 +10,7 @@ import me.odinmain.features.impl.render.ClickGUIModule.devSize
 import me.odinmain.utils.downloadFile
 import me.odinmain.utils.getDataFromServer
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.ui.Colors
 import net.minecraft.client.entity.AbstractClientPlayer
 import net.minecraft.client.model.ModelBase
 import net.minecraft.client.model.ModelRenderer
@@ -37,7 +37,7 @@ object DevPlayers {
     val isDev get() = devs.containsKey(mc.session?.username)
 
     data class DevPlayer(val xScale: Float = 1f, val yScale: Float = 1f, val zScale: Float = 1f,
-                         val wings: Boolean = false, val wingsColor: Color = Color(255, 255, 255), var capeLocation: ResourceLocation? = null)
+                         val wings: Boolean = false, val wingsColor: Color = Colors.WHITE, var capeLocation: ResourceLocation? = null)
     data class DevData(val devName: String, val wingsColor: Triple<Int, Int, Int>, val size: Triple<Float, Float, Float>, val wings: Boolean)
 
     @Suppress("UNCHECKED_CAST")
@@ -152,7 +152,7 @@ object DevPlayers {
                 GlStateManager.translate(0.0, 1.0, -0.5)
             }
 
-            GlStateManager.color(dev.wingsColor.r.toFloat()/255, dev.wingsColor.g.toFloat()/255, dev.wingsColor.b.toFloat()/255, 1f)
+            GlStateManager.color(dev.wingsColor.red.toFloat()/255, dev.wingsColor.green.toFloat()/255, dev.wingsColor.blue.toFloat()/255, 1f)
             mc.textureManager.bindTexture(dragonWingTextureLocation)
 
             for (j in 0..1) {
@@ -197,7 +197,7 @@ object DevPlayers {
     fun preloadCapes() {
         if (!capeFolder.exists()) capeFolder.toPath().createDirectories()
 
-        capeData = fetchCapeData("https://odtheking.github.io/Odin/capes/capes.json")
+        capeData = fetchCapeData()
         capeData.forEach { (capeFileName, _) ->
             val capeFile = File(capeFolder, capeFileName)
             val capeUrl = "https://odtheking.github.io/Odin/capes/$capeFileName"
@@ -213,7 +213,7 @@ object DevPlayers {
         }
     }
 
-    private fun fetchCapeData(manifestUrl: String): Map<String, List<String>> {
+    private fun fetchCapeData(manifestUrl: String = "https://odtheking.github.io/Odin/capes/capes.json"): Map<String, List<String>> {
         return try {
             val json = URL(manifestUrl).readText()
             val manifest = Gson().fromJson(json, Capes::class.java)

@@ -1,20 +1,26 @@
 package me.odinmain.utils.render
 
-import gg.essential.universal.UMatrixStack
 import me.odinmain.OdinMain.mc
 import me.odinmain.font.OdinFont
-import me.odinmain.ui.clickgui.util.ColorUtil
-import me.odinmain.ui.util.shader.RoundedRect
-import me.odinmain.utils.*
+import me.odinmain.utils.div
+import me.odinmain.utils.minus
+import me.odinmain.utils.plus
 import me.odinmain.utils.render.RenderUtils.drawTexturedModalRect
 import me.odinmain.utils.render.TextAlign.Left
+import me.odinmain.utils.times
+import me.odinmain.utils.ui.Colors
+import me.odinmain.utils.ui.clickgui.util.ColorUtil
+import me.odinmain.utils.ui.clickgui.util.ColorUtil.withAlpha
+import me.odinmain.utils.ui.util.shader.CircleShader
+import me.odinmain.utils.ui.util.shader.DropShadowShader
+import me.odinmain.utils.ui.util.shader.HSBBoxShader
+import me.odinmain.utils.ui.util.shader.RoundedRectangleShader
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.texture.DynamicTexture
 import org.lwjgl.opengl.Display
 import org.lwjgl.opengl.GL11
 
-val matrix = UMatrixStack.Compat
 val scaleFactor get() = ScaledResolution(mc).scaleFactor.toFloat()
 
 data class Box(var x: Number, var y: Number, var w: Number, var h: Number)
@@ -33,27 +39,24 @@ fun roundedRectangle(
     borderThickness: Number, topL: Number, topR: Number, botL: Number, botR: Number, edgeSoftness: Number,
     color2: Color = color, gradientDir: Int = 0, shadowSoftness: Float = 0f
 ) {
-    matrix.runLegacyMethod(matrix.get()) {
-        RoundedRect.drawRectangle(
-            matrix.get(),
-            x.toFloat(),
-            y.toFloat(),
-            w.toFloat(),
-            h.toFloat(),
-            color,
-            borderColor,
-            shadowColor,
-            borderThickness.toFloat(),
-            topL.toFloat(),
-            topR.toFloat(),
-            botL.toFloat(),
-            botR.toFloat(),
-            edgeSoftness.toFloat(),
-            color2,
-            gradientDir,
-            shadowSoftness
-        )
-    }
+    RoundedRectangleShader.drawRectangle(
+        x.toFloat(),
+        y.toFloat(),
+        w.toFloat(),
+        h.toFloat(),
+        color,
+        borderColor,
+        shadowColor,
+        borderThickness.toFloat(),
+        topL.toFloat(),
+        topR.toFloat(),
+        botL.toFloat(),
+        botR.toFloat(),
+        edgeSoftness.toFloat(),
+        color2,
+        gradientDir,
+        shadowSoftness
+    )
 }
 
 fun roundedRectangle(x: Number, y: Number, w: Number, h: Number, color: Color, radius: Number = 0f, edgeSoftness: Number = 0.5f) =
@@ -68,42 +71,30 @@ fun <T: Number> roundedRectangle(box: BoxWithClass<T>, color: Color, radius: Num
 
 
 fun rectangleOutline(x: Number, y: Number, w: Number, h: Number, color: Color, radius: Number = 0f, thickness: Number, edgeSoftness: Number = 1f) {
-    roundedRectangle(x, y, w, h, Color.TRANSPARENT, color, Color.TRANSPARENT, thickness, radius, radius, radius, radius, edgeSoftness)
+    roundedRectangle(x, y, w, h, Colors.TRANSPARENT, color, Colors.TRANSPARENT, thickness, radius, radius, radius, radius, edgeSoftness)
 }
 
-fun gradientRect(x: Float, y: Float, w: Float, h: Float, color1: Color, color2: Color, radius: Float, direction: GradientDirection = GradientDirection.Right, borderColor: Color = Color.TRANSPARENT, borderThickness: Number = 0f) {
+fun gradientRect(x: Float, y: Float, w: Float, h: Float, color1: Color, color2: Color, radius: Float, direction: GradientDirection = GradientDirection.Right, borderColor: Color = Colors.TRANSPARENT, borderThickness: Number = 0f) {
     if (color1.isTransparent && color2.isTransparent) return
     roundedRectangle(
-        x, y, w, h, color1.coerceAlpha(.1f, 1f), borderColor, Color.TRANSPARENT, borderThickness, radius, radius, radius, radius, 3, color2.coerceAlpha(.1f, 1f), direction.ordinal
+        x, y, w, h, color1.coerceAlpha(.1f, 1f), borderColor, Colors.TRANSPARENT, borderThickness, radius, radius, radius, radius, 3, color2.coerceAlpha(.1f, 1f), direction.ordinal
     )
 }
 
 fun drawHSBBox(x: Float, y: Float, w: Float, h: Float, color: Color) {
-    matrix.runLegacyMethod(matrix.get()) {
-        RoundedRect.drawHSBBox(
-            matrix.get(),
-            x,
-            y,
-            w,
-            h,
-            color,
-        )
-    }
+    HSBBoxShader.drawHSBBox(x, y, w, h, color)
     rectangleOutline(x-1, y-1, w+2, h+2, Color(38, 38, 38), 3f, 2f)
 }
 
 fun circle(x: Number, y: Number, radius: Number, color: Color, borderColor: Color = color, borderThickness: Number = 0f) {
-    matrix.runLegacyMethod(matrix.get()) {
-        RoundedRect.drawCircle(
-            matrix.get(),
-            x.toFloat(),
-            y.toFloat(),
-            radius.toFloat(),
-            color,
-            borderColor,
-            borderThickness.toFloat()
-        )
-    }
+    CircleShader.drawCircle(
+        x.toFloat(),
+        y.toFloat(),
+        radius.toFloat(),
+        color,
+        borderColor,
+        borderThickness.toFloat()
+    )
 }
 
 fun text(text: String, x: Number, y: Number, color: Color, size: Number, type: Int = OdinFont.REGULAR, align: TextAlign = Left, verticalAlign: TextPos = TextPos.Middle, shadow: Boolean = false) {
@@ -111,12 +102,7 @@ fun text(text: String, x: Number, y: Number, color: Color, size: Number, type: I
 }
 
 fun mcText(text: String, x: Number, y: Number, scale: Number, color: Color, shadow: Boolean = true, center: Boolean = true) {
-    RenderUtils.drawText("$text§r", x.toFloat(), y.toFloat(), scale.toDouble(), color, shadow, center)
-}
-
-fun textAndWidth(text: String, x: Float, y: Float, color: Color, size: Float, type: Int = OdinFont.REGULAR, align: TextAlign = Left, verticalAlign: TextPos = TextPos.Middle, shadow: Boolean = false): Float {
-    text(text, x, y, color, size, type, align, verticalAlign, shadow)
-    return getTextWidth(text, size)
+    RenderUtils.drawText("$text§r", x.toFloat(), y.toFloat(), scale.toFloat(), color, shadow, center)
 }
 
 fun mcTextAndWidth(text: String, x: Number, y: Number, scale: Number, color: Color, shadow: Boolean = true, center: Boolean = true): Float {
@@ -130,38 +116,29 @@ fun getTextWidth(text: String, size: Float) = OdinFont.getTextWidth(text, size)
 
 fun getMCTextHeight() = mc.fontRendererObj.FONT_HEIGHT
 
-fun getTextHeight(text: String, size: Float) = OdinFont.getTextHeight(text, size)
-
-fun translate(x: Number, y: Number, z: Number = 1f) = GlStateManager.translate(x.toDouble(), y.toDouble(), z.toDouble())
-
 fun rotate(degrees: Float, xPos: Float, yPos: Float, zPos: Float, xAxis: Float, yAxis: Float, zAxis: Float) {
-    translate(xPos, yPos, zPos)
+    GlStateManager.translate(xPos, yPos, zPos)
     GlStateManager.rotate(degrees, xAxis, yAxis, zAxis)
-    translate(-xPos, -yPos, -zPos)
+    GlStateManager.translate(-xPos, -yPos, -zPos)
 }
 
-fun scale(x: Number, y: Number, z: Number = 1f) = GlStateManager.scale(x.toDouble(), y.toDouble(), z.toDouble())
-
 fun dropShadow(x: Number, y: Number, w: Number, h: Number, shadowColor: Color, shadowSoftness: Number, topL: Number, topR: Number, botL: Number, botR: Number) {
-    translate(0f, 0f, -100f)
+    GlStateManager.translate(0f, 0f, -100f)
 
-    matrix.runLegacyMethod(matrix.get()) {
-        RoundedRect.drawDropShadow(
-            matrix.get(),
-            (x - shadowSoftness / 2).toFloat(),
-            (y - shadowSoftness / 2).toFloat(),
-            (w + shadowSoftness).toFloat(),
-            (h + shadowSoftness).toFloat(),
-            shadowColor,
-            topL.toFloat(),
-            topR.toFloat(),
-            botL.toFloat(),
-            botR.toFloat(),
-            shadowSoftness.toFloat()
-        )
-    }
+    DropShadowShader.drawShadow(
+        (x - shadowSoftness / 2).toFloat(),
+        (y - shadowSoftness / 2).toFloat(),
+        (w + shadowSoftness).toFloat(),
+        (h + shadowSoftness).toFloat(),
+        shadowColor,
+        topL.toFloat(),
+        topR.toFloat(),
+        botL.toFloat(),
+        botR.toFloat(),
+        shadowSoftness.toFloat()
+    )
 
-    translate(0f, 0f, 100f)
+    GlStateManager.translate(0f, 0f, 100f)
 }
 
 fun dropShadow(x: Number, y: Number, w: Number, h: Number,  radius: Number, shadowSoftness: Number = 1f, shadowColor: Color = ColorUtil.moduleButtonColor) {
@@ -212,4 +189,10 @@ enum class TextPos {
 
 enum class GradientDirection {
     Right, Down, Left, Up
+}
+
+fun Color.coerceAlpha(min: Float, max: Float): Color {
+    return if (this.alphaFloat < min) this.withAlpha(min)
+    else if (this.alphaFloat > max) this.withAlpha(max)
+    else this
 }

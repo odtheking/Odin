@@ -11,6 +11,7 @@ import me.odinmain.utils.skyblock.getBlockAt
 import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.toFixed
 import me.odinmain.utils.toVec3
+import me.odinmain.utils.ui.Colors
 import net.minecraft.init.Blocks
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.util.BlockPos
@@ -26,7 +27,7 @@ object WaterSolver {
     private var waterSolutions: JsonObject
 
     init {
-        val isr = WaterSolver::class.java.getResourceAsStream("/watertimes.json")?.let { InputStreamReader(it, StandardCharsets.UTF_8) }
+        val isr = WaterSolver::class.java.getResourceAsStream("/waterSolutions.json")?.let { InputStreamReader(it, StandardCharsets.UTF_8) }
         waterSolutions = JsonParser().parse(isr).asJsonObject
     }
 
@@ -44,15 +45,15 @@ object WaterSolver {
             getBlockAt(getRealCoords(16, 78, 27)) == Blocks.emerald_block -> 1 // left block == emerald
             getBlockAt(getRealCoords(14, 78, 27)) == Blocks.diamond_block -> 2 // right block == diamond
             getBlockAt(getRealCoords(14, 78, 27)) == Blocks.quartz_block  -> 3 // right block == quartz
-            else -> return@with modMessage("§cFailed to get Water Board pattern.")
+            else -> return@with modMessage("§cFailed to get Water Board pattern. Was the puzzle already started?")
         }
 
         modMessage("$patternIdentifier || ${WoolColor.entries.filter { it.isExtended }.joinToString(", ") { it.name.lowercase() }}")
 
         solutions.clear()
-        waterSolutions[optimized.toString()].asJsonObject[patternIdentifier.toString()].asJsonObject[extendedSlots].asJsonObject.entrySet().forEach {
+        waterSolutions[optimized.toString()].asJsonObject[patternIdentifier.toString()].asJsonObject[extendedSlots].asJsonObject.entrySet().forEach { entry ->
             solutions[
-                when (it.key) {
+                when (entry.key) {
                     "diamond_block" -> LeverBlock.DIAMOND
                     "emerald_block" -> LeverBlock.EMERALD
                     "hardened_clay" -> LeverBlock.CLAY
@@ -62,7 +63,7 @@ object WaterSolver {
                     "water"         -> LeverBlock.WATER
                     else -> LeverBlock.NONE
                 }
-            ] = it.value.asJsonArray.map { it.asDouble }.toTypedArray()
+            ] = entry.value.asJsonArray.map { it.asDouble }.toTypedArray()
         }
     }
 
@@ -92,8 +93,8 @@ object WaterSolver {
                     openedWaterTicks == -1 && timeInTicks == 0 -> "§a§lCLICK ME!"
                     openedWaterTicks == -1 -> "§e${time}s"
                     else ->
-                        (openedWaterTicks + timeInTicks - tickCounter).takeIf { it > 0 }?.let { "§e${(it / 20.0).toFixed()}s" } ?: "§a§lCLICK ME!"
-                }, lever.leverPos.addVector(0.5, (index + lever.i) * 0.5 + 1.5, 0.5), Color.WHITE, scale = 0.04f)
+                        (openedWaterTicks + timeInTicks - tickCounter).takeIf { it > 0 }?.let { "§e${(it / 20f).toFixed()}s" } ?: "§a§lCLICK ME!"
+                }, lever.leverPos.addVector(0.5, (index + lever.i) * 0.5 + 1.5, 0.5), Colors.WHITE, scale = 0.04f)
             }
         }
     }

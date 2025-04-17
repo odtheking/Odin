@@ -1,15 +1,15 @@
 package me.odinmain.features.impl.render
 
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.features.settings.impl.StringSetting
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.render.getMCTextHeight
-import me.odinmain.utils.render.mcText
 import me.odinmain.utils.render.roundedRectangle
 import me.odinmain.utils.skyblock.PlayerUtils
+import me.odinmain.utils.ui.Colors
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.opengl.Display
@@ -17,19 +17,18 @@ import java.awt.Color.getHSBColor
 
 object DVD : Module(
     name = "DVD",
-    category = Category.RENDER,
-    description = "No further explanation."
+    desc = "No further explanation."
 ) {
-    private val boxWidth by NumberSetting("Box Width", 50f, 0, 150, 1, description = "Width of the DVD box.")
-    private val boxHeight by NumberSetting("Box Height", 50f, 0, 150, 1, description = "Height of the DVD box.")
-    private val roundedCorners by BooleanSetting("Rounded Corners", true, description = "Whether the DVD box should have rounded corners.")
+    private val boxWidth by NumberSetting("Box Width", 50f, 0, 150, 1, desc = "Width of the DVD box.")
+    private val boxHeight by NumberSetting("Box Height", 50f, 0, 150, 1, desc = "Height of the DVD box.")
+    private val roundedCorners by BooleanSetting("Rounded Corners", true, desc = "Whether the DVD box should have rounded corners.")
 
-    private val speed by NumberSetting("Speed", 1, .1, 2, .1, description = "Speed of the DVD box.")
-    private val text by StringSetting("Text", "ODVD", description = "Text to display on the DVD box.")
-    private val textScale by NumberSetting("Text Scale", 1.5f, 0.1f, 2f, 0.1f, description = "Scale of the text.")
+    private val speed by NumberSetting("Speed", 1, .1, 2, .1, desc = "Speed of the DVD box.")
+    private val text by StringSetting("Text", "ODVD", desc = "Text to display on the DVD box.")
+    private val textScale by NumberSetting("Text Scale", 1.5f, 0.1, 2, 0.1, desc = "Scale of the text.")
 
     private var lastUpdateTime = System.nanoTime()
-    private var color = Color.WHITE.copy()
+    private var color = Colors.WHITE.copy()
     private var x = 10f
     private var y = 10f
     private var dx = 1
@@ -52,7 +51,7 @@ object DVD : Module(
         if (event.type != RenderGameOverlayEvent.ElementType.ALL) return
         updatePosition()
         roundedRectangle(x, y, boxWidth, boxHeight, color, if (roundedCorners) 12f else 0f)
-        mcText(text, x + boxWidth / 2, y + boxHeight / 2 - getMCTextHeight() * textScale / 2 , textScale, color, true)
+        RenderUtils.drawText(text, x + boxWidth / 2, y + boxHeight / 2f - getMCTextHeight() * textScale / 2f , textScale, color, true, center = true)
     }
 
     private fun updatePosition() {

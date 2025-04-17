@@ -3,7 +3,6 @@ package me.odinclient.mixin.mixins;
 import me.odinmain.events.impl.GuiEvent;
 import net.minecraft.client.gui.GuiScreen;
 import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -28,6 +27,7 @@ public class MixinGuiScreen {
     private void injectMouseClick(CallbackInfo ci, int mouseX, int mouseY, int mouseButton) {
         if (postAndCatch(new GuiEvent.MouseClick(odin$gui, mouseButton, mouseX, mouseY))) ci.cancel();
     }
+
     @Inject(method = "handleKeyboardInput", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiScreen;keyTyped(CI)V"), cancellable = true)
     private void injectKeyboardClick(CallbackInfo ci) {
         if (postAndCatch(new GuiEvent.KeyPress(odin$gui, Keyboard.getEventKey(), Keyboard.getEventCharacter()))) ci.cancel();

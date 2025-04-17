@@ -15,11 +15,11 @@ class ColorSetting(
     name: String,
     override val default: Color,
     var allowAlpha: Boolean = false,
-    hidden: Boolean = false,
-    description: String,
-) : Setting<Color>(name, hidden, description), Saving {
+    desc: String,
+    hidden: Boolean = false
+) : Setting<Color>(name, hidden, desc), Saving {
 
-    override var value: Color = default
+    override var value: Color = default.copy()
 
     var hue: Float
         get() = value.hue
@@ -40,9 +40,9 @@ class ColorSetting(
         }
 
     var alpha: Float
-        get() = value.alpha
+        get() = value.alphaFloat
         set(value) {
-            this.value.alpha = value.coerceIn(0f, 1f)
+            this.value.alphaFloat = value.coerceIn(0f, 1f)
         }
 
     override fun read(element: JsonElement?) {

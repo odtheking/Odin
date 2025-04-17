@@ -14,7 +14,6 @@ import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.network.Packet
 import net.minecraftforge.common.MinecraftForge
 import org.lwjgl.input.Keyboard
-import kotlin.reflect.full.hasAnnotation
 
 /**
  * Class that represents a module. And handles all the settings.
@@ -23,11 +22,19 @@ import kotlin.reflect.full.hasAnnotation
 abstract class Module(
     val name: String,
     key: Int? = Keyboard.KEY_NONE,
-    @Transient val category: Category = Category.RENDER,
-    @Transient var description: String,
+    @Transient var desc: String,
     @Transient val tag: TagType = TagType.NONE,
     toggled: Boolean = false,
 ) {
+
+    /**
+     * Category for this module.
+     *
+     * It is defined by the package of the module. (For example: me.odin.features.impl.render == [Category.RENDER]).
+     * If it is in an invalid package, it will use [Category.RENDER] as a default
+     */
+    @Transient
+    val category: Category = getCategory(this::class.java) ?: Category.RENDER
 
     var enabled: Boolean = toggled
         private set
@@ -49,10 +56,11 @@ abstract class Module(
      * which keeps the module registered to the eventbus, even if disabled
      */
     @Transient
-    val alwaysActive = this::class.hasAnnotation<AlwaysActive>()
+    val alwaysActive = this::class.java.isAnnotationPresent(AlwaysActive::class.java)
 
     init {
         if (alwaysActive) {
+            @Suppress("LeakingThis")
             MinecraftForge.EVENT_BUS.register(this)
         }
     }
@@ -123,7 +131,7 @@ abstract class Module(
     inline fun <reified T : Packet<*>> onPacket(noinline shouldRun: () -> Boolean = { alwaysActive || enabled }, noinline func: (T) -> Unit) {
         @Suppress("UNCHECKED_CAST")
         ModuleManager.packetFunctions.add(
-            ModuleManager.PacketFunction(T::class.java, func, shouldRun) as ModuleManager.PacketFunction<Packet<*>>
+            ModuleManager.PacketFunction(T::class.java, shouldRun, func) as ModuleManager.PacketFunction<Packet<*>>
         )
     }
 
@@ -136,8 +144,8 @@ abstract class Module(
      *
      * @author Bonsai
      */
-    fun onMessage(filter: Regex, shouldRun: () -> Boolean = { alwaysActive || enabled }, func: (String) -> Unit) {
-        ModuleManager.messageFunctions.add(ModuleManager.MessageFunction(filter, shouldRun, func))
+    fun onMessage(filter: Regex, shouldRun: () -> Boolean = { alwaysActive || enabled }, func: (MatchResult) -> Unit) {
+        ModuleManager.messageFunctions.add(ModuleManager.MessageFunction(filter, shouldRun) { matchResult -> func(matchResult) })
     }
 
     fun onWorldLoad(func: () -> Unit) {
@@ -157,6 +165,11 @@ abstract class Module(
     }
 
     enum class TagType {
-        NONE, NEW, RISKY, FPSTAX
+        NONE, RISKY, FPSTAX
+    }
+
+    private companion object {
+        private fun getCategory(clazz: Class<out Module>): Category? =
+            Category.entries.find { clazz.`package`.name.contains(it.name, true) }
     }
 }

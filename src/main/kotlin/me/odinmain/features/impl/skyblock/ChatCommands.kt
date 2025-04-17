@@ -1,7 +1,6 @@
 package me.odinmain.features.impl.skyblock
 
 import me.odinmain.events.impl.MessageSentEvent
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.dungeon.DungeonRequeue.disableRequeue
 import me.odinmain.features.settings.Setting.Companion.withDependency
@@ -17,59 +16,45 @@ import net.minecraft.event.ClickEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
-import kotlin.collections.MutableList
-import kotlin.collections.any
 import kotlin.collections.component1
 import kotlin.collections.component2
-import kotlin.collections.filterValues
-import kotlin.collections.find
-import kotlin.collections.groupBy
-import kotlin.collections.indices
-import kotlin.collections.joinToString
-import kotlin.collections.listOf
-import kotlin.collections.mapOf
-import kotlin.collections.mutableListOf
-import kotlin.collections.none
-import kotlin.collections.random
-import kotlin.collections.toMutableList
 import kotlin.math.floor
 import kotlin.random.Random
 
 object ChatCommands : Module(
     name = "Chat Commands",
-    category = Category.SKYBLOCK,
-    description = "Type !help in the corresponding channel for cmd list. Use /chatclist.",
+    desc = "Type !help in the corresponding channel for cmd list. Use /chatclist.",
 ) {
-    private val chatEmotes by BooleanSetting(name = "Chat Emotes", default = true, description = "Replaces chat emotes with their corresponding emojis.")
-    private val party by BooleanSetting(name = "Party commands", default = true, description = "Toggles chat commands in party chat.")
-    private val guild by BooleanSetting(name = "Guild commands", default = true, description = "Toggles chat commands in guild chat.")
-    private val private by BooleanSetting(name = "Private commands", default = true, description = "Toggles chat commands in private chat.")
-    private val whitelistOnly by BooleanSetting(name = "Whitelist Only", default = false, description = "Whether the list should act like a whitelist or a blacklist.")
-    private val showSettings by DropdownSetting(name = "Show Settings", default = false)
+    private val chatEmotes by BooleanSetting("Chat Emotes", true, desc = "Replaces chat emotes with their corresponding emojis.")
+    private val party by BooleanSetting("Party commands", true, desc = "Toggles chat commands in party chat.")
+    private val guild by BooleanSetting("Guild commands", true, desc = "Toggles chat commands in guild chat.")
+    private val private by BooleanSetting("Private commands", true, desc = "Toggles chat commands in private chat.")
+    private val whitelistOnly by BooleanSetting("Whitelist Only", false, desc = "Whether the list should act like a whitelist or a blacklist.")
+    private val showSettings by DropdownSetting("Show Settings", false)
 
-    private val warp by BooleanSetting(name = "Warp", default = true, description = "Executes the /party warp commnad.").withDependency { showSettings }
-    private val warptransfer by BooleanSetting(name = "Warp & pt (warptransfer)", default = true, description = "Executes the /party warp and /party transfer commands.").withDependency { showSettings }
-    private val coords by BooleanSetting(name = "Coords (coords)", default = true, description = "Sends your current coordinates.").withDependency { showSettings }
-    private val allinvite by BooleanSetting(name = "Allinvite", default = true, description = "Executes the /party settings allinvite command.").withDependency { showSettings }
-    private val odin by BooleanSetting(name = "Odin", default = true, description = "Sends the odin discord link.").withDependency { showSettings }
-    private val boop by BooleanSetting(name = "Boop", default = true, description = "Executes the /boop command.").withDependency { showSettings }
-    private val kick by BooleanSetting(name = "Kick", default = true, description = "Executes the /p kick command.").withDependency { showSettings }
-    private val cf by BooleanSetting(name = "Coinflip (cf)", default = true, description = "Sends the result of a coinflip..").withDependency { showSettings }
-    private val eightball by BooleanSetting(name = "Eightball", default = true, description = "Sends a random 8ball response.").withDependency { showSettings }
-    private val dice by BooleanSetting(name = "Dice", default = true, description = "Rolls a dice.").withDependency { showSettings }
-    private val pt by BooleanSetting(name = "Party transfer (pt)", default = false, description = "Executes the /party transfer command.").withDependency { showSettings }
-    private val ping by BooleanSetting(name = "Ping", default = true, description = "Sends your current ping.").withDependency { showSettings }
-    private val tps by BooleanSetting(name = "TPS", default = true, description = "Sends the server's current TPS.").withDependency { showSettings }
-    private val fps by BooleanSetting(name = "FPS", default = true, description = "Sends your current FPS.").withDependency { showSettings }
-    private val dt by BooleanSetting(name = "DT", default = true, description = "Sets a reminder for the end of the run.").withDependency { showSettings }
-    private val invite by BooleanSetting(name = "invite", default = true, description = "Invites the player to your party.").withDependency { showSettings }
-    private val racism by BooleanSetting(name = "Racism", default = true, description = "Sends a random racism percentage.").withDependency { showSettings }
-    private val queInstance by BooleanSetting(name = "Queue instance cmds", default = true, description = "Queue dungeons commands.").withDependency { showSettings }
-    private val time by BooleanSetting(name = "Time", default = false, description = "Sends the current time.").withDependency { showSettings }
-    private val demote by BooleanSetting(name = "Demote", default = false, description = "Executes the /party demote command.").withDependency { showSettings }
-    private val promote by BooleanSetting(name = "Promote", default = false, description = "Executes the /party promote command.").withDependency { showSettings }
-    private val location by BooleanSetting(name = "Location", default = true, description = "Sends your current location.").withDependency { showSettings }
-    private val holding by BooleanSetting(name = "Holding", default = true, description = "Sends the item you are holding.").withDependency { showSettings }
+    private val warp by BooleanSetting("Warp", true, desc = "Executes the /party warp commnad.").withDependency { showSettings }
+    private val warptransfer by BooleanSetting("Warp & pt (warptransfer)", true, desc = "Executes the /party warp and /party transfer commands.").withDependency { showSettings }
+    private val coords by BooleanSetting("Coords (coords)", true, desc = "Sends your current coordinates.").withDependency { showSettings }
+    private val allinvite by BooleanSetting("Allinvite", true, desc = "Executes the /party settings allinvite command.").withDependency { showSettings }
+    private val odin by BooleanSetting("Odin", true, desc = "Sends the odin discord link.").withDependency { showSettings }
+    private val boop by BooleanSetting("Boop", true, desc = "Executes the /boop command.").withDependency { showSettings }
+    private val kick by BooleanSetting("Kick", true, desc = "Executes the /p kick command.").withDependency { showSettings }
+    private val cf by BooleanSetting("Coinflip (cf)", true, desc = "Sends the result of a coinflip..").withDependency { showSettings }
+    private val eightball by BooleanSetting("Eightball", true, desc = "Sends a random 8ball response.").withDependency { showSettings }
+    private val dice by BooleanSetting("Dice", true, desc = "Rolls a dice.").withDependency { showSettings }
+    private val pt by BooleanSetting("Party transfer (pt)", false, desc = "Executes the /party transfer command.").withDependency { showSettings }
+    private val ping by BooleanSetting("Ping", true, desc = "Sends your current ping.").withDependency { showSettings }
+    private val tps by BooleanSetting("TPS", true, desc = "Sends the server's current TPS.").withDependency { showSettings }
+    private val fps by BooleanSetting("FPS", true, desc = "Sends your current FPS.").withDependency { showSettings }
+    private val dt by BooleanSetting("DT", true, desc = "Sets a reminder for the end of the run.").withDependency { showSettings }
+    private val invite by BooleanSetting("Invite", true, desc = "Invites the player to your party.").withDependency { showSettings }
+    private val racism by BooleanSetting("Racism", false, desc = "Sends a random racism percentage.").withDependency { showSettings }
+    private val queInstance by BooleanSetting("Queue instance cmds", true, desc = "Queue dungeons commands.").withDependency { showSettings }
+    private val time by BooleanSetting("Time", false, desc = "Sends the current time.").withDependency { showSettings }
+    private val demote by BooleanSetting("Demote", false, desc = "Executes the /party demote command.").withDependency { showSettings }
+    private val promote by BooleanSetting("Promote", false, desc = "Executes the /party promote command.").withDependency { showSettings }
+    private val location by BooleanSetting("Location", true, desc = "Sends your current location.").withDependency { showSettings }
+    private val holding by BooleanSetting("Holding", true, desc = "Sends the item you are holding.").withDependency { showSettings }
 
     private val dtReason = mutableListOf<Pair<String, String>>()
     val blacklist: MutableList<String> by ListSetting("Blacklist", mutableListOf())
@@ -89,16 +74,15 @@ object ChatCommands : Module(
         }
 
         onMessage(messageRegex) {
-            val channel = when(it.split(" ")[0]) {
+            val channel = when(it.value.split(" ")[0]) {
                 "From" -> if (!private) return@onMessage else ChatChannel.PRIVATE
                 "Party" -> if (!party)  return@onMessage else ChatChannel.PARTY
                 "Guild" -> if (!guild)  return@onMessage else ChatChannel.GUILD
                 else -> return@onMessage
             }
 
-            val match = messageRegex.find(it) ?: return@onMessage
-            val ign = match.groups[2]?.value ?: match.groups[5]?.value ?: match.groups[9]?.value ?: return@onMessage
-            val msg = match.groups[3]?.value ?: match.groups[7]?.value ?: match.groups[10]?.value ?: return@onMessage
+            val ign = it.groups[2]?.value ?: it.groups[5]?.value ?: it.groups[9]?.value ?: return@onMessage
+            val msg = it.groups[3]?.value ?: it.groups[7]?.value ?: it.groups[10]?.value ?: return@onMessage
 
             if (whitelistOnly != isInBlacklist(ign) || !msg.startsWith("!")) return@onMessage
 
@@ -130,7 +114,7 @@ object ChatCommands : Module(
             "racism" -> if (racism) channelMessage("$name is ${Random.nextInt(1, 101)}% racist. Racism is not allowed!", name, channel)
             "ping" -> if (ping) channelMessage("Current Ping: ${floor(ServerUtils.averagePing).toInt()}ms", name, channel)
             "tps" -> if (tps) channelMessage("Current TPS: ${floor(ServerUtils.averageTps)}", name, channel)
-            "fps" -> if (fps) channelMessage("Current FPS: ${ServerUtils.fps}", name, channel)
+            "fps" -> if (fps) channelMessage("Current FPS: ${mc.debug.split(" ")[0].toIntOrNull() ?: 0}", name, channel)
             "time" -> if (time) channelMessage("Current Time: ${ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss z"))}", name, channel)
             "location" -> if (location) channelMessage("Current Location: ${LocationUtils.currentArea.displayName}", name, channel)
             "holding" -> if (holding) channelMessage("Holding: ${mc.thePlayer?.heldItem?.displayName?.noControlCodes ?: "Nothing :("}", name, channel)

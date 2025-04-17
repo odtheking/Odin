@@ -3,12 +3,10 @@ package me.odinmain.features.impl.dungeon.puzzlesolvers
 import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.PostEntityMetadata
 import me.odinmain.events.impl.RoomEnterEvent
-import me.odinmain.utils.Vec2
-import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
-import me.odinmain.utils.skyblock.dungeon.tiles.Rotations
 import me.odinmain.utils.toAABB
+import me.odinmain.utils.ui.Colors
 import net.minecraft.entity.item.EntityItemFrame
 import net.minecraft.init.Items
 import net.minecraft.util.BlockPos
@@ -40,8 +38,8 @@ object TTTSolver {
         //updateBoard(room.vec2.addRotationCoords(room.rotation, 7, 0), room.rotation)
     }
 
-    private fun updateBoard(bottomRight: Vec2, rotations: Rotations) {
-        for (index in 0 until 9) {
+//    private fun updateBoard(bottomRight: Vec2, rotations: Rotations) {
+//        for (index in 0 until 9) {
 //            val currentSlot = bottomRight.addRotationCoords(rotations, 0, -index / 3).let { BlockPos(it.x.toDouble(), 70.0 + index % 3, it.z.toDouble())}
 //            board[index] = BoardSlot(findSlotState(currentSlot), currentSlot, index % 3, index / 3,
 //                when (index) {
@@ -49,23 +47,23 @@ object TTTSolver {
 //                    0, 2, 6, 8 -> BoardPosition.Corner
 //                    else -> BoardPosition.Edge
 //                })
-        }
-    }
+//        }
+//    }
 
     fun onMetaData(event: PostEntityMetadata) {
         val room = DungeonUtils.currentRoom ?: return
         if (room.data.name != "Tic Tac Toe") return
 
-        mc.theWorld?.getEntityByID(event.packet.entityId) as? EntityItemFrame ?: return
+        if (mc.theWorld?.getEntityByID(event.packet.entityId) !is EntityItemFrame) return
        // updateBoard(room.vec2.addRotationCoords(room.rotation, 7, 0), room.rotation)
     }
 
     fun tttRenderWorld() {
         board.forEach { slot ->
             val color = when (slot.state) {
-                State.X -> Color.RED
-                State.O -> Color.BLUE
-                else -> Color.WHITE
+                State.X -> Colors.MINECRAFT_RED
+                State.O -> Colors.MINECRAFT_BLUE
+                else -> Colors.WHITE
             }
             Renderer.drawBox(slot.location.toAABB(), color, 1f, fillAlpha = 0f)
         }

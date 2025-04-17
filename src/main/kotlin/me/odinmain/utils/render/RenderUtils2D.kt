@@ -1,12 +1,13 @@
 package me.odinmain.utils.render
 
 import me.odinmain.OdinMain.mc
-import me.odinmain.ui.clickgui.util.ColorUtil.withAlpha
 import me.odinmain.utils.*
 import me.odinmain.utils.render.RenderUtils.bind
 import me.odinmain.utils.render.RenderUtils.renderVec
 import me.odinmain.utils.render.RenderUtils.tessellator
 import me.odinmain.utils.render.RenderUtils.worldRenderer
+import me.odinmain.utils.ui.Colors
+import me.odinmain.utils.ui.clickgui.util.ColorUtil.withAlpha
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
@@ -83,9 +84,9 @@ object RenderUtils2D {
         text: String,
         entity: Entity,
         padding: Number,
-        backgroundColor: Color = Color.GRAY.withAlpha(0.5f),
-        accentColor: Color = Color.BLUE,
-        textColor: Color = Color.WHITE,
+        backgroundColor: Color = Colors.MINECRAFT_GRAY.withAlpha(0.5f),
+        accentColor: Color = Colors.MINECRAFT_BLUE,
+        textColor: Color = Colors.WHITE,
         scale: Float = 1f,
         shadow: Boolean = false
     ) {
@@ -93,11 +94,11 @@ object RenderUtils2D {
             val width = getMCTextWidth(text) + padding.toDouble()
             val height = getMCTextHeight() + padding.toDouble()
             GlStateManager.pushMatrix()
-            translate(it.xCoord, it.yCoord, 0)
-            scale(scale, scale, scale)
+            GlStateManager.translate(it.xCoord, it.yCoord, 0.0)
+            GlStateManager.scale(scale, scale, scale)
             roundedRectangle(-width / 2, -height / 2, width, height * 0.9, backgroundColor)
             roundedRectangle(-width / 2, -height / 2 + height * 0.9, width, height * 0.1, accentColor)
-            mcText(text, 0, -getMCTextHeight() / 2,  1f, textColor, shadow = shadow)
+            RenderUtils.drawText(text, 0f, -4.5f, 1f, textColor, shadow = shadow, center = true)
             GlStateManager.popMatrix()
         }
     }
@@ -141,7 +142,7 @@ object RenderUtils2D {
 
         tessellator.draw()
 
-        Color.WHITE.bind()
+        Colors.WHITE.bind()
         GL11.glLineWidth(1f)
         GlStateManager.enableTexture2D()
         GlStateManager.disableBlend()

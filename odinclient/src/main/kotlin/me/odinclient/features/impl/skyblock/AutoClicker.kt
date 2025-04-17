@@ -2,7 +2,6 @@ package me.odinclient.features.impl.skyblock
 
 import me.odinclient.utils.skyblock.PlayerUtils.leftClick
 import me.odinclient.utils.skyblock.PlayerUtils.rightClick
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
@@ -15,16 +14,15 @@ import org.lwjgl.input.Keyboard
 
 object AutoClicker : Module(
     name = "Auto Clicker",
-    description = "Auto clicker with options for left-click, right-click, or both.",
-    category = Category.SKYBLOCK
+    desc = "Auto clicker with options for left-click, right-click, or both."
 ) {
-    private val terminatorOnly by BooleanSetting("Terminator Only", true, description = "Only click when the terminator and right click are held.")
-    private val cps by NumberSetting("Clicks Per Second", 5.0, 3.0, 15.0, .5, false, description = "The amount of clicks per second to perform.").withDependency { terminatorOnly }
+    private val terminatorOnly by BooleanSetting("Terminator Only", true, desc = "Only click when the terminator and right click are held.")
+    private val cps by NumberSetting("Clicks Per Second", 5.0f, 3.0, 15.0, .5, desc = "The amount of clicks per second to perform.").withDependency { terminatorOnly }
 
-    private val enableLeftClick by BooleanSetting("Enable Left Click", true, description = "Enable auto-clicking for left-click.").withDependency { !terminatorOnly }
-    private val enableRightClick by BooleanSetting("Enable Right Click", true, description = "Enable auto-clicking for right-click.").withDependency { !terminatorOnly }
-    private val leftCps by NumberSetting("Left Clicks Per Second", 5.0, 3.0, 15.0, .5, false, description = "The amount of left clicks per second to perform.").withDependency { !terminatorOnly }
-    private val rightCps by NumberSetting("Right Clicks Per Second", 5.0, 3.0, 15.0, .5, false, description = "The amount of right clicks per second to perform.").withDependency { !terminatorOnly }
+    private val enableLeftClick by BooleanSetting("Enable Left Click", true, desc = "Enable auto-clicking for left-click.").withDependency { !terminatorOnly }
+    private val enableRightClick by BooleanSetting("Enable Right Click", true, desc = "Enable auto-clicking for right-click.").withDependency { !terminatorOnly }
+    private val leftCps by NumberSetting("Left Clicks Per Second", 5.0f, 3.0, 15.0, .5, desc = "The amount of left clicks per second to perform.").withDependency { !terminatorOnly }
+    private val rightCps by NumberSetting("Right Clicks Per Second", 5.0f, 3.0, 15.0, .5, desc = "The amount of right clicks per second to perform.").withDependency { !terminatorOnly }
     private val leftClickKeybind by KeybindSetting("Left Click", Keyboard.KEY_NONE, description = "The keybind to hold for the auto clicker to click left click.").withDependency { !terminatorOnly }
     private val rightClickKeybind by KeybindSetting("Right Click", Keyboard.KEY_NONE, description = "The keybind to hold for the auto clicker to click right click.").withDependency { !terminatorOnly }
 

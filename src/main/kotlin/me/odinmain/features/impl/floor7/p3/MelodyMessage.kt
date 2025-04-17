@@ -1,7 +1,6 @@
 package me.odinmain.features.impl.floor7.p3
 
 import me.odinmain.events.impl.TerminalEvent
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.p3.termsim.TermSimGUI
 import me.odinmain.features.settings.Setting.Companion.withDependency
@@ -17,13 +16,12 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object MelodyMessage : Module(
     name = "Melody Message",
-    description = "Helpful messages for the melody terminal in floor 7.",
-    category = Category.FLOOR7
+    desc = "Helpful messages for the melody terminal in floor 7."
 ) {
-    private val sendMelodyMessage by BooleanSetting("Send Melody Message", true, description = "Sends a message when the melody terminal opens.")
-    private val melodyMessage by StringSetting("Melody Message", "Melody Terminal start!", 128, description = "Message sent when the melody terminal opens.").withDependency { sendMelodyMessage }
-    private val melodyProgress by BooleanSetting("Melody Progress", false, description = "Tells the party about melody terminal progress.")
-    private val melodySendCoords by BooleanSetting("Melody Send Coords", false, description = "Sends the coordinates of the melody terminal.").withDependency { melodyProgress }
+    private val sendMelodyMessage by BooleanSetting("Send Melody Message", true, desc = "Sends a message when the melody terminal opens.")
+    private val melodyMessage by StringSetting("Melody Message", "Melody Terminal start!", 128, desc = "Message sent when the melody terminal opens.").withDependency { sendMelodyMessage }
+    private val melodyProgress by BooleanSetting("Melody Progress", false, desc = "Tells the party about melody terminal progress.")
+    private val melodySendCoords by BooleanSetting("Melody Send Coords", false, desc = "Sends the coordinates of the melody terminal.").withDependency { melodyProgress }
 
     private var claySlots = hashMapOf(25 to "Melody terminal is at 25%", 34 to "Melody terminal is at 50%", 43 to "Melody terminal is at 75%")
 
@@ -33,12 +31,12 @@ object MelodyMessage : Module(
         if (sendMelodyMessage) partyMessage(melodyMessage)
         if (melodySendCoords) sendCommand("od sendcoords", true)
 
-        claySlots = hashMapOf(25 to "Melody terminal is at 25%", 34 to "Melody terminal is at 50%", 43 to "Melody terminal is at 75%")
+        claySlots = hashMapOf(25 to "Melody 25%", 34 to "Melody 50%", 43 to "Melody 75%")
     }
 
     init {
         execute(250) {
-            if (DungeonUtils.getF7Phase() != M7Phases.P3 || TerminalSolver.currentTerm.type != TerminalTypes.MELODY || mc.currentScreen is TermSimGUI) return@execute
+            if (DungeonUtils.getF7Phase() != M7Phases.P3 || TerminalSolver.currentTerm?.type != TerminalTypes.MELODY || mc.currentScreen is TermSimGUI) return@execute
 
             val containerChest = mc.thePlayer.openContainer as? ContainerChest ?: return@execute
             if (containerChest.name != "Click the button on time!" || !melodyProgress) return@execute

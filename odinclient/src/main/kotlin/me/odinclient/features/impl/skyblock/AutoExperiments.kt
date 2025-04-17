@@ -1,10 +1,10 @@
 package me.odinclient.features.impl.skyblock
 
 import me.odinmain.events.impl.GuiEvent
-import me.odinmain.features.Category
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.NumberSetting
+import me.odinmain.utils.name
 import me.odinmain.utils.skyblock.ClickType
 import me.odinmain.utils.skyblock.Island
 import me.odinmain.utils.skyblock.LocationUtils
@@ -15,19 +15,18 @@ import net.minecraft.init.Items
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.inventory.Slot
 import net.minecraft.item.Item
+import net.minecraftforge.client.event.GuiOpenEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object AutoExperiments : Module(
     name = "Auto Experiments",
-    category = Category.SKYBLOCK,
-    description = "Automatically click on the Chronomatron and Ultrasequencer experiments."
+    desc = "Automatically click on the Chronomatron and Ultrasequencer experiments."
 ){
-    private val delay by NumberSetting("Click Delay", 200, 0, 1000, 10, unit = "ms", description = "Time in ms between automatic test clicks.")
-    private val autoClose by BooleanSetting("Auto Close", true, description = "Automatically close the GUI after completing the experiment.")
-    private val serumCount by NumberSetting("Serum Count", 0, 0, 3, 1, description = "Consumed Metaphysical Serum count.")
+    private val delay by NumberSetting("Click Delay", 200, 0, 1000, 10, unit = "ms", desc = "Time in ms between automatic test clicks.")
+    private val autoClose by BooleanSetting("Auto Close", true, desc = "Automatically close the GUI after completing the experiment.")
+    private val serumCount by NumberSetting("Serum Count", 0, 0, 3, 1, desc = "Consumed Metaphysical Serum count.")
 
     private var ultrasequencerOrder = HashMap<Int, Int>()
-    private var currentExperiment = ExperimentType.NONE
     private val chronomatronOrder = ArrayList<Int>(28)
     private var lastClickTime = 0L
     private var hasAdded = false
@@ -35,7 +34,6 @@ object AutoExperiments : Module(
     private var clicks = 0
 
     private fun reset() {
-        currentExperiment = ExperimentType.NONE
         ultrasequencerOrder.clear()
         chronomatronOrder.clear()
         hasAdded = false
@@ -43,15 +41,8 @@ object AutoExperiments : Module(
     }
 
     @SubscribeEvent
-    fun onGuiOpen(event: GuiEvent.Loaded) {
-        reset()
-        if (!LocationUtils.currentArea.isArea(Island.PrivateIsland)) return
-
-        currentExperiment = when {
-            event.name.startsWith("Chronomatron") -> ExperimentType.CHRONOMATRON
-            event.name.startsWith("Ultrasequencer") -> ExperimentType.ULTRASEQUENCER
-            else -> ExperimentType.NONE
-        }
+    fun onGuiOpen(event: GuiOpenEvent) {
+        if (event.gui == null) reset()
     }
 
     /**
@@ -62,19 +53,19 @@ object AutoExperiments : Module(
     @SubscribeEvent
     fun onGuiDraw(event: GuiEvent.DrawGuiBackground) {
         if (!LocationUtils.currentArea.isArea(Island.PrivateIsland)) return
-        ((event.gui as? GuiChest)?.inventorySlots as? ContainerChest)?.inventorySlots?.takeIf { it.size >= 54 }?.let {
-            when (currentExperiment) {
-                ExperimentType.CHRONOMATRON -> solveChronomatron(it)
-                ExperimentType.ULTRASEQUENCER -> solveUltraSequencer(it)
-                else -> return
-            }
+        val gui = ((event.gui as? GuiChest)?.inventorySlots as? ContainerChest) ?: return
+
+        when {
+            gui.name.startsWith("Chronomatron (") -> solveChronomatron(gui.inventorySlots)
+            gui.name.startsWith("Ultrasequencer (") -> solveUltraSequencer(gui.inventorySlots)
+            else -> return
         }
     }
 
     private fun solveChronomatron(invSlots: List<Slot>) {
         if (invSlots[49].stack?.item == Item.getItemFromBlock(Blocks.glowstone) && invSlots[lastAdded].stack?.isItemEnchanted == false) {
-            hasAdded = false
             if (autoClose && chronomatronOrder.size > 11 - serumCount) mc.thePlayer?.closeScreen()
+            hasAdded = false
         }
         if (!hasAdded && invSlots[49].stack?.item == Items.clock) {
             invSlots.find { it.slotNumber in 10..43 && it.stack?.isItemEnchanted == true }?.let {
@@ -109,11 +100,5 @@ object AutoExperiments : Module(
             lastClickTime = System.currentTimeMillis()
             clicks++
         }
-    }
-
-    private enum class ExperimentType {
-        CHRONOMATRON,
-        ULTRASEQUENCER,
-        NONE
     }
 }
