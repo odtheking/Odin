@@ -11,7 +11,7 @@ import java.lang.reflect.Type
  *
  * @author Stivais
  */
-class MapSetting<K : Any, V : Any, T : MutableMap<K, V>>(
+class MapSetting<K : Any?, V : Any?, T : MutableMap<K, V>>(
     name: String,
     override val default: T,
     private val type: Type,
@@ -32,7 +32,7 @@ class MapSetting<K : Any, V : Any, T : MutableMap<K, V>>(
     }
 }
 
-inline fun <reified K : Any, reified V : Any, reified T : MutableMap<K, V>> MapSetting(
+inline fun <reified K : Any?, reified V : Any?, reified T : MutableMap<K, V>> MapSetting(
     name: String,
     default: T,
 ): MapSetting<K, V, T> = MapSetting(name, default, object : TypeToken<T>() {}.type)

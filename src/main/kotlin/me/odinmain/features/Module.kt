@@ -17,7 +17,7 @@ import org.lwjgl.input.Keyboard
 
 /**
  * Class that represents a module. And handles all the settings.
- * @author Aton
+ * @author Aton, Bonsai
  */
 abstract class Module(
     val name: String,
@@ -69,18 +69,14 @@ abstract class Module(
      * Gets toggled when module is enabled
      */
     open fun onEnable() {
-        if (!alwaysActive) {
-            MinecraftForge.EVENT_BUS.register(this)
-        }
+        if (!alwaysActive) MinecraftForge.EVENT_BUS.register(this)
     }
 
     /**
      * Gets toggled when module is disabled
      */
     open fun onDisable() {
-        if (!alwaysActive) {
-            MinecraftForge.EVENT_BUS.unregister(this)
-        }
+        if (!alwaysActive) MinecraftForge.EVENT_BUS.unregister(this)
     }
 
     open fun onKeybind() {
@@ -105,9 +101,7 @@ abstract class Module(
     }
 
     fun register(vararg setting: Setting<*>) {
-        for (i in setting) {
-            register(i)
-        }
+        setting.forEach(::register)
     }
 
     operator fun <K : Setting<*>> K.unaryPlus(): K = register(this)
@@ -122,7 +116,7 @@ abstract class Module(
     }
 
     /**
-     * Helper function to make cleaner code, and more performance, since we don't need multiple registers for packet received events.
+     * Helper function to make cleaner code, and better performance, since we don't need multiple registers for packet received events.
      *
      * @param T The type of the packet to listen for.
      * @param shouldRun Get whether the function should run (Will in most cases be used with the "enabled" value)
