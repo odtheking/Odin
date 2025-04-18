@@ -49,7 +49,7 @@ object SimonSays : Module(
     private val autoSSDelay by NumberSetting("Delay Between Clicks", 200L, 50, 500, unit = "ms", desc = "The delay between each click.").withDependency { autoSS }
     private val autoSSRotateTime by NumberSetting("Rotate Time", 150, 0, 400, unit = "ms", desc = "The time it takes to rotate to the correct button.").withDependency { autoSS }
     private val blockWrong by BooleanSetting("Block Wrong Clicks", false, desc = "Blocks Any Wrong Clicks (sneak to disable).")
-    private val cycleClick by BooleanSetting("Cycle Next Click", false, desc = "Set the first button to the beginning one after the last one was clicked")
+    private val optimizeSolution by BooleanSetting("Optimize Solution", false, desc = "Use optimized solution, might fix ss-skip")
 
     private val triggerBotClock = Clock(triggerBotDelay)
     private val firstClickClock = Clock(800)
@@ -70,6 +70,11 @@ object SimonSays : Module(
             }
     }
 
+    private fun resetSolution() {
+        clickInOrder.clear()
+        clickNeeded = 0
+    }
+
     init {
         onMessage(Regex("\\[BOSS] Goldor: Who dares trespass into my domain\\?"), { start && enabled }) {
             start()
@@ -77,8 +82,7 @@ object SimonSays : Module(
         }
 
         onWorldLoad {
-            clickInOrder.clear()
-            clickNeeded = 0
+            resetSolution()
         }
     }
 
@@ -88,9 +92,10 @@ object SimonSays : Module(
     fun onBlockChange(event: BlockChangeEvent) = with (event) {
         if (DungeonUtils.getF7Phase() != M7Phases.P3) return
 
-        if (pos == firstButton && updated.block == Blocks.stone_button && updated.getValue(BlockButtonStone.POWERED)) {
-            clickInOrder.clear()
-            clickNeeded = 0
+        if (pos == firstButton) {
+            if (updated.block == Blocks.stone_button && updated.getValue(BlockButtonStone.POWERED) && !optimizeSolution){
+                resetSolution()
+            }
             return
         }
 
@@ -98,15 +103,28 @@ object SimonSays : Module(
 
         when (pos.x) {
             111 ->
-                if (updated.block == Blocks.obsidian && old.block == Blocks.sea_lantern && pos !in clickInOrder) clickInOrder.add(pos)
+                if (optimizeSolution) {
+                    if (updated.block == Blocks.sea_lantern && old.block == Blocks.obsidian && pos !in clickInOrder) clickInOrder.add(pos)
+                } else {
+                    if (updated.block == Blocks.obsidian && old.block == Blocks.sea_lantern && pos !in clickInOrder) clickInOrder.add(pos)
+                }
 
             110 ->
                 if (updated.block == Blocks.air) {
-                    clickInOrder.clear()
-                    clickNeeded = 0
+                    if (!optimizeSolution) {
+                        resetSolution()
+                    }
                 } else if (old.block == Blocks.stone_button && updated.getValue(BlockButtonStone.POWERED)) {
                     val index = clickInOrder.indexOf(pos.add(1, 0, 0)) + 1
-                    clickNeeded = if (cycleClick && index >= clickInOrder.size) 0 else index
+                    if (index >= clickInOrder.size) {
+                        if (optimizeSolution) {
+                            resetSolution()
+                        } else {
+                            clickNeeded = 0
+                        }
+                    } else {
+                        clickNeeded = index
+                    }
                 }
         }
     }
@@ -167,13 +185,22 @@ object SimonSays : Module(
         if (
             event.pos == null ||
             event.action != PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK ||
-            event.world != mc.theWorld ||
-            !blockWrong ||
-            mc.thePlayer?.isSneaking == true ||
-            event.pos.x != 110 || event.pos.y !in 120..123 || event.pos.z !in 92..95
+            event.world != mc.theWorld
         ) return
 
-        if (event.pos.east() != clickInOrder.getOrNull(clickNeeded)) event.isCanceled = true
+        if (event.pos == firstButton) {
+            if (optimizeSolution) {
+                resetSolution()
+            }
+            return
+        }
+
+        if (
+            blockWrong &&
+            mc.thePlayer?.isSneaking == false &&
+            event.pos.x == 110 && event.pos.y in 120..123 && event.pos.z in 92..95 &&
+            event.pos.east() != clickInOrder.getOrNull(clickNeeded)
+        ) event.isCanceled = true
     }
 
     @SubscribeEvent
