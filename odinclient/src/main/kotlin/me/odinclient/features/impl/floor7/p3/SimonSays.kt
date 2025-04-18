@@ -57,12 +57,12 @@ object SimonSays : Module(
     private var autoSSClickInQueue = false
     private val autoSSLastClickClock = Clock(1000)
 
-    private val firstButton = BlockPos(110, 121, 91)
+    private val startButton = BlockPos(110, 121, 91)
     private val clickInOrder = ArrayList<BlockPos>()
     private var clickNeeded = 0
 
     private fun start() {
-        if (mc.objectMouseOver?.blockPos == firstButton)
+        if (mc.objectMouseOver?.blockPos == startButton)
             repeat(startClicks) {
                 runIn(it * startClickDelay) {
                     rightClick()
@@ -92,7 +92,7 @@ object SimonSays : Module(
     fun onBlockChange(event: BlockChangeEvent) = with (event) {
         if (DungeonUtils.getF7Phase() != M7Phases.P3) return
 
-        if (pos == firstButton) {
+        if (pos == startButton) {
             if (updated.block == Blocks.stone_button && updated.getValue(BlockButtonStone.POWERED) && !optimizeSolution){
                 resetSolution()
             }
@@ -188,7 +188,7 @@ object SimonSays : Module(
             event.world != mc.theWorld
         ) return
 
-        if (event.pos == firstButton) {
+        if (event.pos == startButton) {
             if (optimizeSolution) {
                 resetSolution()
             }

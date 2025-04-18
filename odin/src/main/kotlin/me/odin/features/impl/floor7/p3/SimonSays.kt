@@ -39,7 +39,7 @@ object SimonSays : Module(
     private val blockWrong by BooleanSetting("Block Wrong Clicks", false, desc = "Blocks wrong clicks, shift will override this.")
     private val optimizeSolution by BooleanSetting("Optimize Solution", false, desc = "Use optimized solution, might fix ss-skip")
 
-    private val firstButton = BlockPos(110, 121, 91)
+    private val startButton = BlockPos(110, 121, 91)
     private val clickInOrder = ArrayList<BlockPos>()
     private var clickNeeded = 0
 
@@ -59,7 +59,7 @@ object SimonSays : Module(
     fun onBlockChange(event: BlockChangeEvent) = with (event) {
         if (DungeonUtils.getF7Phase() != M7Phases.P3) return
 
-        if (pos == firstButton) {
+        if (pos == startButton) {
             if (updated.block == Blocks.stone_button && updated.getValue(BlockButtonStone.POWERED) && !optimizeSolution){
                 resetSolution()
             }
@@ -113,7 +113,7 @@ object SimonSays : Module(
             event.world != mc.theWorld
         ) return
 
-        if (event.pos == firstButton) {
+        if (event.pos == startButton) {
             if (optimizeSolution) {
                 resetSolution()
             }
