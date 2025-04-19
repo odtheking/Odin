@@ -19,6 +19,7 @@
     "mixins.block.MixinBlockMushroom",
     "mixins.block.MixinBlockNetherWart",
     "mixins.block.MixinBlockSkull",
+    "mixins.entity.MixinEntityArrow",
     "mixins.entity.MixinEntityLivingBase"
   ],
   "client": [
