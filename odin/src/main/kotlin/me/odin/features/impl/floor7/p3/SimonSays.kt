@@ -59,10 +59,8 @@ object SimonSays : Module(
     fun onBlockChange(event: BlockChangeEvent) = with (event) {
         if (DungeonUtils.getF7Phase() != M7Phases.P3) return
 
-        if (pos == startButton) {
-            if (updated.block == Blocks.stone_button && updated.getValue(BlockButtonStone.POWERED) && !optimizeSolution){
-                resetSolution()
-            }
+        if (pos == startButton && updated.block == Blocks.stone_button && updated.getValue(BlockButtonStone.POWERED)) {
+            if (!optimizeSolution) resetSolution()
             return
         }
 
@@ -70,28 +68,14 @@ object SimonSays : Module(
 
         when (pos.x) {
             111 ->
-                if (optimizeSolution) {
-                    if (updated.block == Blocks.sea_lantern && old.block == Blocks.obsidian && pos !in clickInOrder) clickInOrder.add(pos)
-                } else {
-                    if (updated.block == Blocks.obsidian && old.block == Blocks.sea_lantern && pos !in clickInOrder) clickInOrder.add(pos)
-                }
+                if ((updated.block == Blocks.sea_lantern && old.block == Blocks.obsidian) == optimizeSolution && pos !in clickInOrder) clickInOrder.add(pos)
 
             110 ->
                 if (updated.block == Blocks.air) {
-                    if (!optimizeSolution) {
-                        resetSolution()
-                    }
+                    if (!optimizeSolution) resetSolution()
                 } else if (old.block == Blocks.stone_button && updated.getValue(BlockButtonStone.POWERED)) {
-                    val index = clickInOrder.indexOf(pos.add(1, 0, 0)) + 1
-                    if (index >= clickInOrder.size) {
-                        if (optimizeSolution) {
-                            resetSolution()
-                        } else {
-                            clickNeeded = 0
-                        }
-                    } else {
-                        clickNeeded = index
-                    }
+                    clickNeeded = clickInOrder.indexOf(pos.add(1, 0, 0)) + 1
+                    if (clickNeeded >= clickInOrder.size) if (optimizeSolution) resetSolution() else clickNeeded = 0
                 }
         }
     }
@@ -114,9 +98,7 @@ object SimonSays : Module(
         ) return
 
         if (event.pos == startButton) {
-            if (optimizeSolution) {
-                resetSolution()
-            }
+            if (optimizeSolution) resetSolution()
             return
         }
 

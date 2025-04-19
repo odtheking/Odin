@@ -97,10 +97,8 @@ object SimonSays : Module(
     fun onBlockChange(event: BlockChangeEvent) = with (event) {
         if (DungeonUtils.getF7Phase() != M7Phases.P3) return
 
-        if (pos == startButton) {
-            if (updated.block == Blocks.stone_button && updated.getValue(BlockButtonStone.POWERED) && !optimizeSolution) {
-                resetSolution()
-            }
+        if (pos == startButton && updated.block == Blocks.stone_button && updated.getValue(BlockButtonStone.POWERED)) {
+            if (!optimizeSolution) resetSolution()
             return
         }
 
@@ -111,36 +109,18 @@ object SimonSays : Module(
                 if (optimizeSolution) {
                     if (updated.block == Blocks.sea_lantern && old.block == Blocks.obsidian) {
                         if (clickInOrder.isEmpty()) {
-                            if (faceToFirst) {
-                                firstButton = pos
-                            }
+                            firstButton = pos
                             clickInOrder.add(pos)
-                        } else if (pos !in clickInOrder) {
-                            clickInOrder.add(pos)
-                        }
+                        } else if (pos !in clickInOrder) clickInOrder.add(pos)
                     }
-                } else {
-                    if (updated.block == Blocks.obsidian && old.block == Blocks.sea_lantern && pos !in clickInOrder) {
-                        clickInOrder.add(pos)
-                    }
-                }
+                } else if (updated.block == Blocks.obsidian && old.block == Blocks.sea_lantern && pos !in clickInOrder) clickInOrder.add(pos)
 
             110 ->
                 if (updated.block == Blocks.air) {
-                    if (!optimizeSolution) {
-                        resetSolution()
-                    }
+                    if (!optimizeSolution) resetSolution()
                 } else if (old.block == Blocks.stone_button && updated.getValue(BlockButtonStone.POWERED)) {
-                    val index = clickInOrder.indexOf(pos.add(1, 0, 0)) + 1
-                    if (index >= clickInOrder.size) {
-                        if (optimizeSolution) {
-                            resetSolution(index < 4)
-                        } else {
-                            clickNeeded = 0
-                        }
-                    } else {
-                        clickNeeded = index
-                    }
+                    clickNeeded = clickInOrder.indexOf(pos.add(1, 0, 0)) + 1
+                    if (clickNeeded >= clickInOrder.size) if (optimizeSolution) resetSolution(clickNeeded < 4) else clickNeeded = 0
                 }
         }
     }
@@ -148,8 +128,7 @@ object SimonSays : Module(
     @SubscribeEvent
     fun onPostMetadata(event: PostEntityMetadata) {
         if (DungeonUtils.getF7Phase() != M7Phases.P3) return
-        val (x, y, z) = (mc.theWorld?.getEntityByID(event.packet.entityId) as? EntityItem)?.takeIf { Item.getIdFromItem(it.entityItem?.item) == 77 }?.positionVector?.floorVec()
-            ?: return
+        val (x, y, z) = (mc.theWorld?.getEntityByID(event.packet.entityId) as? EntityItem)?.takeIf { Item.getIdFromItem(it.entityItem?.item) == 77 }?.positionVector?.floorVec() ?: return
         val index = clickInOrder.indexOf(BlockPos(x, y, z).east())
         if (index == 2 && clickInOrder.size == 3) clickInOrder.removeFirst()
         else if (index == 0 && clickInOrder.size == 2) clickInOrder.reverse()
@@ -221,9 +200,7 @@ object SimonSays : Module(
         ) return
 
         if (event.pos == startButton) {
-            if (optimizeSolution) {
-                resetSolution()
-            }
+            if (optimizeSolution) resetSolution()
             return
         }
 
