@@ -122,7 +122,7 @@ val mainCommand = Commodore("od", "odin") {
     runs { tier: KuudraTier -> sendCommand("joininstance ${tier.instance()}") }
 
     literal("leaporder").runs { player1: String?, player2: String?, player3: String?, player4: String? ->
-        val players = listOfNotNull(player1, player2, player3, player4)
+        val players = listOfNotNull(player1.lowercase(), player2.lowercase(), player3.lowercase(), player4.lowercase())
         DungeonUtils.customLeapOrder = players
         modMessage("§aCustom leap order set to: §f${players.joinToString(", ")}")
     }
