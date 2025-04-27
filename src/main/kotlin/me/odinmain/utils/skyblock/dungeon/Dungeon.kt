@@ -10,12 +10,15 @@ import me.odinmain.features.impl.dungeon.LeapMenu
 import me.odinmain.features.impl.dungeon.LeapMenu.odinSorting
 import me.odinmain.features.impl.dungeon.MapInfo.shownTitle
 import me.odinmain.features.impl.dungeon.Mimic
-import me.odinmain.utils.*
+import me.odinmain.utils.equalsOneOf
+import me.odinmain.utils.hasBonusPaulScore
+import me.odinmain.utils.noControlCodes
+import me.odinmain.utils.romanToInt
 import me.odinmain.utils.skyblock.PlayerUtils.posX
 import me.odinmain.utils.skyblock.PlayerUtils.posZ
-import me.odinmain.utils.skyblock.dungeon.DungeonUtils.getDungeonPuzzles
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.getDungeonTeammates
 import me.odinmain.utils.skyblock.dungeon.tiles.Room
+import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.network.play.server.S02PacketChat
 import net.minecraft.network.play.server.S38PacketPlayerListItem
@@ -24,59 +27,86 @@ import net.minecraft.network.play.server.S47PacketPlayerListHeaderFooter
 import net.minecraftforge.event.entity.EntityJoinWorldEvent
 
 // could add some system to look back at previous runs.
-class Dungeon(val floor: Floor) {
+class Dungeon {
 
-    private var expectingBloodUpdate: Boolean = false
-
-    var paul = false
-    val inBoss: Boolean get() = getBoss()
     var dungeonTeammates: ArrayList<DungeonPlayer> = ArrayList(5)
-    var dungeonTeammatesNoSelf: ArrayList<DungeonPlayer> = ArrayList(4)
-    var leapTeammates: ArrayList<DungeonPlayer> = ArrayList(4)
-    var dungeonStats = DungeonStats()
-    inline val currentRoom: Room? get() = ScanUtils.currentRoom
-    inline val passedRooms: MutableSet<Room> get() = ScanUtils.passedRooms
-    var puzzles = listOf<Puzzle>()
+    var dungeonTeammatesNoSelf: List<DungeonPlayer> = ArrayList(4)
+    var leapTeammates: List<DungeonPlayer> = ArrayList(4)
 
-    private fun getBoss(): Boolean {
-        return when (floor.floorNumber) {
-            1 -> posX > -71 && posZ > -39
-            in 2..4 -> posX > -39 && posZ > -39
-            in 5..6 -> posX > -39 && posZ > -7
-            7 -> posX > -7 && posZ > -7
-            else -> false
-        }
+    inline val passedRooms: MutableSet<Room> get() = ScanUtils.passedRooms
+    inline val currentRoom: Room? get() = ScanUtils.currentRoom
+    private var expectingBloodUpdate = false
+    val inBoss: Boolean get() = getBoss()
+    var dungeonStats = DungeonStats()
+    var puzzles = ArrayList<Puzzle>()
+    var floor: Floor? = null
+    var paul = false
+
+    private fun getBoss(): Boolean = when (floor?.floorNumber) {
+        1             -> posX > -71 && posZ > -39
+        in 2..4 -> posX > -39 && posZ > -39
+        in 5..6 -> posX > -39 && posZ > -7
+        7             -> posX > -7  && posZ > -7
+        else -> false
     }
 
     init {
-        scope.launch(Dispatchers.IO) {
-            paul = hasBonusPaulScore()
-        }
+        scope.launch(Dispatchers.IO) { paul = hasBonusPaulScore() }
 
+        Blessing.entries.forEach { it.reset() }
         shownTitle = false
     }
 
     fun enterDungeonRoom(event: RoomEnterEvent) {
         val room = event.room?.takeUnless { room -> passedRooms.any { it.data.name == room.data.name } } ?: return
-        val roomSecrets = room.data.secrets
-        dungeonStats.knownSecrets = dungeonStats.knownSecrets?.plus(roomSecrets) ?: roomSecrets
+        dungeonStats.knownSecrets += room.data.secrets
     }
 
     fun onPacket(event: PacketEvent.Receive) {
         when (event.packet) {
-            is S38PacketPlayerListItem -> handleTabListPacket(event.packet)
-            is S3EPacketTeams -> handleScoreboardPacket(event.packet)
-            is S47PacketPlayerListHeaderFooter -> handleHeaderFooterPacket(event.packet)
-            is S02PacketChat -> handleChatPacket(event.packet)
-        }
-    }
+            is S38PacketPlayerListItem -> {
+                if (!event.packet.action.equalsOneOf(S38PacketPlayerListItem.Action.UPDATE_DISPLAY_NAME, S38PacketPlayerListItem.Action.ADD_PLAYER)) return
+                val tabListEntries = event.packet.entries?.mapNotNull { it.displayName?.unformattedText?.noControlCodes } ?: return
+                updateDungeonTeammates(tabListEntries)
+                updateDungeonStats(tabListEntries)
+                getDungeonPuzzles(tabListEntries)
+            }
 
-    fun onWorldLoad() {
-        dungeonTeammates = ArrayList()
-        dungeonTeammatesNoSelf = ArrayList()
-        leapTeammates = ArrayList()
-        puzzles = emptyList()
-        Blessing.entries.forEach { it.current = 0 }
+            is S3EPacketTeams -> {
+                if (event.packet.action != 2) return
+                val text = event.packet.prefix?.plus(event.packet.suffix) ?: return
+
+                floorRegex.find(text.noControlCodes)?.groupValues?.get(1)?.let { floor = Floor.valueOf(it) }
+
+                clearedRegex.find(text)?.groupValues?.get(1)?.toIntOrNull()?.let {
+                    if (dungeonStats.percentCleared != it && expectingBloodUpdate) dungeonStats.bloodDone = true
+                    dungeonStats.percentCleared = it
+                }
+            }
+
+            is S47PacketPlayerListHeaderFooter -> {
+                Blessing.entries.forEach { blessing ->
+                    blessing.regex.find(event.packet.footer?.unformattedText?.noControlCodes ?: return@forEach)?.let { blessing.current = romanToInt(it.groupValues[1]) }
+                }
+            }
+
+            is S02PacketChat -> {
+                val message = event.packet.chatComponent?.unformattedText?.noControlCodes ?: return
+                if (expectingBloodRegex.matches(message)) expectingBloodUpdate = true
+                doorOpenRegex.find(message)?.let { dungeonStats.doorOpener = it.groupValues[1] }
+                deathRegex.find(message)?.let { match ->
+                    dungeonTeammates.find { teammate -> teammate.name == (match.groupValues[1].takeUnless { it == "You" } ?: mc.thePlayer?.name) }?.deaths?.inc()
+                }
+
+                when (partyMessageRegex.find(message)?.groupValues?.get(1)?.lowercase() ?: return) {
+                    "mimic killed", "mimic slain", "mimic killed!", "mimic dead", "mimic dead!", "\$skytils-dungeon-score-mimic\$", Mimic.mimicMessage ->
+                        dungeonStats.mimicKilled = true
+
+                    "blaze done!", "blaze done", "blaze puzzle solved!" ->
+                        puzzles.find { it.name == Puzzle.Blaze.name }.let { it?.status = PuzzleStatus.Completed }
+                }
+            }
+        }
     }
 
     fun onEntityJoin(event: EntityJoinWorldEvent) {
@@ -84,107 +114,79 @@ class Dungeon(val floor: Floor) {
         teammate.entity = event.entity as? EntityPlayer ?: return
     }
 
-    private fun handleChatPacket(packet: S02PacketChat) {
-        val message = packet.chatComponent.unformattedText.noControlCodes
-        if (expectingBloodRegex.matches(message)) expectingBloodUpdate = true
-        doorOpenRegex.find(message)?.let { dungeonStats.doorOpener = it.groupValues[1] }
-        deathRegex.find(message)?.let { match ->
-            dungeonTeammates.find { teammate ->
-                teammate.name == (match.groupValues[1].takeUnless { it == "You" } ?: mc.thePlayer?.name)
-            }?.deaths?.inc()
-        }
-        val partyMessage = partyMessageRegex.find(message)?.groupValues?.get(1)?.lowercase() ?: return
-        if (partyMessage.equalsOneOf("mimic killed", "mimic slain", "mimic killed!", "mimic dead", "mimic dead!", "\$skytils-dungeon-score-mimic\$", Mimic.mimicMessage))
-            dungeonStats.mimicKilled = true
-        if (partyMessage.equalsOneOf("blaze done!", "blaze done", "blaze puzzle solved!"))  //more completion messages may be necessary.
-            puzzles.find { it.name == Puzzle.Blaze.name }.let { it?.status = PuzzleStatus.Completed }
-    }
+    private fun getDungeonPuzzles(tabList: List<String>) {
+        for (entry in tabList) {
+            val (name, status) = puzzleRegex.find(entry)?.destructured ?: continue
+            val puzzle = Puzzle.allPuzzles.find { it.name == name }?.copy() ?: continue
+            if (puzzle !in puzzles) puzzles.add(puzzle)
 
-    private fun handleHeaderFooterPacket(packet: S47PacketPlayerListHeaderFooter) {
-        Blessing.entries.forEach { blessing ->
-            blessing.regex.find(packet.footer.unformattedText.noControlCodes)?.let { match -> blessing.current = romanToInt(match.groupValues[1]) }
+            puzzle.status = when {
+                DungeonUtils.puzzles.find { it.name == puzzle.name }?.status == PuzzleStatus.Completed -> PuzzleStatus.Completed
+                status == "✖" -> PuzzleStatus.Failed
+                status == "✔" -> PuzzleStatus.Completed
+                status == "✦" -> PuzzleStatus.Incomplete
+                else -> {
+                    modMessage(entry)
+                    continue
+                }
+            }
         }
     }
 
-    private fun handleScoreboardPacket(packet: S3EPacketTeams) {
-        if (packet.action != 2) return
-
-        clearedRegex.find(packet.prefix.plus(packet.suffix))?.groupValues?.get(1)?.toIntOrNull()?.let {
-            if (dungeonStats.percentCleared != it && expectingBloodUpdate) dungeonStats.bloodDone = true
-            dungeonStats.percentCleared = it
-        }
-    }
-
-    private fun handleTabListPacket(packet: S38PacketPlayerListItem) {
-        if (!packet.action.equalsOneOf(S38PacketPlayerListItem.Action.UPDATE_DISPLAY_NAME, S38PacketPlayerListItem.Action.ADD_PLAYER)) return
-        packet.entries.forEach { entry ->
-            entry?.displayName?.formattedText?.let { dungeonStats = updateDungeonStats(it, dungeonStats) }
-        }
-
-        updateDungeonTeammates(packet.entries)
-        runOnMCThread {
-            puzzles = getDungeonPuzzles(getTabList) // transfer to packet based
-        }
-    }
-
-    private val partyMessageRegex = Regex("Party > .*?: (.+)\$")
-    private val doorOpenRegex = Regex("(?:\\[\\w+] )?(\\w+) opened a (?:WITHER|Blood) door!")
-    private val expectingBloodRegex = Regex("\\[BOSS] The Watcher: You have proven yourself. You may pass.")
-    private val deathRegex = Regex("☠ (\\w{1,16}) .* and became a ghost\\.")
-    private val timeRegex = Regex("§r Time: §r§6((?:\\d+h ?)?(?:\\d+m ?)?\\d+s)§r")
-    private val clearedRegex = Regex("^Cleared: §[c6a](\\d+)% §8(?:§8)?\\(\\d+\\)$")
-    private val secretCountRegex = Regex("^§r Secrets Found: §r§b(\\d+)§r$")
+    private val puzzleRegex = Regex("^ (\\w+(?: \\w+)*|\\?\\?\\?): \\[([✖✔✦])] ?(?:\\((\\w+)\\))?$")
+    private val expectingBloodRegex = Regex("^\\[BOSS] The Watcher: You have proven yourself. You may pass.")
+    private val doorOpenRegex = Regex("^(?:\\[\\w+] )?(\\w+) opened a (?:WITHER|Blood) door!")
     private val secretPercentRegex = Regex("^§r Secrets Found: §r§[ea]([\\d.]+)%§r$")
-    private val cryptRegex = Regex("^§r Crypts: §r§6(\\d+)§r$")
-    private val openedRoomsRegex = Regex("^§r Opened Rooms: §r§5(\\d+)§r$")
+    private val clearedRegex = Regex("^Cleared: §[c6a](\\d+)% §8(?:§8)?\\(\\d+\\)$")
+    private val timeRegex = Regex("§r Time: §r§6((?:\\d+h ?)?(?:\\d+m ?)?\\d+s)§r")
     private val completedRoomsRegex = Regex("^§r Completed Rooms: §r§d(\\d+)§r$")
+    private val deathRegex = Regex("^ ☠ You died and became a ghost\\.\$")
+    private val secretCountRegex = Regex("^§r Secrets Found: §r§b(\\d+)§r$")
+    private val openedRoomsRegex = Regex("^§r Opened Rooms: §r§5(\\d+)§r$")
     private val deathsRegex = Regex("^§r§a§lTeam Deaths: §r§f(\\d+)§r$")
+    private val floorRegex = Regex("The Catacombs \\((\\w+)\\)\$")
+    private val partyMessageRegex = Regex("^Party > .*?: (.+)\$")
+    private val cryptRegex = Regex("^§r Crypts: §r§6(\\d+)§r$")
 
     data class DungeonStats(
-        var secretsFound: Int? = null,
-        var secretsPercent: Float? = null,
-        var knownSecrets: Int? = null,
-        var crypts: Int? = null,
-        var openedRooms: Int? = null,
-        var completedRooms: Int? = null,
-        var deaths: Int? = null,
-        var percentCleared: Int? = null,
-        var elapsedTime: String? = null,
+        var secretsFound: Int = 0,
+        var secretsPercent: Float = 0f,
+        var knownSecrets: Int = 0,
+        var crypts: Int = 0,
+        var openedRooms: Int = 0,
+        var completedRooms: Int = 0,
+        var deaths: Int = 0,
+        var percentCleared: Int = 0,
+        var elapsedTime: String = "0s",
         var mimicKilled: Boolean = false,
-        var doorOpener: String? = null,
+        var doorOpener: String = "Unknown",
         var bloodDone: Boolean = false,
     )
 
-    private fun updateDungeonStats(text: String, currentStats: DungeonStats): DungeonStats {
-        when {
-            secretCountRegex.matches(text) -> currentStats.secretsFound = secretCountRegex.find(text)?.groupValues?.get(1)?.toIntOrNull()
-
-            secretPercentRegex.matches(text) -> currentStats.secretsPercent = secretPercentRegex.find(text)?.groupValues?.get(1)?.toFloatOrNull()
-
-            cryptRegex.matches(text) -> currentStats.crypts = cryptRegex.find(text)?.groupValues?.get(1)?.toIntOrNull()
-
-            openedRoomsRegex.matches(text) -> currentStats.openedRooms = openedRoomsRegex.find(text)?.groupValues?.get(1)?.toIntOrNull()
-
-            completedRoomsRegex.matches(text) -> currentStats.completedRooms = completedRoomsRegex.find(text)?.groupValues?.get(1)?.toIntOrNull()
-
-            deathsRegex.matches(text) -> currentStats.deaths = deathsRegex.find(text)?.groupValues?.get(1)?.toIntOrNull()
-
-            timeRegex.matches(text) -> currentStats.elapsedTime = timeRegex.find(text)?.groupValues?.get(1)
+    private fun updateDungeonStats(text: List<String>) {
+        for (entry in text) {
+            with (dungeonStats) {
+                secretsPercent = secretPercentRegex.find(entry)?.groupValues?.get(1)?.toFloatOrNull() ?: secretsPercent
+                completedRooms = completedRoomsRegex.find(entry)?.groupValues?.get(1)?.toIntOrNull() ?: completedRooms
+                secretsFound = secretCountRegex.find(entry)?.groupValues?.get(1)?.toIntOrNull() ?: secretsFound
+                openedRooms = openedRoomsRegex.find(entry)?.groupValues?.get(1)?.toIntOrNull() ?: openedRooms
+                deaths = deathsRegex.find(entry)?.groupValues?.get(1)?.toIntOrNull() ?: deaths
+                crypts = cryptRegex.find(entry)?.groupValues?.get(1)?.toIntOrNull() ?: crypts
+                elapsedTime = timeRegex.find(entry)?.groupValues?.get(1) ?: elapsedTime
+            }
         }
-
-        return currentStats
     }
 
-    private fun updateDungeonTeammates(tabList: List<S38PacketPlayerListItem.AddPlayerData>) {
+    private fun updateDungeonTeammates(tabList: List<String>) {
         dungeonTeammates = getDungeonTeammates(dungeonTeammates, tabList)
-        dungeonTeammatesNoSelf = ArrayList(dungeonTeammates.filter { it.entity != mc.thePlayer })
+        dungeonTeammatesNoSelf = dungeonTeammates.filter { it.entity != mc.thePlayer }
 
         leapTeammates =
             when (LeapMenu.type) {
-                0 -> ArrayList(odinSorting(dungeonTeammatesNoSelf.sortedBy { it.clazz.priority }).toList())
-                1 -> ArrayList(dungeonTeammatesNoSelf.sortedWith(compareBy({ it.clazz.ordinal }, { it.name })))
-                2 -> ArrayList(dungeonTeammatesNoSelf.sortedBy { it.name })
-                3 -> ArrayList(dungeonTeammatesNoSelf.sortedBy { DungeonUtils.customLeapOrder.indexOf(it.name.lowercase()).takeIf { index -> index != -1 } ?: Int.MAX_VALUE })
+                0 -> odinSorting(dungeonTeammatesNoSelf.sortedBy { it.clazz.priority }).toList()
+                1 -> dungeonTeammatesNoSelf.sortedWith(compareBy({ it.clazz.ordinal }, { it.name }))
+                2 -> dungeonTeammatesNoSelf.sortedBy { it.name }
+                3 -> dungeonTeammatesNoSelf.sortedBy { DungeonUtils.customLeapOrder.indexOf(it.name.lowercase()).takeIf { index -> index != -1 } ?: Int.MAX_VALUE }
                 else -> dungeonTeammatesNoSelf
             }
     }

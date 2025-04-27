@@ -41,14 +41,14 @@ object KuudraUtils {
 
     @SubscribeEvent
     fun onWorldLoad(event: WorldEvent.Load) {
-        kuudraTeammates = ArrayList()
-        giantZombies = arrayListOf()
         supplies = BooleanArray(6) { true }
-        kuudraEntity = null
         playersBuildingAmount = 0
         buildDonePercentage = 0
+        kuudraTeammates.clear()
+        buildingPiles.clear()
+        giantZombies.clear()
+        kuudraEntity = null
         phase = 0
-        buildingPiles = arrayListOf()
     }
 
     @SubscribeEvent
