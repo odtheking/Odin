@@ -27,9 +27,11 @@ object DragonCheck {
         }
     }
 
-    fun dragonSpawn(packet: S0FPacketSpawnMob) = WitherDragonsEnum.entries.find {
-        isVecInXZ(Vec3(packet.x / 32.0, packet.y / 32.0, packet.z / 32.0), it.boxesDimensions) && it.state == WitherDragonState.SPAWNING
-    }?.setAlive(packet.entityID)
+    fun dragonSpawn(packet: S0FPacketSpawnMob) {
+        WitherDragonsEnum.entries.find {
+            isVecInXZ(Vec3(packet.x / 32.0, packet.y / 32.0, packet.z / 32.0), it.boxesDimensions) && it.state == WitherDragonState.SPAWNING
+        }?.setAlive(packet.entityID)
+    }
 
     fun dragonSprayed(packet: S04PacketEntityEquipment) {
         if (packet.itemStack?.item != Item.getItemFromBlock(Blocks.packed_ice)) return

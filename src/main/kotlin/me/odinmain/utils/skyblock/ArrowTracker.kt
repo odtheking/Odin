@@ -1,7 +1,7 @@
 package me.odinmain.utils.skyblock
 
 import me.odinmain.OdinMain.mc
-import me.odinmain.events.impl.ArrowDespawnEvent
+import me.odinmain.events.impl.ArrowEvent
 import me.odinmain.events.impl.PacketEvent
 import me.odinmain.events.impl.PostEntityMetadata
 import me.odinmain.events.impl.ServerTickEvent
@@ -19,9 +19,9 @@ object ArrowTracker {
 
     private var currentTick = 0L
 
-    @JvmStatic
-    fun onArrowHit(arrow: EntityArrow, target: Entity) {
-        if (target.isEntityAlive) arrows[arrow.entityId]?.entitiesHit?.add(target)
+    @SubscribeEvent
+    fun onArrowHit(event: ArrowEvent.Hit) {
+        if (event.target.isEntityAlive) arrows[event.arrow.entityId]?.entitiesHit?.add(event.target)
     }
 
     @SubscribeEvent
@@ -46,7 +46,7 @@ object ArrowTracker {
             is S0EPacketSpawnObject -> if (type == 60) arrows[entityID] = ArrowData()
             is S13PacketDestroyEntities -> entityIDs.forEach {
                 arrows.remove(it)?.run {
-                    ArrowDespawnEvent(arrow ?: return@forEach, owner ?: return@forEach, entitiesHit).postAndCatch()
+                    ArrowEvent.Despawn(arrow ?: return@run, owner ?: return@run, entitiesHit).postAndCatch()
                 }
             }
         }
@@ -61,7 +61,7 @@ object ArrowTracker {
             return it
         }
 
-        return (ownedArrows[arrowPos] ?: ownedArrows[arrowPos.addVec(y=16)] ?: return null).owner
+        return (ownedArrows[arrowPos] ?: ownedArrows[arrowPos.addVec(y=16)])?.owner
     }
 
     data class OwnedData(val owner: Entity, val addedTime: Long)

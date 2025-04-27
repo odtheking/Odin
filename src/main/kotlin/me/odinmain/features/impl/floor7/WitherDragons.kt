@@ -1,6 +1,6 @@
 package me.odinmain.features.impl.floor7
 
-import me.odinmain.events.impl.ArrowDespawnEvent
+import me.odinmain.events.impl.ArrowEvent
 import me.odinmain.events.impl.ServerTickEvent
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.DragonCheck.dragonSpawn
@@ -146,14 +146,14 @@ object WitherDragons : Module(
         if (dragonHealth) DragonCheck.dragonEntityList.forEach {
             if (it.health > 0) Renderer.drawStringInWorld(colorHealth(it.health), it.renderVec.addVec(y = 1.5), Colors.WHITE, depth = false, scale = 0.2f, shadow = true)
         }
-        if (dragonTimer) WitherDragonsEnum.entries.forEach { dragon ->
-            if (dragon.state == WitherDragonState.SPAWNING && dragon.timeToSpawn > 0) Renderer.drawStringInWorld(
+
+        WitherDragonsEnum.entries.forEach { dragon ->
+            if (dragonTimer && dragon.state == WitherDragonState.SPAWNING && dragon.timeToSpawn > 0) Renderer.drawStringInWorld(
                 "§${dragon.colorCode}${dragon.name.first()}: ${getDragonTimer(dragon.timeToSpawn)}", dragon.spawnPos,
                 color = Colors.WHITE, depth = false, scale = 0.16f
             )
-        }
-        if (dragonBoxes) WitherDragonsEnum.entries.forEach {
-            if (it.state != WitherDragonState.DEAD) Renderer.drawBox(it.boxesDimensions, it.color.withAlpha(0.5f), lineThickness, depth = false, fillAlpha = 0)
+
+            if (dragonBoxes && dragon.state != WitherDragonState.DEAD) Renderer.drawBox(dragon.boxesDimensions, dragon.color.withAlpha(0.5f), lineThickness, depth = false, fillAlpha = 0)
         }
 
         if (cauldronHighlight) relicsOnWorldLast()
@@ -169,7 +169,7 @@ object WitherDragons : Module(
     }
 
     @SubscribeEvent
-    fun onArrowDespawn(event: ArrowDespawnEvent) = WitherDragonsEnum.entries.forEach { dragon ->
+    fun onArrowDespawn(event: ArrowEvent.Despawn) = WitherDragonsEnum.entries.forEach { dragon ->
         if (dragon.state != WitherDragonState.ALIVE || currentTick - dragon.spawnedTime >= dragon.skipKillTime) return@forEach
         val hits = event.entitiesHit.filter { ((it as? EntityDragonPart)?.entityDragonObj ?: it) == dragon.entity }.size.takeUnless { it == 0 } ?: return@forEach
         runOnMCThread {

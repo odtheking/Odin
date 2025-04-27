@@ -48,7 +48,7 @@ enum class WitherDragonsEnum (
 
     Green( Vec3(27.0, 14.0, 94.0), AxisAlignedBB(7.0,  8.0,  80.0, 37.0, 28.0, 110.0),  'a', Colors.MINECRAFT_GREEN, 23.0..29.0, 91.0..97.0,  skipKillTime = 52),
 
-    Blue(  Vec3(84.0, 14.0, 94.0), AxisAlignedBB(71.5, 16.0, 82.5, 96.5, 26.0, 107.5),  'b', Colors.MINECRAFT_AQUA,  82.0..88.0, 91.0..97.0,  skipKillTime = 39),
+    Blue(  Vec3(84.0, 14.0, 94.0), AxisAlignedBB(71.5, 16.0, 82.5, 96.5, 26.0, 107.5),  'b', Colors.MINECRAFT_AQUA,  82.0..88.0, 91.0..97.0,  skipKillTime = 47),
 
     Purple(Vec3(56.0, 14.0, 125.0), AxisAlignedBB(45.5, 13.0, 113.5,68.5, 23.0, 136.5), '5', Colors.MINECRAFT_DARK_PURPLE, 53.0..59.0, 122.0..128.0, skipKillTime = 38),
 
@@ -65,8 +65,10 @@ enum class WitherDragonsEnum (
         arrowsHit.clear()
 
         if (resetOnDragons && WitherDragons.enabled) onDragonSpawn()
-        if (sendArrowHit && WitherDragons.enabled) runIn(skipKillTime, true) {
-            if (entity?.isEntityAlive == true) modMessage("§fArrows Hit on §${colorCode}${name}§f in §c${(skipKillTime / 20.0).toFixed()}s§7: ${arrowsHit.entries.joinToString(", ") { "§f${it.key}§7: §6${it.value}§7" }}.")
+        if (sendArrowHit && WitherDragons.enabled) {
+            runIn(skipKillTime, true) {
+                if (entity?.isEntityAlive == true) modMessage("§fArrows Hit on §${colorCode}${name}§f in §c${(skipKillTime / 20.0).toFixed()}s§7: ${arrowsHit.entries.joinToString(", ") { "§f${it.key}§7: §6${it.value}§7" }}.")
+            }
         }
         if (sendSpawned && WitherDragons.enabled) {
             val numberSuffix = when (timesSpawned) {

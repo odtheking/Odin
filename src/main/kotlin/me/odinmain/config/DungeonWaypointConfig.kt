@@ -98,7 +98,7 @@ object DungeonWaypointConfig {
             )
         } catch (e: Exception) {
             logger.error("Error decoding Base64 or parsing JSON.", e)
-            modMessage("Error decoding Base64 or parsing json. ${e.message}")
+            modMessage("§eError decoding Base64 or parsing json. §r${e.message}")
             null
         }
     }
