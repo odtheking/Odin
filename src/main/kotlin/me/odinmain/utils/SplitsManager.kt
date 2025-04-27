@@ -6,6 +6,7 @@ import me.odinmain.features.impl.skyblock.Splits.sendSplits
 import me.odinmain.utils.skyblock.Island
 import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.PersonalBest
+import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -41,11 +42,11 @@ object SplitsManager {
 
     @SubscribeEvent(receiveCanceled = true)
     fun onChat(event: ChatPacketEvent) {
-        if (event.message != "Starting in 3 seconds.") return
+        if (event.message != "Starting in 2 seconds.") return
 
         currentSplits = when (LocationUtils.currentArea) {
             Island.Dungeon -> {
-                val floor = LocationUtils.getFloor() ?: return modMessage("§cCouldn't get floor.")
+                val floor = DungeonUtils.floor
 
                 with(dungeonSplits[floor.floorNumber].toMutableList()) {
                     addAll(0, listOf(

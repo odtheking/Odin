@@ -90,6 +90,6 @@ object IceFillSolver {
     }
 
     fun reset() {
-        currentPatterns = ArrayList()
+        currentPatterns.clear()
     }
 }
