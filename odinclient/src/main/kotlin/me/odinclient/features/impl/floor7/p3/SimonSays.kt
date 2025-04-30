@@ -120,7 +120,7 @@ object SimonSays : Module(
                     if (!optimizeSolution) resetSolution()
                 } else if (old.block == Blocks.stone_button && updated.getValue(BlockButtonStone.POWERED)) {
                     clickNeeded = clickInOrder.indexOf(pos.add(1, 0, 0)) + 1
-                    if (clickNeeded >= clickInOrder.size) if (optimizeSolution) resetSolution(clickNeeded < 4) else clickNeeded = 0
+                    if (clickNeeded >= clickInOrder.size) if (optimizeSolution) resetSolution(clickNeeded < 5) else clickNeeded = 0
                 }
         }
     }
