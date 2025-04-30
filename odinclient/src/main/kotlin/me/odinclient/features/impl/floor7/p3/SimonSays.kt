@@ -167,14 +167,13 @@ object SimonSays : Module(
             clickInOrder.isEmpty() ||
             clickNeeded >= clickInOrder.size
         ) {
-            if (faceToFirst) {
-                firstButton?.let {
-                    firstButton = null
-                    val (_, yaw, pitch) = getDirectionToVec3(it.toVec3().addVec(x = -0.1, y = .5, z = .5))
-                    autoSSClickInQueue = true
-                    smoothRotateTo(yaw, pitch, autoSSRotateTime) {
-                        autoSSClickInQueue = false
-                    }
+            if (!faceToFirst) return
+            firstButton?.let {
+                firstButton = null
+                val (_, yaw, pitch) = getDirectionToVec3(it.toVec3().addVec(x = -0.1, y = .5, z = .5))
+                autoSSClickInQueue = true
+                smoothRotateTo(yaw, pitch, autoSSRotateTime) {
+                    autoSSClickInQueue = false
                 }
             }
             return
