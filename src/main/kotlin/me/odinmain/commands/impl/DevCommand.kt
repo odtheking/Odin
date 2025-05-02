@@ -15,7 +15,6 @@ import me.odinmain.features.impl.floor7.WitherDragonState
 import me.odinmain.features.impl.floor7.WitherDragons.priorityDragon
 import me.odinmain.features.impl.floor7.WitherDragonsEnum
 import me.odinmain.features.impl.nether.NoPre
-import me.odinmain.features.impl.render.ClickGUIModule
 import me.odinmain.features.impl.render.DevPlayers.updateDevs
 import me.odinmain.utils.isOtherPlayer
 import me.odinmain.utils.postAndCatch
@@ -100,7 +99,7 @@ val devCommand = Commodore("oddev") {
     literal("debug").runs {
         modMessage("""
             |Version: $VERSION
-            |Hypixel: ${LocationUtils.isOnHypixel}${if (ClickGUIModule.forceHypixel) " (forced)" else ""}
+            |Hypixel: ${LocationUtils.isOnHypixel}}
             ${
                 when {
                     KuudraUtils.inKuudra -> """
