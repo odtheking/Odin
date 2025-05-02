@@ -68,12 +68,7 @@ object SimonSays : Module(
 
         when (pos.x) {
             111 ->
-               if (((optimizeSolution && updated.block == Blocks.sea_lantern && old.block == Blocks.obsidian) ||
-     (!optimizeSolution && updated.block == Blocks.obsidian && old.block == Blocks.sea_lantern)) &&
-     pos !in clickInOrder) {
-    clickInOrder.add(pos)
-}
-
+                if ((if (optimizeSolution) updated.block == Blocks.sea_lantern && old.block == Blocks.obsidian else updated.block == Blocks.obsidian && old.block == Blocks.sea_lantern) && pos !in clickInOrder) clickInOrder.add(pos)
 
             110 ->
                 if (updated.block == Blocks.air) {
