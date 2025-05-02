@@ -97,7 +97,7 @@ class ElementSelector(parent: ModuleButton, setting: SelectorSetting) :
             }
         } else if (mouseButton == 1) {
             if (isHovered) {
-                setting.index += 1
+                setting.index++
                 return true
             }
         }

@@ -3,9 +3,6 @@ package me.odinmain.utils
 import me.odinmain.OdinMain.mc
 import net.minecraft.scoreboard.ScorePlayerTeam
 
-fun cleanSB(scoreboard: String?): String =
-    scoreboard.noControlCodes.filter { it.code in 21..126 }
-
 /**
  * Retrieves a list of strings representing lines on the sidebar of the Minecraft scoreboard.
  *
@@ -30,9 +27,3 @@ inline val sidebarLines: List<String>
 // TODO: Figure out if this and cleanSB() do the same thing, and if so remove one.
 fun cleanLine(scoreboard: String): String =
     scoreboard.noControlCodes.filter { it.code in 32..126 }
-
-inline val getTabList: List<String>
-    get() {
-        val playerInfoMap = mc.thePlayer?.sendQueue?.playerInfoMap ?: return emptyList()
-        return playerInfoMap.toMutableList().map { mc.ingameGUI.tabList.getPlayerName(it) }
-    }

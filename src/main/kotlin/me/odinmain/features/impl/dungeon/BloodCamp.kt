@@ -3,7 +3,6 @@ package me.odinmain.features.impl.dungeon
 import me.odinmain.OdinMain.isLegitVersion
 import me.odinmain.events.impl.EntityLeaveWorldEvent
 import me.odinmain.events.impl.PostEntityMetadata
-import me.odinmain.events.impl.ServerTickEvent
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
@@ -23,6 +22,7 @@ import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.entity.monster.EntityZombie
 import net.minecraft.init.Items
 import net.minecraft.network.play.server.S14PacketEntity.S17PacketEntityLookMove
+import net.minecraft.network.play.server.S32PacketConfirmTransaction
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderGameOverlayEvent
@@ -167,6 +167,10 @@ object BloodCamp : Module(
             }
         }
 
+        onPacket<S32PacketConfirmTransaction> {
+            currentTickTime += 50
+        }
+
         onWorldLoad {
             currentWatcherEntity = null
             entityDataMap.clear()
@@ -276,11 +280,6 @@ object BloodCamp : Module(
                 lastVector.zCoord + (currVector.zCoord - lastVector.zCoord) * multiplier
             )
         }
-    }
-
-    @SubscribeEvent
-    fun onServerTick(event: ServerTickEvent) {
-        currentTickTime += 50
     }
 
     private val watcherSkulls = setOf(

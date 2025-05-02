@@ -32,7 +32,7 @@ object ArrowHit : Module(
     init {
         onPacket<S29PacketSoundEffect> {
             if (it.soundName != "random.successful_hit") return@onPacket
-            arrowCount += 1
+            arrowCount++
             if (arrowCount >= (resetCount.toIntOrNull() ?: 9999) && resetOnNumber) arrowCount = 0
         }
 

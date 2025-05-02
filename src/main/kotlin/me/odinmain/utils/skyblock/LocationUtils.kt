@@ -2,7 +2,6 @@ package me.odinmain.utils.skyblock
 
 import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.PacketEvent
-import me.odinmain.features.impl.render.ClickGUIModule
 import me.odinmain.utils.cleanLine
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.clock.Executor.Companion.register
@@ -33,6 +32,7 @@ object LocationUtils {
 
     init {
         Executor(500, "LocationUtils") {
+            // Move this to packet based
             if (currentArea.isArea(Island.Kuudra) && kuudraTier == 0)
                 sidebarLines.find { cleanLine(it).contains("Kuudra's Hollow (") }?.let {
                     kuudraTier = it.substringBefore(")").lastOrNull()?.digitToIntOrNull() ?: 0 }
@@ -65,7 +65,7 @@ object LocationUtils {
     fun onConnect(event: FMLNetworkEvent.ClientConnectedToServerEvent) {
         if (mc.isSingleplayer) currentArea = Island.SinglePlayer
 
-        isOnHypixel = if (ClickGUIModule.forceHypixel) true else mc.runCatching {
+        isOnHypixel = mc.runCatching {
             !event.isLocal && ((thePlayer?.clientBrand?.contains("hypixel", true) ?: currentServerData?.serverIP?.contains("hypixel", true)) == true)
         }.getOrDefault(false)
     }
@@ -79,16 +79,16 @@ object LocationUtils {
             }
 
             is S38PacketPlayerListItem -> {
-                if (!event.packet.action.equalsOneOf(S38PacketPlayerListItem.Action.UPDATE_DISPLAY_NAME, S38PacketPlayerListItem.Action.ADD_PLAYER)) return
+                if (!currentArea.isArea(Island.Unknown) || !event.packet.action.equalsOneOf(S38PacketPlayerListItem.Action.UPDATE_DISPLAY_NAME, S38PacketPlayerListItem.Action.ADD_PLAYER)) return
                 val area = event.packet.entries?.find { it?.displayName?.unformattedText?.startsWithOneOf("Area: ", "Dungeon: ") == true }?.displayName?.formattedText ?: return
 
                 currentArea = Island.entries.firstOrNull { area.contains(it.displayName, true) } ?: Island.Unknown
                 if (DungeonUtils.inDungeons && currentDungeon == null) currentDungeon = Dungeon()
             }
 
-            is S3BPacketScoreboardObjective -> {
-                isInSkyblock = isOnHypixel && event.packet.func_149339_c() == "SBScoreboard"
-            }
+            is S3BPacketScoreboardObjective ->
+                if (!isInSkyblock)
+                    isInSkyblock = isOnHypixel && event.packet.func_149339_c() == "SBScoreboard"
         }
     }
 }

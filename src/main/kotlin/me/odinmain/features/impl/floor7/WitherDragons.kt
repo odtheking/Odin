@@ -1,6 +1,5 @@
 package me.odinmain.features.impl.floor7
 
-import me.odinmain.events.impl.ServerTickEvent
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.DragonCheck.dragonSpawn
 import me.odinmain.features.impl.floor7.DragonCheck.dragonSprayed
@@ -134,6 +133,12 @@ object WitherDragons : Module(
                 if (sendNotification) modMessage("§${it.colorCode}${it.name} dragon counts.")
             }
         }
+
+        onPacket<S32PacketConfirmTransaction> {
+            WitherDragonsEnum.entries.forEach { if (it.state == WitherDragonState.SPAWNING && it.timeToSpawn > 0) it.timeToSpawn-- }
+            KingRelics.onServerTick()
+            currentTick++
+        }
     }
 
     @SubscribeEvent
@@ -161,13 +166,6 @@ object WitherDragons : Module(
         if (cauldronHighlight) relicsOnWorldLast()
         if (priorityDragon != WitherDragonsEnum.None && dragonTracers && priorityDragon.state == WitherDragonState.SPAWNING)
             Renderer.drawTracer(priorityDragon.spawnPos.addVec(0.5, 3.5, 0.5), color = priorityDragon.color, lineWidth = tracerThickness)
-    }
-
-    @SubscribeEvent
-    fun onServerTick(event: ServerTickEvent) {
-        currentTick++
-        WitherDragonsEnum.entries.forEach { if (it.state == WitherDragonState.SPAWNING && it.timeToSpawn > 0) it.timeToSpawn-- }
-        KingRelics.onServerTick()
     }
 
     fun arrowDeath(dragon: WitherDragonsEnum) {

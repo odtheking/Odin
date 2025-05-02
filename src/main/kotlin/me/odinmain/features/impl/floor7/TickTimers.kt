@@ -1,6 +1,5 @@
 package me.odinmain.features.impl.floor7
 
-import me.odinmain.events.impl.ServerTickEvent
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
@@ -8,7 +7,7 @@ import me.odinmain.features.settings.impl.HudSetting
 import me.odinmain.utils.render.mcTextAndWidth
 import me.odinmain.utils.toFixed
 import me.odinmain.utils.ui.Colors
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import net.minecraft.network.play.server.S32PacketConfirmTransaction
 
 object TickTimers : Module(
     name = "Tick Timers",
@@ -62,22 +61,21 @@ object TickTimers : Module(
 
         onMessage(Regex("\\[BOSS] Storm: Pathetic Maxor, just like expected\\."), { enabled && stormHud.enabled }) { padTickTime = 20 }
 
+        onPacket<S32PacketConfirmTransaction> {
+            if (necronTime >= 0 && necronHud.enabled) necronTime--
+            if (padTickTime >= 0 && stormHud.enabled) padTickTime--
+            if (padTickTime == 0 && stormHud.enabled) padTickTime = 20
+            if (goldorTickTime >= 0 && goldorHud.enabled) goldorTickTime--
+            if (goldorStartTime >= 0 && goldorHud.enabled) goldorStartTime--
+            if (goldorTickTime == 0 && goldorStartTime <= 0 && goldorHud.enabled) { goldorTickTime = 60 }
+        }
+
         onWorldLoad {
             necronTime = -1
             goldorTickTime = -1
             goldorStartTime = -1
             padTickTime = -1
         }
-    }
-
-    @SubscribeEvent
-    fun onServerTick(event: ServerTickEvent) {
-        if (necronTime >= 0 && necronHud.enabled) necronTime--
-        if (padTickTime >= 0 && stormHud.enabled) padTickTime--
-        if (padTickTime == 0 && stormHud.enabled) padTickTime = 20
-        if (goldorTickTime >= 0 && goldorHud.enabled) goldorTickTime--
-        if (goldorStartTime >= 0 && goldorHud.enabled) goldorStartTime--
-        if (goldorTickTime == 0 && goldorStartTime <= 0 && goldorHud.enabled) { goldorTickTime = 60 }
     }
 
     private fun formatTimer(time: Int, max: Int, prefix: String): String {
