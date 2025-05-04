@@ -44,7 +44,7 @@ object WardrobeKeybinds : Module(
 
     @SubscribeEvent
     fun onGuiMouseClick(event: GuiEvent.MouseClick) {
-        if (onClick(event.gui as? GuiChest ?: return, event.button)) event.isCanceled = true
+        if (onClick(event.gui as? GuiChest ?: return, event.button - 100)) event.isCanceled = true
     }
 
     @SubscribeEvent

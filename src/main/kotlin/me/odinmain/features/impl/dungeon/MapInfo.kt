@@ -120,8 +120,8 @@ object MapInfo : Module(
     private fun colorizeDeaths(count: Int): String {
         return when {
             count == 0 -> "§a0"
-            count <= if (DungeonUtils.floorNumber < 6) 2 else 3 -> "§e${count}"
-            count == if (DungeonUtils.floorNumber < 6) 3 else 4 -> "§c${count}"
+            count <= if (DungeonUtils.floor.floorNumber < 6) 2 else 3 -> "§e${count}"
+            count == if (DungeonUtils.floor.floorNumber < 6) 3 else 4 -> "§c${count}"
             else -> "§4${count}"
         }
     }

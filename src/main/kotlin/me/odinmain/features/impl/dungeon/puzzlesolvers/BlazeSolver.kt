@@ -10,6 +10,7 @@ import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.RenderUtils.renderBoundingBox
 import me.odinmain.utils.render.RenderUtils.renderVec
 import me.odinmain.utils.render.Renderer
+import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.Puzzle
 import me.odinmain.utils.skyblock.dungeon.PuzzleStatus
@@ -44,7 +45,7 @@ object BlazeSolver {
         if (blazes.isEmpty()) return
         blazes.removeAll { mc.theWorld?.getEntityByID(it.entityId) == null }
         if (blazes.isEmpty() && lastBlazeCount == 1) {
-            DungeonUtils.puzzles.find { it == Puzzle.BLAZE }?.status = PuzzleStatus.Completed
+            LocationUtils.currentDungeon?.puzzles?.find { it == Puzzle.BLAZE }?.status = PuzzleStatus.Completed
             onPuzzleComplete(if (DungeonUtils.currentRoomName == "Higher Blaze") "Higher Blaze" else "Lower Blaze")
             if (blazeSendComplete) partyMessage("Blaze puzzle solved!")
             lastBlazeCount = 0

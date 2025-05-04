@@ -99,7 +99,7 @@ val devCommand = Commodore("oddev") {
     literal("debug").runs {
         modMessage("""
             |Version: $VERSION
-            |Hypixel: ${LocationUtils.isOnHypixel}}
+            |Hypixel: ${LocationUtils.isOnHypixel}
             ${
                 when {
                     KuudraUtils.inKuudra -> """

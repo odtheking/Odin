@@ -63,9 +63,9 @@ object BloodCamp : Module(
             renderDataMap.entries.sortedBy { it.value.time }.fold(0) { acc, data ->
                 val time = data.takeUnless { it.key.isDead }?.value?.time ?: return@fold acc
                 val color = when {
-                    time > 1.5 -> Colors.MINECRAFT_GREEN
-                    time in 0.5..1.5 -> Colors.MINECRAFT_GOLD
-                    time in 0.0..0.5 -> Colors.MINECRAFT_RED
+                    time > 1.5f -> Colors.MINECRAFT_GREEN
+                    time in 0.5f..1.5f -> Colors.MINECRAFT_GOLD
+                    time in 0f..0.5f -> Colors.MINECRAFT_RED
                     else -> Colors.MINECRAFT_AQUA
                 }
                 mcText("${time.toFixed()}s", 10, 10 * acc, 1f, color, center = false)
