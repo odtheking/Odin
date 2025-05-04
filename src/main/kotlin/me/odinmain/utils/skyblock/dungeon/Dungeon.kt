@@ -74,9 +74,9 @@ class Dungeon {
 
             is S3EPacketTeams -> {
                 if (event.packet.action != 2) return
-                val text = event.packet.prefix?.plus(event.packet.suffix) ?: return
+                val text = event.packet.prefix?.plus(event.packet.suffix)?.noControlCodes ?: return
 
-                floorRegex.find(text.noControlCodes)?.groupValues?.get(1)?.let { floor = Floor.valueOf(it) }
+                floorRegex.find(text)?.groupValues?.get(1)?.let { floor = Floor.valueOf(it) }
 
                 clearedRegex.find(text)?.groupValues?.get(1)?.toIntOrNull()?.let {
                     if (dungeonStats.percentCleared != it && expectingBloodUpdate) dungeonStats.bloodDone = true
