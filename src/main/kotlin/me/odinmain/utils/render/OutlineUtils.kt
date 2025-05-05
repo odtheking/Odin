@@ -65,7 +65,6 @@ object OutlineUtils {
         glColor4d(color.red / 255.0, color.green / 255.0, color.blue / 255.0, color.alpha / 255.0)
 
         glPushMatrix()
-        glScalef(1.01f, 1.01f, 1.01f)
         render(event)
         glPopMatrix()
 
