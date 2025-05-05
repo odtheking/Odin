@@ -53,8 +53,8 @@ object HighlightRenderer {
 
     @SubscribeEvent
     fun onRenderModel(event: RenderEntityModelEvent) {
-        entities[HighlightType.Outline]?.find { it.entity.isEntityAlive && it.entity == event.entity && (!it.depth || mc.thePlayer.isEntitySeen(it.entity)) }?.let {
-            OutlineUtils.outlineEntity(event, it.color, it.thickness)
+        entities[HighlightType.Outline]?.find { it.entity.isEntityAlive && it.entity == event.entity }?.let {
+            OutlineUtils.outlineEntity(event, it.color, it.thickness, it.depth)
         }
     }
 
