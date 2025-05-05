@@ -64,9 +64,7 @@ object OutlineUtils {
 
         glColor4d(color.red / 255.0, color.green / 255.0, color.blue / 255.0, color.alpha / 255.0)
 
-        glPushMatrix()
         render(event)
-        glPopMatrix()
 
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL)
         glDisable(GL_STENCIL_TEST)
