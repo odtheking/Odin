@@ -49,6 +49,8 @@ object SimonSays : Module(
     private val autoSSDelay by NumberSetting("Delay Between Clicks", 200L, 50, 500, unit = "ms", desc = "The delay between each click.").withDependency { autoSS }
     private val autoSSRotateTime by NumberSetting("Rotate Time", 150, 0, 400, unit = "ms", desc = "The time it takes to rotate to the correct button.").withDependency { autoSS }
     private val blockWrong by BooleanSetting("Block Wrong Clicks", false, desc = "Blocks Any Wrong Clicks (sneak to disable).")
+    private val optimizeSolution by BooleanSetting("Optimize Solution", false, desc = "Use optimized solution, might fix ss-skip")
+    private val faceToFirst by BooleanSetting("Face To First", false, desc = "Face to the first button after the last button is click (except the last phase was clicked)").withDependency { autoSS && optimizeSolution }
 
     private val triggerBotClock = Clock(triggerBotDelay)
     private val firstClickClock = Clock(800)
@@ -56,17 +58,26 @@ object SimonSays : Module(
     private var autoSSClickInQueue = false
     private val autoSSLastClickClock = Clock(1000)
 
-    private val firstButton = BlockPos(110, 121, 91)
+    private val startButton = BlockPos(110, 121, 91)
     private val clickInOrder = ArrayList<BlockPos>()
     private var clickNeeded = 0
+    private var firstButton: BlockPos? = null
 
     private fun start() {
-        if (mc.objectMouseOver?.blockPos == firstButton)
+        if (mc.objectMouseOver?.blockPos == startButton)
             repeat(startClicks) {
                 runIn(it * startClickDelay) {
                     rightClick()
                 }
             }
+    }
+
+    private fun resetSolution(keepFirst: Boolean = false) {
+        clickInOrder.clear()
+        clickNeeded = 0
+
+        if (keepFirst) return
+        firstButton = null
     }
 
     init {
@@ -76,8 +87,7 @@ object SimonSays : Module(
         }
 
         onWorldLoad {
-            clickInOrder.clear()
-            clickNeeded = 0
+            resetSolution()
         }
     }
 
@@ -87,9 +97,8 @@ object SimonSays : Module(
     fun onBlockChange(event: BlockChangeEvent) = with (event) {
         if (DungeonUtils.getF7Phase() != M7Phases.P3) return
 
-        if (pos == firstButton && updated.block == Blocks.stone_button && updated.getValue(BlockButtonStone.POWERED)) {
-            clickInOrder.clear()
-            clickNeeded = 0
+        if (pos == startButton && updated.block == Blocks.stone_button && updated.getValue(BlockButtonStone.POWERED)) {
+            if (!optimizeSolution) resetSolution()
             return
         }
 
@@ -97,15 +106,21 @@ object SimonSays : Module(
 
         when (pos.x) {
             111 ->
-                if (updated.block == Blocks.obsidian && old.block == Blocks.sea_lantern && pos !in clickInOrder) clickInOrder.add(pos)
+                if (optimizeSolution) {
+                    if (updated.block == Blocks.sea_lantern && old.block == Blocks.obsidian) {
+                        if (clickInOrder.isEmpty()) {
+                            firstButton = pos
+                            clickInOrder.add(pos)
+                        } else if (pos !in clickInOrder) clickInOrder.add(pos)
+                    }
+                } else if (updated.block == Blocks.obsidian && old.block == Blocks.sea_lantern && pos !in clickInOrder) clickInOrder.add(pos)
 
             110 ->
                 if (updated.block == Blocks.air) {
-                    clickInOrder.clear()
-                    clickNeeded = 0
+                    if (!optimizeSolution) resetSolution()
                 } else if (old.block == Blocks.stone_button && updated.getValue(BlockButtonStone.POWERED)) {
-                    val index = clickInOrder.indexOf(pos.add(1, 0, 0)) + 1
-                    clickNeeded = if (index >= clickInOrder.size) 0 else index
+                    clickNeeded = clickInOrder.indexOf(pos.add(1, 0, 0)) + 1
+                    if (clickNeeded >= clickInOrder.size) if (optimizeSolution) resetSolution(clickNeeded < 5) else clickNeeded = 0
                 }
         }
     }
@@ -122,7 +137,7 @@ object SimonSays : Module(
     private fun triggerBot() {
         if (!triggerBotClock.hasTimePassed(triggerBotDelay) || clickInOrder.isEmpty() || mc.currentScreen != null) return
         val pos = mc.objectMouseOver?.blockPos ?: return
-        if (clickInOrder[clickNeeded] != pos.east()) return
+        if (clickInOrder.getOrNull(clickNeeded) != pos.east()) return
         if (clickNeeded == 0) { // Stops spamming the first button and breaking the puzzle.
             if (!firstClickClock.hasTimePassed()) return
             firstClickClock.update()
@@ -143,12 +158,26 @@ object SimonSays : Module(
         if (
             !isInSSRange ||
             !autoSSClock.hasTimePassed(autoSSDelay) ||
-            clickInOrder.isEmpty() ||
             mc.currentScreen != null ||
             autoSSClickInQueue ||
-            clickNeeded >= clickInOrder.size ||
             !autoSSLastClickClock.hasTimePassed()
         ) return
+
+        if (
+            clickInOrder.isEmpty() ||
+            clickNeeded >= clickInOrder.size
+        ) {
+            if (!faceToFirst) return
+            firstButton?.let {
+                firstButton = null
+                val (_, yaw, pitch) = getDirectionToVec3(it.toVec3().addVec(x = -0.1, y = .5, z = .5))
+                autoSSClickInQueue = true
+                smoothRotateTo(yaw, pitch, autoSSRotateTime) {
+                    autoSSClickInQueue = false
+                }
+            }
+            return
+        }
 
         val buttonToClick = clickInOrder[clickNeeded].takeIf { getBlockIdAt(it.west()) == 77 } ?: return
         val (_, yaw, pitch) = getDirectionToVec3(buttonToClick.toVec3().addVec(x = -0.1, y = .5, z = .5))
@@ -166,13 +195,20 @@ object SimonSays : Module(
         if (
             event.pos == null ||
             event.action != PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK ||
-            event.world != mc.theWorld ||
-            !blockWrong ||
-            mc.thePlayer?.isSneaking == true ||
-            event.pos.x != 110 || event.pos.y !in 120..123 || event.pos.z !in 92..95
+            event.world != mc.theWorld
         ) return
 
-        if (event.pos.east() != clickInOrder.getOrNull(clickNeeded)) event.isCanceled = true
+        if (event.pos == startButton) {
+            if (optimizeSolution) resetSolution()
+            return
+        }
+
+        if (
+            blockWrong &&
+            mc.thePlayer?.isSneaking == false &&
+            event.pos.x == 110 && event.pos.y in 120..123 && event.pos.z in 92..95 &&
+            event.pos.east() != clickInOrder.getOrNull(clickNeeded)
+        ) event.isCanceled = true
     }
 
     @SubscribeEvent
@@ -186,11 +222,13 @@ object SimonSays : Module(
 
         for (index in clickNeeded until clickInOrder.size) {
             with(clickInOrder[index]) {
-                Renderer.drawStyledBox(AxisAlignedBB(x + 0.05, y + 0.37, z + 0.3, x - 0.15, y + 0.63, z + 0.7), when (index) {
-                    clickNeeded -> firstColor
-                    clickNeeded + 1 -> secondColor
-                    else -> thirdColor
-                }, style, lineWidth, depthCheck)
+                Renderer.drawStyledBox(
+                    AxisAlignedBB(x + 0.05, y + 0.37, z + 0.3, x - 0.15, y + 0.63, z + 0.7), when (index) {
+                        clickNeeded -> firstColor
+                        clickNeeded + 1 -> secondColor
+                        else -> thirdColor
+                    }, style, lineWidth, depthCheck
+                )
             }
         }
     }

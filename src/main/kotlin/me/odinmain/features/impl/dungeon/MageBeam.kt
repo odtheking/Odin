@@ -1,7 +1,6 @@
 package me.odinmain.features.impl.dungeon
 
 import me.odinmain.events.impl.PacketEvent
-import me.odinmain.events.impl.ServerTickEvent
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.ColorSetting
@@ -62,10 +61,10 @@ object MageBeam: Module (
         return lastPoint.subtract(points[0]).normalize().dotProduct(newPoint.subtract(lastPoint).normalize()) > 0.99
     }
 
-    @SubscribeEvent
-    fun onServerTick(event: ServerTickEvent) {
-        currentTick++
-    }
+//    @SubscribeEvent
+//    fun onServerTick(event: ServerTickEvent) {
+//        currentTick++
+//    }
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {

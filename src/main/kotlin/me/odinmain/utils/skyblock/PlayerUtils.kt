@@ -3,7 +3,6 @@ package me.odinmain.utils.skyblock
 import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.PacketEvent
 import me.odinmain.features.impl.floor7.p3.termsim.TermSimGUI
-import me.odinmain.features.impl.render.ClickGUIModule
 import me.odinmain.utils.postAndCatch
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
@@ -61,7 +60,7 @@ object PlayerUtils {
     }
 
     fun windowClick(slotId: Int, button: Int, mode: Int) {
-        if (!ClickGUIModule.bypassLowestClickDelay && lastClickSent + 45 > System.currentTimeMillis()) return devMessage("§cIgnoring click on slot §9$slotId.")
+        if (lastClickSent + 45 > System.currentTimeMillis()) return devMessage("§cIgnoring click on slot §9$slotId.")
         mc.thePlayer?.openContainer?.let {
             if (slotId !in 0 until it.inventorySlots.size) return
             if (mc.currentScreen is TermSimGUI) {

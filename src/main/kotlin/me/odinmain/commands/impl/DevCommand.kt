@@ -15,7 +15,6 @@ import me.odinmain.features.impl.floor7.WitherDragonState
 import me.odinmain.features.impl.floor7.WitherDragons.priorityDragon
 import me.odinmain.features.impl.floor7.WitherDragonsEnum
 import me.odinmain.features.impl.nether.NoPre
-import me.odinmain.features.impl.render.ClickGUIModule
 import me.odinmain.features.impl.render.DevPlayers.updateDevs
 import me.odinmain.utils.isOtherPlayer
 import me.odinmain.utils.postAndCatch
@@ -100,7 +99,7 @@ val devCommand = Commodore("oddev") {
     literal("debug").runs {
         modMessage("""
             |Version: $VERSION
-            |Hypixel: ${LocationUtils.isOnHypixel}${if (ClickGUIModule.forceHypixel) " (forced)" else ""}
+            |Hypixel: ${LocationUtils.isOnHypixel}
             ${
                 when {
                     KuudraUtils.inKuudra -> """
@@ -124,7 +123,7 @@ val devCommand = Commodore("oddev") {
                         |Deaths: ${DungeonUtils.deathCount}, Crypts: ${DungeonUtils.cryptCount}
                         |BonusScore: ${DungeonUtils.getBonusScore}, isPaul: ${DungeonUtils.isPaul}
                         |OpenRooms: ${DungeonUtils.openRoomCount}, CompletedRooms: ${DungeonUtils.completedRoomCount} ${DungeonUtils.percentCleared}%, Blood Done: ${DungeonUtils.bloodDone}, Total: ${DungeonUtils.totalRooms}
-                        |Puzzles: ${DungeonUtils.puzzles.joinToString { "${it.name} (${it.status.toString()})" }}, Count: ${DungeonUtils.puzzleCount}
+                        |Puzzles (${DungeonUtils.puzzleCount}): ${DungeonUtils.puzzles.joinToString { "${it.name} (${it.status.toString()})" }}
                         |DungeonTime: ${DungeonUtils.dungeonTime}
                         |currentDungeonPlayer: ${DungeonUtils.currentDungeonPlayer.name}, ${DungeonUtils.currentDungeonPlayer.clazz}, ${DungeonUtils.currentDungeonPlayer.isDead}, ${DungeonUtils.isGhost}
                         |doorOpener: ${DungeonUtils.doorOpener}

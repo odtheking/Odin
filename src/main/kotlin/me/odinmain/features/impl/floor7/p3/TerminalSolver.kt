@@ -99,6 +99,7 @@ object TerminalSolver : Module(
 
     init {
         onPacket<S2DPacketOpenWindow> { packet ->
+            if (currentTerm?.isClicked == false) leftTerm()
             currentTermWindowName = packet.windowTitle?.formattedText?.noControlCodes?.takeIf { newWindowName -> newWindowName != currentTermWindowName } ?: return@onPacket
             val newTermType = TerminalTypes.entries.find { terminal -> currentTermWindowName.startsWith(terminal.windowName) }
 

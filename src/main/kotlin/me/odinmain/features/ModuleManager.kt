@@ -4,7 +4,6 @@ import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.events.impl.InputEvent
 import me.odinmain.events.impl.PacketEvent
-import me.odinmain.events.impl.ServerTickEvent
 import me.odinmain.features.impl.dungeon.*
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints
 import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers
@@ -23,6 +22,7 @@ import me.odinmain.utils.render.getTextWidth
 import me.odinmain.utils.ui.hud.EditHUDGui
 import me.odinmain.utils.ui.hud.HudElement
 import net.minecraft.network.Packet
+import net.minecraft.network.play.server.S32PacketConfirmTransaction
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -46,7 +46,7 @@ object ModuleManager {
     val modules: ArrayList<Module> = arrayListOf(
         // dungeon
         DungeonRequeue, BlessingDisplay, PositionalMessages, ExtraStats, KeyHighlight, Mimic, TeammatesHighlight,
-        TerracottaTimer, BloodCamp, SecretClicked, DungeonWaypoints, LeapMenu, PuzzleSolvers, MageBeam,
+        TerracottaTimer, BloodCamp, SecretClicked, DungeonWaypoints, LeapMenu, PuzzleSolvers, /*MageBeam,*/
         WarpCooldown, MapInfo, SwapSound, LividSolver,
 
         // floor 7
@@ -89,11 +89,6 @@ object ModuleManager {
         tickTaskTick(false)
     }
 
-    @SubscribeEvent(receiveCanceled = true)
-    fun onServerTick(event: ServerTickEvent) {
-        tickTaskTick(true)
-    }
-
     private fun tickTaskTick(server: Boolean = false) {
         val toRemove = tickTasks.filter { tickTask ->
             if (tickTask.server != server) return@filter false
@@ -110,6 +105,7 @@ object ModuleManager {
 
     @SubscribeEvent(receiveCanceled = true)
     fun onReceivePacket(event: PacketEvent.Receive) {
+        if (event.packet is S32PacketConfirmTransaction) tickTaskTick(true)
         packetFunctions.forEach {
             if (it.shouldRun() && it.type.isInstance(event.packet)) it.function(event.packet)
         }

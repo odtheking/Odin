@@ -16,9 +16,9 @@ import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.romanToInt
 import me.odinmain.utils.skyblock.PlayerUtils.posX
 import me.odinmain.utils.skyblock.PlayerUtils.posZ
+import me.odinmain.utils.skyblock.devMessage
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.getDungeonTeammates
 import me.odinmain.utils.skyblock.dungeon.tiles.Room
-import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.network.play.server.S02PacketChat
 import net.minecraft.network.play.server.S38PacketPlayerListItem
@@ -74,9 +74,9 @@ class Dungeon {
 
             is S3EPacketTeams -> {
                 if (event.packet.action != 2) return
-                val text = event.packet.prefix?.plus(event.packet.suffix) ?: return
+                val text = event.packet.prefix?.plus(event.packet.suffix)?.noControlCodes ?: return
 
-                floorRegex.find(text.noControlCodes)?.groupValues?.get(1)?.let { floor = Floor.valueOf(it) }
+                floorRegex.find(text)?.groupValues?.get(1)?.let { floor = Floor.valueOf(it) }
 
                 clearedRegex.find(text)?.groupValues?.get(1)?.toIntOrNull()?.let {
                     if (dungeonStats.percentCleared != it && expectingBloodUpdate) dungeonStats.bloodDone = true
@@ -103,7 +103,7 @@ class Dungeon {
                         dungeonStats.mimicKilled = true
 
                     "blaze done!", "blaze done", "blaze puzzle solved!" ->
-                        puzzles.find { it.name == Puzzle.Blaze.name }.let { it?.status = PuzzleStatus.Completed }
+                        puzzles.find { it == Puzzle.BLAZE }.let { it?.status = PuzzleStatus.Completed }
                 }
             }
         }
@@ -117,51 +117,20 @@ class Dungeon {
     private fun getDungeonPuzzles(tabList: List<String>) {
         for (entry in tabList) {
             val (name, status) = puzzleRegex.find(entry)?.destructured ?: continue
-            val puzzle = Puzzle.allPuzzles.find { it.name == name }?.copy() ?: continue
+            val puzzle = Puzzle.entries.find { it.displayName == name }?.takeIf { it != Puzzle.UNKNOWN } ?: continue
             if (puzzle !in puzzles) puzzles.add(puzzle)
 
-            puzzle.status = when {
-                DungeonUtils.puzzles.find { it.name == puzzle.name }?.status == PuzzleStatus.Completed -> PuzzleStatus.Completed
-                status == "✖" -> PuzzleStatus.Failed
-                status == "✔" -> PuzzleStatus.Completed
-                status == "✦" -> PuzzleStatus.Incomplete
+            puzzle.status = when (status) {
+                "✖" -> PuzzleStatus.Failed
+                "✔" -> PuzzleStatus.Completed
+                "✦" -> PuzzleStatus.Incomplete
                 else -> {
-                    modMessage(entry)
+                    devMessage(entry)
                     continue
                 }
             }
         }
     }
-
-    private val puzzleRegex = Regex("^ (\\w+(?: \\w+)*|\\?\\?\\?): \\[([✖✔✦])] ?(?:\\((\\w+)\\))?$")
-    private val expectingBloodRegex = Regex("^\\[BOSS] The Watcher: You have proven yourself. You may pass.")
-    private val doorOpenRegex = Regex("^(?:\\[\\w+] )?(\\w+) opened a (?:WITHER|Blood) door!")
-    private val secretPercentRegex = Regex("^§r Secrets Found: §r§[ea]([\\d.]+)%§r$")
-    private val clearedRegex = Regex("^Cleared: §[c6a](\\d+)% §8(?:§8)?\\(\\d+\\)$")
-    private val timeRegex = Regex("§r Time: §r§6((?:\\d+h ?)?(?:\\d+m ?)?\\d+s)§r")
-    private val completedRoomsRegex = Regex("^§r Completed Rooms: §r§d(\\d+)§r$")
-    private val deathRegex = Regex("^ ☠ You died and became a ghost\\.\$")
-    private val secretCountRegex = Regex("^§r Secrets Found: §r§b(\\d+)§r$")
-    private val openedRoomsRegex = Regex("^§r Opened Rooms: §r§5(\\d+)§r$")
-    private val deathsRegex = Regex("^§r§a§lTeam Deaths: §r§f(\\d+)§r$")
-    private val floorRegex = Regex("The Catacombs \\((\\w+)\\)\$")
-    private val partyMessageRegex = Regex("^Party > .*?: (.+)\$")
-    private val cryptRegex = Regex("^§r Crypts: §r§6(\\d+)§r$")
-
-    data class DungeonStats(
-        var secretsFound: Int = 0,
-        var secretsPercent: Float = 0f,
-        var knownSecrets: Int = 0,
-        var crypts: Int = 0,
-        var openedRooms: Int = 0,
-        var completedRooms: Int = 0,
-        var deaths: Int = 0,
-        var percentCleared: Int = 0,
-        var elapsedTime: String = "0s",
-        var mimicKilled: Boolean = false,
-        var doorOpener: String = "Unknown",
-        var bloodDone: Boolean = false,
-    )
 
     private fun updateDungeonStats(text: List<String>) {
         for (entry in text) {
@@ -170,6 +139,7 @@ class Dungeon {
                 completedRooms = completedRoomsRegex.find(entry)?.groupValues?.get(1)?.toIntOrNull() ?: completedRooms
                 secretsFound = secretCountRegex.find(entry)?.groupValues?.get(1)?.toIntOrNull() ?: secretsFound
                 openedRooms = openedRoomsRegex.find(entry)?.groupValues?.get(1)?.toIntOrNull() ?: openedRooms
+                puzzleCount = puzzleCountRegex.find(entry)?.groupValues?.get(1)?.toIntOrNull() ?: puzzleCount
                 deaths = deathsRegex.find(entry)?.groupValues?.get(1)?.toIntOrNull() ?: deaths
                 crypts = cryptRegex.find(entry)?.groupValues?.get(1)?.toIntOrNull() ?: crypts
                 elapsedTime = timeRegex.find(entry)?.groupValues?.get(1) ?: elapsedTime
@@ -189,5 +159,39 @@ class Dungeon {
                 3 -> dungeonTeammatesNoSelf.sortedBy { DungeonUtils.customLeapOrder.indexOf(it.name.lowercase()).takeIf { index -> index != -1 } ?: Int.MAX_VALUE }
                 else -> dungeonTeammatesNoSelf
             }
+    }
+
+    companion object {
+        private val puzzleRegex = Regex("^ (\\w+(?: \\w+)*|\\?\\?\\?): \\[([✖✔✦])] ?(?:\\((\\w+)\\))?$")
+        private val expectingBloodRegex = Regex("^\\[BOSS] The Watcher: You have proven yourself. You may pass.")
+        private val doorOpenRegex = Regex("^(?:\\[\\w+] )?(\\w+) opened a (?:WITHER|Blood) door!")
+        private val secretPercentRegex = Regex("^ Secrets Found: ([\\d.]+)%$")
+        private val deathRegex = Regex("☠ (\\w{1,16}) .* and became a ghost\\.")
+        private val timeRegex = Regex("^ Time: ((?:\\d+h ?)?(?:\\d+m ?)?\\d+s)$")
+        private val completedRoomsRegex = Regex("^ Completed Rooms: (\\d+)$")
+        private val clearedRegex = Regex("^Cleared: (\\d+)% \\(\\d+\\)$")
+        private val secretCountRegex = Regex("^ Secrets Found: (\\d+)$")
+        private val openedRoomsRegex = Regex("^ Opened Rooms: (\\d+)$")
+        private val floorRegex = Regex("The Catacombs \\((\\w+)\\)\$")
+        private val partyMessageRegex = Regex("^Party > .*?: (.+)\$")
+        private val puzzleCountRegex = Regex("^Puzzles: \\((\\d+)\\)\$")
+        private val deathsRegex = Regex("^Team Deaths: (\\d+)$")
+        private val cryptRegex = Regex("^ Crypts: (\\d+)$")
+
+        data class DungeonStats(
+            var secretsFound: Int = 0,
+            var secretsPercent: Float = 0f,
+            var knownSecrets: Int = 0,
+            var crypts: Int = 0,
+            var openedRooms: Int = 0,
+            var completedRooms: Int = 0,
+            var deaths: Int = 0,
+            var percentCleared: Int = 0,
+            var elapsedTime: String = "0s",
+            var mimicKilled: Boolean = false,
+            var doorOpener: String = "Unknown",
+            var bloodDone: Boolean = false,
+            var puzzleCount: Int = 0,
+        )
     }
 }
