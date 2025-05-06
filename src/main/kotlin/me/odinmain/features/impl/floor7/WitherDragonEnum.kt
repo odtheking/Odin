@@ -67,7 +67,7 @@ enum class WitherDragonsEnum (
         if (resetOnDragons && WitherDragons.enabled) onDragonSpawn()
         if (sendArrowHit && WitherDragons.enabled) {
             runIn(skipKillTime, true) {
-                if (entity?.isEntityAlive == true) modMessage("§fArrows Hit on §${colorCode}${name}§f in §c${(skipKillTime / 20.0).toFixed()}s§7: ${arrowsHit.entries.joinToString(", ") { "§f${it.key}§7: §6${it.value}§7" }}.")
+                if (entity?.isEntityAlive == true) modMessage("§fArrows Hit on §${colorCode}${name}§f in §c${(skipKillTime / 20f).toFixed()}s§7: ${arrowsHit.entries.joinToString(", ") { "§f${it.key}§7: §6${it.value}§7" }}.")
             }
         }
         if (sendSpawned && WitherDragons.enabled) {
