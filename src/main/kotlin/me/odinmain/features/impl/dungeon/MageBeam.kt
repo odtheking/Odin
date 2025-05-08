@@ -6,13 +6,16 @@ import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.positionVector
+import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.ui.Colors
+import net.minecraft.entity.passive.EntitySheep
 import net.minecraft.network.play.server.S2APacketParticles
 import net.minecraft.util.EnumParticleTypes
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
+import net.minecraftforge.event.entity.EntityJoinWorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import java.util.concurrent.CopyOnWriteArrayList
@@ -24,8 +27,10 @@ object MageBeam : Module(
     private val duration by NumberSetting("Duration", 40, 1, 100, 1, unit = "ticks", desc = "The duration of the beam in ticks.")
     private val color by ColorSetting("Color", Colors.MINECRAFT_DARK_RED, true, desc = "The color of the beam.")
     private val lineWidth by NumberSetting("Line Width", 2f, 1f, 10f, 0.1f, desc = "The width of the beam line.")
-    private val depth by BooleanSetting("Depth Check", true, desc = "Whether or not to depth check the beam.")
-    private val hideParticles by BooleanSetting("Hide Particles", true, desc = "Whether or not to hide the particles.")
+    private val depth by BooleanSetting("Depth Check", true, desc = "Depth check the beam.")
+    private val hideParticles by BooleanSetting("Hide Particles", true, desc = "HHide the particles.")
+    private val removeSheep by BooleanSetting("Remove Sheep", true, desc = "Removes sheep that spawn along the beam.")
+    private val beamFade by BooleanSetting("Beam Fade", false, desc = "Gradually fades the beam")
 
     private data class MageBeam(
         val points: CopyOnWriteArrayList<Vec3> = CopyOnWriteArrayList(),
@@ -119,25 +124,48 @@ object MageBeam : Module(
         return totalBeamVector.dotProduct(newSegmentVector) > 0.99
     }
 
-    // try reduce amount of zig zag by indexing last 2 points
-    private fun isCompatibleWithBeam(beam: MageBeam, newPoint: Vec3): Boolean {
-        val points = beam.points
-        if (points.size < 3) return true
+    @SubscribeEvent
+    fun onEntityJoin(event: EntityJoinWorldEvent) {
+        if (!DungeonUtils.inDungeons || !removeSheep) return
 
-        val vec1 = points[points.size - 2].subtract(points[points.size - 3]).normalize()
-        val vec2 = points.last().subtract(points[points.size - 2]).normalize()
-        val newVec = newPoint.subtract(points.last()).normalize()
-
-        return vec1.dotProduct(vec2) > 0.95 && vec2.dotProduct(newVec) > 0.95
+        val entity = event.entity
+        if (entity is EntitySheep) {
+            if (activeBeams.any { beam ->
+                    beam.points.any { point ->
+                        entity.positionVector.squareDistanceTo(point) < 9.0
+                    }
+                }) {
+                event.isCanceled = true
+            }
+        }
     }
+
+    // try reduce amount of zig zag by indexing last 2 points
+//    private fun isCompatibleWithBeam(beam: MageBeam, newPoint: Vec3): Boolean {
+//        val points = beam.points
+//        if (points.size < 3) return true
+//
+//        val vec1 = points[points.size - 2].subtract(points[points.size - 3]).normalize()
+//        val vec2 = points.last().subtract(points[points.size - 2]).normalize()
+//        val newVec = newPoint.subtract(points.last()).normalize()
+//
+//        return vec1.dotProduct(vec2) > 0.95 && vec2.dotProduct(newVec) > 0.95
+//    }
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
         if (!DungeonUtils.inDungeons || activeBeams.isEmpty()) return
-
         activeBeams.forEach { beam ->
             if (beam.points.size < 2) return@forEach
-            Renderer.draw3DLine(beam.points, color, lineWidth, depth)
+
+            if (beamFade) {
+                val fadeProgress = (beam.expiryTick - currentTick).toFloat() / duration
+                val alpha = color.alphaFloat * if (fadeProgress > 0.75f) 1f else fadeProgress / 0.75f
+                val fadedColor = Color(color.rgba, alpha)
+                Renderer.draw3DLine(beam.points, fadedColor, lineWidth, depth)
+            } else {
+                Renderer.draw3DLine(beam.points, color, lineWidth, depth)
+            }
         }
     }
 }
