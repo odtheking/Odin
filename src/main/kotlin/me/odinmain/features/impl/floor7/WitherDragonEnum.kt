@@ -5,8 +5,6 @@ import me.odinmain.features.impl.floor7.DragonCheck.dragonEntityList
 import me.odinmain.features.impl.floor7.DragonCheck.lastDragonDeath
 import me.odinmain.features.impl.floor7.DragonPriority.displaySpawningDragon
 import me.odinmain.features.impl.floor7.DragonPriority.findPriority
-import me.odinmain.features.impl.floor7.WitherDragons.arrowDeath
-import me.odinmain.features.impl.floor7.WitherDragons.arrowSpawn
 import me.odinmain.features.impl.floor7.WitherDragons.currentTick
 import me.odinmain.features.impl.floor7.WitherDragons.priorityDragon
 import me.odinmain.features.impl.floor7.WitherDragons.sendArrowHit
@@ -16,8 +14,10 @@ import me.odinmain.features.impl.floor7.WitherDragons.sendTime
 import me.odinmain.features.impl.skyblock.ArrowHit.onDragonSpawn
 import me.odinmain.features.impl.skyblock.ArrowHit.resetOnDragons
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.runIn
 import me.odinmain.utils.skyblock.PersonalBest
 import me.odinmain.utils.skyblock.modMessage
+import me.odinmain.utils.toFixed
 import me.odinmain.utils.ui.Colors
 import net.minecraft.entity.boss.EntityDragon
 import net.minecraft.network.play.server.S2APacketParticles
@@ -39,7 +39,8 @@ enum class WitherDragonsEnum (
     var entity: EntityDragon? = null,
     var isSprayed: Boolean = false,
     var spawnedTime: Long = 0,
-    val skipKillTime: Int = 0
+    val skipKillTime: Int = 0,
+    val arrowsHit: HashMap<String, Int> = HashMap()
 ) {
     Red(   Vec3(27.0, 14.0, 59.0), AxisAlignedBB(14.5, 13.0, 45.5, 39.5, 28.0, 70.5),   'c', Colors.MINECRAFT_RED,   24.0..30.0, 56.0..62.0,  skipKillTime = 50),
 
@@ -47,7 +48,7 @@ enum class WitherDragonsEnum (
 
     Green( Vec3(27.0, 14.0, 94.0), AxisAlignedBB(7.0,  8.0,  80.0, 37.0, 28.0, 110.0),  'a', Colors.MINECRAFT_GREEN, 23.0..29.0, 91.0..97.0,  skipKillTime = 52),
 
-    Blue(  Vec3(84.0, 14.0, 94.0), AxisAlignedBB(71.5, 16.0, 82.5, 96.5, 26.0, 107.5),  'b', Colors.MINECRAFT_AQUA,  82.0..88.0, 91.0..97.0,  skipKillTime = 39),
+    Blue(  Vec3(84.0, 14.0, 94.0), AxisAlignedBB(71.5, 16.0, 82.5, 96.5, 26.0, 107.5),  'b', Colors.MINECRAFT_AQUA,  82.0..88.0, 91.0..97.0,  skipKillTime = 47),
 
     Purple(Vec3(56.0, 14.0, 125.0), AxisAlignedBB(45.5, 13.0, 113.5,68.5, 23.0, 136.5), '5', Colors.MINECRAFT_DARK_PURPLE, 53.0..59.0, 122.0..128.0, skipKillTime = 38),
 
@@ -57,13 +58,18 @@ enum class WitherDragonsEnum (
         state = WitherDragonState.ALIVE
 
         timeToSpawn = 100
-        timesSpawned += 1
+        timesSpawned++
         this.entityId = entityId
         spawnedTime = currentTick
         isSprayed = false
+        arrowsHit.clear()
 
-        if (sendArrowHit && WitherDragons.enabled) arrowSpawn(this)
         if (resetOnDragons && WitherDragons.enabled) onDragonSpawn()
+        if (sendArrowHit && WitherDragons.enabled) {
+            runIn(skipKillTime, true) {
+                if (entity?.isEntityAlive == true) modMessage("§fArrows Hit on §${colorCode}${name}§f in §c${(skipKillTime / 20f).toFixed()}s§7: ${arrowsHit.entries.joinToString(", ") { "§f${it.key}§7: §6${it.value}§7" }}.")
+            }
+        }
         if (sendSpawned && WitherDragons.enabled) {
             val numberSuffix = when (timesSpawned) {
                 1 -> "st"
@@ -81,10 +87,9 @@ enum class WitherDragonsEnum (
         entityId = null
         entity = null
         lastDragonDeath = this
-        if (priorityDragon == this) {
-            if (sendArrowHit && WitherDragons.enabled) arrowDeath(this)
-            priorityDragon = None
-        }
+        if (sendArrowHit && WitherDragons.enabled && currentTick - spawnedTime < skipKillTime)
+            modMessage("§fArrows Hit on §${colorCode}${name}§7: ${arrowsHit.entries.joinToString(", ") { "§f${it.key}§7: §6${it.value}§7" }}.")
+        if (priorityDragon == this) priorityDragon = None
 
         if (sendTime && WitherDragons.enabled)
             dragonPBs.time(ordinal, (currentTick - spawnedTime) / 20.0, "s§7!", "§${colorCode}${name} §7was alive for §6", addPBString = true, addOldPBString = true)

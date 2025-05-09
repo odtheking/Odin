@@ -39,7 +39,7 @@ object DragonCheck {
 
         WitherDragonsEnum.entries.forEach { dragon ->
             if (dragon.isSprayed || dragon.state != WitherDragonState.ALIVE || dragon.entity == null || sprayedEntity.getDistanceToEntity(dragon.entity) > 8) return@forEach
-            if (sendSpray) modMessage("§${dragon.colorCode}${dragon.name} §fdragon was sprayed in §c${(currentTick - dragon.spawnedTime)} §ftick${if (currentTick - dragon.spawnedTime > 1) "s" else "" }.")
+            if (sendSpray) modMessage("§${dragon.colorCode}${dragon.name} §fdragon was sprayed in §c${(currentTick - dragon.spawnedTime).let { "$it §ftick${if (it > 1) "s" else ""}" }}.")
             dragon.isSprayed = true
         }
     }

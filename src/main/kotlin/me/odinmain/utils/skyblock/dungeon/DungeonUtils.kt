@@ -124,9 +124,9 @@ object DungeonUtils {
             val total = if (totalRooms != 0) totalRooms else 36
 
             val exploration = floor((secretPercentage / floor.secretPercentage) / 100f * 40f).coerceIn(0f, 40f).toInt() +
-                    floor(completed / total * 60f).coerceIn(0f, 60f).toInt()
+                    floor(completed.toFloat() / total * 60f).coerceIn(0f, 60f).toInt()
 
-            val skillRooms = floor(completed / total * 80f).coerceIn(0f, 80f).toInt()
+            val skillRooms = floor(completed.toFloat() / total * 80f).coerceIn(0f, 80f).toInt()
             val puzzlePenalty = (puzzleCount - puzzles.count { it.status == PuzzleStatus.Completed }) * 10
 
             return exploration + (20 + skillRooms - puzzlePenalty - (deathCount * 2 - 1).coerceAtLeast(0)).coerceIn(20, 100) + getBonusScore + 100
