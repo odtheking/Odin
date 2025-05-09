@@ -151,7 +151,7 @@ object ChatCommands : Module(
             }
             "demote" -> if (demote && channel == ChatChannel.PARTY) sendCommand("p demote $name")
             "promote" -> if (promote && channel == ChatChannel.PARTY) sendCommand("p promote $name")
-            "kick", "k" -> if (kick && channel == ChatChannel.PARTY) sendCommand("p kick ${message.substringAfter("kick ")}")
+            "kick", "k" -> if (kick && channel == ChatChannel.PARTY) sendCommand("p kick ${message.substringAfter("kick ").split(" ")[0]}")
 
             // Private cmds only
             "invite", "inv" -> if (invite && channel == ChatChannel.PRIVATE) {
