@@ -11,10 +11,10 @@ import me.odinmain.utils.times
 import me.odinmain.utils.ui.Colors
 import me.odinmain.utils.ui.clickgui.util.ColorUtil
 import me.odinmain.utils.ui.clickgui.util.ColorUtil.withAlpha
-import me.odinmain.utils.ui.util.shader.CircleShader
-import me.odinmain.utils.ui.util.shader.DropShadowShader
-import me.odinmain.utils.ui.util.shader.HSBBoxShader
-import me.odinmain.utils.ui.util.shader.RoundedRectangleShader
+import me.odinmain.utils.ui.shader.CircleShader
+import me.odinmain.utils.ui.shader.DropShadowShader
+import me.odinmain.utils.ui.shader.HSBBoxShader
+import me.odinmain.utils.ui.shader.RoundedRectangleShader
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.texture.DynamicTexture
