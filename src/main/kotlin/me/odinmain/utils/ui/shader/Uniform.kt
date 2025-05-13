@@ -1,4 +1,4 @@
-package me.odinmain.utils.ui.util.shader
+package me.odinmain.utils.ui.shader
 
 import net.minecraft.client.renderer.OpenGlHelper
 import org.lwjgl.opengl.ARBShaderObjects

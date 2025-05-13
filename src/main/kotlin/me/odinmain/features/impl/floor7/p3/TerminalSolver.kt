@@ -26,11 +26,13 @@ import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.player.InventoryPlayer
 import net.minecraft.item.EnumDyeColor
+import net.minecraft.item.Item
 import net.minecraft.network.play.client.C0DPacketCloseWindow
 import net.minecraft.network.play.client.C0EPacketClickWindow
 import net.minecraft.network.play.server.S2DPacketOpenWindow
 import net.minecraft.network.play.server.S2EPacketCloseWindow
 import net.minecraft.network.play.server.S2FPacketSetSlot
+import net.minecraftforge.client.ClientCommandHandler
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.event.entity.player.ItemTooltipEvent
 import net.minecraftforge.fml.common.Loader
@@ -256,6 +258,7 @@ object TerminalSolver : Module(
 
     @SubscribeEvent(receiveCanceled = true, priority = EventPriority.HIGH)
     fun onGuiClick(event: GuiEvent.MouseClick) = with(currentTerm) {
+        modMessage(ClientCommandHandler.instance.commands.map { it.key })
         if (!enabled || this == null) return
 
         if (renderType == 3 && !(type == TerminalTypes.MELODY && cancelMelodySolver)) {
@@ -294,7 +297,7 @@ object TerminalSolver : Module(
 
     @SubscribeEvent
     fun itemStack(event: GuiEvent.DrawSlotOverlay) {
-        if (enabled && currentTerm?.type == TerminalTypes.NUMBERS && (event.stack?.item?.registryName ?: return) == "minecraft:stained_glass_pane") event.isCanceled = true
+        if (enabled && currentTerm?.type == TerminalTypes.NUMBERS && Item.getIdFromItem((event.stack?.item ?: return)) == 160) event.isCanceled = true
     }
 
     private fun leftTerm() {

@@ -1,4 +1,4 @@
-package me.odinmain.utils.ui.util.shader
+package me.odinmain.utils.ui.shader
 
 import me.odinmain.utils.render.Color
 import net.minecraft.client.gui.Gui

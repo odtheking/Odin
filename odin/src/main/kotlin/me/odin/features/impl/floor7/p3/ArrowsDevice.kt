@@ -53,8 +53,8 @@ object ArrowsDevice : Module(
     private var serverTicksSinceLastTargetDisappeared: Int? = null
 
     init {
-        onMessage(Regex("^[a-zA-Z0-9_]{3,} completed a device! \\([1-7]/7\\)"), { enabled && isPlayerInRoom }) {
-            onComplete()
+        onMessage(Regex("^(.{1,16}) completed a device! \\((\\d)/(\\d)\\)"), { enabled && isPlayerInRoom }) {
+            if (it.groupValues[1] == mc.thePlayer.name) onComplete()
         }
 
         onMessage(Regex("^ ☠ You died and became a ghost\\.$"), { enabled && isPlayerOnStand }) {

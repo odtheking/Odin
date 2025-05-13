@@ -1,5 +1,6 @@
 package me.odinmain.features.impl.floor7
 
+import me.odinmain.events.impl.ArrowEvent
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.DragonCheck.dragonSpawn
 import me.odinmain.features.impl.floor7.DragonCheck.dragonSprayed
@@ -16,17 +17,21 @@ import me.odinmain.utils.render.RenderUtils.renderVec
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.render.getMCTextWidth
 import me.odinmain.utils.render.mcTextAndWidth
-import me.odinmain.utils.runIn
+import me.odinmain.utils.runOnMCThread
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.M7Phases
 import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.toFixed
 import me.odinmain.utils.ui.Colors
 import me.odinmain.utils.ui.clickgui.util.ColorUtil.withAlpha
+import net.minecraft.entity.boss.EntityDragonPart
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.server.*
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import kotlin.collections.arrayListOf
+import kotlin.collections.find
+import kotlin.collections.forEach
 
 object WitherDragons : Module(
     name = "Wither Dragons",
@@ -65,7 +70,7 @@ object WitherDragons : Module(
     val sendSpawned by BooleanSetting("Send Dragon Spawned", true, desc = "Sends a message when a dragon has spawned.").withDependency { dragonAlerts }
     val sendSpray by BooleanSetting("Send Ice Sprayed", true, desc = "Sends a message when a dragon has been ice sprayed.").withDependency { dragonAlerts }
     val sendArrowHit by BooleanSetting("Send Arrows Hit", true, desc = "Sends a message when a dragon dies with how many arrows were hit.").withDependency { dragonAlerts }
-    private var arrowsHit: Int = 0
+    private val firstArrowHit by BooleanSetting("Send First Hit", false, desc = "Sends a message when a player hits their first arrow.").withDependency { dragonAlerts }
 
     private val dragonHealth by BooleanSetting("Dragon Health", true, desc = "Displays the health of M7 dragons.")
 
@@ -107,11 +112,6 @@ object WitherDragons : Module(
             if (relicAnnounce || relicAnnounceTime) relicsBlockPlace(it)
         }
 
-        onPacket<S29PacketSoundEffect> ({ DungeonUtils.getF7Phase() == M7Phases.P5 }) {
-            if (it.soundName != "random.successful_hit" || !sendArrowHit || priorityDragon == WitherDragonsEnum.None) return@onPacket
-            if (priorityDragon.entity?.isEntityAlive == true && currentTick - priorityDragon.spawnedTime < priorityDragon.skipKillTime) arrowsHit++
-        }
-
         onPacket<S04PacketEntityEquipment> ({ DungeonUtils.getF7Phase() == M7Phases.P5 && enabled }) {
             dragonSprayed(it)
         }
@@ -145,42 +145,32 @@ object WitherDragons : Module(
     fun onRenderWorld(event: RenderWorldLastEvent) {
         if (DungeonUtils.getF7Phase() != M7Phases.P5 || !enabled) return
 
-        if (dragonHealth) {
-            DragonCheck.dragonEntityList.forEach {
-                if (it.health > 0) Renderer.drawStringInWorld(colorHealth(it.health), it.renderVec.addVec(y = 1.5), Colors.WHITE, depth = false, scale = 0.2f, shadow = true)
-            }
+        if (dragonHealth) DragonCheck.dragonEntityList.forEach {
+            if (it.health > 0) Renderer.drawStringInWorld(colorHealth(it.health), it.renderVec.addVec(y = 1.5), Colors.WHITE, depth = false, scale = 0.2f, shadow = true)
         }
-        if (dragonTimer) {
-            WitherDragonsEnum.entries.forEach { dragon ->
-                if (dragon.state == WitherDragonState.SPAWNING && dragon.timeToSpawn > 0) Renderer.drawStringInWorld(
-                    "§${dragon.colorCode}${dragon.name.first()}: ${getDragonTimer(dragon.timeToSpawn)}", dragon.spawnPos,
-                    color = Colors.WHITE, depth = false, scale = 0.16f
-                )
-            }
+
+        WitherDragonsEnum.entries.forEach { dragon ->
+            if (dragonTimer && dragon.state == WitherDragonState.SPAWNING && dragon.timeToSpawn > 0) Renderer.drawStringInWorld(
+                "§${dragon.colorCode}${dragon.name.first()}: ${getDragonTimer(dragon.timeToSpawn)}", dragon.spawnPos,
+                color = Colors.WHITE, depth = false, scale = 0.16f
+            )
+
+            if (dragonBoxes && dragon.state != WitherDragonState.DEAD) Renderer.drawBox(dragon.boxesDimensions, dragon.color.withAlpha(0.5f), lineThickness, depth = false, fillAlpha = 0)
         }
-        if (dragonBoxes)
-            WitherDragonsEnum.entries.forEach {
-                if (it.state != WitherDragonState.DEAD) Renderer.drawBox(it.boxesDimensions, it.color.withAlpha(0.5f), lineThickness, depth = false, fillAlpha = 0)
-            }
 
         if (cauldronHighlight) relicsOnWorldLast()
         if (priorityDragon != WitherDragonsEnum.None && dragonTracers && priorityDragon.state == WitherDragonState.SPAWNING)
             Renderer.drawTracer(priorityDragon.spawnPos.addVec(0.5, 3.5, 0.5), color = priorityDragon.color, lineWidth = tracerThickness)
     }
 
-    fun arrowDeath(dragon: WitherDragonsEnum) {
-        if (!sendArrowHit || currentTick - dragon.spawnedTime >= dragon.skipKillTime) return
-        modMessage("§fYou hit §6$arrowsHit §farrows on §${dragon.colorCode}${dragon.name}.")
-        arrowsHit = 0
-    }
-
-    fun arrowSpawn(dragon: WitherDragonsEnum) {
-        if (priorityDragon == WitherDragonsEnum.None || dragon != priorityDragon) return
-        arrowsHit = 0
-        runIn(dragon.skipKillTime, true) {
-            if (dragon.entity?.isEntityAlive != true && arrowsHit <= 0) return@runIn
-            modMessage("§fYou hit §6${arrowsHit} §farrows on §${dragon.colorCode}${dragon.name}${if (dragon.entity?.isEntityAlive == true) " §fin §c${(dragon.skipKillTime / 20f).toFixed()} §fSeconds." else "."}")
-            arrowsHit = 0
+    @SubscribeEvent
+    fun onArrowDespawn(event: ArrowEvent.Despawn) = WitherDragonsEnum.entries.forEach { dragon ->
+        if (dragon.state != WitherDragonState.ALIVE || currentTick - dragon.spawnedTime >= dragon.skipKillTime) return@forEach
+        val hits = event.entitiesHit.filter { ((it as? EntityDragonPart)?.entityDragonObj ?: it) == dragon.entity }.size.takeUnless { it == 0 } ?: return@forEach
+        runOnMCThread {
+            if (event.owner.name !in dragon.arrowsHit.keys && firstArrowHit)
+                modMessage("§a${event.owner.name} §fhit their first arrow on §${dragon.colorCode}${dragon.name}§f after §c${(currentTick - dragon.spawnedTime).let { "$it §ftick${if (it > 1) "s" else ""}" }}.")
+            dragon.arrowsHit.merge(event.owner.name, hits, Int::plus)
         }
     }
 
