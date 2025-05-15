@@ -13,10 +13,7 @@ import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.fetchURLData
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.sendDataToServer
-import me.odinmain.utils.skyblock.LocationUtils
-import me.odinmain.utils.skyblock.createClickStyle
-import me.odinmain.utils.skyblock.getChatBreak
-import me.odinmain.utils.skyblock.modMessage
+import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.ui.Colors
 import me.odinmain.utils.ui.clickgui.ClickGUI
 import me.odinmain.utils.ui.hud.EditHUDGui
@@ -90,6 +87,7 @@ object ClickGUIModule: Module(
                 ${getChatBreak()}§r
                 
                 """.trimIndent(), "")
+                PlayerUtils.alert("Odin Update Available")
             }
 
             if (joined) destroyExecutor()

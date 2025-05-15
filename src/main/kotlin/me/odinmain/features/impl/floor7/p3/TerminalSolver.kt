@@ -32,7 +32,6 @@ import net.minecraft.network.play.client.C0EPacketClickWindow
 import net.minecraft.network.play.server.S2DPacketOpenWindow
 import net.minecraft.network.play.server.S2EPacketCloseWindow
 import net.minecraft.network.play.server.S2FPacketSetSlot
-import net.minecraftforge.client.ClientCommandHandler
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.event.entity.player.ItemTooltipEvent
 import net.minecraftforge.fml.common.Loader
@@ -258,7 +257,6 @@ object TerminalSolver : Module(
 
     @SubscribeEvent(receiveCanceled = true, priority = EventPriority.HIGH)
     fun onGuiClick(event: GuiEvent.MouseClick) = with(currentTerm) {
-        modMessage(ClientCommandHandler.instance.commands.map { it.key })
         if (!enabled || this == null) return
 
         if (renderType == 3 && !(type == TerminalTypes.MELODY && cancelMelodySolver)) {

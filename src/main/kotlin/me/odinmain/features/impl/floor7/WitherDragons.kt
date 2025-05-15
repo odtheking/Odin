@@ -29,9 +29,6 @@ import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.server.*
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import kotlin.collections.arrayListOf
-import kotlin.collections.find
-import kotlin.collections.forEach
 
 object WitherDragons : Module(
     name = "Wither Dragons",
@@ -143,7 +140,7 @@ object WitherDragons : Module(
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-        if (DungeonUtils.getF7Phase() != M7Phases.P5 || !enabled) return
+        if (DungeonUtils.getF7Phase() != M7Phases.P5) return
 
         if (dragonHealth) DragonCheck.dragonEntityList.forEach {
             if (it.health > 0) Renderer.drawStringInWorld(colorHealth(it.health), it.renderVec.addVec(y = 1.5), Colors.WHITE, depth = false, scale = 0.2f, shadow = true)
