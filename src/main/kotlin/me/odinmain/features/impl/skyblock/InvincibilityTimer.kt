@@ -2,7 +2,6 @@ package me.odinmain.features.impl.skyblock
 
 import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.events.impl.GuiEvent.DrawSlotOverlay
-import me.odinmain.events.impl.ServerTickEvent
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.HudSetting
@@ -12,6 +11,7 @@ import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.partyMessage
 import me.odinmain.utils.skyblock.skyblockID
 import me.odinmain.utils.ui.Colors
+import net.minecraft.network.play.server.S32PacketConfirmTransaction
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object InvincibilityTimer : Module(
@@ -44,6 +44,10 @@ object InvincibilityTimer : Module(
     private var bonzoMaskProc = 0L
 
     init {
+        onPacket<S32PacketConfirmTransaction> {
+            invincibilityTime.time--
+        }
+
         onWorldLoad {
             invincibilityTime = Timer(0, "")
             spiritMaskProc = 0L
@@ -68,11 +72,6 @@ object InvincibilityTimer : Module(
 
         if (invincibilityAnnounce) partyMessage("$type Procced")
         invincibilityTime = Timer(60, type)
-    }
-
-    @SubscribeEvent
-    fun onServerTick(event: ServerTickEvent) {
-        invincibilityTime.time--
     }
 
     @SubscribeEvent

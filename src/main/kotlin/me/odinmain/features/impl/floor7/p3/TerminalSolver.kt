@@ -26,6 +26,7 @@ import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.player.InventoryPlayer
 import net.minecraft.item.EnumDyeColor
+import net.minecraft.item.Item
 import net.minecraft.network.play.client.C0DPacketCloseWindow
 import net.minecraft.network.play.client.C0EPacketClickWindow
 import net.minecraft.network.play.server.S2DPacketOpenWindow
@@ -99,6 +100,7 @@ object TerminalSolver : Module(
 
     init {
         onPacket<S2DPacketOpenWindow> { packet ->
+            if (currentTerm?.isClicked == false) leftTerm()
             currentTermWindowName = packet.windowTitle?.formattedText?.noControlCodes?.takeIf { newWindowName -> newWindowName != currentTermWindowName } ?: return@onPacket
             val newTermType = TerminalTypes.entries.find { terminal -> currentTermWindowName.startsWith(terminal.windowName) }
 
@@ -293,7 +295,7 @@ object TerminalSolver : Module(
 
     @SubscribeEvent
     fun itemStack(event: GuiEvent.DrawSlotOverlay) {
-        if (enabled && currentTerm?.type == TerminalTypes.NUMBERS && (event.stack?.item?.registryName ?: return) == "minecraft:stained_glass_pane") event.isCanceled = true
+        if (enabled && currentTerm?.type == TerminalTypes.NUMBERS && Item.getIdFromItem((event.stack?.item ?: return)) == 160) event.isCanceled = true
     }
 
     private fun leftTerm() {

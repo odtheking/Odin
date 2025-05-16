@@ -2,7 +2,6 @@ package me.odinclient.features.impl.floor7.p3
 
 import me.odinclient.utils.skyblock.PlayerUtils.rightClick
 import me.odinmain.events.impl.BlockChangeEvent
-import me.odinmain.events.impl.ServerTickEvent
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
@@ -22,6 +21,7 @@ import net.minecraft.client.settings.KeyBinding
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.init.Blocks
 import net.minecraft.inventory.ContainerChest
+import net.minecraft.network.play.server.S32PacketConfirmTransaction
 import net.minecraft.util.*
 import net.minecraftforge.client.event.GuiOpenEvent
 import net.minecraftforge.client.event.RenderWorldLastEvent
@@ -91,8 +91,8 @@ object ArrowsDevice : Module(
             phoenixSwap()
         }
 
-        onMessage(Regex("^[a-zA-Z0-9_]{3,} completed a device! \\([1-7]/7\\)"), { enabled && isPlayerInRoom }) {
-            onComplete()
+        onMessage(Regex("^(.{1,16}) completed a device! \\((\\d)/(\\d)\\)"), { enabled && isPlayerInRoom }) {
+            if (it.groupValues[1] == mc.thePlayer.name) onComplete()
         }
 
         onMessage(Regex("^ ☠ You died and became a ghost\\.$"), { enabled && isPlayerOnStand }) {
@@ -119,6 +119,24 @@ object ArrowsDevice : Module(
             actionQueue.clear()
             // Reset is called when leaving the device room, but device remains complete across an entire run, so this doesn't belong in reset
             isDeviceComplete = false
+        }
+
+        onPacket<S32PacketConfirmTransaction> {
+            serverTicksSinceLastTargetDisappeared = serverTicksSinceLastTargetDisappeared?.let {
+                // There was no target last tick (or the count would be null)
+
+                if (targetPosition != null) return@let null // A target appeared
+                else if (it < 10)  return@let it + 1 // No target yet, count the ticks
+                else if (it == 10) {
+                    // We reached 10 ticks, device is either done, or the player left the stand
+                    if (isPlayerOnStand) onComplete()
+                    return@let 11
+                } else return@let 11
+            } ?: run {
+                // There was a target last tick (or one appeared this tick
+                // Check if target disappeared, set count accordingly
+                return@run if (targetPosition == null) 0 else null
+            }
         }
 
         execute(10) {
@@ -321,7 +339,7 @@ object ArrowsDevice : Module(
                 PlayerUtils.windowClick(it, ClickType.Middle)
                 autoState = AutoState.Stopped
             } ?: run {
-                attempts += 1
+                attempts++
                 actionQueue.add(::tryClick)
             }
         }
@@ -354,26 +372,6 @@ object ArrowsDevice : Module(
                 actionQueue.removeFirst()()
                 clock.update()
             }
-        }
-    }
-
-
-    @SubscribeEvent
-    fun onServerTick(event: ServerTickEvent) {
-        serverTicksSinceLastTargetDisappeared = serverTicksSinceLastTargetDisappeared?.let {
-            // There was no target last tick (or the count would be null)
-
-            if (targetPosition != null) return@let null // A target appeared
-            else if (it < 10)  return@let it + 1 // No target yet, count the ticks
-            else if (it == 10) {
-                // We reached 10 ticks, device is either done, or the player left the stand
-                if (isPlayerOnStand) onComplete()
-                return@let 11
-            } else return@let 11
-        } ?: run {
-            // There was a target last tick (or one appeared this tick
-            // Check if target disappeared, set count accordingly
-            return@run if (targetPosition == null) 0 else null
         }
     }
 

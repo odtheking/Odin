@@ -3,12 +3,12 @@ package me.odinmain.utils.skyblock
 import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.PacketEvent
 import me.odinmain.features.impl.floor7.p3.termsim.TermSimGUI
-import me.odinmain.features.impl.render.ClickGUIModule
 import me.odinmain.utils.postAndCatch
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.ui.Colors
 import net.minecraft.network.play.client.C0EPacketClickWindow
+import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -49,7 +49,10 @@ object PlayerUtils {
     inline val posY get() = mc.thePlayer?.posY ?: 0.0
     inline val posZ get() = mc.thePlayer?.posZ ?: 0.0
 
-    fun getPositionString() = "x: ${posX.toInt()}, y: ${posY.toInt()}, z: ${posZ.toInt()}"
+    fun getPositionString(): String {
+        val blockPos = BlockPos(posX, posY, posZ)
+        return "x: ${blockPos.getX()}, y: ${blockPos.getY()}, z: ${blockPos.getZ()}"
+    }
 
     private var lastClickSent = 0L
 
@@ -61,7 +64,7 @@ object PlayerUtils {
     }
 
     fun windowClick(slotId: Int, button: Int, mode: Int) {
-        if (!ClickGUIModule.bypassLowestClickDelay && lastClickSent + 45 > System.currentTimeMillis()) return devMessage("§cIgnoring click on slot §9$slotId.")
+        if (lastClickSent + 45 > System.currentTimeMillis()) return devMessage("§cIgnoring click on slot §9$slotId.")
         mc.thePlayer?.openContainer?.let {
             if (slotId !in 0 until it.inventorySlots.size) return
             if (mc.currentScreen is TermSimGUI) {

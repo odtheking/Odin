@@ -15,7 +15,6 @@ import me.odinmain.features.impl.floor7.WitherDragonState
 import me.odinmain.features.impl.floor7.WitherDragons.priorityDragon
 import me.odinmain.features.impl.floor7.WitherDragonsEnum
 import me.odinmain.features.impl.nether.NoPre
-import me.odinmain.features.impl.render.ClickGUIModule
 import me.odinmain.features.impl.render.DevPlayers.updateDevs
 import me.odinmain.utils.isOtherPlayer
 import me.odinmain.utils.postAndCatch
@@ -90,17 +89,20 @@ val devCommand = Commodore("oddev") {
        updateDevs()
     }
 
-    literal("adddev").runs { name: String, password: String ->
+    literal("adddev").runs { name: String, password: String, xSize: Float?, ySize: Float?, zSize: Float? ->
+        val x = xSize ?: 0.6
+        val y = ySize ?: 0.6
+        val z = zSize ?: 0.6
         modMessage("Sending data... name: $name, password: $password")
         scope.launch {
-            modMessage(sendDataToServer("$name, [1,2,3], [1,2,3], true, $password", "https://tj4yzotqjuanubvfcrfo7h5qlq0opcyk.lambda-url.eu-north-1.on.aws/"))
+            modMessage(sendDataToServer("$name, [$x,$y,$z], [1,2,3], false, $password", "https://tj4yzotqjuanubvfcrfo7h5qlq0opcyk.lambda-url.eu-north-1.on.aws/"))
         }
     }
 
     literal("debug").runs {
         modMessage("""
             |Version: $VERSION
-            |Hypixel: ${LocationUtils.isOnHypixel}${if (ClickGUIModule.forceHypixel) " (forced)" else ""}
+            |Hypixel: ${LocationUtils.isOnHypixel}
             ${
                 when {
                     KuudraUtils.inKuudra -> """
@@ -124,7 +126,7 @@ val devCommand = Commodore("oddev") {
                         |Deaths: ${DungeonUtils.deathCount}, Crypts: ${DungeonUtils.cryptCount}
                         |BonusScore: ${DungeonUtils.getBonusScore}, isPaul: ${DungeonUtils.isPaul}
                         |OpenRooms: ${DungeonUtils.openRoomCount}, CompletedRooms: ${DungeonUtils.completedRoomCount} ${DungeonUtils.percentCleared}%, Blood Done: ${DungeonUtils.bloodDone}, Total: ${DungeonUtils.totalRooms}
-                        |Puzzles: ${DungeonUtils.puzzles.joinToString { "${it.name} (${it.status.toString()})" }}, Count: ${DungeonUtils.puzzleCount}
+                        |Puzzles (${DungeonUtils.puzzleCount}): ${DungeonUtils.puzzles.joinToString { "${it.name} (${it.status.toString()})" }}
                         |DungeonTime: ${DungeonUtils.dungeonTime}
                         |currentDungeonPlayer: ${DungeonUtils.currentDungeonPlayer.name}, ${DungeonUtils.currentDungeonPlayer.clazz}, ${DungeonUtils.currentDungeonPlayer.isDead}, ${DungeonUtils.isGhost}
                         |doorOpener: ${DungeonUtils.doorOpener}

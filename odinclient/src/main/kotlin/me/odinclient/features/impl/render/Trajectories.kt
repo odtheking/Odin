@@ -55,6 +55,7 @@ object Trajectories : Module(
     private val planeSize by NumberSetting("Plane Size", 2f, 0.1f, 5.0, 0.1f, desc = "The size of the plane.").withDependency { plane }
     private val boxSize by NumberSetting("Box Size", 0.5f, 0.5f, 3.0f, 0.1f, desc = "The size of the box.").withDependency { boxes }
     private val color by ColorSetting("Color", Colors.MINECRAFT_DARK_AQUA, true, desc = "The color of the trajectory.")
+    private val depth by BooleanSetting("Depth Check", true, desc = "Whether or not to depth check the trajectory.")
 
     private var boxRenderQueue: MutableList<AxisAlignedBB> = mutableListOf()
     private var entityRenderQueue = mutableListOf<Entity>()
@@ -276,7 +277,7 @@ object Trajectories : Module(
             (entity is EntityWither && entity.isInvisible)
         ) return
 
-        OutlineUtils.outlineEntity(event, color, width)
+        OutlineUtils.outlineEntity(event, color, width, depth)
     }
 
     private fun hypot(x: Double, y: Double, d: Double): Double = sqrt(x * x + y * y + d * d)

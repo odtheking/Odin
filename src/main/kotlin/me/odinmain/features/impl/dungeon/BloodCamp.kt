@@ -3,7 +3,6 @@ package me.odinmain.features.impl.dungeon
 import me.odinmain.OdinMain.isLegitVersion
 import me.odinmain.events.impl.EntityLeaveWorldEvent
 import me.odinmain.events.impl.PostEntityMetadata
-import me.odinmain.events.impl.ServerTickEvent
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
@@ -23,6 +22,7 @@ import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.entity.monster.EntityZombie
 import net.minecraft.init.Items
 import net.minecraft.network.play.server.S14PacketEntity.S17PacketEntityLookMove
+import net.minecraft.network.play.server.S32PacketConfirmTransaction
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderGameOverlayEvent
@@ -63,9 +63,9 @@ object BloodCamp : Module(
             renderDataMap.entries.sortedBy { it.value.time }.fold(0) { acc, data ->
                 val time = data.takeUnless { it.key.isDead }?.value?.time ?: return@fold acc
                 val color = when {
-                    time > 1.5 -> Colors.MINECRAFT_GREEN
-                    time in 0.5..1.5 -> Colors.MINECRAFT_GOLD
-                    time in 0.0..0.5 -> Colors.MINECRAFT_RED
+                    time > 1.5f -> Colors.MINECRAFT_GREEN
+                    time in 0.5f..1.5f -> Colors.MINECRAFT_GOLD
+                    time in 0f..0.5f -> Colors.MINECRAFT_RED
                     else -> Colors.MINECRAFT_AQUA
                 }
                 mcText("${time.toFixed()}s", 10, 10 * acc, 1f, color, center = false)
@@ -165,6 +165,10 @@ object BloodCamp : Module(
                 if (killTitle) PlayerUtils.alert("Kill Mobs", 40, Colors.MINECRAFT_RED)
                 finalTime = null
             }
+        }
+
+        onPacket<S32PacketConfirmTransaction> {
+            currentTickTime += 50
         }
 
         onWorldLoad {
@@ -276,11 +280,6 @@ object BloodCamp : Module(
                 lastVector.zCoord + (currVector.zCoord - lastVector.zCoord) * multiplier
             )
         }
-    }
-
-    @SubscribeEvent
-    fun onServerTick(event: ServerTickEvent) {
-        currentTickTime += 50
     }
 
     private val watcherSkulls = setOf(

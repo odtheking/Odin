@@ -1,7 +1,6 @@
 package me.odinmain.features.impl.dungeon
 
 import me.odinmain.events.impl.BlockChangeEvent
-import me.odinmain.events.impl.ServerTickEvent
 import me.odinmain.features.Module
 import me.odinmain.utils.addVec
 import me.odinmain.utils.equal
@@ -11,6 +10,7 @@ import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.toFixed
 import me.odinmain.utils.toVec3
 import me.odinmain.utils.ui.Colors
+import net.minecraft.network.play.server.S32PacketConfirmTransaction
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -23,18 +23,19 @@ object TerracottaTimer : Module(
     private var terracottaSpawning = CopyOnWriteArrayList<Terracotta>()
     private data class Terracotta(val pos: Vec3, var time: Double)
 
+    init {
+        onPacket<S32PacketConfirmTransaction> {
+            terracottaSpawning.removeAll {
+                it.time -= .05
+                it.time <= 0
+            }
+        }
+    }
+
     @SubscribeEvent
     fun onBlockPacket(event: BlockChangeEvent) {
         if (DungeonUtils.isFloor(6) && DungeonUtils.inBoss && event.updated.block.isFlowerPot && terracottaSpawning.none { it.pos.equal(event.pos.toVec3().addVec(0.5, 1.5, 0.5)) })
             terracottaSpawning.add(Terracotta(event.pos.toVec3().addVec(0.5, 1.5, 0.5), if (DungeonUtils.floor.isMM) 12.0 else 15.0))
-    }
-
-    @SubscribeEvent
-    fun onServerTick(event: ServerTickEvent) {
-        terracottaSpawning.removeAll {
-            it.time -= .05
-            it.time <= 0
-        }
     }
 
     @SubscribeEvent

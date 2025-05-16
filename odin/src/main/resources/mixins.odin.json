@@ -10,7 +10,8 @@
     "mixins.MixinRendererLivingEntity",
     "mixins.MixinS1CPacketEntityMetadata",
     "mixins.MixinSkytilsFunny",
-    "mixins.MixinWorld"
+    "mixins.MixinWorld",
+    "mixins.entity.MixinEntityArrow"
   ],
   "client": [
     "accessors.IEntityPlayerSPAccessor",
@@ -36,8 +37,6 @@
     "mixins.MixinRenderItem",
     "mixins.MixinRenderPlayer",
     "mixins.MixinSoundManager",
-    "mixins.MixinTileEntityChestRenderer",
-    "mixins.model.MixinModelBiped",
-    "mixins.model.MixinModelBlaze"
+    "mixins.MixinTileEntityChestRenderer"
   ]
 }

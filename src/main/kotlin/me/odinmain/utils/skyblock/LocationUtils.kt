@@ -2,18 +2,19 @@ package me.odinmain.utils.skyblock
 
 import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.PacketEvent
-import me.odinmain.features.impl.render.ClickGUIModule
 import me.odinmain.utils.cleanLine
-import me.odinmain.utils.cleanSB
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.clock.Executor.Companion.register
+import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.sidebarLines
 import me.odinmain.utils.skyblock.dungeon.Dungeon
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
-import me.odinmain.utils.skyblock.dungeon.Floor
 import me.odinmain.utils.startsWithOneOf
+import net.minecraft.network.play.server.S38PacketPlayerListItem
+import net.minecraft.network.play.server.S3BPacketScoreboardObjective
 import net.minecraft.network.play.server.S3FPacketCustomPayload
 import net.minecraftforge.event.world.WorldEvent
+import net.minecraftforge.fml.common.eventhandler.EventPriority
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.network.FMLNetworkEvent
 
@@ -31,13 +32,7 @@ object LocationUtils {
 
     init {
         Executor(500, "LocationUtils") {
-            if (!isInSkyblock)
-                isInSkyblock = isOnHypixel && mc.theWorld?.scoreboard?.getObjectiveInDisplaySlot(1)?.let { cleanSB(it.displayName).contains("SKYBLOCK") } == true
-
-            if (currentArea.isArea(Island.Unknown)) currentArea = getArea()
-
-            if ((DungeonUtils.inDungeons || currentArea.isArea(Island.SinglePlayer)) && currentDungeon == null) currentDungeon = Dungeon(getFloor() ?: return@Executor)
-
+            // Move this to packet based
             if (currentArea.isArea(Island.Kuudra) && kuudraTier == 0)
                 sidebarLines.find { cleanLine(it).contains("Kuudra's Hollow (") }?.let {
                     kuudraTier = it.substringBefore(")").lastOrNull()?.digitToIntOrNull() ?: 0 }
@@ -46,19 +41,19 @@ object LocationUtils {
 
     @SubscribeEvent
     fun onDisconnect(event: FMLNetworkEvent.ClientDisconnectionFromServerEvent) {
-        isOnHypixel = false
-        isInSkyblock = false
         currentArea = Island.Unknown
-        kuudraTier = 0
         currentDungeon = null
+        isInSkyblock = false
+        isOnHypixel = false
+        kuudraTier = 0
     }
 
     @SubscribeEvent
     fun onWorldChange(event: WorldEvent.Unload) {
+        currentArea = Island.Unknown
         currentDungeon = null
         isInSkyblock = false
         kuudraTier = 0
-        currentArea = Island.Unknown
     }
 
     /**
@@ -68,35 +63,32 @@ object LocationUtils {
      */
     @SubscribeEvent
     fun onConnect(event: FMLNetworkEvent.ClientConnectedToServerEvent) {
-        isOnHypixel = if (ClickGUIModule.forceHypixel) true else mc.runCatching {
+        if (mc.isSingleplayer) currentArea = Island.SinglePlayer
+
+        isOnHypixel = mc.runCatching {
             !event.isLocal && ((thePlayer?.clientBrand?.contains("hypixel", true) ?: currentServerData?.serverIP?.contains("hypixel", true)) == true)
         }.getOrDefault(false)
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.HIGH)
     fun onPacket(event: PacketEvent.Receive) {
-        if (isOnHypixel || event.packet !is S3FPacketCustomPayload || event.packet.channelName != "MC|Brand") return
-        if (event.packet.bufferData?.readStringFromBuffer(Short.MAX_VALUE.toInt())?.contains("hypixel", true) == true) isOnHypixel = true
-    }
+        when (event.packet) {
+            is S3FPacketCustomPayload -> {
+                if (isOnHypixel || event.packet.channelName != "MC|Brand") return
+                if (event.packet.bufferData?.readStringFromBuffer(Short.MAX_VALUE.toInt())?.contains("hypixel", true) == true) isOnHypixel = true
+            }
 
-    /**
-     * Returns the current area from the tab list info.
-     * If no info can be found, return Island.Unknown.
-     */
-    private fun getArea(): Island {
-        if (mc.isSingleplayer) return Island.SinglePlayer
-        if (!isInSkyblock) return Island.Unknown
+            is S38PacketPlayerListItem -> {
+                if (!currentArea.isArea(Island.Unknown) || !event.packet.action.equalsOneOf(S38PacketPlayerListItem.Action.UPDATE_DISPLAY_NAME, S38PacketPlayerListItem.Action.ADD_PLAYER)) return
+                val area = event.packet.entries?.find { it?.displayName?.unformattedText?.startsWithOneOf("Area: ", "Dungeon: ") == true }?.displayName?.formattedText ?: return
 
-        val area = mc.thePlayer?.sendQueue?.playerInfoMap?.find { it?.displayName?.unformattedText?.startsWithOneOf("Area: ", "Dungeon: ") == true }?.displayName?.formattedText ?: return Island.Unknown
+                currentArea = Island.entries.firstOrNull { area.contains(it.displayName, true) } ?: Island.Unknown
+                if (DungeonUtils.inDungeons && currentDungeon == null) currentDungeon = Dungeon()
+            }
 
-        return Island.entries.firstOrNull { area.contains(it.displayName, true) } ?: Island.Unknown
-    }
-
-    fun getFloor(): Floor? {
-        if (currentArea.isArea(Island.SinglePlayer)) return Floor.E
-        for (i in sidebarLines) {
-            return Floor.valueOf(Regex("The Catacombs \\((\\w+)\\)\$").find(cleanSB(i))?.groupValues?.get(1) ?: continue)
+            is S3BPacketScoreboardObjective ->
+                if (!isInSkyblock)
+                    isInSkyblock = isOnHypixel && event.packet.func_149339_c() == "SBScoreboard"
         }
-        return null
     }
 }

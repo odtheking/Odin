@@ -13,10 +13,7 @@ import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.fetchURLData
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.sendDataToServer
-import me.odinmain.utils.skyblock.LocationUtils
-import me.odinmain.utils.skyblock.createClickStyle
-import me.odinmain.utils.skyblock.getChatBreak
-import me.odinmain.utils.skyblock.modMessage
+import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.ui.Colors
 import me.odinmain.utils.ui.clickgui.ClickGUI
 import me.odinmain.utils.ui.hud.EditHUDGui
@@ -34,7 +31,6 @@ object ClickGUIModule: Module(
     val color by ColorSetting("Gui Color", Color(50, 150, 220), allowAlpha = false, desc = "Color theme in the gui.")
     val switchType by BooleanSetting("Switch Type", true, desc = "Switches the type of the settings in the gui.")
     val hudChat by BooleanSetting("Shows HUDs in GUIs", true, desc = "Shows HUDs in GUIs.")
-    val forceHypixel by BooleanSetting("Force Hypixel", false, desc = "Forces the hypixel check to be on (not recommended).")
 
     val devMessages by BooleanSetting("Dev Message", false, desc = "Enables dev messages in chat.")
     val devSize by BooleanSetting("Dev Size", true, desc = "Toggles client side dev size.").withDependency { DevPlayers.isDev }
@@ -58,7 +54,6 @@ object ClickGUIModule: Module(
         OdinMain.display = EditHUDGui
     }
 
-    var bypassLowestClickDelay by BooleanSetting("Bypass lowest click delay (not recommended)", false, desc = "Bypasses the lowest click delay in the game.", hidden = true)
     var lastSeenVersion by StringSetting("Last seen version", "1.0.0", desc = "", hidden = true)
     private var joined by BooleanSetting("First join", false, "", hidden = true)
     private var hasSentUpdateMessage = false
@@ -92,6 +87,7 @@ object ClickGUIModule: Module(
                 ${getChatBreak()}§r
                 
                 """.trimIndent(), "")
+                PlayerUtils.alert("Odin Update Available")
             }
 
             if (joined) destroyExecutor()

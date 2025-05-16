@@ -1,5 +1,6 @@
 package me.odinmain.features.impl.skyblock
 
+import me.odinmain.events.impl.ArrowEvent
 import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.HudSetting
@@ -7,7 +8,7 @@ import me.odinmain.features.settings.impl.StringSetting
 import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.render.getMCTextWidth
 import me.odinmain.utils.ui.Colors
-import net.minecraft.network.play.server.S29PacketSoundEffect
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object ArrowHit : Module(
     name = "Arrow hit",
@@ -30,13 +31,13 @@ object ArrowHit : Module(
         }
     }
     init {
-        onPacket<S29PacketSoundEffect> {
-            if (it.soundName != "random.successful_hit") return@onPacket
-            arrowCount += 1
-            if (arrowCount >= (resetCount.toIntOrNull() ?: 9999) && resetOnNumber) arrowCount = 0
-        }
-
         onWorldLoad { if (resetOnWorldLoad) arrowCount = 0  }
+    }
+
+    @SubscribeEvent
+    fun onArrowHit(event: ArrowEvent.Hit) {
+        arrowCount++
+        if (arrowCount >= (resetCount.toIntOrNull() ?: 9999) && resetOnNumber) arrowCount = 0
     }
 
     fun onDragonSpawn() {

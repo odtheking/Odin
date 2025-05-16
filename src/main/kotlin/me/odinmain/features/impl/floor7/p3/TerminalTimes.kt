@@ -1,6 +1,5 @@
 package me.odinmain.features.impl.floor7.p3
 
-import me.odinmain.events.impl.ServerTickEvent
 import me.odinmain.events.impl.TerminalEvent
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.TerminalSimulator
@@ -10,6 +9,7 @@ import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.skyblock.PersonalBest
 import me.odinmain.utils.skyblock.modMessage
+import net.minecraft.network.play.server.S32PacketConfirmTransaction
 import net.minecraftforge.client.event.ClientChatReceivedEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -69,6 +69,10 @@ object TerminalTimes : Module(
             modMessage("§bTimes: §a${times.joinToString(" §8| ") { "§a${it}s" }}§8, §bTotal: §a${phaseTimer.seconds}s")
         }
 
+        onPacket<S32PacketConfirmTransaction> {
+            if (terminalSplits && !useRealTime)  currentTick += 50
+        }
+
         onWorldLoad {
             resetSection(true)
         }
@@ -85,11 +89,5 @@ object TerminalTimes : Module(
         completed = Pair(0, 7)
         sectionTimer = if (useRealTime) System.currentTimeMillis() else currentTick
         gateBlown = false
-    }
-
-    @SubscribeEvent
-    fun onServerTick(event: ServerTickEvent) {
-        if (!terminalSplits || useRealTime) return
-        currentTick += 50
     }
 }

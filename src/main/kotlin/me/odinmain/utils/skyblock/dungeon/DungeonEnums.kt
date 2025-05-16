@@ -25,29 +25,28 @@ data class DungeonPlayer(
     var deaths: Int = 0
 )
 
-data class Puzzle(
-    val name: String,
+/**
+ * Enumeration representing puzzles in a dungeon.
+ *
+ * @property displayName The display name of the puzzle.
+ * @property status The current status of the puzzle. Defaults to `null`.
+ */
+enum class Puzzle(
+    val displayName: String,
     var status: PuzzleStatus? = null
 ) {
-    companion object {
-        val Unknown = Puzzle("???")
-        val Blaze = Puzzle("Higher Or Lower")
-        val Beams = Puzzle("Creeper Beams")
-        val Weirdos = Puzzle("Three Weirdos")
-        val TTT = Puzzle("Tic Tac Toe")
-        val WaterBoard = Puzzle("Water Board")
-        val TPMaze = Puzzle("Teleport Maze")
-        val Boulder = Puzzle("Boulder")
-        val IceFill = Puzzle("Ice Fill")
-        val IcePath = Puzzle("Ice Path")
-        val Quiz = Puzzle("Quiz")
-        val BombDefuse = Puzzle("Bomb Defuse")
-
-        val allPuzzles = listOf(
-            Blaze, Beams, Weirdos, TTT, WaterBoard, TPMaze,
-            Boulder, IceFill, IcePath, Quiz, BombDefuse, Unknown
-        )
-    }
+    UNKNOWN("???"),
+    BLAZE("Higher Or Lower"),
+    BEAMS("Creeper Beams"),
+    WEIRDOS("Three Weirdos"),
+    TTT("Tic Tac Toe"),
+    WATER_BOARD("Water Board"),
+    TP_MAZE("Teleport Maze"),
+    BOULDER("Boulder"),
+    ICE_FILL("Ice Fill"),
+    ICE_PATH("Ice Path"),
+    QUIZ("Quiz"),
+    BOMB_DEFUSE("Bomb Defuse");
 }
 
 sealed class PuzzleStatus {

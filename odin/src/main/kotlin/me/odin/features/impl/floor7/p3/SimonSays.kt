@@ -37,10 +37,16 @@ object SimonSays : Module(
     private val lineWidth by NumberSetting("Line Width", 2f, 0.1f, 10f, 0.1f, desc = "The width of the box's lines.")
     private val depthCheck by BooleanSetting("Depth check", false, desc = "Boxes show through walls.")
     private val blockWrong by BooleanSetting("Block Wrong Clicks", false, desc = "Blocks wrong clicks, shift will override this.")
+    private val optimizeSolution by BooleanSetting("Optimize Solution", false, desc = "Use optimized solution, might fix ss-skip")
 
-    private val firstButton = BlockPos(110, 121, 91)
+    private val startButton = BlockPos(110, 121, 91)
     private val clickInOrder = ArrayList<BlockPos>()
     private var clickNeeded = 0
+
+    private fun resetSolution() {
+        clickInOrder.clear()
+        clickNeeded = 0
+    }
 
     init {
         onWorldLoad {
@@ -53,9 +59,8 @@ object SimonSays : Module(
     fun onBlockChange(event: BlockChangeEvent) = with (event) {
         if (DungeonUtils.getF7Phase() != M7Phases.P3) return
 
-        if (pos == firstButton && updated.block == Blocks.stone_button && updated.getValue(BlockButtonStone.POWERED)) {
-            clickInOrder.clear()
-            clickNeeded = 0
+        if (pos == startButton && updated.block == Blocks.stone_button && updated.getValue(BlockButtonStone.POWERED)) {
+            if (!optimizeSolution) resetSolution()
             return
         }
 
@@ -63,15 +68,14 @@ object SimonSays : Module(
 
         when (pos.x) {
             111 ->
-                if (updated.block == Blocks.obsidian && old.block == Blocks.sea_lantern && pos !in clickInOrder) clickInOrder.add(pos)
+                if ((if (optimizeSolution) updated.block == Blocks.sea_lantern && old.block == Blocks.obsidian else updated.block == Blocks.obsidian && old.block == Blocks.sea_lantern) && pos !in clickInOrder) clickInOrder.add(pos)
 
             110 ->
                 if (updated.block == Blocks.air) {
-                    clickInOrder.clear()
-                    clickNeeded = 0
+                    if (!optimizeSolution) resetSolution()
                 } else if (old.block == Blocks.stone_button && updated.getValue(BlockButtonStone.POWERED)) {
-                    val index = clickInOrder.indexOf(pos.add(1, 0, 0)) + 1
-                    clickNeeded = if (index >= clickInOrder.size) 0 else index
+                    clickNeeded = clickInOrder.indexOf(pos.add(1, 0, 0)) + 1
+                    if (clickNeeded >= clickInOrder.size) if (optimizeSolution) resetSolution() else clickNeeded = 0
                 }
         }
     }
@@ -90,13 +94,20 @@ object SimonSays : Module(
         if (
             event.pos == null ||
             event.action != PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK ||
-            event.world != mc.theWorld ||
-            !blockWrong ||
-            mc.thePlayer?.isSneaking == true ||
-            event.pos.x != 110 || event.pos.y !in 120..123 || event.pos.z !in 92..95
+            event.world != mc.theWorld
         ) return
 
-        if (event.pos.east() != clickInOrder.getOrNull(clickNeeded)) event.isCanceled = true
+        if (event.pos == startButton) {
+            if (optimizeSolution) resetSolution()
+            return
+        }
+
+        if (
+            blockWrong &&
+            mc.thePlayer?.isSneaking == false &&
+            event.pos.x == 110 && event.pos.y in 120..123 && event.pos.z in 92..95 &&
+            event.pos.east() != clickInOrder.getOrNull(clickNeeded)
+        ) event.isCanceled = true
     }
 
     @SubscribeEvent

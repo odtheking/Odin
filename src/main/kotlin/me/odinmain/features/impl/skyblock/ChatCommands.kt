@@ -48,6 +48,7 @@ object ChatCommands : Module(
     private val fps by BooleanSetting("FPS", true, desc = "Sends your current FPS.").withDependency { showSettings }
     private val dt by BooleanSetting("DT", true, desc = "Sets a reminder for the end of the run.").withDependency { showSettings }
     private val invite by BooleanSetting("Invite", true, desc = "Invites the player to your party.").withDependency { showSettings }
+    private val autoConfirm by BooleanSetting("Auto Confirm", true, desc = "Removes the need to confirm a party invite with the !invite command.").withDependency { showSettings && invite }
     private val racism by BooleanSetting("Racism", false, desc = "Sends a random racism percentage.").withDependency { showSettings }
     private val queInstance by BooleanSetting("Queue instance cmds", true, desc = "Queue dungeons commands.").withDependency { showSettings }
     private val time by BooleanSetting("Time", false, desc = "Sends the current time.").withDependency { showSettings }
@@ -151,10 +152,11 @@ object ChatCommands : Module(
             }
             "demote" -> if (demote && channel == ChatChannel.PARTY) sendCommand("p demote $name")
             "promote" -> if (promote && channel == ChatChannel.PARTY) sendCommand("p promote $name")
-            "kick", "k" -> if (kick && channel == ChatChannel.PARTY) sendCommand("p kick ${message.substringAfter("kick ")}")
+            "kick", "k" -> if (kick && channel == ChatChannel.PARTY) sendCommand("p kick ${message.substringAfter("kick ").split(" ")[0]}")
 
             // Private cmds only
             "invite", "inv" -> if (invite && channel == ChatChannel.PRIVATE) {
+                if (autoConfirm) return sendCommand("p invite $name")
                 modMessage("§aClick on this message to invite $name to your party!", chatStyle = createClickStyle(ClickEvent.Action.RUN_COMMAND, "/party invite $name"))
                 PlayerUtils.playLoudSound("note.pling", 100f, 1f)
             }

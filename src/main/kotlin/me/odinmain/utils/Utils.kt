@@ -56,8 +56,6 @@ fun String.containsOneOf(options: Collection<String>, ignoreCase: Boolean = fals
 fun Number.toFixed(decimals: Int = 2): String =
     "%.${decimals}f".format(Locale.US, this)
 
-
-
 fun String.startsWithOneOf(vararg options: String, ignoreCase: Boolean = false): Boolean =
     options.any { this.startsWith(it, ignoreCase) }
 

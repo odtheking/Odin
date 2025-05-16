@@ -36,6 +36,7 @@ object TPMazeSolver {
         if (correctPortals.isEmpty()) correctPortals = correctPortals.plus(tpPads)
 
         correctPortals = correctPortals.filter {
+            it !in visited &&
             isXZInterceptable(
                 AxisAlignedBB(it.x.toDouble(), it.y.toDouble(), it.z.toDouble(), it.x + 1.0, it.y + 4.0, it.z + 1.0).expand(0.75, 0.0, 0.75),
                 60f, pos, yaw, pitch

@@ -11,16 +11,13 @@ import me.odinmain.utils.skyblock.LocationUtils.currentDungeon
 import me.odinmain.utils.skyblock.PlayerUtils.posY
 import me.odinmain.utils.skyblock.dungeon.tiles.Room
 import me.odinmain.utils.skyblock.getItemSlot
-import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.block.BlockSkull
 import net.minecraft.block.state.IBlockState
 import net.minecraft.init.Blocks
-import net.minecraft.network.play.server.S38PacketPlayerListItem
 import net.minecraft.tileentity.TileEntitySkull
 import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
 import net.minecraftforge.event.entity.EntityJoinWorldEvent
-import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.EventPriority
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import kotlin.math.ceil
@@ -31,9 +28,6 @@ object DungeonUtils {
 
     inline val inDungeons: Boolean
         get() = LocationUtils.currentArea.isArea(Island.Dungeon)
-
-    inline val floorNumber: Int
-        get() = currentDungeon?.floor?.floorNumber ?: 0
 
     inline val floor: Floor
         get() = currentDungeon?.floor ?: Floor.E
@@ -75,7 +69,7 @@ object DungeonUtils {
         get() = currentDungeon?.puzzles.orEmpty()
 
     inline val puzzleCount: Int
-        get() = currentDungeon?.puzzles?.size ?: 0
+        get() = currentDungeon?.dungeonStats?.puzzleCount ?: 0
 
     inline val dungeonTime: String
         get() = currentDungeon?.dungeonStats?.elapsedTime ?: "00m 00s"
@@ -89,10 +83,10 @@ object DungeonUtils {
     inline val dungeonTeammates: ArrayList<DungeonPlayer>
         get() = currentDungeon?.dungeonTeammates ?: ArrayList()
 
-    inline val dungeonTeammatesNoSelf: ArrayList<DungeonPlayer>
+    inline val dungeonTeammatesNoSelf: List<DungeonPlayer>
         get() = currentDungeon?.dungeonTeammatesNoSelf ?: ArrayList()
 
-    inline val leapTeammates: ArrayList<DungeonPlayer>
+    inline val leapTeammates: List<DungeonPlayer>
         get() = currentDungeon?.leapTeammates ?: ArrayList()
 
     inline val currentDungeonPlayer: DungeonPlayer
@@ -126,20 +120,20 @@ object DungeonUtils {
 
     inline val score: Int
         get() {
-            val completed: Float = completedRoomCount.toFloat() + (if (!bloodDone) 1f else 0f) + (if (!inBoss) 1f else 0f)
-            val total: Float = if (totalRooms != 0) totalRooms.toFloat() else 36f
+            val completed = completedRoomCount + (if (!bloodDone) 1 else 0) + (if (!inBoss) 1 else 0)
+            val total = if (totalRooms != 0) totalRooms else 36
 
             val exploration = floor((secretPercentage / floor.secretPercentage) / 100f * 40f).coerceIn(0f, 40f).toInt() +
-                    floor(completed / total * 60f).coerceIn(0f, 60f).toInt()
+                    floor(completed.toFloat() / total * 60f).coerceIn(0f, 60f).toInt()
 
-            val skillRooms = floor(completed / total * 80f).coerceIn(0f, 80f).toInt()
-            val puzzlePenalty = puzzles.filter { it.status != PuzzleStatus.Completed }.size * 10
+            val skillRooms = floor(completed.toFloat() / total * 80f).coerceIn(0f, 80f).toInt()
+            val puzzlePenalty = (puzzleCount - puzzles.count { it.status == PuzzleStatus.Completed }) * 10
 
             return exploration + (20 + skillRooms - puzzlePenalty - (deathCount * 2 - 1).coerceAtLeast(0)).coerceIn(20, 100) + getBonusScore + 100
         }
 
     inline val neededSecretsAmount: Int
-        get() = ceil((totalSecrets * floor.secretPercentage) * (40 - getBonusScore + (deathCount * 2 - 1).coerceAtLeast(0)) / 40.0).toInt()
+        get() = ceil((totalSecrets * floor.secretPercentage) * (40 - getBonusScore + (deathCount * 2 - 1).coerceAtLeast(0)) / 40f).toInt()
 
     /**
      * Checks if the current dungeon floor number matches any of the specified options.
@@ -148,7 +142,7 @@ object DungeonUtils {
      * @return `true` if the current dungeon floor matches any of the specified options, otherwise `false`.
      */
     fun isFloor(vararg options: Int): Boolean {
-        return floorNumber in options
+        return floor.floorNumber in options
     }
 
     /**
@@ -168,7 +162,7 @@ object DungeonUtils {
         }
     }
 
-    fun getMageCooldownMultiplier(): Double {
+    private fun getMageCooldownMultiplier(): Double {
         return if (currentDungeonPlayer.clazz != DungeonClass.Mage) 1.0
         else 1 - 0.25 - (floor(currentDungeonPlayer.clazzLvl / 2.0) / 100) * if (dungeonTeammates.count { it.clazz == DungeonClass.Mage } == 1) 2 else 1
     }
@@ -193,43 +187,16 @@ object DungeonUtils {
     }
 
     @SubscribeEvent
-    fun onWorldLoad(event: WorldEvent.Load) {
-        currentDungeon?.onWorldLoad()
-    }
-
-    @SubscribeEvent
     fun onEntityJoin(event: EntityJoinWorldEvent) {
-        currentDungeon?.onEntityJoin(event)
-    }
-
-    private val puzzleRegex = Regex("^§r (\\w+(?: \\w+)*|\\?\\?\\?): §r§7\\[(§r§c§l✖|§r§a§l✔|§r§6§l✦)§r§7] ?(?:§r§f\\(§r§[a-z](\\w+)§r§f\\))?§r$")
-
-    fun getDungeonPuzzles(list: List<String> = listOf()): List<Puzzle> {
-        return list.mapNotNull { text ->
-            val (name, status) = puzzleRegex.find(text)?.destructured ?: return@mapNotNull null
-            val puzzle = Puzzle.allPuzzles.find { it.name == name }?.copy() ?: return@mapNotNull null
-
-            puzzle.status = when {
-                puzzles.find { it.name == puzzle.name }?.status == PuzzleStatus.Completed -> PuzzleStatus.Completed
-                status == "§r§c§l✖" -> PuzzleStatus.Failed
-                status == "§r§a§l✔" -> PuzzleStatus.Completed
-                status == "§r§6§l✦" -> PuzzleStatus.Incomplete
-                else -> {
-                    modMessage(text.replace("§", "&"))
-                    return@mapNotNull null
-                }
-            }
-            puzzle
-        }
+        if (inDungeons) currentDungeon?.onEntityJoin(event)
     }
 
     private val tablistRegex = Regex("^\\[(\\d+)] (?:\\[\\w+] )*(\\w+) .*?\\((\\w+)(?: (\\w+))*\\)$")
     var customLeapOrder: List<String> = emptyList()
 
-    fun getDungeonTeammates(previousTeammates: ArrayList<DungeonPlayer>, tabList: List<S38PacketPlayerListItem.AddPlayerData>): ArrayList<DungeonPlayer> {
+    fun getDungeonTeammates(previousTeammates: ArrayList<DungeonPlayer>, tabList: List<String>): ArrayList<DungeonPlayer> {
         for (line in tabList) {
-            val displayName = line.displayName?.unformattedText?.noControlCodes ?: continue
-            val (_, name, clazz, clazzLevel) = tablistRegex.find(displayName)?.destructured ?: continue
+            val (_, name, clazz, clazzLevel) = tablistRegex.find(line)?.destructured ?: continue
 
             previousTeammates.find { it.name == name }?.let { player -> player.isDead = clazz == "DEAD" } ?:
             previousTeammates.add(DungeonPlayer(name, DungeonClass.entries.find { it.name == clazz } ?: continue, clazzLvl = romanToInt(clazzLevel), mc.netHandler?.getPlayerInfo(name)?.locationSkin ?: continue, mc.theWorld?.getPlayerEntityByName(name), false))
