@@ -32,7 +32,7 @@ object LocationUtils {
         private set
     var kuudraTier: Int = 0
         private set
-    private val tierRegex = Regex("Kuudra's Hollow \\(T(\\w)\\)\$")
+    private val tierRegex = Regex("Kuudra's Hollow \\(T(\\d)\\)\$")
 
     @SubscribeEvent
     fun onDisconnect(event: FMLNetworkEvent.ClientDisconnectionFromServerEvent) {
