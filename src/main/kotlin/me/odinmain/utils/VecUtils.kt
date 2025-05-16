@@ -502,3 +502,82 @@ fun BlockPos.addRotationCoords(rotation: Rotations, x: Int, z: Int): BlockPos =
         Rotations.EAST ->  BlockPos(this.x - z, this.y, this.z + x)
         else -> this
     }
+
+fun calculateMean(points: List<Vec3>): Vec3 {
+    var sumX = 0.0
+    var sumY = 0.0
+    var sumZ = 0.0
+
+    for (point in points) {
+        sumX += point.xCoord
+        sumY += point.yCoord
+        sumZ += point.zCoord
+    }
+
+    return Vec3(sumX / points.size, sumY / points.size, sumZ / points.size)
+}
+
+fun covarianceMatrix(points: List<Vec3>, center: Vec3): Array<DoubleArray> {
+    val covMatrix = Array(3) { DoubleArray(3) }
+
+    for (point in points) {
+        val centeredPoint = point.subtract(center)
+
+        covMatrix[0][0] += centeredPoint.xCoord * centeredPoint.xCoord
+        covMatrix[0][1] += centeredPoint.xCoord * centeredPoint.yCoord
+        covMatrix[0][2] += centeredPoint.xCoord * centeredPoint.zCoord
+        covMatrix[1][0] += centeredPoint.yCoord * centeredPoint.xCoord
+        covMatrix[1][1] += centeredPoint.yCoord * centeredPoint.yCoord
+        covMatrix[1][2] += centeredPoint.yCoord * centeredPoint.zCoord
+        covMatrix[2][0] += centeredPoint.zCoord * centeredPoint.xCoord
+        covMatrix[2][1] += centeredPoint.zCoord * centeredPoint.yCoord
+        covMatrix[2][2] += centeredPoint.zCoord * centeredPoint.zCoord
+    }
+
+    // normalize
+    for (i in 0..2) {
+        for (j in 0..2) {
+            covMatrix[i][j] /= points.size
+        }
+    }
+
+    return covMatrix
+}
+
+// find eigenvectors/eigenvalues using power iteration method
+fun findMainEigenvector(matrix: Array<DoubleArray>): Vec3 {
+    // initialize with a non-zero vector
+    var v = Vec3(1.0, 0.0, 0.0)
+
+    // number of iterations for power method
+    val numIterations = 20
+
+    for (i in 0 until numIterations) {
+        // matrix vector multiplication
+        val newV = Vec3(
+            matrix[0][0] * v.xCoord + matrix[0][1] * v.yCoord + matrix[0][2] * v.zCoord,
+            matrix[1][0] * v.xCoord + matrix[1][1] * v.yCoord + matrix[1][2] * v.zCoord,
+            matrix[2][0] * v.xCoord + matrix[2][1] * v.yCoord + matrix[2][2] * v.zCoord
+        )
+
+        // normalize the vector
+        val norm = newV.lengthVector()
+        if (norm > 0) {
+            v = newV.scale(1.0 / norm)
+        }
+    }
+
+    return v
+}
+
+fun Vec3.dot(v2: Vec3): Double {
+    return this.xCoord * v2.xCoord + this.yCoord * v2.yCoord + this.zCoord * v2.zCoord
+}
+
+fun Vec3.scale(scalar: Double): Vec3 {
+    return Vec3(
+        this.xCoord * scalar,
+        this.yCoord * scalar,
+        this.zCoord * scalar
+    )
+}
