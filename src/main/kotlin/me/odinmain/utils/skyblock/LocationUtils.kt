@@ -6,12 +6,15 @@ import me.odinmain.utils.cleanLine
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.clock.Executor.Companion.register
 import me.odinmain.utils.equalsOneOf
+import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.sidebarLines
 import me.odinmain.utils.skyblock.dungeon.Dungeon
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.skyblock.dungeon.Floor
 import me.odinmain.utils.startsWithOneOf
 import net.minecraft.network.play.server.S38PacketPlayerListItem
 import net.minecraft.network.play.server.S3BPacketScoreboardObjective
+import net.minecraft.network.play.server.S3EPacketTeams
 import net.minecraft.network.play.server.S3FPacketCustomPayload
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.EventPriority
@@ -29,15 +32,7 @@ object LocationUtils {
         private set
     var kuudraTier: Int = 0
         private set
-
-    init {
-        Executor(500, "LocationUtils") {
-            // Move this to packet based
-            if (currentArea.isArea(Island.Kuudra) && kuudraTier == 0)
-                sidebarLines.find { cleanLine(it).contains("Kuudra's Hollow (") }?.let {
-                    kuudraTier = it.substringBefore(")").lastOrNull()?.digitToIntOrNull() ?: 0 }
-        }.register()
-    }
+    private val tierRegex = Regex("Kuudra's Hollow \\(T(\\w)\\)\$")
 
     @SubscribeEvent
     fun onDisconnect(event: FMLNetworkEvent.ClientDisconnectionFromServerEvent) {
@@ -89,6 +84,13 @@ object LocationUtils {
             is S3BPacketScoreboardObjective ->
                 if (!isInSkyblock)
                     isInSkyblock = isOnHypixel && event.packet.func_149339_c() == "SBScoreboard"
+
+            is S3EPacketTeams -> {
+                if (!currentArea.isArea(Island.Kuudra) || event.packet.action != 2) return
+                val text = event.packet.prefix?.plus(event.packet.suffix)?.noControlCodes ?: return
+
+                tierRegex.find(text)?.groupValues?.get(1)?.let { kuudraTier = it.toInt() }
+            }
         }
     }
 }
