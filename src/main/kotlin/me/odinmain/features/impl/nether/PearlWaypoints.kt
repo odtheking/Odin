@@ -1,6 +1,5 @@
 package me.odinmain.features.impl.nether
 
-import jdk.nashorn.internal.ir.Block
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
