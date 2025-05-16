@@ -148,7 +148,7 @@ object ChatCommands : Module(
             "f1", "f2", "f3", "f4", "f5", "f6", "f7", "m1", "m2", "m3", "m4", "m5", "m6", "m7", "t1", "t2", "t3", "t4", "t5" -> {
                 if (!queInstance || channel != ChatChannel.PARTY) return
                 modMessage("§8Entering -> §e${message.substring(1).capitalizeFirst()}")
-                sendCommand("od ${message.substring(1)}", true)
+                sendCommand("od ${message.substring(1).lowercase()}", true)
             }
             "demote" -> if (demote && channel == ChatChannel.PARTY) sendCommand("p demote $name")
             "promote" -> if (promote && channel == ChatChannel.PARTY) sendCommand("p promote $name")
