@@ -30,9 +30,6 @@ object LocationUtils {
         private set
     var currentArea: Island = Island.Unknown
         private set
-    var kuudraTier: Int = 0
-        private set
-    private val tierRegex = Regex("Kuudra's Hollow \\(T(\\d)\\)\$")
 
     @SubscribeEvent
     fun onDisconnect(event: FMLNetworkEvent.ClientDisconnectionFromServerEvent) {
@@ -40,7 +37,6 @@ object LocationUtils {
         currentDungeon = null
         isInSkyblock = false
         isOnHypixel = false
-        kuudraTier = 0
     }
 
     @SubscribeEvent
@@ -48,7 +44,6 @@ object LocationUtils {
         currentArea = Island.Unknown
         currentDungeon = null
         isInSkyblock = false
-        kuudraTier = 0
     }
 
     /**
@@ -84,13 +79,6 @@ object LocationUtils {
             is S3BPacketScoreboardObjective ->
                 if (!isInSkyblock)
                     isInSkyblock = isOnHypixel && event.packet.func_149339_c() == "SBScoreboard"
-
-            is S3EPacketTeams -> {
-                if (!currentArea.isArea(Island.Kuudra) || event.packet.action != 2) return
-                val text = event.packet.prefix?.plus(event.packet.suffix)?.noControlCodes ?: return
-
-                tierRegex.find(text)?.groupValues?.get(1)?.let { kuudraTier = it.toInt() }
-            }
         }
     }
 }

@@ -48,7 +48,7 @@ object BuildHelper : Module(
     @SubscribeEvent
     fun renderWorldEvent(event: RenderWorldLastEvent) {
         if (!KuudraUtils.inKuudra || KuudraUtils.phase != 2) return
-        if (stunNotification && LocationUtils.kuudraTier > 2 && KuudraUtils.buildDonePercentage > stunNotificationNumber) PlayerUtils.alert("§lGo to stun", playSound = false, color = Colors.MINECRAFT_DARK_AQUA)
+        if (stunNotification && KuudraUtils.kuudraTier > 2 && KuudraUtils.buildDonePercentage > stunNotificationNumber) PlayerUtils.alert("§lGo to stun", playSound = false, color = Colors.MINECRAFT_DARK_AQUA)
         if (buildHelperDraw)
             Renderer.drawStringInWorld("Build ${colorBuild(KuudraUtils.buildDonePercentage)}%", Vec3(-101.5, 84.0, -105.5), buildHelperColor, depth = false, scale = 0.15f)
 

@@ -106,7 +106,7 @@ val devCommand = Commodore("oddev") {
             ${
                 when {
                     KuudraUtils.inKuudra -> """
-                        |inKuudra: ${KuudraUtils.inKuudra}, tier: ${LocationUtils.kuudraTier}, phase: ${KuudraUtils.phase}
+                        |inKuudra: ${KuudraUtils.inKuudra}, tier: ${KuudraUtils.kuudraTier}, phase: ${KuudraUtils.phase}
                         |kuudraTeammates: ${KuudraUtils.kuudraTeammates.joinToString { it.playerName }}
                         |giantZombies: ${KuudraUtils.giantZombies.joinToString { it.positionVector.toString() }}
                         |supplies: ${KuudraUtils.supplies.joinToString()}
