@@ -170,6 +170,7 @@ object PearlWaypoints : Module(
     private const val EVEL = 1.67
     private const val GRAV = 0.08
 
+    // Made by Aidanmao
     fun calculatePearl(landingX: Double, landingY: Double, landingZ: Double): Vec3? {
         val playerX = posX
         val playerY = posY
