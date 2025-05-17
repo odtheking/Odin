@@ -69,7 +69,7 @@ object SupplyHelper : Module(
         Pair(Vec3(-98.0, 78.0, -112.0), SupplyPickUpSpot.Shop),
         Pair(Vec3(-98.0, 78.0, -99.0), SupplyPickUpSpot.Equals),
         Pair(Vec3(-110.0, 78.0, -106.0), SupplyPickUpSpot.xCannon),
-        Pair(Vec3(-106.0, 78.0, -112.0), SupplyPickUpSpot.X ),
+        Pair(Vec3(-106.0, 78.0, -112.0), SupplyPickUpSpot.X),
         Pair(Vec3(-94.0, 78.0, -106.0), SupplyPickUpSpot.Triangle),
         Pair(Vec3(-106.0, 78.0, -99.0), SupplyPickUpSpot.Slash),
     )
