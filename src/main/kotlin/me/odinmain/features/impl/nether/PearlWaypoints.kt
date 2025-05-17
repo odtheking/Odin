@@ -11,7 +11,6 @@ import me.odinmain.utils.skyblock.PlayerUtils.posX
 import me.odinmain.utils.skyblock.PlayerUtils.posY
 import me.odinmain.utils.skyblock.PlayerUtils.posZ
 import me.odinmain.utils.toAABB
-import me.odinmain.utils.toBlockPos
 import me.odinmain.utils.ui.Colors
 import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
@@ -19,12 +18,7 @@ import net.minecraft.util.Vec3i
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.util.*
-import kotlin.math.PI
-import kotlin.math.atan
-import kotlin.math.atan2
-import kotlin.math.cos
-import kotlin.math.sin
-import kotlin.math.sqrt
+import kotlin.math.*
 
 object PearlWaypoints : Module(
     name = "Pearl Waypoints",
@@ -40,7 +34,8 @@ object PearlWaypoints : Module(
         SupplyPickUpSpot.Shop to BlockPos(-98.0, 78.0, -112.0),
         SupplyPickUpSpot.Triangle to BlockPos(-94.0, 78.0, -106.0),
         SupplyPickUpSpot.Equals to BlockPos(-98.0, 78.0, -99.0),
-        SupplyPickUpSpot.Slash to BlockPos(-106.0, 78.0, -99.0)
+        SupplyPickUpSpot.Slash to BlockPos(-106.0, 78.0, -99.0),
+        SupplyPickUpSpot.None to BlockPos(0, 0, 0)
     )
 
     private val pearlLineups: Map<Lineup, Color> = mapOf(
