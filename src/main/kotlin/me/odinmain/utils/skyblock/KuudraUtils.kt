@@ -143,11 +143,15 @@ object KuudraUtils {
     enum class SupplyPickUpSpot(val location: Vec3) {
         Triangle(Vec3(-67.5, 77.0, -122.5)),
         X(Vec3(-142.5, 77.0, -151.0)),
+        XSafe(Vec3(-135.0, 78.0, -129.0)),
         Equals(Vec3(-65.5, 76.0, -87.5)),
         Slash(Vec3(-113.5, 77.0, -68.5)),
         Shop(Vec3(-81.0, 76.0, -143.0)),
+        ShopCorner(Vec3(-71.0, 79.0, -135.0)),
         xCannon(Vec3(-143.0, 76.0, -125.0)),
+        xCannonStair(Vec3(-135.0, 76.0, -124.0)),
         Square(Vec3(-143.0, 76.0, -80.0)),
+        SquareLow(Vec3(-142.0, 77.0, -87.0)),
         None(Vec3(0.0, 0.0, 0.0))
     }
 }
