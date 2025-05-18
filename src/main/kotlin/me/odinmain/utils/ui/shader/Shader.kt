@@ -11,7 +11,7 @@ abstract class Shader(vertexShader: String, fragmentShader: String) {
     private var programId: Int = OpenGlHelper.glCreateProgram()
     private var vertShader: Int = OpenGlHelper.glCreateShader(GL20.GL_VERTEX_SHADER)
     private var fragShader: Int = OpenGlHelper.glCreateShader(GL20.GL_FRAGMENT_SHADER)
-    private var uniformsMap: HashMap<String, Int> = HashMap()
+    private var uniformsMap: MutableMap<String, Int>? = null
 
     var usable = false
         private set
@@ -27,6 +27,10 @@ abstract class Shader(vertexShader: String, fragmentShader: String) {
 
         createShader(vertexSource, fragmentSource)
     }
+
+    abstract fun setupUniforms()
+
+    abstract fun updateUniforms()
 
     private fun createShader(vertexShader: String, fragmentShader: String) {
         for ((shader, source) in listOf(vertShader to vertexShader, fragShader to fragmentShader)) {
@@ -70,28 +74,37 @@ abstract class Shader(vertexShader: String, fragmentShader: String) {
         usable = true
     }
 
-    fun bind() {
-        OpenGlHelper.glUseProgram(programId)
-    }
-
-    fun unbind() {
-        OpenGlHelper.glUseProgram(0)
-    }
-
-    private fun getUniformLocation(uniformName: String): Int {
-        return uniformsMap.getOrPut(uniformName) {
-            val location = OpenGlHelper.glGetUniformLocation(programId, uniformName)
-            if (location == -1) println("Uniform $uniformName not found in shader")
-            location
+    fun startShader() {
+        GL20.glUseProgram(programId)
+        if (uniformsMap == null) {
+            uniformsMap = HashMap()
+            setupUniforms()
         }
+        updateUniforms()
+    }
+
+    fun stopShader() {
+        GL20.glUseProgram(0)
+    }
+
+    private fun setUniform(uniformName: String, location: Int) {
+        uniformsMap!![uniformName] = location
+    }
+
+    fun setupUniform(uniformName: String) {
+        setUniform(uniformName, GL20.glGetUniformLocation(programId, uniformName))
+    }
+
+    fun getUniform(uniformName: String): Int {
+        return uniformsMap!![uniformName]!!
     }
 
     fun getFloatUniform(name: String): FloatUniform =
-        FloatUniform(getUniformLocation(name))
+        FloatUniform(getUniform(name))
 
     fun getFloat2Uniform(name: String): Float2Uniform =
-        Float2Uniform(getUniformLocation(name))
+        Float2Uniform(getUniform(name))
 
     fun getFloat4Uniform(name: String): Float4Uniform =
-        Float4Uniform(getUniformLocation(name))
+        Float4Uniform(getUniform(name))
 }
