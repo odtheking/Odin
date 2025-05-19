@@ -34,7 +34,10 @@ object MelodyGui : TermGui() {
             val colorMelody = when {
                 pane / 9 == 0 || pane / 9 == 5 -> melodyColumColor
                 (pane % 9).equalsOneOf(1, 2, 3, 4, 5)  -> melodyRowColor
-                else -> melodyPressColor
+                else -> {
+                    TerminalSolver.melodyCorrect = true
+                    melodyPressColor
+                }
             }
             if ((pane % 9).equalsOneOf(1, 2, 3, 4, 5) && pane / 9 != 0 && pane / 9 != 5) {
                 roundedRectangle((-163 + ((gap-20).unaryPlus() * 0.5)) -1*70, -115 + row * 70,350 - gap, 70 - gap, melodyCorrectRowColor)
@@ -49,7 +52,7 @@ object MelodyGui : TermGui() {
                 val row = index / 9 - 1
                 val col = index % 9 - 2
                 val box = BoxWithClass(ceil(-163 + ((gap - 20).unaryPlus() * 0.5)) + col * 70, -115 + row * 70, 70 - gap, 70 - gap)
-                if (index !in it.solution) roundedRectangle(box, melodyPressColumColor)
+                if (index !in it.solution) roundedRectangle(box, melodyPressColumColor); TerminalSolver.melodyCorrect = false
                 itemIndexMap[index] = Box(
                     box.x.toFloat() * customScale + mc.displayWidth / 2,
                     box.y.toFloat() * customScale + mc.displayHeight / 2,

@@ -97,6 +97,7 @@ object TerminalSolver : Module(
     private val startsWithRegex = Regex("What starts with: '(\\w+)'?")
     private var currentTermWindowName = ""
     private var lastClickTime = 0L
+    var melodyCorrect = false
 
     init {
         onPacket<S2DPacketOpenWindow> { packet ->
@@ -242,7 +243,10 @@ object TerminalSolver : Module(
                 Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, when {
                     slotIndex / 9 == 0 || slotIndex / 9 == 5 -> melodyColumColor
                     (slotIndex % 9).equalsOneOf(1, 2, 3, 4, 5) -> melodyRowColor
-                    else -> melodyPressColor
+                    else -> {
+                        melodyCorrect = true
+                        melodyPressColor
+                    }
                 }.rgba)
             }
         }
