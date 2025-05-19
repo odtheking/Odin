@@ -4,6 +4,7 @@ import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.features.impl.skyblock.Splits
 import me.odinmain.features.impl.skyblock.Splits.sendSplits
 import me.odinmain.utils.skyblock.Island
+import me.odinmain.utils.skyblock.KuudraUtils
 import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.PersonalBest
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
@@ -59,7 +60,7 @@ object SplitsManager {
                 }
             }
 
-            Island.Kuudra -> when (LocationUtils.kuudraTier) {
+            Island.Kuudra -> when (KuudraUtils.kuudraTier) {
                 5 -> SplitsGroup(kuudraT5SplitsGroup.map { it.copy(time = 0L) }, kuudraT5PBs)
                 4 -> SplitsGroup(kuudraSplitsGroup.map   { it.copy(time = 0L) }, kuudraT4PBs)
                 3 -> SplitsGroup(kuudraSplitsGroup.map   { it.copy(time = 0L) }, kuudraT3PBs)
