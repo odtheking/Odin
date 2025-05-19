@@ -51,7 +51,7 @@ open class TerminalHandler(val type: TerminalTypes, val timeOpened: Long = Syste
     }
 
     fun canClick(slotIndex: Int, button: Int, needed: Int = solution.count { it == slotIndex }): Boolean = when {
-        type == TerminalTypes.MELODY && TerminalSolver.renderType == 3 && TerminalSolver.melodyCorrect -> false
+        type == TerminalTypes.MELODY && TerminalSolver.renderType == 3 && !TerminalSolver.melodyCorrect -> false
         type == TerminalTypes.MELODY -> slotIndex.equalsOneOf(16, 25, 34, 43)
         slotIndex !in solution -> false
         type == TerminalTypes.NUMBERS && slotIndex != solution.firstOrNull() -> false
