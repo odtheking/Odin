@@ -43,43 +43,43 @@ object PearlWaypoints : Module(
             supply = SupplyPickUpSpot.ShopCorner,
             startPos = setOf(BlockPos(-71, 79, -135)),
             lineups = setOf(BlockPos(0, 0, 0)),
-            endPos = setOf(supplyNameMap[SupplyPickUpSpot.Shop] as BlockPos)
+            endPos = setOfNotNull(supplyNameMap[SupplyPickUpSpot.Shop])
         ) to Colors.MINECRAFT_DARK_RED,
         Lineup(
             supply = SupplyPickUpSpot.Shop,
             startPos = setOf(BlockPos(-86, 78, -129)),
             lineups = setOf(BlockPos(-97, 159, -112)),
-            endPos = setOf(supplyNameMap[SupplyPickUpSpot.Shop] as BlockPos)
+            endPos = setOfNotNull(supplyNameMap[SupplyPickUpSpot.Shop])
         ) to Colors.MINECRAFT_RED,
         Lineup(
             supply = SupplyPickUpSpot.Triangle,
             startPos = setOf(BlockPos(-68, 77, -123)),
             lineups = setOf(BlockPos(-93, 155, -105)),
-            endPos = setOf(supplyNameMap[SupplyPickUpSpot.Triangle] as BlockPos)
+            endPos = setOfNotNull(supplyNameMap[SupplyPickUpSpot.Triangle])
         ) to Colors.MINECRAFT_LIGHT_PURPLE,
         Lineup(
             supply = SupplyPickUpSpot.X,
             startPos = setOf(BlockPos(-135, 77, -139)),
             lineups = setOf(BlockPos(-105, 149, -112)),
-            endPos = setOf(supplyNameMap[SupplyPickUpSpot.X] as BlockPos)
+            endPos = setOfNotNull(supplyNameMap[SupplyPickUpSpot.X])
         ) to Colors.MINECRAFT_YELLOW,
         Lineup(
             supply = SupplyPickUpSpot.XSafe,
             startPos = setOf(BlockPos(-135, 78, -129)),
             lineups = setOf(BlockPos(-109, 157, -105)),
-            endPos = setOf(supplyNameMap[SupplyPickUpSpot.X] as BlockPos)
+            endPos = setOfNotNull(supplyNameMap[SupplyPickUpSpot.X])
         ) to Colors.MINECRAFT_GOLD,
         Lineup(
             supply = SupplyPickUpSpot.xCannon,
             startPos = setOf(BlockPos(-131, 78, -115)),
             lineups = setOf(BlockPos(-109, 163, -105)),
-            endPos = setOf(supplyNameMap[SupplyPickUpSpot.xCannon] as BlockPos)
+            endPos = setOfNotNull(supplyNameMap[SupplyPickUpSpot.xCannon])
         ) to Colors.WHITE,
         Lineup(
             supply = SupplyPickUpSpot.xCannonStair,
             startPos = setOf(BlockPos(-135, 76, -124)),
             lineups = setOf(BlockPos(-109, 155, -105)),
-            endPos = setOf(supplyNameMap[SupplyPickUpSpot.xCannon] as BlockPos)
+            endPos = setOfNotNull(supplyNameMap[SupplyPickUpSpot.xCannon])
         ) to Colors.MINECRAFT_GRAY,
         Lineup(
             supply = SupplyPickUpSpot.Square,
@@ -92,7 +92,7 @@ object PearlWaypoints : Module(
                 BlockPos(-97, 97, -98), // Equals
                 BlockPos(-105, 155, -98) // Slash
             ),
-            endPos = setOf(supplyNameMap[NoPre.missing] as BlockPos)
+            endPos = setOfNotNull(supplyNameMap[NoPre.missing])
         ) to Colors.MINECRAFT_AQUA,
         Lineup(
             supply = SupplyPickUpSpot.SquareLow,
@@ -105,19 +105,19 @@ object PearlWaypoints : Module(
                 BlockPos(-97, 102, -98), // Equals
                 BlockPos(-105, 149, -98) // Slash
             ),
-            endPos = setOf(supplyNameMap[NoPre.missing] as BlockPos)
+            endPos = setOfNotNull(supplyNameMap[NoPre.missing])
         ) to Colors.MINECRAFT_DARK_AQUA,
         Lineup(
             supply = SupplyPickUpSpot.Equals,
             startPos = setOf(BlockPos(-66, 76, -87)),
             lineups = setOf(BlockPos(-97, 153, -98)),
-            endPos = setOf(supplyNameMap[SupplyPickUpSpot.Equals] as BlockPos)
+            endPos = setOfNotNull(supplyNameMap[SupplyPickUpSpot.Equals])
         ) to Colors.MINECRAFT_GREEN,
         Lineup(
             supply = SupplyPickUpSpot.Slash,
             startPos = setOf(BlockPos(-113, 77, -69)),
             lineups = setOf(BlockPos(-105, 157, -99)),
-            endPos = setOf(supplyNameMap[SupplyPickUpSpot.Slash] as BlockPos)
+            endPos = setOfNotNull(supplyNameMap[SupplyPickUpSpot.Slash])
         ) to Colors.MINECRAFT_BLUE
     )
 
