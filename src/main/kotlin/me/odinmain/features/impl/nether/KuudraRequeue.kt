@@ -5,6 +5,7 @@ import me.odinmain.features.impl.dungeon.DungeonRequeue.disableRequeue
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.runIn
+import me.odinmain.utils.skyblock.KuudraUtils
 import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.sendCommand
 
@@ -23,7 +24,7 @@ object KuudraRequeue : Module(
             }
 
             runIn(delay * 20) {
-                if (!disableRequeue) sendCommand("od t${LocationUtils.kuudraTier}", true)
+                if (!disableRequeue) sendCommand("od t${KuudraUtils.kuudraTier}", true)
             }
         }
 

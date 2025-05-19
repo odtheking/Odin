@@ -9,11 +9,13 @@ import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.getSBMaxHealth
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.runIn
+import me.odinmain.utils.skyblock.LocationUtils.currentArea
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.entity.monster.EntityGiantZombie
 import net.minecraft.entity.monster.EntityMagmaCube
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.network.play.server.S38PacketPlayerListItem
+import net.minecraft.network.play.server.S3EPacketTeams
 import net.minecraft.util.Vec3
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -28,6 +30,10 @@ object KuudraUtils {
     var buildingPiles = arrayListOf<EntityArmorStand>()
     var playersBuildingAmount = 0
     var buildDonePercentage = 0
+
+    var kuudraTier: Int = 0
+        private set
+    private val tierRegex = Regex("Kuudra's Hollow \\(T(\\d)\\)\$")
 
     private val freshRegex = Regex("^Party > (\\[[^]]*?])? ?(\\w{1,16}): FRESH\$")
     private val buildRegex = Regex("Building Progress (\\d+)% \\((\\d+) Players Helping\\)")
@@ -49,6 +55,7 @@ object KuudraUtils {
         giantZombies.clear()
         kuudraEntity = null
         phase = 0
+        kuudraTier = 0
     }
 
     @SubscribeEvent
@@ -123,6 +130,18 @@ object KuudraUtils {
             !event.packet.action.equalsOneOf(S38PacketPlayerListItem.Action.UPDATE_DISPLAY_NAME, S38PacketPlayerListItem.Action.ADD_PLAYER) ||
             !LocationUtils.currentArea.isArea(Island.Unknown, Island.Kuudra)) return
         kuudraTeammates = updateKuudraTeammates(kuudraTeammates, event.packet.entries)
+    }
+
+    @SubscribeEvent
+    fun onPacket(event: PacketEvent.Receive) {
+        when (event.packet) {
+            is S3EPacketTeams -> {
+                if (!currentArea.isArea(Island.Kuudra) || event.packet.action != 2) return
+                val text = event.packet.prefix?.plus(event.packet.suffix)?.noControlCodes ?: return
+
+                tierRegex.find(text)?.groupValues?.get(1)?.let { kuudraTier = it.toInt() }
+            }
+        }
     }
 
     private val tablistRegex = Regex("^\\[(\\d+)] (?:\\[\\w+] )*(\\w+)")
