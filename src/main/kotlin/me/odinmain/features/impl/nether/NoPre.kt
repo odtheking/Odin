@@ -21,6 +21,7 @@ object NoPre : Module(
 
     private var preSpot = SupplyPickUpSpot.None
     var missing = SupplyPickUpSpot.None
+    var prio = SupplyPickUpSpot.None
 
     init {
         onMessage(Regex("\\[NPC] Elle: Head over to the main platform, I will join you when I get a bite!")) {
@@ -66,7 +67,8 @@ object NoPre : Module(
         onMessage(Regex("^Party > (\\[[^]]*?])? ?(\\w{1,16}): No ?(Triangle|X|Equals|Slash|xCannon|Square|Shop)!\$")) {
             missing = SupplyPickUpSpot.valueOf(it.groupValues.lastOrNull() ?: return@onMessage)
             if (!showCratePriority) return@onMessage
-            val cratePriority = cratePriority(missing).ifEmpty { return@onMessage }
+            val (prio, cratePriority) = cratePriority(missing)
+            cratePriority.ifEmpty { return@onMessage }
             PlayerUtils.alert(cratePriority, time = cratePriorityTitleTime)
             modMessage("Crate Priority: $cratePriority")
         }
@@ -77,66 +79,66 @@ object NoPre : Module(
         }
     }
     
-    private fun cratePriority(missing: SupplyPickUpSpot): String {
+    private fun cratePriority(missing: SupplyPickUpSpot): Pair<SupplyPickUpSpot, String> {
         return when (missing) {
             // Shop Missing
             SupplyPickUpSpot.Shop -> when (preSpot) {
-                SupplyPickUpSpot.Triangle, SupplyPickUpSpot.X -> "Go X Cannon"
-                SupplyPickUpSpot.Equals, SupplyPickUpSpot.Slash -> "Go Square, place on Shop"
-                else -> ""
+                SupplyPickUpSpot.Triangle, SupplyPickUpSpot.X -> SupplyPickUpSpot.xCannon to "Go X Cannon"
+                SupplyPickUpSpot.Equals, SupplyPickUpSpot.Slash -> SupplyPickUpSpot.Square to "Go Square, place on Shop"
+                else -> SupplyPickUpSpot.None to ""
             }
 
             // Triangle Missing
             SupplyPickUpSpot.Triangle -> when (preSpot) {
-                SupplyPickUpSpot.Triangle -> if (advanced) "Pull Square and X Cannon. Next: collect Shop" else "Pull Square. Next: collect Shop"
-                SupplyPickUpSpot.X -> "Go X Cannon"
-                SupplyPickUpSpot.Equals -> if (advanced) "Go Shop" else "Go X Cannon"
-                SupplyPickUpSpot.Slash -> "Go Square, place on Triangle"
-                else -> ""
+                SupplyPickUpSpot.Triangle -> SupplyPickUpSpot.None to if (advanced) "Pull Square and X Cannon. Next: collect Shop" else "Pull Square. Next: collect Shop"
+                SupplyPickUpSpot.X -> SupplyPickUpSpot.xCannon to "Go X Cannon"
+                SupplyPickUpSpot.Equals -> if (advanced) SupplyPickUpSpot.Shop to "Go Shop" else SupplyPickUpSpot.xCannon to "Go X Cannon"
+                SupplyPickUpSpot.Slash -> SupplyPickUpSpot.Square to "Go Square, place on Triangle"
+                else -> SupplyPickUpSpot.None to ""
             }
 
             // Equals Missing
             SupplyPickUpSpot.Equals -> when (preSpot) {
-                SupplyPickUpSpot.Triangle -> if (advanced) "Go Shop" else "Go X Cannon"
-                SupplyPickUpSpot.X -> "Go X Cannon"
-                SupplyPickUpSpot.Equals -> if (advanced) "Pull Square and X Cannon. Next: collect Shop" else "Pull Square. Next: collect Shop"
-                SupplyPickUpSpot.Slash -> "Go Square, place on Equals"
-                else -> ""
+                SupplyPickUpSpot.Triangle -> if (advanced) SupplyPickUpSpot.Shop to "Go Shop" else SupplyPickUpSpot.xCannon to "Go X Cannon"
+                SupplyPickUpSpot.X -> SupplyPickUpSpot.xCannon to "Go X Cannon"
+                SupplyPickUpSpot.Equals -> SupplyPickUpSpot.Shop to if (advanced) "Pull Square and X Cannon. Next: collect Shop" else "Pull Square. Next: collect Shop"
+                SupplyPickUpSpot.Slash -> SupplyPickUpSpot.Square to "Go Square, place on Equals"
+                else -> SupplyPickUpSpot.None to ""
             }
 
             // Slash Missing
             SupplyPickUpSpot.Slash -> when (preSpot) {
-                SupplyPickUpSpot.Triangle -> "Go Square, place on Slash"
-                SupplyPickUpSpot.X -> "Go X Cannon"
-                SupplyPickUpSpot.Equals -> if (advanced) "Go Shop" else "Go X Cannon"
-                SupplyPickUpSpot.Slash -> if (advanced) "Pull Square and X Cannon. Next: collect Shop" else "Pull Square. Next: collect Shop"
-                else -> ""
+                SupplyPickUpSpot.Triangle -> SupplyPickUpSpot.Square to "Go Square, place on Slash"
+                SupplyPickUpSpot.X -> SupplyPickUpSpot.xCannon to "Go X Cannon"
+                SupplyPickUpSpot.Equals -> if (advanced) SupplyPickUpSpot.Shop to "Go Shop" else SupplyPickUpSpot.xCannon to "Go X Cannon"
+                SupplyPickUpSpot.Slash -> SupplyPickUpSpot.Shop to if (advanced) "Pull Square and X Cannon. Next: collect Shop" else "Pull Square. Next: collect Shop"
+                else -> SupplyPickUpSpot.None to ""
             }
 
             // Square Missing
             SupplyPickUpSpot.Square -> when (preSpot) {
-                SupplyPickUpSpot.Triangle, SupplyPickUpSpot.Equals -> "Go Shop"
-                SupplyPickUpSpot.X, SupplyPickUpSpot.Slash -> "Go X Cannon"
-                else -> ""
+                SupplyPickUpSpot.Triangle, SupplyPickUpSpot.Equals -> SupplyPickUpSpot.Shop to "Go Shop"
+                SupplyPickUpSpot.X, SupplyPickUpSpot.Slash -> SupplyPickUpSpot.xCannon to "Go X Cannon"
+                else -> SupplyPickUpSpot.None to ""
             }
 
             // X Cannon Missing
             SupplyPickUpSpot.xCannon -> when (preSpot) {
-                SupplyPickUpSpot.Triangle, SupplyPickUpSpot.Equals -> "Go Shop"
-                SupplyPickUpSpot.Slash, SupplyPickUpSpot.X -> "Go Square, place on X Cannon"
-                else -> ""
+                SupplyPickUpSpot.Triangle, SupplyPickUpSpot.Equals -> SupplyPickUpSpot.Shop to "Go Shop"
+                SupplyPickUpSpot.Slash, SupplyPickUpSpot.X -> SupplyPickUpSpot.Square to "Go Square, place on X Cannon"
+                else -> SupplyPickUpSpot.None to ""
             }
 
             // X Missing
             SupplyPickUpSpot.X -> when (preSpot) {
-                SupplyPickUpSpot.Triangle -> "Go X Cannon"
-                SupplyPickUpSpot.X -> if (advanced) "Pull Square and X Cannon. Next: collect Shop" else "Pull Square. Next: collect Shop"
-                SupplyPickUpSpot.Equals -> if (advanced) "Go Shop" else "Go X Cannon"
-                SupplyPickUpSpot.Slash -> "Go Square, place on X"
-                else -> ""
+                SupplyPickUpSpot.Triangle -> SupplyPickUpSpot.xCannon to "Go X Cannon"
+                SupplyPickUpSpot.X -> SupplyPickUpSpot.Shop to if (advanced) "Pull Square and X Cannon. Next: collect Shop" else "Pull Square. Next: collect Shop"
+                SupplyPickUpSpot.Equals -> if (advanced) SupplyPickUpSpot.Shop to "Go Shop" else SupplyPickUpSpot.xCannon to "Go X Cannon"
+                SupplyPickUpSpot.Slash -> SupplyPickUpSpot.Square to "Go Square, place on X"
+                else -> SupplyPickUpSpot.None to ""
             }
 
-            else -> ""
+            else -> SupplyPickUpSpot.None to ""
         }
     }
 }
