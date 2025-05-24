@@ -2,6 +2,7 @@ package me.odinmain.features.impl.floor7.p3.terminalhandler
 
 import me.odinmain.events.impl.PacketEvent
 import me.odinmain.events.impl.TerminalEvent
+import me.odinmain.features.impl.floor7.p3.TerminalSolver
 import me.odinmain.features.impl.floor7.p3.TerminalTypes
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.postAndCatch
@@ -50,6 +51,7 @@ open class TerminalHandler(val type: TerminalTypes, val timeOpened: Long = Syste
     }
 
     fun canClick(slotIndex: Int, button: Int, needed: Int = solution.count { it == slotIndex }): Boolean = when {
+        type == TerminalTypes.MELODY && (TerminalSolver.blockIncorrectClicks || TerminalSolver.renderType == 3) && !TerminalSolver.melodyCorrect -> false
         type == TerminalTypes.MELODY -> slotIndex.equalsOneOf(16, 25, 34, 43)
         slotIndex !in solution -> false
         type == TerminalTypes.NUMBERS && slotIndex != solution.firstOrNull() -> false

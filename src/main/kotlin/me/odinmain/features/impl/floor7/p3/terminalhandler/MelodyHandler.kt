@@ -1,5 +1,6 @@
 package me.odinmain.features.impl.floor7.p3.terminalhandler
 
+import me.odinmain.features.impl.floor7.p3.TerminalSolver
 import me.odinmain.features.impl.floor7.p3.TerminalTypes
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
@@ -18,6 +19,7 @@ class MelodyHandler: TerminalHandler(TerminalTypes.MELODY) {
         val greenPane = items.indexOfLast { it?.metadata == 5 && Item.getIdFromItem(it.item) == 160 }.takeIf { it != -1 } ?: return emptyList()
         val magentaPane = items.indexOfFirst { it?.metadata == 2 && Item.getIdFromItem(it.item) == 160 }.takeIf { it != -1 } ?: return emptyList()
         val greenClay = items.indexOfLast { it?.metadata == 5 && Item.getIdFromItem(it.item) == 159 }.takeIf { it != -1 } ?: return emptyList()
+        TerminalSolver.melodyCorrect = (magentaPane == greenPane.rem(9))
         return items.mapIndexedNotNull { index, item ->
             when {
                 index == greenPane || item?.metadata == 2 && Item.getIdFromItem(item.item) == 160 -> index
