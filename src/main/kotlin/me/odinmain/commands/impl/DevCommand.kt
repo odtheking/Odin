@@ -137,7 +137,7 @@ val devCommand = Commodore("oddev") {
                         |Blessings: ${Blessing.entries.joinToString { "${it.name}: ${it.current}" }}
                     """.trimIndent()
                     else -> """
-                        |Current Area: ${LocationUtils.currentArea}
+                        |Current Area: ${LocationUtils.currentArea.displayName}
                     """.trimIndent()
                 }
             }
