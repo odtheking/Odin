@@ -9,6 +9,7 @@ import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.render.getMCTextWidth
 import me.odinmain.utils.skyblock.dungeon.Blessing
+import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.ui.Colors
 
 object BlessingDisplay : Module(
@@ -36,6 +37,7 @@ object BlessingDisplay : Module(
     )
 
     private val hud by HudSetting("Display", 10f, 10f, 1f, false) { example ->
+        if (!DungeonUtils.inDungeons) return@HudSetting 0f to 0f
         (0..5).reduce { acc, index ->
             val blessing = blessings[index - 1].takeIf { it.enabled.invoke() } ?: return@reduce acc
             val level = if (example) 19 else if (blessing.type.current > 0) blessing.type.current else return@reduce acc

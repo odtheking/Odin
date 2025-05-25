@@ -5,6 +5,7 @@ import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.HudSetting
 import me.odinmain.utils.render.mcTextAndWidth
+import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.toFixed
 import me.odinmain.utils.ui.Colors
 import net.minecraft.network.play.server.S32PacketConfirmTransaction
@@ -46,20 +47,21 @@ object TickTimers : Module(
     private var padTickTime: Int = -1
 
     init {
-        onMessage(Regex("\\[BOSS] Necron: I'm afraid, your journey ends now\\."), { enabled && necronHud.enabled }) { necronTime = 60 }
+        onMessage(Regex("^\\[BOSS] Necron: I'm afraid, your journey ends now\\.$"), { enabled && necronHud.enabled && DungeonUtils.inDungeons }) { necronTime = 60 }
 
-        onMessage(Regex("\\[BOSS] Goldor: Who dares trespass into my domain\\?"), { enabled && goldorHud.enabled }) { goldorTickTime = 60 }
-        onMessage(Regex("The Core entrance is opening!"), { enabled && goldorHud.enabled }) {
+        onMessage(Regex("^\\[BOSS] Goldor: Who dares trespass into my domain\\?$"), { enabled && goldorHud.enabled && DungeonUtils.inDungeons }) { goldorTickTime = 60 }
+        onMessage(Regex("^The Core entrance is opening!$"), { enabled && goldorHud.enabled && DungeonUtils.inDungeons }) {
             goldorTickTime = -1
             goldorStartTime = -1
         }
 
-        onMessage(Regex("\\[BOSS] Storm: I should have known that I stood no chance\\.")) {
+        onMessage(Regex("^\\[BOSS] Storm: I should have known that I stood no chance\\.$")) {
+            if (!DungeonUtils.inDungeons) return@onMessage
             if (goldorHud.enabled) goldorStartTime = 104
             if (stormHud.enabled) padTickTime = -1
         }
 
-        onMessage(Regex("\\[BOSS] Storm: Pathetic Maxor, just like expected\\."), { enabled && stormHud.enabled }) { padTickTime = 20 }
+        onMessage(Regex("^\\[BOSS] Storm: Pathetic Maxor, just like expected\\.$"), { enabled && stormHud.enabled && DungeonUtils.inDungeons }) { padTickTime = 20 }
 
         onPacket<S32PacketConfirmTransaction> {
             if (necronTime >= 0 && necronHud.enabled) necronTime--
