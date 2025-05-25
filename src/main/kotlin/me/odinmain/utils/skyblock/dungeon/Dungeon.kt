@@ -25,6 +25,8 @@ import net.minecraft.network.play.server.S38PacketPlayerListItem
 import net.minecraft.network.play.server.S3EPacketTeams
 import net.minecraft.network.play.server.S47PacketPlayerListHeaderFooter
 import net.minecraftforge.event.entity.EntityJoinWorldEvent
+import net.minecraftforge.event.world.WorldEvent
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 // could add some system to look back at previous runs.
 class Dungeon {
@@ -106,6 +108,13 @@ class Dungeon {
                         puzzles.find { it == Puzzle.BLAZE }.let { it?.status = PuzzleStatus.Completed }
                 }
             }
+        }
+    }
+
+    @SubscribeEvent
+    fun onWorldLoad(event: WorldEvent.Load) {
+        Blessing.entries.forEach { blessing ->
+            blessing.current = 0
         }
     }
 
