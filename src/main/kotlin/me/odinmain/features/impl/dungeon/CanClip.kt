@@ -32,7 +32,7 @@ object CanClip : Module(
             RenderUtils.drawText("Can Clip", 1f, 1f, 1f, Colors.WHITE, shadow = true)
             getMCTextWidth("Can Clip").toFloat() to 12f
         } else {
-            RenderUtils.drawText("Can Clip", 1f, 1f, 1f, Colors.WHITE, shadow = true)
+            if (canClip) RenderUtils.drawText("Can Clip", 1f, 1f, 1f, Colors.WHITE, shadow = true)
             getMCTextWidth("Can Clip").toFloat() to 12f
         }
     }
