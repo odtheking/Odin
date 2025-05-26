@@ -48,6 +48,7 @@ object ChatCommands : Module(
     private val fps by BooleanSetting("FPS", true, desc = "Sends your current FPS.").withDependency { showSettings }
     private val dt by BooleanSetting("DT", true, desc = "Sets a reminder for the end of the run.").withDependency { showSettings }
     private val invite by BooleanSetting("Invite", true, desc = "Invites the player to your party.").withDependency { showSettings }
+    private val autoConfirm by BooleanSetting("Auto Confirm", true, desc = "Removes the need to confirm a party invite with the !invite command.").withDependency { showSettings && invite }
     private val racism by BooleanSetting("Racism", false, desc = "Sends a random racism percentage.").withDependency { showSettings }
     private val queInstance by BooleanSetting("Queue instance cmds", true, desc = "Queue dungeons commands.").withDependency { showSettings }
     private val time by BooleanSetting("Time", false, desc = "Sends the current time.").withDependency { showSettings }
@@ -55,6 +56,7 @@ object ChatCommands : Module(
     private val promote by BooleanSetting("Promote", false, desc = "Executes the /party promote command.").withDependency { showSettings }
     private val location by BooleanSetting("Location", true, desc = "Sends your current location.").withDependency { showSettings }
     private val holding by BooleanSetting("Holding", true, desc = "Sends the item you are holding.").withDependency { showSettings }
+    private val noLimbo by BooleanSetting("No Limbo", true, desc = "Automatically leaves limbo after 3 seconds.").withDependency { showSettings }
 
     private val dtReason = mutableListOf<Pair<String, String>>()
     val blacklist: MutableList<String> by ListSetting("Blacklist", mutableListOf())
@@ -87,8 +89,13 @@ object ChatCommands : Module(
             if (whitelistOnly != isInBlacklist(ign) || !msg.startsWith("!")) return@onMessage
 
             runIn(5) { handleChatCommands(msg, ign, channel) }
+        }
 
-            onWorldLoad { dtReason.clear() }
+        onWorldLoad { dtReason.clear() }
+
+        onMessage(Regex("^You were spawned in Limbo.$")) {
+            if (!noLimbo) return@onMessage
+            runIn(60) { sendCommand("/lobby")}
         }
     }
 
@@ -113,7 +120,7 @@ object ChatCommands : Module(
             "dice" -> if (dice) channelMessage((1..6).random(), name, channel)
             "racism" -> if (racism) channelMessage("$name is ${Random.nextInt(1, 101)}% racist. Racism is not allowed!", name, channel)
             "ping" -> if (ping) channelMessage("Current Ping: ${floor(ServerUtils.averagePing).toInt()}ms", name, channel)
-            "tps" -> if (tps) channelMessage("Current TPS: ${floor(ServerUtils.averageTps)}", name, channel)
+            "tps" -> if (tps) channelMessage("Current TPS: ${ServerUtils.averageTps.toInt()}", name, channel)
             "fps" -> if (fps) channelMessage("Current FPS: ${mc.debug.split(" ")[0].toIntOrNull() ?: 0}", name, channel)
             "time" -> if (time) channelMessage("Current Time: ${ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss z"))}", name, channel)
             "location" -> if (location) channelMessage("Current Location: ${LocationUtils.currentArea.displayName}", name, channel)
@@ -147,7 +154,7 @@ object ChatCommands : Module(
             "f1", "f2", "f3", "f4", "f5", "f6", "f7", "m1", "m2", "m3", "m4", "m5", "m6", "m7", "t1", "t2", "t3", "t4", "t5" -> {
                 if (!queInstance || channel != ChatChannel.PARTY) return
                 modMessage("§8Entering -> §e${message.substring(1).capitalizeFirst()}")
-                sendCommand("od ${message.substring(1)}", true)
+                sendCommand("od ${message.substring(1).lowercase()}", true)
             }
             "demote" -> if (demote && channel == ChatChannel.PARTY) sendCommand("p demote $name")
             "promote" -> if (promote && channel == ChatChannel.PARTY) sendCommand("p promote $name")
@@ -155,6 +162,7 @@ object ChatCommands : Module(
 
             // Private cmds only
             "invite", "inv" -> if (invite && channel == ChatChannel.PRIVATE) {
+                if (autoConfirm) return sendCommand("p invite $name")
                 modMessage("§aClick on this message to invite $name to your party!", chatStyle = createClickStyle(ClickEvent.Action.RUN_COMMAND, "/party invite $name"))
                 PlayerUtils.playLoudSound("note.pling", 100f, 1f)
             }

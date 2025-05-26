@@ -95,7 +95,7 @@ val devCommand = Commodore("oddev") {
         val z = zSize ?: 0.6
         modMessage("Sending data... name: $name, password: $password")
         scope.launch {
-            modMessage(sendDataToServer("$name, [$x,$y,$z], [1,2,3], false, $password", "https://tj4yzotqjuanubvfcrfo7h5qlq0opcyk.lambda-url.eu-north-1.on.aws/"))
+            modMessage(sendDataToServer("$name, [1,2,3], [$x,$y,$z], false, $password", "https://tj4yzotqjuanubvfcrfo7h5qlq0opcyk.lambda-url.eu-north-1.on.aws/"))
         }
     }
 
@@ -106,7 +106,7 @@ val devCommand = Commodore("oddev") {
             ${
                 when {
                     KuudraUtils.inKuudra -> """
-                        |inKuudra: ${KuudraUtils.inKuudra}, tier: ${LocationUtils.kuudraTier}, phase: ${KuudraUtils.phase}
+                        |inKuudra: ${KuudraUtils.inKuudra}, tier: ${KuudraUtils.kuudraTier}, phase: ${KuudraUtils.phase}
                         |kuudraTeammates: ${KuudraUtils.kuudraTeammates.joinToString { it.playerName }}
                         |giantZombies: ${KuudraUtils.giantZombies.joinToString { it.positionVector.toString() }}
                         |supplies: ${KuudraUtils.supplies.joinToString()}
@@ -137,7 +137,7 @@ val devCommand = Commodore("oddev") {
                         |Blessings: ${Blessing.entries.joinToString { "${it.name}: ${it.current}" }}
                     """.trimIndent()
                     else -> """
-                        |Current Area: ${LocationUtils.currentArea}
+                        |Current Area: ${LocationUtils.currentArea.displayName}
                     """.trimIndent()
                 }
             }

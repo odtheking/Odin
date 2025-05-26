@@ -2,11 +2,7 @@ package me.odinmain.utils.skyblock
 
 import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.PacketEvent
-import me.odinmain.utils.cleanLine
-import me.odinmain.utils.clock.Executor
-import me.odinmain.utils.clock.Executor.Companion.register
 import me.odinmain.utils.equalsOneOf
-import me.odinmain.utils.sidebarLines
 import me.odinmain.utils.skyblock.dungeon.Dungeon
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.startsWithOneOf
@@ -27,17 +23,6 @@ object LocationUtils {
         private set
     var currentArea: Island = Island.Unknown
         private set
-    var kuudraTier: Int = 0
-        private set
-
-    init {
-        Executor(500, "LocationUtils") {
-            // Move this to packet based
-            if (currentArea.isArea(Island.Kuudra) && kuudraTier == 0)
-                sidebarLines.find { cleanLine(it).contains("Kuudra's Hollow (") }?.let {
-                    kuudraTier = it.substringBefore(")").lastOrNull()?.digitToIntOrNull() ?: 0 }
-        }.register()
-    }
 
     @SubscribeEvent
     fun onDisconnect(event: FMLNetworkEvent.ClientDisconnectionFromServerEvent) {
@@ -45,7 +30,6 @@ object LocationUtils {
         currentDungeon = null
         isInSkyblock = false
         isOnHypixel = false
-        kuudraTier = 0
     }
 
     @SubscribeEvent
@@ -53,7 +37,6 @@ object LocationUtils {
         currentArea = Island.Unknown
         currentDungeon = null
         isInSkyblock = false
-        kuudraTier = 0
     }
 
     /**

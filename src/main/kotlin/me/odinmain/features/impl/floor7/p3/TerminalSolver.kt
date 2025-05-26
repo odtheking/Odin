@@ -32,7 +32,6 @@ import net.minecraft.network.play.client.C0EPacketClickWindow
 import net.minecraft.network.play.server.S2DPacketOpenWindow
 import net.minecraft.network.play.server.S2EPacketCloseWindow
 import net.minecraft.network.play.server.S2FPacketSetSlot
-import net.minecraftforge.client.ClientCommandHandler
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.event.entity.player.ItemTooltipEvent
 import net.minecraftforge.fml.common.Loader
@@ -96,14 +95,13 @@ object TerminalSolver : Module(
         private set
     var lastTermOpened: TerminalHandler? = null
     private val startsWithRegex = Regex("What starts with: '(\\w+)'?")
-    private var currentTermWindowName = ""
     private var lastClickTime = 0L
 
     init {
         onPacket<S2DPacketOpenWindow> { packet ->
             if (currentTerm?.isClicked == false) leftTerm()
-            currentTermWindowName = packet.windowTitle?.formattedText?.noControlCodes?.takeIf { newWindowName -> newWindowName != currentTermWindowName } ?: return@onPacket
-            val newTermType = TerminalTypes.entries.find { terminal -> currentTermWindowName.startsWith(terminal.windowName) }
+            val windowName = packet.windowTitle?.formattedText?.noControlCodes ?: return@onPacket
+            val newTermType = TerminalTypes.entries.find { terminal -> windowName.startsWith(terminal.windowName) }?.takeIf { it != currentTerm?.type } ?: return@onPacket
 
             currentTerm = when (newTermType) {
                 TerminalTypes.PANES -> PanesHandler()
@@ -113,10 +111,10 @@ object TerminalSolver : Module(
                 TerminalTypes.NUMBERS -> NumbersHandler()
 
                 TerminalTypes.STARTS_WITH ->
-                    StartsWithHandler(startsWithRegex.find(currentTermWindowName)?.groupValues?.get(1) ?: return@onPacket modMessage("Failed to find letter, please report this!"))
+                    StartsWithHandler(startsWithRegex.find(windowName)?.groupValues?.get(1) ?: return@onPacket modMessage("Failed to find letter, please report this!"))
 
                 TerminalTypes.SELECT ->
-                    SelectAllHandler(EnumDyeColor.entries.find { currentTermWindowName.contains(it.name.replace("_", " ").uppercase()) }?.unlocalizedName ?: return@onPacket modMessage("Failed to find color, please report this!"))
+                    SelectAllHandler(EnumDyeColor.entries.find { windowName.contains(it.name.replace("_", " ").uppercase()) }?.unlocalizedName ?: return@onPacket modMessage("Failed to find color, please report this!"))
 
                 TerminalTypes.MELODY -> MelodyHandler()
 
@@ -258,7 +256,6 @@ object TerminalSolver : Module(
 
     @SubscribeEvent(receiveCanceled = true, priority = EventPriority.HIGH)
     fun onGuiClick(event: GuiEvent.MouseClick) = with(currentTerm) {
-        modMessage(ClientCommandHandler.instance.commands.map { it.key })
         if (!enabled || this == null) return
 
         if (renderType == 3 && !(type == TerminalTypes.MELODY && cancelMelodySolver)) {
@@ -288,11 +285,10 @@ object TerminalSolver : Module(
 
     @SubscribeEvent
     fun onGuiKeyPress(event: GuiEvent.KeyPress) {
-        if (!enabled || currentTerm == null || (currentTerm?.type == TerminalTypes.MELODY && cancelMelodySolver)) return
-        if (renderType == 3 && (Keyboard.isKeyDown(mc.gameSettings.keyBindDrop.keyCode) || (event.key in 2..10))) {
+        if (!enabled || currentTerm == null || (currentTerm?.type == TerminalTypes.MELODY && cancelMelodySolver) || renderType != 3) return
+        if ((event.key == mc.gameSettings?.keyBindDrop?.keyCode || (event.key in 2..10)))
             CustomTermGui.mouseClicked(MouseUtils.mouseX.toInt(), MouseUtils.mouseY.toInt(), if (event.key == Keyboard.KEY_LCONTROL && event.key == mc.gameSettings.keyBindDrop.keyCode) 1 else 0)
-            event.isCanceled = true
-        }
+        event.isCanceled = true
     }
 
     @SubscribeEvent
@@ -305,7 +301,6 @@ object TerminalSolver : Module(
             MinecraftForge.EVENT_BUS.unregister(it)
             devMessage("§cLeft terminal: §6${it.type.name}")
             TerminalEvent.Closed(it).postAndCatch()
-            currentTermWindowName = ""
             currentTerm = null
         }
     }
