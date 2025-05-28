@@ -70,8 +70,7 @@ object TerminalTimes : Module(
         }
 
         onPacket<S32PacketConfirmTransaction> {
-            if (!terminalSplits || useRealTime) return@onPacket
-            currentTick += 50
+            if (terminalSplits && !useRealTime)  currentTick += 50
         }
 
         onWorldLoad {

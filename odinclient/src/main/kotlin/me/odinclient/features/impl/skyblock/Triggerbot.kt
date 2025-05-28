@@ -79,11 +79,11 @@ object Triggerbot : Module(
     fun onEntityJoin(event: EntityJoinWorldEvent) {
         if (event.entity !is EntityOtherPlayerMP || mc.currentScreen != null || !DungeonUtils.inDungeons) return
         val name = event.entity.name.replace(" ", "")
-        if (!(blood && name in bloodMobs) && !(spiritBear && name == "Spirit Bear")) return
+        if (!(blood && name in bloodMobs) && !(spiritBear && name == "SpiritBear")) return
 
         if (!isFacingAABB(AxisAlignedBB(event.entity.posX - .5, event.entity.posY - 2.0, event.entity.posZ - .5, event.entity.posX + .5, event.entity.posY + 3.0, event.entity.posZ + .5), 30f)) return
 
-        if (bloodClickType && name != "Spirit Bear") PlayerUtils.rightClick() else leftClick()
+        if (bloodClickType && name != "SpiritBear") PlayerUtils.rightClick() else leftClick()
     }
 
     @SubscribeEvent
