@@ -143,7 +143,7 @@ object WitherDragons : Module(
 
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
-        if (DungeonUtils.getF7Phase() != M7Phases.P5 || !enabled) return
+        if (DungeonUtils.getF7Phase() != M7Phases.P5) return
 
         if (dragonHealth) DragonCheck.dragonEntityList.forEach {
             if (it.health > 0) Renderer.drawStringInWorld(colorHealth(it.health), it.renderVec.addVec(y = 1.5), Colors.WHITE, depth = false, scale = 0.2f, shadow = true)

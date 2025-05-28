@@ -4,8 +4,11 @@ import me.odinmain.features.Module
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.fillItemFromSack
+import me.odinmain.utils.runIn
 import me.odinmain.utils.skyblock.KuudraUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.skyblock.modMessage
+import me.odinmain.utils.skyblock.sendCommand
 import me.odinmain.utils.skyblock.skyblockID
 
 object AutoGFS : Module(
@@ -20,6 +23,7 @@ object AutoGFS : Module(
     private val refillTNT by BooleanSetting("Refill TNT", true, desc = "Refill superboom tnt.")
     private val refillOnTimer by BooleanSetting("Refill on Timer", true, desc = "Refill on a 5s intervals.")
     private val timerIncrements by NumberSetting("Timer Increments", 5L, 1, 60, desc = "The interval in which to refill.", unit = "s")
+    private val autoGetDraf by BooleanSetting("Auto Get Draf", true, desc = "Automatically get draf from the sack.")
 
     init {
         execute({ timerIncrements * 1000 }) {
@@ -28,6 +32,14 @@ object AutoGFS : Module(
 
         onMessage(Regex("\\[NPC] Mort: Here, I found this map when I first entered the dungeon\\.|\\[NPC] Mort: Right-click the Orb for spells, and Left-click \\(or Drop\\) to use your Ultimate!")) {
             if (refillOnDungeonStart) refill()
+        }
+
+        onMessage(Regex("^PUZZLE FAIL! (\\w{1,16}) .+\$|^\\[STATUE\\] Oruo the Omniscient: (\\w{1,16}) chose the wrong answer! I shall never forget this moment of misrememberance\\.\$")) {
+            if (!autoGetDraf) return@onMessage
+            runIn(30) {
+                modMessage("§7Fetching Draf from sack...")
+                sendCommand("gfs architect's first draft 1")
+            }
         }
     }
 

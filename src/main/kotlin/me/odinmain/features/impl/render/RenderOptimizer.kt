@@ -359,7 +359,7 @@ object RenderOptimizer : Module(
 
         for (tileEntity in mc.theWorld.loadedTileEntityList) {
             if (tileEntity is TileEntitySign || tileEntity is TileEntityEndPortal) continue
-            if (camera.isBoundingBoxInFrustum(tileEntity.renderBoundingBox)) TileEntityRendererDispatcher.instance.renderTileEntity(tileEntity, partialTicks, -1)
+            tileEntity?.let { if (camera.isBoundingBoxInFrustum(it.renderBoundingBox)) TileEntityRendererDispatcher.instance.renderTileEntity(it, partialTicks, -1) }
         }
     }
 

@@ -1,6 +1,5 @@
 package me.odin.mixin.mixins;
 
-
 import me.odinmain.events.impl.RenderEntityModelEvent;
 import me.odinmain.utils.render.Color;
 import me.odinmain.utils.render.HighlightRenderer;
