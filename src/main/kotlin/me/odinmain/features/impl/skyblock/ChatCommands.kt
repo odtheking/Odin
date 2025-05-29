@@ -92,11 +92,6 @@ object ChatCommands : Module(
         }
 
         onWorldLoad { dtReason.clear() }
-
-        onMessage(Regex("^You were spawned in Limbo.$")) {
-            if (!noLimbo) return@onMessage
-            runIn(60) { sendCommand("/lobby")}
-        }
     }
 
     private fun handleChatCommands(message: String, name: String, channel: ChatChannel) {
