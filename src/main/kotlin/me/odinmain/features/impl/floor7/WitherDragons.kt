@@ -29,9 +29,6 @@ import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.server.*
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import kotlin.collections.arrayListOf
-import kotlin.collections.find
-import kotlin.collections.forEach
 
 object WitherDragons : Module(
     name = "Wither Dragons",
