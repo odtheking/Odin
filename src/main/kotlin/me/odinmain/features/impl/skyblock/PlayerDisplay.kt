@@ -96,11 +96,11 @@ object PlayerDisplay : Module(
     fun modifyText(text: String): String {
         if (!enabled) return text
         var toReturn = text
-        toReturn = if (hideHealth) toReturn.replace("[\\d|,]+/[\\d|,]+❤".toRegex(), "") else toReturn
-        toReturn = if (hideMana) toReturn.replace("[\\d|,]+/[\\d|,]+✎( Mana)?".toRegex(), "") else toReturn
-        toReturn = if (hideOverflow) toReturn.replace("§?[\\d|,]+ʬ".toRegex(), "") else toReturn
-        toReturn = if (hideDefense) toReturn.replace("[\\d|,]+§a❈ Defense".toRegex(), "") else toReturn
-        return toReturn
+        toReturn = if (hideHealth) toReturn.replace(SkyblockPlayer.HEALTH_REGEX, "") else toReturn
+        toReturn = if (hideMana) toReturn.replace(SkyblockPlayer.MANA_REGEX, "") else toReturn
+        toReturn = if (hideOverflow) toReturn.replace(SkyblockPlayer.OVERFLOW_MANA_REGEX, "") else toReturn
+        toReturn = if (hideDefense) toReturn.replace(SkyblockPlayer.DEFENSE_REGEX, "") else toReturn
+        return toReturn.trimStart()
     }
 
     private fun generateText(current: Int, max: Int, icon: String): String {

@@ -21,10 +21,10 @@ object SkyblockPlayer {
     current overflow mana
      */
 
-    private val HEALTH_REGEX = Regex("([\\d|,]+)/([\\d|,]+)❤")
-    private val MANA_REGEX = Regex("([\\d|,]+)/([\\d|,]+)✎")
-    private val OVERFLOW_MANA_REGEX = Regex("([\\d|,]+)ʬ")
-    private val DEFENSE_REGEX = Regex("([\\d|,]+)❈ Defense")
+    val HEALTH_REGEX = Regex("([\\d|,]+)/([\\d|,]+)❤")
+    val MANA_REGEX = Regex("([\\d|,]+)/([\\d|,]+)✎")
+    val OVERFLOW_MANA_REGEX = Regex("([\\d|,]+)ʬ")
+    val DEFENSE_REGEX = Regex("([\\d|,]+)❈ Defense")
 
     inline val currentHealth: Int get() = (mc.thePlayer?.let { player -> (maxHealth * player.health / player.maxHealth).toInt() } ?: 0)
     var maxHealth: Int = 0
