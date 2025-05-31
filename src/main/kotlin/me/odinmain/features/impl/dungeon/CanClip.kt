@@ -95,7 +95,7 @@ object CanClip : Module(
                 else -> return
             }
 
-            if (line) Renderer.draw3DLine(listOf(pos1, pos2), color = Colors.MINECRAFT_RED, depth = true)
+            if (line) Renderer.draw3DLine(setOf(pos1, pos2), color = Colors.MINECRAFT_RED, depth = true)
         }
     }
 
