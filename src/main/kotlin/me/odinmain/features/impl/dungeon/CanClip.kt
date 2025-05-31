@@ -61,7 +61,10 @@ object CanClip : Module(
             val state = getBlockStateAt(it.position)
 
             runIn(1) {
-                if (state.block == Blocks.air) blocks[it.position.toVec3()] = getDirection(state)
+                // this NEEDS to get state again. the other state will still be the state for the stair, not the new block that were checking to see if is air.
+                if (getBlockStateAt(it.position).block == Blocks.air) {
+                    blocks[it.position.toVec3()] = getDirection(state)
+                }
             }
         }
 
