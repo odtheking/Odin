@@ -12,10 +12,11 @@ import net.minecraft.network.play.server.S13PacketDestroyEntities
 import net.minecraft.network.play.server.S32PacketConfirmTransaction
 import net.minecraft.util.Vec3i
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import java.util.concurrent.ConcurrentHashMap
 
 object ArrowTracker {
-    private val ownedArrows = HashMap<Vec3i, OwnedData>()
-    private val arrows = HashMap<Int, ArrowData>()
+    private val ownedArrows = ConcurrentHashMap<Vec3i, OwnedData>()
+    private val arrows = ConcurrentHashMap<Int, ArrowData>()
 
     private var currentTick = 0L
 

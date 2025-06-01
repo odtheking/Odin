@@ -61,7 +61,10 @@ object CanClip : Module(
             val state = getBlockStateAt(it.position)
 
             runIn(1) {
-                if (state.block == Blocks.air) blocks[it.position.toVec3()] = getDirection(state)
+                // this NEEDS to get state again. the other state will still be the state for the stair, not the new block that were checking to see if is air.
+                if (getBlockStateAt(it.position).block == Blocks.air) {
+                    blocks[it.position.toVec3()] = getDirection(state)
+                }
             }
         }
 
@@ -95,7 +98,7 @@ object CanClip : Module(
                 else -> return
             }
 
-            if (line) Renderer.draw3DLine(listOf(pos1, pos2), color = Colors.MINECRAFT_RED, depth = true)
+            if (line) Renderer.draw3DLine(setOf(pos1, pos2), color = Colors.MINECRAFT_RED, depth = true)
         }
     }
 

@@ -56,6 +56,7 @@ object ChatCommands : Module(
     private val promote by BooleanSetting("Promote", false, desc = "Executes the /party promote command.").withDependency { showSettings }
     private val location by BooleanSetting("Location", true, desc = "Sends your current location.").withDependency { showSettings }
     private val holding by BooleanSetting("Holding", true, desc = "Sends the item you are holding.").withDependency { showSettings }
+    private val noLimbo by BooleanSetting("No Limbo", true, desc = "Automatically leaves limbo after 3 seconds.").withDependency { showSettings }
 
     private val dtReason = mutableListOf<Pair<String, String>>()
     val blacklist: MutableList<String> by ListSetting("Blacklist", mutableListOf())
@@ -88,9 +89,9 @@ object ChatCommands : Module(
             if (whitelistOnly != isInBlacklist(ign) || !msg.startsWith("!")) return@onMessage
 
             runIn(5) { handleChatCommands(msg, ign, channel) }
-
-            onWorldLoad { dtReason.clear() }
         }
+
+        onWorldLoad { dtReason.clear() }
     }
 
     private fun handleChatCommands(message: String, name: String, channel: ChatChannel) {
