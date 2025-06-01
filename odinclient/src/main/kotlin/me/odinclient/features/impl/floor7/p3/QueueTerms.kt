@@ -58,7 +58,7 @@ object QueueTerms : Module(
     fun onTerminalUpdate(event: TerminalEvent.Updated) {
         with (TerminalSolver.currentTerm ?: return) {
             if (type == TerminalTypes.MELODY || TerminalSolver.renderType != 3 || queue.isEmpty()) return
-            if (queue.all { it.slot in solution }) queue.forEach { simulateClick(it.slot, if (it.button == 0) ClickType.Middle else ClickType.Right) }
+            queue.forEach { simulateClick(it.slot, if (it.button == 0) ClickType.Middle else ClickType.Right) }
         }
     }
 

@@ -16,8 +16,8 @@ class RubixHandler: TerminalHandler(TerminalTypes.RUBIX) {
     }
 
     override fun simulateClick(slotIndex: Int, clickType: ClickType) {
-        if (solution.none { it == slotIndex }) return
-        if (ClickType.Right == clickType) solution.add(slotIndex)
+        if (slotIndex !in solution) return
+        if (clickType == ClickType.Right) solution.add(slotIndex)
         else solution.remove(slotIndex)
     }
 
