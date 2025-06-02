@@ -95,7 +95,7 @@ object PlayerDisplay : Module(
     private val HEALTH_REGEX = Regex("[\\d|,]+/[\\d|,]+❤")
     private val MANA_REGEX = Regex("[\\d|,]+/[\\d|,]+✎( Mana)?")
     private val OVERFLOW_MANA_REGEX = Regex("§?[\\d|,]+ʬ")
-    private val DEFENSE_REGEX = Regex("d|,]+§a❈ Defense")
+    private val DEFENSE_REGEX = Regex("[\\d|,]+§a❈ Defense")
     @JvmStatic
     fun modifyText(text: String): String {
         if (!enabled) return text
