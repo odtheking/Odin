@@ -27,6 +27,7 @@ import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
+import java.util.concurrent.CopyOnWriteArrayList
 
 /**
  * Class that contains all Modules and huds
@@ -40,7 +41,7 @@ object ModuleManager {
     val packetFunctions = arrayListOf<PacketFunction<Packet<*>>>()
     val messageFunctions = arrayListOf<MessageFunction>()
     val worldLoadFunctions = arrayListOf<() -> Unit>()
-    val tickTasks = arrayListOf<TickTask>()
+    val tickTasks = CopyOnWriteArrayList<TickTask>()
     val huds = arrayListOf<HudElement>()
 
     val modules: ArrayList<Module> = arrayListOf(
