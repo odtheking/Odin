@@ -37,8 +37,8 @@ object DevPlayers {
     val isDev get() = devs.containsKey(mc.session?.username)
 
     data class DevPlayer(val xScale: Float = 1f, val yScale: Float = 1f, val zScale: Float = 1f,
-                         val wings: Boolean = false, val wingsColor: Color = Colors.WHITE, var capeLocation: ResourceLocation? = null)
-    data class DevData(val devName: String, val wingsColor: Triple<Int, Int, Int>, val size: Triple<Float, Float, Float>, val wings: Boolean)
+                         val wings: Boolean = false, val wingsColor: Color = Colors.WHITE, var capeLocation: ResourceLocation? = null, val customName: String)
+    data class DevData(val devName: String, val wingsColor: Triple<Int, Int, Int>, val size: Triple<Float, Float, Float>, val wings: Boolean, val customName: String)
 
     @Suppress("UNCHECKED_CAST")
     class DevDeserializer : JsonDeserializer<DevData> {
@@ -63,7 +63,9 @@ object DevPlayers {
             )
             val wings = jsonObject?.get("Wings")?.asBoolean == true
 
-            return DevData(devName ?: "", wingsColorTriple, sizeTriple as Triple<Float, Float, Float>, wings)
+            val customName = jsonObject?.get("CustomName")?.asString
+
+            return DevData(devName ?: "", wingsColorTriple, sizeTriple as Triple<Float, Float, Float>, wings, customName ?: "")
         }
     }
 
@@ -78,7 +80,7 @@ object DevPlayers {
             val data = convertDecimalToNumber(getDataFromServer("https://tj4yzotqjuanubvfcrfo7h5qlq0opcyk.lambda-url.eu-north-1.on.aws/")).ifEmpty { return@runBlocking }
             val gson = GsonBuilder().registerTypeAdapter(DevData::class.java, DevDeserializer())?.create() ?: return@runBlocking
             gson.fromJson(data, Array<DevData>::class.java).forEach {
-                devs[it.devName] = DevPlayer(it.size.first, it.size.second, it.size.third, it.wings, Color(it.wingsColor.first, it.wingsColor.second, it.wingsColor.third))
+                devs[it.devName] = DevPlayer(it.size.first, it.size.second, it.size.third, it.wings, Color(it.wingsColor.first, it.wingsColor.second, it.wingsColor.third), null, it.customName)
             }
         }
         return devs
@@ -104,6 +106,16 @@ object DevPlayers {
         val dev = devs[event.entity.name] ?: return
         if (!dev.wings) return
         DragonWings.renderWings(event.entityPlayer, event.partialRenderTick, dev)
+    }
+
+    fun replaceText(text: String?): String? {
+        var replacedText = text
+        for (dev in devs) {
+            if (dev.value.customName.isBlank()) continue
+            replacedText = devs[dev.key]?.let { replacedText?.replace(dev.key, it.customName) }
+        }
+
+        return replacedText
     }
 
     object DragonWings : ModelBase() {
