@@ -56,6 +56,7 @@ object ChatCommands : Module(
     private val promote by BooleanSetting("Promote", false, desc = "Executes the /party promote command.").withDependency { showSettings }
     private val location by BooleanSetting("Location", true, desc = "Sends your current location.").withDependency { showSettings }
     private val holding by BooleanSetting("Holding", true, desc = "Sends the item you are holding.").withDependency { showSettings }
+    private val noLimbo by BooleanSetting("No Limbo", true, desc = "Automatically leaves limbo after 3 seconds.").withDependency { showSettings }
 
     private val dtReason = mutableListOf<Pair<String, String>>()
     val blacklist: MutableList<String> by ListSetting("Blacklist", mutableListOf())
@@ -88,9 +89,9 @@ object ChatCommands : Module(
             if (whitelistOnly != isInBlacklist(ign) || !msg.startsWith("!")) return@onMessage
 
             runIn(5) { handleChatCommands(msg, ign, channel) }
-
-            onWorldLoad { dtReason.clear() }
         }
+
+        onWorldLoad { dtReason.clear() }
     }
 
     private fun handleChatCommands(message: String, name: String, channel: ChatChannel) {
@@ -114,7 +115,7 @@ object ChatCommands : Module(
             "dice" -> if (dice) channelMessage((1..6).random(), name, channel)
             "racism" -> if (racism) channelMessage("$name is ${Random.nextInt(1, 101)}% racist. Racism is not allowed!", name, channel)
             "ping" -> if (ping) channelMessage("Current Ping: ${floor(ServerUtils.averagePing).toInt()}ms", name, channel)
-            "tps" -> if (tps) channelMessage("Current TPS: ${floor(ServerUtils.averageTps)}", name, channel)
+            "tps" -> if (tps) channelMessage("Current TPS: ${ServerUtils.averageTps.toInt()}", name, channel)
             "fps" -> if (fps) channelMessage("Current FPS: ${mc.debug.split(" ")[0].toIntOrNull() ?: 0}", name, channel)
             "time" -> if (time) channelMessage("Current Time: ${ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss z"))}", name, channel)
             "location" -> if (location) channelMessage("Current Location: ${LocationUtils.currentArea.displayName}", name, channel)

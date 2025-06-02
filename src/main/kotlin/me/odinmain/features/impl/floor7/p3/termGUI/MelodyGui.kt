@@ -9,7 +9,6 @@ import me.odinmain.features.impl.floor7.p3.TerminalSolver.melodyCorrectRowColor
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.melodyPressColor
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.melodyPressColumColor
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.melodyRowColor
-import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.render.*
 import me.odinmain.utils.ui.Colors
 import net.minecraft.item.Item
@@ -33,10 +32,10 @@ object MelodyGui : TermGui() {
             val col = pane % 9 - 2
             val colorMelody = when {
                 pane / 9 == 0 || pane / 9 == 5 -> melodyColumColor
-                (pane % 9).equalsOneOf(1, 2, 3, 4, 5)  -> melodyRowColor
+                (pane % 9) in 1..5  -> melodyRowColor
                 else -> melodyPressColor
             }
-            if ((pane % 9).equalsOneOf(1, 2, 3, 4, 5) && pane / 9 != 0 && pane / 9 != 5) {
+            if ((pane % 9) in 1..5 && pane / 9 != 0 && pane / 9 != 5) {
                 roundedRectangle((-163 + ((gap-20).unaryPlus() * 0.5)) -1*70, -115 + row * 70,350 - gap, 70 - gap, melodyCorrectRowColor)
             }
             val box = BoxWithClass(ceil(-163 + ((gap-20).unaryPlus() * 0.5)) + col * 70, -115 + row * 70, 70 - gap, 70 - gap)

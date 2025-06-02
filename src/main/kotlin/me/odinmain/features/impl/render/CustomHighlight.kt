@@ -25,8 +25,8 @@ object CustomHighlight : Module(
     private val mode by SelectorSetting("Mode", HighlightRenderer.HIGHLIGHT_MODE_DEFAULT, HighlightRenderer.highlightModeList, desc = HighlightRenderer.HIGHLIGHT_MODE_DESCRIPTION)
 
     private val color by ColorSetting("Color", Colors.WHITE.withAlpha(0.75f), true, desc = "The color of the highlight.")
-    private val starredColor by ColorSetting("Starred Mob Color", Colors.WHITE.withAlpha(0.75f), true, desc = "The color of highlighted starred mobs.")
-    private val shadowAssassinColor by ColorSetting("Shadow Assassin Color", Colors.WHITE.withAlpha(0.75f), true, desc = "The color of highlighted Shadow Assassins.")
+    private val starredColor by ColorSetting("Starred Mob Color", Colors.WHITE.withAlpha(0.75f), true, desc = "The color of highlighted starred mobs.").withDependency { starredMobESP }
+    private val shadowAssassinColor by ColorSetting("Shadow Assassin Color", Colors.WHITE.withAlpha(0.75f), true, desc = "The color of highlighted Shadow Assassins.").withDependency { !isLegitVersion && shadowAssassin }
     private val thickness by NumberSetting("Line Width", 2f, 1f, 6f, .1f, desc = "The line width of Outline / Boxes/ 2D Boxes.").withDependency { mode != HighlightRenderer.HighlightType.Overlay.ordinal }
     private val style by SelectorSetting("Style", Renderer.DEFAULT_STYLE, Renderer.styles, desc = Renderer.STYLE_DESCRIPTION).withDependency { mode == HighlightRenderer.HighlightType.Boxes.ordinal }
     private val scanDelay by NumberSetting("Scan Delay", 100L, 20L, 2000L, 20L, desc = "The delay between entity scans.", unit = "ms")

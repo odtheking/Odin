@@ -92,15 +92,19 @@ object PlayerDisplay : Module(
     }
     private val ehpColor by ColorSetting("EffectiveHealth Color", Colors.MINECRAFT_DARK_GREEN, true, desc = "The color of the effective health text.")
 
+    private val HEALTH_REGEX = Regex("[\\d|,]+/[\\d|,]+❤")
+    private val MANA_REGEX = Regex("[\\d|,]+/[\\d|,]+✎( Mana)?")
+    private val OVERFLOW_MANA_REGEX = Regex("§?[\\d|,]+ʬ")
+    private val DEFENSE_REGEX = Regex("d|,]+§a❈ Defense")
     @JvmStatic
     fun modifyText(text: String): String {
         if (!enabled) return text
         var toReturn = text
-        toReturn = if (hideHealth) toReturn.replace("[\\d|,]+/[\\d|,]+❤".toRegex(), "") else toReturn
-        toReturn = if (hideMana) toReturn.replace("[\\d|,]+/[\\d|,]+✎( Mana)?".toRegex(), "") else toReturn
-        toReturn = if (hideOverflow) toReturn.replace("§?[\\d|,]+ʬ".toRegex(), "") else toReturn
-        toReturn = if (hideDefense) toReturn.replace("[\\d|,]+§a❈ Defense".toRegex(), "") else toReturn
-        return toReturn
+        toReturn = if (hideHealth) toReturn.replace(HEALTH_REGEX, "") else toReturn
+        toReturn = if (hideMana) toReturn.replace(MANA_REGEX, "") else toReturn
+        toReturn = if (hideOverflow) toReturn.replace(OVERFLOW_MANA_REGEX, "") else toReturn
+        toReturn = if (hideDefense) toReturn.replace(DEFENSE_REGEX, "") else toReturn
+        return toReturn.trimStart()
     }
 
     private fun generateText(current: Int, max: Int, icon: String): String {
