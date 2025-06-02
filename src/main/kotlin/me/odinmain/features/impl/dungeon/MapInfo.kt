@@ -96,7 +96,7 @@ object MapInfo : Module(
         execute(250) {
             if (!DungeonUtils.inDungeons || shownTitle || (!scoreTitle && !printWhenScore) || DungeonUtils.score < 300) return@execute
             if (scoreTitle) PlayerUtils.alert(scoreText.replace("&", "§"))
-            if (printWhenScore) modMessage("§b${DungeonUtils.score} §ascore reached in §6${DungeonUtils.dungeonTime} || ${DungeonUtils.floor.name}.")
+            if (printWhenScore) modMessage("§b${DungeonUtils.score} §ascore reached in §6${DungeonUtils.dungeonTime} || ${DungeonUtils.floor?.name}.")
             shownTitle = true
         }
     }
@@ -118,10 +118,11 @@ object MapInfo : Module(
     }
 
     private fun colorizeDeaths(count: Int): String {
+        val floor = DungeonUtils.floor?.floorNumber ?: 0
         return when {
             count == 0 -> "§a0"
-            count <= if (DungeonUtils.floor.floorNumber < 6) 2 else 3 -> "§e${count}"
-            count == if (DungeonUtils.floor.floorNumber < 6) 3 else 4 -> "§c${count}"
+            count <= if (floor < 6) 2 else 3 -> "§e${count}"
+            count == if (floor < 6) 3 else 4 -> "§c${count}"
             else -> "§4${count}"
         }
     }

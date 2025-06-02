@@ -185,7 +185,7 @@ object BloodCamp : Module(
     @SubscribeEvent
     fun onRenderBossHealth(event: RenderGameOverlayEvent.Pre) {
         if (!watcherBar || !inDungeons || inBoss || event.type != RenderGameOverlayEvent.ElementType.BOSSHEALTH || BossStatus.bossName.noControlCodes != "The Watcher") return
-        val amount = 12 + DungeonUtils.floor.floorNumber
+        val amount = 12 + (DungeonUtils.floor?.floorNumber ?: 0)
         BossStatus.bossName += BossStatus.healthScale.takeIf { it >= 0.05 }?.let { " ${(amount * it).roundToInt()}/$amount" } ?: ""
     }
 

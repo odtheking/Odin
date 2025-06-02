@@ -29,8 +29,8 @@ object DungeonUtils {
     inline val inDungeons: Boolean
         get() = LocationUtils.currentArea.isArea(Island.Dungeon)
 
-    inline val floor: Floor
-        get() = currentDungeon?.floor ?: Floor.E
+    inline val floor: Floor?
+        get() = currentDungeon?.floor
 
     inline val inBoss: Boolean
         get() = currentDungeon?.inBoss == true
@@ -84,10 +84,10 @@ object DungeonUtils {
         get() = currentDungeon?.dungeonTeammates ?: ArrayList()
 
     inline val dungeonTeammatesNoSelf: List<DungeonPlayer>
-        get() = currentDungeon?.dungeonTeammatesNoSelf ?: ArrayList()
+        get() = currentDungeon?.dungeonTeammatesNoSelf ?: emptyList()
 
     inline val leapTeammates: List<DungeonPlayer>
-        get() = currentDungeon?.leapTeammates ?: ArrayList()
+        get() = currentDungeon?.leapTeammates ?: emptyList()
 
     inline val currentDungeonPlayer: DungeonPlayer
         get() = dungeonTeammates.find { it.name == mc.thePlayer?.name } ?: DungeonPlayer(mc.thePlayer?.name ?: "Unknown", DungeonClass.Unknown, 0, entity = mc.thePlayer)
@@ -123,8 +123,8 @@ object DungeonUtils {
             val completed = completedRoomCount + (if (!bloodDone) 1 else 0) + (if (!inBoss) 1 else 0)
             val total = if (totalRooms != 0) totalRooms else 36
 
-            val exploration = floor((secretPercentage / floor.secretPercentage) / 100f * 40f).coerceIn(0f, 40f).toInt() +
-                    floor(completed.toFloat() / total * 60f).coerceIn(0f, 60f).toInt()
+            val exploration = floor?.let { floor((secretPercentage / it.secretPercentage) / 100f * 40f).coerceIn(0f, 40f).toInt() +
+                    floor(completed.toFloat() / total * 60f).coerceIn(0f, 60f).toInt() } ?: 0
 
             val skillRooms = floor(completed.toFloat() / total * 80f).coerceIn(0f, 80f).toInt()
             val puzzlePenalty = (puzzleCount - puzzles.count { it.status == PuzzleStatus.Completed }) * 10
@@ -133,7 +133,8 @@ object DungeonUtils {
         }
 
     inline val neededSecretsAmount: Int
-        get() = ceil((totalSecrets * floor.secretPercentage) * (40 - getBonusScore + (deathCount * 2 - 1).coerceAtLeast(0)) / 40f).toInt()
+        get() =
+            currentDungeon?.floor?.let { ceil((totalSecrets * it.secretPercentage) * (40 - getBonusScore + (deathCount * 2 - 1).coerceAtLeast(0)) / 40f).toInt() } ?: 0
 
     /**
      * Checks if the current dungeon floor number matches any of the specified options.
@@ -142,7 +143,7 @@ object DungeonUtils {
      * @return `true` if the current dungeon floor matches any of the specified options, otherwise `false`.
      */
     fun isFloor(vararg options: Int): Boolean {
-        return floor.floorNumber in options
+        return floor?.floorNumber?.let { it in options } ?: false
     }
 
     /**

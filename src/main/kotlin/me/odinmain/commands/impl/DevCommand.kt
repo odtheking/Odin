@@ -119,7 +119,7 @@ val devCommand = Commodore("oddev") {
                     DungeonUtils.inDungeons -> """
                         |inDungeons: ${DungeonUtils.inDungeons}
                         |InBoss: ${DungeonUtils.inBoss}
-                        |Floor: ${DungeonUtils.floor.name}
+                        |Floor: ${DungeonUtils.floor?.name}
                         |Score: ${DungeonUtils.score}${when (MapInfo.togglePaul) {1 -> ", Force disabled Paul"; 2 -> ", Force enabled Paul"; else -> "" }}
                         |Secrets: (${DungeonUtils.secretCount} - ${DungeonUtils.neededSecretsAmount} - ${DungeonUtils.totalSecrets} - ${DungeonUtils.knownSecrets}) 
                         |mimicKilled: ${DungeonUtils.mimicKilled}

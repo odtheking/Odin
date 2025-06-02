@@ -20,7 +20,7 @@ object ExtraStats : Module(
 
         modMessage(getChatBreak(), prefix = "")
         modMessage("", prefix = "")
-        modMessage(getCenteredText((if (DungeonUtils.floor.isMM) "§cMaster Mode" else "§cThe Catacombs") + " §r- §e${DungeonUtils.floor.name}"), prefix = "")
+        modMessage(getCenteredText((if (DungeonUtils.floor?.isMM == true) "§cMaster Mode" else "§cThe Catacombs") + " §r- §e${DungeonUtils.floor?.name}"), prefix = "")
         modMessage("", prefix = "")
         modMessage(getCenteredText(defeatedText), prefix = "")
         modMessage(getCenteredText("§aScore: §6${extraStats.score} §a(§b${extraStats.scoreLetter}§a${if (extraStats.scorePB) " §d§l(NEW RECORD!)" else ""})"), prefix = "")

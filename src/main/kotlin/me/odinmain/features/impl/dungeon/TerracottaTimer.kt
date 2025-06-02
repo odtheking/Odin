@@ -21,12 +21,12 @@ object TerracottaTimer : Module(
     desc = "Displays the time until the terracotta respawns."
 ) {
     private var terracottaSpawning = CopyOnWriteArrayList<Terracotta>()
-    private data class Terracotta(val pos: Vec3, var time: Double)
+    private data class Terracotta(val pos: Vec3, var time: Float)
 
     init {
         onPacket<S32PacketConfirmTransaction> {
             terracottaSpawning.removeAll {
-                it.time -= .05
+                it.time -= .05f
                 it.time <= 0
             }
         }
@@ -35,7 +35,7 @@ object TerracottaTimer : Module(
     @SubscribeEvent
     fun onBlockPacket(event: BlockChangeEvent) {
         if (DungeonUtils.isFloor(6) && DungeonUtils.inBoss && event.updated.block.isFlowerPot && terracottaSpawning.none { it.pos.equal(event.pos.toVec3().addVec(0.5, 1.5, 0.5)) })
-            terracottaSpawning.add(Terracotta(event.pos.toVec3().addVec(0.5, 1.5, 0.5), if (DungeonUtils.floor.isMM) 12.0 else 15.0))
+            terracottaSpawning.add(Terracotta(event.pos.toVec3().addVec(0.5, 1.5, 0.5), if (DungeonUtils.floor?.isMM == true) 12f else 15f))
     }
 
     @SubscribeEvent
@@ -46,10 +46,10 @@ object TerracottaTimer : Module(
         }
     }
 
-    private fun getColor(time: Double): Color {
+    private fun getColor(time: Float): Color {
         return when {
-            time > 5.0 -> Colors.MINECRAFT_DARK_GREEN
-            time > 2.0 -> Colors.MINECRAFT_GOLD
+            time > 5f -> Colors.MINECRAFT_DARK_GREEN
+            time > 2f -> Colors.MINECRAFT_GOLD
             else -> Colors.MINECRAFT_DARK_RED
         }
     }

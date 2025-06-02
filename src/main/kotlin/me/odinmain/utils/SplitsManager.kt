@@ -3,12 +3,8 @@ package me.odinmain.utils
 import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.features.impl.skyblock.Splits
 import me.odinmain.features.impl.skyblock.Splits.sendSplits
-import me.odinmain.utils.skyblock.Island
-import me.odinmain.utils.skyblock.KuudraUtils
-import me.odinmain.utils.skyblock.LocationUtils
-import me.odinmain.utils.skyblock.PersonalBest
+import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
-import me.odinmain.utils.skyblock.modMessage
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -43,11 +39,11 @@ object SplitsManager {
 
     @SubscribeEvent(receiveCanceled = true)
     fun onChat(event: ChatPacketEvent) {
-        if (event.message != "Starting in 2 seconds.") return
+        if (event.message != "Starting in 1 seconds.") return
 
         currentSplits = when (LocationUtils.currentArea) {
             Island.Dungeon -> {
-                val floor = DungeonUtils.floor
+                val floor = DungeonUtils.floor ?: return@onChat modMessage("§cFailed to get dungeon floor!")
 
                 with(dungeonSplits[floor.floorNumber].toMutableList()) {
                     addAll(0, listOf(
