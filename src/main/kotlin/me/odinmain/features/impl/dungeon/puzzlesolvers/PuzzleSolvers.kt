@@ -64,10 +64,10 @@ object PuzzleSolvers : Module(
     private val blazeLineNext by BooleanSetting("Blaze Solver Next Line", true, desc = "Shows the next line to click.").withDependency { blazeSolver && blazeDropDown }
     private val blazeLineAmount by NumberSetting("Blaze Solver Lines", 1, 1, 10, 1, desc = "Amount of lines to show.").withDependency { blazeSolver && blazeDropDown }
     private val blazeLineWidth by NumberSetting("Blaze Solver Lines Width", 2f, 0.5, 5, 0.1, desc = "Width for blaze lines.").withDependency { blazeSolver && blazeDropDown }
-    private val blazeHighlightMode: Int by SelectorSetting("Mode", HighlightRenderer.HIGHLIGHT_MODE_DEFAULT, HighlightRenderer.highlightModeList, desc = "Mode")
-    private val blazeHighlightThickness: Float by NumberSetting("Line Width", 1f, .1f, 4f, .1f, desc = "The line width of Outline / Boxes/ 2D Boxes").withDependency { blazeHighlightMode != HighlightRenderer.HighlightType.Overlay.ordinal }
-    private val blazeHighlightStyle: Int by SelectorSetting("Style", Renderer.DEFAULT_STYLE, Renderer.styles, desc = Renderer.STYLE_DESCRIPTION).withDependency { blazeHighlightMode == HighlightRenderer.HighlightType.Boxes.ordinal }
-    private val blazeHighlightDepthCheck: Boolean by BooleanSetting("Depth check", false, desc = "Highlights teammates only when they are visible.")
+    private val blazeHighlightMode by SelectorSetting("Mode", HighlightRenderer.HIGHLIGHT_MODE_DEFAULT, HighlightRenderer.highlightModeList, desc = "Mode")
+    private val blazeHighlightThickness by NumberSetting("Line Width", 1f, .1f, 4f, .1f, desc = "The line width of Outline / Boxes/ 2D Boxes").withDependency { blazeHighlightMode != HighlightRenderer.HighlightType.Overlay.ordinal }
+    private val blazeHighlightStyle by SelectorSetting("Style", Renderer.DEFAULT_STYLE, Renderer.styles, desc = Renderer.STYLE_DESCRIPTION).withDependency { blazeHighlightMode == HighlightRenderer.HighlightType.Boxes.ordinal }
+    private val blazeHighlightDepthCheck by BooleanSetting("Depth check", false, desc = "Highlights teammates only when they are visible.")
     private val blazeFirstColor by ColorSetting("First Color", Colors.MINECRAFT_GREEN.withAlpha(.75f), true, desc = "Color for the first blaze.").withDependency { blazeSolver && blazeDropDown }
     private val blazeSecondColor by ColorSetting("Second Color", Colors.MINECRAFT_GOLD.withAlpha(.75f), true, desc = "Color for the second blaze.").withDependency { blazeSolver && blazeDropDown }
     private val blazeAllColor by ColorSetting("Other Color", Colors.WHITE.withAlpha(.3f), true, desc = "Color for the other blazes.").withDependency { blazeSolver && blazeDropDown }
@@ -186,7 +186,7 @@ object PuzzleSolvers : Module(
             if (iceFillSolver) IceFillSolver.onRenderWorld(iceFillColor)
             if (weirdosSolver) WeirdosSolver.onRenderWorld(weirdosColor, weirdosWrongColor, weirdosStyle)
             if (boulderSolver) BoulderSolver.onRenderWorld(showAllBoulderClicks, boulderStyle, boulderColor, boulderLineWidth)
-            if (blazeSolver)   BlazeSolver.onRenderWorld(blazeLineNext, blazeLineAmount, 0, blazeFirstColor, blazeSecondColor, blazeAllColor, 0f, 0f, blazeSendComplete, blazeLineWidth)
+            if (blazeSolver)   BlazeSolver.onRenderWorld(blazeLineNext, blazeLineAmount, blazeFirstColor, blazeSecondColor, blazeAllColor, blazeSendComplete, blazeLineWidth)
             if (beamsSolver)   BeamsSolver.onRenderWorld(beamStyle, beamsTracer, beamsAlpha)
             if (waterSolver)   WaterSolver.onRenderWorld(showTracer, tracerColorFirst, tracerColorSecond)
             if (quizSolver)    QuizSolver.onRenderWorld(quizColor, quizDepth)

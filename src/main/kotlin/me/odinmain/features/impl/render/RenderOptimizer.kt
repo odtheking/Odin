@@ -401,7 +401,6 @@ object RenderOptimizer : Module(
     }
 
     private fun removeBlazePuzzleNames(entity: Entity) {
-        if (entity is EntityBlaze) entity.setDead()
         if (entity.customNameTag.noControlCodes.startsWith("[Lv15] Blaze "))
             entity.alwaysRenderNameTag = false
     }
