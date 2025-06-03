@@ -64,7 +64,7 @@ object PuzzleSolvers : Module(
     private val blazeLineNext by BooleanSetting("Blaze Solver Next Line", true, desc = "Shows the next line to click.").withDependency { blazeSolver && blazeDropDown }
     private val blazeLineAmount by NumberSetting("Blaze Solver Lines", 1, 1, 10, 1, desc = "Amount of lines to show.").withDependency { blazeSolver && blazeDropDown }
     private val blazeLineWidth by NumberSetting("Blaze Solver Lines Width", 2f, 0.5, 5, 0.1, desc = "Width for blaze lines.").withDependency { blazeSolver && blazeDropDown }
-    private val blazeHighlightMode by SelectorSetting("Mode", HighlightRenderer.HIGHLIGHT_MODE_DEFAULT, HighlightRenderer.highlightModeList, desc = "Mode")
+    private val blazeHighlightMode by SelectorSetting("Mode", HighlightRenderer.HIGHLIGHT_MODE_DEFAULT, HighlightRenderer.highlightModeList, desc = HighlightRenderer.HIGHLIGHT_MODE_DESCRIPTION).withDependency { blazeSolver && blazeDropDown }
     private val blazeHighlightThickness by NumberSetting("Line Width", 1f, .1f, 4f, .1f, desc = "The line width of Outline / Boxes/ 2D Boxes").withDependency { blazeHighlightMode != HighlightRenderer.HighlightType.Overlay.ordinal }
     private val blazeHighlightStyle by SelectorSetting("Style", Renderer.DEFAULT_STYLE, Renderer.styles, desc = Renderer.STYLE_DESCRIPTION).withDependency { blazeHighlightMode == HighlightRenderer.HighlightType.Boxes.ordinal }
     private val blazeHighlightDepthCheck by BooleanSetting("Depth check", false, desc = "Highlights teammates only when they are visible.")
