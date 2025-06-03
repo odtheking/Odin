@@ -9,9 +9,16 @@ import me.odinclient.features.impl.floor7.RelicAura
 import me.odinclient.features.impl.floor7.p3.*
 import me.odinclient.features.impl.render.*
 import me.odinclient.features.impl.skyblock.*
+import me.odinclient.mixin.accessors.EntityRendererInvoker
+import me.odinclient.mixin.accessors.RenderManagerAccessor
 import me.odinmain.OdinMain
 import me.odinmain.commands.CommandRegistry
 import me.odinmain.features.ModuleManager
+import me.odinmain.utils.PrivateMethodAccess
+import me.odinmain.utils.PrivateMethodInvoker
+import me.odinmain.utils.render.RenderUtils
+import net.minecraft.client.renderer.EntityRenderer
+import net.minecraft.client.renderer.entity.RenderManager
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.Mod.EventHandler
@@ -55,6 +62,7 @@ class ModCore {
     @EventHandler
     fun loadComplete(event: FMLLoadCompleteEvent) {
         OdinMain.loadComplete()
+        PrivateMethodAccess.impl = OdinInvoker()
     }
 
     @SubscribeEvent
@@ -67,5 +75,23 @@ class ModCore {
         const val MOD_ID = "odclient"
         const val NAME = "OdinClient"
         const val VERSION = OdinMain.VERSION
+    }
+
+    class OdinInvoker : PrivateMethodInvoker {
+        override fun invokeSetupCameraTransform(instance: EntityRenderer, partialTicks: Float, renderPass: Int) {
+            (instance as EntityRendererInvoker).invokeSetupCameraTransform(RenderUtils.partialTicks, 0)
+        }
+
+        override fun getRenderPosX(instance: RenderManager): Double {
+            return (instance as RenderManagerAccessor).getRenderPosX()
+        }
+
+        override fun getRenderPosY(instance: RenderManager): Double {
+            return (instance as RenderManagerAccessor).getRenderPosY()
+        }
+
+        override fun getRenderPosZ(instance: RenderManager): Double {
+            return (instance as RenderManagerAccessor).getRenderPosZ()
+        }
     }
 }

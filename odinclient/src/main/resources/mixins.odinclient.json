@@ -23,7 +23,10 @@
     "mixins.entity.MixinEntityLivingBase"
   ],
   "client": [
+    "accessors.EntityRendererInvoker",
     "accessors.IEntityPlayerSPAccessor",
+    "accessors.RenderManagerAccessor",
+    "mixins.MixinEntityRenderer",
     "mixins.MixinFontRenderer",
     "mixins.MixinGuiContainer",
     "mixins.MixinGuiIngame",

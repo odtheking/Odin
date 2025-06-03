@@ -6,6 +6,7 @@ import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.features.settings.impl.SelectorSetting
+import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.render.HighlightRenderer
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.getBlockAt
@@ -32,9 +33,9 @@ object BlockOverlay : Module(
 
     private val entityToggle by BooleanSetting("Entity Hover", false, desc = "Master toggle for Entity Hover feature.")
 
-    private val entityMode by SelectorSetting("Mode", HighlightRenderer.HIGHLIGHT_MODE_DEFAULT, HighlightRenderer.highlightModeList, desc = HighlightRenderer.HIGHLIGHT_MODE_DESCRIPTION).withDependency { entityToggle }
+    private val entityMode by SelectorSetting("Entity Render", HighlightRenderer.HIGHLIGHT_MODE_DEFAULT, HighlightRenderer.highlightModeList, desc = HighlightRenderer.HIGHLIGHT_MODE_DESCRIPTION).withDependency { entityToggle }
     private val entityColor by ColorSetting("Entity Color", Colors.WHITE.withAlpha(0.75f), true, desc = "The color of the highlight.").withDependency { entityToggle }
-    private val thickness by NumberSetting("Entity Line Width", 2f, 1f, 6f, .1f, desc = "The line width of Outline / Boxes/ 2D Boxes.").withDependency { entityToggle && entityMode != HighlightRenderer.HighlightType.Overlay.ordinal }
+    private val thickness by NumberSetting("Entity Line Width", 1f, .1f, 4f, .1f, desc = "The line width of Boxes / 2D Boxes.").withDependency { entityMode.equalsOneOf(HighlightRenderer.HighlightType.Boxes, HighlightRenderer.HighlightType.Box2d)}
     private val entityStyle by SelectorSetting("Entity Style", Renderer.DEFAULT_STYLE, Renderer.styles, desc = Renderer.STYLE_DESCRIPTION).withDependency { entityToggle && entityMode == HighlightRenderer.HighlightType.Boxes.ordinal }
 
     init {

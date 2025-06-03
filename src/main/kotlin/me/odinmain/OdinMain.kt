@@ -6,6 +6,7 @@ import me.odinmain.config.Config
 import me.odinmain.config.DungeonWaypointConfig
 import me.odinmain.config.PBConfig
 import me.odinmain.events.EventDispatcher
+import me.odinmain.events.impl.RenderShaderEvent
 import me.odinmain.features.ModuleManager
 import me.odinmain.features.impl.render.ClickGUIModule
 import me.odinmain.features.impl.render.DevPlayers
@@ -14,6 +15,7 @@ import me.odinmain.font.OdinFont
 import me.odinmain.utils.ServerUtils
 import me.odinmain.utils.SplitsManager
 import me.odinmain.utils.clock.Executor
+import me.odinmain.utils.postAndCatch
 import me.odinmain.utils.render.HighlightRenderer
 import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.render.RenderUtils2D
@@ -25,6 +27,7 @@ import me.odinmain.utils.skyblock.dungeon.ScanUtils
 import me.odinmain.utils.ui.clickgui.ClickGUI
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
+import net.minecraft.client.renderer.texture.TextureMap
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.Loader
 import org.apache.logging.log4j.LogManager
@@ -38,6 +41,7 @@ object OdinMain {
     const val VERSION = "@VER@"
     val scope = CoroutineScope(SupervisorJob() + EmptyCoroutineContext)
     val logger: Logger = LogManager.getLogger("Odin")
+    var isShaderRunning = false
 
     var display: GuiScreen? = null
     inline val isLegitVersion: Boolean
@@ -83,5 +87,18 @@ object OdinMain {
         if (display == null) return
         mc.displayGuiScreen(display)
         display = null
+    }
+
+    private var lastPartialTicksShader = -1f
+
+    @JvmStatic
+    fun fireShaderRender(partialTicks: Float) {
+        if (lastPartialTicksShader == partialTicks) return
+        mc.textureManager.bindTexture(TextureMap.locationBlocksTexture)
+        mc.textureManager.getTexture(TextureMap.locationBlocksTexture).setBlurMipmap(false, false)
+        RenderShaderEvent(partialTicks).postAndCatch()
+        mc.textureManager.bindTexture(TextureMap.locationBlocksTexture)
+        mc.textureManager.getTexture(TextureMap.locationBlocksTexture).restoreLastBlurMipmap()
+        lastPartialTicksShader = partialTicks
     }
 }

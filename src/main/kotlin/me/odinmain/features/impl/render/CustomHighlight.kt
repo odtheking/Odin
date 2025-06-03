@@ -4,8 +4,12 @@ import me.odinmain.OdinMain.isLegitVersion
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
+import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.isOtherPlayer
-import me.odinmain.utils.render.*
+import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.HighlightRenderer
+import me.odinmain.utils.render.HighlightRenderer.HighlightEntity
+import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.ui.Colors
 import me.odinmain.utils.ui.clickgui.util.ColorUtil.withAlpha
@@ -13,7 +17,6 @@ import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.entity.Entity
 import net.minecraft.entity.boss.EntityWither
 import net.minecraft.entity.item.EntityArmorStand
-import me.odinmain.utils.render.HighlightRenderer.HighlightEntity
 
 object CustomHighlight : Module(
     name = "Custom Highlight",
@@ -22,12 +25,12 @@ object CustomHighlight : Module(
 ) {
     private val starredMobESP by BooleanSetting("Starred Mob Highlight", true, desc = "Highlights mobs with a star in their name.")
     private val shadowAssassin by BooleanSetting("Shadow Assassin", false, desc = "Highlights Shadow Assassins.").withDependency { !isLegitVersion }
-    private val mode by SelectorSetting("Mode", HighlightRenderer.HIGHLIGHT_MODE_DEFAULT, HighlightRenderer.highlightModeList, desc = HighlightRenderer.HIGHLIGHT_MODE_DESCRIPTION)
+    private val mode by SelectorSetting("Entity Render", HighlightRenderer.HIGHLIGHT_MODE_DEFAULT, HighlightRenderer.highlightModeList, desc = HighlightRenderer.HIGHLIGHT_MODE_DESCRIPTION)
 
     private val color by ColorSetting("Color", Colors.WHITE.withAlpha(0.75f), true, desc = "The color of the highlight.")
     private val starredColor by ColorSetting("Starred Mob Color", Colors.WHITE.withAlpha(0.75f), true, desc = "The color of highlighted starred mobs.").withDependency { starredMobESP }
     private val shadowAssassinColor by ColorSetting("Shadow Assassin Color", Colors.WHITE.withAlpha(0.75f), true, desc = "The color of highlighted Shadow Assassins.").withDependency { !isLegitVersion && shadowAssassin }
-    private val thickness by NumberSetting("Line Width", 2f, 1f, 6f, .1f, desc = "The line width of Outline / Boxes/ 2D Boxes.").withDependency { mode != HighlightRenderer.HighlightType.Overlay.ordinal }
+    private val thickness by NumberSetting("Line Width", 1f, .1f, 4f, .1f, desc = "The line width of Boxes / 2D Boxes.").withDependency { mode.equalsOneOf(HighlightRenderer.HighlightType.Boxes, HighlightRenderer.HighlightType.Box2d)}
     private val style by SelectorSetting("Style", Renderer.DEFAULT_STYLE, Renderer.styles, desc = Renderer.STYLE_DESCRIPTION).withDependency { mode == HighlightRenderer.HighlightType.Boxes.ordinal }
     private val scanDelay by NumberSetting("Scan Delay", 100L, 20L, 2000L, 20L, desc = "The delay between entity scans.", unit = "ms")
 

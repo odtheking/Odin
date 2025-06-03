@@ -4,6 +4,7 @@ import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.features.settings.impl.SelectorSetting
+import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.HighlightRenderer
@@ -21,8 +22,8 @@ object BlazeAttunement : Module(
     name = "Blaze Attunement",
     desc = "Displays what attunement a blaze boss currently requires."
 ) {
-    private val mode by SelectorSetting("Mode", HighlightRenderer.HIGHLIGHT_MODE_DEFAULT, HighlightRenderer.highlightModeList, desc = HighlightRenderer.HIGHLIGHT_MODE_DESCRIPTION)
-    private val thickness by NumberSetting("Line Width", 2f, 1f, 6f, .1f, desc = "The line width of Outline / Boxes/ 2D Boxes.").withDependency { mode != HighlightRenderer.HighlightType.Overlay.ordinal }
+    private val mode by SelectorSetting("Entity Render", HighlightRenderer.HIGHLIGHT_MODE_DEFAULT, HighlightRenderer.highlightModeList, desc = HighlightRenderer.HIGHLIGHT_MODE_DESCRIPTION)
+    private val thickness by NumberSetting("Line Width", 1f, .1f, 4f, .1f, desc = "The line width of Boxes / 2D Boxes.").withDependency { mode.equalsOneOf(HighlightRenderer.HighlightType.Boxes, HighlightRenderer.HighlightType.Box2d)}
     private val style by SelectorSetting("Style", Renderer.DEFAULT_STYLE, Renderer.styles, desc = Renderer.STYLE_DESCRIPTION).withDependency { mode == HighlightRenderer.HighlightType.Boxes.ordinal }
 
     private var currentBlazes = hashMapOf<Entity, Color>()
