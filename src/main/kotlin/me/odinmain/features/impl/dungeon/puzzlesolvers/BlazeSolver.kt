@@ -8,7 +8,6 @@ import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.HighlightRenderer.HighlightEntity
 import me.odinmain.utils.render.RenderUtils.renderBoundingBox
-import me.odinmain.utils.render.RenderUtils.renderVec
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
@@ -72,7 +71,7 @@ object BlazeSolver {
             }
 
             if (blazeLineNext && index > 0 && index <= blazeLineAmount)
-                Renderer.draw3DLine(listOf(blazes[index - 1].renderVec, entity.renderBoundingBox.middle), color = color, lineWidth = blazeLineWidth, depth = true)
+                Renderer.draw3DLine(listOf(blazes[index - 1].renderBoundingBox.middle, entity.renderBoundingBox.middle), color = color, lineWidth = blazeLineWidth, depth = true)
         }
     }
 

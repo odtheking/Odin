@@ -9,7 +9,7 @@ import me.odinmain.features.impl.dungeon.dungeonwaypoints.SecretWaypoints.onEthe
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.SecretWaypoints.onLocked
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.SecretWaypoints.onPosUpdate
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.SecretWaypoints.resetSecrets
-import me.odinmain.features.impl.render.DevPlayers
+import me.odinmain.features.impl.render.RandomPlayers
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.*
@@ -83,7 +83,7 @@ object DungeonWaypoints : Module(
         glList = -1
         modMessage("Successfully reset current room!")
     }
-    private val debugWaypoint by BooleanSetting("Debug Waypoint", false, desc = "Shows a waypoint in the middle of every extra room.").withDependency { DevPlayers.isDev }
+    private val debugWaypoint by BooleanSetting("Debug Waypoint", false, desc = "Shows a waypoint in the middle of every extra room.").withDependency { RandomPlayers.isDev }
 
     private inline val selectedColor get() = when (colorPallet) {
         0 -> color

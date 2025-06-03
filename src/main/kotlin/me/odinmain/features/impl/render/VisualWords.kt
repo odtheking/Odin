@@ -16,7 +16,7 @@ object VisualWords : Module(
         for (actualText in wordsMap.keys) {
             replacedText = wordsMap[actualText]?.let { replacedText?.replace(actualText, it) }
         }
-        replacedText = DevPlayers.replaceText(replacedText)
+        replacedText = RandomPlayers.replaceText(replacedText)
         return replacedText
     }
 }

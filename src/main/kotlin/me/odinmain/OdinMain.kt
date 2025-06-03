@@ -8,7 +8,7 @@ import me.odinmain.config.PBConfig
 import me.odinmain.events.EventDispatcher
 import me.odinmain.features.ModuleManager
 import me.odinmain.features.impl.render.ClickGUIModule
-import me.odinmain.features.impl.render.DevPlayers
+import me.odinmain.features.impl.render.RandomPlayers
 import me.odinmain.features.impl.render.WaypointManager
 import me.odinmain.font.OdinFont
 import me.odinmain.utils.ServerUtils
@@ -49,7 +49,7 @@ object OdinMain {
             LocationUtils, ServerUtils, PlayerUtils,
             RenderUtils, Renderer, DungeonUtils, KuudraUtils,
             EventDispatcher, Executor, ModuleManager,
-            WaypointManager, DevPlayers, SkyblockPlayer,
+            WaypointManager, RandomPlayers, SkyblockPlayer,
             ScanUtils, HighlightRenderer, //OdinUpdater,
             SplitsManager, RenderUtils2D, ArrowTracker,
             this
@@ -57,7 +57,7 @@ object OdinMain {
 
         CommandRegistry.register()
         OdinFont.init()
-        scope.launch(Dispatchers.IO) { DevPlayers.preloadCapes() }
+        scope.launch(Dispatchers.IO) { RandomPlayers.preloadCapes() }
     }
 
     fun postInit() {

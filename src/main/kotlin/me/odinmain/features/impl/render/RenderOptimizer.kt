@@ -57,7 +57,8 @@ object RenderOptimizer : Module(
     private val hideWitherMinerName by BooleanSetting("Hide WitherMiner Name", true, desc = "Hides the wither miner name.")
     private val hideTerracottaName by BooleanSetting("Hide Terracota Name", true, desc = "Hides the terracota name.")
     private val hideNonStarredMobName by BooleanSetting("Hide Non-Starred Mob Name", true, desc = "Hides the non-starred mob name.")
-    private val removeBlazePuzzleNames by BooleanSetting("Hide blazes", false, desc = "Hides the blazes in the blaze puzzle room.")
+    private val removePuzzleBlazeNames by BooleanSetting("Hide blazes names", false, desc = "Hides the blazes in the blaze puzzle room.")
+    private val removePuzzleBlaze by BooleanSetting("Hide blazes", true, desc = "Removes the blaze in the blaze puzzle room.")
 
     private val showParticleOptions by DropdownSetting("Show Particles Options")
     private val removeExplosion by BooleanSetting("Remove Explosion", false, desc = "Removes explosion particles.").withDependency { showParticleOptions }
@@ -164,7 +165,7 @@ object RenderOptimizer : Module(
         execute(500) {
             mc.theWorld?.loadedEntityList?.forEach {
                 if (!DungeonUtils.inDungeons) return@execute
-                if (removeBlazePuzzleNames) removeBlazePuzzleNames(it)
+                if (removePuzzleBlazeNames || removePuzzleBlaze) removeBlazePuzzleNames(it)
                 if (it !is EntityArmorStand) return@forEach
                 if (hideArcherBones) handleHideArcherBones(it)
                 if (removeTentacles) removeTentacles(it)
@@ -401,7 +402,8 @@ object RenderOptimizer : Module(
     }
 
     private fun removeBlazePuzzleNames(entity: Entity) {
-        if (entity.customNameTag.noControlCodes.startsWith("[Lv15] Blaze "))
+        if (removePuzzleBlaze && entity is EntityBlaze) entity.setDead()
+        if (removePuzzleBlazeNames && entity.customNameTag.noControlCodes.startsWith("[Lv15] Blaze "))
             entity.alwaysRenderNameTag = false
     }
 }

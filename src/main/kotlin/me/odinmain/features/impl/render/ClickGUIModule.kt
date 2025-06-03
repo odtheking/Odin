@@ -33,22 +33,22 @@ object ClickGUIModule: Module(
     val hudChat by BooleanSetting("Shows HUDs in GUIs", true, desc = "Shows HUDs in GUIs.")
 
     val devMessages by BooleanSetting("Dev Message", false, desc = "Enables dev messages in chat.")
-    val devSize by BooleanSetting("Dev Size", true, desc = "Toggles client side dev size.").withDependency { DevPlayers.isDev }
-    private val devWings by BooleanSetting("Dev Wings", false, desc = "Toggles client side dev wings.").withDependency { DevPlayers.isDev }
-    private val devWingsColor by ColorSetting("Dev Wings Color", Colors.WHITE, desc = "Color of the dev wings.").withDependency { DevPlayers.isDev }
-    private val devSizeX by NumberSetting("Dev Size X", 1f, -1f, 3f, 0.1, desc = "X scale of the dev size.").withDependency { DevPlayers.isDev && devSize }
-    private val devSizeY by NumberSetting("Dev Size Y", 1f, -1f, 3f, 0.1, desc = "Y scale of the dev size.").withDependency { DevPlayers.isDev && devSize }
-    private val devSizeZ by NumberSetting("Dev Size Z", 1f, -1f, 3f, 0.1, desc = "Z scale of the dev size.").withDependency { DevPlayers.isDev && devSize }
-    private var showHidden by DropdownSetting("Show Hidden", false).withDependency { DevPlayers.isDev }
-    private val passcode by StringSetting("Passcode", "odin", desc = "Passcode for dev features.").withDependency { DevPlayers.isDev && showHidden }
+    val devSize by BooleanSetting("Dev Size", true, desc = "Toggles client side dev size.").withDependency { RandomPlayers.isRandom }
+    private val devSizeX by NumberSetting("Size X", 1f, -1f, 3f, 0.1, desc = "X scale of the dev size.").withDependency { RandomPlayers.isRandom && devSize }
+    private val devSizeY by NumberSetting("Size Y", 1f, -1f, 3f, 0.1, desc = "Y scale of the dev size.").withDependency { RandomPlayers.isRandom && devSize }
+    private val devSizeZ by NumberSetting("Size Z", 1f, -1f, 3f, 0.1, desc = "Z scale of the dev size.").withDependency { RandomPlayers.isRandom && devSize }
+    private val devWings by BooleanSetting("Wings", false, desc = "Toggles client side dev wings.").withDependency { RandomPlayers.isRandom }
+    private val devWingsColor by ColorSetting("Wings Color", Colors.WHITE, desc = "Color of the dev wings.").withDependency { RandomPlayers.isRandom }
+    private var showHidden by DropdownSetting("Show Hidden", false).withDependency { RandomPlayers.isRandom }
+    private val passcode by StringSetting("Passcode", "odin", desc = "Passcode for dev features.").withDependency { RandomPlayers.isRandom && showHidden }
 
     private val reset by ActionSetting("Send Dev Data", desc = "Sends dev data to the server.") {
         showHidden = false
         scope.launch {
             modMessage(sendDataToServer(body = "${mc.thePlayer.name}, [${devWingsColor.red},${devWingsColor.green},${devWingsColor.blue}], [$devSizeX,$devSizeY,$devSizeZ], $devWings, $passcode", "https://tj4yzotqjuanubvfcrfo7h5qlq0opcyk.lambda-url.eu-north-1.on.aws/"))
-            DevPlayers.updateDevs()
+            RandomPlayers.updateCustomProperties()
         }
-    }.withDependency { DevPlayers.isDev }
+    }.withDependency { RandomPlayers.isRandom }
 
     private val action by ActionSetting("Open Example Hud", desc = "Opens an example hud to allow configuration of huds.") {
         OdinMain.display = EditHUDGui

@@ -1,7 +1,7 @@
 package me.odinclient.mixin.mixins;
 
 import com.mojang.authlib.GameProfile;
-import me.odinmain.features.impl.render.DevPlayers;
+import me.odinmain.features.impl.render.RandomPlayers;
 import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.util.ResourceLocation;
 import org.spongepowered.asm.mixin.Debug;
@@ -22,7 +22,7 @@ public abstract class MixinNetworkPlayerInfo {
 
     @Inject(method = "getLocationCape", at = @At("HEAD"), cancellable = true)
     private void getDevCape(CallbackInfoReturnable<ResourceLocation> cir) {
-        ResourceLocation devCape = DevPlayers.hookGetLocationCape(this.gameProfile);
+        ResourceLocation devCape = RandomPlayers.hookGetLocationCape(this.gameProfile);
         if (devCape != null) {
             this.locationCape = devCape;
             cir.setReturnValue(devCape);

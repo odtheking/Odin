@@ -1,15 +1,17 @@
 package me.odinmain.features.impl.render
 
-import com.google.gson.*
+import com.google.gson.Gson
+import com.google.gson.JsonParser
 import com.google.gson.annotations.SerializedName
 import com.mojang.authlib.GameProfile
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.launch
 import me.odinmain.OdinMain.mc
 import me.odinmain.OdinMain.scope
 import me.odinmain.features.impl.render.ClickGUIModule.devSize
 import me.odinmain.utils.downloadFile
 import me.odinmain.utils.getDataFromServer
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.ui.Colors
 import net.minecraft.client.entity.AbstractClientPlayer
 import net.minecraft.client.model.ModelBase
@@ -23,7 +25,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.awt.image.BufferedImage
 import java.io.File
 import java.io.IOException
-import java.lang.reflect.Type
 import java.net.URL
 import javax.imageio.ImageIO
 import kotlin.io.encoding.Base64
@@ -32,87 +33,59 @@ import kotlin.io.path.createDirectories
 import kotlin.math.cos
 import kotlin.math.sin
 
-object DevPlayers {
-    private var devs: HashMap<String, DevPlayer> = HashMap()
-    val isDev get() = devs.containsKey(mc.session?.username)
+object RandomPlayers {
+    private var randoms: HashMap<String, RandomPlayer> = HashMap()
+    val isRandom get() = randoms.containsKey(mc.session?.username)
+    val isDev get() = randoms[mc.session?.username]?.isDev ?: false
 
-    data class DevPlayer(val xScale: Float = 1f, val yScale: Float = 1f, val zScale: Float = 1f,
-                         val wings: Boolean = false, val wingsColor: Color = Colors.WHITE, var capeLocation: ResourceLocation? = null, val customName: String)
-    data class DevData(val devName: String, val wingsColor: Triple<Int, Int, Int>, val size: Triple<Float, Float, Float>, val wings: Boolean, val customName: String)
+    data class RandomPlayer(val scale: Triple<Float, Float, Float>, val wings: Boolean = false, val wingsColor: Color = Colors.WHITE, var capeLocation: ResourceLocation? = null, val customName: String, val isDev: Boolean)
 
-    @Suppress("UNCHECKED_CAST")
-    class DevDeserializer : JsonDeserializer<DevData> {
-        override fun deserialize(
-            json: JsonElement?,
-            typeOfT: Type?,
-            context: JsonDeserializationContext?
-        ): DevData {
-            val jsonObject = json?.asJsonObject
-            val devName = jsonObject?.get("DevName")?.asString
-            val wingsColorJsonArray = jsonObject?.get("WingsColor")?.asJsonArray
-            val wingsColorTriple = Triple(
-                wingsColorJsonArray?.get(0)?.asInt ?: 0,
-                wingsColorJsonArray?.get(1)?.asInt ?: 0,
-                wingsColorJsonArray?.get(2)?.asInt ?: 0
-            )
-            val sizeJsonArray = jsonObject?.get("Size")?.asJsonArray
-            val sizeTriple = Triple(
-                sizeJsonArray?.get(0)?.asFloat ?: 0,
-                sizeJsonArray?.get(1)?.asFloat ?: 0,
-                sizeJsonArray?.get(2)?.asFloat ?: 0
-            )
-            val wings = jsonObject?.get("Wings")?.asBoolean == true
+    private val pattern = Regex("Decimal\\('(-?\\d+(?:\\.\\d+)?)'\\)")
 
-            val customName = jsonObject?.get("CustomName")?.asString
-
-            return DevData(devName ?: "", wingsColorTriple, sizeTriple as Triple<Float, Float, Float>, wings, customName ?: "")
-        }
-    }
-
-    private fun convertDecimalToNumber(s: String): String {
-        val pattern = Regex("""Decimal\('(-?\d+(?:\.\d+)?)'\)""")
-
-        return s.replace(pattern) { match -> match.groupValues[1] }
-    }
-
-    fun updateDevs(): HashMap<String, DevPlayer> {
-        runBlocking(scope.coroutineContext) {
-            val data = convertDecimalToNumber(getDataFromServer("https://tj4yzotqjuanubvfcrfo7h5qlq0opcyk.lambda-url.eu-north-1.on.aws/")).ifEmpty { return@runBlocking }
-            val gson = GsonBuilder().registerTypeAdapter(DevData::class.java, DevDeserializer())?.create() ?: return@runBlocking
-            gson.fromJson(data, Array<DevData>::class.java).forEach {
-                devs[it.devName] = DevPlayer(it.size.first, it.size.second, it.size.third, it.wings, Color(it.wingsColor.first, it.wingsColor.second, it.wingsColor.third), null, it.customName)
+    fun updateCustomProperties() {
+        scope.launch {
+            val data = getDataFromServer("https://tj4yzotqjuanubvfcrfo7h5qlq0opcyk.lambda-url.eu-north-1.on.aws/").replace(pattern) { match -> match.groupValues[1] }.ifEmpty { return@launch }
+            JsonParser().parse(data)?.asJsonArray?.forEach {
+                val jsonElement = it.asJsonObject
+                val randomsName = jsonElement.get("DevName")?.asString ?: return@forEach
+                val size = jsonElement.get("Size")?.asJsonArray?.let { sizeArray -> Triple(sizeArray[0].asFloat, sizeArray[1].asFloat, sizeArray[2].asFloat) } ?: return@forEach
+                val wings = jsonElement.get("Wings")?.asBoolean == true
+                val wingsColor = jsonElement.get("WingsColor")?.asJsonArray?.let { colorArray -> Color(colorArray[0].asInt, colorArray[1].asInt, colorArray[2].asInt) } ?: Colors.WHITE
+                val customName = jsonElement.get("CustomName")?.asString ?: ""
+                val isDev = jsonElement.get("IsDev")?.asBoolean ?: false
+                randoms[randomsName] = RandomPlayer(size, wings, Color(wingsColor.red, wingsColor.green, wingsColor.blue), null, customName, isDev)
             }
+            modMessage("Dev players updated: ${randoms.size} players found.")
         }
-        return devs
     }
 
     init {
-        updateDevs()
+        updateCustomProperties()
     }
 
     @JvmStatic
     fun preRenderCallbackScaleHook(entityLivingBaseIn: AbstractClientPlayer) {
-        if (!devs.containsKey(entityLivingBaseIn.name)) return
+        if (!randoms.containsKey(entityLivingBaseIn.name)) return
         if (!devSize && entityLivingBaseIn.name == mc.thePlayer.name) return
-        val dev = devs[entityLivingBaseIn.name] ?: return
-        if (dev.yScale < 0) GlStateManager.translate(0f, dev.yScale * 2, 0f)
-        GlStateManager.scale(dev.xScale, dev.yScale, dev.zScale)
+        val random = randoms[entityLivingBaseIn.name] ?: return
+        if (random.scale.second < 0) GlStateManager.translate(0f, random.scale.second * 2, 0f)
+        GlStateManager.scale(random.scale.first, random.scale.second, random.scale.third)
     }
 
     @SubscribeEvent
     fun onRenderPlayer(event: RenderPlayerEvent.Post) {
-        if (!devs.containsKey(event.entity.name)) return
+        if (!randoms.containsKey(event.entity.name)) return
         if (!devSize && event.entity.name == mc.thePlayer.name) return
-        val dev = devs[event.entity.name] ?: return
-        if (!dev.wings) return
-        DragonWings.renderWings(event.entityPlayer, event.partialRenderTick, dev)
+        val random = randoms[event.entity.name] ?: return
+        if (!random.wings) return
+        DragonWings.renderWings(event.entityPlayer, event.partialRenderTick, random)
     }
 
     fun replaceText(text: String?): String? {
         var replacedText = text
-        for (dev in devs) {
-            if (dev.value.customName.isBlank()) continue
-            replacedText = devs[dev.key]?.let { replacedText?.replace(dev.key, it.customName) }
+        for (random in randoms) {
+            if (random.value.customName.isBlank()) continue
+            replacedText = randoms[random.key]?.let { replacedText?.replace(random.key, it.customName) }
         }
 
         return replacedText
@@ -143,18 +116,18 @@ object DevPlayers {
             wing.addChild(wingTip)
         }
 
-        fun renderWings(player: EntityPlayer, partialTicks: Float, dev: DevPlayer) {
+        fun renderWings(player: EntityPlayer, partialTicks: Float, random: RandomPlayer) {
             val rotation = this.interpolate(player.prevRenderYawOffset, player.renderYawOffset, partialTicks)
 
             GlStateManager.pushMatrix()
             val x = player.lastTickPosX + (player.posX - player.lastTickPosX) * partialTicks
             val y = player.lastTickPosY + (player.posY - player.lastTickPosY) * partialTicks
             val z = player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * partialTicks
-            if (dev.yScale < 0) GlStateManager.translate(0f, dev.yScale * -2, 0f)
+            if (random.scale.second < 0) GlStateManager.translate(0f, random.scale.second * -2, 0f)
 
             GlStateManager.translate(-mc.renderManager.viewerPosX + x, -mc.renderManager.viewerPosY + y, -mc.renderManager.viewerPosZ + z)
             GlStateManager.scale(-0.2, -0.2, 0.2)
-            GlStateManager.scale(dev.xScale, dev.yScale, dev.zScale)
+            GlStateManager.scale(random.scale.first, random.scale.second, random.scale.third)
             GlStateManager.rotate(180 + rotation, 0f, 1f, 0f)
             GlStateManager.translate(0.0, -(1.25 / 0.2f), 0.0)
             GlStateManager.translate(0.0, 0.0, 0.25)
@@ -164,7 +137,7 @@ object DevPlayers {
                 GlStateManager.translate(0.0, 1.0, -0.5)
             }
 
-            GlStateManager.color(dev.wingsColor.red.toFloat()/255, dev.wingsColor.green.toFloat()/255, dev.wingsColor.blue.toFloat()/255, 1f)
+            GlStateManager.color(random.wingsColor.red.toFloat()/255, random.wingsColor.green.toFloat()/255, random.wingsColor.blue.toFloat()/255, 1f)
             mc.textureManager.bindTexture(dragonWingTextureLocation)
 
             for (j in 0..1) {
@@ -245,7 +218,7 @@ object DevPlayers {
         val capeFileName = findCapeFileName(nameEncoded) ?: return null
         val capeFile = File(capeFolder, capeFileName)
 
-        return getCapeLocation(devs[name], capeFile)
+        return getCapeLocation(randoms[name], capeFile)
     }
 
     private fun findCapeFileName(encodedName: String): String? {
@@ -265,7 +238,7 @@ object DevPlayers {
         }
     }
 
-    private fun getCapeLocation(dev: DevPlayer?, file: File): ResourceLocation? {
+    private fun getCapeLocation(dev: RandomPlayer?, file: File): ResourceLocation? {
         if (dev?.capeLocation == null && file.exists()) {
             try {
                 val image: BufferedImage = ImageIO.read(file)

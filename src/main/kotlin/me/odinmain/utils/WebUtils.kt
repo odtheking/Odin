@@ -5,7 +5,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import me.odinmain.OdinMain.logger
-import me.odinmain.features.impl.render.DevPlayers
+import me.odinmain.features.impl.render.RandomPlayers
 import java.io.*
 import java.net.HttpURLConnection
 import java.net.URL
@@ -35,11 +35,11 @@ suspend fun sendDataToServer(body: String, url: String = "https://gi2wsqbyse6tnf
         }
 
         val responseCode = connection.responseCode
-        if (DevPlayers.isDev) println("Response Code: $responseCode")
+        if (RandomPlayers.isDev) println("Response Code: $responseCode")
 
         val inputStream = connection.inputStream
         val response = inputStream.bufferedReader().use { it.readText() }
-        if (DevPlayers.isDev) println("Response: $response")
+        if (RandomPlayers.isDev) println("Response: $response")
 
         connection.disconnect()
 
@@ -62,11 +62,11 @@ suspend fun getDataFromServer(url: String): String {
             connection.requestMethod = "GET"
 
             val responseCode = connection.responseCode
-            if (DevPlayers.isDev) println("Response Code: $responseCode")
+            if (RandomPlayers.isDev) println("Response Code: $responseCode")
             if (responseCode != 200) return@withTimeoutOrNull ""
             val inputStream = connection.inputStream
             val response = inputStream.bufferedReader().use { it.readText() }
-            if (DevPlayers.isDev) println("Response: $response")
+            if (RandomPlayers.isDev) println("Response: $response")
 
             connection.disconnect()
 
