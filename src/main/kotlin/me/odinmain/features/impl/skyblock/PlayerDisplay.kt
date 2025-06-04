@@ -96,6 +96,7 @@ object PlayerDisplay : Module(
     private val MANA_REGEX = Regex("[\\d|,]+/[\\d|,]+✎( Mana)?")
     private val OVERFLOW_MANA_REGEX = Regex("§?[\\d|,]+ʬ")
     private val DEFENSE_REGEX = Regex("[\\d|,]+§a❈ Defense")
+
     @JvmStatic
     fun modifyText(text: String): String {
         if (!enabled) return text
@@ -104,7 +105,7 @@ object PlayerDisplay : Module(
         toReturn = if (hideMana) toReturn.replace(MANA_REGEX, "") else toReturn
         toReturn = if (hideOverflow) toReturn.replace(OVERFLOW_MANA_REGEX, "") else toReturn
         toReturn = if (hideDefense) toReturn.replace(DEFENSE_REGEX, "") else toReturn
-        return toReturn.trimStart()
+        return toReturn.trim()
     }
 
     private fun generateText(current: Int, max: Int, icon: String): String {
