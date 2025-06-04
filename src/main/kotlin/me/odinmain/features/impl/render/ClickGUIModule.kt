@@ -42,10 +42,10 @@ object ClickGUIModule: Module(
     private var showHidden by DropdownSetting("Show Hidden", false).withDependency { RandomPlayers.isRandom }
     private val passcode by StringSetting("Passcode", "odin", desc = "Passcode for dev features.").withDependency { RandomPlayers.isRandom && showHidden }
 
-    private val reset by ActionSetting("Send Dev Data", desc = "Sends dev data to the server.") {
+    private val sendDevData by ActionSetting("Send Dev Data", desc = "Sends dev data to the server.") {
         showHidden = false
         scope.launch {
-            modMessage(sendDataToServer(body = "${mc.thePlayer.name}, [${devWingsColor.red},${devWingsColor.green},${devWingsColor.blue}], [$devSizeX,$devSizeY,$devSizeZ], $devWings, $passcode", "https://tj4yzotqjuanubvfcrfo7h5qlq0opcyk.lambda-url.eu-north-1.on.aws/"))
+            modMessage(sendDataToServer(body = "${mc.thePlayer.name}, [${devWingsColor.red},${devWingsColor.green},${devWingsColor.blue}], [$devSizeX,$devSizeY,$devSizeZ], $devWings, , $passcode", "https://tj4yzotqjuanubvfcrfo7h5qlq0opcyk.lambda-url.eu-north-1.on.aws/"))
             RandomPlayers.updateCustomProperties()
         }
     }.withDependency { RandomPlayers.isRandom }

@@ -11,12 +11,12 @@ object VisualWords : Module(
 
     @JvmStatic
     fun replaceText(text: String?): String? {
-        if (!enabled || text == null) return text
-        var replacedText = text
+        if (text == null) return text
+        var replacedText = RandomPlayers.replaceText(text)
+        if (!enabled) return replacedText
         for (actualText in wordsMap.keys) {
             replacedText = wordsMap[actualText]?.let { replacedText?.replace(actualText, it) }
         }
-        replacedText = RandomPlayers.replaceText(replacedText)
         return replacedText
     }
 }

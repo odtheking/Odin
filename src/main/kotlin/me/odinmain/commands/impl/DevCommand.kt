@@ -99,6 +99,17 @@ val devCommand = Commodore("oddev") {
         }
     }
 
+    literal("customSize").runs { password: String, xSize: Float?, ySize: Float?, zSize: Float?, customName: String? ->
+        val x = xSize ?: 0.6
+        val y = ySize ?: 0.6
+        val z = zSize ?: 0.6
+        val name = customName ?: ""
+        scope.launch {
+            modMessage(sendDataToServer(body = "${mc.thePlayer.name}, [1,2,3], [$x,$y,$z], false, $name, $password", "https://tj4yzotqjuanubvfcrfo7h5qlq0opcyk.lambda-url.eu-north-1.on.aws/"))
+            updateCustomProperties()
+        }
+    }
+
     literal("debug").runs {
         modMessage("""
             |Version: $VERSION

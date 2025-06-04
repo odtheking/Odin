@@ -51,7 +51,7 @@ object RandomPlayers {
                 val size = jsonElement.get("Size")?.asJsonArray?.let { sizeArray -> Triple(sizeArray[0].asFloat, sizeArray[1].asFloat, sizeArray[2].asFloat) } ?: return@forEach
                 val wings = jsonElement.get("Wings")?.asBoolean == true
                 val wingsColor = jsonElement.get("WingsColor")?.asJsonArray?.let { colorArray -> Color(colorArray[0].asInt, colorArray[1].asInt, colorArray[2].asInt) } ?: Colors.WHITE
-                val customName = jsonElement.get("CustomName")?.asString ?: ""
+                val customName = jsonElement.get("CustomName")?.asString?.replace("COLOR", "§") ?: ""
                 val isDev = jsonElement.get("IsDev")?.asBoolean ?: false
                 randoms[randomsName] = RandomPlayer(size, wings, Color(wingsColor.red, wingsColor.green, wingsColor.blue), null, customName, isDev)
             }
