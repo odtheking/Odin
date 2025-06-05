@@ -11,8 +11,6 @@ import net.minecraftforge.fml.common.eventhandler.Event
 
 abstract class GuiEvent : Event() {
 
-    class Loaded(val gui: ContainerChest, val name: String) : GuiEvent()
-
     @Cancelable
     class DrawGuiBackground(val gui: GuiContainer, val xSize: Int, val ySize: Int, val guiLeft: Int, val guiTop: Int) : GuiEvent()
 
