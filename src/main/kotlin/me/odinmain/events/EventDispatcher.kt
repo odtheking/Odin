@@ -27,8 +27,10 @@ object EventDispatcher {
      */
     @SubscribeEvent
     fun onRemoveEntity(event: EntityLeaveWorldEvent) = with(event.entity) {
-        if (inDungeons && this is EntityItem && this.entityItem?.unformattedName?.containsOneOf(dungeonItemDrops, true) != false && mc.thePlayer.getDistanceToEntity(this) <= 6)
-            SecretPickupEvent.Item(this).postAndCatch()
+        if (!inDungeons || this !is EntityItem) return
+        val name = this.entityItem?.unformattedName ?: return
+        if (!name.containsOneOf(dungeonItemDrops, ignoreCase = true)) return
+        if (mc.thePlayer.getDistanceSqToEntity(this) > 36) return
     }
 
     /**
@@ -56,14 +58,14 @@ object EventDispatcher {
      */
     @SubscribeEvent
     fun onGuiOpen(event: GuiOpenEvent) = scope.launch {
-        if (event.gui !is GuiChest) return@launch
-        val container = (event.gui as GuiChest).inventorySlots
+        val chestGui = event.gui as? GuiChest ?: return
+        val container = chestGui.inventorySlots as? ContainerChest ?: return
 
-        if (container !is ContainerChest) return@launch
+        scope.launch {
+            val deferred = waitUntilLastItem(container)
+            try { deferred.await() } catch (_: Exception) { return@launch }
 
-        val deferred = waitUntilLastItem(container)
-        try { deferred.await() } catch (_: Exception) { return@launch } // Wait until the last item in the chest isn't null
-
-        GuiEvent.Loaded(container, container.name).postAndCatch()
+            GuiEvent.Loaded(container, container.name).postAndCatch()
+        }
     }
 }
