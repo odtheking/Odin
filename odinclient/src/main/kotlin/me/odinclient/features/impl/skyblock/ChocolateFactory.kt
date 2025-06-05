@@ -103,11 +103,6 @@ object ChocolateFactory : Module(
     }
 
     @SubscribeEvent
-    fun guiLoad(event: GuiEvent.Loaded) {
-        if (isInChocolateFactory()) findWorker(event.gui)
-    }
-
-    @SubscribeEvent
     fun onSoundPlay(event: PlaySoundEvent) {
         if (cancelSound && event.name == "random.eat" && isInChocolateFactory()) event.result = null
     }

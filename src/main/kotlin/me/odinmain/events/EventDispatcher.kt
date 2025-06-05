@@ -50,20 +50,4 @@ object EventDispatcher {
         if (event.packet !is S02PacketChat || !ChatPacketEvent(event.packet.chatComponent.unformattedText.noControlCodes).postAndCatch()) return
         event.isCanceled = true
     }
-
-    /**
-     * Dispatches [GuiEvent.Loaded]
-     */
-    @SubscribeEvent
-    fun onGuiOpen(event: GuiOpenEvent) = scope.launch {
-        if (event.gui !is GuiChest) return@launch
-        val container = (event.gui as GuiChest).inventorySlots
-
-        if (container !is ContainerChest) return@launch
-
-        val deferred = waitUntilLastItem(container)
-        try { deferred.await() } catch (_: Exception) { return@launch } // Wait until the last item in the chest isn't null
-
-        GuiEvent.Loaded(container, container.name).postAndCatch()
-    }
 }
