@@ -53,7 +53,7 @@ object ArrowsDevice : Module(
     private var serverTicksSinceLastTargetDisappeared: Int? = null
 
     init {
-        onMessage(Regex("^(.{1,16}) completed a device! \\((\\d)/(\\d)\\)"), { enabled && isPlayerInRoom }) {
+        onMessage(Regex("^(.{1,16}) completed a device! \\((\\d)/(\\d)\\)")) {
             if (it.groupValues[1] == mc.thePlayer.name) onComplete()
         }
 
@@ -116,7 +116,7 @@ object ArrowsDevice : Module(
     //    ticks are up
     // We use all three here since we want to detect as soon as possible (since we might die if we wait too long).
     private fun onComplete() {
-        if (isDeviceComplete) return
+        if (isDeviceComplete || !DungeonUtils.inBoss || !isPlayerInRoom) return
 
         isDeviceComplete = true
 
