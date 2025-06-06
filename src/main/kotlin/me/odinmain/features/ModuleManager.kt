@@ -47,7 +47,7 @@ object ModuleManager {
     val modules: ArrayList<Module> = arrayListOf(
         // dungeon
         DungeonRequeue, BlessingDisplay, PositionalMessages, ExtraStats, KeyHighlight, Mimic, TeammatesHighlight,
-        TerracottaTimer, BloodCamp, SecretClicked, DungeonWaypoints, LeapMenu, PuzzleSolvers, /*MageBeam,*/
+        TerracottaTimer, BloodCamp, SecretClicked, DungeonWaypoints, LeapMenu, PuzzleSolvers, MageBeam,
         WarpCooldown, MapInfo, SwapSound, LividSolver,
 
         // floor 7
