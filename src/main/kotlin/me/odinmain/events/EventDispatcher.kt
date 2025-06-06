@@ -27,8 +27,10 @@ object EventDispatcher {
      */
     @SubscribeEvent
     fun onRemoveEntity(event: EntityLeaveWorldEvent) = with(event.entity) {
-        if (inDungeons && this is EntityItem && this.entityItem?.unformattedName?.containsOneOf(dungeonItemDrops, true) != false && mc.thePlayer.getDistanceToEntity(this) <= 6)
-            SecretPickupEvent.Item(this).postAndCatch()
+        if (!inDungeons || this !is EntityItem) return
+        val name = this.entityItem?.unformattedName ?: return
+        if (!name.containsOneOf(dungeonItemDrops, ignoreCase = true)) return
+        if (mc.thePlayer.getDistanceSqToEntity(this) > 36) return
     }
 
     /**
@@ -49,5 +51,21 @@ object EventDispatcher {
 
         if (event.packet !is S02PacketChat || !ChatPacketEvent(event.packet.chatComponent.unformattedText.noControlCodes).postAndCatch()) return
         event.isCanceled = true
+    }
+
+    /**
+     * Dispatches [GuiEvent.Loaded]
+     */
+    @SubscribeEvent
+    fun onGuiOpen(event: GuiOpenEvent) = scope.launch {
+        val chestGui = event.gui as? GuiChest ?: return
+        val container = chestGui.inventorySlots as? ContainerChest ?: return
+
+        scope.launch {
+            val deferred = waitUntilLastItem(container)
+            try { deferred.await() } catch (_: Exception) { return@launch }
+
+            GuiEvent.Loaded(container, container.name).postAndCatch()
+        }
     }
 }
