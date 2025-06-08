@@ -104,11 +104,13 @@ object ChatCommands : Module(
             ChatChannel.PRIVATE -> mapOf ("coords" to coords, "odin" to odin, "boop" to boop, "cf" to cf, "8ball" to eightball, "dice" to dice, "racism" to racism, "ping" to ping, "tps" to tps, "invite" to invite, "time" to time)
         }
 
-        when (message.split(" ")[0].drop(1).lowercase()) {
+        val words = message.drop(1).split(" ").map { it.lowercase() }
+
+        when (words[0]) {
             "help", "h" -> channelMessage("Commands: ${commandsMap.filterValues { it }.keys.joinToString(", ")}", name, channel)
             "coords", "co" -> if (coords) channelMessage(PlayerUtils.getPositionString(), name, channel)
             "odin", "od" -> if (odin) channelMessage("Odin! https://discord.gg/2nCbC9hkxT", name, channel)
-            "boop" -> if (boop) sendCommand("boop ${message.substringAfter("boop ")}")
+            "boop" -> if (boop) words.getOrNull(1)?.let { sendCommand("boop $it") }
             "cf" -> if (cf) channelMessage(if (Math.random() < 0.5) "heads" else "tails", name, channel)
             "8ball" -> if (eightball) channelMessage(responses.random(), name, channel)
             "dice" -> if (dice) channelMessage((1..6).random(), name, channel)
@@ -132,7 +134,7 @@ object ChatCommands : Module(
             "pt", "ptme", "transfer" -> if (pt && channel == ChatChannel.PARTY) sendCommand("p transfer $name")
             "downtime", "dt" -> {
                 if (!dt || channel != ChatChannel.PARTY) return
-                val reason = message.substringAfter("dt ").takeIf { it != message && !it.contains("!dt") } ?: "No reason given"
+                val reason = words.getOrNull(1)?.takeIf { it.isNotBlank() } ?: "No reason given"
                 if (dtReason.any { it.first == name }) return modMessage("§6${name} §calready has a reminder!")
                 modMessage("§aReminder set for the end of the run! §7(disabled auto requeue for this run)")
                 dtReason.add(name to reason)
@@ -147,12 +149,12 @@ object ChatCommands : Module(
             }
             "f1", "f2", "f3", "f4", "f5", "f6", "f7", "m1", "m2", "m3", "m4", "m5", "m6", "m7", "t1", "t2", "t3", "t4", "t5" -> {
                 if (!queInstance || channel != ChatChannel.PARTY) return
-                modMessage("§8Entering -> §e${message.substring(1).capitalizeFirst()}")
-                sendCommand("od ${message.substring(1).lowercase()}", true)
+                modMessage("§8Entering -> §e${words[0].capitalizeFirst()}")
+                sendCommand("od ${words[0].lowercase()}", true)
             }
             "demote" -> if (demote && channel == ChatChannel.PARTY) sendCommand("p demote $name")
             "promote" -> if (promote && channel == ChatChannel.PARTY) sendCommand("p promote $name")
-            "kick", "k" -> if (kick && channel == ChatChannel.PARTY) sendCommand("p kick ${message.substringAfter("kick ").split(" ")[0]}")
+            "kick", "k" -> if (kick && channel == ChatChannel.PARTY) words.getOrNull(1)?.let { sendCommand("p kick $it") }
 
             // Private cmds only
             "invite", "inv" -> if (invite && channel == ChatChannel.PRIVATE) {
@@ -225,25 +227,11 @@ object ChatCommands : Module(
     }
 
     private val responses = arrayOf(
-        "It is certain",
-        "It is decidedly so",
-        "Without a doubt",
-        "Yes definitely",
-        "You may rely on it",
-        "As I see it, yes",
-        "Most likely",
-        "Outlook good",
-        "Yes",
-        "Signs point to yes",
-        "Reply hazy try again",
-        "Ask again later",
-        "Better not tell you now",
-        "Cannot predict now",
-        "Concentrate and ask again",
-        "Don't count on it",
-        "My reply is no",
-        "My sources say no",
-        "Outlook not so good",
-        "Very doubtful"
+        "It is certain", "It is decidedly so", "Without a doubt",
+        "Yes definitely", "You may rely on it", "As I see it, yes",
+        "Most likely", "Outlook good", "Yes", "Signs point to yes",
+        "Reply hazy try again", "Ask again later", "Better not tell you now",
+        "Cannot predict now", "Concentrate and ask again", "Don't count on it",
+        "My reply is no", "My sources say no", "Outlook not so good", "Very doubtful"
     )
 }

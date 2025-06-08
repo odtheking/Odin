@@ -51,7 +51,7 @@ object PlayerUtils {
 
     fun getPositionString(): String {
         val blockPos = BlockPos(posX, posY, posZ)
-        return "x: ${blockPos.getX()}, y: ${blockPos.getY()}, z: ${blockPos.getZ()}"
+        return "x: ${blockPos.x}, y: ${blockPos.y}, z: ${blockPos.z}"
     }
 
     private var lastClickSent = 0L

@@ -92,7 +92,7 @@ object ArrowsDevice : Module(
         }
 
         onMessage(Regex("^(.{1,16}) completed a device! \\((\\d)/(\\d)\\)")) {
-            if (it.groupValues[1] == mc.thePlayer.name) onComplete()
+            if (it.groupValues[1] == mc.thePlayer.name) onComplete("Device Complete Message")
         }
 
         onMessage(Regex("^ ☠ You died and became a ghost\\.$"), { enabled && isPlayerOnStand }) {
@@ -129,7 +129,7 @@ object ArrowsDevice : Module(
                 else if (it < 10)  return@let it + 1 // No target yet, count the ticks
                 else if (it == 10) {
                     // We reached 10 ticks, device is either done, or the player left the stand
-                    if (isPlayerOnStand) onComplete()
+                    if (isPlayerOnStand) onComplete("Device Ticks")
                     return@let 11
                 } else return@let 11
             } ?: run {
@@ -303,7 +303,7 @@ object ArrowsDevice : Module(
     //    for the text most of the time (but not always) also can fail if the player leaves the device before those 10
     //    ticks are up
     // We use all three here since we want to detect as soon as possible (since we might die if we wait too long).
-    private fun onComplete() {
+    private fun onComplete(method: String) {
         if (isDeviceComplete || !DungeonUtils.inBoss || !isPlayerInRoom) return
 
         isDeviceComplete = true
@@ -311,7 +311,7 @@ object ArrowsDevice : Module(
             releaseClick()
 
         if (alertOnDeviceComplete) {
-            modMessage("§aSharp shooter device complete")
+            modMessage("§aSharp shooter device complete §7($method)")
             PlayerUtils.alert("Device Complete", color = Colors.MINECRAFT_GREEN)
         }
 
@@ -356,7 +356,7 @@ object ArrowsDevice : Module(
             return
         }
 
-        if (!isDeviceComplete && activeArmorStand?.name == ACTIVE_DEVICE_STRING) onComplete()
+        if (!isDeviceComplete && activeArmorStand?.name == ACTIVE_DEVICE_STRING) onComplete("Armor Stand")
 
         if (autoState != AutoState.Stopped) {
             if (!isPlayerOnStand) {
