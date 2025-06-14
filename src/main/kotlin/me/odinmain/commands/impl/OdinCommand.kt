@@ -45,6 +45,10 @@ val mainCommand = Commodore("od", "odin") {
         fillItemFromSack(64, "SUPERBOOM_TNT", "superboom_tnt", true)
     }
 
+    literal("de").runs {
+        fillItemFromSack(64, "DUNGEON_DECOY", "dungeon_decoy", true)
+    }
+
     literal("reset") {
         literal("clickgui").runs {
             ClickGUIModule.resetPositions()
