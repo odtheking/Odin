@@ -99,7 +99,7 @@ object TerminalSolver : Module(
 
     init {
         onPacket<S2DPacketOpenWindow> { packet ->
-            currentTerm?.let { if (!it.isClicked && it.clickCount < 2) leftTerm() }
+            currentTerm?.let { if (!it.isClicked && it.windowCount <= 2) leftTerm() }
             val windowName = packet.windowTitle?.formattedText?.noControlCodes ?: return@onPacket
             val newTermType = TerminalTypes.entries.find { terminal -> windowName.startsWith(terminal.windowName) }?.takeIf { it != currentTerm?.type } ?: return@onPacket
 
@@ -138,7 +138,6 @@ object TerminalSolver : Module(
 
         onPacket<C0EPacketClickWindow> {
             lastClickTime = System.currentTimeMillis()
-            currentTerm?.let { it.clickCount++ }
         }
 
         execute(50) {

@@ -11,6 +11,7 @@ import net.minecraft.item.ItemStack
 import net.minecraft.network.play.server.S2DPacketOpenWindow
 import net.minecraft.network.play.server.S2FPacketSetSlot
 import net.minecraftforge.common.MinecraftForge
+import net.minecraftforge.fml.common.eventhandler.EventPriority
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.util.concurrent.CopyOnWriteArrayList
 
@@ -19,9 +20,9 @@ open class TerminalHandler(val type: TerminalTypes) {
     val items: Array<ItemStack?> = arrayOfNulls(type.windowSize)
     val timeOpened = System.currentTimeMillis()
     var isClicked = false
-    var clickCount = 0
+    var windowCount = 1
 
-    @SubscribeEvent(receiveCanceled = true)
+    @SubscribeEvent(priority = EventPriority.LOW, receiveCanceled = true)
     fun onPacketReceived(event: PacketEvent.Receive) = with (event.packet) {
         when (this) {
             is S2FPacketSetSlot -> {
@@ -30,8 +31,9 @@ open class TerminalHandler(val type: TerminalTypes) {
                 if (handleSlotUpdate(this)) TerminalEvent.Updated(this@TerminalHandler).postAndCatch()
             }
             is S2DPacketOpenWindow -> {
-                items.fill(null)
                 isClicked = false
+                items.fill(null)
+                windowCount++
             }
         }
     }
