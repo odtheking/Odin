@@ -20,6 +20,7 @@ import me.odinmain.utils.render.RenderUtils2D
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.sendDataToServer
 import me.odinmain.utils.skyblock.*
+import me.odinmain.utils.skyblock.dungeon.DungeonListener
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.ScanUtils
 import me.odinmain.utils.ui.clickgui.ClickGUI
@@ -50,7 +51,7 @@ object OdinMain {
             RenderUtils, Renderer, DungeonUtils, KuudraUtils,
             EventDispatcher, Executor, ModuleManager,
             WaypointManager, RandomPlayers, SkyblockPlayer,
-            ScanUtils, HighlightRenderer, //OdinUpdater,
+            ScanUtils, HighlightRenderer, DungeonListener,
             SplitsManager, RenderUtils2D, ArrowTracker,
             this
         ).forEach { MinecraftForge.EVENT_BUS.register(it) }

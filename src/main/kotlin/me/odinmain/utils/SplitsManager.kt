@@ -39,11 +39,11 @@ object SplitsManager {
 
     @SubscribeEvent(receiveCanceled = true)
     fun onChat(event: ChatPacketEvent) {
-        if (event.message != "Starting in 1 seconds.") return
+        if (event.message != "Starting in 1 second.") return
 
         currentSplits = when (LocationUtils.currentArea) {
             Island.Dungeon -> {
-                val floor = DungeonListener.floor ?: return@onChat modMessage("§cFailed to get dungeon floor!")
+                val floor = DungeonListener.floor ?: return modMessage("§cFailed to get dungeon floor!")
 
                 with(dungeonSplits[floor.floorNumber].toMutableList()) {
                     addAll(0, listOf(
