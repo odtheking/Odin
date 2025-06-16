@@ -7,7 +7,7 @@ import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.render.Renderer
-import me.odinmain.utils.skyblock.LocationUtils.currentDungeon
+import me.odinmain.utils.skyblock.dungeon.DungeonListener
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.getSkullValue
 import me.odinmain.utils.skyblock.partyMessage
@@ -51,6 +51,6 @@ object Mimic : Module(
     private fun mimicKilled() {
         if (DungeonUtils.mimicKilled || DungeonUtils.inBoss) return
         if (mimicMessageToggle) partyMessage(mimicMessage)
-        currentDungeon?.dungeonStats?.mimicKilled = true
+        DungeonListener.dungeonStats.mimicKilled = true
     }
 }

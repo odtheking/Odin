@@ -3,8 +3,6 @@ package me.odinmain.utils.skyblock
 import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.PacketEvent
 import me.odinmain.utils.equalsOneOf
-import me.odinmain.utils.skyblock.dungeon.Dungeon
-import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.startsWithOneOf
 import net.minecraft.network.play.server.S38PacketPlayerListItem
 import net.minecraft.network.play.server.S3BPacketScoreboardObjective
@@ -19,15 +17,12 @@ object LocationUtils {
         private set
     var isInSkyblock: Boolean = false
         private set
-    var currentDungeon: Dungeon? = null
-        private set
     var currentArea: Island = Island.Unknown
         private set
 
     @SubscribeEvent
     fun onDisconnect(event: FMLNetworkEvent.ClientDisconnectionFromServerEvent) {
         currentArea = Island.Unknown
-        currentDungeon = null
         isInSkyblock = false
         isOnHypixel = false
     }
@@ -35,7 +30,6 @@ object LocationUtils {
     @SubscribeEvent
     fun onWorldChange(event: WorldEvent.Unload) {
         currentArea = Island.Unknown
-        currentDungeon = null
         isInSkyblock = false
     }
 
@@ -66,7 +60,6 @@ object LocationUtils {
                 val area = event.packet.entries?.find { it?.displayName?.unformattedText?.startsWithOneOf("Area: ", "Dungeon: ") == true }?.displayName?.formattedText ?: return
 
                 currentArea = Island.entries.firstOrNull { area.contains(it.displayName, true) } ?: Island.Unknown
-                if (DungeonUtils.inDungeons && currentDungeon == null) currentDungeon = Dungeon()
             }
 
             is S3BPacketScoreboardObjective ->

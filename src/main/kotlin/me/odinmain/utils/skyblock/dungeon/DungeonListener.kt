@@ -25,9 +25,11 @@ import net.minecraft.network.play.server.S38PacketPlayerListItem
 import net.minecraft.network.play.server.S3EPacketTeams
 import net.minecraft.network.play.server.S47PacketPlayerListHeaderFooter
 import net.minecraftforge.event.entity.EntityJoinWorldEvent
+import net.minecraftforge.event.world.WorldEvent
+import net.minecraftforge.fml.common.eventhandler.EventPriority
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
-// could add some system to look back at previous runs.
-class Dungeon {
+object DungeonListener {
 
     var dungeonTeammates: ArrayList<DungeonPlayer> = ArrayList(5)
     var dungeonTeammatesNoSelf: List<DungeonPlayer> = ArrayList(4)
@@ -50,18 +52,27 @@ class Dungeon {
         else -> false
     }
 
-    init {
-        scope.launch(Dispatchers.IO) { paul = hasBonusPaulScore() }
-
+    @SubscribeEvent
+    fun onWorldUnload(event: WorldEvent.Unload) {
         Blessing.entries.forEach { it.reset() }
+        dungeonTeammatesNoSelf = emptyList()
+        dungeonStats = DungeonStats()
+        expectingBloodUpdate = false
+        leapTeammates = emptyList()
+        dungeonTeammates.clear()
         shownTitle = false
+        puzzles.clear()
+        floor = null
+        paul = false
     }
 
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
     fun enterDungeonRoom(event: RoomEnterEvent) {
         val room = event.room?.takeUnless { room -> passedRooms.any { it.data.name == room.data.name } } ?: return
         dungeonStats.knownSecrets += room.data.secrets
     }
 
+    @SubscribeEvent
     fun onPacket(event: PacketEvent.Receive) {
         when (event.packet) {
             is S38PacketPlayerListItem -> {
@@ -76,7 +87,10 @@ class Dungeon {
                 if (event.packet.action != 2) return
                 val text = event.packet.prefix?.plus(event.packet.suffix)?.noControlCodes ?: return
 
-                floorRegex.find(text)?.groupValues?.get(1)?.let { floor = Floor.valueOf(it) }
+                floorRegex.find(text)?.groupValues?.get(1)?.let {
+                    scope.launch(Dispatchers.IO) { paul = hasBonusPaulScore() }
+                    floor = Floor.valueOf(it)
+                }
 
                 clearedRegex.find(text)?.groupValues?.get(1)?.toIntOrNull()?.let {
                     if (dungeonStats.percentCleared != it && expectingBloodUpdate) dungeonStats.bloodDone = true
@@ -109,6 +123,7 @@ class Dungeon {
         }
     }
 
+    @SubscribeEvent
     fun onEntityJoin(event: EntityJoinWorldEvent) {
         val teammate = dungeonTeammatesNoSelf.find { it.name == event.entity.name } ?: return
         teammate.entity = event.entity as? EntityPlayer ?: return
@@ -161,37 +176,35 @@ class Dungeon {
             }
     }
 
-    companion object {
-        private val puzzleRegex = Regex("^ (\\w+(?: \\w+)*|\\?\\?\\?): \\[([✖✔✦])] ?(?:\\((\\w+)\\))?$")
-        private val expectingBloodRegex = Regex("^\\[BOSS] The Watcher: You have proven yourself. You may pass.")
-        private val doorOpenRegex = Regex("^(?:\\[\\w+] )?(\\w+) opened a (?:WITHER|Blood) door!")
-        private val secretPercentRegex = Regex("^ Secrets Found: ([\\d.]+)%$")
-        private val deathRegex = Regex("☠ (\\w{1,16}) .* and became a ghost\\.")
-        private val timeRegex = Regex("^ Time: ((?:\\d+h ?)?(?:\\d+m ?)?\\d+s)$")
-        private val completedRoomsRegex = Regex("^ Completed Rooms: (\\d+)$")
-        private val clearedRegex = Regex("^Cleared: (\\d+)% \\(\\d+\\)$")
-        private val secretCountRegex = Regex("^ Secrets Found: (\\d+)$")
-        private val openedRoomsRegex = Regex("^ Opened Rooms: (\\d+)$")
-        private val floorRegex = Regex("The Catacombs \\((\\w+)\\)\$")
-        private val partyMessageRegex = Regex("^Party > .*?: (.+)\$")
-        private val puzzleCountRegex = Regex("^Puzzles: \\((\\d+)\\)\$")
-        private val deathsRegex = Regex("^Team Deaths: (\\d+)$")
-        private val cryptRegex = Regex("^ Crypts: (\\d+)$")
+    private val puzzleRegex = Regex("^ (\\w+(?: \\w+)*|\\?\\?\\?): \\[([✖✔✦])] ?(?:\\((\\w+)\\))?$")
+    private val expectingBloodRegex = Regex("^\\[BOSS] The Watcher: You have proven yourself. You may pass.")
+    private val doorOpenRegex = Regex("^(?:\\[\\w+] )?(\\w+) opened a (?:WITHER|Blood) door!")
+    private val secretPercentRegex = Regex("^ Secrets Found: ([\\d.]+)%$")
+    private val deathRegex = Regex("☠ (\\w{1,16}) .* and became a ghost\\.")
+    private val timeRegex = Regex("^ Time: ((?:\\d+h ?)?(?:\\d+m ?)?\\d+s)$")
+    private val completedRoomsRegex = Regex("^ Completed Rooms: (\\d+)$")
+    private val clearedRegex = Regex("^Cleared: (\\d+)% \\(\\d+\\)$")
+    private val secretCountRegex = Regex("^ Secrets Found: (\\d+)$")
+    private val openedRoomsRegex = Regex("^ Opened Rooms: (\\d+)$")
+    private val floorRegex = Regex("The Catacombs \\((\\w+)\\)\$")
+    private val partyMessageRegex = Regex("^Party > .*?: (.+)\$")
+    private val puzzleCountRegex = Regex("^Puzzles: \\((\\d+)\\)\$")
+    private val deathsRegex = Regex("^Team Deaths: (\\d+)$")
+    private val cryptRegex = Regex("^ Crypts: (\\d+)$")
 
-        data class DungeonStats(
-            var secretsFound: Int = 0,
-            var secretsPercent: Float = 0f,
-            var knownSecrets: Int = 0,
-            var crypts: Int = 0,
-            var openedRooms: Int = 0,
-            var completedRooms: Int = 0,
-            var deaths: Int = 0,
-            var percentCleared: Int = 0,
-            var elapsedTime: String = "0s",
-            var mimicKilled: Boolean = false,
-            var doorOpener: String = "Unknown",
-            var bloodDone: Boolean = false,
-            var puzzleCount: Int = 0,
-        )
-    }
+    data class DungeonStats(
+        var secretsFound: Int = 0,
+        var secretsPercent: Float = 0f,
+        var knownSecrets: Int = 0,
+        var crypts: Int = 0,
+        var openedRooms: Int = 0,
+        var completedRooms: Int = 0,
+        var deaths: Int = 0,
+        var percentCleared: Int = 0,
+        var elapsedTime: String = "0s",
+        var mimicKilled: Boolean = false,
+        var doorOpener: String = "Unknown",
+        var bloodDone: Boolean = false,
+        var puzzleCount: Int = 0,
+    )
 }

@@ -1,13 +1,10 @@
 package me.odinmain.utils
 
-import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.features.impl.skyblock.Splits
 import me.odinmain.features.impl.skyblock.Splits.sendSplits
 import me.odinmain.utils.skyblock.*
-import me.odinmain.utils.skyblock.LocationUtils.currentArea
-import me.odinmain.utils.skyblock.dungeon.Floor
-import net.minecraft.scoreboard.ScorePlayerTeam
+import me.odinmain.utils.skyblock.dungeon.DungeonListener
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -46,7 +43,7 @@ object SplitsManager {
 
         currentSplits = when (LocationUtils.currentArea) {
             Island.Dungeon -> {
-                val floor = getFloor() ?: return@onChat modMessage("§cFailed to get dungeon floor!")
+                val floor = DungeonListener.floor ?: return@onChat modMessage("§cFailed to get dungeon floor!")
 
                 with(dungeonSplits[floor.floorNumber].toMutableList()) {
                     addAll(0, listOf(
@@ -92,22 +89,6 @@ object SplitsManager {
     @SubscribeEvent
     fun onWorldLoad(event: WorldEvent.Load) {
         currentSplits = SplitsGroup(mutableListOf(), null)
-    }
-
-    private fun getFloor(): Floor? {
-        if (currentArea.isArea(Island.SinglePlayer)) return Floor.E
-        val scoreboard = mc.theWorld?.scoreboard ?: return null
-        val objective = scoreboard.getObjectiveInDisplaySlot(1) ?: return null
-
-        val scoreboardValues = scoreboard.getSortedScores(objective)
-            .filter { it?.playerName?.startsWith("#") == false }
-            .let { if (it.size > 15) it.drop(15) else it }
-            .map { ScorePlayerTeam.formatPlayerName(scoreboard.getPlayersTeam(it.playerName), it.playerName) }
-
-        for (i in scoreboardValues) {
-            return Floor.valueOf(Regex("The Catacombs \\((\\w+)\\)\$").find(i.noControlCodes.filter { it.code in 32..126 })?.groupValues?.get(1) ?: continue)
-        }
-        return null
     }
 }
 
