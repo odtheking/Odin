@@ -96,11 +96,10 @@ object TerminalSolver : Module(
     var lastTermOpened: TerminalHandler? = null
     private val startsWithRegex = Regex("What starts with: '(\\w+)'?")
     private var lastClickTime = 0L
-    private var isReload = false
 
     init {
         onPacket<S2DPacketOpenWindow> { packet ->
-            if (currentTerm?.isClicked == false && !isReload) leftTerm()
+            currentTerm?.let { if (!it.isClicked && it.clickCount < 2) leftTerm() }
             val windowName = packet.windowTitle?.formattedText?.noControlCodes ?: return@onPacket
             val newTermType = TerminalTypes.entries.find { terminal -> windowName.startsWith(terminal.windowName) }?.takeIf { it != currentTerm?.type } ?: return@onPacket
 
@@ -139,14 +138,13 @@ object TerminalSolver : Module(
 
         onPacket<C0EPacketClickWindow> {
             lastClickTime = System.currentTimeMillis()
-            isReload = false
+            currentTerm?.let { it.clickCount++ }
         }
 
         execute(50) {
             if (System.currentTimeMillis() - lastClickTime >= terminalReloadThreshold && currentTerm?.isClicked == true) currentTerm?.let {
                 PacketEvent.Receive(S2FPacketSetSlot(mc.thePlayer?.openContainer?.windowId ?: return@execute, it.type.windowSize - 1, null)).postAndCatch()
                 it.isClicked = false
-                isReload = true
             }
         }
 

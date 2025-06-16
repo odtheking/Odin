@@ -14,10 +14,12 @@ import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.util.concurrent.CopyOnWriteArrayList
 
-open class TerminalHandler(val type: TerminalTypes, val timeOpened: Long = System.currentTimeMillis()) {
+open class TerminalHandler(val type: TerminalTypes) {
     val solution: CopyOnWriteArrayList<Int> = CopyOnWriteArrayList()
     val items: Array<ItemStack?> = arrayOfNulls(type.windowSize)
-    var isClicked: Boolean = false
+    val timeOpened = System.currentTimeMillis()
+    var isClicked = false
+    var clickCount = 0
 
     @SubscribeEvent(receiveCanceled = true)
     fun onPacketReceived(event: PacketEvent.Receive) = with (event.packet) {
