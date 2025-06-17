@@ -7,6 +7,7 @@ import me.odinmain.utils.fillItemFromSack
 import me.odinmain.utils.runIn
 import me.odinmain.utils.skyblock.KuudraUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.skyblock.dungeon.tiles.RoomType
 import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.skyblock.sendCommand
 import me.odinmain.utils.skyblock.skyblockID
@@ -35,7 +36,7 @@ object AutoGFS : Module(
         }
 
         onMessage(Regex("^PUZZLE FAIL! (\\w{1,16}) .+\$|^\\[STATUE\\] Oruo the Omniscient: (\\w{1,16}) chose the wrong answer! I shall never forget this moment of misrememberance\\.\$")) {
-            if (!autoGetDraf) return@onMessage
+            if (!autoGetDraf || DungeonUtils.currentRoom?.data?.type != RoomType.PUZZLE) return@onMessage
             runIn(30) {
                 modMessage("§7Fetching Draf from sack...")
                 sendCommand("gfs architect's first draft 1")

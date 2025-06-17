@@ -91,17 +91,15 @@ object ModuleManager {
     }
 
     private fun tickTaskTick(server: Boolean = false) {
-        val toRemove = tickTasks.filter { tickTask ->
-            if (tickTask.server != server) return@filter false
+        tickTasks.removeAll { tickTask ->
+            if (tickTask.server != server) return@removeAll false
             if (tickTask.ticksLeft <= 0) {
                 runCatching { tickTask.function() }.onFailure { logError(it, this) }
-                true
-            } else {
-                tickTask.ticksLeft--
-                false
+                return@removeAll true
             }
+            tickTask.ticksLeft--
+            false
         }
-        tickTasks.removeAll(toRemove.toSet())
     }
 
     @SubscribeEvent(receiveCanceled = true)
