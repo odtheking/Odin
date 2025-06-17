@@ -138,6 +138,7 @@ object TerminalSolver : Module(
 
         onPacket<C0EPacketClickWindow> {
             lastClickTime = System.currentTimeMillis()
+            currentTerm?.isClicked = true
         }
 
         execute(50) {
