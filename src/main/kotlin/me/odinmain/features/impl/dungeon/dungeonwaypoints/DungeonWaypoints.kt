@@ -172,7 +172,7 @@ object DungeonWaypoints : Module(
     var lastEtherTime = 0L
 
     private inline val reachPosition: BlockPos? get() =
-        mc.objectMouseOver?.takeUnless { it.typeOfHit == MovingObjectType.MISS || (distance <= 4.5 && allowMidair) }?.blockPos ?: EtherWarpHelper.getEtherPos(mc.thePlayer.renderVec, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch, distance, allowMidair).pos
+        mc.objectMouseOver?.takeUnless { it.typeOfHit == MovingObjectType.MISS || (distance <= 4.5 && allowMidair) }?.blockPos ?: EtherWarpHelper.getEtherPos(getPositionEyes(mc.thePlayer.renderVec), mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch, distance, allowMidair).pos
 
     @SubscribeEvent
     fun onRender(event: RenderWorldLastEvent) {
@@ -232,7 +232,7 @@ object DungeonWaypoints : Module(
     @SubscribeEvent
     fun onInteract(event: ClickEvent.Right) {
         if (mc.thePlayer.usingEtherWarp) {
-            val pos = EtherWarpHelper.getEtherPos(mc.thePlayer.renderVec, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch)
+            val pos = EtherWarpHelper.getEtherPos()
             if (pos.succeeded && pos.pos != null) {
                 if (DungeonUtils.currentRoom?.waypoints?.any { pos.vec?.equal(it.toVec3()) == true && (it.type == WaypointType.BLOCKETHERWARP) } == true) {
                     event.isCanceled = true
