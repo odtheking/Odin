@@ -32,7 +32,7 @@ object EtherWarpHelper {
     fun getEtherPos(pos: Vec3, yaw: Float, pitch: Float, distance: Double = 60.0, returnEnd: Boolean = false): EtherPos {
         mc.thePlayer ?: return EtherPos.NONE
 
-        val endPos = getLook(yaw = yaw, pitch = pitch).normalize().multiply(factor = distance).add(pos)
+        val endPos = getLook(yaw, pitch).normalize().multiply(distance).add(pos)
         return traverseVoxels(pos, endPos).takeUnless { it == EtherPos.NONE && returnEnd } ?: EtherPos(true, endPos.toBlockPos(), null)
     }
 

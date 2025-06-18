@@ -58,7 +58,6 @@ object OdinMain {
 
         CommandRegistry.register()
         OdinFont.init()
-        scope.launch(Dispatchers.IO) { RandomPlayers.preloadCapes() }
     }
 
     fun postInit() {

@@ -134,7 +134,7 @@ object ChatCommands : Module(
             "pt", "ptme", "transfer" -> if (pt && channel == ChatChannel.PARTY) sendCommand("p transfer $name")
             "downtime", "dt" -> {
                 if (!dt || channel != ChatChannel.PARTY) return
-                val reason = words.getOrNull(1)?.takeIf { it.isNotBlank() } ?: "No reason given"
+                val reason = words.drop(1).joinToString(" ").takeIf { it.isNotBlank() } ?: "No reason given"
                 if (dtReason.any { it.first == name }) return modMessage("§6${name} §calready has a reminder!")
                 modMessage("§aReminder set for the end of the run! §7(disabled auto requeue for this run)")
                 dtReason.add(name to reason)

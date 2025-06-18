@@ -1,14 +1,10 @@
 package me.odinmain.features.impl.render
 
-import com.google.gson.Gson
 import com.google.gson.JsonParser
-import com.google.gson.annotations.SerializedName
-import com.mojang.authlib.GameProfile
 import kotlinx.coroutines.launch
 import me.odinmain.OdinMain.mc
 import me.odinmain.OdinMain.scope
 import me.odinmain.features.impl.render.ClickGUIModule.devSize
-import me.odinmain.utils.downloadFile
 import me.odinmain.utils.getDataFromServer
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.skyblock.modMessage
@@ -17,19 +13,10 @@ import net.minecraft.client.entity.AbstractClientPlayer
 import net.minecraft.client.model.ModelBase
 import net.minecraft.client.model.ModelRenderer
 import net.minecraft.client.renderer.GlStateManager
-import net.minecraft.client.renderer.texture.DynamicTexture
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.client.event.RenderPlayerEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import java.awt.image.BufferedImage
-import java.io.File
-import java.io.IOException
-import java.net.URL
-import javax.imageio.ImageIO
-import kotlin.io.encoding.Base64
-import kotlin.io.encoding.ExperimentalEncodingApi
-import kotlin.io.path.createDirectories
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -169,85 +156,5 @@ object RandomPlayers {
             }
             return f
         }
-    }
-
-    private lateinit var capeData: Map<String, List<String>>
-    private val capeFolder = File(mc.mcDataDir, "config/odin/capes")
-    private val capeUpdateCache = mutableMapOf<String, Boolean>()
-    data class Capes(
-        @SerializedName("capes")
-        val capes: Map<String, List<String>>
-    )
-
-    fun preloadCapes() {
-        if (!capeFolder.exists()) capeFolder.toPath().createDirectories()
-
-        capeData = fetchCapeData()
-        capeData.forEach { (capeFileName, _) ->
-            val capeFile = File(capeFolder, capeFileName)
-            val capeUrl = "https://odtheking.github.io/Odin/capes/$capeFileName"
-
-            synchronized(capeUpdateCache) {
-                if (capeUpdateCache[capeFileName] != true) {
-                    if (!capeFile.exists() || !isFileUpToDate(capeUrl, capeFile)) {
-                        downloadFile(capeUrl, capeFile.path)
-                    }
-                    capeUpdateCache[capeFileName] = true
-                }
-            }
-        }
-    }
-
-    private fun fetchCapeData(manifestUrl: String = "https://odtheking.github.io/Odin/capes/capes.json"): Map<String, List<String>> {
-        return try {
-            val json = URL(manifestUrl).readText()
-            val manifest = Gson().fromJson(json, Capes::class.java)
-            manifest.capes
-        } catch (e: IOException) {
-            e.printStackTrace()
-            emptyMap()
-        }
-    }
-
-    @OptIn(ExperimentalEncodingApi::class)
-    @JvmStatic
-    fun hookGetLocationCape(gameProfile: GameProfile): ResourceLocation? {
-        val name = gameProfile.name
-        val nameEncoded = Base64.encode(name.toByteArray())
-
-        val capeFileName = findCapeFileName(nameEncoded) ?: return null
-        val capeFile = File(capeFolder, capeFileName)
-
-        return getCapeLocation(randoms[name], capeFile)
-    }
-
-    private fun findCapeFileName(encodedName: String): String? {
-        return capeData.entries.find { (_, usernames) -> encodedName in usernames }?.key
-    }
-
-    private fun isFileUpToDate(url: String, file: File): Boolean {
-        return try {
-            val connection = URL(url).openConnection()
-            connection.connect()
-            val remoteLastModified = connection.getHeaderFieldDate("Last-Modified", 0L)
-            val localLastModified = file.lastModified()
-            localLastModified >= remoteLastModified
-        } catch (e: IOException) {
-            e.printStackTrace()
-            false
-        }
-    }
-
-    private fun getCapeLocation(dev: RandomPlayer?, file: File): ResourceLocation? {
-        if (dev?.capeLocation == null && file.exists()) {
-            try {
-                val image: BufferedImage = ImageIO.read(file)
-                val capeLocation = mc.textureManager.getDynamicTextureLocation("odincapes", DynamicTexture(image))
-                dev?.capeLocation = capeLocation
-            } catch (e: IOException) {
-                e.printStackTrace()
-            }
-        }
-        return dev?.capeLocation
     }
 }
