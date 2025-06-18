@@ -14,7 +14,7 @@ import static me.odinmain.utils.Utils.postAndCatch;
 @Mixin(EntityArrow.class)
 public class MixinEntityArrow {
 
-    @Inject(method = "onUpdate", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;attackEntityFrom(Lnet/minecraft/util/DamageSource;F)Z"), locals = LocalCapture.CAPTURE_FAILHARD)
+    @Inject(method = "onUpdate", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;attackEntityFrom(Lnet/minecraft/util/DamageSource;F)Z"), locals = LocalCapture.CAPTURE_FAILSOFT)
     private void onArrowHit(CallbackInfo ci, MovingObjectPosition movingObjectPosition) {
         if (movingObjectPosition == null || movingObjectPosition.entityHit == null) return;
         postAndCatch(new ArrowEvent.Hit((EntityArrow) (Object) this, movingObjectPosition.entityHit));
