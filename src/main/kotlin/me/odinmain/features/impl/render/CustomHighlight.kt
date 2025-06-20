@@ -5,7 +5,10 @@ import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.isOtherPlayer
-import me.odinmain.utils.render.*
+import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.HighlightRenderer
+import me.odinmain.utils.render.HighlightRenderer.HighlightEntity
+import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.ui.Colors
 import me.odinmain.utils.ui.clickgui.util.ColorUtil.withAlpha
@@ -13,7 +16,6 @@ import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.entity.Entity
 import net.minecraft.entity.boss.EntityWither
 import net.minecraft.entity.item.EntityArmorStand
-import me.odinmain.utils.render.HighlightRenderer.HighlightEntity
 
 object CustomHighlight : Module(
     name = "Custom Highlight",
@@ -34,7 +36,7 @@ object CustomHighlight : Module(
     private val xray by BooleanSetting("Depth Check", false, desc = "Highlights entities through walls.").withDependency { !isLegitVersion }
     private val showInvisible by BooleanSetting("Show Invisible", false, desc = "Highlights invisible entities.").withDependency { !isLegitVersion }
 
-    val highlightMap: MutableMap<String, Color?> by MapSetting("highlightMap", mutableMapOf())
+    val highlightMap by MapSetting("highlightMap", mutableMapOf<String, Color>())
 
     private inline val depthCheck get() = if (isLegitVersion) true else xray
     val currentEntities = mutableSetOf<HighlightEntity>()
@@ -85,7 +87,9 @@ object CustomHighlight : Module(
             ?.minByOrNull { entity.getDistanceToEntity(it) }
     }
 
-    private fun getColorFromList(name: String): Color =
-        highlightMap.entries.firstOrNull { name.contains(it.key, true) }?.value ?: color
-
+    private fun getColorFromList(name: String): Color {
+        highlightMap.entries.firstOrNull { name.contains(it.key, true) }?.value.let {
+            return if (it == Colors.TRANSPARENT) color else it ?: color
+        }
+    }
 }

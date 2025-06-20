@@ -43,7 +43,7 @@ object EtherWarpHelper : Module(
     desc = "Provides configurable visual and audio feedback for etherwarp."
 ) {
     private val zeroPing by BooleanSetting("Zero Ping", false, desc = "Teleports you to the exact position of the etherwarp.").withDependency { !LocationUtils.isOnHypixel }
-    private val keepMotion by BooleanSetting("Keep Motion", true, desc = "If you should keep your motion after zero ping etherwarp.").withDependency { zeroPing }
+    private val keepMotion by BooleanSetting("Keep Motion", true, desc = "If you should keep your motion after zero ping etherwarp.").withDependency { !LocationUtils.isOnHypixel && zeroPing }
     private val render by BooleanSetting("Show Etherwarp Guess", true, desc = "Shows where etherwarp will take you.")
     private val color by ColorSetting("Color", Colors.MINECRAFT_GOLD.withAlpha(.5f), allowAlpha = true, desc = "Color of the box.").withDependency { render }
     private val renderFail by BooleanSetting("Show when failed", true, desc = "Shows the box even when the guess failed.").withDependency { render }

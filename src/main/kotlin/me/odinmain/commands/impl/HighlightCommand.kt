@@ -7,6 +7,7 @@ import me.odinmain.features.impl.render.CustomHighlight.currentEntities
 import me.odinmain.features.impl.render.CustomHighlight.highlightMap
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.skyblock.modMessage
+import me.odinmain.utils.ui.Colors
 
 @OptIn(ExperimentalStdlibApi::class)
 val highlightCommand = Commodore("highlight") {
@@ -31,9 +32,9 @@ val highlightCommand = Commodore("highlight") {
                 Color(colorCode.padEnd(8, 'f'))
             } catch (e: Exception) {
                 modMessage("Invalid color format. Use #RRGGBB or #RRGGBBAA.")
-                null
+                Colors.TRANSPARENT
             }
-        } else null
+        } else Colors.TRANSPARENT
 
         highlightMap[lowercase] = color
         modMessage("Added $mobNameTrimmed to the highlight list${if (colorCode.isNotEmpty()) " with color #$colorCode" else ""}.")
@@ -59,7 +60,7 @@ val highlightCommand = Commodore("highlight") {
     literal("list").runs {
         if (highlightMap.isEmpty()) return@runs modMessage("Highlight list is empty")
         modMessage("Highlight list:\n${highlightMap.entries.joinToString("\n") {
-            "${it.key} - ${it.value?.rgba?.toHexString() ?: "default color"}"
+            "${it.key} - ${it.value.rgba.toHexString()}"
         }}")
     }
 }
