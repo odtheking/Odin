@@ -7,7 +7,6 @@ import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.PositionLook
 import me.odinmain.utils.positionVector
-import me.odinmain.utils.render.RenderUtils.renderVec
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.EtherWarpHelper
 import me.odinmain.utils.skyblock.EtherWarpHelper.etherPos
@@ -61,7 +60,7 @@ object EtherWarpHelper : Module(
             if (useServerPosition)
                 PositionLook(Vec3(player.lastReportedPosX, player.lastReportedPosY, player.lastReportedPosZ), player.lastReportedYaw, player.lastReportedPitch)
             else
-                PositionLook(mc.thePlayer.renderVec, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch)
+                PositionLook(mc.thePlayer.positionVector, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch)
 
         etherPos = EtherWarpHelper.getEtherPos(positionLook)
         val succeeded =

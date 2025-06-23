@@ -2,7 +2,6 @@ package me.odinmain.utils.skyblock
 
 import me.odinmain.OdinMain.mc
 import me.odinmain.utils.*
-import me.odinmain.utils.render.RenderUtils.renderVec
 import net.minecraft.block.Block
 import net.minecraft.block.state.BlockState
 import net.minecraft.util.BlockPos
@@ -30,14 +29,13 @@ object EtherWarpHelper {
      * @return An `EtherPos` representing the calculated position in the "ether" or `EtherPos.NONE` if the player is not present.
      */
     fun getEtherPos(pos: Vec3, yaw: Float, pitch: Float, distance: Double = 60.0, returnEnd: Boolean = false): EtherPos {
-        mc.thePlayer ?: return EtherPos.NONE
+        val endPos = getLook(yaw = yaw, pitch = pitch).normalize().multiply(factor = distance).add(pos)
 
-        val endPos = getLook(yaw, pitch).normalize().multiply(distance).add(pos)
         return traverseVoxels(pos, endPos).takeUnless { it == EtherPos.NONE && returnEnd } ?: EtherPos(true, endPos.toBlockPos(), null)
     }
 
-    fun getEtherPos(positionLook: PositionLook = PositionLook(getPositionEyes(mc.thePlayer.renderVec), mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch), distance: Double =  56.0 + mc.thePlayer.heldItem.getTunerBonus): EtherPos {
-        return getEtherPos(positionLook.pos, positionLook.yaw, positionLook.pitch, distance)
+    fun getEtherPos(positionLook: PositionLook = PositionLook(mc.thePlayer.positionVector, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch), distance: Double =  56.0 + mc.thePlayer.heldItem.getTunerBonus): EtherPos {
+        return getEtherPos(getPositionEyes(positionLook.pos), positionLook.yaw, positionLook.pitch, distance)
     }
 
     /**
