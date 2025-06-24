@@ -3,7 +3,10 @@ package me.odinmain.features.impl.dungeon
 import me.odinmain.events.impl.ClickEvent
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.*
+import me.odinmain.features.settings.impl.BooleanSetting
+import me.odinmain.features.settings.impl.NumberSetting
+import me.odinmain.features.settings.impl.SelectorSetting
+import me.odinmain.features.settings.impl.StringSetting
 import me.odinmain.utils.skyblock.PlayerUtils
 import net.minecraft.init.Items
 import net.minecraft.network.play.client.C09PacketHeldItemChange
@@ -23,9 +26,10 @@ object SwapSound : Module(
     ).withDependency { sound == defaultSounds.size - 1 }
     private val volume by NumberSetting("Volume", 1f, 0, 1, .01f, description = "Volume of the sound.")
     private val pitch by NumberSetting("Pitch", 2f, 0, 2, .01f, description = "Pitch of the sound.")
-    val reset by ActionSetting("Play sound", description = "Plays the sound with the current settings.") {
-        PlayerUtils.playLoudSound(if (sound == defaultSounds.size - 1) customSound else defaultSounds[sound], volume, pitch)
-    }
+    // TODO READD
+//    val reset by ActionSetting("Play sound", description = "Plays the sound with the current settings.") {
+//        PlayerUtils.playLoudSound(if (sound == defaultSounds.size - 1) customSound else defaultSounds[sound], volume, pitch)
+//    }
 
     private var slot: Int? = null
     private val pickaxes = arrayListOf(Items.diamond_pickaxe, Items.golden_pickaxe, Items.wooden_pickaxe, Items.stone_pickaxe, Items.iron_pickaxe)

@@ -15,10 +15,6 @@ import me.odinmain.features.impl.nether.*
 import me.odinmain.features.impl.render.*
 import me.odinmain.features.impl.skyblock.*
 import me.odinmain.features.settings.impl.KeybindSetting
-import me.odinmain.utils.capitalizeFirst
-import me.odinmain.utils.ui.regularFont
-import me.odinmain.utils.ui.renderer.NVGRenderer
-import me.odinmain.utils.ui.renderer.NVGRenderer.textWidth
 import net.minecraft.network.Packet
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -161,7 +157,8 @@ object ModuleManager {
     fun getModuleByName(name: String?): Module? = modules.firstOrNull { it.name.equals(name, true) }
 
     fun generateFeatureList(): String {
-        val sortedCategories = modules.sortedByDescending { textWidth(it.name, 18f, font = regularFont) }.groupBy { it.category }.entries
+        // todo, readd textwidth
+        val sortedCategories = modules.sortedByDescending { it.name.length }.groupBy { it.category }.entries
             .sortedBy { Category.entries.associateWith { it.ordinal }[it.key] }
 
         val featureList = StringBuilder()

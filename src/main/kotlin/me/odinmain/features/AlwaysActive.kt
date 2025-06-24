@@ -1,4 +1,4 @@
-package me.odinmain.features.settings
+package me.odinmain.features
 
 /**
  * Annotation to ensure a module is always registered to the Forge Eventbus, even while disabled

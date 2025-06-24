@@ -2,30 +2,31 @@ package me.odinmain.features.settings.impl
 
 import com.github.stivais.aurora.animations.Animation
 import com.github.stivais.aurora.color.Color
-import com.github.stivais.aurora.constraints.impl.measurements.Animatable
-import com.github.stivais.aurora.constraints.impl.measurements.Pixel
+import com.github.stivais.aurora.components.impl.Layout
+import com.github.stivais.aurora.components.impl.dropShadow
+import com.github.stivais.aurora.components.scope.ContainerScope
 import com.github.stivais.aurora.dsl.*
-import com.github.stivais.aurora.elements.ElementScope
-import com.github.stivais.aurora.elements.impl.Block.Companion.outline
-import com.github.stivais.aurora.utils.color
+import com.github.stivais.aurora.measurements.Measurement
+import com.github.stivais.aurora.measurements.impl.Center
+import com.github.stivais.aurora.renderer.data.Radius.Companion.radius
+import com.github.stivais.aurora.utils.Timing.Companion.seconds
+import com.github.stivais.aurora.utils.withAlpha
 import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
 import me.odinmain.features.impl.render.ClickGUI
-import me.odinmain.features.impl.render.ClickGUI.`gray 38`
+import me.odinmain.features.settings.RepresentableSetting
 import me.odinmain.features.settings.Saving
-import me.odinmain.features.settings.Setting
-import me.odinmain.features.settings.Setting.Renders.Companion.onValueChanged
-import me.odinmain.features.settings.Setting.Renders.Companion.setting
 
 /**
- * A setting that represents a boolean.
+ * # BooleanSetting
+ *
+ * [Representable setting][RepresentableSetting], which stores a boolean value.
  */
 class BooleanSetting(
     name: String,
     override val default: Boolean = false,
-    hidden: Boolean = false,
     description: String,
-): Setting<Boolean>(name, hidden, description), Saving, Setting.Renders {
+) : RepresentableSetting<Boolean>(name, description), Saving {
 
     override var value: Boolean = default
 
@@ -39,36 +40,49 @@ class BooleanSetting(
         }
     }
 
-    override fun ElementScope<*>.create() = setting {
-        text(
-            name,
-            pos = at(x = Pixel.ZERO),
-            size = 40.percent
-        )
-        val pointer = Animatable(from = 30.percent, to = 70.percent, swapIf = value)
-        val color = Color.Animated(from = `gray 38`, to = ClickGUI.color, swapIf = value)
+    override fun ContainerScope<*>.represent() = row(
+        size = size(100.percent),
+        gap = Layout.Gap.Auto,
+        alignment = Layout.Alignment.Center
+    ) {
+        val color = Color.Animated(from = ClickGUI.gray38, ClickGUI.color)
+        val circle = animatable<Measurement.Position>(from = 0.percent, to = 50.percent)
 
+        if (value) {
+            color.swap()
+            circle.swap()
+        }
+
+        onEvent(event = ValueChanged) {
+            circle.animate(0.4.seconds, Animation.Style.EaseInOutQuint)
+            color.animate(0.4.seconds, Animation.Style.EaseInOutQuint)
+        }
+
+        text(
+            string = name,
+            size = 18.px
+        )
         block(
-            constrain(x = Pixel.ZERO.alignOpposite, w = 35.px, h = 50.percent),
-            color,
-            radius = 10.radius()
+            size = size(44.px, 24.px),
+            color = color,
+            strokeColor = ClickGUI.colorDarker,
+            strokeWidth = 2.px,
+            radius = 12.radius()
         ) {
-            outline(color = color { ClickGUI.color.rgba }, thickness = 1.5.px)
-            hoverEffect(factor = 1.25f)
+            dropShadow(color = Color.BLACK.withAlpha(0.4f), blur = 5f, spread = 2f, offsetY = 2f)
+            padding(4f, 4f)
 
             block(
-                constrain(x = pointer.alignCenter, w = 50.percent, h = 80.percent),
+                position = at(x = circle, y = Center),
+                size = size(50.percent, 100.percent),
                 color = Color.WHITE,
-                radius = 8.radius()
+                radius = 10.radius()
             )
             onClick {
                 value = !value
+                true
             }
         }
-
-        onValueChanged {
-            color.animate(0.25.seconds, Animation.Style.EaseInOutQuint)
-            pointer.animate(0.25.seconds, Animation.Style.EaseInOutQuint)
-        }
     }
+
 }

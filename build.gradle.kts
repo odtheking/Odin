@@ -46,11 +46,13 @@ allprojects {
         annotationProcessor("org.spongepowered:mixin:0.8.5-SNAPSHOT")
         implementation("org.spongepowered:mixin:0.7.11-SNAPSHOT") { isTransitive = false }
 
-        //implementation("com.github.stivais:AuroraUI:0.9.1-beta")
-        // todo: create releases for aurora
-        implementation("com.github.stivais:AuroraUI:4ba1ee9386e01035a05f7efd331c1be0554fc16b")
+        // mavenLocal
+        implementation("com.github.stivais:AuroraUI:1.0.0")
 
-        implementation("com.github.odtheking:odin-lwjgl:e50f062233")
+//        implementation("com.github.stivais:AuroraUI:4ba1ee9386e01035a05f7efd331c1be0554fc16b")
+
+//        implementation("com.github.odtheking:odin-lwjgl:e50f062233")
+        implementation("com.github.Stivais:odin-lwjgl:940689bd6c")
     }
 
     loom {

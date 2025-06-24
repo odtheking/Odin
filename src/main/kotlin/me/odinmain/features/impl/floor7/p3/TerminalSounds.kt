@@ -6,7 +6,10 @@ import me.odinmain.events.impl.TerminalEvent
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.currentTerm
 import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.*
+import me.odinmain.features.settings.impl.BooleanSetting
+import me.odinmain.features.settings.impl.NumberSetting
+import me.odinmain.features.settings.impl.SelectorSetting
+import me.odinmain.features.settings.impl.StringSetting
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.skyblock.PlayerUtils
 import net.minecraft.client.gui.inventory.GuiChest
@@ -29,9 +32,10 @@ object TerminalSounds : Module(
     ).withDependency { sound == defaultSounds.size - 1 && clickSounds }
     private val clickVolume by NumberSetting("Click Volume", 1f, 0, 1, .01f, description = "Volume of the sound.").withDependency { clickSounds }
     private val clickPitch by NumberSetting("Click Pitch", 2f, 0, 2, .01f, description = "Pitch of the sound.").withDependency { clickSounds }
-    val reset by ActionSetting("Play sound", description = "Plays the sound with the current settings.") {
-        PlayerUtils.playLoudSound(if (sound == defaultSounds.size - 1) customSound else defaultSounds[sound], clickVolume, clickPitch)
-    }
+    // TODO READD
+//    val reset by ActionSetting("Play sound", description = "Plays the sound with the current settings.") {
+//        PlayerUtils.playLoudSound(if (sound == defaultSounds.size - 1) customSound else defaultSounds[sound], clickVolume, clickPitch)
+//    }
     val completeSounds by BooleanSetting("Complete Sounds", default = false, description = "Plays a sound when you complete a terminal.")
     private val cancelLastClick by BooleanSetting("Cancel Last Click", default = false, description = "Cancels the last click sound instead of playing both click and completion sound.").withDependency { clickSounds && completeSounds }
     private val completedSound by SelectorSetting("Sound", "mob.blaze.hit", defaultSounds, description = "Which sound to play when you complete the terminal.").withDependency { completeSounds }
@@ -39,10 +43,12 @@ object TerminalSounds : Module(
         description = "Name of a custom sound to play. This is used when Custom is selected in the Sound setting.", length = 32
     ).withDependency { completedSound == defaultSounds.size - 1 && completeSounds }
     private val completeVolume by NumberSetting("Completion Volume", 1f, 0, 1, .01f, description = "Volume of the sound.").withDependency { completeSounds }
+
     private val completePitch by NumberSetting("Completion Pitch", 2f, 0, 2, .01f, description = "Pitch of the sound.").withDependency { completeSounds }
-    val playCompleteSound by ActionSetting("Play sound", description = "Plays the sound with the current settings.") {
-        PlayerUtils.playLoudSound(if (completedSound == defaultSounds.size - 1) customCompleteSound else defaultSounds[completedSound], completeVolume, completePitch)
-    }
+    // TODO READD
+//    val playCompleteSound by ActionSetting("Play sound", description = "Plays the sound with the current settings.") {
+//        PlayerUtils.playLoudSound(if (completedSound == defaultSounds.size - 1) customCompleteSound else defaultSounds[completedSound], completeVolume, completePitch)
+//    }
 
     private var lastPlayed = System.currentTimeMillis()
 

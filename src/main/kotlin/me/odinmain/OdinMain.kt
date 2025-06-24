@@ -1,11 +1,12 @@
 package me.odinmain
 
+import com.github.stivais.aurora.Aurora
+import com.github.stivais.aurora.Window
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import me.odin.lwjgl.Lwjgl3Loader
-import me.odin.lwjgl.Lwjgl3Wrapper
+import me.odinmain.aurora.NVGRenderer
 import me.odinmain.commands.impl.*
 import me.odinmain.commands.registerCommands
 import me.odinmain.config.Config
@@ -13,7 +14,6 @@ import me.odinmain.config.DungeonWaypointConfig
 import me.odinmain.config.PBConfig
 import me.odinmain.events.EventDispatcher
 import me.odinmain.features.ModuleManager
-import me.odinmain.features.huds.HUDManager
 import me.odinmain.features.impl.render.ClickGUI
 import me.odinmain.features.impl.render.DevPlayers
 import me.odinmain.features.impl.render.WaypointManager
@@ -31,9 +31,6 @@ import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.SkyblockPlayer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.ScanUtils
-import me.odinmain.utils.ui.regularFont
-import me.odinmain.utils.ui.renderer.NVGRenderer.textWidth
-import me.odinmain.utils.ui.screens.UIScreen
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
 import net.minecraftforge.common.MinecraftForge
@@ -51,10 +48,25 @@ object OdinMain {
     val logger: Logger = LogManager.getLogger("Odin")
 
     var display: GuiScreen? = null
+
     val isLegitVersion: Boolean
         get() = Loader.instance().activeModList.none { it.modId == "odclient" }
 
-	val wrapper: Lwjgl3Wrapper by lazy { Lwjgl3Loader.load() }
+    /**
+     * The aurora context for odin.
+     *
+     * Uses [NVGRenderer] for rendering.
+     */
+    val aurora: Aurora = Aurora(
+        window = object : Window {
+            override val width: Int
+                get() = mc.framebuffer.framebufferWidth
+
+            override val height: Int
+                get() = mc.framebuffer.framebufferHeight
+        },
+        renderer = NVGRenderer
+    )
 
     fun init() {
         PBConfig.loadConfig()
@@ -64,7 +76,7 @@ object OdinMain {
             EventDispatcher, Executor, ModuleManager,
             WaypointManager, DevPlayers, SkyblockPlayer,
             ScanUtils, HighlightRenderer, //OdinUpdater,
-            SplitsManager, RenderUtils2D, UIScreen,
+            SplitsManager, RenderUtils2D,
             this
         ).forEach { MinecraftForge.EVENT_BUS.register(it) }
 
@@ -90,8 +102,6 @@ object OdinMain {
                 ClickGUI.lastSeenVersion = VERSION
             }
         }
-
-        HUDManager.setupHUDs()
 
         val name = mc.session?.username?.takeIf { !it.matches(Regex("Player\\d{2,3}")) } ?: return
         scope.launch(Dispatchers.IO) {

@@ -20,7 +20,7 @@ class MapSetting<K : Any, V : Any, T : MutableMap<K, V>>(
     name: String,
     override val default: T,
     private val type: Type,
-) : Setting<T>(name, true, description = ""), Saving {
+) : Setting<T>(name, description = ""), Saving {
 
     override var value: T = default
 

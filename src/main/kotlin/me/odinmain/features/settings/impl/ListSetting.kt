@@ -15,7 +15,7 @@ class ListSetting<E, T : MutableCollection<E>>(
     name: String,
     override val default: T,
     private val type: Type
-) : Setting<T>(name, true, description = ""), Saving {
+) : Setting<T>(name, description = ""), Saving {
 
     override var value: T = default
 

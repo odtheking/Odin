@@ -45,11 +45,11 @@ object ArrowsDevice : Module(
         actionQueue.clear()
     }.withDependency { solver && solverDropdown }
     private val depthCheck by BooleanSetting("Depth check", true, description = "Marked positions show through walls.").withDependency { solver && solverDropdown }
-    private val reset by ActionSetting("Reset", description = "Resets the solver.") {
-        markedPositions.clear()
-        autoState = AutoState.Stopped
-        actionQueue.clear()
-    }.withDependency { solver && solverDropdown }
+//    private val reset by ActionSetting("Reset", description = "Resets the solver.") {
+//        markedPositions.clear()
+//        autoState = AutoState.Stopped
+//        actionQueue.clear()
+//    }.withDependency { solver && solverDropdown }
     private val alertOnDeviceComplete by BooleanSetting("Device complete alert", default = true, description = "Send an alert when device is complete.").withDependency { solverDropdown }
 
     private val autoDropdown by DropdownSetting("Auto Device")

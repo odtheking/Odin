@@ -2,40 +2,38 @@ package me.odinmain.features.impl.render
 
 import com.github.stivais.aurora.animations.Animation
 import com.github.stivais.aurora.color.Color
-import com.github.stivais.aurora.constraints.impl.measurements.Animatable
-import com.github.stivais.aurora.constraints.impl.size.Bounding
-import com.github.stivais.aurora.constraints.impl.size.Copying
+import com.github.stivais.aurora.components.Component
+import com.github.stivais.aurora.components.impl.Layout
+import com.github.stivais.aurora.components.impl.dropShadow
+import com.github.stivais.aurora.components.impl.scroll
+import com.github.stivais.aurora.components.scope.ContainerScope
 import com.github.stivais.aurora.dsl.*
-import com.github.stivais.aurora.elements.ElementScope
-import com.github.stivais.aurora.elements.impl.Block.Companion.outline
-import com.github.stivais.aurora.elements.impl.Popup
-import com.github.stivais.aurora.elements.impl.Scrollable.Companion.scroll
-import com.github.stivais.aurora.elements.impl.TextInput.Companion.onTextChanged
-import com.github.stivais.aurora.elements.impl.popup
-import com.github.stivais.aurora.utils.*
-import kotlinx.coroutines.launch
+import com.github.stivais.aurora.effects.AuroraEffect
+import com.github.stivais.aurora.input.Keys
+import com.github.stivais.aurora.measurements.impl.Sum
+import com.github.stivais.aurora.renderer.Renderer
+import com.github.stivais.aurora.renderer.data.Radius.Companion.radius
+import com.github.stivais.aurora.utils.Timing.Companion.seconds
+import com.github.stivais.aurora.utils.color
+import com.github.stivais.aurora.utils.multiply
+import com.github.stivais.aurora.utils.withAlpha
 import me.odinmain.OdinMain
-import me.odinmain.OdinMain.scope
+import me.odinmain.OdinMain.aurora
+import me.odinmain.aurora.components.draggable
+import me.odinmain.aurora.screens.AuroraOverlay
 import me.odinmain.config.Config
+import me.odinmain.features.AlwaysActive
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.features.ModuleManager
-import me.odinmain.features.huds.HUDManager
-import me.odinmain.features.settings.AlwaysActive
-import me.odinmain.features.settings.Setting
+import me.odinmain.features.ModuleManager.modules
+import me.odinmain.features.settings.RepresentableSetting
 import me.odinmain.features.settings.Setting.Companion.withDependency
 import me.odinmain.features.settings.impl.*
-import me.odinmain.utils.sendDataToServer
+import me.odinmain.utils.lateinit
 import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.createClickStyle
 import me.odinmain.utils.skyblock.getChatBreak
 import me.odinmain.utils.skyblock.modMessage
-import me.odinmain.utils.ui.lifetimeAnimations
-import me.odinmain.utils.ui.onHover
-import me.odinmain.utils.ui.regularFont
-import me.odinmain.utils.ui.renderer.NVGRenderer
-import me.odinmain.utils.ui.renderer.NVGRenderer.textWidth
-import me.odinmain.utils.ui.screens.UIScreen.Companion.open
 import net.minecraft.event.ClickEvent
 import net.minecraft.util.ChatComponentText
 import org.lwjgl.input.Keyboard
@@ -46,6 +44,7 @@ object ClickGUI : Module(
     key = Keyboard.KEY_RSHIFT,
     description = "Allows you to customize the UI."
 ) {
+
     /**
      * Main color used within the mod.
      */
@@ -56,7 +55,7 @@ object ClickGUI : Module(
     val forceHypixel by BooleanSetting("Force Hypixel", false, description = "Forces the Hypixel check to be on (Mainly used for development. Only use if you know what you're doing)")
 
     // make useful someday
-    val updateMessage by SelectorSetting("Update Message", arrayListOf("Full", "Beta", "None"), description = "").hide()
+    val updateMessage by SelectorSetting("Update Message", arrayListOf("Full", "Beta", "None"), description = "")//.hide()
 
     // needs own module
     val devMessages by BooleanSetting("Dev Messages", true, description = "Enables dev messages in chat.").withDependency { DevPlayers.isDev } // make dev-specific modules and put this there
@@ -68,24 +67,26 @@ object ClickGUI : Module(
     private val devSizeZ by NumberSetting("Dev Size Z", 1f, -1f, 3f, 0.1, description = "Z scale of the dev size.").withDependency { DevPlayers.isDev && devSize }
     private val passcode by StringSetting("Passcode", "odin", description = "Passcode for dev features.").withDependency { DevPlayers.isDev }.censors()
 
-    val reset by ActionSetting("Send Dev Data") {
-        scope.launch {
-            modMessage(
-                sendDataToServer(
-                    body = "${mc.thePlayer.name}, [${devWingsColor.red},${devWingsColor.green},${devWingsColor.blue}], [$devSizeX,$devSizeY,$devSizeZ], $devWings, $passcode",
-                    "https://tj4yzotqjuanubvfcrfo7h5qlq0opcyk.lambda-url.eu-north-1.on.aws/"
-                )
-            )
-            DevPlayers.updateDevs()
-        }
-    }.withDependency { DevPlayers.isDev }
+    // TODO READD
+//    val reset by ActionSetting("Send Dev Data") {
+//        scope.launch {
+//            modMessage(
+//                sendDataToServer(
+//                    body = "${mc.thePlayer.name}, [${devWingsColor.red},${devWingsColor.green},${devWingsColor.blue}], [$devSizeX,$devSizeY,$devSizeZ], $devWings, $passcode",
+//                    "https://tj4yzotqjuanubvfcrfo7h5qlq0opcyk.lambda-url.eu-north-1.on.aws/"
+//                )
+//            )
+//            DevPlayers.updateDevs()
+//        }
+//    }.withDependency { DevPlayers.isDev }
 
-    val action by ActionSetting(
-        "Open HUD Editor",
-        description = "Opens the HUD Editor, allowing you to reposition HUDs"
-    ) {
-        open(HUDManager.makeHUDEditor())
-    }
+    // todo readd
+//    val action by ActionSetting(
+//        "Open HUD Editor",
+//        description = "Opens the HUD Editor, allowing you to reposition HUDs"
+//    ) {
+//        open(HUDManager.makeHUDEditor())
+//    }
 
     val panelSettings by MapSetting("panel.data", mutableMapOf<Category, PanelData>()).also { setting ->
         Category.entries.forEach {
@@ -94,7 +95,7 @@ object ClickGUI : Module(
     }
 
     private var joined by BooleanSetting("first.join", false, description = "").hide()
-    var lastSeenVersion by StringSetting("last.seen.version", "1.0.0", description = "").hide()
+    var lastSeenVersion by StringSetting("last.seen.version", "1.0.0", description = "")//.hide()
 
     /**
      * Used in [ColorSetting].
@@ -140,219 +141,200 @@ object ClickGUI : Module(
     }
 
     override fun onKeybind() {
-        open(clickGUI())
         this.toggle()
     }
 
     override fun onEnable() {
-        open(clickGUI())
         super.onEnable()
         toggle()
     }
 
     @JvmField
-    val `gray 26`: Color = Color.RGB(26, 26, 26)
+    val gray26: Color = Color.RGB(26, 26, 26)
 
     @JvmField
-    val `gray 38`: Color = Color.RGB(38, 38, 38)
+    val gray38: Color = Color.RGB(38, 38, 38)
 
-    fun clickGUI() = Aurora(renderer = NVGRenderer) {
+    @JvmField
+    val colorDarker: Color = color { color.rgba.multiply(0.9f) }
 
-        // used for search bar to not require iterating over all elements
-        val moduleElements = arrayListOf<Pair<Module, ElementScope<*>>>()
-
-        onRemove {
-            Config.save()
-            HUDManager.UI?.close()
-            HUDManager.setupHUDs()
-        }
-
-        for (panel in Category.entries) {
-            val data = panelSettings[panel] ?: throw NullPointerException("This should never happen")
-            column(at(x = data.x.px, y = data.y.px)) {
-                onRemove {
-                    data.x = element.x
-                    data.y = element.y
-                }
-
-                val height = Animatable(from = Bounding, to = 0.px, swapIf = !data.extended)
-
-                // panel header
-                block(
-                    size(240.px, 40.px),
-                    color = `gray 26`,
-                    radius = radius(tl = 5, tr = 5)
-                ) {
-                    text(
-                        string = panel.displayName,
-                        size = 70.percent
-                    )
-                    onClick(1) {
-                        height.animate(0.5.seconds, Animation.Style.EaseInOutQuint)
-                        redraw()
-                        data.extended = !data.extended; true
-                    }
-                    draggable(moves = element.parent!!, coerce = false)
-                }
-
-                //---------//
-                // modules //
-                //---------//
-                val scrollable = scrollable(size(Bounding, Bounding)) {
-                    column(size(h = height)) {
-                        // bg
-                        block(
-                            copies(),
-                            color = `gray 38`.withAlpha(0.7f)
-                        )
-                        for (module in ModuleManager.modules.sortedByDescending { textWidth(it.name, 18f, font = regularFont) }) {
-                            if (module.category != panel) continue
-                            moduleElements.add(module to module(module))
-                        }
-                    }
-                }
-                // tail
-                block(
-                    size(240.px, 10.px),
-                    color = `gray 26`,
-                    radius = radius(br = 5, bl = 5)
-                )
-
-                // used for smoother transition between header and modules when they're scrolled
-//                block(
-//                    constrain(y = Linked(header.element), w = 240.px, h = 3.px),
-//                    colors = `gray 26` to Color.TRANSPARENT,
-//                    gradient = Gradient.TopToBottom
-//                )
-
-                onScroll { (amount) ->
-                    scrollable.scroll(amount * -75f, style = Animation.Style.EaseOutQuint)
-                    true
-                }
-            }
-        }
-
-        //------------//
-        // search bar //
-        //------------//
-        block(
-            constrain(x = 40.percent, y = 90.percent, w = 20.percent, 4.percent),
-            color = `gray 26`,
-            radius = 10.radius()
-        ) {
-            outline(
-                this@ClickGUI.color,
-                thickness = 2.px,
-            )
-            val input = textInput(placeholder = "Search") {
-                onTextChanged { (string) ->
-                    moduleElements.loop { (module, element) ->
-                        element.enabled = module.name.contains(string, true) || module.description.contains(string, true)
-                    }
-                    this@Aurora.redraw()
-                }
-            }
-            onClick {
-                ui.focus(input.element)
-            }
-            draggable(button = 1)
-        }
-
-        lifetimeAnimations(duration = 0.5.seconds, Animation.Style.EaseOutQuint, Animation.Style.EaseInBack)
-    }
-
-    private fun ElementScope<*>.module(module: Module): ElementScope<*> {
-        var loaded = false
-        val height = Animatable(from = 32.px, to = Bounding)
-        val color = Color.Animated(from = `gray 26`, to = this@ClickGUI.color, swapIf = module.enabled)
-        return column(size(w = 240.px, h = height)) {
+    /**
+     * Creates the Click GUI using aurora.
+     */
+    fun clickGUI() = aurora {
+        for (category in Category.entries) {
+            val data = panelSettings[category] ?: throw NullPointerException()
             block(
-                size(Copying, 32.px),
-                color
-            ) {
-                hoverEffect(factor = 1.2f, style = Animation.Style.Linear)
-                text(
-                    string = module.name,
-                    size = 60.percent
-                )
-                hoverInformation(
-                    description = module.description
-                )
-                onClick {
-                    color.animate(0.15.seconds, Animation.Style.Linear)
-                    module.toggle()
-                }
-                onClick(button = 1) { _ ->
-                    if (!loaded) {
-                        loaded = true
-                        module.settings.loop { setting ->
-                            if (!setting.hidden && setting is Setting.Renders) {
-                                this@column.createScope(setting.Drawable()) {
-                                    hoverInformation(description = setting.description)
-                                    setting.apply { create() }
-                                }
+                position = at(data.x.px, data.y.px),
+                size = sum(),
+                color = gray38.withAlpha(0.7f),
+                radius = 15.radius()
+            ) background@ {
+                dropShadow(color = Color.BLACK.withAlpha(0.25f), blur = 10f, spread = 5f)
+                column {
+                    clipContents()
+
+                    val animatable = animatable(from = Sum, to = 0.px)
+
+                    block(
+                        size = size(270.px, 50.px),
+                        color = gray26,
+                        radius = radius(tl = 15, tr = 15)
+                    ) {
+                        text(
+                            string = category.displayName,
+                            size = 50.percent
+                        )
+                        onClick(button = 1) {
+                            animatable.animate(0.5.seconds, Animation.Style.EaseInOutQuint)
+                            component.redraw()
+                            true
+                        }
+                        draggable(moves = this@background.component)
+                    }
+
+                    val scrollable = scrollable(size = size(100.percent, Sum)) {
+                        clipContents()
+                        column(size = size(100.percent, animatable)) {
+                            for (module in modules) {
+                                if (module.category != category) continue
+                                module(module)
                             }
                         }
                     }
-                    height.animate(0.25.seconds, Animation.Style.EaseInOutQuint)
-                    redraw()
-                    true
-                }
-            }
-        }
-    }
-
-    fun ElementScope<*>.hoverInformation(description: String) {
-        if (description.isEmpty()) return
-
-        val lines = arrayListOf<String>()
-        var lastIndex = 0
-        var spaces = 0
-        for (index in description.indices) {
-            if (description[index] == ' ') {
-                spaces++
-            }
-            if (spaces == 5 || index == description.lastIndex) {
-                lines.add(description.substring(lastIndex, index + 1))
-                lastIndex = index + 1
-                spaces = 0
-            }
-        }
-
-        var popup: Popup? = null
-
-        onHover(duration = 1.seconds) {
-            if (popup != null) return@onHover
-
-            val it = element
-            val x = if (it.x >= ui.main.width / 2f) (it.x - 10).px.alignRight else (it.x + it.width + 10).px
-            val y = (it.y + 5).px
-
-            popup = popup(constrain(x, y, Bounding, Bounding), smooth = true) {
-                block(
-                    constraints = bounds(padding = 7.5.px),
-                    color = `gray 38`,
-                    radius = 5.radius()
-                ) {
-                    outline(this@ClickGUI.color, 2.px)
-                    column {
-                        lines.loop {
-                            text(
-                                string = it,
-                                size = 15.px
-                            )
-                        }
+                    onScroll { (amount) ->
+                        scrollable.scroll(amount * 75f, 0.3.seconds, Animation.Style.EaseOutQuint)
+                        true
                     }
                 }
             }
-            onMouseExit {
-                popup?.let {
-                    it.closePopup()
-                    popup = null
+        }
+
+        // open and close animation
+        var animation: Animation? = Animation(0.5.seconds, Animation.Style.EaseInOutQuint)
+        var reverse = false
+
+        effect(object : AuroraEffect {
+            override fun preRender(component: Component, renderer: Renderer) {
+                animation?.let { anim ->
+                    val progress = if (reverse) 1f - anim.get() else anim.get()
+                    renderer.globalAlpha(progress)
+                    val x = component.x + component.width / 2f
+                    val y = component.y + component.height / 2f
+                    renderer.translate(x, y)
+                    renderer.scale(progress, progress)
+                    renderer.translate(-x, -y)
+                    if (anim.finished) animation = null
                 }
             }
+        })
+
+        onBind(Keys.ESCAPE) {
+            reverse = true
+            val overlay = AuroraOverlay(aurora)
+            overlay.open()
+            animation = Animation(0.5.seconds, Animation.Style.EaseInBack).onFinish {
+                overlay.close()
+            }
+            false
+        }
+
+    }
+
+    private fun ContainerScope<*>.module(module: Module) = column(size = size(100.percent)) {
+        clipContents()
+        // used to lazily load the components,
+        // as most of the time you aren't seeing any a lot of them
+        var loaded = false
+        var column: ContainerScope<Layout> by lateinit()
+
+        val color = Color.Animated(from = gray26, to = color, swapIf = module.enabled)
+        val animatable = animatable(from = 0.px, to = Sum)
+
+        block(
+            size = size(100.percent, 40.px),
+            color = color
+        ) {
+            text(
+                string = module.name,
+                size = 50.percent
+            )
+            onClick {
+                color.animate(0.5.seconds, Animation.Style.EaseInOutQuint)
+                module.toggle()
+                true
+            }
+            onClick(button = 1) {
+                if (!loaded) {
+                    column.apply {
+                        for (setting in module.settings) {
+                            if (setting is RepresentableSetting) setting.visualize(this)
+                        }
+                    }
+                    loaded = true
+                }
+                animatable.animate(0.5.seconds, Animation.Style.EaseInOutQuint)
+                component.redraw()
+                true
+            }
+        }
+
+        column = column(size = size(100.percent, animatable), gap = Layout.Gap.Static(16.px)) {
+            padding(horizontal = 12f, vertical = 10f)
         }
     }
+
+//    fun ComponentScope<*>.hoverInformation(description: String) {
+//        if (description.isEmpty()) return
+//
+//        val lines = arrayListOf<String>()
+//        var lastIndex = 0
+//        var spaces = 0
+//        for (index in description.indices) {
+//            if (description[index] == ' ') {
+//                spaces++
+//            }
+//            if (spaces == 5 || index == description.lastIndex) {
+//                lines.add(description.substring(lastIndex, index + 1))
+//                lastIndex = index + 1
+//                spaces = 0
+//            }
+//        }
+//
+//        var popup: Popup? = null
+//
+//        onHover(duration = 1.seconds) {
+//            if (popup != null) return@onHover
+//
+//            val it = component
+//            val x = if (it.x >= ui.main.width / 2f) (it.x - 10).px.alignRight else (it.x + it.width + 10).px
+//            val y = (it.y + 5).px
+//
+//            popup = popup(constrain(x, y, Bounding, Bounding), smooth = true) {
+//                block(
+//                    constraints = bounds(padding = 7.5.px),
+//                    color = `gray 38`,
+//                    radius = 5.radius()
+//                ) {
+//                    outline(this@ClickGUI.color, 2.px)
+//                    column {
+//                        lines.loop {
+//                            text(
+//                                string = it,
+//                                size = 15.px
+//                            )
+//                        }
+//                    }
+//                }
+//            }
+//            onMouseExit {
+//                popup?.let {
+//                    it.closePopup()
+//                    popup = nullV
+//                }
+//            }
+//        }
+//    }
 
     data class PanelData(var x: Float, var y: Float, var extended: Boolean) {
         val defaultX = x

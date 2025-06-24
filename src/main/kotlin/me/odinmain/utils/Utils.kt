@@ -1,4 +1,4 @@
-@file:Suppress("FunctionName")
+@file:Suppress("FunctionName", "nothing_to_inline")
 @file:JvmName("Utils")
 
 package me.odinmain.utils
@@ -29,6 +29,7 @@ import java.util.*
 import kotlin.math.floor
 import kotlin.math.pow
 import kotlin.math.round
+import kotlin.properties.Delegates
 
 private val FORMATTING_CODE_PATTERN = Regex("§[0-9a-fk-or]", RegexOption.IGNORE_CASE)
 
@@ -317,3 +318,8 @@ fun EntityPlayer?.isOtherPlayer(): Boolean {
 fun EntityLivingBase?.getSBMaxHealth(): Float {
     return this?.getEntityAttribute(SharedMonsterAttributes.maxHealth)?.baseValue?.toFloat() ?: 0f
 }
+
+/**
+ * Nicer looking version of [Delegates.notNull]
+ */
+inline fun <T : Any> lateinit() = Delegates.notNull<T>()

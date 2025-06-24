@@ -1,13 +1,9 @@
 package me.odinmain.features.impl.skyblock
 
-import com.github.stivais.aurora.dsl.at
-import com.github.stivais.aurora.elements.impl.Text.Companion.textSupplied
 import me.odinmain.events.impl.PostEntityMetadata
 import me.odinmain.features.Module
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.skyblock.getSkullValue
-import me.odinmain.utils.ui.TextHUD
-import me.odinmain.utils.ui.image
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -15,17 +11,17 @@ object DeployableTimer : Module(
     name = "Deployable Timer",
     description = "Displays the active deployable and it's time left."
 ) {
-    private val HUD by TextHUD("Deployable HUD") { color, font, shadow ->
-        needs { getRenderDeployable() != null }
-        row {
-            image(image = "clickgui/chevron.svg".image(), at())
-            text("AA", font, color)
-            column {
-                textSupplied({ getRenderDeployable() ?: return@textSupplied "" }, font, color)
-            }
-        }
-
-    }.setting(description = "Displays the cooldown.")
+//    private val HUD by TextHUD("Deployable HUD") { color, font, shadow ->
+//        needs { getRenderDeployable() != null }
+//        row {
+//            image(image = "clickgui/chevron.svg".image(), at())
+//            text("AA", font, color)
+//            column {
+//                textSupplied({ getRenderDeployable() ?: return@textSupplied "" }, font, color)
+//            }
+//        }
+//
+//    }.setting(description = "Displays the cooldown.")
 
     private fun getRenderDeployable(): Deployable? {
         val activeDeployable = activeDeployables.firstOrNull { dep -> mc.thePlayer.getDistanceToEntity(dep.entity) <= dep.deployable.range } ?: return null

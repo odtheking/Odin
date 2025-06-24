@@ -28,7 +28,7 @@ object ItemsHighlight : Module(
     private val style by SelectorSetting("Style", Renderer.DEFAULT_STYLE, Renderer.styles, description = Renderer.STYLE_DESCRIPTION).withDependency { mode == HighlightRenderer.HighlightType.Boxes.ordinal }
     private val depthCheck by BooleanSetting("Depth check", false, description = "Boxes show through walls.")
     private val colorList = arrayListOf("Rarity", "Distance", "Custom")
-    private val colorStyle by SelectorSetting("Color Style", "Rarity", colorList, false, description = "Which color style to use.")
+    private val colorStyle by SelectorSetting("Color Style", "Rarity", colorList, description = "Which color style to use.")
     private val rarityAlpha by NumberSetting("Rarity Alpha", 1f, 0f, 1f, .1f, description = "The alpha of the rarity color.").withDependency { colorStyle == 0 }
     private val customColor by ColorSetting("Custom Color", Color.WHITE.withAlpha(1f), true, description = "The custom color to use.").withDependency { colorStyle == 2 }
 

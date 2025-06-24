@@ -1,7 +1,6 @@
 package me.odinmain.features.impl.floor7
 
 import com.github.stivais.aurora.color.Color
-import com.github.stivais.aurora.utils.color
 import com.github.stivais.aurora.utils.withAlpha
 import me.odinmain.events.impl.ServerTickEvent
 import me.odinmain.features.Module
@@ -25,8 +24,6 @@ import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.M7Phases
 import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.ui.Colors
-import me.odinmain.utils.ui.TextHUD
-import me.odinmain.utils.ui.buildText
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.server.*
 import net.minecraftforge.client.event.RenderWorldLastEvent
@@ -39,14 +36,7 @@ object WitherDragons : Module(
 ) {
     private val dragonTimerDropDown by DropdownSetting("Dragon Timer Dropdown")
     private val dragonTimer by BooleanSetting("Dragon Timer", true, description = "Displays a timer for when M7 dragons spawn.").withDependency { dragonTimerDropDown }
-    private val HUD by TextHUD("Dragon Timer HUD") { color, font, shadow ->
-        needs { DungeonUtils.getF7Phase() == M7Phases.P5 }
-        buildText(
-            string = "${priorityDragon.name.first()}:",
-            supplier = { String.format(Locale.US, "%.2f", priorityDragon.timeToSpawn / 20.0) },
-            font = font, color1 = color { priorityDragon.color.rgba }, color2 = color { getDragonTimerColor(priorityDragon.timeToSpawn).rgba }, shadow = shadow
-        ).needs { priorityDragon != WitherDragonsEnum.None }
-    }.setting(description = "Displays the time until the next dragon spawns.")
+    val addUselessDecimal by BooleanSetting("Add Useless Decimal", false, description = "Adds a decimal to the timer.").withDependency { dragonTimer && dragonTimerDropDown }
 
     private val dragonBoxesDropDown by DropdownSetting("Dragon Boxes Dropdown")
     private val dragonBoxes by BooleanSetting("Dragon Boxes", true, description = "Displays boxes for where M7 dragons spawn.").withDependency { dragonBoxesDropDown }
@@ -72,7 +62,7 @@ object WitherDragons : Module(
     val dragonPriorityToggle by BooleanSetting("Dragon Priority", false, description = "Displays the priority of dragons spawning.").withDependency { dragonPriorityDropDown }
     val normalPower by NumberSetting("Normal Power", 22.0, 0.0, 32.0, description = "Power needed to split.").withDependency { dragonPriorityToggle && dragonPriorityDropDown }
     val easyPower by NumberSetting("Easy Power", 19.0, 0.0, 32.0, description = "Power needed when its Purple and another dragon.").withDependency { dragonPriorityToggle && dragonPriorityDropDown }
-    val soloDebuff by SelectorSetting("Purple Solo Debuff", "Tank", arrayListOf("Tank", "Healer"), false, description = "Displays the debuff of the config. The class that solo debuffs purple, the other class helps b/m.").withDependency { dragonPriorityToggle && dragonPriorityDropDown }
+    val soloDebuff by SelectorSetting("Purple Solo Debuff", "Tank", arrayListOf("Tank", "Healer"), description = "Displays the debuff of the config. The class that solo debuffs purple, the other class helps b/m.").withDependency { dragonPriorityToggle && dragonPriorityDropDown }
     val soloDebuffOnAll by BooleanSetting("Solo Debuff on All Splits", true, description = "Same as Purple Solo Debuff but for all dragons (A will only have 1 debuff).").withDependency { dragonPriorityToggle && dragonPriorityDropDown }
     val paulBuff by BooleanSetting("Paul Buff", false, description = "Multiplies the power in your run by 1.25.").withDependency { dragonPriorityToggle && dragonPriorityDropDown }
 
@@ -83,15 +73,6 @@ object WitherDragons : Module(
     val relicAnnounceTime by BooleanSetting("Relic Time", true, description = "Sends how long it took you to get that relic.").withDependency { relicDropDown }
     val relicSpawnTicks by NumberSetting("Relic Spawn Ticks", 42, 0, 100, description = "The amount of ticks for the relic to spawn.").withDependency {  relicDropDown }
     private val cauldronHighlight by BooleanSetting("Cauldron Highlight", true, description = "Highlights the cauldron for held relic.").withDependency { relicDropDown }
-
-    private val relicHud by TextHUD("Relic HUD") { color, font, shadow ->
-        needs { DungeonUtils.getF7Phase() == M7Phases.P5 }
-        buildText(
-            string = "Relic:",
-            supplier = { String.format(Locale.US, "%.2f", KingRelics.relicTicksToSpawn / 20.0) },
-            font = font, color1 = color, color2 = Colors.WHITE, shadow = shadow
-        ).needs { KingRelics.relicTicksToSpawn > 0 }
-    }.setting(description = "Displays the time until the next relic spawns.").withDependency { relicDropDown }
 
     var priorityDragon = WitherDragonsEnum.None
     var currentTick: Long = 0
@@ -149,7 +130,7 @@ object WitherDragons : Module(
         if (dragonTimer) {
             WitherDragonsEnum.entries.forEach { dragon ->
                 if (dragon.state == WitherDragonState.SPAWNING) Renderer.drawStringInWorld(
-                    "§${dragon.colorCode}${dragon.name.first()}: ${colorDragonTimer(dragon.timeToSpawn)}${String.format(Locale.US, "%.2f", dragon.timeToSpawn / 20.0)}", dragon.spawnPos,
+                    "§${dragon.colorCode}${dragon.name.first()}: ${colorDragonTimer(dragon.timeToSpawn)}${String.format(Locale.US, "%.2f", dragon.timeToSpawn / 20.0)}${if (addUselessDecimal) "0" else ""}", dragon.spawnPos,
                     color = Color.WHITE, depth = false, scale = 0.16f
                 )
             }

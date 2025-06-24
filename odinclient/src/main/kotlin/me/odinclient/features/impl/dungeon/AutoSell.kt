@@ -1,8 +1,6 @@
 package me.odinclient.features.impl.dungeon
 
-import me.odinmain.config.Config
 import me.odinmain.features.Module
-import me.odinmain.features.settings.impl.ActionSetting
 import me.odinmain.features.settings.impl.ListSetting
 import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.features.settings.impl.SelectorSetting
@@ -11,7 +9,6 @@ import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.name
 import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.PlayerUtils.windowClick
-import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.inventory.ContainerChest
 
 object AutoSell : Module(
@@ -21,11 +18,12 @@ object AutoSell : Module(
     val sellList: MutableSet<String> by ListSetting("Sell list", mutableSetOf())
     private val delay by NumberSetting("Delay", 100L, 30L, 300L, 5L, description = "The delay between each sell action.", unit = "ms")
     private val clickType by SelectorSetting("Click Type", "Shift", arrayListOf("Shift", "Middle", "Left"), description = "The type of click to use when selling items.")
-    private val addDefaults by ActionSetting("Add defaults", description = "Add default dungeon items to the auto sell list.") {
-        sellList.addAll(defaultItems)
-        modMessage("§aAdded default items to auto sell list")
-        Config.save()
-    }
+    // TODO READD
+//    p`rivate val addDefaults by ActionSetting("Add defaults", description = "Add default dungeon items to the auto sell list.") {
+//        sellList.addAll(defaultItems)
+//        modMessage("§aAdded default items to auto sell list")
+//        Config.save()
+//    }
 
     init {
         execute(delay = { delay }) {

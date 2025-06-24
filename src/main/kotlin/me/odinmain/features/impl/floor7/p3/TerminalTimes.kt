@@ -4,7 +4,6 @@ import me.odinmain.events.impl.ServerTickEvent
 import me.odinmain.events.impl.TerminalEvent
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.p3.termsim.TermSimGui
-import me.odinmain.features.settings.impl.ActionSetting
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.skyblock.PersonalBest
@@ -17,10 +16,12 @@ object TerminalTimes : Module(
     description = "Records the time taken to complete terminals in floor 7."
 ) {
     private val sendMessage by BooleanSetting("Send Message", false, description = "Send a message when a terminal is completed.")
-    private val reset by ActionSetting("Reset pbs", description = "Resets the terminal PBs.") {
-        repeat(6) { i -> termPBs.set(i, 999.0) }
-        modMessage("§6Terminal PBs §fhave been reset.")
-    }
+
+    // TODO READD
+//    private val reset by ActionSetting("Reset pbs", description = "Resets the terminal PBs.") {
+//        repeat(6) { i -> termPBs.set(i, 999.0) }
+//        modMessage("§6Terminal PBs §fhave been reset.")
+//    }
 
     private val terminalSplits by BooleanSetting("Terminal Splits", default = true, description = "Adds the time when a term was completed to its message, and sends the total term time after terms are done.")
     private val useRealTime by BooleanSetting("Use Real Time", default = true, description = "Use real time rather than server ticks.")

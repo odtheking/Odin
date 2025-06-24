@@ -74,17 +74,20 @@ object DungeonWaypoints : Module(
     var size: Double by NumberSetting("Size", 1.0, .125, 1.0, increment = 0.01, description = "The size of the next waypoint you place.").withDependency { !useBlockSize && settingsDropDown }
     var timerSetting: Int by SelectorSetting("Timer Type", TimerType.NONE.displayName, TimerType.getArrayList(), description = "Type of route timer you want to place.").withDependency { !waypointType.equalsOneOf(0, 1, 5) && settingsDropDown }
 
-    private val resetButton by ActionSetting("Reset Current Room", description = "Resets the waypoints for the current room.") {
-        val room = DungeonUtils.currentRoom ?: return@ActionSetting modMessage("§cRoom not found!")
+    // TODO READD
+//    private val resetButton by ActionSetting("Reset Current Room", description = "Resets the waypoints for the current room.") {
+//        val room = DungeonUtils.currentRoom ?: return@ActionSetting modMessage("§cRoom not found!")
+//
+//        val waypoints = DungeonWaypointConfig.waypoints.getOrPut(room.data.name) { mutableListOf() }
+//        if (waypoints.isEmpty()) return@ActionSetting modMessage("§cCurrent room does not have any waypoints!")
+//        waypoints.clear()
+//        DungeonWaypointConfig.saveConfig()
+//        setWaypoints(room)
+//        glList = -1
+//        modMessage("Successfully reset current room!")
+//    }
 
-        val waypoints = DungeonWaypointConfig.waypoints.getOrPut(room.data.name) { mutableListOf() }
-        if (waypoints.isEmpty()) return@ActionSetting modMessage("§cCurrent room does not have any waypoints!")
-        waypoints.clear()
-        DungeonWaypointConfig.saveConfig()
-        setWaypoints(room)
-        glList = -1
-        modMessage("Successfully reset current room!")
-    }
+
     private val debugWaypoint by BooleanSetting("Debug Waypoint", false, description = "Shows a waypoint in the middle of every extra room.").withDependency { DevPlayers.isDev }
 
     private val selectedColor get() = when (colorPallet) {

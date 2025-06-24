@@ -2,17 +2,12 @@ package me.odinclient.features.impl.floor7
 
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.ActionSetting
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.SelectorSetting
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.profile
-import me.odinmain.utils.skyblock.Island
-import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
-import me.odinmain.utils.skyblock.dungeon.DungeonUtils.isFloor
 import me.odinmain.utils.skyblock.dungeon.M7Phases
-import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.init.Blocks
 import net.minecraft.util.BlockPos
 import net.minecraft.world.chunk.Chunk
@@ -34,10 +29,11 @@ object FuckDiorite : Module(
     private val colorIndex by SelectorSetting("Color", "None", arrayListOf("NONE", "WHITE", "ORANGE", "MAGENTA", "LIGHT_BLUE", "YELLOW", "LIME", "PINK",
             "GRAY", "LIGHT_GRAY", "CYAN", "PURPLE", "BLUE", "BROWN", "GREEN", "RED", "BLACK"), description = "Color for the stained glass.").withDependency { !pillarBasedColor && !schitzo }
     private val schitzo by BooleanSetting("Schitzo mode", false, description = "Schtizoing.")
-    val action by ActionSetting("Force Glass", description = "Replaces all pillars with glass.") {
-        if ((DungeonUtils.inBoss && isFloor(7)) || LocationUtils.currentArea.isArea(Island.SinglePlayer)) replaceDiorite(true)
-        else modMessage("§cYou must be in F7/M7 boss room to use this feature.")
-    }
+    // TODO READD
+    //  val action by ActionSetting("Force Glass", description = "Replaces all pillars with glass.") {
+//        if ((DungeonUtils.inBoss && isFloor(7)) || LocationUtils.currentArea.isArea(Island.SinglePlayer)) replaceDiorite(true)
+//        else modMessage("§cYou must be in F7/M7 boss room to use this feature.")
+//    }
 
     private val pillars = arrayOf(BlockPos(46, 169, 41), BlockPos(46, 169, 65), BlockPos(100, 169, 65), BlockPos(100, 169, 41))
     private val pillarColors = intArrayOf(5, 4, 10, 14)

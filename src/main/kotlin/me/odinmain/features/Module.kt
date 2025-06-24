@@ -1,11 +1,8 @@
 package me.odinmain.features
 
 import me.odinmain.OdinMain
-import me.odinmain.features.huds.HUD
 import me.odinmain.features.impl.render.ClickGUI
-import me.odinmain.features.settings.AlwaysActive
 import me.odinmain.features.settings.Setting
-import me.odinmain.features.settings.impl.HUDSetting
 import me.odinmain.features.settings.impl.Keybinding
 import me.odinmain.utils.clock.Executable
 import me.odinmain.utils.clock.Executor
@@ -161,25 +158,6 @@ abstract class Module(
 
     fun execute(delay: Long, profileName: String = "${this.name} Executor", shouldRun: () -> Boolean = { this.enabled || this.alwaysActive }, func: Executable) {
         Executor(delay, profileName, shouldRun, func).register()
-    }
-
-    fun HUD(
-        name: String,
-        block: HUD.Scope.() -> Unit
-    ): HUD {
-        return HUD(
-            name,
-            this,
-            block
-        )
-    }
-
-    fun HUD.setting(description: String): HUDSetting {
-        return HUDSetting(
-            name,
-            this,
-            description
-        )
     }
 
     // this is unused

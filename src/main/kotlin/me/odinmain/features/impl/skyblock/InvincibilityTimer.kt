@@ -1,13 +1,6 @@
 package me.odinmain.features.impl.skyblock
 
 import com.github.stivais.aurora.color.Color
-import com.github.stivais.aurora.constraints.impl.measurements.Pixel
-import com.github.stivais.aurora.constraints.impl.size.AspectRatio
-import com.github.stivais.aurora.dsl.constrain
-import com.github.stivais.aurora.dsl.px
-import com.github.stivais.aurora.elements.Layout.Companion.divider
-import com.github.stivais.aurora.elements.impl.Text.Companion.textSupplied
-import com.github.stivais.aurora.utils.color
 import me.odinmain.events.impl.GuiEvent.DrawSlotOverlayEvent
 import me.odinmain.events.impl.ServerTickEvent
 import me.odinmain.features.Module
@@ -15,21 +8,16 @@ import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.utils.capitalizeFirst
 import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.skyblock.LocationUtils
-import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.partyMessage
 import me.odinmain.utils.skyblock.skyblockID
 import me.odinmain.utils.ui.Colors
-import me.odinmain.utils.ui.getFont
-import me.odinmain.utils.ui.image
-import me.odinmain.utils.ui.makeFontSetting
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import java.util.*
 
 object InvincibilityTimer : Module(
     name = "Invincibility Timer",
     description = "Provides visual information about your invincibility items."
 ) {
-    private val font by makeFontSetting()
+//    private val font by makeFontSetting()
     private val shadow by BooleanSetting("Shadow", true, description = "Whether to display a shadow behind the text.")
 
     private val invincibilityAnnounce by BooleanSetting("Announce Invincibility", default = true, description = "Announces when you get invincibility.")
@@ -37,26 +25,27 @@ object InvincibilityTimer : Module(
     private val compactMode by BooleanSetting("Compact Mode", default = false, description = "Displays the HUD in a more compact way.")
     private val removeWhenBlank by BooleanSetting("Remove Blank", default = false, description = "Removes the HUD when there is no active invincibility.")
 
-    private val HUD by HUD("Invincibility HUD") {
-        needs { DungeonUtils.inDungeons }
-        column {
-            InvincibilityType.entries.forEach { type ->
-                needs { !preview && removeWhenBlank && type.activeTime == 0 && type.currentCooldown == 0 }
-                image("huds/${type.name.lowercase()}.png".image(), constrain(x = Pixel.ZERO, w = 100.px, h = AspectRatio(1f)))
-                textSupplied(
-                    supplier = {
-                        when {
-                            type.activeTime > 0 -> "${String.format(Locale.US, "%.2f", type.activeTime / 20.0)}s"
-                            type.currentCooldown > 0 -> "${String.format(Locale.US, "%.2f", type.currentCooldown / 20.0)}s"
-                            else -> "√"
-                        } },
-                    getFont(font), color { if (type.activeTime == 0 && type.currentCooldown == 0) Colors.MINECRAFT_GREEN.rgba else if (type.activeTime > 0) Colors.MINECRAFT_GOLD.rgba else Colors.MINECRAFT_RED.rgba }
-                )
-                divider(5.px)
-            }
-        }
-    }.registerSettings(::font, ::shadow, ::compactMode, ::removeWhenBlank
-    ).setting(description = "Displays information about your invincibility items.")
+
+//    private val HUD by HUD("Invincibility HUD") {
+//        needs { DungeonUtils.inDungeons }
+//        column {
+//            InvincibilityType.entries.forEach { type ->
+//                needs { !preview && removeWhenBlank && type.activeTime == 0 && type.currentCooldown == 0 }
+//                image("huds/${type.name.lowercase()}.png".image(), constrain(x = Pixel.ZERO, w = 100.px, h = AspectRatio(1f)))
+//                textSupplied(
+//                    supplier = {
+//                        when {
+//                            type.activeTime > 0 -> "${String.format(Locale.US, "%.2f", type.activeTime / 20.0)}s"
+//                            type.currentCooldown > 0 -> "${String.format(Locale.US, "%.2f", type.currentCooldown / 20.0)}s"
+//                            else -> "√"
+//                        } },
+//                    getFont(font), color { if (type.activeTime == 0 && type.currentCooldown == 0) Colors.MINECRAFT_GREEN.rgba else if (type.activeTime > 0) Colors.MINECRAFT_GOLD.rgba else Colors.MINECRAFT_RED.rgba }
+//                )
+//                divider(5.px)
+//            }
+//        }
+//    }.registerSettings(::font, ::shadow, ::compactMode, ::removeWhenBlank
+//    ).setting(description = "Displays information about your invincibility items.")
 
     init {
         onWorldLoad {

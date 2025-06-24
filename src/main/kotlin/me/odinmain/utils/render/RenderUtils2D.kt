@@ -9,8 +9,6 @@ import me.odinmain.utils.render.RenderUtils.renderVec
 import me.odinmain.utils.render.RenderUtils.tessellator
 import me.odinmain.utils.render.RenderUtils.worldRenderer
 import me.odinmain.utils.ui.Colors
-import me.odinmain.utils.ui.mcFont
-import me.odinmain.utils.ui.renderer.NVGRenderer
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats

@@ -5,7 +5,6 @@ import me.odinmain.events.impl.BlockChangeEvent
 import me.odinmain.events.impl.ServerTickEvent
 import me.odinmain.features.Module
 import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.ActionSetting
 import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.features.settings.impl.KeybindSetting
@@ -37,9 +36,10 @@ object ArrowsDevice : Module(
         markedPositions.clear()
     }.withDependency { solver }
     private val depthCheck by BooleanSetting("Depth check", true, description = "Marked positions show through walls.").withDependency { solver }
-    private val reset by ActionSetting("Reset", description = "Resets the solver.") {
-        markedPositions.clear()
-    }.withDependency { solver }
+    // todo: fix
+//    private val reset by ActionSetting("Reset", description = "Resets the solver.") {
+//        markedPositions.clear()
+//    }.withDependency { solver }
     private val alertOnDeviceComplete by BooleanSetting("Device complete alert", default = true, description = "Send an alert when device is complete.")
 
     private val markedPositions = mutableSetOf<BlockPos>()

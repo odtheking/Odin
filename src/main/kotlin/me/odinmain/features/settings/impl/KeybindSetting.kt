@@ -1,51 +1,94 @@
 package me.odinmain.features.settings.impl
 
 import com.github.stivais.aurora.animations.Animation
-import com.github.stivais.aurora.constraints.impl.measurements.Animatable
-import com.github.stivais.aurora.constraints.impl.measurements.Pixel
-import com.github.stivais.aurora.constraints.impl.size.Bounding
+import com.github.stivais.aurora.color.Color
+import com.github.stivais.aurora.components.impl.Layout
+import com.github.stivais.aurora.components.impl.dropShadow
+import com.github.stivais.aurora.components.scope.ContainerScope
 import com.github.stivais.aurora.dsl.*
-import com.github.stivais.aurora.elements.ElementScope
-import com.github.stivais.aurora.elements.impl.Block.Companion.outline
-import com.github.stivais.aurora.elements.impl.Text.Companion.string
-import com.github.stivais.aurora.elements.impl.popup
+import com.github.stivais.aurora.measurements.Measurement
+import com.github.stivais.aurora.renderer.data.Radius.Companion.radius
+import com.github.stivais.aurora.utils.Timing.Companion.seconds
+import com.github.stivais.aurora.utils.withAlpha
 import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
+import me.odinmain.aurora.components.SwappingText
 import me.odinmain.features.impl.render.ClickGUI
-import me.odinmain.features.impl.render.ClickGUI.`gray 38`
+import me.odinmain.features.settings.RepresentableSetting
 import me.odinmain.features.settings.Saving
-import me.odinmain.features.settings.Setting
-import me.odinmain.features.settings.Setting.Renders.Companion.onValueChanged
-import me.odinmain.features.settings.Setting.Renders.Companion.setting
+import net.minecraftforge.fml.client.registry.ClientRegistry
 import org.lwjgl.input.Keyboard.*
 import org.lwjgl.input.Mouse
+import net.minecraft.client.settings.KeyBinding as MCKeybinding
 
 class KeybindSetting(
     name: String,
     override val default: Keybinding,
     description: String,
-) : Setting<Keybinding>(name, false, description), Saving, Setting.Renders {
+) : RepresentableSetting<Keybinding>(name, description), Saving {
 
     constructor(name: String, key: Int, description: String) : this(name, Keybinding(key), description)
 
     override var value: Keybinding = default
 
-    private val keyName: String
-        get() {
-            val key = value.key
-            return when {
-                key > 0 -> getKeyName(key) ?: "Error"
-                key < 0 -> {
-                    when (val button = key + 100) {
-                        0 -> "Left Button"
-                        1 -> "Right Button"
-                        2 -> "Middle Button"
-                        else -> "Button $button"
-                    }
+    override fun ContainerScope<*>.represent() = row(
+        size = size(width = 100.percent),
+        gap = Layout.Gap.Auto,
+        alignment = Layout.Alignment.Center
+    ) {
+        text(
+            string = name,
+            size = 18.px
+        )
+
+        val strokeWidth = animatable<Measurement.Size>(from = 2.px, to = 3.px)
+
+        block(
+            size = sum(),
+            color = ClickGUI.gray38,
+            strokeColor = ClickGUI.colorDarker,
+            strokeWidth = strokeWidth,
+            radius = 8.radius()
+        ) {
+            dropShadow(color = Color.BLACK.withAlpha(0.4f), blur = 5f, spread = 2f, offsetY = 2f)
+            padding(horizontal = 8f, vertical = 5f)
+
+            val text = SwappingText(component, string = getKeyName(), size = 18.px)
+            text.scope {
+                onEvent(event = ValueChanged) {
+                    text.animate(getKeyName(), .3.seconds)
                 }
-                else -> "None"
             }
+
+            onClick {
+                aurora.focus(component)
+                false
+            }
+
+            onAnyClick { (button) ->
+                if (aurora.isFocused(component)) {
+                    value.key = -100 + button
+                    aurora.focus(null)
+                    true
+                } else false
+            }
+
+            onKeycodeTyped { (code) ->
+                value.key = when (code) {
+                    KEY_ESCAPE, KEY_BACK -> 0
+                    KEY_NUMPADENTER, KEY_RETURN -> value.key
+                    else -> code
+                }
+                // this should have focus,
+                // since it is a focused event.
+                aurora.focus(null)
+                true
+            }
+
+            onFocus { strokeWidth.animate(.5.seconds, Animation.Style.EaseInOutQuad) }
+            onFocusLost { strokeWidth.animate(.5.seconds, Animation.Style.EaseInOutQuad) }
         }
+    }
 
     override fun reset() {
         value.key = default.key
@@ -61,63 +104,6 @@ class KeybindSetting(
         }
     }
 
-    override fun ElementScope<*>.create() = setting {
-        text(
-            name,
-            pos = at(x = Pixel.ZERO),
-            size = 40.percent,
-        )
-
-        val outline = Animatable(from = 1.px, to = 2.5.px)
-
-        block(
-            constraints = constrain(x = Pixel.ZERO.alignOpposite, w = Bounding + 6.px, h = 70.percent),
-            color = `gray 38`,
-            radius = 5.radius()
-        ) {
-            outline(
-                color = ClickGUI.color,
-                thickness = outline
-            )
-            hoverEffect(
-                factor = 1.25f
-            )
-            text(
-                string = keyName
-            ) {
-                onValueChanged {
-                    string = keyName
-                }
-            }
-            onClick {
-                // creates a popup which consumes any input and closes the popup and sets the keybind
-
-                val popup = popup(copies(), smooth = false) {
-                    onFocusChanged {
-                        outline.animate(0.25.seconds, style = Animation.Style.Linear)
-                    }
-                    onClick(nonSpecific = true) { (button) ->
-                        value.key = -100 + button
-                        ui.unfocus()
-                        closePopup()
-                        true
-                    }
-                    onKeycodePressed { (code) ->
-                        value.key = when (code) {
-                            KEY_ESCAPE, KEY_BACK -> 0
-                            KEY_NUMPADENTER, KEY_RETURN -> value.key
-                            else -> code
-                        }
-                        ui.unfocus()
-                        closePopup()
-                        true
-                    }
-                }
-                ui.focus(popup.element)
-            }
-        }
-    }
-
     /**
      * Action to do, when keybinding is pressed
      *
@@ -127,12 +113,42 @@ class KeybindSetting(
         value.onPress = block
         return this
     }
+
+    fun attach(name: String = this.name): KeybindSetting {
+        val bind = object : MCKeybinding(name, value.key, "Odin") {
+            override fun getKeyCode(): Int {
+                return value.key
+            }
+            override fun setKeyCode(keyCode: Int) {
+                value.key = keyCode
+            }
+        }
+        ClientRegistry.registerKeyBinding(bind)
+        return this
+    }
+
+    private fun getKeyName(): String {
+        val key = value.key
+        return when {
+            key > 0 -> getKeyName(key) ?: "Error"
+            key < 0 -> {
+                when (val button = key + 100) {
+                    0 -> "Left Button"
+                    1 -> "Right Button"
+                    2 -> "Middle Button"
+                    else -> "MB $button"
+                }
+            }
+
+            else -> "None"
+        }
+    }
 }
 
 data class Keybinding(var key: Int) {
 
     /**
-     * Intended to active when keybind is pressed.
+     * Intended to active when keybinding is pressed.
      */
     var onPress: (() -> Unit)? = null
 

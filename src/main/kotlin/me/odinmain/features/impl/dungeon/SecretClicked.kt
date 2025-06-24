@@ -44,9 +44,10 @@ object SecretClicked : Module(
     ).withDependency { sound == defaultSounds.size - 1 && chimeDropdownSetting && chime}
     private val volume by NumberSetting("Volume", 1f, 0, 1, .01f, description = "Volume of the sound.").withDependency { chimeDropdownSetting && chime }
     private val pitch by NumberSetting("Pitch", 2f, 0, 2, .01f, description = "Pitch of the sound.").withDependency { chimeDropdownSetting && chime }
-    val reset by ActionSetting("Play Sound", description = "Plays the sound with the current settings.") {
-        PlayerUtils.playLoudSound(if (sound == defaultSounds.size - 1) customSound else defaultSounds[sound], volume, pitch)
-    }.withDependency { chimeDropdownSetting && chime }
+    // TODO READD
+    //    val reset by ActionSetting("Play Sound", description = "Plays the sound with the current settings.") {
+//        PlayerUtils.playLoudSound(if (sound == defaultSounds.size - 1) customSound else defaultSounds[sound], volume, pitch)
+//    }.withDependency { chimeDropdownSetting && chime }
     private val chimeInBoss by BooleanSetting("Chime In Boss", false, description = "Prevent playing the sound if in boss room.").withDependency { chimeDropdownSetting && chime }
 
     private data class Secret(val pos: BlockPos, var locked: Boolean = false)
