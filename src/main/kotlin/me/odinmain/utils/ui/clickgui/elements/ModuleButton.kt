@@ -76,7 +76,7 @@ class ModuleButton(val module: Module, val panel: Panel) {
                     is ActionSetting -> ElementAction(this, setting)
                     is DualSetting -> ElementDual(this, setting)
                     is HudSetting -> ElementHud(this, setting)
-                    is KeybindSetting -> me.odinmain.utils.ui.clickgui.elements.menu.ElementKeyBind(this, setting)
+                    is KeybindSetting -> ElementKeyBind(this, setting)
                     is DropdownSetting -> ElementDropdown(this, setting)
                     else -> {
                         position--
