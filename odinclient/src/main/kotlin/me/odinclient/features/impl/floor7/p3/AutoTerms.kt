@@ -1,6 +1,7 @@
 package me.odinclient.features.impl.floor7.p3
 
 import me.odinmain.events.impl.GuiEvent
+import me.odinmain.events.impl.TerminalEvent
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.p3.TerminalSolver
 import me.odinmain.features.impl.floor7.p3.TerminalTypes
@@ -23,11 +24,7 @@ object AutoTerms : Module(
 
     @SubscribeEvent(receiveCanceled = true)
     fun onDrawGuiContainer(event: GuiEvent.DrawGuiBackground) = with (TerminalSolver.currentTerm) {
-        if (this?.type == null) {
-            lastClickTime = System.currentTimeMillis()
-            firstClick = true
-            return
-        }
+        if (this?.type == null) return
 
         if (firstClick && (System.currentTimeMillis() - lastClickTime < firstClickDelay)) return
 
@@ -51,5 +48,11 @@ object AutoTerms : Module(
 
             else -> click(item, ClickType.Middle, false)
         }
+    }
+
+    @SubscribeEvent
+    fun onTerminalOpen(event: TerminalEvent.Opened) {
+        lastClickTime = System.currentTimeMillis()
+        firstClick = true
     }
 }
