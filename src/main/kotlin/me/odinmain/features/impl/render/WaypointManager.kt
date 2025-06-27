@@ -22,7 +22,6 @@ object WaypointManager {
     private var temporaryWaypoints = mutableListOf<Pair<Waypoint, Clock>>()
 
     fun addTempWaypoint(name: String = "§fWaypoint", x: Int, y: Int, z: Int, time: Long = 60_000) {
-        if (currentArea.isArea(Island.Unknown)) return modMessage("§cYou are not in Skyblock.")
         if (!Waypoints.enabled) return
         if (listOf(x, y,z).any { abs(it) > 5000}) return modMessage("§cWaypoint out of bounds.")
         if (temporaryWaypoints.any { it.first.x == x && it.first.y == y && it.first.z == z }) return modMessage("§cWaypoint already exists at $x, $y, $z.")
