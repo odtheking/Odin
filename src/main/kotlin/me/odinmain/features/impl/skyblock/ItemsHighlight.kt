@@ -11,6 +11,7 @@ import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.HighlightRenderer
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.dungeonItemDrops
+import me.odinmain.utils.skyblock.dungeon.DungeonUtils.inDungeons
 import me.odinmain.utils.skyblock.getRarity
 import me.odinmain.utils.skyblock.lore
 import me.odinmain.utils.skyblock.unformattedName
@@ -39,7 +40,7 @@ object ItemsHighlight : Module(
             currentEntityItems = mutableSetOf()
             mc.theWorld?.loadedEntityList?.forEach { entity ->
                 if (entity !is EntityItem) return@forEach
-                if (!onlySecrets || entity.entityItem?.unformattedName?.containsOneOf(dungeonItemDrops, true) == true) currentEntityItems.add(entity)
+                if (!onlySecrets || (inDungeons && entity.entityItem?.unformattedName?.containsOneOf(dungeonItemDrops, true) ?: false)) currentEntityItems.add(entity)
             }
         }
 
