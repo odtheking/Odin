@@ -17,20 +17,22 @@ object SpiritBear : Module(
     name = "Spirit Bear",
     desc = "Displays the current state of Spirit Bear."
 ) {
-    private val hud by HudSetting("Hud", 10f, 10f, 1f, true) {
-        if ((!DungeonUtils.isFloor(4) || !DungeonUtils.inBoss) && !it) return@HudSetting 0f to 0f
+    private val hud by HudSetting("Hud", 10f, 10f, 1f, true) { example ->
         when {
-            it -> mcTextAndWidth("§eSpirit Bear: §61.45s", 0f, 0f, 1f, Colors.WHITE, center = false) + 2f to 12f
-            timer > 0 -> mcTextAndWidth("§eSpirit Bear: §6${(timer / 20f).toFixed()}s", 0f, 0f, 1f, Colors.WHITE, center = false) + 2f to 12f
-            timer == 0 -> mcTextAndWidth("§eSpirit Bear: §aAlive!", 0f, 0f, 1f, Colors.WHITE, center = false) + 2f to 12f
-            timer < 0 && showNotSpawned -> mcTextAndWidth("§eSpirit Bear: §cNot Spawned", 0f, 0f, 1f, Colors.WHITE, center = false) + 2f to 12f
-            else -> 0f to 0f
-        }
+            example -> "§61.45s"
+            !DungeonUtils.isFloor(4) || !DungeonUtils.inBoss -> null
+            timer > 0 -> "§6${(timer / 20f).toFixed()}s"
+            timer == 0 -> "§aAlive!"
+            timer < 0 && showNotSpawned -> "§cNot Spawned"
+            else -> null
+        } ?.let { text ->
+            mcTextAndWidth("§eSpirit Bear: ${text}", 0f, 0f, 1f, Colors.WHITE, center = false) + 2f to 12f
+        } ?: 0f to 0f
     }
     private val showNotSpawned by BooleanSetting("Show Not Spawned", false, desc = "Show the Spirit Bear hud even when it's not spawned.")
 
-    private var timer: Int = -1 // state: -1=NotSpawned, 0=Alive, 1+=Spawning
     private val lastBlockLocation = BlockPos(7, 77, 34)
+    private var timer: Int = -1 // state: -1=NotSpawned, 0=Alive, 1+=Spawning
 
     init {
         onPacket<S32PacketConfirmTransaction> { if (timer > 0) timer -- }
