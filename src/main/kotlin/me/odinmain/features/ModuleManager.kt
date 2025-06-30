@@ -48,7 +48,7 @@ object ModuleManager {
         // dungeon
         DungeonRequeue, BlessingDisplay, PositionalMessages, ExtraStats, KeyHighlight, Mimic, TeammatesHighlight,
         TerracottaTimer, BloodCamp, SecretClicked, DungeonWaypoints, LeapMenu, PuzzleSolvers, /*MageBeam,*/
-        WarpCooldown, MapInfo, SwapSound, LividSolver,
+        WarpCooldown, MapInfo, SwapSound, LividSolver, SpiritBear,
 
         // floor 7
         TerminalSolver, TerminalTimes, MelodyMessage, TickTimers, InactiveWaypoints, WitherDragons,
