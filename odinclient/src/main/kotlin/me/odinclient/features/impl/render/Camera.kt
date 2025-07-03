@@ -27,7 +27,7 @@ object Camera : Module(
     private val fov by NumberSetting("FOV", mc.gameSettings.fovSetting, 1f, 180f, 1f, desc = "The field of view of the camera.").withDependency { customFOV }
     private val freelookDropdown by DropdownSetting("Freelook")
     private val toggleMode by BooleanSetting("Toggle Mode", false, desc = "If enabled, toggle freelook. Otherwise, hold to use.").withDependency { freelookDropdown }
-    private val freelookKeybind by KeybindSetting("Freelook Key", Keyboard.KEY_NONE, description = "Keybind to toggle/ hold for freelook.")
+    private val freelookKeybind by KeybindSetting("Freelook Key", Keyboard.KEY_NONE, desc = "Keybind to toggle/ hold for freelook.")
         .withDependency { freelookDropdown }
         .onPress {
             if (!freelookToggled && enabled) enable()

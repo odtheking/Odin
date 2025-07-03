@@ -39,7 +39,7 @@ object ArrowsDevice : Module(
     private val solver by BooleanSetting("Solver Enabled", true, desc = "Automatically solve the puzzle.").withDependency { solverDropdown }
     private val markedPositionColor by ColorSetting("Marked Position", Colors.MINECRAFT_RED, desc = "Color of the marked position.").withDependency { solver && solverDropdown }
     private val targetPositionColor by ColorSetting("Target Position", Colors.MINECRAFT_GREEN, desc = "Color of the target position.").withDependency { solver && solverDropdown }
-    private val resetKey by KeybindSetting("Reset", Keyboard.KEY_NONE, description = "Resets the solver.").onPress {
+    private val resetKey by KeybindSetting("Reset", Keyboard.KEY_NONE, desc = "Resets the solver.").onPress {
         markedPositions.clear()
         autoState = AutoState.Stopped
         actionQueue.clear()

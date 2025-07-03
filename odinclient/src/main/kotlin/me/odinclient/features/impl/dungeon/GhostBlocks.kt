@@ -50,8 +50,8 @@ object GhostBlocks : Module(
     private val slot by NumberSetting("Ghost tool slot", 1, 1.0, 9.0, 1.0, desc = "The slot at which the ghost tool will spawn.").withDependency { ghostPickDropDown }
     private val level by NumberSetting("Efficiency level", 10, 1.0, 100.0, 1.0, desc = "The efficiency level the ghost tool will spawn with.").withDependency { ghostPickDropDown }
     private val delay by NumberSetting("Delay to Create", 0, 0, 1000, 10, unit = "ms", desc = "The delay between clicking to the spawning of the ghost tool.").withDependency { ghostPickDropDown }
-    private val pickaxeKey by KeybindSetting("Pickaxe Keybind", Keyboard.KEY_NONE, description = "Press this keybind to create a ghost pickaxe.").onPress { giveItem(278) }.withDependency { ghostPickDropDown }
-    private val axeKey by KeybindSetting("Axe Keybind", Keyboard.KEY_NONE, description = "Press this keybind to create a ghost axe.").onPress { giveItem(279) }.withDependency { ghostPickDropDown }
+    private val pickaxeKey by KeybindSetting("Pickaxe Keybind", Keyboard.KEY_NONE, desc = "Press this keybind to create a ghost pickaxe.").onPress { giveItem(278) }.withDependency { ghostPickDropDown }
+    private val axeKey by KeybindSetting("Axe Keybind", Keyboard.KEY_NONE, desc = "Press this keybind to create a ghost axe.").onPress { giveItem(279) }.withDependency { ghostPickDropDown }
 
     private fun giveItem(id: Int) {
         if (!enabled || mc.thePlayer == null || mc.currentScreen != null) return
@@ -308,7 +308,7 @@ object GhostBlocks : Module(
     )
 
 
-    private val toggleKeybind: Keybinding by KeybindSetting("Toggle Module", Keyboard.KEY_NONE, description = "Keybind to toggle the module on/off.").onPress {
+    private val toggleKeybind: Keybinding by KeybindSetting("Toggle Module", Keyboard.KEY_NONE, desc = "Keybind to toggle the module on/off.").onPress {
         this.onKeybind()
     }
 }

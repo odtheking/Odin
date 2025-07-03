@@ -20,7 +20,7 @@ object Waypoints : Module(
 
     private val pingLocationDropDown by DropdownSetting("Ping Location Dropdown", false)
     private val pingLocationToggle by BooleanSetting("Ping Location", false, desc = "Adds a waypoint at the location you are looking at.").withDependency { pingLocationDropDown }
-    private val pingLocation by KeybindSetting("Ping Location Keybind", Keyboard.KEY_NONE, description = "Sends the location you are looking at as coords in chat for waypoints.").onPress {
+    private val pingLocation by KeybindSetting("Ping Location Keybind", Keyboard.KEY_NONE, desc = "Sends the location you are looking at as coords in chat for waypoints.").onPress {
         if (!pingLocationToggle) return@onPress
         EtherWarpHelper.getEtherPos(PositionLook(mc.thePlayer.positionVector, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch), pingDistance).pos?.let { pos ->
             val (x, y, z) = pos.addVec(0.5, 0.5, 0.5)
