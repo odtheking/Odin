@@ -213,7 +213,8 @@ object DungeonUtils {
     fun Room.getRealCoords(x: Int, y: Int, z: Int) = getRealCoords(Vec3(x.toDouble(), y.toDouble(), z.toDouble())).toBlockPos()
 
     val dungeonItemDrops = listOf(
-        "Architect's First Draft", "Decoy", "Dungeon Chest Key", "Inflatable Jerry", "Spirit Leap", "Trap", 
-        "Candycomb", "Defuse Kit", "Healing 8 Splash Potion", "Healing VIII Splash Potion", "Revive Stone", "Secret Dye", "Training Weights", "Treasure Talisman"
+        "Health Potion VIII Splash Potion", "Healing Potion 8 Splash Potion", "Healing Potion VIII Splash Potion", "Healing VIII Splash Potion", "Healing 8 Splash Potion",
+        "Decoy", "Inflatable Jerry", "Spirit Leap", "Trap", "Training Weights", "Defuse Kit", "Dungeon Chest Key", "Treasure Talisman", "Revive Stone", "Architect's First Draft",
+        "Secret Dye", "Candycomb"
     )
 }

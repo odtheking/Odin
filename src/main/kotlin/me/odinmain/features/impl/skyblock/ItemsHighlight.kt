@@ -40,7 +40,7 @@ object ItemsHighlight : Module(
             currentEntityItems = mutableSetOf()
             mc.theWorld?.loadedEntityList?.forEach { entity ->
                 if (entity !is EntityItem) return@forEach
-                if (!onlySecrets || (inDungeons && entity.entityItem?.unformattedName?.containsOneOf(dungeonItemDrops, true) ?: false)) currentEntityItems.add(entity)
+                if (!onlySecrets || (inDungeons && entity.entityItem?.unformattedName?.containsOneOf(dungeonItemDrops, true) == true)) currentEntityItems.add(entity)
             }
         }
 
