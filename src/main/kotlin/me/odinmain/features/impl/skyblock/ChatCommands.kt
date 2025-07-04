@@ -197,7 +197,6 @@ object ChatCommands : Module(
         ":typing:" to "✎...",
         ":maths:" to "√(π+x)=L",
         ":snail:" to "@'-'",
-        "ez" to "ｅｚ",
         ":thinking:" to "(0.o?)",
         ":gimme:" to "༼つ◕_◕༽つ",
         ":wizard:" to "('-')⊃━☆ﾟ.*･｡ﾟ",
