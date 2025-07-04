@@ -43,7 +43,7 @@ object DianaHelper : Module(
     private val darkAuction by BooleanSetting("DA Warp", desc = "Warp to the dark auction.").withDependency { showWarpSettings }
     private val museum by BooleanSetting("Museum Warp", desc = "Warp to the museum.").withDependency { showWarpSettings }
     private val wizard by BooleanSetting("Wizard Warp", desc = "Warp to the wizard.").withDependency { showWarpSettings }
-    private val warpKeybind by KeybindSetting("Warp Keybind", Keyboard.KEY_NONE, description = "Keybind to warp to the nearest warp location.").onPress {
+    private val warpKeybind by KeybindSetting("Warp Keybind", Keyboard.KEY_NONE, desc = "Keybind to warp to the nearest warp location.").onPress {
         if (!cmdCooldown.hasTimePassed()) return@onPress
         sendCommand("warp ${warpLocation?.name ?: return@onPress}")
         warpLocation = null

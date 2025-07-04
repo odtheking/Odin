@@ -23,8 +23,8 @@ object AutoClicker : Module(
     private val enableRightClick by BooleanSetting("Enable Right Click", true, desc = "Enable auto-clicking for right-click.").withDependency { !terminatorOnly }
     private val leftCps by NumberSetting("Left Clicks Per Second", 5.0f, 3.0, 15.0, .5, desc = "The amount of left clicks per second to perform.").withDependency { !terminatorOnly }
     private val rightCps by NumberSetting("Right Clicks Per Second", 5.0f, 3.0, 15.0, .5, desc = "The amount of right clicks per second to perform.").withDependency { !terminatorOnly }
-    private val leftClickKeybind by KeybindSetting("Left Click", Keyboard.KEY_NONE, description = "The keybind to hold for the auto clicker to click left click.").withDependency { !terminatorOnly }
-    private val rightClickKeybind by KeybindSetting("Right Click", Keyboard.KEY_NONE, description = "The keybind to hold for the auto clicker to click right click.").withDependency { !terminatorOnly }
+    private val leftClickKeybind by KeybindSetting("Left Click", Keyboard.KEY_NONE, desc = "The keybind to hold for the auto clicker to click left click.").withDependency { !terminatorOnly }
+    private val rightClickKeybind by KeybindSetting("Right Click", Keyboard.KEY_NONE, desc = "The keybind to hold for the auto clicker to click right click.").withDependency { !terminatorOnly }
 
     private var nextLeftClick = .0
     private var nextRightClick = .0

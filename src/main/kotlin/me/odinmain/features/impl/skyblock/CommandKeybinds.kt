@@ -28,7 +28,5 @@ object CommandKeybinds : Module(
         sendCommand("equipment")
     }
     private val dhub by KeybindSetting("Dungeon Hub", Keyboard.KEY_NONE, description = "Warps to the dungeon hub.").onPress {
-        if (!enabled || !isInSkyblock) return@onPress
-        sendCommand("warp dungeon_hub")
-    }
+        if (!enabled || !isInSkyblock) return@onPress    
 }
