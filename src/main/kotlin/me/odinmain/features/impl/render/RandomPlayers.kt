@@ -25,7 +25,7 @@ object RandomPlayers {
     val isRandom get() = randoms.containsKey(mc.session?.username)
     val isDev get() = randoms[mc.session?.username]?.isDev ?: false
 
-    data class RandomPlayer(val scale: Triple<Float, Float, Float>, val wings: Boolean = false, val wingsColor: Color = Colors.WHITE, var capeLocation: ResourceLocation? = null, val customName: String, val isDev: Boolean)
+    data class RandomPlayer(val scale: Triple<Float, Float, Float>, val wings: Boolean = false, val wingsColor: Color = Colors.WHITE, val customName: String, val isDev: Boolean)
 
     private val pattern = Regex("Decimal\\('(-?\\d+(?:\\.\\d+)?)'\\)")
 
@@ -40,7 +40,7 @@ object RandomPlayers {
                 val wingsColor = jsonElement.get("WingsColor")?.asJsonArray?.let { colorArray -> Color(colorArray[0].asInt, colorArray[1].asInt, colorArray[2].asInt) } ?: Colors.WHITE
                 val customName = jsonElement.get("CustomName")?.asString?.replace("COLOR", "§") ?: ""
                 val isDev = jsonElement.get("IsDev")?.asBoolean ?: false
-                randoms[randomsName] = RandomPlayer(size, wings, Color(wingsColor.red, wingsColor.green, wingsColor.blue), null, customName, isDev)
+                randoms[randomsName] = RandomPlayer(size, wings, Color(wingsColor.red, wingsColor.green, wingsColor.blue), customName, isDev)
             }
             modMessage("Dev players updated: ${randoms.size} players found.")
         }
