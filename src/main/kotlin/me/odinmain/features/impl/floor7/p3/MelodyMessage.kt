@@ -23,7 +23,7 @@ object MelodyMessage : Module(
     private val melodyProgress by BooleanSetting("Melody Progress", false, desc = "Tells the party about melody terminal progress.")
     private val melodySendCoords by BooleanSetting("Melody Send Coords", false, desc = "Sends the coordinates of the melody terminal.").withDependency { melodyProgress }
 
-    private var claySlots = hashMapOf(25 to "25%", 34 to "50%", 43 to "75%")
+    private var claySlots = hashMapOf(25 to "Melody terminal is at 25%", 34 to "Melody terminal is at 50%", 43 to "Melody terminal is at 75%")
 
     @SubscribeEvent
     fun onGuiLoad(event: TerminalEvent.Opened) {
@@ -31,7 +31,7 @@ object MelodyMessage : Module(
         if (sendMelodyMessage) partyMessage(melodyMessage)
         if (melodySendCoords) sendCommand("od sendcoords", true)
 
-        claySlots = hashMapOf(25 to "25%", 34 to "50%", 43 to "75%")
+        claySlots = hashMapOf(25 to "Melody 25%", 34 to "Melody 50%", 43 to "Melody 75%")
     }
 
     init {
@@ -42,10 +42,8 @@ object MelodyMessage : Module(
             if (containerChest.name != "Click the button on time!" || !melodyProgress) return@execute
 
             val greenClayIndices = claySlots.keys.filter { index -> containerChest.getSlot(index)?.stack?.metadata == 5 }.ifEmpty { return@execute }
-            val lastSlot = greenClayIndices.last()
-            val progress = claySlots[lastSlot] ?: return@execute
 
-            partyMessage("$melodyMessage $progress")
+            partyMessage(claySlots[greenClayIndices.last()] ?: return@execute)
             greenClayIndices.forEach { claySlots.remove(it) }
         }
     }
