@@ -10,7 +10,6 @@ import me.odinmain.utils.skyblock.ClickType
 import me.odinmain.utils.skyblock.devMessage
 import net.minecraftforge.fml.common.eventhandler.EventPriority
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import net.minecraftforge.fml.common.gameevent.TickEvent
 import java.util.*
 
 object QueueTerms : Module(
@@ -36,22 +35,20 @@ object QueueTerms : Module(
         }
     }
 
-    @SubscribeEvent
-    fun onTick(event: TickEvent.ClientTickEvent) {
-        with (TerminalSolver.currentTerm ?: return) {
-            if (
-                event.phase != TickEvent.Phase.START ||
-                type == TerminalTypes.MELODY ||
-                TerminalSolver.renderType != 3 ||
-                System.currentTimeMillis() - lastClickTime < dispatchDelay ||
-                queue.isEmpty() ||
-                isClicked
-            ) return
-            val click = queue.poll() ?: return
-            click(click.slot, if (click.button == 0) ClickType.Middle else ClickType.Right, false)
-            devMessage("§dDispatched click on slot ${click.slot}")
-            lastClickTime = System.currentTimeMillis()
-        }
+    @SubscribeEvent(receiveCanceled = true)
+    fun onDrawGuiContainer(event: GuiEvent.DrawGuiBackground) = with (TerminalSolver.currentTerm) {
+        if (
+            this == null ||
+            this.type == TerminalTypes.MELODY ||
+            TerminalSolver.renderType != 3 ||
+            System.currentTimeMillis() - lastClickTime < dispatchDelay ||
+            queue.isEmpty() ||
+            isClicked
+        ) return
+        val click = queue.poll() ?: return
+        click(click.slot, if (click.button == 0) ClickType.Middle else ClickType.Right, false)
+        devMessage("§dDispatched click on slot ${click.slot}")
+        lastClickTime = System.currentTimeMillis()
     }
 
     @SubscribeEvent
