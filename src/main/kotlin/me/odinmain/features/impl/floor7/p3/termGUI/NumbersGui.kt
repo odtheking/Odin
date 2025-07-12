@@ -8,7 +8,6 @@ object NumbersGui : TermGui("Click in order!") {
 
     override fun renderTerminal(slotCount: Int) {
         renderBackground(slotCount)
-
         TerminalSolver.currentTerm?.solution?.forEach { pane ->
             val amount = TerminalSolver.currentTerm?.items[pane]?.stackSize ?: return@forEach
             val index = currentSolution.indexOf(pane)
@@ -21,16 +20,12 @@ object NumbersGui : TermGui("Click in order!") {
             }
 
             val (slotX, slotY) = renderSlot(pane, color, color).let {
-                it.first + (50f - (textWidths[amount] ?: 0f)) / 2f to it.second + (50f / 2f + 30f / 2f) / 2f - 6f }
+                it.first + (50f * TerminalSolver.customTermSize  - NVGRenderer.textWidth(amount.toString(), 30f * TerminalSolver.customTermSize, NVGRenderer.defaultFont)) / 2f to
+                        it.second + (50f * TerminalSolver.customTermSize  / 2f + 30f * TerminalSolver.customTermSize  / 2f) / 2f - 6f * TerminalSolver.customTermSize
+            }
 
             if (TerminalSolver.showNumbers && index != -1)
-                NVGRenderer.text(amount.toString(), slotX, slotY, 30f, Colors.WHITE.rgba, NVGRenderer.defaultFont)
-        }
-    }
-
-    private val textWidths by lazy {
-        (1..14).associateWith { number ->
-            NVGRenderer.textWidth(number.toString(), 30f, NVGRenderer.defaultFont)
+                NVGRenderer.text(amount.toString(), slotX, slotY, 30f * TerminalSolver.customTermSize, Colors.WHITE.rgba, NVGRenderer.defaultFont)
         }
     }
 }

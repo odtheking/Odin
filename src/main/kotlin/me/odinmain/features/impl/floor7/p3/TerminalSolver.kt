@@ -53,6 +53,7 @@ object TerminalSolver : Module(
     private val cancelMelodySolver by BooleanSetting("Stop Melody Solver", false, desc = "Stops rendering the melody solver.")
     val showNumbers by BooleanSetting("Show Numbers", true, desc = "Shows numbers in the order terminal.")
     private val terminalReloadThreshold by NumberSetting("Reload Threshold", 600, 300, 1000, 10, unit = "ms", desc = "The amount of time in seconds before the terminal reloads.")
+    val customTermSize by NumberSetting("Custom Term Size", 3, 1, 3, 0.2, desc = "The size of the custom terminal GUI.").withDependency { renderType == 3 }
 
     private val showRemoveWrongSettings by DropdownSetting("Render Wrong Settings").withDependency { renderType == 1 }
     private val removeWrong by BooleanSetting("Stop Rendering Wrong", true, desc = "Main toggle for stopping the rendering of incorrect items in terminals.").withDependency { renderType == 1 && showRemoveWrongSettings }
@@ -211,7 +212,7 @@ object TerminalSolver : Module(
                     event.isCanceled = true
                 }
                 val amount = event.slot.stack?.stackSize?.toString() ?: ""
-                if (showNumbers) RenderUtils.drawText(amount, event.x + 8f + getTextWidth(amount) / 2f, event.y + 4.5f, Colors.WHITE)
+                if (showNumbers) RenderUtils.drawText(amount, event.x + 8f - getTextWidth(amount) / 2f, event.y + 4.5f, Colors.WHITE)
             }
 
             TerminalTypes.RUBIX -> {
@@ -226,7 +227,7 @@ object TerminalSolver : Module(
                     }
 
                     if (renderType != 1) Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, color.rgba)
-                    RenderUtils.drawText(text.toString(), event.x + 8f + getTextWidth(text.toString()) / 2f, event.y + 4.5f, Colors.WHITE)
+                    RenderUtils.drawText(text.toString(), event.x + 8f - getTextWidth(text.toString()) / 2f, event.y + 4.5f, Colors.WHITE)
                 }
             }
 

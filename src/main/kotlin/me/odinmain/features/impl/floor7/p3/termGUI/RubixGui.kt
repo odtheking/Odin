@@ -15,20 +15,13 @@ object RubixGui : TermGui("Change all to same color!") {
             val clicksRequired = if (amount < 3) amount else amount - 5
 
             val (slotX, slotY) = renderSlot(pane, getColor(clicksRequired), getColor(if (amount < 3) clicksRequired + 1 else clicksRequired - 1)).let {
-                it.first + (50f - (textWidths[clicksRequired] ?: 0f)) / 2f to it.second + (50f / 2f + 30f / 2f) / 2f - 6f }
+                it.first + (50f * TerminalSolver.customTermSize - NVGRenderer.textWidth(clicksRequired.toString(), 30f * TerminalSolver.customTermSize, NVGRenderer.defaultFont)) / 2f to
+                        it.second + (50f * TerminalSolver.customTermSize / 2f + 30f * TerminalSolver.customTermSize / 2f) / 2f - 6f * TerminalSolver.customTermSize
+            }
 
             if (clicksRequired != 0)
-                NVGRenderer.text("$clicksRequired", slotX, slotY, 30f, Colors.WHITE.rgba, NVGRenderer.defaultFont)
+                NVGRenderer.text("$clicksRequired", slotX, slotY, 30f * TerminalSolver.customTermSize, Colors.WHITE.rgba, NVGRenderer.defaultFont)
         }
-    }
-
-    private val textWidths by lazy {
-        mapOf(
-            1 to NVGRenderer.textWidth("1", 30f, NVGRenderer.defaultFont),
-            2 to NVGRenderer.textWidth("2", 30f, NVGRenderer.defaultFont),
-            -1 to NVGRenderer.textWidth("-1", 30f, NVGRenderer.defaultFont),
-            -2 to NVGRenderer.textWidth("-2", 30f, NVGRenderer.defaultFont)
-        )
     }
 
     private fun getColor(clicksRequired: Int): Color = when (clicksRequired) {
