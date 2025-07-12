@@ -4,6 +4,7 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import me.odinmain.utils.equal
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.Colors
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.getRealCoords
@@ -11,16 +12,12 @@ import me.odinmain.utils.skyblock.getBlockAt
 import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.toFixed
 import me.odinmain.utils.toVec3
-import me.odinmain.utils.ui.Colors
 import net.minecraft.init.Blocks
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
 import java.io.InputStreamReader
 import java.nio.charset.StandardCharsets
-import kotlin.collections.component1
-import kotlin.collections.component2
-import kotlin.collections.set
 
 object WaterSolver {
 

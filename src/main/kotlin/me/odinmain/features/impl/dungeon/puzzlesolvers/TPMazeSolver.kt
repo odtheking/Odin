@@ -4,12 +4,12 @@ import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.RoomEnterEvent
 import me.odinmain.utils.isXZInterceptable
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.Color.Companion.withAlpha
+import me.odinmain.utils.render.Colors
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.getRealCoords
 import me.odinmain.utils.toAABB
-import me.odinmain.utils.ui.Colors
-import me.odinmain.utils.ui.clickgui.util.ColorUtil.withAlpha
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos

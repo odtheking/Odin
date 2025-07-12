@@ -22,6 +22,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object KuudraUtils {
 
+    val freshers: MutableMap<String, Long?> = mutableMapOf()
     var kuudraTeammates: ArrayList<KuudraPlayer> = ArrayList(4)
     var giantZombies: ArrayList<EntityGiantZombie> = arrayListOf()
     var supplies = BooleanArray(6) { true }

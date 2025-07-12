@@ -1,46 +1,35 @@
 package me.odinmain.features.impl.nether
 
+import me.odinmain.clickgui.settings.Setting.Companion.withDependency
+import me.odinmain.clickgui.settings.impl.BooleanSetting
+import me.odinmain.clickgui.settings.impl.ColorSetting
+import me.odinmain.clickgui.settings.impl.NumberSetting
 import me.odinmain.features.Module
-import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.features.settings.impl.ColorSetting
-import me.odinmain.features.settings.impl.HudSetting
-import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.addVec
+import me.odinmain.utils.render.Colors
 import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.render.Renderer
-import me.odinmain.utils.render.getMCTextWidth
 import me.odinmain.utils.skyblock.KuudraUtils
-import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.PlayerUtils
-import me.odinmain.utils.ui.Colors
+import me.odinmain.utils.ui.getTextWidth
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object BuildHelper : Module(
     name = "Build Helper",
-    desc = "Displays various information about the current state of the ballista build."
+    description = "Displays various information about the current state of the ballista build."
 ) {
     private val buildHelperDraw by BooleanSetting("Render on Ballista", false, desc = "Draws the build helper.")
     private val unfinishedWaypoints by BooleanSetting("Unfinished Waypoints", true, desc = "Renders the unfinished piles waypoints.")
     private val fadeWaypoints by BooleanSetting("Fade Waypoints", true, desc = "Fades the waypoints when close to them.")
     private val buildHelperColor by ColorSetting("Build Helper Color", Colors.MINECRAFT_GOLD, desc = "Color of the build helper.")
-    private val hud by HudSetting("Build helper HUD", 10f, 10f, 1f, true) {
-        if (it) {
-            RenderUtils.drawText("Build §c50§8%", 1f, 1f, 1f, buildHelperColor, shadow = true)
-            RenderUtils.drawText("Builders §e2", 1f, 12f, 1f, buildHelperColor, shadow = true)
-            RenderUtils.drawText("Freshers: §e1", 1f, 24f, 1f, buildHelperColor, shadow = true)
-
-            getMCTextWidth("Freshers: 1") + 2f to 36f
-        } else {
-            if (KuudraUtils.phase != 2) return@HudSetting 0f to 0f
-
-            RenderUtils.drawText("Build ${colorBuild(KuudraUtils.buildDonePercentage)}§8%", 1f,1f, 1f, buildHelperColor, shadow = true)
-            RenderUtils.drawText("Builders ${colorBuilders(KuudraUtils.playersBuildingAmount)}", 1f, 12f, 1f, buildHelperColor, shadow = true)
-            RenderUtils.drawText("Freshers: ${colorBuilders(KuudraUtils.kuudraTeammates.count { teammate -> teammate.eatFresh })}", 1f, 24f, 1f, buildHelperColor, shadow = true)
-            getMCTextWidth("4Build 50%") + 2f to 36f
-        }
+    private val hud by HUD("Build helper", "Shows information about the build progress.") { example ->
+        if (!example && (!KuudraUtils.inKuudra || KuudraUtils.phase != 2)) return@HUD 0f to 0f
+        RenderUtils.drawText("§bFreshers: ${colorBuilders(KuudraUtils.kuudraTeammates.count { teammate -> teammate.eatFresh })}", 1f, 1f)
+        RenderUtils.drawText("§bBuilders: ${colorBuilders(KuudraUtils.playersBuildingAmount)}", 1f, 10f)
+        RenderUtils.drawText("§bBuild: ${colorBuild(KuudraUtils.buildDonePercentage)}%", 1f, 19f)
+        getTextWidth("Freshers: 0") + 2f to 10f * 3
     }
     private val stunNotification by BooleanSetting("Stun Notification", true, desc = "Notifies you when to go to stun.")
     private val stunNotificationNumber by NumberSetting("Stun Percent", 93, 0.0, 100.0, desc = "The build % to notify at.", unit = "%").withDependency { stunNotification }

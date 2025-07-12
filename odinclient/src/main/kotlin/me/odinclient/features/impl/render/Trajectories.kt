@@ -1,15 +1,17 @@
 package me.odinclient.features.impl.render
 
+import me.odinmain.clickgui.settings.Setting.Companion.withDependency
+import me.odinmain.clickgui.settings.impl.BooleanSetting
+import me.odinmain.clickgui.settings.impl.ColorSetting
+import me.odinmain.clickgui.settings.impl.NumberSetting
 import me.odinmain.events.impl.RenderEntityModelEvent
 import me.odinmain.features.Module
-import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.features.settings.impl.ColorSetting
-import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.addVec
 import me.odinmain.utils.component1
 import me.odinmain.utils.component2
 import me.odinmain.utils.component3
+import me.odinmain.utils.render.Color.Companion.multiplyAlpha
+import me.odinmain.utils.render.Colors
 import me.odinmain.utils.render.OutlineUtils
 import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.render.RenderUtils.renderVec
@@ -21,8 +23,6 @@ import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.isHolding
 import me.odinmain.utils.skyblock.isLeap
 import me.odinmain.utils.skyblock.isShortbow
-import me.odinmain.utils.ui.Colors
-import me.odinmain.utils.ui.clickgui.util.ColorUtil.multiplyAlpha
 import net.minecraft.entity.Entity
 import net.minecraft.entity.boss.EntityWither
 import net.minecraft.entity.item.EntityArmorStand
@@ -43,7 +43,7 @@ import kotlin.math.sqrt
 
 object Trajectories : Module(
     name = "Trajectories",
-    desc = "Displays the trajectory of pearls and bows."
+    description = "Displays the trajectory of pearls and bows."
 ) {
     private val bows by BooleanSetting("Bows", true, desc = "Render trajectories of bow arrows.")
     private val pearls by BooleanSetting("Pearls", true, desc = "Render trajectories of ender pearls.")

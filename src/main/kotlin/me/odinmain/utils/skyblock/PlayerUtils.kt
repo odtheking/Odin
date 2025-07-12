@@ -5,8 +5,8 @@ import me.odinmain.events.impl.PacketEvent
 import me.odinmain.features.impl.floor7.p3.termsim.TermSimGUI
 import me.odinmain.utils.postAndCatch
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.Colors
 import me.odinmain.utils.render.Renderer
-import me.odinmain.utils.ui.Colors
 import net.minecraft.network.play.client.C0EPacketClickWindow
 import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3

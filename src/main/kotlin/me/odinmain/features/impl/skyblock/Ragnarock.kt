@@ -1,14 +1,14 @@
 package me.odinmain.features.impl.skyblock
 
+import me.odinmain.clickgui.settings.Setting.Companion.withDependency
+import me.odinmain.clickgui.settings.impl.BooleanSetting
 import me.odinmain.features.Module
-import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.utils.skyblock.*
 import net.minecraft.network.play.server.S29PacketSoundEffect
 
 object Ragnarock : Module(
     name = "Ragnarock",
-    desc = "Provides alerts about Ragnarock's state."
+    description = "Provides alerts about Ragnarock's state."
 ) {
     private val alert by BooleanSetting("Alert", true, desc = "Alerts you when you start casting Ragnarock.")
     private val alertCancelled by BooleanSetting("Alert Cancelled", true, desc = "Alerts you when your Ragnarock is cancelled.")

@@ -1,17 +1,15 @@
 package me.odinmain.features.impl.skyblock
 
+import me.odinmain.clickgui.settings.Setting.Companion.withDependency
+import me.odinmain.clickgui.settings.impl.BooleanSetting
 import me.odinmain.features.Module
-import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.features.settings.impl.HudSetting
 import me.odinmain.utils.equalsOneOf
-import me.odinmain.utils.render.RenderUtils
-import me.odinmain.utils.render.mcTextAndWidth
+import me.odinmain.utils.render.Colors
 import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.isHolding
 import me.odinmain.utils.skyblock.skyblockID
 import me.odinmain.utils.toFixed
-import me.odinmain.utils.ui.Colors
+import me.odinmain.utils.ui.drawStringWidth
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.server.S29PacketSoundEffect
 import net.minecraft.network.play.server.S32PacketConfirmTransaction
@@ -19,25 +17,23 @@ import kotlin.math.ceil
 
 object AbilityTimers : Module(
     name = "Ability Timers",
-    desc = "Provides timers for Wither Impact, Tactical Insertion, and Enrage."
+    description = "Provides timers for Wither Impact, Tactical Insertion, and Enrage."
 ) {
-    private val witherHud by HudSetting("Wither Impact Hud", 10f, 10f, 1f, true) {
-        if (witherImpactTicks <= 0 && (hideWhenDone || !LocationUtils.isInSkyblock) && !it) return@HudSetting 0f to 0f
-        val width = if (compact) 6f else 65f
-        RenderUtils.drawText(witherImpactText, width / 2f, 0f, 1f, Colors.WHITE, shadow = true, center = true)
-        width to 12f
+    private val witherHud by HUD("Wither Impact Hud", "Displays the cooldown of Wither Impact.") {
+        if (witherImpactTicks <= 0 && (hideWhenDone || !LocationUtils.isInSkyblock) && !it) return@HUD 0f to 0f
+        drawStringWidth(witherImpactText, 1f, 1f, Colors.WHITE) + 2f to 10f
     }
     private val compact: Boolean by BooleanSetting("Compact Mode", true, desc = "Compacts the Hud to just one character wide.").withDependency { witherHud.enabled }
     private val hideWhenDone: Boolean by BooleanSetting("Hide When Ready", true, desc = "Hides the hud when the cooldown is over.").withDependency { witherHud.enabled }
 
-    private val tacHud by HudSetting("Tactical Insertion Hud", 10f, 10f, 1f, true) {
-        if (tacTimer == 0 && !it) return@HudSetting 0f to 0f
-        mcTextAndWidth("§6Tac: ${tacTimer.color(40, 20)}${(tacTimer / 20f).toFixed()}s", 1f, 1f, 1f, color = Colors.WHITE, center = false) + 2f to 12f
+    private val tacHud by HUD("Tactical Insertion Hud", "Displays the cooldown of Tactical Insertion.") {
+        if (tacTimer == 0 && !it) return@HUD 0f to 0f
+        drawStringWidth("§6Tac: ${tacTimer.color(40, 20)}${(tacTimer / 20f).toFixed()}s", 1f, 1f, color = Colors.WHITE) + 2f to 10f
     }
 
-    private val enrageHud by HudSetting("Enrage Hud", 10f, 10f, 1f, true) {
-        if (enrageTimer == 0 && !it) return@HudSetting 0f to 0f
-        mcTextAndWidth("§4Enrage: ${enrageTimer.color(80, 40)}${(enrageTimer / 20f).toFixed()}s", 0f, 0f, 1f, Colors.WHITE, center = false) + 2f to 12f
+    private val enrageHud by HUD("Enrage Hud", "Displays the cooldown of Enrage.") {
+        if (enrageTimer == 0 && !it) return@HUD 0f to 0f
+        drawStringWidth("§4Enrage: ${enrageTimer.color(80, 40)}${(enrageTimer / 20f).toFixed()}s", 1f, 1f, Colors.WHITE) + 2f to 10f
     }
 
     private var witherImpactTicks: Int = -1

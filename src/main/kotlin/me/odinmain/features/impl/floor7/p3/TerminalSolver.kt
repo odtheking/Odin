@@ -1,26 +1,27 @@
 package me.odinmain.features.impl.floor7.p3
 
 import io.github.moulberry.notenoughupdates.NEUApi
+import me.odinmain.clickgui.settings.AlwaysActive
+import me.odinmain.clickgui.settings.Setting.Companion.withDependency
+import me.odinmain.clickgui.settings.impl.*
 import me.odinmain.events.impl.GuiEvent
 import me.odinmain.events.impl.PacketEvent
 import me.odinmain.events.impl.TerminalEvent
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.p3.termGUI.CustomTermGui
 import me.odinmain.features.impl.floor7.p3.terminalhandler.*
-import me.odinmain.features.settings.AlwaysActive
-import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.postAndCatch
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.Colors
 import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.skyblock.ClickType
 import me.odinmain.utils.skyblock.devMessage
 import me.odinmain.utils.skyblock.modMessage
-import me.odinmain.utils.ui.Colors
-import me.odinmain.utils.ui.clickgui.util.ColorUtil.withAlpha
-import me.odinmain.utils.ui.util.MouseUtils
+import me.odinmain.utils.ui.getTextWidth
+import me.odinmain.utils.ui.mouseX
+import me.odinmain.utils.ui.mouseY
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.client.renderer.GlStateManager
@@ -42,11 +43,9 @@ import org.lwjgl.input.Keyboard
 @AlwaysActive // So it can be used in other modules
 object TerminalSolver : Module(
     name = "Terminal Solver",
-    desc = "Renders solution for terminals in floor 7."
+    description = "Renders solution for terminals in floor 7."
 ) {
     val renderType by SelectorSetting("Mode", "Odin", arrayListOf("Odin", "Skytils", "SBE", "Custom GUI"), desc = "How the terminal solver should render.")
-    val customGuiText by SelectorSetting("Custom Gui Title", "Top Left", arrayListOf("Top Left", "Middle", "Disabled"), desc = "Where the custom gui text should be rendered.").withDependency { renderType == 3 }
-    val customScale by NumberSetting("Custom Scale", 1f, .8f, 2.5f, .1f, desc = "Size of the Custom Terminal Gui.").withDependency { renderType == 3 }
     private val cancelToolTip by BooleanSetting("Stop Tooltips", true, desc = "Stops rendering tooltips in terminals.").withDependency { renderType != 3 }
     val hideClicked by BooleanSetting("Hide Clicked", false, desc = "Visually hides your first click before a gui updates instantly to improve perceived response time. Does not affect actual click time.")
     private val middleClickGUI by BooleanSetting("Middle Click GUI", true, desc = "Replaces right click with middle click in terminals.").withDependency { renderType != 3 }
@@ -63,37 +62,32 @@ object TerminalSolver : Module(
     private val removeWrongSelect by BooleanSetting("Stop Select", true, desc = "Stops rendering wrong items in the select terminal.").withDependency { renderType == 1 && showRemoveWrongSettings && removeWrong }
     private val removeWrongMelody by BooleanSetting("Stop Melody", true, desc = "Stops rendering wrong items in the melody terminal.").withDependency { renderType == 1 && showRemoveWrongSettings && removeWrong }
 
-    val gap by NumberSetting("Gap", 10, 0, 20, 1, "Gap between items for the custom gui.").withDependency { renderType == 3 }
-    val textScale by NumberSetting("Text Scale", 1, 1, 3, increment = 1, desc = "Scale of the text in the custom gui.").withDependency { renderType == 3 }
-
     private val showColors by DropdownSetting("Color Settings")
-    private val backgroundColor by ColorSetting("Background Color", Colors.MINECRAFT_DARK_GRAY, true, desc = "Background color of the terminal solver.").withDependency { renderType == 0 && showColors }
+    private val backgroundColor by ColorSetting("Background", Colors.MINECRAFT_DARK_GRAY, true, desc = "Background color of the terminal solver.").withDependency { renderType == 0 && showColors }
 
-    val customGuiColor by ColorSetting("Custom Gui Color", Colors.MINECRAFT_DARK_GRAY.withAlpha(.8f), true, desc = "Color of the custom gui.").withDependency { renderType == 3 && showColors }
-    val panesColor by ColorSetting("Panes Color", Colors.MINECRAFT_DARK_AQUA, true, desc = "Color of the panes terminal solver.").withDependency { showColors }
+    val panesColor by ColorSetting("Panes", Colors.MINECRAFT_GREEN, true, desc = "Color of the panes terminal solver.").withDependency { showColors }
 
-    val rubixColor1 by ColorSetting("Rubix Color 1", Colors.MINECRAFT_DARK_AQUA, true, desc = "Color of the rubix terminal solver for 1 click.").withDependency { showColors }
-    val rubixColor2 by ColorSetting("Rubix Color 2", Color(0, 100, 100), true, desc = "Color of the rubix terminal solver for 2 click.").withDependency { showColors }
-    val oppositeRubixColor1 by ColorSetting("Rubix Color -1", Color(170, 85, 0), true, desc = "Color of the rubix terminal solver for -1 click.").withDependency { showColors }
-    val oppositeRubixColor2 by ColorSetting("Rubix Color -2", Color(210, 85, 0), true, desc = "Color of the rubix terminal solver for -2 click.").withDependency { showColors }
+    val rubixColor1 by ColorSetting("Rubix 1", Colors.MINECRAFT_DARK_AQUA, true, desc = "Color of the rubix terminal solver for 1 click.").withDependency { showColors }
+    val rubixColor2 by ColorSetting("Rubix 2", Color(0, 100, 100), true, desc = "Color of the rubix terminal solver for 2 click.").withDependency { showColors }
+    val oppositeRubixColor1 by ColorSetting("Rubix -1", Color(170, 85, 0), true, desc = "Color of the rubix terminal solver for -1 click.").withDependency { showColors }
+    val oppositeRubixColor2 by ColorSetting("Rubix -2", Color(210, 85, 0), true, desc = "Color of the rubix terminal solver for -2 click.").withDependency { showColors }
 
-    val orderColor by ColorSetting("Order Color 1", Colors.MINECRAFT_DARK_AQUA, true, desc = "Color of the order terminal solver for 1st item.").withDependency { showColors }
-    val orderColor2 by ColorSetting("Order Color 2", Color(0, 100, 100), true, desc = "Color of the order terminal solver for 2nd item.").withDependency { showColors }
-    val orderColor3 by ColorSetting("Order Color 3", Color(0, 65, 65), true, desc = "Color of the order terminal solver for 3rd item.").withDependency { showColors }
+    val orderColor by ColorSetting("Order 1", Colors.MINECRAFT_DARK_AQUA, true, desc = "Color of the order terminal solver for 1st item.").withDependency { showColors }
+    val orderColor2 by ColorSetting("Order 2", Color(0, 100, 100), true, desc = "Color of the order terminal solver for 2nd item.").withDependency { showColors }
+    val orderColor3 by ColorSetting("Order 3", Color(0, 65, 65), true, desc = "Color of the order terminal solver for 3rd item.").withDependency { showColors }
 
-    val startsWithColor by ColorSetting("Starts With Color", Colors.MINECRAFT_DARK_AQUA, true, desc = "Color of the starts with terminal solver.").withDependency { showColors }
+    val startsWithColor by ColorSetting("Starts With", Colors.MINECRAFT_DARK_AQUA, true, desc = "Color of the starts with terminal solver.").withDependency { showColors }
 
-    val selectColor by ColorSetting("Select Color", Colors.MINECRAFT_DARK_AQUA, true, desc = "Color of the select terminal solver.").withDependency { showColors }
+    val selectColor by ColorSetting("Select", Colors.MINECRAFT_DARK_AQUA, true, desc = "Color of the select terminal solver.").withDependency { showColors }
 
-    val melodyColumColor by ColorSetting("Melody Column Color", Colors.MINECRAFT_DARK_PURPLE.withAlpha(0.75f), true, desc = "Color of the colum indicator for melody.").withDependency { showColors && !cancelMelodySolver }
-    val melodyRowColor by ColorSetting("Melody Row Color", Colors.MINECRAFT_GREEN.withAlpha(0.75f), true, desc = "Color of the row indicator for melody.").withDependency { showColors && !cancelMelodySolver }
-    val melodyPressColumColor by ColorSetting("Melody Press Column Color", Colors.MINECRAFT_YELLOW.withAlpha(0.75f), true, desc = "Color of the location for pressing for melody.").withDependency { showColors && !cancelMelodySolver }
-    val melodyPressColor by ColorSetting("Melody Press Color", Colors.MINECRAFT_DARK_AQUA.withAlpha(0.75f), true, desc = "Color of the location for pressing for melody.").withDependency { showColors && !cancelMelodySolver }
-    val melodyCorrectRowColor by ColorSetting("Melody Correct Row Color", Colors.WHITE.withAlpha(0.75f), true, desc = "Color of the whole row for melody.").withDependency { showColors && !cancelMelodySolver }
+    val melodyColumColor by ColorSetting("Melody Column", Colors.MINECRAFT_DARK_PURPLE, true, desc = "Color of the colum indicator for melody.").withDependency { showColors && !cancelMelodySolver }
+    val melodyRowColor by ColorSetting("Melody Row", Colors.MINECRAFT_RED, true, desc = "Color of the row indicator for melody.").withDependency { showColors && !cancelMelodySolver }
+    val melodyPointerColor by ColorSetting("Melody Pointer", Colors.MINECRAFT_GREEN, true, desc = "Color of the location for pressing for melody.").withDependency { showColors && !cancelMelodySolver }
 
     var currentTerm: TerminalHandler? = null
         private set
     var lastTermOpened: TerminalHandler? = null
+        private set
     private val startsWithRegex = Regex("What starts with: '(\\w+)'?")
     private var lastClickTime = 0L
 
@@ -217,7 +211,7 @@ object TerminalSolver : Module(
                     event.isCanceled = true
                 }
                 val amount = event.slot.stack?.stackSize?.toString() ?: ""
-                if (showNumbers) RenderUtils.drawText(amount, event.x + 8.5f, event.y + 4.5f, 1f, Colors.WHITE, center = true)
+                if (showNumbers) RenderUtils.drawText(amount, event.x + 8f + getTextWidth(amount) / 2f, event.y + 4.5f, Colors.WHITE)
             }
 
             TerminalTypes.RUBIX -> {
@@ -232,15 +226,15 @@ object TerminalSolver : Module(
                     }
 
                     if (renderType != 1) Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, color.rgba)
-                    RenderUtils.drawText(text.toString(), event.x + 8f, event.y + 4.5f, 1f, Colors.WHITE, center = true)
+                    RenderUtils.drawText(text.toString(), event.x + 8f + getTextWidth(text.toString()) / 2f, event.y + 4.5f, Colors.WHITE)
                 }
             }
 
             TerminalTypes.MELODY -> if (renderType != 1 || (renderType == 1 && !removeWrong)) {
                 Gui.drawRect(event.x, event.y, event.x + 16, event.y + 16, when {
                     slotIndex / 9 == 0 || slotIndex / 9 == 5 -> melodyColumColor
-                    (slotIndex % 9).equalsOneOf(1, 2, 3, 4, 5) -> melodyRowColor
-                    else -> melodyPressColor
+                    (slotIndex % 9).equalsOneOf(1, 2, 3, 4, 5) -> melodyPointerColor
+                    else -> melodyPointerColor
                 }.rgba)
             }
         }
@@ -258,7 +252,7 @@ object TerminalSolver : Module(
         if (!enabled || this == null) return
 
         if (renderType == 3 && !(type == TerminalTypes.MELODY && cancelMelodySolver)) {
-            CustomTermGui.mouseClicked(MouseUtils.mouseX.toInt(), MouseUtils.mouseY.toInt(), event.button)
+            CustomTermGui.mouseClicked(mouseX.toInt(), mouseY.toInt(), event.button)
             event.isCanceled = true
             return
         }
@@ -286,7 +280,7 @@ object TerminalSolver : Module(
     fun onGuiKeyPress(event: GuiEvent.KeyPress) {
         if (!enabled || currentTerm == null || (currentTerm?.type == TerminalTypes.MELODY && cancelMelodySolver) || renderType != 3) return
         if ((event.key == mc.gameSettings?.keyBindDrop?.keyCode || (event.key in 2..10))) {
-            CustomTermGui.mouseClicked(MouseUtils.mouseX.toInt(), MouseUtils.mouseY.toInt(), if (event.key == Keyboard.KEY_LCONTROL && event.key == mc.gameSettings.keyBindDrop.keyCode) 1 else 0)
+            CustomTermGui.mouseClicked(mouseX.toInt(), mouseY.toInt(), if (event.key == Keyboard.KEY_LCONTROL && event.key == mc.gameSettings.keyBindDrop.keyCode) 1 else 0)
             event.isCanceled = true
         }
     }

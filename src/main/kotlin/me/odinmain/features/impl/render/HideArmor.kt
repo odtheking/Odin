@@ -1,17 +1,17 @@
 package me.odinmain.features.impl.render
 
+import me.odinmain.clickgui.settings.Setting.Companion.withDependency
+import me.odinmain.clickgui.settings.impl.BooleanSetting
+import me.odinmain.clickgui.settings.impl.DropdownSetting
+import me.odinmain.clickgui.settings.impl.SelectorSetting
 import me.odinmain.features.Module
-import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.features.settings.impl.DropdownSetting
-import me.odinmain.features.settings.impl.SelectorSetting
 import me.odinmain.utils.equalsOneOf
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
 
 object HideArmor : Module(
     name = "Hide Armor",
-    desc = "Prevents rendering of selectable armor pieces."
+    description = "Prevents rendering of selectable armor pieces."
 ) {
     private val hideOnlyPlayers by BooleanSetting("Hide Only Players", true, desc = "Only hide armor on players.")
     private val hideArmor by SelectorSetting("Hide Armor", "Self", options = arrayListOf("Self", "Others", "Both"), desc = "Hide the armor of yourself, others, or both.")

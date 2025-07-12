@@ -1,15 +1,14 @@
 package me.odinmain.features.impl.render
 
+import me.odinmain.clickgui.settings.impl.NumberSetting
+import me.odinmain.clickgui.settings.impl.StringSetting
 import me.odinmain.features.Module
-import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.features.settings.impl.NumberSetting
-import me.odinmain.features.settings.impl.StringSetting
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.Colors
 import me.odinmain.utils.render.RenderUtils
-import me.odinmain.utils.render.getMCTextHeight
-import me.odinmain.utils.render.roundedRectangle
 import me.odinmain.utils.skyblock.PlayerUtils
-import me.odinmain.utils.ui.Colors
+import me.odinmain.utils.ui.getTextWidth
+import net.minecraft.client.gui.Gui
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.opengl.Display
@@ -17,26 +16,24 @@ import java.awt.Color.getHSBColor
 
 object DVD : Module(
     name = "DVD",
-    desc = "No further explanation."
+    description = "No further explanation."
 ) {
-    private val boxWidth by NumberSetting("Box Width", 50f, 0, 150, 1, desc = "Width of the DVD box.")
-    private val boxHeight by NumberSetting("Box Height", 50f, 0, 150, 1, desc = "Height of the DVD box.")
-    private val roundedCorners by BooleanSetting("Rounded Corners", true, desc = "Whether the DVD box should have rounded corners.")
+    private val boxWidth by NumberSetting("Box Width", 50, 0, 150, 1, desc = "Width of the DVD box.")
+    private val boxHeight by NumberSetting("Box Height", 50, 0, 150, 1, desc = "Height of the DVD box.")
 
     private val speed by NumberSetting("Speed", 1, .1, 2, .1, desc = "Speed of the DVD box.")
     private val text by StringSetting("Text", "ODVD", desc = "Text to display on the DVD box.")
-    private val textScale by NumberSetting("Text Scale", 1.5f, 0.1, 2, 0.1, desc = "Scale of the text.")
 
     private var lastUpdateTime = System.nanoTime()
     private var color = Colors.WHITE.copy()
-    private var x = 10f
-    private var y = 10f
+    private var x = 10
+    private var y = 10
     private var dx = 1
     private var dy = 1
 
     override fun onEnable() {
-        x = Display.getWidth() / 4f
-        y = Display.getHeight() / 4f
+        x = Display.getWidth() / 4
+        y = Display.getHeight() / 4
         lastUpdateTime = System.nanoTime()
         super.onEnable()
     }
@@ -50,8 +47,8 @@ object DVD : Module(
     fun onRenderOverlay(event: RenderGameOverlayEvent.Post) {
         if (event.type != RenderGameOverlayEvent.ElementType.ALL) return
         updatePosition()
-        roundedRectangle(x, y, boxWidth, boxHeight, color, if (roundedCorners) 12f else 0f)
-        RenderUtils.drawText(text, x + boxWidth / 2, y + boxHeight / 2f - getMCTextHeight() * textScale / 2f , textScale, color, true, center = true)
+        Gui.drawRect(x, y, x + boxWidth, y + boxHeight, color.rgba)
+        RenderUtils.drawText(text, x + boxWidth / 2f - getTextWidth(text) / 2f, y + boxHeight / 2f - 5, color, true)
     }
 
     private fun updatePosition() {
@@ -60,14 +57,14 @@ object DVD : Module(
         lastUpdateTime = currentTime
 
         val movement = speed * deltaTime * 200
-        x += dx * movement.toFloat()
-        y += dy * movement.toFloat()
+        x += (dx * movement.toFloat()).toInt()
+        y += (dy * movement.toFloat()).toInt()
 
         val screenWidth = Display.getWidth() / 2
         val screenHeight = Display.getHeight() / 2
 
         if (x <= 0) {
-            x = 0f
+            x = 0
             dx = -dx
             color = randomDVDColor()
         } else if (x + boxWidth >= screenWidth) {
@@ -77,7 +74,7 @@ object DVD : Module(
         }
 
         if (y <= 0) {
-            y = 0f
+            y = 0
             dy = -dy
             color = randomDVDColor()
         } else if (y + boxHeight >= screenHeight) {

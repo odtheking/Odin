@@ -1,9 +1,9 @@
 package me.odinmain.features.impl.nether
 
+import me.odinmain.clickgui.settings.Setting.Companion.withDependency
+import me.odinmain.clickgui.settings.impl.BooleanSetting
+import me.odinmain.clickgui.settings.impl.NumberSetting
 import me.odinmain.features.Module
-import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.skyblock.KuudraUtils.SupplyPickUpSpot
 import me.odinmain.utils.skyblock.KuudraUtils.giantZombies
 import me.odinmain.utils.skyblock.PlayerUtils
@@ -13,7 +13,7 @@ import net.minecraft.util.Vec3
 
 object NoPre : Module(
     name = "Pre-Spot Alert",
-    desc = "Alerts the party if a pre spot is missing."
+    description = "Alerts the party if a pre spot is missing."
 ) {
     private val showCratePriority by BooleanSetting("Show Crate Priority", false, desc = "Shows the crate priority alert.")
     private val cratePriorityTitleTime by NumberSetting("Title Time", 30, 1, 60, desc = "The time the crate priority alert will be displayed for.").withDependency { showCratePriority }

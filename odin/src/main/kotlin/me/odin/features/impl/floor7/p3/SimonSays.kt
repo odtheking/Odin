@@ -1,21 +1,21 @@
 package me.odin.features.impl.floor7.p3
 
+import me.odinmain.clickgui.settings.impl.BooleanSetting
+import me.odinmain.clickgui.settings.impl.ColorSetting
+import me.odinmain.clickgui.settings.impl.NumberSetting
+import me.odinmain.clickgui.settings.impl.SelectorSetting
 import me.odinmain.events.impl.BlockChangeEvent
 import me.odinmain.events.impl.PostEntityMetadata
 import me.odinmain.features.Module
-import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.features.settings.impl.ColorSetting
-import me.odinmain.features.settings.impl.NumberSetting
-import me.odinmain.features.settings.impl.SelectorSetting
 import me.odinmain.utils.component1
 import me.odinmain.utils.component2
 import me.odinmain.utils.component3
 import me.odinmain.utils.floorVec
+import me.odinmain.utils.render.Color.Companion.withAlpha
+import me.odinmain.utils.render.Colors
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.M7Phases
-import me.odinmain.utils.ui.Colors
-import me.odinmain.utils.ui.clickgui.util.ColorUtil.withAlpha
 import net.minecraft.block.BlockButtonStone
 import net.minecraft.entity.item.EntityItem
 import net.minecraft.init.Blocks
@@ -28,7 +28,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object SimonSays : Module(
     name = "Simon Says",
-    desc = "Shows a solution for the Simon Says device."
+    description = "Shows a solution for the Simon Says device."
 ) {
     private val firstColor by ColorSetting("First Color", Colors.MINECRAFT_GREEN.withAlpha(0.5f), allowAlpha = true, desc = "The color of the first button.")
     private val secondColor by ColorSetting("Second Color", Colors.MINECRAFT_GOLD.withAlpha(0.5f), allowAlpha = true, desc = "The color of the second button.")

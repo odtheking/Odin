@@ -1,9 +1,9 @@
 package me.odin.features.impl.skyblock
 
+import me.odinmain.clickgui.settings.Setting.Companion.withDependency
+import me.odinmain.clickgui.settings.impl.BooleanSetting
+import me.odinmain.clickgui.settings.impl.NumberSetting
 import me.odinmain.features.Module
-import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.skyblock.Island
 import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
@@ -13,7 +13,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object HidePlayers : Module(
     name = "Hide Players",
-    desc = "Hides players in your vicinity."
+    description = "Hides players in your vicinity."
 ) {
     private val hideAll by BooleanSetting("Hide all", false, desc = "Hides all players, regardless of distance.")
     private val distance by NumberSetting("distance", 3f, 0.0, 32.0, .5, "The number of blocks away to hide players.", unit = "blocks").withDependency { !hideAll }

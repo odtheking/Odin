@@ -1,14 +1,14 @@
 package me.odinmain.features.impl.skyblock
 
+import me.odinmain.clickgui.settings.impl.KeybindSetting
 import me.odinmain.features.Module
-import me.odinmain.features.settings.impl.KeybindSetting
 import me.odinmain.utils.skyblock.LocationUtils.isInSkyblock
 import me.odinmain.utils.skyblock.sendCommand
 import org.lwjgl.input.Keyboard
 
 object CommandKeybinds : Module(
     name = "Command Keybinds",
-    desc = "Various keybinds for common skyblock commands.",
+    description = "Various keybinds for common skyblock commands.",
     key = null
 ) {
     private val pets by KeybindSetting("Pets", Keyboard.KEY_NONE, desc = "Opens the pets menu.").onPress {

@@ -1,78 +1,42 @@
 package me.odinmain.utils
 
 import com.google.gson.JsonParser
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 import me.odinmain.OdinMain.logger
-import me.odinmain.features.impl.render.RandomPlayers
 import java.io.*
 import java.net.HttpURLConnection
+import java.net.URI
 import java.net.URL
 
-/**
- * Sends a POST request to a specified server URL with the provided request body.
- *
- * @param body The content of the request body to be sent to the server.
- * @param url The URL of the server to which the request will be sent. Defaults to a predefined URL.
- *
- * @returns The response code from the server (can be used as a bad get request)
- */
-suspend fun sendDataToServer(body: String, url: String = "https://gi2wsqbyse6tnfhqakbnq6f2su0vujgz.lambda-url.eu-north-1.on.aws/"): String = withTimeoutOrNull(5000) {
-    return@withTimeoutOrNull try {
-        val connection = withContext(Dispatchers.IO) {
-            URL(url).openConnection()
-        } as HttpURLConnection
-        connection.requestMethod = "POST"
-        connection.doOutput = true
+fun setupConnection(url: String, timeout: Int = 5000, useCaches: Boolean = true): InputStream {
+    val connection = URI(url).toURL().openConnection() as HttpURLConnection
+    connection.setRequestMethod("GET")
+    connection.setUseCaches(useCaches)
+    connection.addRequestProperty("User-Agent", "Odin")
+    connection.setReadTimeout(timeout)
+    connection.setConnectTimeout(timeout)
+    connection.setDoOutput(true)
+    return connection.inputStream
+}
 
-        val writer = OutputStreamWriter(connection.outputStream)
-        withContext(Dispatchers.IO) {
-            writer.write(body)
+fun fetchData(url: String, timeout: Int = 5000, useCaches: Boolean = true): String =
+    setupConnection(url, timeout, useCaches).bufferedReader().use { it.readText() }
+
+fun sendDataToServer(body: String, url: String = "https://gi2wsqbyse6tnfhqakbnq6f2su0vujgz.lambda-url.eu-north-1.on.aws/"): String {
+    return try {
+        val connection = URI(url).toURL().openConnection() as HttpURLConnection
+        connection.setRequestMethod("POST")
+        connection.setDoOutput(true)
+
+        with (OutputStreamWriter(connection.outputStream)) {
+            write(body)
+            flush()
         }
-        withContext(Dispatchers.IO) {
-            writer.flush()
-        }
-
-        val responseCode = connection.responseCode
-        if (RandomPlayers.isDev) println("Response Code: $responseCode")
-
-        val inputStream = connection.inputStream
-        val response = inputStream.bufferedReader().use { it.readText() }
-        if (RandomPlayers.isDev) println("Response: $response")
 
         connection.disconnect()
 
-        response
+        connection.inputStream.bufferedReader().use { it.readText() }
     } catch (_: Exception) { "" }
-} ?: ""
-
-/**
- * Fetches data from a specified URL and returns it as a string.
- *
- * @param url The URL from which to fetch data.
- * @return A string containing the data fetched from the URL, or an empty string in case of an exception.
- */
-suspend fun getDataFromServer(url: String): String {
-    return withTimeoutOrNull(10000) {
-        try {
-            val connection = withContext(Dispatchers.IO) {
-                URL(url).openConnection()
-            } as HttpURLConnection
-            connection.requestMethod = "GET"
-
-            val responseCode = connection.responseCode
-            if (RandomPlayers.isDev) println("Response Code: $responseCode")
-            if (responseCode != 200) return@withTimeoutOrNull ""
-            val inputStream = connection.inputStream
-            val response = inputStream.bufferedReader().use { it.readText() }
-            if (RandomPlayers.isDev) println("Response: $response")
-
-            connection.disconnect()
-
-            response
-        } catch (_: Exception) { "" }
-    } ?: ""
 }
 
 /**

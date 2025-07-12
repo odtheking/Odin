@@ -1,25 +1,25 @@
 package me.odinmain.features.impl.skyblock
 
+import me.odinmain.clickgui.settings.Setting.Companion.withDependency
+import me.odinmain.clickgui.settings.impl.BooleanSetting
+import me.odinmain.clickgui.settings.impl.ColorSetting
+import me.odinmain.clickgui.settings.impl.NumberSetting
 import me.odinmain.features.Module
-import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.features.settings.impl.ColorSetting
-import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.clock.Clock
+import me.odinmain.utils.render.Color.Companion.withAlpha
+import me.odinmain.utils.render.Colors
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.EtherWarpHelper
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.getAbilityCooldown
 import me.odinmain.utils.skyblock.isAir
 import me.odinmain.utils.skyblock.isHolding
 import me.odinmain.utils.toVec3
-import me.odinmain.utils.ui.Colors
-import me.odinmain.utils.ui.clickgui.util.ColorUtil.withAlpha
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object GyroWand : Module(
     name = "Gyro Wand",
-    desc = "Shows area of effect and cooldown of the Gyrokinetic Wand."
+    description = "Shows area of effect and cooldown of the Gyrokinetic Wand."
 ) {
     private val color by ColorSetting("Color", Colors.MINECRAFT_DARK_PURPLE.withAlpha(0.5f), allowAlpha = true, desc = "The color of the Gyrokinetic Wand range.")
     private val thickness by NumberSetting("Thickness", 0.4f, 0, 10, 0.05f, desc = "The thickness of the Gyrokinetic Wand range.")

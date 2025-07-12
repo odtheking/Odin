@@ -10,7 +10,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object ExtraStats : Module(
     name = "Extra Stats",
-    desc = "Shows additional dungeon stats at the end of the run in chat."
+    description = "Shows additional dungeon stats at the end of the run in chat."
 ) {
     private val extraStats = PostDungeonStats()
 

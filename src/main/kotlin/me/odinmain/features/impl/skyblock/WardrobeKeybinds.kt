@@ -1,12 +1,12 @@
 package me.odinmain.features.impl.skyblock
 
+import me.odinmain.clickgui.settings.Setting.Companion.withDependency
+import me.odinmain.clickgui.settings.impl.BooleanSetting
+import me.odinmain.clickgui.settings.impl.DropdownSetting
+import me.odinmain.clickgui.settings.impl.KeybindSetting
+import me.odinmain.clickgui.settings.impl.NumberSetting
 import me.odinmain.events.impl.GuiEvent
 import me.odinmain.features.Module
-import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.features.settings.impl.DropdownSetting
-import me.odinmain.features.settings.impl.KeybindSetting
-import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.name
 import me.odinmain.utils.skyblock.ClickType
@@ -20,11 +20,11 @@ import org.lwjgl.input.Keyboard
 
 object WardrobeKeybinds : Module(
     name = "Wardrobe Keybinds",
-    desc = "Keybinds for wardrobe equipping and unequipping."
+    description = "Keybinds for wardrobe equipping and unequipping."
 ) {
-    private val unequipKeybind by KeybindSetting("Unequip Keybind", Keyboard.KEY_NONE, "Unequips the current armor.")
-    private val nextPageKeybind by KeybindSetting("Next Page Keybind", Keyboard.KEY_NONE, "Goes to the next page.")
-    private val previousPageKeybind by KeybindSetting("Previous Page Keybind", Keyboard.KEY_NONE, "Goes to the previous page.")
+    private val unequipKeybind by KeybindSetting("Unequip", Keyboard.KEY_NONE, "Unequips the current armor.")
+    private val nextPageKeybind by KeybindSetting("Next Page", Keyboard.KEY_NONE, "Goes to the next page.")
+    private val previousPageKeybind by KeybindSetting("Previous Page", Keyboard.KEY_NONE, "Goes to the previous page.")
     private val delay by NumberSetting("Delay", 300L, 0L, 10000L, 10L, desc = "The delay between each click.", unit = "ms")
     private val disallowUnequippingEquipped by BooleanSetting("Disable Unequip", false, desc = "Prevents unequipping equipped armor.")
 

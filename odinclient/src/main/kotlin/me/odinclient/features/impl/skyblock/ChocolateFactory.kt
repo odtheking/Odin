@@ -1,18 +1,17 @@
 package me.odinclient.features.impl.skyblock
 
-import me.odinmain.events.impl.GuiEvent
+import me.odinmain.clickgui.settings.impl.BooleanSetting
+import me.odinmain.clickgui.settings.impl.NumberSetting
 import me.odinmain.features.Module
-import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.containsOneOf
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.name
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.Colors
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.PlayerUtils.windowClick
-import me.odinmain.utils.ui.Colors
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.inventory.Container
 import net.minecraft.inventory.ContainerChest
@@ -23,7 +22,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object ChocolateFactory : Module(
     name = "Chocolate Factory",
-    desc = "Automates the Chocolate Factory."
+    description = "Automates the Chocolate Factory."
 ) {
     private val clickFactory by BooleanSetting("Click Factory", false, desc = "Click the cookie in the Chocolate Factory menu.")
     private val autoUpgrade by BooleanSetting("Auto Upgrade", false, desc = "Automatically upgrade the worker.")

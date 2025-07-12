@@ -1,11 +1,11 @@
 package me.odinmain.features.impl.render
 
+import me.odinmain.clickgui.settings.Setting.Companion.withDependency
+import me.odinmain.clickgui.settings.impl.BooleanSetting
+import me.odinmain.clickgui.settings.impl.DropdownSetting
+import me.odinmain.clickgui.settings.impl.KeybindSetting
+import me.odinmain.clickgui.settings.impl.NumberSetting
 import me.odinmain.features.Module
-import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.features.settings.impl.DropdownSetting
-import me.odinmain.features.settings.impl.KeybindSetting
-import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.*
 import me.odinmain.utils.skyblock.EtherWarpHelper
 import me.odinmain.utils.skyblock.sendCommand
@@ -13,7 +13,7 @@ import org.lwjgl.input.Keyboard
 
 object Waypoints : Module(
     name = "Waypoints",
-    desc = "Allows to render waypoints based on coordinates in chat."
+    description = "Allows to render waypoints based on coordinates in chat."
 ) {
     private val fromParty by BooleanSetting("From Party Chat", true, desc = "Adds waypoints from party chat.")
     private val fromAll by BooleanSetting("From All Chat", false, desc = "Adds waypoints from all chat.")

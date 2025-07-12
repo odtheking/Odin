@@ -3,7 +3,7 @@ package me.odinmain.utils.skyblock
 import me.odinmain.features.impl.skyblock.DianaHelper
 import me.odinmain.utils.*
 import me.odinmain.utils.render.Color
-import me.odinmain.utils.ui.Colors
+import me.odinmain.utils.render.Colors
 import net.minecraft.network.play.server.S29PacketSoundEffect
 import net.minecraft.network.play.server.S2APacketParticles
 import net.minecraft.util.BlockPos

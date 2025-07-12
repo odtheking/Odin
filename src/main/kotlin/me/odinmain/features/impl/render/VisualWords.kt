@@ -1,11 +1,11 @@
 package me.odinmain.features.impl.render
 
+import me.odinmain.clickgui.settings.impl.MapSetting
 import me.odinmain.features.Module
-import me.odinmain.features.settings.impl.MapSetting
 
 object VisualWords : Module(
     name = "Visual Words",
-    desc = "Replaces words in the world with other words. (/visualwords)"
+    description = "Replaces words in the world with other words. (/visualwords)"
 ) {
     val wordsMap by MapSetting("wordsMap", mutableMapOf<String, String>())
 

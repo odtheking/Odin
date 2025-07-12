@@ -1,19 +1,18 @@
 package me.odinclient.features.impl.floor7.p3
 
+import me.odinmain.clickgui.settings.impl.BooleanSetting
+import me.odinmain.clickgui.settings.impl.NumberSetting
 import me.odinmain.events.impl.GuiEvent
 import me.odinmain.events.impl.TerminalEvent
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.p3.TerminalSolver
 import me.odinmain.features.impl.floor7.p3.TerminalTypes
-import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.skyblock.ClickType
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object AutoTerms : Module(
     name = "Auto Terms",
-    desc = "Automatically solves terminals.",
-    tag = TagType.RISKY
+    description = "Automatically solves terminals."
 ) {
     private val autoDelay by NumberSetting("Delay", 170L, 100, 300, unit = "ms", desc = "Delay between clicks.")
     private val firstClickDelay by NumberSetting("First Click Delay", 350L, 300, 500, unit = "ms", desc = "Delay before first click.")

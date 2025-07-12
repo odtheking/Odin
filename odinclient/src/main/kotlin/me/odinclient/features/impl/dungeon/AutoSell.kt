@@ -1,11 +1,11 @@
 package me.odinclient.features.impl.dungeon
 
+import me.odinmain.clickgui.settings.impl.ActionSetting
+import me.odinmain.clickgui.settings.impl.ListSetting
+import me.odinmain.clickgui.settings.impl.NumberSetting
+import me.odinmain.clickgui.settings.impl.SelectorSetting
 import me.odinmain.config.Config
 import me.odinmain.features.Module
-import me.odinmain.features.settings.impl.ActionSetting
-import me.odinmain.features.settings.impl.ListSetting
-import me.odinmain.features.settings.impl.NumberSetting
-import me.odinmain.features.settings.impl.SelectorSetting
 import me.odinmain.utils.containsOneOf
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.name
@@ -16,7 +16,7 @@ import net.minecraft.inventory.ContainerChest
 
 object AutoSell : Module(
     name = "Auto Sell",
-    desc = "Automatically sell items in trades and cookie menus. (/autosell)"
+    description = "Automatically sell items in trades and cookie menus. (/autosell)"
 ) {
     val sellList by ListSetting("Sell list", mutableSetOf<String>())
     private val delay by NumberSetting("Delay", 100L, 75L, 300L, 5L, desc = "The delay between each sell action.", unit = "ms")

@@ -1,13 +1,13 @@
 package me.odin.features.impl.render
 
+import me.odinmain.clickgui.settings.impl.BooleanSetting
 import me.odinmain.features.Module
-import me.odinmain.features.settings.impl.BooleanSetting
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
 object Camera : Module(
     name = "Camera",
-    desc = "Allows you to change camera settings."
+    description = "Allows you to change camera settings."
 ) {
     private val frontCamera by BooleanSetting("No Front Camera", desc = "Disables the front camera.")
 

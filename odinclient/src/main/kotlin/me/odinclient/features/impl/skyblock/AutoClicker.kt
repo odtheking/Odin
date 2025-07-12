@@ -2,11 +2,11 @@ package me.odinclient.features.impl.skyblock
 
 import me.odinclient.utils.skyblock.PlayerUtils.leftClick
 import me.odinclient.utils.skyblock.PlayerUtils.rightClick
+import me.odinmain.clickgui.settings.Setting.Companion.withDependency
+import me.odinmain.clickgui.settings.impl.BooleanSetting
+import me.odinmain.clickgui.settings.impl.KeybindSetting
+import me.odinmain.clickgui.settings.impl.NumberSetting
 import me.odinmain.features.Module
-import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.features.settings.impl.KeybindSetting
-import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.skyblock.isHolding
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -14,7 +14,7 @@ import org.lwjgl.input.Keyboard
 
 object AutoClicker : Module(
     name = "Auto Clicker",
-    desc = "Auto clicker with options for left-click, right-click, or both."
+    description = "Auto clicker with options for left-click, right-click, or both."
 ) {
     private val terminatorOnly by BooleanSetting("Terminator Only", true, desc = "Only click when the terminator and right click are held.")
     private val cps by NumberSetting("Clicks Per Second", 5.0f, 3.0, 15.0, .5, desc = "The amount of clicks per second to perform.").withDependency { terminatorOnly }

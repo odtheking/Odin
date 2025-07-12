@@ -2,23 +2,23 @@ package me.odinclient.features.impl.render
 
 import me.odinclient.mixin.accessors.IEntityPlayerSPAccessor
 import me.odinclient.utils.skyblock.PlayerUtils
+import me.odinmain.clickgui.settings.Setting.Companion.withDependency
+import me.odinmain.clickgui.settings.impl.*
 import me.odinmain.events.impl.ClickEvent
 import me.odinmain.events.impl.PacketEvent
 import me.odinmain.features.Module
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.toBlockPos
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.toVec3
-import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.*
 import me.odinmain.utils.clock.Clock
+import me.odinmain.utils.render.Color.Companion.withAlpha
+import me.odinmain.utils.render.Colors
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.EtherWarpHelper
 import me.odinmain.utils.skyblock.EtherWarpHelper.etherPos
 import me.odinmain.utils.skyblock.PlayerUtils.playLoudSound
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
-import me.odinmain.utils.ui.Colors
-import me.odinmain.utils.ui.clickgui.util.ColorUtil.withAlpha
 import net.minecraft.block.Block.getIdFromBlock
 import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.init.Blocks
@@ -39,7 +39,7 @@ import kotlin.math.absoluteValue
 
 object EtherWarpHelper : Module(
     name = "Etherwarp Helper",
-    desc = "Provides configurable visual and audio feedback for etherwarp."
+    description = "Provides configurable visual and audio feedback for etherwarp."
 ) {
     private val zeroPing by BooleanSetting("Zero Ping", false, desc = "Teleports you to the exact position of the etherwarp.").withDependency { !LocationUtils.isOnHypixel }
     private val keepMotion by BooleanSetting("Keep Motion", true, desc = "If you should keep your motion after zero ping etherwarp.").withDependency { !LocationUtils.isOnHypixel && zeroPing }
@@ -159,7 +159,7 @@ object EtherWarpHelper : Module(
             is C08PacketPlayerBlockPlacement -> {
                 if (LocationUtils.isOnHypixel) return@with
                 if (!zeroPing || placedBlockDirection != 255 || !mc.thePlayer.isHoldingEtherwarp() || lastSentLook == null ||
-                    !isSneaking && mc.thePlayer.heldItem?.skyblockID != "ETHERWARP_CONDUIT" || getBlockIdAt(mc.objectMouseOver.blockPos).equalsOneOf(54, 146)) return@with
+                    !isSneaking && mc.thePlayer.heldItem?.skyblockID != "ETHERWARP_CONDUIT" || getBlockIdAt(mc.objectMouseOver?.blockPos ?: return@with).equalsOneOf(54, 146)) return@with
 
                 if (!checkAllowedFails()) {
                     modMessage("Failed to etherwarp, too many failed attempts. ${recentFails.size} fails, ${recentlySentC06s.size} packets queued.")

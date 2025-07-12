@@ -1,9 +1,9 @@
 package me.odinmain.features.impl.skyblock
 
+import me.odinmain.clickgui.settings.Setting.Companion.withDependency
+import me.odinmain.clickgui.settings.impl.*
 import me.odinmain.events.impl.GuiEvent
 import me.odinmain.features.Module
-import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.name
 import me.odinmain.utils.skyblock.ClickType
@@ -18,11 +18,11 @@ import org.lwjgl.input.Keyboard
 
 object PetKeybinds : Module(
     name = "Pet Keybinds",
-    desc = "Keybinds for the pets menu. (/petkeys)"
+    description = "Keybinds for the pets menu. (/petkeys)"
 ) {
-    private val unequipKeybind by KeybindSetting("Unequip Keybind", Keyboard.KEY_NONE, "Unequips the current Pet.")
-    private val nextPageKeybind by KeybindSetting("Next Page Keybind", Keyboard.KEY_NONE, "Goes to the next page.")
-    private val previousPageKeybind by KeybindSetting("Previous Page Keybind", Keyboard.KEY_NONE, "Goes to the previous page.")
+    private val unequipKeybind by KeybindSetting("Unequip", Keyboard.KEY_NONE, "Unequips the current Pet.")
+    private val nextPageKeybind by KeybindSetting("Next Page", Keyboard.KEY_NONE, "Goes to the next page.")
+    private val previousPageKeybind by KeybindSetting("Previous Page", Keyboard.KEY_NONE, "Goes to the previous page.")
     private val delay by NumberSetting("Delay", 0L, 0, 10000, 10, desc = "The delay between each click.", unit = "ms")
     private val nounequip by BooleanSetting("Disable Unequip", false, desc = "Prevents using a pets keybind to unequip a pet. Does not prevent unequip keybind or normal clicking.")
     private val advanced by DropdownSetting("Show Settings", false)

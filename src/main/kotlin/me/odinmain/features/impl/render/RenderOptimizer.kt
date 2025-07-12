@@ -1,15 +1,16 @@
 package me.odinmain.features.impl.render
 
+import me.odinmain.clickgui.settings.Setting.Companion.withDependency
+import me.odinmain.clickgui.settings.impl.BooleanSetting
+import me.odinmain.clickgui.settings.impl.ColorSetting
+import me.odinmain.clickgui.settings.impl.DropdownSetting
 import me.odinmain.events.impl.PacketEvent
 import me.odinmain.features.Module
-import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.features.settings.impl.ColorSetting
-import me.odinmain.features.settings.impl.DropdownSetting
 import me.odinmain.utils.containsOneOf
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.Colors
 import me.odinmain.utils.render.RenderUtils.renderBoundingBox
 import me.odinmain.utils.render.RenderUtils.tessellator
 import me.odinmain.utils.render.RenderUtils.worldRenderer
@@ -18,7 +19,6 @@ import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.M7Phases
 import me.odinmain.utils.skyblock.getSkullValue
 import me.odinmain.utils.skyblock.skullTexture
-import me.odinmain.utils.ui.Colors
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.culling.ICamera
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher
@@ -46,7 +46,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo
 
 object RenderOptimizer : Module(
     "Render Optimizer",
-    desc = "Disables certain render function when they are not necessary."
+    description = "Disables certain render function when they are not necessary."
 ) {
     private val fallingBlocks by BooleanSetting("Remove Falling Blocks", true, desc = "Removes falling blocks that are not necessary.")
     private val removeTentacles by BooleanSetting("Remove P5 Tentacles", true, desc = "Removes armorstands of tentacles which are not necessary.")

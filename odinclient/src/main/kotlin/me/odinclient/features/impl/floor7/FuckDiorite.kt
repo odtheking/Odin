@@ -1,10 +1,10 @@
 package me.odinclient.features.impl.floor7
 
+import me.odinmain.clickgui.settings.Setting.Companion.withDependency
+import me.odinmain.clickgui.settings.impl.ActionSetting
+import me.odinmain.clickgui.settings.impl.BooleanSetting
+import me.odinmain.clickgui.settings.impl.SelectorSetting
 import me.odinmain.features.Module
-import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.ActionSetting
-import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.features.settings.impl.SelectorSetting
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.profile
 import me.odinmain.utils.skyblock.Island
@@ -22,7 +22,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.Phase
 
 object FuckDiorite : Module(
     name = "Fuck Diorite",
-    desc = "Replaces the pillars in the storm fight with glass."
+    description = "Replaces the pillars in the storm fight with glass."
 ) {
     private val GLASS_STATE = Blocks.glass.defaultState
     private val STAINED_GLASS = Blocks.stained_glass

@@ -4,19 +4,19 @@ import com.google.gson.JsonParser
 import kotlinx.coroutines.launch
 import me.odinmain.OdinMain
 import me.odinmain.OdinMain.scope
+import me.odinmain.clickgui.ClickGUI
+import me.odinmain.clickgui.HudManager
+import me.odinmain.clickgui.settings.AlwaysActive
+import me.odinmain.clickgui.settings.Setting.Companion.withDependency
+import me.odinmain.clickgui.settings.impl.*
 import me.odinmain.config.Config
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.features.settings.AlwaysActive
-import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.fetchURLData
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.Colors
 import me.odinmain.utils.sendDataToServer
 import me.odinmain.utils.skyblock.*
-import me.odinmain.utils.ui.Colors
-import me.odinmain.utils.ui.clickgui.ClickGUI
-import me.odinmain.utils.ui.hud.EditHUDGui
 import net.minecraft.event.ClickEvent
 import org.lwjgl.input.Keyboard
 
@@ -24,11 +24,11 @@ import org.lwjgl.input.Keyboard
 object ClickGUIModule: Module(
     name = "Click Gui",
     Keyboard.KEY_RSHIFT,
-    desc = "Allows you to customize the GUI."
+    description = "Allows you to customize the GUI."
 ) {
     val blur by BooleanSetting("Blur", false, desc = "Toggles the background blur for the gui.")
     val enableNotification by BooleanSetting("Enable notifications", true, desc = "Shows you a notification in chat when you toggle an option with a keybind.")
-    val color by ColorSetting("Gui Color", Color(50, 150, 220), allowAlpha = false, desc = "Color theme in the gui.")
+    val clickGUIColor by ColorSetting("Gui Color", Color(50, 150, 220), allowAlpha = false, desc = "Color theme in the gui.")
     val switchType by BooleanSetting("Switch Type", true, desc = "Switches the type of the settings in the gui.")
     val hudChat by BooleanSetting("Shows HUDs in GUIs", true, desc = "Shows HUDs in GUIs.")
 
@@ -45,23 +45,33 @@ object ClickGUIModule: Module(
     private val sendDevData by ActionSetting("Send Dev Data", desc = "Sends dev data to the server.") {
         showHidden = false
         scope.launch {
-            modMessage(sendDataToServer(body = "${mc.thePlayer.name}, [${devWingsColor.red},${devWingsColor.green},${devWingsColor.blue}], [$devSizeX,$devSizeY,$devSizeZ], $devWings, , $passcode", "https://tj4yzotqjuanubvfcrfo7h5qlq0opcyk.lambda-url.eu-north-1.on.aws/"))
+            modMessage(
+                sendDataToServer(
+                    body = "${mc.thePlayer.name}, [${devWingsColor.red},${devWingsColor.green},${devWingsColor.blue}], [$devSizeX,$devSizeY,$devSizeZ], $devWings, , $passcode",
+                    "https://tj4yzotqjuanubvfcrfo7h5qlq0opcyk.lambda-url.eu-north-1.on.aws/"
+                )
+            )
             RandomPlayers.updateCustomProperties()
         }
     }.withDependency { RandomPlayers.isRandom }
 
     private val action by ActionSetting("Open Example Hud", desc = "Opens an example hud to allow configuration of huds.") {
-        OdinMain.display = EditHUDGui
+        OdinMain.display = HudManager
     }
 
-    var lastSeenVersion by StringSetting("Last seen version", "1.0.0", desc = "", hidden = true)
-    private var joined by BooleanSetting("First join", false, "", hidden = true)
+    var lastSeenVersion by StringSetting("Last seen version", "1.0.0", desc = "").hide()
+    private var joined by BooleanSetting("First join", false, "").hide()
     private var hasSentUpdateMessage = false
     var latestVersionNumber: String? = null
 
-    val panelX = mutableMapOf<Category, NumberSetting<Float>>()
-    val panelY = mutableMapOf<Category, NumberSetting<Float>>()
-    val panelExtended = mutableMapOf<Category, BooleanSetting>()
+    data class PanelData(var x: Float = 10f, var y: Float = 10f, var extended: Boolean = true)
+    val panelSetting by MapSetting("Panel Settings", mutableMapOf<Category, PanelData>())
+
+    fun resetPositions() {
+        Category.entries.forEach {
+            panelSetting[it] = PanelData(10f + 260f * it.ordinal, 10f, true)
+        }
+    }
 
     init {
         execute(250) {
@@ -144,14 +154,7 @@ object ClickGUIModule: Module(
         }
     }
 
-    fun resetPositions() {
-        Category.entries.forEach {
-            val incr = 10f + 260f * it.ordinal
-            panelX.getOrPut(it) { +NumberSetting(it.name + ",x", default = incr, desc = "", hidden = true) }.value = incr
-            panelY.getOrPut(it) { +NumberSetting(it.name + ",y", default = 10f, desc = "", hidden = true) }.value = 10f
-            panelExtended.getOrPut(it) { +BooleanSetting(it.name + ",extended", default = true, desc = "", hidden = true) }.enabled = true
-        }
-    }
+
 
     override fun onKeybind() {
         this.toggle()

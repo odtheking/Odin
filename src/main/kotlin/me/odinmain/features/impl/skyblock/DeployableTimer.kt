@@ -2,13 +2,12 @@ package me.odinmain.features.impl.skyblock
 
 import me.odinmain.events.impl.PostEntityMetadata
 import me.odinmain.features.Module
-import me.odinmain.features.settings.impl.HudSetting
 import me.odinmain.utils.noControlCodes
+import me.odinmain.utils.render.Colors
 import me.odinmain.utils.render.RenderUtils
-import me.odinmain.utils.render.getMCTextWidth
 import me.odinmain.utils.skyblock.drawItem
 import me.odinmain.utils.skyblock.getSkullValue
-import me.odinmain.utils.ui.Colors
+import me.odinmain.utils.ui.getTextWidth
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
@@ -16,28 +15,28 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object DeployableTimer : Module(
     name = "Deployable Timer",
-    desc = "Displays the active deployable remaining time."
+    description = "Displays the active deployable remaining time."
 ) {
     private val firework = Item.getByNameOrId("minecraft:fireworks")
-    private val hud by HudSetting("Display", 10f, 10f, 1f, false) {
+    private val hud by HUD("Display", "Display the deployable timer in the HUD") {
         if (it) {
-            RenderUtils.drawText("§l§5SOS Flare", 40f, 10f, 1.35f, Colors.WHITE, center = false)
-            RenderUtils.drawText("§e179s", 40f, 25f, 1.2f, Colors.WHITE, center = false)
+            RenderUtils.drawText("§l§5SOS Flare", 40f, 10f, Colors.WHITE)
+            RenderUtils.drawText("§e179s", 40f, 25f, Colors.WHITE)
             ItemStack(firework).drawItem(x= -10f, y= -4f, scale = 3.5f)
-            getMCTextWidth("SOS Flare") + 45f to 52f
+            getTextWidth("SOS Flare") + 45f to 52f
         } else {
-            val activeDeployable = activeDeployables.firstOrNull { dep -> mc.thePlayer.getDistanceToEntity(dep.entity) <= dep.deployable.range } ?: return@HudSetting 0f to 0f
+            val activeDeployable = activeDeployables.firstOrNull { dep -> mc.thePlayer.getDistanceToEntity(dep.entity) <= dep.deployable.range } ?: return@HUD 0f to 0f
             val timeLeft = (activeDeployable.timeAdded + activeDeployable.duration - System.currentTimeMillis()) / 1000
 
             if (timeLeft <= 0 || activeDeployable.entity.isDead) {
                 activeDeployables.remove(activeDeployable)
                 activeDeployables.sortByDescending { dep -> dep.deployable.priority }
-                return@HudSetting 0f to 0f
+                return@HUD 0f to 0f
             }
-            RenderUtils.drawText(activeDeployable.deployable.displayName, 40f, 10f, 1.35f, Colors.WHITE, center = false)
-            RenderUtils.drawText("§e${timeLeft}s", 40f, 25f, 1.2f, Colors.WHITE, center = false)
+            RenderUtils.drawText(activeDeployable.deployable.displayName, 40f, 10f, Colors.WHITE)
+            RenderUtils.drawText("§e${timeLeft}s", 40f, 25f, Colors.WHITE)
             activeDeployable.entity.inventory?.get(4)?.drawItem(x= -10f, y= -4f, scale = 3.5f)
-            getMCTextWidth(activeDeployable.deployable.displayName.noControlCodes) + 45f to 52f
+            getTextWidth(activeDeployable.deployable.displayName.noControlCodes) + 45f to 52f
         }
     }
 

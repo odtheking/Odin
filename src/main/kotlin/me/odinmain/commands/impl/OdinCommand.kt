@@ -7,16 +7,13 @@ import com.github.stivais.commodore.parsers.CommandParsable
 import com.github.stivais.commodore.utils.GreedyString
 import me.odinmain.OdinMain.display
 import me.odinmain.OdinMain.mc
+import me.odinmain.clickgui.ClickGUI
+import me.odinmain.clickgui.HudManager
 import me.odinmain.features.impl.render.ClickGUIModule
-import me.odinmain.features.impl.render.ServerHud.colorizeFPS
-import me.odinmain.features.impl.render.ServerHud.colorizePing
-import me.odinmain.features.impl.render.ServerHud.colorizeTps
 import me.odinmain.utils.ServerUtils
 import me.odinmain.utils.fillItemFromSack
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
-import me.odinmain.utils.ui.clickgui.ClickGUI
-import me.odinmain.utils.ui.hud.EditHUDGui
 import me.odinmain.utils.writeToClipboard
 import kotlin.math.round
 
@@ -26,7 +23,7 @@ val mainCommand = Commodore("od", "odin") {
     }
 
     literal("edithud").runs {
-        display = EditHUDGui
+        display = HudManager
     }
 
     literal("ep").runs {
@@ -51,7 +48,7 @@ val mainCommand = Commodore("od", "odin") {
             modMessage("Reset click gui positions.")
         }
         literal("hud").runs {
-            EditHUDGui.resetHUDs()
+            HudManager.resetHUDS()
             modMessage("Reset HUD positions.")
         }
     }
@@ -104,15 +101,15 @@ val mainCommand = Commodore("od", "odin") {
     }
 
     literal("ping").runs {
-        modMessage("${colorizePing(ServerUtils.averagePing.toInt())}ms")
+        modMessage("${ServerUtils.averagePing.toInt()}ms")
     }
 
     literal("fps").runs {
-        modMessage(colorizeFPS(mc.debug.split(" ")[0].toIntOrNull() ?: 0))
+        modMessage(mc.debug.split(" ")[0].toIntOrNull() ?: 0)
     }
 
     literal("tps").runs {
-        modMessage("${colorizeTps(round(ServerUtils.averageTps))}ms")
+        modMessage("${round(ServerUtils.averageTps)}ms")
     }
 
     // separated for better error handling,

@@ -1,19 +1,19 @@
 package me.odinmain.features.impl.nether
 
+import me.odinmain.clickgui.settings.Setting.Companion.withDependency
+import me.odinmain.clickgui.settings.impl.BooleanSetting
+import me.odinmain.clickgui.settings.impl.ColorSetting
+import me.odinmain.clickgui.settings.impl.NumberSetting
+import me.odinmain.clickgui.settings.impl.SelectorSetting
 import me.odinmain.features.Module
-import me.odinmain.features.impl.nether.FreshTimer.highlightFresh
-import me.odinmain.features.impl.nether.FreshTimer.highlightFreshColor
-import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.features.settings.impl.ColorSetting
-import me.odinmain.features.settings.impl.NumberSetting
-import me.odinmain.features.settings.impl.SelectorSetting
+import me.odinmain.features.impl.nether.FreshTools.highlightFresh
+import me.odinmain.features.impl.nether.FreshTools.highlightFreshColor
+import me.odinmain.utils.render.Colors
 import me.odinmain.utils.render.HighlightRenderer
 import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.KuudraUtils
 import me.odinmain.utils.skyblock.KuudraUtils.kuudraTeammates
-import me.odinmain.utils.ui.Colors
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderLivingEvent
@@ -21,7 +21,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object TeamHighlight : Module(
     name = "Team Highlight",
-    desc = "Highlights your teammates in Kuudra."
+    description = "Highlights your teammates in Kuudra."
 ) {
     private val mode by SelectorSetting("Mode", HighlightRenderer.HIGHLIGHT_MODE_DEFAULT, HighlightRenderer.highlightModeList, desc = HighlightRenderer.HIGHLIGHT_MODE_DESCRIPTION)
     private val thickness by NumberSetting("Line Width", 2f, 1f, 6f, .1f, desc = "The line width of Outline / Boxes/ 2D Boxes.").withDependency { mode != HighlightRenderer.HighlightType.Overlay.ordinal }

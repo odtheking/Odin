@@ -1,7 +1,7 @@
 package me.odinclient.features.impl.skyblock
 
+import me.odinmain.clickgui.settings.impl.BooleanSetting
 import me.odinmain.features.Module
-import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.hasAbility
@@ -13,7 +13,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 
 object NoBlock : Module(
     name = "No Block",
-    desc = "Prevents you from blocking with items that have an ability, this is effectively NoSlow."
+    description = "Prevents you from blocking with items that have an ability, this is effectively NoSlow."
 ) {
     private val onlyBoss by BooleanSetting("Only Boss", false, desc = "Only prevent blocking in boss fights.")
     private var isRightClickKeyDown = false

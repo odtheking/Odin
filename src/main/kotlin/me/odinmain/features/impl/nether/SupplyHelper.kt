@@ -1,16 +1,16 @@
 package me.odinmain.features.impl.nether
 
+import me.odinmain.clickgui.settings.Setting.Companion.withDependency
+import me.odinmain.clickgui.settings.impl.BooleanSetting
+import me.odinmain.clickgui.settings.impl.ColorSetting
 import me.odinmain.features.Module
 import me.odinmain.features.impl.nether.NoPre.missing
-import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.features.settings.impl.ColorSetting
 import me.odinmain.utils.formatTime
+import me.odinmain.utils.render.Colors
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.KuudraUtils
 import me.odinmain.utils.skyblock.KuudraUtils.SupplyPickUpSpot
 import me.odinmain.utils.skyblock.modMessage
-import me.odinmain.utils.ui.Colors
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.ClientChatReceivedEvent
 import net.minecraftforge.client.event.RenderWorldLastEvent
@@ -20,7 +20,7 @@ import kotlin.math.sin
 
 object SupplyHelper : Module(
     name = "Supply Helper",
-    desc = "Provides visual aid for supply drops in Kuudra."
+    description = "Provides visual aid for supply drops in Kuudra."
 ) {
     private val suppliesWaypoints by BooleanSetting("Supplies Waypoints", true, desc = "Renders the supply waypoints.")
     private val supplyWaypointColor by ColorSetting("Supply Waypoint Color", Colors.MINECRAFT_YELLOW, true, desc = "Color of the supply waypoints.").withDependency { suppliesWaypoints }

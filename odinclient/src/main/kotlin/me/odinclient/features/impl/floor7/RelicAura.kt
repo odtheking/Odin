@@ -1,7 +1,7 @@
 package me.odinclient.features.impl.floor7
 
+import me.odinmain.clickgui.settings.impl.NumberSetting
 import me.odinmain.features.Module
-import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.component1
 import me.odinmain.utils.component2
 import me.odinmain.utils.component3
@@ -16,8 +16,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 
 object RelicAura : Module(
     name = "Relic Aura",
-    desc = "Automatically picks up relics in the Wither King boss.",
-    tag = TagType.RISKY
+    description = "Automatically picks up relics in the Wither King boss."
 ){
     private val distance by NumberSetting("Distance", 3f, 1.0, 6.0, 0.1, desc = "The distance to the relic to pick it up.")
 

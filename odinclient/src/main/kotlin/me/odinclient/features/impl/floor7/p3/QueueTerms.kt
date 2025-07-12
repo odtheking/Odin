@@ -1,11 +1,11 @@
 package me.odinclient.features.impl.floor7.p3
 
+import me.odinmain.clickgui.settings.impl.NumberSetting
 import me.odinmain.events.impl.GuiEvent
 import me.odinmain.events.impl.TerminalEvent
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.p3.TerminalSolver
 import me.odinmain.features.impl.floor7.p3.TerminalTypes
-import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.skyblock.ClickType
 import me.odinmain.utils.skyblock.devMessage
 import net.minecraftforge.fml.common.eventhandler.EventPriority
@@ -14,8 +14,7 @@ import java.util.*
 
 object QueueTerms : Module(
     name = "Queue Terms",
-    desc = "Queues clicks in terminals to ensure every click is registered (only works in custom term gui).",
-    tag = TagType.RISKY
+    description = "Queues clicks in terminals to ensure every click is registered (only works in custom term gui)."
 ) {
     private val dispatchDelay by NumberSetting("Dispatch Delay", 140L, 140L, 300L, unit = "ms", desc = "The delay between each click.")
     private data class Click(val slot: Int, val button: Int)

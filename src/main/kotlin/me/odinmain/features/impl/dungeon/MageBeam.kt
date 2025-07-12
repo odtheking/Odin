@@ -1,15 +1,15 @@
 package me.odinmain.features.impl.dungeon
 
+import me.odinmain.clickgui.settings.impl.BooleanSetting
+import me.odinmain.clickgui.settings.impl.ColorSetting
+import me.odinmain.clickgui.settings.impl.NumberSetting
 import me.odinmain.events.impl.PacketEvent
 import me.odinmain.features.Module
-import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.features.settings.impl.ColorSetting
-import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.positionVector
+import me.odinmain.utils.render.Colors
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.runIn
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
-import me.odinmain.utils.ui.Colors
 import net.minecraft.network.play.server.S2APacketParticles
 import net.minecraft.util.EnumParticleTypes
 import net.minecraft.util.Vec3
@@ -19,7 +19,7 @@ import java.util.concurrent.CopyOnWriteArrayList
 
 object MageBeam: Module (
     name = "Mage Beam",
-    desc = "Allows you to customize the rendering of the mage beam ability."
+    description = "Allows you to customize the rendering of the mage beam ability."
 ) {
     private val duration by NumberSetting("Duration", 40, 1, 100, 1, unit = "ticks", desc = "The duration of the beam in ticks.")
     private val color by ColorSetting("Color", Colors.MINECRAFT_DARK_RED, true, desc = "The color of the beam.")

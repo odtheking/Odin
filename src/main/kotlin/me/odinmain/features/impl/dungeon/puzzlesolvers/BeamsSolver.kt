@@ -9,13 +9,13 @@ import me.odinmain.features.impl.dungeon.puzzlesolvers.PuzzleSolvers.onPuzzleCom
 import me.odinmain.utils.addVec
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.Color.Companion.withAlpha
+import me.odinmain.utils.render.Colors
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.getRealCoords
 import me.odinmain.utils.skyblock.getBlockIdAt
 import me.odinmain.utils.toVec3
-import me.odinmain.utils.ui.Colors
-import me.odinmain.utils.ui.clickgui.util.ColorUtil.withAlpha
 import net.minecraft.init.Blocks
 import net.minecraft.util.BlockPos
 import java.io.InputStreamReader

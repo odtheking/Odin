@@ -1,10 +1,10 @@
 package me.odinmain.features.impl.render
 
+import me.odinmain.clickgui.settings.Setting.Companion.withDependency
+import me.odinmain.clickgui.settings.impl.ActionSetting
+import me.odinmain.clickgui.settings.impl.BooleanSetting
+import me.odinmain.clickgui.settings.impl.NumberSetting
 import me.odinmain.features.Module
-import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.ActionSetting
-import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.skyblock.isHolding
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -19,7 +19,7 @@ import kotlin.math.sqrt
  */
 object Animations : Module(
     name = "Animations",
-    desc = "Changes the appearance of the first-person view model."
+    description = "Changes the appearance of the first-person view model."
 ) {
     private val size by NumberSetting("Size", 0.0f, -1.5, 1.5, 0.05, desc = "Scales the size of your currently held item. Default: 0")
     private val scaleSwing by BooleanSetting("Scale Swing", true, desc = "Scales the swing animation.").withDependency { !noSwing }

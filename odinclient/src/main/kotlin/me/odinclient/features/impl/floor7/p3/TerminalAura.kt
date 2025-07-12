@@ -1,11 +1,11 @@
 package me.odinclient.features.impl.floor7.p3
 
+import me.odinmain.clickgui.settings.impl.BooleanSetting
+import me.odinmain.clickgui.settings.impl.NumberSetting
 import me.odinmain.events.impl.PacketEvent
 import me.odinmain.events.impl.PostEntityMetadata
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.p3.TerminalSolver
-import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.addVec
 import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.noControlCodes
@@ -21,8 +21,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 
 object TerminalAura : Module(
     name = "Terminal Aura",
-    desc = "Automatically interacts with inactive terminals.",
-    tag = TagType.RISKY
+    description = "Automatically interacts with inactive terminals."
 ) {
     private val onGround by BooleanSetting("On Ground", true, desc = "Only click when on the ground.")
     private val distance by NumberSetting("Distance", 3.5f, 1.0, 4.5, 0.1, desc = "The distance to click the terminal.")

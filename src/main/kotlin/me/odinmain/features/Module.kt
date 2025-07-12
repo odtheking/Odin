@@ -1,11 +1,11 @@
 package me.odinmain.features
 
 import me.odinmain.OdinMain
+import me.odinmain.clickgui.settings.AlwaysActive
+import me.odinmain.clickgui.settings.DevModule
+import me.odinmain.clickgui.settings.Setting
+import me.odinmain.clickgui.settings.impl.HUDSetting
 import me.odinmain.features.impl.render.ClickGUIModule
-import me.odinmain.features.settings.AlwaysActive
-import me.odinmain.features.settings.Setting
-import me.odinmain.features.settings.impl.HudSetting
-import me.odinmain.features.settings.impl.Keybinding
 import me.odinmain.utils.clock.Executable
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.clock.Executor.Companion.register
@@ -21,9 +21,8 @@ import org.lwjgl.input.Keyboard
  */
 abstract class Module(
     val name: String,
-    key: Int? = Keyboard.KEY_NONE,
-    @Transient var desc: String,
-    @Transient val tag: TagType = TagType.NONE,
+    val key: Int? = Keyboard.KEY_NONE,
+    @Transient var description: String,
     toggled: Boolean = false,
 ) {
 
@@ -44,11 +43,6 @@ abstract class Module(
      */
     val settings: ArrayList<Setting<*>> = ArrayList()
 
-    /**
-     * Main keybinding of the module
-     */
-    val keybinding: Keybinding? = key?.let { Keybinding(it).apply { onPress = ::onKeybind } }
-
     protected inline val mc get() = OdinMain.mc
 
     /**
@@ -57,6 +51,9 @@ abstract class Module(
      */
     @Transient
     val alwaysActive = this::class.java.isAnnotationPresent(AlwaysActive::class.java)
+
+    @Transient
+    val isDevModule = this::class.java.isAnnotationPresent(DevModule::class.java)
 
     init {
         if (alwaysActive) {
@@ -81,9 +78,7 @@ abstract class Module(
 
     open fun onKeybind() {
         toggle()
-        if (ClickGUIModule.enableNotification) {
-            modMessage("$name ${if (enabled) "§aenabled" else "§cdisabled"}.")
-        }
+        if (ClickGUIModule.enableNotification) modMessage("$name ${if (enabled) "§aenabled" else "§cdisabled"}.")
     }
 
     fun toggle() {
@@ -92,17 +87,7 @@ abstract class Module(
         else onDisable()
     }
 
-    fun <K : Setting<*>> register(setting: K): K {
-        settings.add(setting)
-        if (setting is HudSetting) {
-            setting.value.init(this)
-        }
-        return setting
-    }
-
-    fun register(vararg setting: Setting<*>) {
-        setting.forEach(::register)
-    }
+    fun <K : Setting<*>> register(setting: K): K = setting.also { settings.add(it) }
 
     operator fun <K : Setting<*>> K.unaryPlus(): K = register(this)
 
@@ -114,6 +99,17 @@ abstract class Module(
         }
         return null
     }
+
+    @Suppress("FunctionName")
+    fun HUD(
+        name: String,
+        desc: String,
+        toggleable: Boolean = true,
+        x: Float = 10f,
+        y: Float = 10f,
+        scale: Float = 2f,
+        block: (example: Boolean) -> Pair<Number, Number>
+    ): HUDSetting = HUDSetting(name, x, y, scale, toggleable, desc, this, block)
 
     /**
      * Helper function to make cleaner code, and better performance, since we don't need multiple registers for packet received events.
@@ -156,10 +152,6 @@ abstract class Module(
 
     fun execute(delay: Long, profileName: String = "${this.name} Executor", shouldRun: () -> Boolean = { this.enabled || this.alwaysActive }, func: Executable) {
         Executor(delay, profileName, shouldRun, func).register()
-    }
-
-    enum class TagType {
-        NONE, RISKY, FPSTAX
     }
 
     private companion object {

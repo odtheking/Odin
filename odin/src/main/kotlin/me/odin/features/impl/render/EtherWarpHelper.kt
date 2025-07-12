@@ -1,20 +1,20 @@
 package me.odin.features.impl.render
 
 import me.odin.mixin.accessors.IEntityPlayerSPAccessor
+import me.odinmain.clickgui.settings.Setting.Companion.withDependency
+import me.odinmain.clickgui.settings.impl.*
 import me.odinmain.events.impl.PacketEvent
 import me.odinmain.features.Module
-import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.PositionLook
 import me.odinmain.utils.positionVector
+import me.odinmain.utils.render.Color.Companion.withAlpha
+import me.odinmain.utils.render.Colors
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.EtherWarpHelper
 import me.odinmain.utils.skyblock.EtherWarpHelper.etherPos
 import me.odinmain.utils.skyblock.PlayerUtils.playLoudSound
 import me.odinmain.utils.skyblock.usingEtherWarp
 import me.odinmain.utils.toAABB
-import me.odinmain.utils.ui.Colors
-import me.odinmain.utils.ui.clickgui.util.ColorUtil.withAlpha
 import net.minecraft.block.Block.getIdFromBlock
 import net.minecraft.init.Blocks
 import net.minecraft.network.play.server.S29PacketSoundEffect
@@ -26,7 +26,7 @@ import java.util.*
 
 object EtherWarpHelper : Module(
     name = "Etherwarp Helper",
-    desc = "Provides configurable visual and audio feedback for etherwarp."
+    description = "Provides configurable visual and audio feedback for etherwarp."
 ) {
     private val render by BooleanSetting("Show Etherwarp Guess", true, desc = "Shows where etherwarp will take you.")
     private val color by ColorSetting("Color", Colors.MINECRAFT_GOLD.withAlpha(.5f), allowAlpha = true, desc = "Color of the box.").withDependency { render }

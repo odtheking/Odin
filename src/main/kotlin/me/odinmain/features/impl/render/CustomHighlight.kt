@@ -1,17 +1,17 @@
 package me.odinmain.features.impl.render
 
 import me.odinmain.OdinMain.isLegitVersion
+import me.odinmain.clickgui.settings.Setting.Companion.withDependency
+import me.odinmain.clickgui.settings.impl.*
 import me.odinmain.features.Module
-import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.isOtherPlayer
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.Color.Companion.withAlpha
+import me.odinmain.utils.render.Colors
 import me.odinmain.utils.render.HighlightRenderer
 import me.odinmain.utils.render.HighlightRenderer.HighlightEntity
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
-import me.odinmain.utils.ui.Colors
-import me.odinmain.utils.ui.clickgui.util.ColorUtil.withAlpha
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.entity.Entity
 import net.minecraft.entity.boss.EntityWither
@@ -19,8 +19,7 @@ import net.minecraft.entity.item.EntityArmorStand
 
 object CustomHighlight : Module(
     name = "Custom Highlight",
-    tag = TagType.FPSTAX,
-    desc = "Allows you to highlight selected mobs. (/highlight)"
+    description = "Allows you to highlight selected mobs. (/highlight)"
 ) {
     private val starredMobESP by BooleanSetting("Starred Mob Highlight", true, desc = "Highlights mobs with a star in their name.")
     private val shadowAssassin by BooleanSetting("Shadow Assassin", false, desc = "Highlights Shadow Assassins.").withDependency { !isLegitVersion }

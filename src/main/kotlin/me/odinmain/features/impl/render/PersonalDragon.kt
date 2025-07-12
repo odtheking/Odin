@@ -1,13 +1,13 @@
 package me.odinmain.features.impl.render
 
+import me.odinmain.clickgui.settings.impl.BooleanSetting
+import me.odinmain.clickgui.settings.impl.ColorSetting
+import me.odinmain.clickgui.settings.impl.NumberSetting
 import me.odinmain.features.Module
-import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.features.settings.impl.ColorSetting
-import me.odinmain.features.settings.impl.NumberSetting
+import me.odinmain.utils.render.Colors
 import me.odinmain.utils.render.RenderUtils.renderX
 import me.odinmain.utils.render.RenderUtils.renderY
 import me.odinmain.utils.render.RenderUtils.renderZ
-import me.odinmain.utils.ui.Colors
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.boss.EntityDragon
 import net.minecraftforge.client.event.RenderLivingEvent
@@ -20,7 +20,7 @@ import kotlin.math.sin
 
 object PersonalDragon : Module(
     name = "Personal Dragon",
-    desc = "Spawns your own personal dragon."
+    description = "Spawns your own personal dragon."
 ) {
     private val onlyF5 by BooleanSetting("Only F5", true, desc = "Only render the dragon when in F5 mode.")
     private val scale by NumberSetting("Scale", 0.5f, 0f, 1f, 0.01f, desc = "The scale of the dragon.")

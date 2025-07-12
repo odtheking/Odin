@@ -1,10 +1,10 @@
 package me.odinclient.features.impl.floor7.p3
 
 import me.odinclient.utils.skyblock.PlayerUtils.rightClick
+import me.odinmain.clickgui.settings.Setting.Companion.withDependency
+import me.odinmain.clickgui.settings.impl.BooleanSetting
+import me.odinmain.clickgui.settings.impl.NumberSetting
 import me.odinmain.features.Module
-import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.M7Phases
@@ -15,7 +15,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object LightsDevice : Module(
     name = "Lights Device",
-    desc = "Features to help with the lights device."
+    description = "Features to help with the lights device."
 ) {
     private val triggerBot by BooleanSetting("Triggerbot", false, desc = "Toggles correct levers automatically when you look at them.")
     private val delay by NumberSetting("Delay", 200L, 70, 500, unit = "ms", desc = "The delay between each click.").withDependency { triggerBot }

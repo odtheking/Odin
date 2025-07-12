@@ -1,20 +1,20 @@
 package me.odin.features.impl.floor7.p3
 
+import me.odinmain.clickgui.settings.Setting.Companion.withDependency
+import me.odinmain.clickgui.settings.impl.ActionSetting
+import me.odinmain.clickgui.settings.impl.BooleanSetting
+import me.odinmain.clickgui.settings.impl.ColorSetting
+import me.odinmain.clickgui.settings.impl.KeybindSetting
 import me.odinmain.events.impl.BlockChangeEvent
 import me.odinmain.features.Module
-import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.ActionSetting
-import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.features.settings.impl.ColorSetting
-import me.odinmain.features.settings.impl.KeybindSetting
 import me.odinmain.utils.equalsOneOf
+import me.odinmain.utils.render.Colors
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.M7Phases
 import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.toVec3
-import me.odinmain.utils.ui.Colors
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.init.Blocks
 import net.minecraft.network.play.server.S32PacketConfirmTransaction
@@ -27,7 +27,7 @@ import org.lwjgl.input.Keyboard
 
 object ArrowsDevice : Module(
     name = "Arrows Device",
-    desc = "Shows a solution for the Sharp Shooter puzzle in floor 7."
+    description = "Shows a solution for the Sharp Shooter puzzle in floor 7."
 ) {
     private val solver by BooleanSetting("Solver", desc = "Enables the solver.")
     private val markedPositionColor by ColorSetting("Marked Position", Colors.MINECRAFT_RED, desc = "Color of the marked position.").withDependency { solver }

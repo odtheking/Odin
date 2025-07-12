@@ -2,10 +2,10 @@ package me.odinclient.features.impl.dungeon
 
 import me.odinclient.utils.skyblock.PlayerUtils.leftClick
 import me.odinclient.utils.skyblock.PlayerUtils.swapToIndex
+import me.odinmain.clickgui.settings.Setting.Companion.withDependency
+import me.odinmain.clickgui.settings.impl.*
 import me.odinmain.events.impl.BlockChangeEvent
 import me.odinmain.features.Module
-import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.addRange
 import me.odinmain.utils.runIn
 import me.odinmain.utils.skyblock.LocationUtils
@@ -31,8 +31,7 @@ import org.lwjgl.input.Keyboard
 
 object GhostBlocks : Module(
     name = "Ghost Blocks",
-    desc = "Creates ghost blocks by key, tools, swap stonk, stonk delay and pre configured.",
-    key = null,
+    description = "Creates ghost blocks by key, tools, swap stonk, stonk delay and pre configured."
 ) {
     // gkey
     private val gkeyDropDown by DropdownSetting("Gkey Dropdown", false)
@@ -306,9 +305,4 @@ object GhostBlocks : Module(
             BlockPos(54, 63, 74)
         )
     )
-
-
-    private val toggleKeybind: Keybinding by KeybindSetting("Toggle Module", Keyboard.KEY_NONE, desc = "Keybind to toggle the module on/off.").onPress {
-        this.onKeybind()
-    }
 }

@@ -1,21 +1,20 @@
 package me.odinclient.features.impl.floor7.p3
 
+import me.odinmain.clickgui.settings.impl.NumberSetting
 import me.odinmain.events.impl.GuiEvent
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.p3.TerminalSolver
 import me.odinmain.features.impl.floor7.p3.TerminalTypes
 import me.odinmain.features.impl.floor7.p3.termGUI.TermGui
-import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.skyblock.ClickType
-import me.odinmain.utils.ui.util.MouseUtils.mouseX
-import me.odinmain.utils.ui.util.MouseUtils.mouseY
+import me.odinmain.utils.ui.mouseX
+import me.odinmain.utils.ui.mouseY
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object HoverTerms : Module(
     name = "Hover Terms",
-    desc = "Clicks the hovered item in a terminal if it is correct.",
-    tag = TagType.RISKY
+    description = "Clicks the hovered item in a terminal if it is correct."
 ) {
     private val triggerDelay by NumberSetting("Delay", 170L, 130, 300, unit = "ms", desc = "Delay between clicks.")
     private val firstClickDelay by NumberSetting("First Click Delay", 350L, 300, 500, unit = "ms", desc = "Delay before first click.")
@@ -66,7 +65,6 @@ object HoverTerms : Module(
                     triggerBotClock.update()
                 }
             }
-            else -> return
         }
     }
 }

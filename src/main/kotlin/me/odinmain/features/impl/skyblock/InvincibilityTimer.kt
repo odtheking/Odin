@@ -1,36 +1,28 @@
 package me.odinmain.features.impl.skyblock
 
+import me.odinmain.clickgui.settings.impl.BooleanSetting
 import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.events.impl.GuiEvent.DrawSlotOverlay
 import me.odinmain.features.Module
-import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.features.settings.impl.HudSetting
+import me.odinmain.utils.render.Colors
 import me.odinmain.utils.render.RenderUtils
-import me.odinmain.utils.render.getMCTextWidth
 import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.partyMessage
 import me.odinmain.utils.skyblock.skyblockID
-import me.odinmain.utils.ui.Colors
+import me.odinmain.utils.ui.drawStringWidth
 import net.minecraft.network.play.server.S32PacketConfirmTransaction
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object InvincibilityTimer : Module(
     name = "Invincibility Timer",
-    desc = "Timer to show how long you have left Invincible."
+    description = "Timer to show how long you have left Invincible."
 )  {
     private val showCooldown by BooleanSetting("Show Cooldown", true, desc = "Shows the cooldown of the mask.")
     private val invincibilityAnnounce by BooleanSetting("Announce Invincibility", true, desc = "Announces when you get invincibility.")
-    private val hud by HudSetting("Timer Hud", 10f, 10f, 1f, true) {
-        if (it) {
-            RenderUtils.drawText("${if(showPrefix) "§bBonzo§f: " else ""}59t", 1f, 1f, 1f, Colors.WHITE, center = false)
-            getMCTextWidth("Bonzo: 59t") + 2f to 12f
-        } else {
-            if (invincibilityTime.time <= 0) return@HudSetting 0f to 0f
-            val invincibilityType = if (invincibilityTime.type == "Bonzo") "§bBonzo§f:" else if (invincibilityTime.type == "Phoenix") "§6Phoenix§f:" else "§5Spirit§f:"
-
-            RenderUtils.drawText("${if (showPrefix) invincibilityType else ""} ${invincibilityTime.time}t", 1f, 1f, 1f, Colors.WHITE, center = false)
-            getMCTextWidth("Bonzo: 59t") + 2f to 12f
-        }
+    private val hud by HUD("Timer Hud", "Shows the timer in the HUD.") {
+        if (invincibilityTime.time <= 0 && !it) return@HUD 0f to 0f
+        val invincibilityType = if (invincibilityTime.type == "Bonzo") "§bBonzo§f:" else if (invincibilityTime.type == "Phoenix") "§6Phoenix§f:" else "§5Spirit§f:"
+        drawStringWidth("${if (showPrefix) invincibilityType else ""} ${if (it) 59 else invincibilityTime.time}t", 1f, 1f, Colors.WHITE) + 2f to 10f
     }
     private val showPrefix by BooleanSetting("Show Prefix", true, desc = "Shows the prefix of the timer.")
 

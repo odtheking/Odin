@@ -1,8 +1,8 @@
 package me.odinmain.utils.skyblock.dungeon
 
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.Colors
 import me.odinmain.utils.skyblock.PersonalBest
-import me.odinmain.utils.ui.Colors
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.ResourceLocation
 

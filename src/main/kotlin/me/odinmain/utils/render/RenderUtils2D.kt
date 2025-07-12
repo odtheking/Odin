@@ -1,17 +1,17 @@
 package me.odinmain.utils.render
 
 import me.odinmain.OdinMain.mc
-import me.odinmain.utils.*
+import me.odinmain.utils.component1
+import me.odinmain.utils.component2
+import me.odinmain.utils.component3
+import me.odinmain.utils.corners
 import me.odinmain.utils.render.RenderUtils.bind
 import me.odinmain.utils.render.RenderUtils.renderVec
 import me.odinmain.utils.render.RenderUtils.tessellator
 import me.odinmain.utils.render.RenderUtils.worldRenderer
-import me.odinmain.utils.ui.Colors
-import me.odinmain.utils.ui.clickgui.util.ColorUtil.withAlpha
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
-import net.minecraft.entity.Entity
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
@@ -80,33 +80,9 @@ object RenderUtils2D {
         return if (x1 != Double.MAX_VALUE) Box2D(x1, y1, x2, y2) else null
     }
 
-    fun drawBackgroundNameTag(
-        text: String,
-        entity: Entity,
-        padding: Number,
-        backgroundColor: Color = Colors.MINECRAFT_GRAY.withAlpha(0.5f),
-        accentColor: Color = Colors.MINECRAFT_BLUE,
-        textColor: Color = Colors.WHITE,
-        scale: Float = 1f,
-        shadow: Boolean = false
-    ) {
-        worldToScreenPosition(entity.renderVec.addVec(y = 0.5 + entity.height))?.let {
-            val width = getMCTextWidth(text) + padding.toDouble()
-            val height = getMCTextHeight() + padding.toDouble()
-            GlStateManager.pushMatrix()
-            GlStateManager.translate(it.xCoord, it.yCoord, 0.0)
-            GlStateManager.scale(scale, scale, scale)
-            roundedRectangle(-width / 2, -height / 2, width, height * 0.9, backgroundColor)
-            roundedRectangle(-width / 2, -height / 2 + height * 0.9, width, height * 0.1, accentColor)
-            RenderUtils.drawText(text, 0f, -4.5f, 1f, textColor, shadow = shadow, center = true)
-            GlStateManager.popMatrix()
-        }
-    }
-
-
     fun drawNameTag(vec3: Vec3, name: String) {
         worldToScreenPosition(vec3)?.let { pos ->
-            mc.fontRendererObj.drawString(name, pos.xCoord.toFloat(), pos.yCoord.toFloat(), -1, true) // can use nvg in the future
+            mc.fontRendererObj.drawString(name, pos.xCoord.toFloat(), pos.yCoord.toFloat(), -1, true)
         }
     }
 

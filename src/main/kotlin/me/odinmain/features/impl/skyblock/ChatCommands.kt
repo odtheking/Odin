@@ -1,12 +1,12 @@
 package me.odinmain.features.impl.skyblock
 
+import me.odinmain.clickgui.settings.Setting.Companion.withDependency
+import me.odinmain.clickgui.settings.impl.BooleanSetting
+import me.odinmain.clickgui.settings.impl.DropdownSetting
+import me.odinmain.clickgui.settings.impl.ListSetting
 import me.odinmain.events.impl.MessageSentEvent
 import me.odinmain.features.Module
 import me.odinmain.features.impl.dungeon.DungeonRequeue.disableRequeue
-import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.features.settings.impl.DropdownSetting
-import me.odinmain.features.settings.impl.ListSetting
 import me.odinmain.utils.ServerUtils
 import me.odinmain.utils.capitalizeFirst
 import me.odinmain.utils.noControlCodes
@@ -16,14 +16,12 @@ import net.minecraft.event.ClickEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
-import kotlin.collections.component1
-import kotlin.collections.component2
 import kotlin.math.floor
 import kotlin.random.Random
 
 object ChatCommands : Module(
     name = "Chat Commands",
-    desc = "Type !help in the corresponding channel for cmd list. Use /chatclist.",
+    description = "Type !help in the corresponding channel for cmd list. Use /chatclist.",
 ) {
     private val chatEmotes by BooleanSetting("Chat Emotes", true, desc = "Replaces chat emotes with their corresponding emojis.")
     private val party by BooleanSetting("Party commands", true, desc = "Toggles chat commands in party chat.")

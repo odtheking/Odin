@@ -3,15 +3,16 @@ package me.odinmain.utils.render
 import me.odinmain.OdinMain.mc
 import me.odinmain.utils.addVec
 import me.odinmain.utils.fastEyeHeight
+import me.odinmain.utils.render.Color.Companion.multiplyAlpha
+import me.odinmain.utils.render.Color.Companion.withAlpha
 import me.odinmain.utils.render.RenderUtils.drawBeaconBeam
 import me.odinmain.utils.render.RenderUtils.outlineBounds
 import me.odinmain.utils.render.RenderUtils.renderVec
 import me.odinmain.utils.skyblock.getBlockAt
 import me.odinmain.utils.toAABB
-import me.odinmain.utils.ui.Colors
-import me.odinmain.utils.ui.clickgui.util.ColorUtil.multiplyAlpha
-import me.odinmain.utils.ui.clickgui.util.ColorUtil.withAlpha
+import me.odinmain.utils.ui.getTextWidth
 import net.minecraft.client.gui.ScaledResolution
+import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.Entity
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
@@ -228,12 +229,11 @@ object Renderer {
         if (event.type != RenderGameOverlayEvent.ElementType.ALL || titleTicks <= 0) return
         mc.entityRenderer.setupOverlayRendering()
         val sr = ScaledResolution(mc)
-
-        RenderUtils.drawText(
-            text = displayTitle, x = sr.scaledWidth / 2f,
-            y = sr.scaledHeight / 2.5f, scale = 4f,
-            color = displayColor, center = true
-        )
+        GlStateManager.pushMatrix()
+        GlStateManager.translate(sr.scaledWidth / 2f, sr.scaledHeight / 2.5f, 1f)
+        GlStateManager.scale(4f, 4f, 4f)
+        RenderUtils.drawText(displayTitle, 0f - getTextWidth(displayTitle) / 2, 0f, displayColor)
+        GlStateManager.popMatrix()
     }
 
     @SubscribeEvent

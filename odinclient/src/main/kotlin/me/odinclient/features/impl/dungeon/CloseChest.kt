@@ -1,9 +1,9 @@
 package me.odinclient.features.impl.dungeon
 
+import me.odinmain.clickgui.settings.impl.SelectorSetting
 import me.odinmain.events.impl.GuiEvent
 import me.odinmain.events.impl.PacketEvent
 import me.odinmain.features.Module
-import me.odinmain.features.settings.impl.SelectorSetting
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.name
 import me.odinmain.utils.noControlCodes
@@ -16,7 +16,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object CloseChest : Module(
     name = "Close Chest",
-    desc = "Allows you to instantly close chests with any key or automatically."
+    description = "Allows you to instantly close chests with any key or automatically."
 ) {
     private val mode by SelectorSetting("Mode", "Auto", arrayListOf("Auto", "Any Key"), desc = "The mode to use, auto will automatically close the chest, any key will make any key input close the chest.")
 

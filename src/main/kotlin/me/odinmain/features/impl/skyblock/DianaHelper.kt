@@ -1,20 +1,20 @@
 package me.odinmain.features.impl.skyblock
 
 import me.odinmain.OdinMain.isLegitVersion
+import me.odinmain.clickgui.settings.Setting.Companion.withDependency
+import me.odinmain.clickgui.settings.impl.*
 import me.odinmain.events.impl.ClickEvent
 import me.odinmain.features.Module
-import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.addVec
 import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.findNearestGrassBlock
+import me.odinmain.utils.render.Color.Companion.withAlpha
+import me.odinmain.utils.render.Colors
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.runIn
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.DianaBurrowEstimate.activeBurrows
 import me.odinmain.utils.toVec3
-import me.odinmain.utils.ui.Colors
-import me.odinmain.utils.ui.clickgui.util.ColorUtil.withAlpha
 import net.minecraft.network.play.client.C07PacketPlayerDigging
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.server.S29PacketSoundEffect
@@ -27,9 +27,9 @@ import kotlin.math.roundToInt
 
 object DianaHelper : Module(
     name = "Diana Helper",
-    desc = "Displays the location of the Diana guess and burrows."
+    description = "Displays the location of the Diana guess and burrows."
 ) {
-    private val guessColor by ColorSetting("Guess Color", Colors.WHITE, allowAlpha = true, desc = "Color of the guess text.")
+    private val guessColor by ColorSetting("Guess Color", Colors.WHITE, true, desc = "Color of the guess text.")
     private val tracer by BooleanSetting("Tracer", true, desc = "Draws a line from your position to the guess.")
     private val tracerWidth by NumberSetting("Tracer Width", 5f, 1f, 20f, desc = "Width of the tracer line.").withDependency { tracer }
     private val tracerColor by ColorSetting("Tracer Line Color", Colors.WHITE, allowAlpha = true, desc = "Color of the tracer line.").withDependency { tracer }

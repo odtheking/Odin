@@ -1,7 +1,7 @@
 package me.odinmain.features.impl.render
 
+import me.odinmain.clickgui.settings.impl.NumberSetting
 import me.odinmain.features.Module
-import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.skyblock.setLore
 import net.minecraft.init.Blocks
 import net.minecraft.item.Item
@@ -13,7 +13,7 @@ import java.util.*
 
 object SpaceHelmet : Module(
     name = "Space Helmet",
-    desc = "Equips you with a space helmet."
+    description = "Equips you with a space helmet."
 ) {
     private val speed by NumberSetting("Speed", 250L, 100, 1000, 10, desc = "The speed at which the color changes.", unit = "ms")
     private var edition = 0

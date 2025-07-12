@@ -4,14 +4,14 @@ import com.github.stivais.commodore.Commodore
 import com.github.stivais.commodore.utils.GreedyString
 import me.odinmain.config.Config
 import me.odinmain.features.impl.dungeon.PositionalMessages.PosMessage
-import me.odinmain.utils.render.Color
 import me.odinmain.features.impl.dungeon.PositionalMessages.posMessageStrings
+import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.Colors
 import me.odinmain.utils.round
 import me.odinmain.utils.skyblock.PlayerUtils.posX
 import me.odinmain.utils.skyblock.PlayerUtils.posY
 import me.odinmain.utils.skyblock.PlayerUtils.posZ
 import me.odinmain.utils.skyblock.modMessage
-import me.odinmain.utils.ui.Colors
 
 val PosMsgCommand = Commodore("posmsg") {
     literal("add") {
@@ -53,7 +53,7 @@ val PosMsgCommand = Commodore("posmsg") {
 
     literal("list").runs {
         val output = posMessageStrings.joinToString(separator = "\n") {
-            "${posMessageStrings.indexOf(it) + 1}: ${it.x}, ${it.y}, ${it.z}, ${it.x2}, ${it.y2}, ${it.z2}, ${it.delay}, ${it.distance}, ${it.color.hex}, \"${it.message}\""
+            "${posMessageStrings.indexOf(it) + 1}: ${it.x}, ${it.y}, ${it.z}, ${it.x2}, ${it.y2}, ${it.z2}, ${it.delay}, ${it.distance}, ${it.color.hex()}, \"${it.message}\""
         }
         modMessage(if (posMessageStrings.isEmpty()) "Positional Message list is empty!" else "Positonal Message list:\n$output")
     }
@@ -73,8 +73,8 @@ val hexRegex = Regex("^#?([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$")
 fun getColorFromString(color: String): Color? {
     hexRegex.find(color)?.let {
         val hex = it.value.replace("#", "")
-        if (hex.length == 6) return Color(hex + "FF")
-        else return Color(hex)
+        return if (hex.length == 6) Color(hex + "FF")
+        else Color(hex)
     }
     return when (color.uppercase()) {
         "DARKBLUE" -> Colors.MINECRAFT_DARK_BLUE

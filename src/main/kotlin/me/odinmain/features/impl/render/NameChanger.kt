@@ -1,11 +1,11 @@
 package me.odinmain.features.impl.render
 
+import me.odinmain.clickgui.settings.impl.StringSetting
 import me.odinmain.features.Module
-import me.odinmain.features.settings.impl.StringSetting
 
 object NameChanger : Module(
     name = "Name Changer",
-    desc = "Replaces your name with the given nick, color codes work (&)."
+    description = "Replaces your name with the given nick, color codes work (&)."
 ) {
     private val nick by StringSetting("Nick", "Odin", 32, desc = "The nick to replace your name with.")
 

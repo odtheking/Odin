@@ -3,10 +3,10 @@ package me.odinmain.features.impl.dungeon.puzzlesolvers
 import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.PostEntityMetadata
 import me.odinmain.events.impl.RoomEnterEvent
+import me.odinmain.utils.render.Colors
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.toAABB
-import me.odinmain.utils.ui.Colors
 import net.minecraft.entity.item.EntityItemFrame
 import net.minecraft.init.Items
 import net.minecraft.util.BlockPos

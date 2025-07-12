@@ -1,17 +1,16 @@
 package me.odinmain.features.impl.nether
 
+import me.odinmain.clickgui.settings.impl.BooleanSetting
+import me.odinmain.clickgui.settings.impl.NumberSetting
 import me.odinmain.features.Module
 import me.odinmain.features.impl.dungeon.DungeonRequeue.disableRequeue
-import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.runIn
 import me.odinmain.utils.skyblock.KuudraUtils
-import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.sendCommand
 
 object KuudraRequeue : Module(
     name = "Kuudra Requeue",
-    desc = "Automatically starts a new kuudra at the end of a kuudra."
+    description = "Automatically starts a new kuudra at the end of a kuudra."
 ) {
     private val delay by NumberSetting("Delay", 10, 0, 30, 1, desc = "The delay in seconds before requeuing.", unit = "s")
     private val disablePartyLeave by BooleanSetting("Disable Party Leave", false, desc = "Disables the requeue on party leave message.")

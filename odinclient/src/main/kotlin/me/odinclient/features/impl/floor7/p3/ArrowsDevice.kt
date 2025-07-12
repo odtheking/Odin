@@ -1,12 +1,13 @@
 package me.odinclient.features.impl.floor7.p3
 
 import me.odinclient.utils.skyblock.PlayerUtils.rightClick
+import me.odinmain.clickgui.settings.Setting.Companion.withDependency
+import me.odinmain.clickgui.settings.impl.*
 import me.odinmain.events.impl.BlockChangeEvent
 import me.odinmain.features.Module
-import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.*
 import me.odinmain.utils.clock.Clock
+import me.odinmain.utils.render.Colors
 import me.odinmain.utils.render.RenderUtils.renderX
 import me.odinmain.utils.render.RenderUtils.renderY
 import me.odinmain.utils.render.RenderUtils.renderZ
@@ -15,7 +16,6 @@ import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonClass
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.M7Phases
-import me.odinmain.utils.ui.Colors
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.client.settings.KeyBinding
 import net.minecraft.entity.item.EntityArmorStand
@@ -32,8 +32,7 @@ import kotlin.math.sqrt
 
 object ArrowsDevice : Module(
     name = "Arrows Device",
-    desc = "Different features for the Sharp Shooter puzzle in floor 7.",
-    tag = TagType.RISKY
+    description = "Different features for the Sharp Shooter puzzle in floor 7."
 ) {
     private val solverDropdown by DropdownSetting("Solver")
     private val solver by BooleanSetting("Solver Enabled", true, desc = "Automatically solve the puzzle.").withDependency { solverDropdown }

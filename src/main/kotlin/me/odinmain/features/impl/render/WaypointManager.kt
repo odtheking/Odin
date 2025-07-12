@@ -2,11 +2,11 @@ package me.odinmain.features.impl.render
 
 import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.Colors
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.Island
 import me.odinmain.utils.skyblock.LocationUtils.currentArea
 import me.odinmain.utils.skyblock.modMessage
-import me.odinmain.utils.ui.Colors
 import net.minecraft.util.Vec3
 import net.minecraft.util.Vec3i
 import net.minecraftforge.client.event.RenderWorldLastEvent
@@ -14,9 +14,6 @@ import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import kotlin.math.abs
 
-// TODO: Make changes cuz ngl its kinda eh (eg: good ordered waypoints for mining so people dont need to use ct)
-// TODO: Make all waypoint areas constant and make LocationUtils use locraw
-// this is o
 object WaypointManager {
 
     private var temporaryWaypoints = mutableListOf<Pair<Waypoint, Clock>>()

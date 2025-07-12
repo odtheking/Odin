@@ -1,9 +1,7 @@
 package me.odinmain.utils.ui
 
-
 import net.minecraft.client.gui.GuiScreen
 import org.lwjgl.input.Mouse
-
 
 abstract class Screen : GuiScreen() {
 

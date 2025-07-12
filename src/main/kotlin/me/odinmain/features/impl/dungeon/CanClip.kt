@@ -1,16 +1,15 @@
 package me.odinmain.features.impl.dungeon
 
+import me.odinmain.clickgui.settings.impl.BooleanSetting
 import me.odinmain.features.Module
-import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.features.settings.impl.HudSetting
+import me.odinmain.utils.render.Colors
 import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.render.Renderer
-import me.odinmain.utils.render.getMCTextWidth
 import me.odinmain.utils.runIn
 import me.odinmain.utils.skyblock.getBlockAt
 import me.odinmain.utils.skyblock.getBlockStateAt
 import me.odinmain.utils.toVec3
-import me.odinmain.utils.ui.Colors
+import me.odinmain.utils.ui.getTextWidth
 import net.minecraft.block.BlockStairs
 import net.minecraft.block.properties.IProperty
 import net.minecraft.block.state.IBlockState
@@ -24,22 +23,16 @@ import kotlin.math.abs
 
 object CanClip : Module(
     name = "Can Clip",
-    desc = "Tells you if you are currently able to clip through a stair under you."
+    description = "Tells you if you are currently able to clip through a stair under you."
 ) {
     private val line by BooleanSetting("Line", true, desc = "Draws a line where you can clip.")
-    private val hud by HudSetting("Display", 10f, 10f, 1f, true) {
-        if (it) {
-            RenderUtils.drawText("Can Clip", 1f, 1f, 1f, Colors.WHITE, shadow = true)
-            getMCTextWidth("Can Clip").toFloat() to 12f
-        } else {
-            if (canClip) RenderUtils.drawText("Can Clip", 1f, 1f, 1f, Colors.WHITE, shadow = true)
-            getMCTextWidth("Can Clip").toFloat() to 12f
-        }
+    private val hud by HUD("Display", "Displays if you can clip in the HUD.") {
+        if (canClip || it) RenderUtils.drawText("Can Clip", 1f, 1f, Colors.WHITE)
+        getTextWidth("Can Clip") + 2f to 10f
     }
 
-    private var canClip = false
-
     private val ranges = listOf(0.235..0.265, 0.735..0.765)
+    private var canClip = false
 
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {

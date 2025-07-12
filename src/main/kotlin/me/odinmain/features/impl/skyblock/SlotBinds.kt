@@ -1,15 +1,15 @@
 package me.odinmain.features.impl.skyblock
 
+import me.odinmain.clickgui.settings.impl.ColorSetting
+import me.odinmain.clickgui.settings.impl.KeybindSetting
+import me.odinmain.clickgui.settings.impl.MapSetting
 import me.odinmain.config.Config
 import me.odinmain.events.impl.GuiEvent
 import me.odinmain.features.Module
-import me.odinmain.features.settings.impl.ColorSetting
-import me.odinmain.features.settings.impl.KeybindSetting
-import me.odinmain.features.settings.impl.MapSetting
+import me.odinmain.utils.render.Colors
 import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.modMessage
-import me.odinmain.utils.ui.Colors
 import net.minecraft.client.gui.inventory.GuiInventory
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraftforge.client.event.GuiOpenEvent
@@ -19,7 +19,7 @@ import org.lwjgl.input.Keyboard
 
 object SlotBinds: Module (
     name = "Slot Binds",
-    desc = "Bind slots together for quick access.",
+    description = "Bind slots together for quick access.",
     key = null
 ) {
     private val setNewSlotbind by KeybindSetting("Bind set key", Keyboard.KEY_NONE, desc = "Key to set new bindings.")

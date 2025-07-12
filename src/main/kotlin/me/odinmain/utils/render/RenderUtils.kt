@@ -3,7 +3,6 @@ package me.odinmain.utils.render
 import me.odinmain.OdinMain
 import me.odinmain.OdinMain.mc
 import me.odinmain.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.DungeonWaypoint
-import me.odinmain.utils.ui.Colors
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.WorldRenderer
@@ -127,6 +126,7 @@ object RenderUtils {
     }
 
     /**
+     * Draws a filled Axis Aligned Bounding Box (AABB).
      * Draws a filled Axis Aligned Bounding Box (AABB).
      *
      * @param aabb The bounding box to draw.
@@ -283,46 +283,43 @@ object RenderUtils {
         GlStateManager.popMatrix()
     }
 
-    /**
-     * Draws a Texture modal rectangle at the specified position.
-     * @param x The x-coordinate of the rectangle.
-     * @param y The y-coordinate of the rectangle.
-     * @param width The width of the rectangle.
-     * @param height The height of the rectangle.
-     */
-    fun drawTexturedModalRect(
-        x: Int, y: Int, width: Int, height: Int,
-        u: Float = 0f, v: Float = 0f, uWidth: Int = 1, vHeight: Int = 1,
-        tileWidth: Float = 1.0f, tileHeight: Float = 1.0f
-    ) {
-        val f = 1.0f / tileWidth
-        val g = 1.0f / tileHeight
-        Colors.WHITE.bind()
+    fun hollowRect(x: Float, y: Float, width: Float, height: Float, thickness: Float, color: Color) {
+        val left = x
+        val right = x + width
+        val top = y
+        val bottom = y + height
+
+        GlStateManager.enableBlend()
+        GlStateManager.disableTexture2D()
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
+        color.bind()
+
+        GL11.glLineWidth(thickness)
         worldRenderer {
-            begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX)
-            pos(x.toDouble(), (y + height).toDouble(), 0.0).tex((u * f).toDouble(), ((v + vHeight.toFloat()) * g).toDouble()).endVertex()
-            pos((x + width).toDouble(), (y + height).toDouble(), 0.0).tex(((u + uWidth.toFloat()) * f).toDouble(), ((v + vHeight.toFloat()) * g).toDouble()).endVertex()
-            pos((x + width).toDouble(), y.toDouble(), 0.0).tex(((u + uWidth.toFloat()) * f).toDouble(), (v * g).toDouble()).endVertex()
-            pos(x.toDouble(), y.toDouble(), 0.0).tex((u * f).toDouble(), (v * g).toDouble()).endVertex()
+            begin(GL11.GL_LINE_LOOP, DefaultVertexFormats.POSITION)
+            pos(left.toDouble(), bottom.toDouble(), 0.0).endVertex()
+            pos(right.toDouble(), bottom.toDouble(), 0.0).endVertex()
+            pos(right.toDouble(), top.toDouble(), 0.0).endVertex()
+            pos(left.toDouble(), top.toDouble(), 0.0).endVertex()
         }
+
         tessellator.draw()
+
+        GlStateManager.enableTexture2D()
+        GlStateManager.disableBlend()
     }
 
     fun drawText(
         text: String,
         x: Float,
         y: Float,
-        scale: Float = 1f,
         color: Color = Colors.WHITE,
         shadow: Boolean = true,
-        center: Boolean = false
     ) {
         GlStateManager.pushMatrix()
         GlStateManager.enableBlend()
         GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
-        GlStateManager.translate(x, y, 0f)
-        GlStateManager.scale(scale, scale, scale)
-        mc.fontRendererObj.drawString("${text}§r", if (center) mc.fontRendererObj.getStringWidth(text) / -2f else 0f, 0f, color.rgba, shadow)
+        mc.fontRendererObj.drawString("${text}§r", x, y, color.rgba, shadow)
         GlStateManager.resetColor()
         GlStateManager.disableBlend()
         GlStateManager.popMatrix()

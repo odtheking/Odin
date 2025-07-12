@@ -1,9 +1,9 @@
 package me.odinclient.features.impl.skyblock
 
+import me.odinmain.clickgui.settings.impl.BooleanSetting
+import me.odinmain.clickgui.settings.impl.NumberSetting
 import me.odinmain.events.impl.GuiEvent
 import me.odinmain.features.Module
-import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.name
 import me.odinmain.utils.skyblock.ClickType
 import me.odinmain.utils.skyblock.Island
@@ -20,7 +20,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object AutoExperiments : Module(
     name = "Auto Experiments",
-    desc = "Automatically click on the Chronomatron and Ultrasequencer experiments."
+    description = "Automatically click on the Chronomatron and Ultrasequencer experiments."
 ){
     private val delay by NumberSetting("Click Delay", 200, 0, 1000, 10, unit = "ms", desc = "Time in ms between automatic test clicks.")
     private val autoClose by BooleanSetting("Auto Close", true, desc = "Automatically close the GUI after completing the experiment.")

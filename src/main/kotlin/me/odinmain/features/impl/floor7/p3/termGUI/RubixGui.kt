@@ -1,51 +1,40 @@
 package me.odinmain.features.impl.floor7.p3.termGUI
 
-import me.odinmain.OdinMain.mc
 import me.odinmain.features.impl.floor7.p3.TerminalSolver
-import me.odinmain.features.impl.floor7.p3.TerminalSolver.currentTerm
-import me.odinmain.features.impl.floor7.p3.TerminalSolver.customScale
-import me.odinmain.features.impl.floor7.p3.TerminalSolver.gap
-import me.odinmain.features.impl.floor7.p3.TerminalSolver.textScale
-import me.odinmain.utils.render.*
-import me.odinmain.utils.ui.Colors
+import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.Colors
+import me.odinmain.utils.ui.rendering.NVGRenderer
 
-object RubixGui : TermGui() {
-    override fun render() {
-        setCurrentGui(this)
-        itemIndexMap.clear()
-        roundedRectangle(-300, -175, 600, 300, TerminalSolver.customGuiColor, 10f, 1f)
-        if (TerminalSolver.customGuiText == 0) {
-            text("Change all to same color!", -295, -163, Colors.WHITE, 20, verticalAlign = TextPos.Top)
-            roundedRectangle(-298, -135, getTextWidth("Change all to same color!", 20f), 3, Colors.WHITE, radius = 5f)
-        } else if (TerminalSolver.customGuiText == 1) {
-            text("Change all to same color!", 0, -163, Colors.WHITE, 20, align = TextAlign.Middle, verticalAlign = TextPos.Top)
-            roundedRectangle(-getTextWidth("Change all to same color!", 20f) / 2, -135, getTextWidth("Change all to same color!", 20f), 3, Colors.WHITE, radius = 5f)
+object RubixGui : TermGui("Change all to same color!") {
+
+    override fun renderTerminal(slotCount: Int) {
+        renderBackground(slotCount)
+
+        currentSolution.distinct().forEach { pane ->
+            val amount = currentSolution.count { it == pane }
+            val clicksRequired = if (amount < 3) amount else amount - 5
+
+            val (slotX, slotY) = renderSlot(pane, getColor(clicksRequired), getColor(if (amount < 3) clicksRequired + 1 else clicksRequired - 1)).let {
+                it.first + (50f - (textWidths[clicksRequired] ?: 0f)) / 2f to it.second + (50f / 2f + 30f / 2f) / 2f - 6f }
+
+            if (clicksRequired != 0)
+                NVGRenderer.text("$clicksRequired", slotX, slotY, 30f, Colors.WHITE.rgba, NVGRenderer.defaultFont)
         }
-        currentTerm?.solution?.distinct()?.forEach { pane ->
-            val needed = currentTerm?.solution?.count { it == pane } ?: return@forEach
-            val text = if (needed < 3) needed else (needed - 5)
+    }
 
-            val row = pane / 9 - 1
-            val col = pane % 9 - 2
-            val box = BoxWithClass((-168 + ((gap -20).unaryPlus() * 0.5)) + col * 70, -110 + row * 70, 70 - gap, 70 - gap)
+    private val textWidths by lazy {
+        mapOf(
+            1 to NVGRenderer.textWidth("1", 30f, NVGRenderer.defaultFont),
+            2 to NVGRenderer.textWidth("2", 30f, NVGRenderer.defaultFont),
+            -1 to NVGRenderer.textWidth("-1", 30f, NVGRenderer.defaultFont),
+            -2 to NVGRenderer.textWidth("-2", 30f, NVGRenderer.defaultFont)
+        )
+    }
 
-            if (text != 0) {
-                val color = when (text) {
-                    2 -> TerminalSolver.rubixColor2
-                    1 -> TerminalSolver.rubixColor1
-                    -2 -> TerminalSolver.oppositeRubixColor2
-                    else -> TerminalSolver.oppositeRubixColor1
-                }
-                roundedRectangle(box, color)
-                RenderUtils.drawText(text.toString(), -168 + col * 70 + 26f , -110f + row * 70f + (27f - (textScale * 3f) - (gap * 0.5f)), 2f + textScale, Colors.WHITE, center = true)
-            }
-            
-            itemIndexMap[pane] = Box(
-                box.x.toFloat() * customScale + mc.displayWidth / 2,
-                box.y.toFloat() * customScale + mc.displayHeight / 2,
-                box.w.toFloat() * customScale,
-                box.h.toFloat() * customScale
-            )
-        }
+    private fun getColor(clicksRequired: Int): Color = when (clicksRequired) {
+        1 -> TerminalSolver.rubixColor1
+        2 -> TerminalSolver.rubixColor2
+        -1 -> TerminalSolver.oppositeRubixColor1
+        else -> TerminalSolver.oppositeRubixColor2
     }
 }

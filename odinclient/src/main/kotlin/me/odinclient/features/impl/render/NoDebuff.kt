@@ -1,8 +1,8 @@
 package me.odinclient.features.impl.render
 
+import me.odinmain.clickgui.settings.impl.BooleanSetting
 import me.odinmain.events.impl.PacketEvent
 import me.odinmain.features.Module
-import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.utils.equalsOneOf
 import net.minecraft.block.material.Material
 import net.minecraft.client.renderer.GlStateManager
@@ -15,7 +15,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object NoDebuff : Module(
     name = "No Debuff",
-    desc = "Removes various unwanted effects from the game."
+    description = "Removes various unwanted effects from the game."
 ) {
     private val antiBlind by BooleanSetting("No Blindness", false, desc = "Disables blindness.")
     private val antiPortal by BooleanSetting("No Portal Effect", false, desc = "Disables the nether portal overlay.")

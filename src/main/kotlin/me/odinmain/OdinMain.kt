@@ -10,7 +10,6 @@ import me.odinmain.features.ModuleManager
 import me.odinmain.features.impl.render.ClickGUIModule
 import me.odinmain.features.impl.render.RandomPlayers
 import me.odinmain.features.impl.render.WaypointManager
-import me.odinmain.font.OdinFont
 import me.odinmain.utils.ServerUtils
 import me.odinmain.utils.SplitsManager
 import me.odinmain.utils.clock.Executor
@@ -23,7 +22,6 @@ import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonListener
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.ScanUtils
-import me.odinmain.utils.ui.clickgui.ClickGUI
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
 import net.minecraftforge.common.MinecraftForge
@@ -57,7 +55,6 @@ object OdinMain {
         ).forEach { MinecraftForge.EVENT_BUS.register(it) }
 
         CommandRegistry.register()
-        OdinFont.init()
     }
 
     fun postInit() {
@@ -69,7 +66,6 @@ object OdinMain {
             Config.load()
             ClickGUIModule.lastSeenVersion = VERSION
         }
-        ClickGUI.init()
 
         val name = mc.session?.username?.takeIf { !it.matches(Regex("Player\\d{2,3}")) } ?: return
         scope.launch(Dispatchers.IO) {

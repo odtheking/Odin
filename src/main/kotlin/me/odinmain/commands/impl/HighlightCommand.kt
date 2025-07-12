@@ -6,8 +6,8 @@ import me.odinmain.config.Config
 import me.odinmain.features.impl.render.CustomHighlight.currentEntities
 import me.odinmain.features.impl.render.CustomHighlight.highlightMap
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.Colors
 import me.odinmain.utils.skyblock.modMessage
-import me.odinmain.utils.ui.Colors
 
 @OptIn(ExperimentalStdlibApi::class)
 val highlightCommand = Commodore("highlight") {

@@ -2,13 +2,13 @@ package me.odinclient.features.impl.skyblock
 
 import me.odinclient.utils.skyblock.PlayerUtils
 import me.odinclient.utils.skyblock.PlayerUtils.leftClick
+import me.odinmain.clickgui.settings.Setting.Companion.withDependency
+import me.odinmain.clickgui.settings.impl.BooleanSetting
+import me.odinmain.clickgui.settings.impl.DropdownSetting
+import me.odinmain.clickgui.settings.impl.NumberSetting
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.p3.ArrowAlign.clicksRemaining
 import me.odinmain.features.impl.floor7.p3.ArrowAlign.currentFrameRotations
-import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.features.settings.impl.DropdownSetting
-import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.*
 import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.skyblock.Island
@@ -31,7 +31,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 
 object Triggerbot : Module(
     name = "Triggerbot",
-    desc = "Provides triggerbots for Blood, Spirit Bear, Crystal Triggerbot, Secret Triggerbot, Relic Triggerbot."
+    description = "Provides triggerbots for Blood, Spirit Bear, Crystal Triggerbot, Secret Triggerbot, Relic Triggerbot."
 ) {
     private val bloodDropDown by DropdownSetting("Blood Dropdown", false)
     private val blood by BooleanSetting("Blood Mobs", false, desc = "Automatically clicks blood mobs.").withDependency { bloodDropDown }

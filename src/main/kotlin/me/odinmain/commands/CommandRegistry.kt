@@ -69,8 +69,7 @@ object CommandRegistry {
                 }
             }
         }
-        if (from.children.size == 0) {
+        if (from.children.isEmpty())
             builder.append("  /${getArgumentsRequired(from).joinToString(" ")}\n")
-        }
     }
 }

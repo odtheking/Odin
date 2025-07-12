@@ -1,29 +1,26 @@
 package me.odinmain.features.impl.nether
 
+import me.odinmain.clickgui.settings.Setting.Companion.withDependency
+import me.odinmain.clickgui.settings.impl.BooleanSetting
+import me.odinmain.clickgui.settings.impl.ColorSetting
+import me.odinmain.clickgui.settings.impl.NumberSetting
 import me.odinmain.features.Module
-import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.features.settings.impl.ColorSetting
-import me.odinmain.features.settings.impl.HudSetting
-import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.addVec
+import me.odinmain.utils.render.Colors
 import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.render.RenderUtils.renderBoundingBox
 import me.odinmain.utils.render.Renderer
-import me.odinmain.utils.render.getMCTextWidth
-import me.odinmain.utils.round
 import me.odinmain.utils.skyblock.KuudraUtils
-import me.odinmain.utils.skyblock.KuudraUtils.kuudraEntity
-import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.PlayerUtils
-import me.odinmain.utils.ui.Colors
+import me.odinmain.utils.toFixed
+import me.odinmain.utils.ui.getTextWidth
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 
 object KuudraDisplay : Module(
     name = "Kuudra Display",
-    desc = "Displays information about Kuudra entity itself."
+    description = "Displays information about Kuudra entity itself."
 ) {
     private val highlightKuudra by BooleanSetting("Highlight Kuudra", true, desc = "Highlights the kuudra entity.")
     private val kuudraColor by ColorSetting("Kuudra Color", Colors.MINECRAFT_RED, true, desc = "Color of the kuudra highlight.").withDependency { highlightKuudra }
@@ -31,18 +28,14 @@ object KuudraDisplay : Module(
     private val kuudraSpawnAlert by BooleanSetting("Kuudra Spawn Alert", true, desc = "Alerts you where kuudra spawns.")
     private val kuudraHPDisplay by BooleanSetting("Kuudra HP", true, desc = "Renders kuudra's hp on him.")
     private val healthSize by NumberSetting("Health Size", 0.3f, 0.1f, 1.0f, 0.1, desc = "Size of the health display.").withDependency { kuudraHPDisplay }
-    private val healthFormat by BooleanSetting("Health Format", true, desc = "Format of the health display (true for Absolute, false for Percentage).").withDependency { kuudraHPDisplay }
     private val scaledHealth by BooleanSetting("Use Scaled", true, desc = "Use scaled health display.").withDependency { kuudraHPDisplay }
-    private val hud by HudSetting("Health Display", 10f, 10f, 1f, true) {
-        if (it) {
-            RenderUtils.drawText("§a99.975M/240M", 1f, 1f, 1f, Colors.WHITE, center = false)
-            getMCTextWidth("99.975k/100k") + 2f to 12f
-        } else {
-            if (!KuudraUtils.inKuudra) return@HudSetting 0f to 0f
+    private val hud by HUD("Health Display", "Displays the current health of Kuudra.") { example ->
+        if (!example && !KuudraUtils.inKuudra) return@HUD 0f to 0f
+        val string = if (example) "§a99.975M/240M§c❤" else getCurrentHealthDisplay(KuudraUtils.kuudraEntity?.health ?: return@HUD 0 to 0)
 
-            RenderUtils.drawText(getCurrentHealthDisplay(), 1f, 1f, 1f, Colors.WHITE, center = false)
-            getMCTextWidth("99.975k/100k") + 2f to 12f
-        }
+        RenderUtils.drawText(string, 1f, 1f)
+
+        getTextWidth(string) + 2f to 10f
     }
 
     private var kuudraHP = 100000f
@@ -50,12 +43,12 @@ object KuudraDisplay : Module(
     fun renderWorldEvent(event: RenderWorldLastEvent) {
         if (!KuudraUtils.inKuudra) return
 
-        kuudraEntity?.let {
+        KuudraUtils.kuudraEntity?.let {
             if (highlightKuudra)
                 Renderer.drawBox(it.renderBoundingBox, kuudraColor, depth = false, fillAlpha = 0, outlineWidth = thickness)
 
             if (kuudraHPDisplay)
-                Renderer.drawStringInWorld(getCurrentHealthDisplay(), it.positionVector.addVec(y = 10), Colors.WHITE, depth = false, scale = healthSize, shadow = true)
+                Renderer.drawStringInWorld(getCurrentHealthDisplay(it.health), it.positionVector.addVec(y = 10), Colors.WHITE, depth = false, scale = healthSize, shadow = true)
         }
     }
 
@@ -63,8 +56,8 @@ object KuudraDisplay : Module(
     fun onTick(event: TickEvent.ClientTickEvent) {
         if (event.phase != TickEvent.Phase.START || !KuudraUtils.inKuudra) return
 
-        kuudraHP = kuudraEntity?.health ?: return
-        val kuudraPos = kuudraEntity?.positionVector ?: return
+        kuudraHP = KuudraUtils.kuudraEntity?.health ?: return
+        val kuudraPos = KuudraUtils.kuudraEntity?.positionVector ?: return
         if (kuudraSpawnAlert && kuudraHP in 24900f..25000f) {
             when {
                 kuudraPos.xCoord < -128 -> "§c§lRIGHT"
@@ -76,7 +69,7 @@ object KuudraDisplay : Module(
         }
     }
 
-    private fun getCurrentHealthDisplay(): String {
+    private fun getCurrentHealthDisplay(kuudraHP: Float): String {
         val color = when {
             kuudraHP > 99000 -> "§a"
             kuudraHP > 75000 -> "§2"
@@ -89,11 +82,9 @@ object KuudraDisplay : Module(
 
         return when {
             // Scaled
-            kuudraHP <= 25000 && scaledHealth && KuudraUtils.kuudraTier == 5 -> "$color${(health * 9.6).round(2)}M§7/§a240M §c❤"
-            // Percentage
-            healthFormat -> "$color${health}§a% §c❤"
-            // Exact
-            else -> "$color${health}K§7/§a100k §c❤"
+            kuudraHP <= 25000 && scaledHealth && KuudraUtils.kuudraTier == 5 -> "$color${(health * 9.6).toFixed()}M§7/§a240M§c❤"
+            // Absolute
+            else -> "$color${health}K§7/§a100k§c❤"
         }
     }
 }

@@ -1,11 +1,11 @@
 package me.odinclient.features.impl.render
 
+import me.odinmain.clickgui.settings.Setting.Companion.withDependency
+import me.odinmain.clickgui.settings.impl.BooleanSetting
+import me.odinmain.clickgui.settings.impl.DropdownSetting
+import me.odinmain.clickgui.settings.impl.KeybindSetting
+import me.odinmain.clickgui.settings.impl.NumberSetting
 import me.odinmain.features.Module
-import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.features.settings.impl.DropdownSetting
-import me.odinmain.features.settings.impl.KeybindSetting
-import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.getPositionEyes
 import net.minecraft.util.MathHelper
 import net.minecraft.util.Vec3
@@ -18,7 +18,7 @@ import kotlin.math.sin
 
 object Camera : Module(
     name = "Camera",
-    desc = "Various camera improvements and settings."
+    description = "Various camera improvements and settings."
 ) {
     private val frontCamera by BooleanSetting("No Front Camera", false, desc = "Disables front camera.")
     private val cameraClip by BooleanSetting("Camera Clip", false, desc = "Allows the camera to clip through blocks.")

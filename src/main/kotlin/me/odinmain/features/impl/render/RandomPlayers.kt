@@ -5,10 +5,10 @@ import kotlinx.coroutines.launch
 import me.odinmain.OdinMain.mc
 import me.odinmain.OdinMain.scope
 import me.odinmain.features.impl.render.ClickGUIModule.devSize
-import me.odinmain.utils.getDataFromServer
+import me.odinmain.utils.fetchData
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.Colors
 import me.odinmain.utils.skyblock.modMessage
-import me.odinmain.utils.ui.Colors
 import net.minecraft.client.entity.AbstractClientPlayer
 import net.minecraft.client.model.ModelBase
 import net.minecraft.client.model.ModelRenderer
@@ -31,7 +31,7 @@ object RandomPlayers {
 
     fun updateCustomProperties() {
         scope.launch {
-            val data = getDataFromServer("https://tj4yzotqjuanubvfcrfo7h5qlq0opcyk.lambda-url.eu-north-1.on.aws/").replace(pattern) { match -> match.groupValues[1] }.ifEmpty { return@launch }
+            val data = fetchData("https://tj4yzotqjuanubvfcrfo7h5qlq0opcyk.lambda-url.eu-north-1.on.aws/").replace(pattern) { match -> match.groupValues[1] }.ifEmpty { return@launch }
             JsonParser().parse(data)?.asJsonArray?.forEach {
                 val jsonElement = it.asJsonObject
                 val randomsName = jsonElement.get("DevName")?.asString ?: return@forEach

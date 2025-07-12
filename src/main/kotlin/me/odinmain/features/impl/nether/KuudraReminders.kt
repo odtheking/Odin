@@ -1,8 +1,8 @@
 package me.odinmain.features.impl.nether
 
+import me.odinmain.clickgui.settings.Setting.Companion.withDependency
+import me.odinmain.clickgui.settings.impl.BooleanSetting
 import me.odinmain.features.Module
-import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.utils.isOtherPlayer
 import me.odinmain.utils.skyblock.KuudraUtils
 import me.odinmain.utils.skyblock.PlayerUtils
@@ -10,7 +10,7 @@ import me.odinmain.utils.skyblock.partyMessage
 
 object KuudraReminders : Module(
     name = "Kuudra Reminders",
-    desc = "Displays reminders about Kuudra."
+    description = "Displays reminders about Kuudra."
 ) {
     private val displayText by BooleanSetting("Display Text", true, desc = "Displays kuudra information in chat.")
     private val playSound by BooleanSetting("Play Sound", true, desc = "Plays a sound when a kuudra event occurs.")

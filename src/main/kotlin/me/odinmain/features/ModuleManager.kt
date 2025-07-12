@@ -1,6 +1,9 @@
 package me.odinmain.features
 
 import me.odinmain.OdinMain.mc
+import me.odinmain.clickgui.HudManager
+import me.odinmain.clickgui.settings.impl.HUDSetting
+import me.odinmain.clickgui.settings.impl.KeybindSetting
 import me.odinmain.events.impl.ChatPacketEvent
 import me.odinmain.events.impl.InputEvent
 import me.odinmain.events.impl.PacketEvent
@@ -15,12 +18,11 @@ import me.odinmain.features.impl.nether.*
 import me.odinmain.features.impl.render.*
 import me.odinmain.features.impl.render.ClickGUIModule.hudChat
 import me.odinmain.features.impl.skyblock.*
-import me.odinmain.features.settings.impl.KeybindSetting
 import me.odinmain.utils.logError
 import me.odinmain.utils.profile
-import me.odinmain.utils.render.getTextWidth
-import me.odinmain.utils.ui.hud.EditHUDGui
-import me.odinmain.utils.ui.hud.HudElement
+import me.odinmain.utils.ui.rendering.NVGRenderer
+import net.minecraft.client.gui.ScaledResolution
+import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.network.Packet
 import net.minecraft.network.play.server.S32PacketConfirmTransaction
 import net.minecraftforge.client.event.RenderGameOverlayEvent
@@ -42,7 +44,8 @@ object ModuleManager {
     val messageFunctions = arrayListOf<MessageFunction>()
     val worldLoadFunctions = arrayListOf<() -> Unit>()
     val tickTasks = CopyOnWriteArrayList<TickTask>()
-    val huds = arrayListOf<HudElement>()
+    private val keybindSettingsCache = mutableListOf<KeybindSetting>()
+    val hudSettingsCache = mutableListOf<HUDSetting>()
 
     val modules: ArrayList<Module> = arrayListOf(
         // dungeon
@@ -56,8 +59,8 @@ object ModuleManager {
 
         // render
         BPSDisplay, ClickGUIModule, CustomHighlight, CPSDisplay, DragonHitboxes, GyroWand, NameChanger,
-        PersonalDragon, RenderOptimizer, ServerHud, Waypoints, CanClip, Animations, SpaceHelmet,
-        BlockOverlay, VisualWords, DVD, Sidebar, HideArmor,
+        PersonalDragon, RenderOptimizer, PerformanceHUD, Waypoints, CanClip, Animations, SpaceHelmet,
+        BlockOverlay, VisualWords, DVD, HideArmor,
 
         //skyblock
         NoCursorReset, AutoSprint, BlazeAttunement, ChatCommands, DeployableTimer, DianaHelper, ArrowHit,
@@ -65,14 +68,18 @@ object ModuleManager {
         FarmKeys, PetKeybinds, CommandKeybinds, SpringBoots, AbilityTimers, SlotBinds,
 
         // kuudra
-        BuildHelper, FreshTimer, KuudraDisplay, NoPre, PearlWaypoints, RemovePerks, SupplyHelper, TeamHighlight,
+        BuildHelper, FreshTools, KuudraDisplay, NoPre, PearlWaypoints, RemovePerks, SupplyHelper, TeamHighlight,
         VanqNotifier, KuudraReminders, KuudraRequeue,
     )
 
     init {
         for (module in modules) {
-            module.keybinding?.let {
-                module.register(KeybindSetting("Keybind", it, "Toggles the module"))
+            module.key?.let {
+                module.register(KeybindSetting("Keybind", it, "Toggles the module").apply { value.onPress = { module.onKeybind() } })
+            }
+            for (setting in module.settings) {
+                if (setting is KeybindSetting) keybindSettingsCache.add(setting)
+                if (setting is HUDSetting) hudSettingsCache.add(setting)
             }
         }
     }
@@ -80,7 +87,7 @@ object ModuleManager {
     fun addModules(vararg module: Module) {
         for (i in module) {
             modules.add(i)
-            i.keybinding?.let { i.register(KeybindSetting("Keybind", it, "Toggles the module")) }
+            i.key?.let { i.register(KeybindSetting("Keybind", it, "Toggles the module")) }
         }
     }
 
@@ -131,34 +138,31 @@ object ModuleManager {
 
     @SubscribeEvent
     fun activateModuleKeyBinds(event: InputEvent.Keyboard) {
-        for (module in modules) {
-            for (setting in module.settings) {
-                if (setting is KeybindSetting && setting.value.key == event.keycode) {
-                    setting.value.onPress?.invoke()
-                }
-            }
+        for (keybindSetting in keybindSettingsCache) {
+            if (keybindSetting.value.key == event.keycode) keybindSetting.value.onPress?.invoke()
         }
     }
 
     @SubscribeEvent
     fun activateModuleMouseBinds(event: InputEvent.Mouse) {
-        for (module in modules) {
-            for (setting in module.settings) {
-                if (setting is KeybindSetting && setting.value.key + 100 == event.keycode) {
-                    setting.value.onPress?.invoke()
-                }
-            }
+        for (keybindSetting in keybindSettingsCache) {
+            if (keybindSetting.value.key + 100 == event.keycode) keybindSetting.value.onPress?.invoke()
         }
     }
 
     @SubscribeEvent
     fun onRenderOverlay(event: RenderGameOverlayEvent.Post) {
-        if ((mc.currentScreen != null && !hudChat) || event.type != RenderGameOverlayEvent.ElementType.ALL || mc.currentScreen == EditHUDGui) return
+        if ((mc.currentScreen != null && !hudChat) || event.type != RenderGameOverlayEvent.ElementType.ALL || mc.currentScreen == HudManager) return
 
         profile("Odin Hud") {
-            for (i in 0 until huds.size) {
-                huds[i].draw(false)
+            GlStateManager.pushMatrix()
+            val sr = ScaledResolution(mc)
+            GlStateManager.scale(mc.displayWidth / 1920f, mc.displayHeight / 1080f, 0f)
+            GlStateManager.scale(1f / sr.scaleFactor, 1f / sr.scaleFactor, 1f)
+            for (hudSettings in hudSettingsCache) {
+                if (hudSettings.isEnabled) hudSettings.value.draw(false)
             }
+            GlStateManager.popMatrix()
         }
     }
 
@@ -169,8 +173,8 @@ object ModuleManager {
 
         for ((category, modulesInCategory) in modules.groupBy { it.category }.entries) {
             featureList.appendLine("Category: ${category.displayName}")
-            for (module in modulesInCategory.sortedByDescending { getTextWidth(it.name, 18f) }) {
-                featureList.appendLine("- ${module.name}: ${module.desc}")
+            for (module in modulesInCategory.sortedByDescending { NVGRenderer.textWidth(it.name, 18f, NVGRenderer.defaultFont) }) {
+                featureList.appendLine("- ${module.name}: ${module.description}")
             }
             featureList.appendLine()
         }

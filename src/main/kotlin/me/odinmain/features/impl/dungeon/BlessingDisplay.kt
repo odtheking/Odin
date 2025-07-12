@@ -1,20 +1,19 @@
 package me.odinmain.features.impl.dungeon
 
+import me.odinmain.clickgui.settings.Setting.Companion.withDependency
+import me.odinmain.clickgui.settings.impl.BooleanSetting
+import me.odinmain.clickgui.settings.impl.ColorSetting
 import me.odinmain.features.Module
-import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.features.settings.impl.ColorSetting
-import me.odinmain.features.settings.impl.HudSetting
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.Colors
 import me.odinmain.utils.render.RenderUtils
-import me.odinmain.utils.render.getMCTextWidth
 import me.odinmain.utils.skyblock.dungeon.Blessing
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
-import me.odinmain.utils.ui.Colors
+import me.odinmain.utils.ui.getTextWidth
 
 object BlessingDisplay : Module(
     name = "Blessing Display",
-    desc = "Displays the current active blessings of the dungeon."
+    description = "Displays the current active blessings of the dungeon."
 ) {
     private val power by BooleanSetting("Power Blessing", true, desc = "Displays the power blessing.")
     private val powerColor by ColorSetting("Power Color", Colors.MINECRAFT_DARK_RED, true, desc = "The color of the power blessing.").withDependency { power }
@@ -36,13 +35,13 @@ object BlessingDisplay : Module(
         BlessingData(Blessing.WISDOM, { wisdom }, { wisdomColor })
     )
 
-    private val hud by HudSetting("Display", 10f, 10f, 1f, false) { example ->
-        if (!DungeonUtils.inDungeons) return@HudSetting 0f to 0f
+    private val hud by HUD("Display", "Displays the current active blessings of the dungeon.") { example ->
+        if (!DungeonUtils.inDungeons) return@HUD 0f to 0f
         (0..5).reduce { acc, index ->
             val blessing = blessings[index - 1].takeIf { it.enabled.invoke() } ?: return@reduce acc
             val level = if (example) 19 else if (blessing.type.current > 0) blessing.type.current else return@reduce acc
-            RenderUtils.drawText("${blessing.type.displayString} §a$level§r", 0f, 10f * acc, 1f, blessing.color.invoke(), center = false)
+            RenderUtils.drawText("${blessing.type.displayString} §a$level§r", 1f, 1 + 12f * acc, blessing.color.invoke())
             acc + 1
-        }.let { getMCTextWidth("Power: 19").toFloat() to 10f * it }
+        }.let { getTextWidth("Power: 19") to 1 + 10f * it }
     }
 }

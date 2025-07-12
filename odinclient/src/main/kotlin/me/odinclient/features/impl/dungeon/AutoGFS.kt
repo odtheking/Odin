@@ -1,8 +1,8 @@
 package me.odinclient.features.impl.dungeon
 
+import me.odinmain.clickgui.settings.impl.BooleanSetting
+import me.odinmain.clickgui.settings.impl.NumberSetting
 import me.odinmain.features.Module
-import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.fillItemFromSack
 import me.odinmain.utils.runIn
 import me.odinmain.utils.skyblock.KuudraUtils
@@ -14,7 +14,7 @@ import me.odinmain.utils.skyblock.skyblockID
 
 object AutoGFS : Module(
     name = "Auto GFS",
-    desc = "Automatically refills certain items from your sacks."
+    description = "Automatically refills certain items from your sacks."
 ) {
     private val inKuudra by BooleanSetting("In Kuudra", true, desc = "Only gfs in Kuudra.")
     private val inDungeon by BooleanSetting("In Dungeon", true, desc = "Only gfs in Dungeons.")

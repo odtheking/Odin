@@ -38,6 +38,9 @@ allprojects {
         forge("net.minecraftforge:forge:1.8.9-11.15.1.2318-1.8.9")
 
         implementation(kotlin("stdlib-jdk8"))
+        implementation(kotlin("reflect"))
+        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0-RC")
+
 
         compileOnly("com.github.NotEnoughUpdates:NotEnoughUpdates:2.4.0:all")
 
@@ -47,10 +50,9 @@ allprojects {
         annotationProcessor("org.spongepowered:mixin:0.8.5-SNAPSHOT")
         implementation("org.spongepowered:mixin:0.7.11-SNAPSHOT") { isTransitive = false }
 
-        implementation("gg.essential:loader-launchwrapper:1.1.3")
-        compileOnly("gg.essential:essential-1.8.9-forge:12132+g6e2bf4dc5")
-
         implementation("com.mojang:brigadier:1.2.9")
+
+        implementation("com.github.odtheking:odin-lwjgl:108b85bda5ee61cc5e4b8bfeedf906a2b24824af")
     }
 
     loom {

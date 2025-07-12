@@ -14,11 +14,11 @@ import me.odinmain.features.impl.floor7.WitherDragons.sendTime
 import me.odinmain.features.impl.skyblock.ArrowHit.onDragonSpawn
 import me.odinmain.features.impl.skyblock.ArrowHit.resetOnDragons
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.Colors
 import me.odinmain.utils.runIn
 import me.odinmain.utils.skyblock.PersonalBest
 import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.toFixed
-import me.odinmain.utils.ui.Colors
 import net.minecraft.entity.boss.EntityDragon
 import net.minecraft.network.play.server.S2APacketParticles
 import net.minecraft.util.AxisAlignedBB

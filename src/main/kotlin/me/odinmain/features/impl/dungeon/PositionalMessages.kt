@@ -1,17 +1,17 @@
 package me.odinmain.features.impl.dungeon
 
+import me.odinmain.clickgui.settings.Setting.Companion.withDependency
+import me.odinmain.clickgui.settings.impl.BooleanSetting
+import me.odinmain.clickgui.settings.impl.ListSetting
+import me.odinmain.clickgui.settings.impl.NumberSetting
 import me.odinmain.events.impl.PacketEvent
 import me.odinmain.features.Module
-import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.features.settings.impl.ListSetting
-import me.odinmain.features.settings.impl.NumberSetting
 import me.odinmain.utils.isVecInAABB
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.Colors
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.partyMessage
-import me.odinmain.utils.ui.Colors
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.Vec3
@@ -22,7 +22,7 @@ import kotlin.concurrent.schedule
 
 object PositionalMessages : Module(
     name = "Positional Messages",
-    desc = "Sends a message when you're near a certain position. /posmsg"
+    description = "Sends a message when you're near a certain position. /posmsg"
 ) {
     private val onlyDungeons by BooleanSetting("Only in Dungeons", true, desc = "Only sends messages when you're in a dungeon.")
     private val showPositions by BooleanSetting("Show Positions", true, desc = "Draws boxes/lines around the positions.")

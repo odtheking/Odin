@@ -1,13 +1,13 @@
 package me.odinmain.features.impl.nether
 
+import me.odinmain.clickgui.settings.impl.BooleanSetting
 import me.odinmain.features.Module
-import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.Colors
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.KuudraUtils
 import me.odinmain.utils.skyblock.KuudraUtils.SupplyPickUpSpot
 import me.odinmain.utils.toAABB
-import me.odinmain.utils.ui.Colors
 import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3i
 import net.minecraftforge.client.event.RenderWorldLastEvent
@@ -16,7 +16,7 @@ import java.util.*
 
 object PearlWaypoints : Module(
     name = "Pearl Waypoints",
-    desc = "Renders waypoints for pearls in Kuudra."
+    description = "Renders waypoints for pearls in Kuudra."
 ) {
     private val hideFarWaypoints by BooleanSetting("Hide Far Waypoints", true, desc = "Hides the waypoints that are not the closest to you.")
 

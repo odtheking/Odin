@@ -1,26 +1,26 @@
 package me.odinmain.features.impl.dungeon
 
 import me.odinmain.OdinMain.isLegitVersion
+import me.odinmain.clickgui.settings.Setting.Companion.withDependency
+import me.odinmain.clickgui.settings.impl.*
 import me.odinmain.events.impl.EntityLeaveWorldEvent
 import me.odinmain.events.impl.RenderChestEvent
 import me.odinmain.features.Module
-import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.*
+import me.odinmain.utils.render.Color.Companion.withAlpha
+import me.odinmain.utils.render.Colors
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonListener
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.getSkullValue
 import me.odinmain.utils.skyblock.partyMessage
 import me.odinmain.utils.toAABB
-import me.odinmain.utils.ui.Colors
-import me.odinmain.utils.ui.clickgui.util.ColorUtil.withAlpha
 import net.minecraft.entity.monster.EntityZombie
 import net.minecraftforge.event.entity.living.LivingDeathEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object Mimic : Module(
     name = "Mimic",
-    desc = "Highlights and announces mimic kills in dungeons."
+    description = "Highlights and announces mimic kills in dungeons."
 ) {
     private val mimicMessageToggle by BooleanSetting("Toggle Mimic Message", true, desc = "Toggles the mimic killed message.")
     val mimicMessage by StringSetting("Mimic Message", "Mimic Killed!", 128, desc = "Message sent when mimic is detected as killed.").withDependency { mimicMessageToggle }

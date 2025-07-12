@@ -1,18 +1,18 @@
 package me.odinclient.features.impl.render
 
+import me.odinmain.clickgui.settings.impl.BooleanSetting
+import me.odinmain.clickgui.settings.impl.ColorSetting
+import me.odinmain.clickgui.settings.impl.SelectorSetting
 import me.odinmain.events.impl.RenderChestEvent
 import me.odinmain.features.Module
-import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.features.settings.impl.ColorSetting
-import me.odinmain.features.settings.impl.SelectorSetting
 import me.odinmain.utils.equalsOneOf
+import me.odinmain.utils.render.Colors
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.Island
 import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.getBlockAt
 import me.odinmain.utils.toAABB
-import me.odinmain.utils.ui.Colors
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.init.Blocks
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
@@ -23,7 +23,7 @@ import org.lwjgl.opengl.GL11
 
 object ChestEsp : Module(
     name = "Chest Esp",
-    desc = "Displays chests through walls."
+    description = "Displays chests through walls."
 ) {
     private val onlyDungeon by BooleanSetting("Only Dungeon", desc = "Only show chests in dungeons.")
     private val onlyCH by BooleanSetting("Only Crystal Hollows", desc = "Only show chests in Crystal Hollows.")

@@ -1,12 +1,12 @@
 package me.odinmain.features.impl.render
 
+import me.odinmain.clickgui.settings.impl.BooleanSetting
+import me.odinmain.clickgui.settings.impl.ColorSetting
+import me.odinmain.clickgui.settings.impl.NumberSetting
 import me.odinmain.features.Module
-import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.features.settings.impl.ColorSetting
-import me.odinmain.features.settings.impl.NumberSetting
+import me.odinmain.utils.render.Colors
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
-import me.odinmain.utils.ui.Colors
 import net.minecraft.entity.boss.EntityDragon
 import net.minecraft.util.AxisAlignedBB
 import net.minecraftforge.client.event.RenderWorldLastEvent
@@ -17,7 +17,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 
 object DragonHitboxes : Module(
     name = "Dragon Hitboxes",
-    desc = "Draws dragon's correct hitboxes around them."
+    description = "Draws dragon's correct hitboxes around them."
 ) {
     private val onlyM7 by BooleanSetting("Only M7", true, desc = "Only render hitboxes in floor 7.")
     private val color by ColorSetting("Hitbox Color", Colors.MINECRAFT_AQUA, desc = "The color of the hitboxes.")

@@ -7,7 +7,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object EscrowFix : Module(
     name = "Escrow Fix",
-    desc = "Automatically reopens the ah/bz when it gets closed by escrow."
+    description = "Automatically reopens the ah/bz when it gets closed by escrow."
 ) {
     private val messages = mapOf(
         "There was an error with the auction house! (AUCTION_EXPIRED_OR_NOT_FOUND)" to "ah",

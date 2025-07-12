@@ -1,22 +1,26 @@
 package me.odinmain.features.impl.dungeon
 
 import me.odinmain.OdinMain.isLegitVersion
+import me.odinmain.clickgui.settings.Setting.Companion.withDependency
+import me.odinmain.clickgui.settings.impl.BooleanSetting
+import me.odinmain.clickgui.settings.impl.ColorSetting
+import me.odinmain.clickgui.settings.impl.DropdownSetting
+import me.odinmain.clickgui.settings.impl.NumberSetting
 import me.odinmain.events.impl.EntityLeaveWorldEvent
 import me.odinmain.events.impl.PostEntityMetadata
 import me.odinmain.features.Module
-import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.*
 import me.odinmain.utils.*
 import me.odinmain.utils.ServerUtils.averagePing
+import me.odinmain.utils.render.Colors
+import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.render.RenderUtils.renderVec
 import me.odinmain.utils.render.Renderer
-import me.odinmain.utils.render.mcText
-import me.odinmain.utils.render.mcTextAndWidth
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.inBoss
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.inDungeons
-import me.odinmain.utils.ui.Colors
+import me.odinmain.utils.ui.drawStringWidth
+import me.odinmain.utils.ui.getTextWidth
 import net.minecraft.entity.boss.BossStatus
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.entity.monster.EntityZombie
@@ -35,7 +39,7 @@ import kotlin.math.roundToInt
 
 object BloodCamp : Module(
     name = "Blood Camp",
-    desc = "Features for Blood Camping."
+    description = "Features for Blood Camping."
 ) {
     private val predictionDropdown by DropdownSetting("Prediction Dropdown", true)
     private val movePrediction by BooleanSetting("Move Prediction", true, desc = "Predicts when watcher will move after its initial spawns. Only works on f7.").withDependency { predictionDropdown }
@@ -43,22 +47,19 @@ object BloodCamp : Module(
     private val partyMoveTime by BooleanSetting("Party Move Message", false, desc = "Sends a message indicating when the watcher will move to party members.").withDependency { movePrediction && predictionDropdown }
     private val killTitle by BooleanSetting("Kill Title", true, desc = "Shows a title for when to kill the initial spawns.").withDependency { movePrediction && predictionDropdown }
 
-    private val moveTimer by HudSetting("Move Hud", 10f, 10f, 1f, true) { example ->
-        if (example) return@HudSetting mcTextAndWidth("Move Timer: 0.50s", 10, 0, 1f, Colors.MINECRAFT_RED, center = false) to 10f
-        0f to 0f
-        finalTime?.let {
-            mcTextAndWidth("Move Timer: ${((it - normalTickTime) * 0.05).toFixed()}s", 10, 0, 1f, Colors.MINECRAFT_RED, center = false) to 10f
-        } ?: return@HudSetting 0f to 0f
+    private val moveTimer by HUD("Move Hud", "Displays the time until the watcher moves.") { example ->
+        if (example) return@HUD drawStringWidth("Move Timer: 0.50s", 1f, 1f, Colors.MINECRAFT_RED) + 2f to 10f
+        finalTime?.let { drawStringWidth("Move Timer: ${((it - normalTickTime) * 0.05).toFixed()}s", 1f, 1f, Colors.MINECRAFT_RED) to 10f } ?: return@HUD 0f to 0f
     }.withDependency { movePrediction && predictionDropdown }
 
     private val assistDropdown by DropdownSetting("Blood Assist Dropdown", true)
     private val bloodAssist by BooleanSetting("Blood Camp Assist", true, desc = "Draws boxes to spawning mobs in the blood room. WARNING: not perfectly accurate. Mobs spawn randomly between 37 - 41 ticks, adjust offset to adjust between ticks.").withDependency { assistDropdown }
 
-    private val timerHud by HudSetting("Timer Hud", 10f, 10f, 1f, true) { example ->
-        if ((!bloodAssist || (!inDungeons || inBoss)) && !example) return@HudSetting 0f to 0f
+    private val timerHud by HUD("Timer Hud", "Displays the time left for each mob to spawn.") { example ->
+        if ((!bloodAssist || (!inDungeons || inBoss)) && !example) return@HUD 0f to 0f
         if (example) {
-            mcText("1.15s", 10, 0, 1f, Colors.MINECRAFT_RED)
-            mcText("2.15s", 10, 10, 1f, Colors.MINECRAFT_GREEN)
+            RenderUtils.drawText("1.15s", 1f, 1f, Colors.MINECRAFT_RED)
+            RenderUtils.drawText("2.15s", 1f, 12f, Colors.MINECRAFT_GREEN)
         } else {
             renderDataMap.entries.sortedBy { it.value.time }.fold(0) { acc, data ->
                 val time = data.takeUnless { it.key.isDead }?.value?.time ?: return@fold acc
@@ -68,17 +69,17 @@ object BloodCamp : Module(
                     time in 0f..0.5f -> Colors.MINECRAFT_RED
                     else -> Colors.MINECRAFT_AQUA
                 }
-                mcText("${time.toFixed()}s", 10, 10 * acc, 1f, color, center = false)
+                RenderUtils.drawText("${time.toFixed()}s", 1f, 1f + 10f * acc, color)
                 acc + 1
             }
         }
-        20f to 20f
+        getTextWidth("2.15s") to 20f
     }.withDependency { bloodAssist && assistDropdown }
 
     private val pboxColor by ColorSetting("Spawn Color", Colors.MINECRAFT_RED, true, desc = "Color for Spawn render box. Set alpha to 0 to disable.").withDependency { bloodAssist && assistDropdown}
     private val fboxColor by ColorSetting("Final Color", Colors.MINECRAFT_DARK_AQUA, true, desc = "Color for when Spawn and Mob boxes are merged. Set alpha to 0 to disable.").withDependency { bloodAssist && assistDropdown }
     private val mboxColor by ColorSetting("Position Color", Colors.MINECRAFT_GREEN, true, desc = "Color for current position box. Set alpha to 0 to disable.").withDependency { bloodAssist && assistDropdown }
-    private val boxSize by NumberSetting("Box Size", 1.0, 0.1, 1.0 ,0.1, desc = "The size of the boxes. Lower values may seem less accurate.").withDependency { bloodAssist && assistDropdown }
+    private val boxSize by NumberSetting("Box Size", 1.0, 0.1, 1.0, 0.1, desc = "The size of the boxes. Lower values may seem less accurate.").withDependency { bloodAssist && assistDropdown }
     private val drawLine by BooleanSetting("Line", true, desc = "Line between Position box and Spawn box.").withDependency { bloodAssist && assistDropdown }
     private val drawTime by BooleanSetting("Time Left", true, desc = "Time before the blood mob spawns. Adjust offset depending on accuracy. May be up to ~100ms off.").withDependency { bloodAssist && assistDropdown }
     private val advanced by DropdownSetting("Advanced", false).withDependency { bloodAssist && assistDropdown }

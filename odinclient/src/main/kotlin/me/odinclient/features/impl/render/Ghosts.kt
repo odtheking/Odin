@@ -1,19 +1,19 @@
 package me.odinclient.features.impl.render
 
+import me.odinmain.clickgui.settings.impl.BooleanSetting
 import me.odinmain.features.Module
-import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.utils.addVec
 import me.odinmain.utils.getSBMaxHealth
+import me.odinmain.utils.render.Colors
 import me.odinmain.utils.render.RenderUtils.renderVec
 import me.odinmain.utils.render.Renderer
-import me.odinmain.utils.ui.Colors
 import net.minecraft.entity.monster.EntityCreeper
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object Ghosts : Module(
     name = "Ghosts",
-    desc = "Adds visual changes to ghosts."
+    description = "Adds visual changes to ghosts."
 ) {
     private var showGhostNametag by BooleanSetting("Show Ghost Nametag", desc = "Show the ghost's name tag.")
     private var showGhosts by BooleanSetting("Hide Ghosts", desc = "Hide ghosts.")

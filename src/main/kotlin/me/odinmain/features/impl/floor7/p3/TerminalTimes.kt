@@ -1,11 +1,11 @@
 package me.odinmain.features.impl.floor7.p3
 
+import me.odinmain.clickgui.settings.impl.ActionSetting
+import me.odinmain.clickgui.settings.impl.BooleanSetting
 import me.odinmain.events.impl.TerminalEvent
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.TerminalSimulator
 import me.odinmain.features.impl.floor7.p3.termsim.TermSimGUI
-import me.odinmain.features.settings.impl.ActionSetting
-import me.odinmain.features.settings.impl.BooleanSetting
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.skyblock.PersonalBest
 import me.odinmain.utils.skyblock.modMessage
@@ -15,7 +15,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object TerminalTimes : Module(
     name = "Terminal Times",
-    desc = "Records the time taken to complete terminals in floor 7."
+    description = "Records the time taken to complete terminals in floor 7."
 ) {
     private val sendMessage by BooleanSetting("Send Message", false, desc = "Send a message when a terminal is completed.")
     private val reset by ActionSetting("Reset pbs", desc = "Resets the terminal PBs.") {

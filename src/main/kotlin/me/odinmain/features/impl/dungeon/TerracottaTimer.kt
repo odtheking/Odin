@@ -5,11 +5,11 @@ import me.odinmain.features.Module
 import me.odinmain.utils.addVec
 import me.odinmain.utils.equal
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.Colors
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.toFixed
 import me.odinmain.utils.toVec3
-import me.odinmain.utils.ui.Colors
 import net.minecraft.network.play.server.S32PacketConfirmTransaction
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
@@ -18,7 +18,7 @@ import java.util.concurrent.CopyOnWriteArrayList
 
 object TerracottaTimer : Module(
     name = "Terracotta Timer",
-    desc = "Displays the time until the terracotta respawns."
+    description = "Displays the time until the terracotta respawns."
 ) {
     private var terracottaSpawning = CopyOnWriteArrayList<Terracotta>()
     private data class Terracotta(val pos: Vec3, var time: Float)

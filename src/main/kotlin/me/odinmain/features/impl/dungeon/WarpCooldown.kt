@@ -1,32 +1,24 @@
 package me.odinmain.features.impl.dungeon
 
+import me.odinmain.clickgui.settings.Setting.Companion.withDependency
+import me.odinmain.clickgui.settings.impl.BooleanSetting
+import me.odinmain.clickgui.settings.impl.StringSetting
 import me.odinmain.features.Module
-import me.odinmain.features.settings.Setting.Companion.withDependency
-import me.odinmain.features.settings.impl.BooleanSetting
-import me.odinmain.features.settings.impl.HudSetting
-import me.odinmain.features.settings.impl.StringSetting
 import me.odinmain.utils.clock.Clock
-import me.odinmain.utils.render.RenderUtils
-import me.odinmain.utils.render.getMCTextWidth
+import me.odinmain.utils.render.Colors
 import me.odinmain.utils.skyblock.partyMessage
 import me.odinmain.utils.toFixed
-import me.odinmain.utils.ui.Colors
+import me.odinmain.utils.ui.drawStringWidth
 
 object WarpCooldown : Module(
     name = "Warp Cooldown",
-    desc = "Displays the time until you can warp into a new dungeon."
+    description = "Displays the time until you can warp into a new dungeon."
 ) {
-    private val announceKick: Boolean by BooleanSetting("Announce Kick", false, desc = "Announce when you get kicked from skyblock.")
-    private val kickText: String by StringSetting("Kick Text", "Kicked!", desc = "The text sent in party chat when you get kicked from skyblock.").withDependency { announceKick }
-    private val hud by HudSetting("Warp Timer Hud", 10f, 10f, 1f, true) {
-        if (it) {
-            RenderUtils.drawText("§eWarp: §a30s", 1f, 1f, 1f, Colors.WHITE, shadow = true)
-            getMCTextWidth("Warp: 30s") + 2f to 12f
-        } else {
-            if (warpTimer.timeLeft() <= 0) return@HudSetting 0f to 0f
-            RenderUtils.drawText("§eWarp: §a${(warpTimer.timeLeft() / 1000f).toFixed()}s", 1f, 1f, 1f, Colors.WHITE, shadow = true)
-            getMCTextWidth("§eWarp: §a30s") + 2f to 12f
-        }
+    private val announceKick by BooleanSetting("Announce Kick", false, desc = "Announce when you get kicked from skyblock.")
+    private val kickText by StringSetting("Kick Text", "Kicked!", desc = "The text sent in party chat when you get kicked from skyblock.").withDependency { announceKick }
+    private val hud by HUD("Warp Timer Hud", "Displays the warp timer in the HUD.") {
+        if (warpTimer.timeLeft() <= 0 && !it) return@HUD 0f to 0f
+        drawStringWidth("§eWarp: §a${if (it) "30" else (warpTimer.timeLeft() / 1000f).toFixed()}s", 1f, 1f, Colors.WHITE) + 2f to 10f
     }
 
     private var warpTimer = Clock(30_000L)

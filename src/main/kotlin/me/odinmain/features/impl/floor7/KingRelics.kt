@@ -5,12 +5,12 @@ import me.odinmain.features.impl.floor7.WitherDragons.relicAnnounceTime
 import me.odinmain.features.impl.floor7.WitherDragons.selected
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.Colors
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.PersonalBest
 import me.odinmain.utils.skyblock.getBlockAt
 import me.odinmain.utils.skyblock.partyMessage
 import me.odinmain.utils.skyblock.skyblockID
-import me.odinmain.utils.ui.Colors
 import net.minecraft.init.Blocks
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.util.Vec3
