@@ -157,7 +157,6 @@ object ModuleManager {
         profile("Odin Hud") {
             GlStateManager.pushMatrix()
             val sr = ScaledResolution(mc)
-            GlStateManager.scale(mc.displayWidth / 1920f, mc.displayHeight / 1080f, 1f)
             GlStateManager.scale(1f / sr.scaleFactor, 1f / sr.scaleFactor, 1f)
             for (hudSettings in hudSettingsCache) {
                 if (hudSettings.isEnabled) hudSettings.value.draw(false)

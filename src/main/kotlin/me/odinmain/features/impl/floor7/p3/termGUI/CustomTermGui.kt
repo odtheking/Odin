@@ -9,41 +9,42 @@ import me.odinmain.utils.render.Colors
 import me.odinmain.utils.skyblock.ClickType
 import me.odinmain.utils.ui.animations.ColorAnimation
 import me.odinmain.utils.ui.rendering.NVGRenderer
+import org.lwjgl.opengl.Display
 
 object CustomTermGui {
     fun render() {
-        NVGRenderer.beginFrame(1920f, 1080f)
-        TerminalSolver.currentTerm?.type?.gui?.render()
+        NVGRenderer.beginFrame(Display.getWidth().toFloat(), Display.getHeight().toFloat())
+        TerminalSolver.currentTerm?.type?.getGUI()?.render()
         NVGRenderer.endFrame()
     }
 
-    fun mouseClicked(x: Int, y: Int, button: Int) = TerminalSolver.currentTerm?.type?.gui?.mouseClicked(x, y, button)
+    fun mouseClicked(x: Int, y: Int, button: Int) = TerminalSolver.currentTerm?.type?.getGUI()?.mouseClicked(x, y, button)
 }
 
 abstract class TermGui(val name: String) {
     private val titleWidth = NVGRenderer.textWidth(name, 30f * TerminalSolver.customTermSize, NVGRenderer.defaultFont)
     protected val itemIndexMap: MutableMap<Int, Box> = mutableMapOf()
     inline val currentSolution get() = TerminalSolver.currentTerm?.solution.orEmpty()
-    protected val colorAnimations = mutableMapOf<Int, ColorAnimation>()
+    private val colorAnimations = mutableMapOf<Int, ColorAnimation>()
 
     abstract fun renderTerminal(slotCount: Int)
 
     protected fun renderBackground(slotCount: Int) {
         val slotSize = 55f * TerminalSolver.customTermSize
-        val backgroundStartX = 1920f / 2f + (-4 * slotSize) - 25f * TerminalSolver.customTermSize - 75f * TerminalSolver.customTermSize
-        val backgroundStartY = 1080f / 2f + (-getRowOffset(slotCount) * slotSize) - 25f * TerminalSolver.customTermSize - 25f * TerminalSolver.customTermSize
+        val backgroundStartX = Display.getWidth() / 2f + (-4 * slotSize) - 25f * TerminalSolver.customTermSize - 75f * TerminalSolver.customTermSize
+        val backgroundStartY = Display.getHeight() / 2f + (-getRowOffset(slotCount) * slotSize) - 25f * TerminalSolver.customTermSize - 25f * TerminalSolver.customTermSize
         val backgroundWidth = 9 * slotSize - 5f * TerminalSolver.customTermSize + 150f * TerminalSolver.customTermSize
         val backgroundHeight = ((slotCount + 9) / 9) * slotSize - 5f * TerminalSolver.customTermSize + 55f * TerminalSolver.customTermSize
 
         NVGRenderer.rect(backgroundStartX, backgroundStartY, backgroundWidth, backgroundHeight, Colors.gray26.rgba, 12f * TerminalSolver.customTermSize)
-        NVGRenderer.text(name, 1920f / 2f - titleWidth / 2, backgroundStartY + (12.5f + 15f) * TerminalSolver.customTermSize, 30f * TerminalSolver.customTermSize, Colors.WHITE.rgba, NVGRenderer.defaultFont)
+        NVGRenderer.text(name, Display.getWidth() / 2f - titleWidth / 2, backgroundStartY + (12.5f + 15f) * TerminalSolver.customTermSize, 30f * TerminalSolver.customTermSize, Colors.WHITE.rgba, NVGRenderer.defaultFont)
     }
 
     protected fun renderSlot(index: Int, startColor: Color, endColor: Color): Pair<Float, Float> {
         val slotSize = 55f * TerminalSolver.customTermSize
         val slotInnerSize = 50f * TerminalSolver.customTermSize
-        val x = (index % 9 - 4) * slotSize + 1920f / 2f - slotInnerSize / 2
-        val y = (index / 9 - 2) * slotSize + 1080f / 2f - slotInnerSize / 2
+        val x = (index % 9 - 4) * slotSize + Display.getWidth() / 2f - slotInnerSize / 2
+        val y = (index / 9 - 2) * slotSize + Display.getHeight() / 2f - slotInnerSize / 2
         itemIndexMap[index] = Box(x - 2.5f * TerminalSolver.customTermSize, y - 2.5f * TerminalSolver.customTermSize, slotInnerSize + 5f * TerminalSolver.customTermSize, slotInnerSize + 5f * TerminalSolver.customTermSize)
 
         val colorAnim = colorAnimations.getOrPut(index) { ColorAnimation(250) }

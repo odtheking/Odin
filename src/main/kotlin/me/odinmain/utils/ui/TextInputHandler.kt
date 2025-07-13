@@ -223,7 +223,7 @@ class TextInputHandler(
 
     fun keyTyped(typedChar: Char): Boolean {
         if (!listening) return false
-
+        if (!ChatAllowedCharacters.isAllowedCharacter(typedChar)) return false
         insert(ChatAllowedCharacters.filterAllowedCharacters(typedChar.toString()))
         return true
     }

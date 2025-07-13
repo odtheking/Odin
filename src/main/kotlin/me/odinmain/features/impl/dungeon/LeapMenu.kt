@@ -68,7 +68,7 @@ object LeapMenu : Module(
         hoverHandler[2].handle(0f, halfHeight, halfWidth, halfHeight)
         hoverHandler[3].handle(halfWidth, halfHeight, halfWidth, halfHeight)
 
-        NVGRenderer.beginFrame(1920f, 1080f)
+        NVGRenderer.beginFrame(Display.getWidth().toFloat(), Display.getHeight().toFloat())
         NVGRenderer.translate(1920f / 2f, 1080f / 2f)
         val boxWidth = 800f
         val boxHeight = 300f

@@ -13,14 +13,14 @@ object RubixGui : TermGui("Change all to same color!") {
         currentSolution.distinct().forEach { pane ->
             val amount = currentSolution.count { it == pane }
             val clicksRequired = if (amount < 3) amount else amount - 5
+            if (clicksRequired == 0) return@forEach
 
             val (slotX, slotY) = renderSlot(pane, getColor(clicksRequired), getColor(if (amount < 3) clicksRequired + 1 else clicksRequired - 1)).let {
                 it.first + (50f * TerminalSolver.customTermSize - NVGRenderer.textWidth(clicksRequired.toString(), 30f * TerminalSolver.customTermSize, NVGRenderer.defaultFont)) / 2f to
                         it.second + (50f * TerminalSolver.customTermSize / 2f + 30f * TerminalSolver.customTermSize / 2f) / 2f - 6f * TerminalSolver.customTermSize
             }
 
-            if (clicksRequired != 0)
-                NVGRenderer.text("$clicksRequired", slotX, slotY, 30f * TerminalSolver.customTermSize, Colors.WHITE.rgba, NVGRenderer.defaultFont)
+            NVGRenderer.text("$clicksRequired", slotX, slotY, 30f * TerminalSolver.customTermSize, Colors.WHITE.rgba, NVGRenderer.defaultFont)
         }
     }
 

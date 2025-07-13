@@ -19,7 +19,7 @@ open class HudElement(
 
     fun draw(example: Boolean) {
         GlStateManager.pushMatrix()
-        GlStateManager.translate(x, y, 0f)
+        GlStateManager.translate(x, y, 1f)
         GlStateManager.scale(scale, scale, 1f)
         val (width, height) = render(example).let { (w, h) -> w.toFloat() to h.toFloat() }
 

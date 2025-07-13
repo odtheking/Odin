@@ -13,6 +13,7 @@ import me.odinmain.utils.ui.mouseX
 import me.odinmain.utils.ui.mouseY
 import me.odinmain.utils.ui.rendering.NVGRenderer
 import net.minecraftforge.common.MinecraftForge
+import org.lwjgl.opengl.Display
 import kotlin.math.sign
 
 /**
@@ -40,7 +41,7 @@ object ClickGUI : Screen() {
     }
 
     override fun draw() {
-        NVGRenderer.beginFrame(1920f, 1080f)
+        NVGRenderer.beginFrame(Display.getWidth().toFloat(), Display.getHeight().toFloat())
         if (openAnim.isAnimating()) {
             NVGRenderer.translate(0f, openAnim.get(-10f, 0f))
             NVGRenderer.globalAlpha(openAnim.get(0f, 1f))

@@ -14,7 +14,7 @@ import java.util.*
 
 object QueueTerms : Module(
     name = "Queue Terms",
-    description = "Queues clicks in terminals to ensure every click is registered (only works in custom term gui)."
+    description = "Queues clicks in terminals to ensure every click is registered (only works in custom term gui and make sure you have hide clicked on)."
 ) {
     private val dispatchDelay by NumberSetting("Dispatch Delay", 140L, 140L, 300L, unit = "ms", desc = "The delay between each click.")
     private data class Click(val slot: Int, val button: Int)
@@ -25,7 +25,6 @@ object QueueTerms : Module(
     fun onCustomTermClick(event: GuiEvent.CustomTermGuiClick) {
         with (TerminalSolver.currentTerm ?: return) {
             if (type == TerminalTypes.MELODY || TerminalSolver.renderType != 3 || !isClicked || !canClick(event.slot, event.button)) return
-
             queue.offer(Click(event.slot, event.button))
             simulateClick(event.slot, if (event.button == 0) ClickType.Middle else ClickType.Right)
 
@@ -38,7 +37,7 @@ object QueueTerms : Module(
     fun onDrawGuiContainer(event: GuiEvent.DrawGuiBackground) = with (TerminalSolver.currentTerm) {
         if (
             this == null ||
-            this.type == TerminalTypes.MELODY ||
+            type == TerminalTypes.MELODY ||
             TerminalSolver.renderType != 3 ||
             System.currentTimeMillis() - lastClickTime < dispatchDelay ||
             queue.isEmpty() ||

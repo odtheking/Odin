@@ -41,6 +41,7 @@ object CommandRegistry {
 //                    modMessage(builder.toString())
 //                }
 //            }
+
             commodore.register { problem, cause ->
                 val builder = StringBuilder()
 
