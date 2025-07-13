@@ -17,11 +17,13 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.client.event.RenderPlayerEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.ConcurrentMap
 import kotlin.math.cos
 import kotlin.math.sin
 
 object RandomPlayers {
-    private var randoms: HashMap<String, RandomPlayer> = HashMap()
+    private var randoms: ConcurrentMap<String, RandomPlayer> = ConcurrentHashMap()
     val isRandom get() = randoms.containsKey(mc.session?.username)
     val isDev get() = randoms[mc.session?.username]?.isDev ?: false
 
