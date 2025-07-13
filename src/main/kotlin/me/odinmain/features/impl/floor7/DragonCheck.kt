@@ -22,7 +22,7 @@ object DragonCheck {
 
     fun dragonUpdate(packet: S1CPacketEntityMetadata) {
         val dragon = WitherDragonsEnum.entries.find { it.entityId == packet.entityId }?.apply { if (entity == null) updateEntity(packet.entityId) } ?: return
-        (packet.func_149376_c().find { it.dataValueId == 6 }?.`object` as? Float)?.let { health ->
+        (packet.func_149376_c()?.find { it.dataValueId == 6 }?.`object` as? Float)?.let { health ->
             if (health <= 0 && dragon.state != WitherDragonState.DEAD) dragon.setDead()
         }
     }

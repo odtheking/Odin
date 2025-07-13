@@ -133,5 +133,4 @@ object ClickGUI : Screen() {
     val movementImage = NVGRenderer.createImage("/assets/odinmain/clickgui/MovementIcon.svg")
     val hueImage = NVGRenderer.createImage("/assets/odinmain/clickgui/HueGradient.png")
     val chevronImage = NVGRenderer.createImage("/assets/odinmain/clickgui/chevron.svg")
-
 }

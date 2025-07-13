@@ -57,6 +57,7 @@ object RenderOptimizer : Module(
     private val hideWitherMinerName by BooleanSetting("Hide WitherMiner Name", true, desc = "Hides the wither miner name.")
     private val hideTerracottaName by BooleanSetting("Hide Terracota Name", true, desc = "Hides the terracota name.")
     private val hideNonStarredMobName by BooleanSetting("Hide Non-Starred Mob Name", true, desc = "Hides the non-starred mob name.")
+    private val hideDeadMobs by BooleanSetting("Hide Dead Mobs", true, desc = "Hides dead mobs in dungeons.")
     private val removePuzzleBlazeNames by BooleanSetting("Hide blazes names", false, desc = "Hides the blazes in the blaze puzzle room.")
     private val removePuzzleBlaze by BooleanSetting("Hide blazes", true, desc = "Removes the blaze in the blaze puzzle room.")
 
@@ -184,27 +185,31 @@ object RenderOptimizer : Module(
     )
 
     @SubscribeEvent
-    fun onPacket(event: PacketEvent.Receive) {
+    fun onPacket(event: PacketEvent.Receive) = with (event.packet) {
         if (!LocationUtils.isInSkyblock) return
-        if (event.packet is S1CPacketEntityMetadata && hide0HealthNames) {
-            mc.theWorld?.getEntityByID(event.packet.entityId)?.let { entity ->
-                event.packet.func_149376_c()?.find { it.objectType == 4 }?.toString()?.let { name ->
+        if (this is S1CPacketEntityMetadata && hide0HealthNames) {
+            mc.theWorld?.getEntityByID(entityId)?.let { entity ->
+                func_149376_c()?.find { it.objectType == 4 }?.toString()?.let { name ->
                     if (healthMatches.any { regex -> regex.matches(name) }) entity.setDead()
+                }
+
+               (func_149376_c()?.find { it.dataValueId == 6 }?.`object` as? Float)?.let { health ->
+                    if (hideDeadMobs && health <= 0) entity.setDead()
                 }
             }
         }
 
-        if (event.packet is S0EPacketSpawnObject && event.packet.type == 70 && fallingBlocks) event.isCanceled = true
+        if (this is S0EPacketSpawnObject && type == 70 && fallingBlocks) event.isCanceled = true
 
-        if (event.packet !is S2APacketParticles) return
+        if (this !is S2APacketParticles) return
 
-        if (event.packet.particleType.equalsOneOf(EnumParticleTypes.EXPLOSION_NORMAL, EnumParticleTypes.EXPLOSION_LARGE, EnumParticleTypes.EXPLOSION_HUGE) && removeExplosion)
+        if (particleType.equalsOneOf(EnumParticleTypes.EXPLOSION_NORMAL, EnumParticleTypes.EXPLOSION_LARGE, EnumParticleTypes.EXPLOSION_HUGE) && removeExplosion)
             event.isCanceled = true
 
-        if (DungeonUtils.getF7Phase() == M7Phases.P5 && hideParticles && !event.packet.particleType.equalsOneOf(EnumParticleTypes.ENCHANTMENT_TABLE, EnumParticleTypes.FLAME, EnumParticleTypes.FIREWORKS_SPARK))
+        if (DungeonUtils.getF7Phase() == M7Phases.P5 && hideParticles && !particleType.equalsOneOf(EnumParticleTypes.ENCHANTMENT_TABLE, EnumParticleTypes.FLAME, EnumParticleTypes.FIREWORKS_SPARK))
             event.isCanceled = true
 
-        if (hideHeartParticles && event.packet.particleType == EnumParticleTypes.HEART)
+        if (hideHeartParticles && particleType == EnumParticleTypes.HEART)
             event.isCanceled = true
     }
 
