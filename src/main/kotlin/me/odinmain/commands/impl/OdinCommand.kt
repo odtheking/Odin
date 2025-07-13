@@ -121,7 +121,7 @@ val mainCommand = Commodore("od", "odin") {
     literal("leaporder").runs { player1: String?, player2: String?, player3: String?, player4: String? ->
         val players = listOf(player1, player2, player3, player4).mapNotNull { it?.lowercase() }
         DungeonUtils.customLeapOrder = players
-        modMessage("§aCustom leap order set to: §f${player1}, ${player2}, ${player3}, ${player4}")
+        modMessage("§aCustom leap order set to: §f${player1}, ${player2}, ${player3}, $player4")
     }
 
     literal("copy").runs { message: GreedyString ->
