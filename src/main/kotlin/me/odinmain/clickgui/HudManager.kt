@@ -19,13 +19,13 @@ object HudManager : Screen() {
 
     override fun draw() {
         dragging?.let {
-            it.x = (odinMouseX - startX).coerceAtLeast(0f, )
+            it.x = (odinMouseX - startX).coerceAtLeast(0f)
             it.y = (odinMouseY - startY).coerceAtLeast(0f)
         }
 
         GlStateManager.pushMatrix()
         val sr = ScaledResolution(mc)
-        GlStateManager.scale(mc.displayWidth / 1920f, mc.displayHeight / 1080f, 0f)
+        GlStateManager.scale(mc.displayWidth / 1920f, mc.displayHeight / 1080f, 1f)
         GlStateManager.scale(1f / sr.scaleFactor, 1f / sr.scaleFactor, 1f)
 
         for (hudSettings in hudSettingsCache) {

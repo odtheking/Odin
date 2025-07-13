@@ -59,11 +59,9 @@ object LeapMenu : Module(
     fun onDrawScreen(event: GuiEvent.DrawGuiBackground) {
         val chest = (event.gui as? GuiChest)?.inventorySlots ?: return
         if (chest !is ContainerChest || !chest.name.equalsOneOf("Spirit Leap", "Teleport to Player") || leapTeammates.isEmpty() || leapTeammates.all { it == EMPTY }) return
-        val displayWidth = Display.getWidth()
-        val displayHeight = Display.getHeight()
 
-        val halfWidth = displayWidth / 2f
-        val halfHeight = displayHeight / 2f
+        val halfWidth = Display.getWidth() / 2f
+        val halfHeight = Display.getHeight() / 2f
 
         hoverHandler[0].handle(0f, 0f, halfWidth, halfHeight)
         hoverHandler[1].handle(halfWidth, 0f, halfWidth, halfHeight)
@@ -71,19 +69,19 @@ object LeapMenu : Module(
         hoverHandler[3].handle(halfWidth, halfHeight, halfWidth, halfHeight)
 
         NVGRenderer.beginFrame(1920f, 1080f)
-        NVGRenderer.translate(halfWidth, halfHeight)
+        NVGRenderer.translate(1920f / 2f, 1080f / 2f)
         val boxWidth = 800f
         val boxHeight = 300f
         leapTeammates.forEachIndexed { index, player ->
             if (player == EMPTY) return@forEachIndexed
 
             val x = when (index) {
-                0, 2 -> -((displayWidth - (boxWidth * 2f)) / 6f + boxWidth)
-                else -> ((displayWidth - (boxWidth * 2f)) / 6f)
+                0, 2 -> -((1920f - (boxWidth * 2f)) / 6f + boxWidth)
+                else -> ((1920f - (boxWidth * 2f)) / 6f)
             }
             val y = when (index) {
-                0, 1 -> -((displayHeight - (boxHeight * 2f)) / 8f + boxHeight)
-                else -> ((displayHeight - (boxHeight * 2f)) / 8f)
+                0, 1 -> -((1080f - (boxHeight * 2f)) / 8f + boxHeight)
+                else -> ((1080f - (boxHeight * 2f)) / 8f)
             }
 
             val color = if (colorStyle) player.clazz.color else backgroundColor
@@ -162,7 +160,7 @@ object LeapMenu : Module(
         DungeonPlayer("Odtheking", DungeonClass.Archer, 50),
         DungeonPlayer("Bonzi", DungeonClass.Mage, 47),
         DungeonPlayer("Cezar", DungeonClass.Tank, 38)
-    ) */
+    )*/
 
     /**
      * Sorts the list of players based on their default quadrant and class priority.
