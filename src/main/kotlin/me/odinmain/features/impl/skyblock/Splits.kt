@@ -8,7 +8,6 @@ import me.odinmain.utils.SplitsManager.getAndUpdateSplitsTimes
 import me.odinmain.utils.formatTime
 import me.odinmain.utils.render.Colors
 import me.odinmain.utils.render.RenderUtils
-import me.odinmain.utils.ui.getMCTextHeight
 import me.odinmain.utils.ui.getTextWidth
 
 object Splits : Module(
@@ -18,7 +17,7 @@ object Splits : Module(
     private val hud by HUD("Splits Display HUD", "Shows timers for each split.") { example ->
         if (example) {
             repeat(5) { i ->
-                RenderUtils.drawText("Split $i: 0h 00m 00s", 1f, 1f + i * getMCTextHeight(), Colors.WHITE, shadow = true)
+                RenderUtils.drawText("Split $i: 0h 00m 00s", 1f, 1f + i * 9f, Colors.WHITE, shadow = true)
             }
             return@HUD getTextWidth("Split 0: 0h 00m 00s") + 2f to 10f * 5
         }
@@ -28,14 +27,14 @@ object Splits : Module(
         val x = getTextWidth("Professor: 0m 00s")
         currentSplits.splits.dropLast(1).forEachIndexed { index, split ->
             val time = formatTime(if (index >= times.size) 0 else times[index], numbersAfterDecimal)
-            RenderUtils.drawText(split.name, 1f, 1f + index * getMCTextHeight(), Colors.WHITE, shadow = true)
-            RenderUtils.drawText(time, x.toFloat(), 1f + index * getMCTextHeight(), Colors.WHITE, shadow = true)
+            RenderUtils.drawText(split.name, 1f, 1f + index * 9f, Colors.WHITE, shadow = true)
+            RenderUtils.drawText(time, x.toFloat(), 1f + index * 9f, Colors.WHITE, shadow = true)
         }
         if (bossEntrySplit && currentSplits.splits.size > 3) {
-            RenderUtils.drawText("§9Boss Entry", 1f, (currentSplits.splits.size) * 12f, Colors.WHITE, shadow = true)
-            RenderUtils.drawText(formatTime(times.take(3).sum(), numbersAfterDecimal), x.toFloat(), (currentSplits.splits.size) * 12f, Colors.WHITE, shadow = true)
+            RenderUtils.drawText("§9Boss Entry", 1f, (currentSplits.splits.size) * 9f, Colors.WHITE, shadow = true)
+            RenderUtils.drawText(formatTime(times.take(3).sum(), numbersAfterDecimal), x.toFloat(), (currentSplits.splits.size) * 9f, Colors.WHITE, shadow = true)
         }
-        getTextWidth("Split 0: 0h 00m 00s") + 2f to 12f * 5
+        getTextWidth("Split 0: 0h 00m 00s") + 2f to 9f * 5
     }
     private val bossEntrySplit by BooleanSetting("Boss Entry Split", true, desc = "Split for boss entry.")
     val sendSplits by BooleanSetting("Send Splits", true, desc = "Send splits to chat.")

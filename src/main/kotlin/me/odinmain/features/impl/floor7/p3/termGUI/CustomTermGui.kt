@@ -22,7 +22,6 @@ object CustomTermGui {
 }
 
 abstract class TermGui(val name: String) {
-    private val titleWidth = NVGRenderer.textWidth(name, 30f * TerminalSolver.customTermSize, NVGRenderer.defaultFont)
     protected val itemIndexMap: MutableMap<Int, Box> = mutableMapOf()
     inline val currentSolution get() = TerminalSolver.currentTerm?.solution.orEmpty()
     private val colorAnimations = mutableMapOf<Int, ColorAnimation>()
@@ -37,7 +36,7 @@ abstract class TermGui(val name: String) {
         val backgroundHeight = ((slotCount + 9) / 9) * slotSize - 5f * TerminalSolver.customTermSize + 55f * TerminalSolver.customTermSize
 
         NVGRenderer.rect(backgroundStartX, backgroundStartY, backgroundWidth, backgroundHeight, Colors.gray26.rgba, 12f * TerminalSolver.customTermSize)
-        NVGRenderer.text(name, Display.getWidth() / 2f - titleWidth / 2, backgroundStartY + (12.5f + 15f) * TerminalSolver.customTermSize, 30f * TerminalSolver.customTermSize, Colors.WHITE.rgba, NVGRenderer.defaultFont)
+        NVGRenderer.text(name, Display.getWidth() / 2f - NVGRenderer.textWidth(name, 30f * TerminalSolver.customTermSize, NVGRenderer.defaultFont) / 2, backgroundStartY + (12.5f + 15f) * TerminalSolver.customTermSize, 30f * TerminalSolver.customTermSize, Colors.WHITE.rgba, NVGRenderer.defaultFont)
     }
 
     protected fun renderSlot(index: Int, startColor: Color, endColor: Color): Pair<Float, Float> {
