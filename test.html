@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Horizontal HTML Tags Showcase</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .tag-box {
+      border: 1px solid #ccc;
+      padding: 10px;
+      width: 300px;
+      box-sizing: border-box;
+      background: #f9f9f9;
+    }
+
+    .tag-box h3 {
+      font-size: 1em;
+      margin-bottom: 5px;
+    }
+
+    .tag-box hr {
+      margin: 10px 0;
+    }
+
+    img {
+      max-width: 100%;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+
+    table, th, td {
+      border: 1px solid #333;
+      padding: 4px;
+    }
+
+    form input, form select, form textarea {
+      width: 100%;
+      margin-bottom: 5px;
+    }
+
+    .inline {
+      display: inline-block;
+    }
+  </style>
+</head>
+<body>
+
+<h1>HTML Tags</h1>
+<div class="container">
+  <div class="tag-box"><h3>&lt;p&gt;</h3><p>This is a paragraph. Text wraps automatically.</p></div>
+  <div class="tag-box"><h3>&lt;h1&gt;</h3><h1>Heading 1</h1></div>
+  <div class="tag-box"><h3>&lt;h2&gt;</h3><h2>Heading 2</h2></div>
+  <div class="tag-box"><h3>&lt;b&gt;</h3><b>Bold text</b></div>
+  <div class="tag-box"><h3>&lt;i&gt;</h3><i>Italic text</i></div>
+  <div class="tag-box"><h3>&lt;u&gt;</h3><u>Underlined text</u></div>
+  <div class="tag-box"><h3>&lt;mark&gt;</h3><mark>Highlighted</mark></div>
+  <div class="tag-box"><h3>&lt;small&gt;</h3><small>Small text</small></div>
+  <div class="tag-box"><h3>&lt;code&gt;</h3><code>inline code</code></div>
+  <div class="tag-box"><h3>&lt;br&gt;</h3>Line 1<br>Line 2</div>
+  <div class="tag-box"><h3>&lt;hr&gt;</h3><hr></div>
+  <div class="tag-box"><h3>&lt;a&gt;</h3><a href="#">Click me</a></div>
+  <div class="tag-box"><h3>&lt;img&gt;</h3><img src="https://via.placeholder.com/100" alt="Placeholder"></div>
+  <div class="tag-box"><h3>&lt;ul&gt;</h3><ul><li>One</li><li>Two</li></ul></div>
+  <div class="tag-box"><h3>&lt;ol&gt;</h3><ol><li>First</li><li>Second</li></ol></div>
+  <div class="tag-box"><h3>&lt;table&gt;</h3>
+    <table>
+      <tr><th>A</th><th>B</th></tr>
+      <tr><td>1</td><td>2</td></tr>
+    </table>
+  </div>
+  <div class="tag-box"><h3>&lt;form&gt;</h3>
+    <form>
+      <input type="text" placeholder="Text"><br>
+      <input type="checkbox"> Check<br>
+      <input type="radio"> Radio<br>
+      <select><option>One</option></select>
+      <textarea>Text</textarea>
+    </form>
+  </div>
+  <div class="tag-box"><h3>&lt;details&gt;</h3>
+    <details><summary>More info</summary><p>Hidden content</p></details>
+  </div>
+  <div class="tag-box"><h3>&lt;div&gt;</h3><div>This is a div block.</div></div>
+  <div class="tag-box"><h3>&lt;span&gt;</h3><span>This is inline span</span></div>
+  <div class="tag-box"><h3>&lt;abbr&gt;</h3><abbr title="Hypertext Markup Language">HTML</abbr></div>
+  <div class="tag-box"><h3>&lt;blockquote&gt;</h3><blockquote>Quoted block</blockquote></div>
+  <div class="tag-box"><h3>&lt;del&gt;</h3><del>Deleted text</del></div>
+  <div class="tag-box"><h3>&lt;ins&gt;</h3><ins>Inserted text</ins></div>
+  <div class="tag-box"><h3>&lt;sup&gt;&lt;sub&gt;</h3>H<sub>2</sub>O and 10<sup>2</sup></div>
+</div>
+
+</body>
+</html>
