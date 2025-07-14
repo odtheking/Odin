@@ -5,7 +5,7 @@ import me.odinmain.clickgui.settings.ModuleButton
 import me.odinmain.features.Category
 import me.odinmain.features.ModuleManager
 import me.odinmain.features.impl.render.ClickGUIModule
-import me.odinmain.features.impl.render.RandomPlayers
+import me.odinmain.features.impl.render.PlayerSize
 import me.odinmain.utils.render.Colors
 import me.odinmain.utils.ui.isAreaHovered
 import me.odinmain.utils.ui.rendering.NVGRenderer
@@ -24,7 +24,7 @@ class Panel(private val category: Category) {
 
     val moduleButtons: ArrayList<ModuleButton> = ArrayList<ModuleButton>().apply {
         ModuleManager.modules
-            .filter { it.category == category && (!it.isDevModule || RandomPlayers.isRandom) }
+            .filter { it.category == category && (!it.isDevModule || PlayerSize.isRandom) }
             .sortedByDescending { NVGRenderer.textWidth(it.name, 16f, NVGRenderer.defaultFont) }
             .forEach { add(ModuleButton(it, this@Panel)) }
     }

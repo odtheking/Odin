@@ -12,7 +12,7 @@ object VisualWords : Module(
     @JvmStatic
     fun replaceText(text: String?): String? {
         if (text == null) return text
-        var replacedText = RandomPlayers.replaceText(text)
+        var replacedText = PlayerSize.replaceText(text)
         if (!enabled) return replacedText
         for (actualText in wordsMap.keys) {
             replacedText = wordsMap[actualText]?.let { replacedText?.replace(actualText, it) }

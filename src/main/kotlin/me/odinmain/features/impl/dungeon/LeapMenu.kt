@@ -84,8 +84,8 @@ object LeapMenu : Module(
             }
 
             val color = if (colorStyle) player.clazz.color else backgroundColor
-            val expandValue = hoverHandler[index].anim.get(0f, 5f, !hoverHandler[index].hasStarted)
-
+            val expandValue = hoverHandler[index].anim.get(0f, 15f, !hoverHandler[index].hasStarted)
+            NVGRenderer.dropShadow(x - expandValue, y - expandValue, boxWidth + expandValue * 2, boxHeight + expandValue * 2, 2f, 2f, 12f)
             NVGRenderer.rect(x - expandValue ,y - expandValue, boxWidth + expandValue * 2, boxHeight + expandValue * 2, color.rgba, 12f)
             imageCacheMap.getOrPut(player.locationSkin.resourcePath) {
                 createFaceImage(mc.textureManager.getTexture(player.locationSkin)?.glTextureId ?: 0, 64, 64)
@@ -93,8 +93,8 @@ object LeapMenu : Module(
                 NVGRenderer.drawSubImage(glTextureId, 64, 64, 8, 8, 8, 8, x + 30f, y + 30f, 240f, 240f, 9f)
             }
 
-            NVGRenderer.text(player.name, x + 275f, y + 155f, 45f, if (!colorStyle) player.clazz.color.rgba else backgroundColor.rgba, NVGRenderer.defaultFont)
-            if (!onlyClass || player.isDead) NVGRenderer.text(if (player.isDead) "§cDEAD" else player.clazz.name, x + 275f, y + 210f, 30f, Colors.WHITE.rgba, NVGRenderer.defaultFont)
+            NVGRenderer.text(player.name, x + 275f, y + 130f, 45f, if (!colorStyle) player.clazz.color.rgba else backgroundColor.rgba, NVGRenderer.defaultFont)
+            if (!onlyClass || player.isDead) NVGRenderer.text(if (player.isDead) "§cDEAD" else player.clazz.name, x + 275f, y + 180f, 30f, Colors.WHITE.rgba, NVGRenderer.defaultFont)
         }
         NVGRenderer.endFrame()
         event.isCanceled = true

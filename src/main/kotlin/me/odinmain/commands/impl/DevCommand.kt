@@ -15,7 +15,7 @@ import me.odinmain.features.impl.floor7.WitherDragonState
 import me.odinmain.features.impl.floor7.WitherDragons.priorityDragon
 import me.odinmain.features.impl.floor7.WitherDragonsEnum
 import me.odinmain.features.impl.nether.NoPre
-import me.odinmain.features.impl.render.RandomPlayers.updateCustomProperties
+import me.odinmain.features.impl.render.PlayerSize
 import me.odinmain.utils.isOtherPlayer
 import me.odinmain.utils.postAndCatch
 import me.odinmain.utils.sendDataToServer
@@ -86,7 +86,7 @@ val devCommand = Commodore("oddev") {
     }
 
     literal("updatedevs").runs {
-       updateCustomProperties()
+       PlayerSize.updateCustomProperties()
     }
 
     literal("adddev").runs { name: String, password: String, xSize: Float?, ySize: Float?, zSize: Float? ->
@@ -106,7 +106,7 @@ val devCommand = Commodore("oddev") {
         val name = customName ?: ""
         scope.launch {
             modMessage(sendDataToServer(body = "${mc.thePlayer.name}, [1,2,3], [$x,$y,$z], false, $name, $password", "https://tj4yzotqjuanubvfcrfo7h5qlq0opcyk.lambda-url.eu-north-1.on.aws/"))
-            updateCustomProperties()
+            PlayerSize.updateCustomProperties()
         }
     }
 

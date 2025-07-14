@@ -8,7 +8,6 @@ import me.odinmain.config.PBConfig
 import me.odinmain.events.EventDispatcher
 import me.odinmain.features.ModuleManager
 import me.odinmain.features.impl.render.ClickGUIModule
-import me.odinmain.features.impl.render.RandomPlayers
 import me.odinmain.features.impl.render.WaypointManager
 import me.odinmain.utils.ServerUtils
 import me.odinmain.utils.SplitsManager
@@ -48,7 +47,7 @@ object OdinMain {
             LocationUtils, ServerUtils, PlayerUtils,
             RenderUtils, Renderer, DungeonUtils, KuudraUtils,
             EventDispatcher, Executor, ModuleManager,
-            WaypointManager, RandomPlayers, SkyblockPlayer,
+            WaypointManager, SkyblockPlayer,
             ScanUtils, HighlightRenderer, DungeonListener,
             SplitsManager, RenderUtils2D, ArrowTracker,
             this
