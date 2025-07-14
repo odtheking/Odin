@@ -26,7 +26,6 @@ import me.odinmain.utils.ui.getQuadrant
 import me.odinmain.utils.ui.rendering.NVGRenderer
 import me.odinmain.utils.ui.rendering.NVGRenderer.createFaceImage
 import net.minecraft.client.gui.inventory.GuiChest
-import net.minecraft.client.renderer.texture.SimpleTexture
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.client.event.GuiOpenEvent
@@ -69,7 +68,7 @@ object LeapMenu : Module(
         hoverHandler[3].handle(halfWidth, halfHeight, halfWidth, halfHeight)
 
         NVGRenderer.beginFrame(Display.getWidth().toFloat(), Display.getHeight().toFloat())
-        NVGRenderer.translate(1920f / 2f, 1080f / 2f)
+        NVGRenderer.translate(halfWidth, halfHeight)
         val boxWidth = 800f
         val boxHeight = 300f
         leapTeammates.forEachIndexed { index, player ->
@@ -89,7 +88,6 @@ object LeapMenu : Module(
 
             NVGRenderer.rect(x - expandValue ,y - expandValue, boxWidth + expandValue * 2, boxHeight + expandValue * 2, color.rgba, 12f)
             imageCacheMap.getOrPut(player.locationSkin.resourcePath) {
-                mc.textureManager.loadTexture(player.locationSkin, SimpleTexture(player.locationSkin))
                 createFaceImage(mc.textureManager.getTexture(player.locationSkin)?.glTextureId ?: 0, 64, 64)
             }.let { glTextureId ->
                 NVGRenderer.drawSubImage(glTextureId, 64, 64, 8, 8, 8, 8, x + 30f, y + 30f, 240f, 240f, 9f)
