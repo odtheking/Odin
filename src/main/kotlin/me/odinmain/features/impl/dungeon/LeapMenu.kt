@@ -75,12 +75,12 @@ object LeapMenu : Module(
             if (player == EMPTY) return@forEachIndexed
 
             val x = when (index) {
-                0, 2 -> -((1920f - (boxWidth * 2f)) / 6f + boxWidth)
-                else -> ((1920f - (boxWidth * 2f)) / 6f)
+                0, 2 -> -((Display.getWidth() - (boxWidth * 2f)) / 6f + boxWidth)
+                else -> ((Display.getWidth() - (boxWidth * 2f)) / 6f)
             }
             val y = when (index) {
-                0, 1 -> -((1080f - (boxHeight * 2f)) / 8f + boxHeight)
-                else -> ((1080f - (boxHeight * 2f)) / 8f)
+                0, 1 -> -((Display.getHeight() - (boxHeight * 2f)) / 8f + boxHeight)
+                else -> ((Display.getHeight() - (boxHeight * 2f)) / 8f)
             }
 
             val color = if (colorStyle) player.clazz.color else backgroundColor

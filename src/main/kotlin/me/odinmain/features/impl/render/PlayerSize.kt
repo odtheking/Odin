@@ -3,7 +3,7 @@ package me.odinmain.features.impl.render
 import com.google.gson.JsonParser
 import kotlinx.coroutines.launch
 import me.odinmain.OdinMain
-import me.odinmain.clickgui.settings.DevModule
+import me.odinmain.clickgui.settings.AlwaysActive
 import me.odinmain.clickgui.settings.Setting.Companion.withDependency
 import me.odinmain.clickgui.settings.impl.*
 import me.odinmain.features.Module
@@ -23,19 +23,19 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import kotlin.math.cos
 import kotlin.math.sin
 
-@DevModule
+@AlwaysActive
 object PlayerSize : Module(
     name = "Player Size",
     description = "Changes the size of the player model."
 ) {
-    private val devSize by BooleanSetting("Dev Size", true, desc = "Toggles client side dev size for your own player.")
-    private val devSizeX by NumberSetting("Size X", 1f, -1f, 3f, 0.1, desc = "X scale of the dev size.")
-    private val devSizeY by NumberSetting("Size Y", 1f, -1f, 3f, 0.1, desc = "Y scale of the dev size.")
-    private val devSizeZ by NumberSetting("Size Z", 1f, -1f, 3f, 0.1, desc = "Z scale of the dev size.")
-    private val devWings by BooleanSetting("Wings", false, desc = "Toggles client side dev wings.")
-    private val devWingsColor by ColorSetting("Wings Color", Colors.WHITE, desc = "Color of the dev wings.").withDependency { devWings }
-    private var showHidden by DropdownSetting("Show Hidden", false)
-    private val passcode by StringSetting("Passcode", "odin", desc = "Passcode for dev features.").withDependency { showHidden }
+    private val devSize by BooleanSetting("Dev Size", true, desc = "Toggles client side dev size for your own player.").withDependency { isRandom }
+    private val devSizeX by NumberSetting("Size X", 1f, 0.2, 3f, 0.1, desc = "X scale of the dev size.")
+    private val devSizeY by NumberSetting("Size Y", 1f, 0.2, 3f, 0.1, desc = "Y scale of the dev size.")
+    private val devSizeZ by NumberSetting("Size Z", 1f, 0.2, 3f, 0.1, desc = "Z scale of the dev size.")
+    private val devWings by BooleanSetting("Wings", false, desc = "Toggles dragon wings.").withDependency { isRandom }
+    private val devWingsColor by ColorSetting("Wings Color", Colors.WHITE, desc = "Color of the dev wings.").withDependency { devWings && isRandom }
+    private var showHidden by DropdownSetting("Show Hidden", false).withDependency { isRandom }
+    private val passcode by StringSetting("Passcode", "odin", desc = "Passcode for dev features.").withDependency { showHidden && isRandom }
 
     private val sendDevData by ActionSetting("Send Dev Data", desc = "Sends dev data to the server.") {
         showHidden = false
@@ -45,7 +45,6 @@ object PlayerSize : Module(
         }
     }.withDependency { isRandom }
 
-
     private var randoms: HashMap<String, RandomPlayer> = HashMap()
     val isRandom get() = randoms.containsKey(mc.session?.username)
 
@@ -53,6 +52,10 @@ object PlayerSize : Module(
 
     @JvmStatic
     fun preRenderCallbackScaleHook(entityLivingBaseIn: AbstractClientPlayer) {
+        if (enabled && entityLivingBaseIn == mc.thePlayer && !randoms.containsKey(entityLivingBaseIn.name)) {
+            if (devSizeY < 0) GlStateManager.translate(0f, devSizeY * 2, 0f)
+            GlStateManager.scale(devSizeX, devSizeY, devSizeZ)
+        }
         if (!randoms.containsKey(entityLivingBaseIn.name)) return
         if (!devSize && entityLivingBaseIn.name == mc.thePlayer.name) return
         val random = randoms[entityLivingBaseIn.name] ?: return
@@ -135,7 +138,7 @@ object PlayerSize : Module(
             val z = player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * partialTicks
             if (random.scale.second < 0) GlStateManager.translate(0f, random.scale.second * -2, 0f)
 
-            GlStateManager.translate(-OdinMain.mc.renderManager.viewerPosX + x, -OdinMain.mc.renderManager.viewerPosY + y, -OdinMain.mc.renderManager.viewerPosZ + z)
+            GlStateManager.translate(-mc.renderManager.viewerPosX + x, -mc.renderManager.viewerPosY + y, -mc.renderManager.viewerPosZ + z)
             GlStateManager.scale(-0.2, -0.2, 0.2)
             GlStateManager.scale(random.scale.first, random.scale.second, random.scale.third)
             GlStateManager.rotate(180 + rotation, 0f, 1f, 0f)
@@ -148,7 +151,7 @@ object PlayerSize : Module(
             }
 
             GlStateManager.color(random.wingsColor.red.toFloat()/255, random.wingsColor.green.toFloat()/255, random.wingsColor.blue.toFloat()/255, 1f)
-            OdinMain.mc.textureManager.bindTexture(dragonWingTextureLocation)
+            mc.textureManager.bindTexture(dragonWingTextureLocation)
 
             for (j in 0..1) {
                 GlStateManager.enableCull()
