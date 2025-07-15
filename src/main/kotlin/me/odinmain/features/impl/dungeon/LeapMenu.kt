@@ -24,7 +24,7 @@ import me.odinmain.utils.skyblock.unformattedName
 import me.odinmain.utils.ui.HoverHandler
 import me.odinmain.utils.ui.getQuadrant
 import me.odinmain.utils.ui.rendering.NVGRenderer
-import me.odinmain.utils.ui.rendering.NVGRenderer.createFaceImage
+import me.odinmain.utils.ui.rendering.NVGRenderer.createNVGImage
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.util.ResourceLocation
@@ -88,9 +88,9 @@ object LeapMenu : Module(
             NVGRenderer.dropShadow(x - expandValue, y - expandValue, boxWidth + expandValue * 2, boxHeight + expandValue * 2, 2f, 2f, 12f)
             NVGRenderer.rect(x - expandValue ,y - expandValue, boxWidth + expandValue * 2, boxHeight + expandValue * 2, color.rgba, 12f)
             imageCacheMap.getOrPut(player.locationSkin.resourcePath) {
-                createFaceImage(mc.textureManager.getTexture(player.locationSkin)?.glTextureId ?: 0, 64, 64)
+                createNVGImage(mc.textureManager.getTexture(player.locationSkin)?.glTextureId ?: 0, 64, 64)
             }.let { glTextureId ->
-                NVGRenderer.drawSubImage(glTextureId, 64, 64, 8, 8, 8, 8, x + 30f, y + 30f, 240f, 240f, 9f)
+                NVGRenderer.image(glTextureId, 64, 64, 8, 8, 8, 8, x + 30f, y + 30f, 240f, 240f, 9f)
             }
 
             NVGRenderer.text(player.name, x + 275f, y + 130f, 45f, if (!colorStyle) player.clazz.color.rgba else backgroundColor.rgba, NVGRenderer.defaultFont)

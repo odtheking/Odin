@@ -8,20 +8,19 @@ import me.odinmain.events.impl.GuiEvent
 import me.odinmain.events.impl.PacketEvent
 import me.odinmain.events.impl.TerminalEvent
 import me.odinmain.features.Module
-import me.odinmain.features.impl.floor7.p3.termGUI.CustomTermGui
 import me.odinmain.features.impl.floor7.p3.terminalhandler.*
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.postAndCatch
 import me.odinmain.utils.render.Color
+import me.odinmain.utils.render.Color.Companion.darker
 import me.odinmain.utils.render.Colors
 import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.skyblock.ClickType
 import me.odinmain.utils.skyblock.devMessage
 import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.ui.getTextWidth
-import me.odinmain.utils.ui.mouseX
-import me.odinmain.utils.ui.mouseY
+import me.odinmain.utils.ui.rendering.NVGRenderer
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.client.renderer.GlStateManager
@@ -39,6 +38,7 @@ import net.minecraftforge.fml.common.Loader
 import net.minecraftforge.fml.common.eventhandler.EventPriority
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.input.Keyboard
+import org.lwjgl.opengl.Display
 
 @AlwaysActive // So it can be used in other modules
 object TerminalSolver : Module(
@@ -54,6 +54,7 @@ object TerminalSolver : Module(
     val showNumbers by BooleanSetting("Show Numbers", true, desc = "Shows numbers in the order terminal.")
     private val terminalReloadThreshold by NumberSetting("Reload Threshold", 600, 300, 1000, 10, unit = "ms", desc = "The amount of time in seconds before the terminal reloads.")
     val customTermSize by NumberSetting("Custom Term Size", 1f, 1, 3, 0.2, desc = "The size of the custom terminal GUI.").withDependency { renderType == 3 }
+    val customAnimations by BooleanSetting("Custom Animations", true, desc = "Enables animations for the custom terminal gui.").withDependency { renderType == 3 }
 
     private val showRemoveWrongSettings by DropdownSetting("Render Wrong Settings").withDependency { renderType == 1 }
     private val removeWrong by BooleanSetting("Stop Rendering Wrong", true, desc = "Main toggle for stopping the rendering of incorrect items in terminals.").withDependency { renderType == 1 && showRemoveWrongSettings }
@@ -73,9 +74,9 @@ object TerminalSolver : Module(
     val oppositeRubixColor1 by ColorSetting("Rubix -1", Color(170, 85, 0), true, desc = "Color of the rubix terminal solver for -1 click.").withDependency { showColors }
     val oppositeRubixColor2 by ColorSetting("Rubix -2", Color(210, 85, 0), true, desc = "Color of the rubix terminal solver for -2 click.").withDependency { showColors }
 
-    val orderColor by ColorSetting("Order 1", Colors.MINECRAFT_DARK_AQUA, true, desc = "Color of the order terminal solver for 1st item.").withDependency { showColors }
-    val orderColor2 by ColorSetting("Order 2", Color(0, 100, 100), true, desc = "Color of the order terminal solver for 2nd item.").withDependency { showColors }
-    val orderColor3 by ColorSetting("Order 3", Color(0, 65, 65), true, desc = "Color of the order terminal solver for 3rd item.").withDependency { showColors }
+    val orderColor by ColorSetting("Order 1", Colors.MINECRAFT_GREEN, true, desc = "Color of the order terminal solver for 1st item.").withDependency { showColors }
+    val orderColor2 by ColorSetting("Order 2", Colors.MINECRAFT_GREEN.darker(), true, desc = "Color of the order terminal solver for 2nd item.").withDependency { showColors }
+    val orderColor3 by ColorSetting("Order 3", Colors.MINECRAFT_GREEN.darker().darker(), true, desc = "Color of the order terminal solver for 3rd item.").withDependency { showColors }
 
     val startsWithColor by ColorSetting("Starts With", Colors.MINECRAFT_DARK_AQUA, true, desc = "Color of the starts with terminal solver.").withDependency { showColors }
 
@@ -158,7 +159,9 @@ object TerminalSolver : Module(
                 GlStateManager.translate(-event.guiLeft.toFloat(), -event.guiTop.toFloat(), -399f)
             }
             3 -> {
-                CustomTermGui.render()
+                NVGRenderer.beginFrame(Display.getWidth().toFloat(), Display.getHeight().toFloat())
+                currentTerm?.type?.getGUI()?.render()
+                NVGRenderer.endFrame()
                 event.isCanceled = true
             }
         }
@@ -253,7 +256,7 @@ object TerminalSolver : Module(
         if (!enabled || this == null) return
 
         if (renderType == 3 && !(type == TerminalTypes.MELODY && cancelMelodySolver)) {
-            CustomTermGui.mouseClicked(mouseX.toInt(), mouseY.toInt(), event.button)
+            currentTerm?.type?.getGUI()?.mouseClicked(event.button)
             event.isCanceled = true
             return
         }
@@ -281,7 +284,7 @@ object TerminalSolver : Module(
     fun onGuiKeyPress(event: GuiEvent.KeyPress) {
         if (!enabled || currentTerm == null || (currentTerm?.type == TerminalTypes.MELODY && cancelMelodySolver) || renderType != 3) return
         if ((event.key == mc.gameSettings?.keyBindDrop?.keyCode || (event.key in 2..10))) {
-            CustomTermGui.mouseClicked(mouseX.toInt(), mouseY.toInt(), if (event.key == Keyboard.KEY_LCONTROL && event.key == mc.gameSettings.keyBindDrop.keyCode) 1 else 0)
+            currentTerm?.type?.getGUI()?.mouseClicked(if (event.key == Keyboard.KEY_LCONTROL && event.key == mc.gameSettings.keyBindDrop.keyCode) 1 else 0)
             event.isCanceled = true
         }
     }
@@ -296,6 +299,7 @@ object TerminalSolver : Module(
             MinecraftForge.EVENT_BUS.unregister(it)
             devMessage("§cLeft terminal: §6${it.type.name}")
             TerminalEvent.Closed(it).postAndCatch()
+            currentTerm?.type?.getGUI()?.closeGui()
             currentTerm = null
         }
     }

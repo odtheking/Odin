@@ -174,15 +174,7 @@ object NVGRenderer : Lwjgl3Wrapper by Lwjgl3Loader.load() {
         nvgFill(vg)
     }
 
-    fun dropShadow(
-        x: Float,
-        y: Float,
-        width: Float,
-        height: Float,
-        blur: Float,
-        spread: Float,
-        radius: Float
-    ) {
+    fun dropShadow(x: Float, y: Float, width: Float, height: Float, blur: Float, spread: Float, radius: Float) {
         nvgRGBA(0, 0, 0, 125, nvgColor)
         nvgRGBA(0, 0, 0, 0, nvgColor2)
 
@@ -235,20 +227,7 @@ object NVGRenderer : Lwjgl3Wrapper by Lwjgl3Loader.load() {
         return bounds // [minX, minY, maxX, maxY]
     }
 
-    fun drawSubImage(
-        image: Int,
-        textureWidth: Int,
-        textureHeight: Int,
-        subX: Int,
-        subY: Int,
-        subW: Int,
-        subH: Int,
-        x: Float,
-        y: Float,
-        w: Float,
-        h: Float,
-        radius: Float
-    ) {
+    fun image(image: Int, textureWidth: Int, textureHeight: Int, subX: Int, subY: Int, subW: Int, subH: Int, x: Float, y: Float, w: Float, h: Float, radius: Float) {
         if (image == -1) return
 
         val sx = subX.toFloat() / textureWidth
@@ -268,7 +247,7 @@ object NVGRenderer : Lwjgl3Wrapper by Lwjgl3Loader.load() {
         nvgFill(vg)
     }
 
-    fun createFaceImage(textureId: Int, textureWidth: Int, textureHeight: Int): Int =
+    fun createNVGImage(textureId: Int, textureWidth: Int, textureHeight: Int): Int =
         nvglCreateImageFromHandle(vg, textureId, textureWidth, textureHeight, NVG_IMAGE_NEAREST or NVG_IMAGE_NODELETE)
 
     fun image(image: Image, x: Float, y: Float, w: Float, h: Float, radius: Float) {

@@ -34,7 +34,7 @@ class KeybindSetting(
 
     override fun render(x: Float, y: Float, mouseX: Float, mouseY: Float): Float {
         super.render(x, y, mouseX, mouseY)
-        if (keyNameWidth < 0) keyNameWidth = NVGRenderer.textWidth(getKeyName(value.key), 16f, NVGRenderer.defaultFont)
+        if (keyNameWidth < 0) keyNameWidth = NVGRenderer.textWidth(getKeyName(key), 16f, NVGRenderer.defaultFont)
         val height = getHeight()
 
         val rectX = x + width - 20 - keyNameWidth
@@ -46,14 +46,14 @@ class KeybindSetting(
         NVGRenderer.hollowRect(rectX - 1, rectY - 1, rectWidth + 2f, rectHeight + 2f, 1.5f, ClickGUIModule.clickGUIColor.rgba, 4f)
 
         NVGRenderer.text(name, x + 6f, y + height / 2f - 8f, 16f, Colors.WHITE.rgba, NVGRenderer.defaultFont)
-        NVGRenderer.text(getKeyName(value.key), rectX + (rectWidth - keyNameWidth) / 2, rectY + rectHeight / 2 - 8f, 16f, if (listening) Colors.MINECRAFT_YELLOW.rgba else Colors.WHITE.rgba, NVGRenderer.defaultFont)
+        NVGRenderer.text(getKeyName(key), rectX + (rectWidth - keyNameWidth) / 2, rectY + rectHeight / 2 - 8f, 16f, if (listening) Colors.MINECRAFT_YELLOW.rgba else Colors.WHITE.rgba, NVGRenderer.defaultFont)
 
         return height
     }
 
     override fun mouseClicked(mouseX: Float, mouseY: Float, mouseButton: Int): Boolean {
         if (listening) {
-            value.key = -100 + mouseButton
+            key = -100 + mouseButton
             listening = false
             return true
         } else if (mouseButton == 0 && isHovered) {
@@ -67,9 +67,9 @@ class KeybindSetting(
         if (!listening) return false
 
         when (keyCode) {
-            Keyboard.KEY_ESCAPE, Keyboard.KEY_BACK -> value.key = Keyboard.KEY_NONE
+            Keyboard.KEY_ESCAPE, Keyboard.KEY_BACK -> key = Keyboard.KEY_NONE
             Keyboard.KEY_RETURN -> listening = false
-            else -> value.key = keyCode
+            else -> key = keyCode
         }
 
         listening = false

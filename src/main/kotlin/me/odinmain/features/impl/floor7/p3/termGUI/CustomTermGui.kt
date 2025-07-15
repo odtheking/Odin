@@ -8,23 +8,14 @@ import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Colors
 import me.odinmain.utils.skyblock.ClickType
 import me.odinmain.utils.ui.animations.ColorAnimation
+import me.odinmain.utils.ui.isAreaHovered
 import me.odinmain.utils.ui.rendering.NVGRenderer
 import org.lwjgl.opengl.Display
-
-object CustomTermGui {
-    fun render() {
-        NVGRenderer.beginFrame(Display.getWidth().toFloat(), Display.getHeight().toFloat())
-        TerminalSolver.currentTerm?.type?.getGUI()?.render()
-        NVGRenderer.endFrame()
-    }
-
-    fun mouseClicked(x: Int, y: Int, button: Int) = TerminalSolver.currentTerm?.type?.getGUI()?.mouseClicked(x, y, button)
-}
 
 abstract class TermGui(val name: String) {
     protected val itemIndexMap: MutableMap<Int, Box> = mutableMapOf()
     inline val currentSolution get() = TerminalSolver.currentTerm?.solution.orEmpty()
-    private val colorAnimations = mutableMapOf<Int, ColorAnimation>()
+    val colorAnimations = mutableMapOf<Int, ColorAnimation>()
 
     abstract fun renderTerminal(slotCount: Int)
 
@@ -52,15 +43,19 @@ abstract class TermGui(val name: String) {
         return x to y
     }
 
-    fun mouseClicked(x: Int, y: Int, button: Int) {
-        itemIndexMap.entries.find { it.value.isPointWithin(x, y) }?.let { (slot, _) ->
+    fun mouseClicked(button: Int) {
+        getHoveredItem()?.let { slot ->
             TerminalSolver.currentTerm?.let {
                 if (System.currentTimeMillis() - it.timeOpened >= 300 && !GuiEvent.CustomTermGuiClick(slot, button).postAndCatch() && it.canClick(slot, button)) {
                     it.click(slot, if (button == 0) ClickType.Middle else ClickType.Right, hideClicked && !it.isClicked)
-                    colorAnimations[slot]?.start()
+                    if (TerminalSolver.customAnimations) colorAnimations[slot]?.start()
                 }
             }
         }
+    }
+
+    fun closeGui() {
+        colorAnimations.clear()
     }
 
     open fun render() {
@@ -88,16 +83,9 @@ abstract class TermGui(val name: String) {
             currentGui = gui
         }
 
-        fun getHoveredItem(x: Int, y: Int): Int? {
-            return currentGui?.itemIndexMap?.entries?.find {
-                it.value.isPointWithin(x, y)
-            }?.key
-        }
+        fun getHoveredItem(): Int? =
+            currentGui?.itemIndexMap?.entries?.find { isAreaHovered(it.value.x, it.value.y, it.value.w, it.value.h) }?.key
     }
 
-    data class Box(val x: Float, val y: Float, val w: Float, val h: Float) {
-        fun isPointWithin(px: Int, py: Int): Boolean {
-            return px in (x.toInt()..(x + w).toInt()) && py in (y.toInt()..(y + h).toInt())
-        }
-    }
+    data class Box(val x: Float, val y: Float, val w: Float, val h: Float)
 }
