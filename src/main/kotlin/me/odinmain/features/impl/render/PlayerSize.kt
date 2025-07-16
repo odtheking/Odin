@@ -29,9 +29,9 @@ object PlayerSize : Module(
     description = "Changes the size of the player model."
 ) {
     private val devSize by BooleanSetting("Dev Size", true, desc = "Toggles client side dev size for your own player.").withDependency { isRandom }
-    private val devSizeX by NumberSetting("Size X", 1f, 0.2, 3f, 0.1, desc = "X scale of the dev size.")
-    private val devSizeY by NumberSetting("Size Y", 1f, 0.2, 3f, 0.1, desc = "Y scale of the dev size.")
-    private val devSizeZ by NumberSetting("Size Z", 1f, 0.2, 3f, 0.1, desc = "Z scale of the dev size.")
+    private val devSizeX by NumberSetting("Size X", 1f, -1, 3f, 0.1, desc = "X scale of the dev size.")
+    private val devSizeY by NumberSetting("Size Y", 1f, -1, 3f, 0.1, desc = "Y scale of the dev size.")
+    private val devSizeZ by NumberSetting("Size Z", 1f, -1, 3f, 0.1, desc = "Z scale of the dev size.")
     private val devWings by BooleanSetting("Wings", false, desc = "Toggles dragon wings.").withDependency { isRandom }
     private val devWingsColor by ColorSetting("Wings Color", Colors.WHITE, desc = "Color of the dev wings.").withDependency { devWings && isRandom }
     private var showHidden by DropdownSetting("Show Hidden", false).withDependency { isRandom }

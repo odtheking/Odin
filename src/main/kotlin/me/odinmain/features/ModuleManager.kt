@@ -88,6 +88,10 @@ object ModuleManager {
         for (i in module) {
             modules.add(i)
             i.key?.let { i.register(KeybindSetting("Keybind", it, "Toggles the module")) }
+            for (setting in i.settings) {
+                if (setting is KeybindSetting) keybindSettingsCache.add(setting)
+                if (setting is HUDSetting) hudSettingsCache.add(setting)
+            }
         }
     }
 

@@ -4,8 +4,6 @@ import me.odinmain.utils.clock.Clock
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Colors
 import me.odinmain.utils.render.Renderer
-import me.odinmain.utils.skyblock.Island
-import me.odinmain.utils.skyblock.LocationUtils.currentArea
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.util.Vec3
 import net.minecraft.util.Vec3i
@@ -37,7 +35,7 @@ object WaypointManager {
 
     @SubscribeEvent
     fun onRenderWorldLast(event: RenderWorldLastEvent) {
-        if (!Waypoints.enabled || currentArea.isArea(Island.Unknown)) return
+        if (!Waypoints.enabled) return
         temporaryWaypoints.removeAll {
             it.first.renderBeacon()
             it.second.hasTimePassed()

@@ -12,8 +12,8 @@ object StartsWithGui : TermGui("What starts with:") {
         for (index in 9..slotCount) {
             if ((index % 9).equalsOneOf(0, 8)) continue
             val inSolution = index in currentSolution
-            val startColor = if (inSolution) TerminalSolver.selectColor else Colors.gray38
-            val endColor = if (inSolution) TerminalSolver.selectColor else TerminalSolver.selectColor
+            val startColor = if (inSolution) TerminalSolver.startsWithColor else Colors.gray38
+            val endColor = if (inSolution) TerminalSolver.startsWithColor else TerminalSolver.startsWithColor
             if (colorAnimations[index] != null || inSolution) renderSlot(index, startColor, endColor)
         }
     }

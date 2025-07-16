@@ -68,7 +68,7 @@ object GhostBlocks : Module(
     private val swapStonk by BooleanSetting("Swap Stonk", false, desc = "Does a swap stonk when you press the keybind.").withDependency { swapStonkDropDown }
     private val pickaxe by SelectorSetting("Type", "Pickaxe", arrayListOf("Pickaxe", "Stonk"), desc = "The type of pickaxe to use.").withDependency { swapStonk && swapStonkDropDown }
     private val speed by NumberSetting("Swap back speed", 2, 1, 5, desc = "Delay between swapping back.", unit = " ticks").withDependency { swapStonk &&  swapStonkDropDown}
-    private val swapStonkKey by KeybindSetting("Swap Stonk Keybind", Keyboard.KEY_NONE, "Press to perform a swap stonk.").withDependency { swapStonkDropDown }
+    private val swapStonkKey by KeybindSetting("Swap Stonk Keybind", Keyboard.KEY_NONE, "Press to perform a swap stonk.")
         .onPress {
             if (!enabled) return@onPress
             val slot = getItemSlot(if (pickaxe == 1) "Stonk" else "Pickaxe", true) ?: return@onPress
@@ -78,7 +78,7 @@ object GhostBlocks : Module(
             leftClick()
             swapToIndex(slot)
             runIn(speed) { swapToIndex(originalItem) }
-        }.withDependency { swapStonk }
+        }.withDependency { swapStonk && swapStonkDropDown}
 
 
     private val blacklist = arrayOf(Blocks.stone_button, Blocks.chest, Blocks.trapped_chest, Blocks.lever)

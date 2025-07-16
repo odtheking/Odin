@@ -27,7 +27,6 @@ object QueueTerms : Module(
             if (type == TerminalTypes.MELODY || TerminalSolver.renderType != 3 || !isClicked || !canClick(event.slot, event.button)) return
             queue.offer(Click(event.slot, event.button))
             simulateClick(event.slot, if (event.button == 0) ClickType.Middle else ClickType.Right)
-
             devMessage("§aQueued click on slot ${event.slot}")
             event.isCanceled = true
         }
