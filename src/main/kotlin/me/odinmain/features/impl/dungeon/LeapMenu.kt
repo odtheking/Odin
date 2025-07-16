@@ -88,7 +88,7 @@ object LeapMenu : Module(
             NVGRenderer.dropShadow(x - expandValue, y - expandValue, boxWidth + expandValue * 2, boxHeight + expandValue * 2, 2f, 2f, 12f)
             NVGRenderer.rect(x - expandValue ,y - expandValue, boxWidth + expandValue * 2, boxHeight + expandValue * 2, color.rgba, 12f)
             imageCacheMap.getOrPut(player.locationSkin.resourcePath) {
-                createNVGImage(mc.textureManager.getTexture(player.locationSkin)?.glTextureId ?: 0, 64, 64)
+                createNVGImage(mc.textureManager.getTexture(player.locationSkin)?.glTextureId ?: return@getOrPut 0, 64, 64)
             }.let { glTextureId ->
                 NVGRenderer.image(glTextureId, 64, 64, 8, 8, 8, 8, x + 30f, y + 30f, 240f, 240f, 9f)
             }

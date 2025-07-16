@@ -43,13 +43,6 @@ object NVGRenderer : Lwjgl3Wrapper by Lwjgl3Loader.load() {
     init {
         vg = nvgCreate(NVG_ANTIALIAS or NVG_STENCIL_STROKES)
         require(vg != -1L) { "Failed to initialize NanoVG" }
-        push()
-        nvgFontSize(vg, 16f)
-        nvgFontFaceId(vg, getFontID(defaultFont))
-        nvgBeginPath(vg)
-        nvgText(vg, -1000f, -1000f, "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#\\\$%^&*()-_=+[]{};:'\\\",.<>?/|\\\\`~")
-        nvgClosePath(vg)
-        pop()
     }
 
     fun beginFrame(width: Float, height: Float) {

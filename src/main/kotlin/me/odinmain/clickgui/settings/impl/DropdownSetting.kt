@@ -38,7 +38,7 @@ class DropdownSetting(
 
         NVGRenderer.push()
         NVGRenderer.translate(x + width - 18f, y + height / 2f - 4f)
-        NVGRenderer.rotate(toggleAnimation.get(0f, Math.PI.toFloat() / 2f, enabled))
+        NVGRenderer.rotate(toggleAnimation.get(0f, Math.PI.toFloat() / 2f, !enabled))
         NVGRenderer.translate(-(12f + offset), -(12f + offset))
         NVGRenderer.image(ClickGUI.chevronImage, 0f, 0f, imageSize, imageSize)
         NVGRenderer.pop()
