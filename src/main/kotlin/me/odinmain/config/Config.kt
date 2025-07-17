@@ -19,6 +19,7 @@ object Config {
 
     private val configFile = File(mc.mcDataDir, "config/odin/odin-config.json").apply {
         try {
+            parentFile?.mkdirs()
             createNewFile()
         } catch (e: Exception) {
             println("Error initializing module config\n${e.message}")

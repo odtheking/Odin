@@ -2,10 +2,7 @@ package me.odinmain.features.impl.dungeon
 
 import io.github.moulberry.notenoughupdates.NEUApi
 import me.odinmain.clickgui.settings.Setting.Companion.withDependency
-import me.odinmain.clickgui.settings.impl.BooleanSetting
-import me.odinmain.clickgui.settings.impl.ColorSetting
-import me.odinmain.clickgui.settings.impl.KeybindSetting
-import me.odinmain.clickgui.settings.impl.SelectorSetting
+import me.odinmain.clickgui.settings.impl.*
 import me.odinmain.events.impl.GuiEvent
 import me.odinmain.features.Module
 import me.odinmain.utils.equalsOneOf
@@ -16,7 +13,6 @@ import me.odinmain.utils.render.Colors
 import me.odinmain.utils.skyblock.ClickType
 import me.odinmain.utils.skyblock.PlayerUtils.windowClick
 import me.odinmain.utils.skyblock.dungeon.DungeonClass
-import me.odinmain.utils.skyblock.dungeon.DungeonListener.leapTeammates
 import me.odinmain.utils.skyblock.dungeon.DungeonPlayer
 import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.skyblock.partyMessage
@@ -42,6 +38,7 @@ object LeapMenu : Module(
     private val onlyClass by BooleanSetting("Only Classes", false, desc = "Renders classes instead of names.")
     private val colorStyle by BooleanSetting("Color Style", false, desc = "Which color style to use.")
     private val backgroundColor by ColorSetting("Background Color", Colors.MINECRAFT_DARK_GRAY.withAlpha(0.75f), true, desc = "Color of the background of the leap menu.").withDependency { !colorStyle }
+    private val scale by NumberSetting("Scale", 0.5f, 0.1f, 1f, 0.1f, desc = "Scale of the leap menu.", unit = "x").withDependency { !colorStyle }
     private val useNumberKeys by BooleanSetting("Use Number Keys", false, desc = "Use keyboard keys to leap to the player you want, going from left to right, top to bottom.")
     private val topLeftKeybind by KeybindSetting("Top Left", Keyboard.KEY_1, "Used to click on the first person in the leap menu.").withDependency { useNumberKeys }
     private val topRightKeybind by KeybindSetting("Top Right", Keyboard.KEY_2, "Used to click on the second person in the leap menu.").withDependency { useNumberKeys }
@@ -68,7 +65,8 @@ object LeapMenu : Module(
         hoverHandler[3].handle(halfWidth, halfHeight, halfWidth, halfHeight)
 
         NVGRenderer.beginFrame(Display.getWidth().toFloat(), Display.getHeight().toFloat())
-        NVGRenderer.translate(halfWidth, halfHeight)
+        NVGRenderer.scale(scale, scale)
+        NVGRenderer.translate(halfWidth / scale, halfHeight / scale)
         val boxWidth = 800f
         val boxHeight = 300f
         leapTeammates.forEachIndexed { index, player ->
@@ -153,12 +151,12 @@ object LeapMenu : Module(
         }
     }
 
-    /*private val leapTeammates: MutableList<DungeonPlayer> = mutableListOf(
+    private val leapTeammates: MutableList<DungeonPlayer> = mutableListOf(
         DungeonPlayer("Stiviaisd", DungeonClass.Healer, 50),
         DungeonPlayer("Odtheking", DungeonClass.Archer, 50),
         DungeonPlayer("Bonzi", DungeonClass.Mage, 47),
         DungeonPlayer("Cezar", DungeonClass.Tank, 38)
-    )*/
+    )
 
     /**
      * Sorts the list of players based on their default quadrant and class priority.
