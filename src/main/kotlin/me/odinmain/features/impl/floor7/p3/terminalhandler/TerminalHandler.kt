@@ -20,7 +20,6 @@ open class TerminalHandler(val type: TerminalTypes) {
     val items: Array<ItemStack?> = arrayOfNulls(type.windowSize)
     val timeOpened = System.currentTimeMillis()
     var isClicked = false
-    var windowCount = 1
 
     @SubscribeEvent(priority = EventPriority.LOW, receiveCanceled = true)
     fun onPacketReceived(event: PacketEvent.Receive) = with (event.packet) {
@@ -33,7 +32,6 @@ open class TerminalHandler(val type: TerminalTypes) {
             is S2DPacketOpenWindow -> {
                 isClicked = false
                 items.fill(null)
-                windowCount++
             }
         }
     }

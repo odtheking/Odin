@@ -9,6 +9,7 @@ import me.odinmain.events.impl.PacketEvent
 import me.odinmain.events.impl.TerminalEvent
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.p3.terminalhandler.*
+import me.odinmain.features.impl.floor7.p3.termsim.TermSimGUI
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.postAndCatch
@@ -95,7 +96,7 @@ object TerminalSolver : Module(
 
     init {
         onPacket<S2DPacketOpenWindow> { packet ->
-            currentTerm?.let { if (!it.isClicked && it.windowCount <= 2) leftTerm() }
+            currentTerm?.let { if (!it.isClicked && mc.currentScreen !is TermSimGUI) leftTerm() }
             val windowName = packet.windowTitle?.formattedText?.noControlCodes ?: return@onPacket
             val newTermType = TerminalTypes.entries.find { terminal -> windowName.startsWith(terminal.windowName) }?.takeIf { it != currentTerm?.type } ?: return@onPacket
 

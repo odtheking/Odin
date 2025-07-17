@@ -21,17 +21,14 @@ object ClickGUIModule: Module(
     Keyboard.KEY_RSHIFT,
     description = "Allows you to customize the GUI."
 ) {
-    val blur by BooleanSetting("Blur", false, desc = "Toggles the background blur for the gui.")
     val enableNotification by BooleanSetting("Enable notifications", true, desc = "Shows you a notification in chat when you toggle an option with a keybind.")
     val clickGUIColor by ColorSetting("Gui Color", Color(50, 150, 220), allowAlpha = false, desc = "Color theme in the gui.")
-    val switchType by BooleanSetting("Switch Type", true, desc = "Switches the type of the settings in the gui.")
-    val hudChat by BooleanSetting("Shows HUDs in GUIs", true, desc = "Shows HUDs in GUIs.")
-
-    val devMessages by BooleanSetting("Dev Message", false, desc = "Enables dev messages in chat.")
+    val hudChat by BooleanSetting("Show HUDs in GUIs", true, desc = "Shows HUDs in GUIs.")
 
     private val action by ActionSetting("Open Example Hud", desc = "Opens an example hud to allow configuration of huds.") {
         OdinMain.display = HudManager
     }
+    val devMessages by BooleanSetting("Dev Message", false, desc = "Enables dev messages in chat.")
 
     var lastSeenVersion by StringSetting("Last seen version", "1.0.0", desc = "").hide()
     private var joined by BooleanSetting("First join", false, "").hide()
