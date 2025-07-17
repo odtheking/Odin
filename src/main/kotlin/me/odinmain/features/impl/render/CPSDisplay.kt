@@ -31,14 +31,14 @@ object CPSDisplay : Module(
         if (mouseText) {
             if (button == 2) {
                 RenderUtils.drawText("LMB", 1f, 1f, textColor)
-                RenderUtils.drawText(leftClicks.size.toString(), 5f, 15f, textColor)
+                RenderUtils.drawText(leftClicks.size.toString(), 7f, 15f, textColor)
 
                 RenderUtils.drawText("RMB", 35f, 1f, textColor)
-                RenderUtils.drawText(rightClicks.size.toString(), 40f, 15f, textColor)
+                RenderUtils.drawText(rightClicks.size.toString(), 42f, 15f, textColor)
             } else {
                 val text = if (button == 0) "LMB" else "RMB"
                 RenderUtils.drawText(text, 1f, 1f, textColor)
-                RenderUtils.drawText(value, 5f, 15f, textColor)
+                RenderUtils.drawText(value, 7f, 15f, textColor)
             }
         } else {
             if (button == 2) {
@@ -46,7 +46,7 @@ object CPSDisplay : Module(
                 RenderUtils.drawText(rightClicks.size.toString(), 35f, 10f, textColor)
             } else RenderUtils.drawText(value, 5f, 10f, textColor)
         }
-        if (button == 2) 55f to 25f else 50f to 38f
+        if (button == 2) 54f to 24f else 20f to 24f
     }
 
     private val leftClicks = mutableListOf<Long>()

@@ -13,6 +13,7 @@ import me.odinmain.utils.render.Colors
 import me.odinmain.utils.skyblock.ClickType
 import me.odinmain.utils.skyblock.PlayerUtils.windowClick
 import me.odinmain.utils.skyblock.dungeon.DungeonClass
+import me.odinmain.utils.skyblock.dungeon.DungeonListener.leapTeammates
 import me.odinmain.utils.skyblock.dungeon.DungeonPlayer
 import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.skyblock.partyMessage
@@ -151,12 +152,12 @@ object LeapMenu : Module(
         }
     }
 
-    private val leapTeammates: MutableList<DungeonPlayer> = mutableListOf(
+    /*private val leapTeammates: MutableList<DungeonPlayer> = mutableListOf(
         DungeonPlayer("Stiviaisd", DungeonClass.Healer, 50),
         DungeonPlayer("Odtheking", DungeonClass.Archer, 50),
         DungeonPlayer("Bonzi", DungeonClass.Mage, 47),
         DungeonPlayer("Cezar", DungeonClass.Tank, 38)
-    )
+    )*/
 
     /**
      * Sorts the list of players based on their default quadrant and class priority.

@@ -5,12 +5,13 @@ import me.odinmain.clickgui.settings.impl.BooleanSetting
 import me.odinmain.clickgui.settings.impl.ColorSetting
 import me.odinmain.features.Module
 import me.odinmain.features.impl.nether.NoPre.missing
+import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.formatTime
 import me.odinmain.utils.render.Colors
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.KuudraUtils
-import me.odinmain.utils.skyblock.KuudraUtils.SupplyPickUpSpot
 import me.odinmain.utils.skyblock.modMessage
+import me.odinmain.utils.toVec3
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.ClientChatReceivedEvent
 import net.minecraftforge.client.event.RenderWorldLastEvent
@@ -28,8 +29,8 @@ object SupplyHelper : Module(
     private val sendSupplyTime by BooleanSetting("Send Supply Time", true, desc = "Sends a message when a supply is collected.")
 
     private var startRun = 0L
-    private val supplyPickUpRegex = Regex("(?:\\[[^]]*])? ?(\\w{1,16}) recovered one of Elle's supplies! \\((\\d)/(\\d)\\)")
-    // https://regex101.com/r/xsDImP/1
+    private val supplyPickUpRegex = Regex("(?:\\[[^]]*])? ?(\\w{1,16}) recovered one of Elle's supplies! \\((\\d)/(\\d)\\)") // https://regex101.com/r/xsDImP/1
+
     init {
         onMessage(Regex("\\[NPC] Elle: Okay adventurers, I will go and fish up Kuudra!")) {
             startRun = System.currentTimeMillis()
@@ -50,11 +51,11 @@ object SupplyHelper : Module(
 
     @SubscribeEvent
     fun onWorldRender(event: RenderWorldLastEvent) {
-        if (!KuudraUtils.inKuudra || KuudraUtils.phase != 1) return
+        //if (!KuudraUtils.inKuudra || KuudraUtils.phase != 1) return
         if (supplyDropWaypoints) {
-            locations.forEachIndexed { index, (position, name) ->
-                if (!KuudraUtils.supplies[index]) return@forEachIndexed
-                Renderer.drawCustomBeacon("", position, if (missing == name) Colors.MINECRAFT_GREEN else Colors.MINECRAFT_RED, increase = false)
+            Supply.entries.forEach { type ->
+                if (type.equalsOneOf(Supply.None, Supply.Square) || !type.isActive) return@forEach
+                Renderer.drawCustomBeacon("", type.dropOffSpot.toVec3(), if (missing == type) Colors.MINECRAFT_GREEN else Colors.MINECRAFT_RED, increase = false, distance = false)
             }
         }
 
@@ -65,12 +66,4 @@ object SupplyHelper : Module(
             }
         }
     }
-    private val locations = listOf(
-        Pair(Vec3(-98.0, 78.0, -112.0), SupplyPickUpSpot.Shop),
-        Pair(Vec3(-98.0, 78.0, -99.0), SupplyPickUpSpot.Equals),
-        Pair(Vec3(-110.0, 78.0, -106.0), SupplyPickUpSpot.xCannon),
-        Pair(Vec3(-106.0, 78.0, -112.0), SupplyPickUpSpot.X ),
-        Pair(Vec3(-94.0, 78.0, -106.0), SupplyPickUpSpot.Triangle),
-        Pair(Vec3(-106.0, 78.0, -99.0), SupplyPickUpSpot.Slash),
-    )
 }

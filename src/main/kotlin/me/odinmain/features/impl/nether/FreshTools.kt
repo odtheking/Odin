@@ -20,7 +20,6 @@ object FreshTools : Module(
     private val notifyFresh by BooleanSetting("Notify Fresh", true, desc = "Notifies your party when you get fresh timer.")
     val highlightFresh by BooleanSetting("Highlight Fresh", true, desc = "Highlights fresh timer users.")
     val highlightFreshColor by ColorSetting("Highlight Fresh Color", Colors.MINECRAFT_YELLOW, true, desc = "Color of the highlight.").withDependency { highlightFresh }
-    private val freshTimerHUDColor by ColorSetting("Fresh Timer Color", Colors.MINECRAFT_GOLD, true, desc = "Color of the fresh timer HUD.")
     private val hud by HUD("Fresh timer", "Displays how long players have fresh for.") { example ->
         if (!example && (!KuudraUtils.inKuudra || KuudraUtils.phase != 2 || KuudraUtils.freshers.isEmpty())) return@HUD 0f to 0f
 

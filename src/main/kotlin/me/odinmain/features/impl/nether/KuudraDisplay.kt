@@ -24,9 +24,9 @@ object KuudraDisplay : Module(
 ) {
     private val highlightKuudra by BooleanSetting("Highlight Kuudra", true, desc = "Highlights the kuudra entity.")
     private val kuudraColor by ColorSetting("Kuudra Color", Colors.MINECRAFT_RED, true, desc = "Color of the kuudra highlight.").withDependency { highlightKuudra }
-    private val thickness by NumberSetting("Thickness", 3f, 0.1, 8f, desc = "Thickness of the kuudra highlight.").withDependency { highlightKuudra }
     private val kuudraSpawnAlert by BooleanSetting("Kuudra Spawn Alert", true, desc = "Alerts you where kuudra spawns.")
     private val kuudraHPDisplay by BooleanSetting("Kuudra HP", true, desc = "Renders kuudra's hp on him.")
+    private val showPercentage by BooleanSetting("Show Percentage", true, desc = "Shows the percentage of Kuudra's health instead of absolute.").withDependency { kuudraHPDisplay }
     private val healthSize by NumberSetting("Health Size", 0.3f, 0.1f, 1.0f, 0.1, desc = "Size of the health display.").withDependency { kuudraHPDisplay }
     private val scaledHealth by BooleanSetting("Use Scaled", true, desc = "Use scaled health display.").withDependency { kuudraHPDisplay }
     private val hud by HUD("Health Display", "Displays the current health of Kuudra.") { example ->
@@ -45,7 +45,7 @@ object KuudraDisplay : Module(
 
         KuudraUtils.kuudraEntity?.let {
             if (highlightKuudra)
-                Renderer.drawBox(it.renderBoundingBox, kuudraColor, depth = false, fillAlpha = 0, outlineWidth = thickness)
+                Renderer.drawBox(it.renderBoundingBox, kuudraColor, depth = false, fillAlpha = 0, outlineWidth = 3f)
 
             if (kuudraHPDisplay)
                 Renderer.drawStringInWorld(getCurrentHealthDisplay(it.health), it.positionVector.addVec(y = 10), Colors.WHITE, depth = false, scale = healthSize, shadow = true)
@@ -83,6 +83,10 @@ object KuudraDisplay : Module(
         return when {
             // Scaled
             kuudraHP <= 25000 && scaledHealth && KuudraUtils.kuudraTier == 5 -> "$color${(health * 9.6).toFixed()}M§7/§a240M§c❤"
+
+            // Percentage
+            showPercentage -> "$color${health}§a% §c❤"
+
             // Absolute
             else -> "$color${health}K§7/§a100k§c❤"
         }
