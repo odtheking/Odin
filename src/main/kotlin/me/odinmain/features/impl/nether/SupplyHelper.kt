@@ -51,7 +51,7 @@ object SupplyHelper : Module(
 
     @SubscribeEvent
     fun onWorldRender(event: RenderWorldLastEvent) {
-        //if (!KuudraUtils.inKuudra || KuudraUtils.phase != 1) return
+        if (!KuudraUtils.inKuudra || KuudraUtils.phase != 1) return
         if (supplyDropWaypoints) {
             Supply.entries.forEach { type ->
                 if (type.equalsOneOf(Supply.None, Supply.Square) || !type.isActive) return@forEach

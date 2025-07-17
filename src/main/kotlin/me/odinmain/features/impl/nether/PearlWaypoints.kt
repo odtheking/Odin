@@ -12,6 +12,7 @@ import me.odinmain.utils.render.RenderUtils.renderX
 import me.odinmain.utils.render.RenderUtils.renderY
 import me.odinmain.utils.render.RenderUtils.renderZ
 import me.odinmain.utils.render.Renderer
+import me.odinmain.utils.skyblock.KuudraUtils
 import me.odinmain.utils.toAABB
 import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
@@ -83,7 +84,7 @@ object PearlWaypoints : Module(
 
     @SubscribeEvent
     fun onRender(event: RenderWorldLastEvent) {
-       // if (!KuudraUtils.inKuudra || KuudraUtils.phase != 1) return
+        if (!KuudraUtils.inKuudra || KuudraUtils.phase != 1) return
 
         var closest = true
         getOrderedLineups(mc.thePlayer?.position ?: return).forEach { (lineup, color) ->
