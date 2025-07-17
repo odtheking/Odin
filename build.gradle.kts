@@ -19,10 +19,9 @@ blossom {
 
 allprojects {
     repositories {
-//        mavenLocal()
         mavenCentral()
         maven("https://repo.spongepowered.org/maven/")
-        maven("https://repo.essential.gg/repository/maven-public/")
+        maven("https://jitpack.io")
     }
 
     apply(plugin = "dev.architectury.architectury-pack200")
@@ -41,18 +40,15 @@ allprojects {
         implementation(kotlin("reflect"))
         implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0-RC")
 
-
         compileOnly("com.github.NotEnoughUpdates:NotEnoughUpdates:2.4.0:all")
-
-        // 1.0.0-legacy
-        implementation("com.github.Stivais:Commodore:bea320fe0a")
 
         annotationProcessor("org.spongepowered:mixin:0.8.5-SNAPSHOT")
         implementation("org.spongepowered:mixin:0.7.11-SNAPSHOT") { isTransitive = false }
 
         implementation("com.mojang:brigadier:1.2.9")
+        implementation("com.github.Stivais:Commodore:bea320fe0a")
 
-        implementation("com.github.odtheking:odin-lwjgl:108b85bda5ee61cc5e4b8bfeedf906a2b24824af")
+        implementation("com.github.odtheking:odin-lwjgl:68de0d3e0b")
     }
 
     loom {
