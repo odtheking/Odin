@@ -6,18 +6,12 @@ import me.odinmain.clickgui.settings.impl.ColorSetting
 import me.odinmain.clickgui.settings.impl.NumberSetting
 import me.odinmain.events.impl.RenderEntityModelEvent
 import me.odinmain.features.Module
-import me.odinmain.utils.addVec
-import me.odinmain.utils.component1
-import me.odinmain.utils.component2
-import me.odinmain.utils.component3
+import me.odinmain.utils.*
 import me.odinmain.utils.render.Color.Companion.multiplyAlpha
 import me.odinmain.utils.render.Colors
 import me.odinmain.utils.render.OutlineUtils
 import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.render.RenderUtils.renderVec
-import me.odinmain.utils.render.RenderUtils.renderX
-import me.odinmain.utils.render.RenderUtils.renderY
-import me.odinmain.utils.render.RenderUtils.renderZ
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.isHolding
@@ -32,14 +26,13 @@ import net.minecraft.item.ItemBow
 import net.minecraft.item.ItemEnderPearl
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.EnumFacing
-import net.minecraft.util.MathHelper.sqrt_double
 import net.minecraft.util.MovingObjectPosition
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import net.minecraftforge.fml.common.gameevent.TickEvent
 import kotlin.math.cos
 import kotlin.math.sin
-import kotlin.math.sqrt
 
 object Trajectories : Module(
     name = "Trajectories",
@@ -61,208 +54,151 @@ object Trajectories : Module(
     private var entityRenderQueue = mutableListOf<Entity>()
     private var pearlImpactPos: AxisAlignedBB? = null
     private var planePos: MovingObjectPosition? = null
+    private var charge = 0f
+    private var lastCharge = 0f
+
+    @SubscribeEvent
+    fun onTick(event: TickEvent.ClientTickEvent) {
+        if (event.phase == TickEvent.Phase.END) {
+            lastCharge = charge
+            charge = minOf((72000 - (mc.thePlayer?.itemInUseCount ?: 0)) / 20f, 1.0f) * 2f
+        }
+        if ((lastCharge - charge) > 1f) lastCharge = charge
+    }
 
     @SubscribeEvent
     fun onRenderWorldLast(event: RenderWorldLastEvent) {
         entityRenderQueue.clear()
         planePos = null
-        if (mc.thePlayer?.heldItem == null) return
-        if (bows && mc.thePlayer.heldItem.item is ItemBow) {
-            val pair1: Pair<ArrayList<Vec3>, MovingObjectPosition?>
-            var pair2: Pair<ArrayList<Vec3>, MovingObjectPosition?>
-            var pair3: Pair<ArrayList<Vec3>, MovingObjectPosition?>
-            if (mc.thePlayer.heldItem?.isShortbow == true) {
-                pair1 = setBowTrajectoryHeading(0f, false)
-                pair2 = Pair(arrayListOf(Vec3(0.0, 0.0, 0.0)), null)
-                pair3 = Pair(arrayListOf(Vec3(0.0, 0.0, 0.0)), null)
-                if (isHolding("TERMINATOR")) {
-                    pair2 = setBowTrajectoryHeading(-5f, false)
-                    pair3 = setBowTrajectoryHeading(5f, false)
-                }
+        val player = mc.thePlayer ?: return
+        val heldItem = player.heldItem ?: return
+
+        if (bows && heldItem.item is ItemBow) {
+            val pairs = if (heldItem.isShortbow) {
+                listOfNotNull(
+                    calculateTrajectory(0f, false),
+                    if (isHolding("TERMINATOR")) calculateTrajectory(-5f, false) else null,
+                    if (isHolding("TERMINATOR")) calculateTrajectory(5f, false) else null
+                )
             } else {
-                if (mc.thePlayer.itemInUseDuration == 0) return
-                pair1 = setBowTrajectoryHeading(0f, true)
-                pair2 = Pair(arrayListOf(Vec3(0.0, 0.0, 0.0)), null)
-                pair3 = Pair(arrayListOf(Vec3(0.0, 0.0, 0.0)), null)
+                if (player.itemInUseDuration == 0) return
+                listOf(calculateTrajectory(0f, isPearl = false, useCharge = true))
             }
-            if (boxes) drawBowCollisionBoxes()
-            if (plane) {
-                drawPlaneCollision(pair1.second)
-                drawPlaneCollision(pair2.second)
-                drawPlaneCollision(pair3.second)
-            }
-            if (lines) {
-                Renderer.draw3DLine(pair1.first, color = color, lineWidth = width, depth = true)
-                Renderer.draw3DLine(pair2.first, color = color, lineWidth = width, depth = true)
-                Renderer.draw3DLine(pair3.first, color = color, lineWidth = width, depth = true)
-            }
-        }
-        if (pearls) {
-            pearlImpactPos = null
-            val itemStack = mc.thePlayer?.heldItem ?: return
-            if (itemStack.item is ItemEnderPearl && !itemStack.isLeap) {
-                val pair = setPearlTrajectoryHeading()
-                if (boxes) drawPearlCollisionBox()
-                if (lines) Renderer.draw3DLine(pair.first, color = color, lineWidth = width, depth = true)
+
+            if (boxes) drawCollisionBoxes(isPearl = false)
+            pairs.forEach { pair ->
                 if (plane) drawPlaneCollision(pair.second)
+                if (lines) Renderer.draw3DLine(pair.first, color, width, depth)
             }
+        }
+
+        if (pearls && heldItem.item is ItemEnderPearl && !heldItem.isLeap) {
+            val pair = calculateTrajectory(0f, isPearl = true)
+            if (boxes) drawCollisionBoxes(isPearl = true)
+            if (lines) Renderer.draw3DLine(pair.first, color, width, depth)
+            if (plane) drawPlaneCollision(pair.second)
         }
     }
 
-    private fun setPearlTrajectoryHeading(): Pair<ArrayList<Vec3>, MovingObjectPosition?> {
-        val player = mc.thePlayer ?: return Pair(arrayListOf(), null)
+    private fun calculateTrajectory(yawOffset: Float, isPearl: Boolean, useCharge: Boolean = false): Pair<ArrayList<Vec3>, MovingObjectPosition?> {
+        val yaw = Math.toRadians((mc.thePlayer.rotationYaw + yawOffset).toDouble())
+        val offset = Vec3(-cos(yaw) * 0.16, mc.thePlayer.eyeHeight - 0.1, -sin(yaw) * 0.16)
+        var pos = mc.thePlayer.renderVec.add(offset)
 
-        val yawRadians = Math.toRadians(player.rotationYaw.toDouble())
-        val pitchRadians = Math.toRadians(player.rotationPitch.toDouble())
+        val velocityMultiplier = if (isPearl) {
+            1.5f
+        } else {
+            val interpolatedCharge = if (!useCharge) 2f else lastCharge + (charge - lastCharge) * RenderUtils.partialTicks
+            interpolatedCharge * 1.5f
+        }
+        var motion = getLook().normalize().multiply(velocityMultiplier)
 
-        var motionX = -sin(yawRadians) * cos(pitchRadians) * 0.4
-        var motionZ = cos(yawRadians) * cos(pitchRadians) * 0.4
-        var motionY = -sin(pitchRadians) * 0.4
-
-        val posX = player.renderX - cos(yawRadians) * 0.16
-        val posY = player.renderY + player.eyeHeight - 0.1
-        val posZ = player.renderZ - sin(yawRadians) * 0.16
-
-        val f = sqrt_double(motionX * motionX + motionY * motionY + motionZ * motionZ)
-        motionX = (motionX / f) * 1.5
-        motionY = (motionY / f) * 1.5
-        motionZ = (motionZ / f) * 1.5
-
-        return calculatePearlTrajectory(Vec3(motionX, motionY, motionZ), Vec3(posX, posY, posZ))
-    }
-
-    private fun calculatePearlTrajectory(mV: Vec3,pV: Vec3): Pair<ArrayList<Vec3>, MovingObjectPosition?> {
         var hitResult = false
-        var motionVec = mV
-        var posVec = pV
         val lines = arrayListOf<Vec3>()
         var rayTraceHit: MovingObjectPosition? = null
+
         repeat(range + 1) {
             if (hitResult) return@repeat
-            lines.add(posVec)
-            mc.theWorld?.rayTraceBlocks(posVec, motionVec.add(posVec), false, true, false)?.let {
+            lines.add(pos)
+
+            if (!isPearl) {
+                val aabb = AxisAlignedBB(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+                    .offset(pos.xCoord, pos.yCoord, pos.zCoord)
+                    .addCoord(motion.xCoord, motion.yCoord, motion.zCoord)
+                    .expand(0.01, 0.01, 0.01)
+                val entityHit = mc.theWorld?.getEntitiesWithinAABBExcludingEntity(mc.thePlayer, aabb)
+                    ?.filter { it !is EntityArrow && it !is EntityArmorStand }.orEmpty()
+                if (entityHit.isNotEmpty()) {
+                    hitResult = true
+                    entityRenderQueue.addAll(entityHit)
+                    return@repeat
+                }
+            }
+
+            mc.theWorld?.rayTraceBlocks(pos, motion.add(pos), false, true, false)?.let {
                 rayTraceHit = it
                 lines.add(it.hitVec)
-                pearlImpactPos =  AxisAlignedBB(
-                    it.hitVec.xCoord - 0.15 * boxSize, it.hitVec.yCoord - 0.15 * boxSize, it.hitVec.zCoord - 0.15 * boxSize,
-                    it.hitVec.xCoord + 0.15 * boxSize, it.hitVec.yCoord + 0.15 * boxSize, it.hitVec.zCoord + 0.15 * boxSize
-                )
-                hitResult = true
-            }
-            posVec = posVec.add(motionVec)
-            motionVec = Vec3(motionVec.xCoord * 0.99, motionVec.yCoord * 0.99 - 0.03, motionVec.zCoord * 0.99)
-        }
-
-        return lines to rayTraceHit
-    }
-
-    private fun setBowTrajectoryHeading(yawOffset: Float, bowCharge: Boolean): Pair<ArrayList<Vec3>, MovingObjectPosition?> {
-        val charge = if (bowCharge) minOf((72000 - mc.thePlayer.itemInUseCount) / 20f, 1.0f) * 2 else 2f
-
-        val yawRadians = Math.toRadians((mc.thePlayer.rotationYaw + yawOffset).toDouble())
-        val pitchRadians = Math.toRadians(mc.thePlayer.rotationPitch.toDouble())
-        val (renderX, renderY, renderZ) = mc.thePlayer?.renderVec ?: return Pair(arrayListOf(), null)
-
-        val posX = renderX - cos(Math.toRadians(mc.thePlayer.rotationYaw.toDouble())) * 0.16
-        val posY = renderY + mc.thePlayer.eyeHeight - 0.1
-        val posZ = renderZ - sin(Math.toRadians(mc.thePlayer.rotationYaw.toDouble())) * 0.16
-
-        var motionX = -sin(yawRadians) * cos(pitchRadians)
-        var motionY = -sin(pitchRadians)
-        var motionZ = cos(yawRadians) * cos(pitchRadians)
-
-        val lengthOffset = sqrt(motionX * motionX + motionY * motionY + motionZ * motionZ)
-        motionX = (motionX / lengthOffset) * charge * 1.5
-        motionY = (motionY / lengthOffset) * charge * 1.5
-        motionZ = (motionZ / lengthOffset) * charge * 1.5
-
-        return calculateBowTrajectory(Vec3(motionX, motionY, motionZ), Vec3(posX, posY, posZ))
-    }
-
-    private fun calculateBowTrajectory(mV: Vec3,pV: Vec3): Pair<ArrayList<Vec3>, MovingObjectPosition?> {
-        var hitResult = false
-        var motionVec = mV
-        var posVec = pV
-        val lines = arrayListOf<Vec3>()
-        var rayTraceHit: MovingObjectPosition? = null
-        repeat(range + 1) {
-            if (hitResult) return@repeat
-            lines.add(posVec)
-            val aabb = AxisAlignedBB(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
-                .offset(posVec.xCoord, posVec.yCoord, posVec.zCoord)
-                .addCoord(motionVec.xCoord, motionVec.yCoord, motionVec.zCoord)
-                .expand(0.01, 0.01, 0.01)
-            val entityHit = mc.theWorld?.getEntitiesWithinAABBExcludingEntity(mc.thePlayer, aabb)?.filter { it !is EntityArrow && it !is EntityArmorStand }.orEmpty()
-            if (entityHit.isNotEmpty()) {
-                hitResult = true
-                entityRenderQueue.addAll(entityHit)
-            } else {
-                mc.theWorld?.rayTraceBlocks(posVec, motionVec.add(posVec), false, true, false)?.let {
-                    rayTraceHit = it
-                    lines.add(it.hitVec)
-                    if (boxes) {
-                        boxRenderQueue.add(
-                            AxisAlignedBB(
-                                it.hitVec.xCoord - 0.15 * boxSize, it.hitVec.yCoord - 0.15 * boxSize, it.hitVec.zCoord - 0.15 * boxSize,
-                                it.hitVec.xCoord + 0.15 * boxSize, it.hitVec.yCoord + 0.15 * boxSize, it.hitVec.zCoord + 0.15 * boxSize
-                            )
-                        )
+                if (boxes) {
+                    val box = AxisAlignedBB(
+                        it.hitVec.xCoord - 0.15 * boxSize, it.hitVec.yCoord - 0.15 * boxSize, it.hitVec.zCoord - 0.15 * boxSize,
+                        it.hitVec.xCoord + 0.15 * boxSize, it.hitVec.yCoord + 0.15 * boxSize, it.hitVec.zCoord + 0.15 * boxSize
+                    )
+                    if (isPearl) {
+                        pearlImpactPos = box
+                    } else {
+                        boxRenderQueue.add(box)
                     }
-                    hitResult = true
                 }
+                hitResult = true
             }
-            posVec = posVec.add(motionVec)
-            motionVec = Vec3(motionVec.xCoord * 0.99, motionVec.yCoord * 0.99 - 0.05, motionVec.zCoord * 0.99)
+
+            pos = pos.add(motion)
+            motion = if (isPearl) {
+                Vec3(motion.xCoord * 0.99, motion.yCoord * 0.99 - 0.03, motion.zCoord * 0.99)
+            } else {
+                Vec3(motion.xCoord * 0.99, motion.yCoord * 0.99 - 0.05, motion.zCoord * 0.99)
+            }
         }
+
         return lines to rayTraceHit
     }
 
-    private fun drawPlaneCollision(rayTrace: MovingObjectPosition?) {
-        val vec1: Vec3
-        val vec2: Vec3
-        when (rayTrace?.sideHit) {
-            EnumFacing.DOWN, EnumFacing.UP -> {
-                vec1 = rayTrace.hitVec.addVec(-0.15 * planeSize, -0.02, -0.15 * planeSize)
-                vec2 = rayTrace.hitVec.addVec(0.15 * planeSize, 0.02, 0.15 * planeSize)
-            }
-            EnumFacing.NORTH, EnumFacing.SOUTH -> {
-                vec1 = rayTrace.hitVec.addVec(-0.15 * planeSize, -0.15 * planeSize, -0.02)
-                vec2 = rayTrace.hitVec.addVec(0.15 * planeSize, 0.15 * planeSize, 0.02)
-            }
-            EnumFacing.WEST, EnumFacing.EAST -> {
-                vec1 = rayTrace.hitVec.addVec(-0.02, -0.15 * planeSize, -0.15 * planeSize)
-                vec2 = rayTrace.hitVec.addVec(0.02, 0.15 * planeSize, 0.15 * planeSize)
-            }
+    private fun drawPlaneCollision(hit: MovingObjectPosition?) {
+        hit ?: return
+
+        val (vec1, vec2) = when (hit.sideHit) {
+            EnumFacing.DOWN, EnumFacing.UP ->
+                hit.hitVec.addVec(-0.15 * planeSize, -0.02, -0.15 * planeSize) to
+                        hit.hitVec.addVec(0.15 * planeSize, 0.02, 0.15 * planeSize)
+            EnumFacing.NORTH, EnumFacing.SOUTH ->
+                hit.hitVec.addVec(-0.15 * planeSize, -0.15 * planeSize, -0.02) to
+                        hit.hitVec.addVec(0.15 * planeSize, 0.15 * planeSize, 0.02)
+            EnumFacing.WEST, EnumFacing.EAST ->
+                hit.hitVec.addVec(-0.02, -0.15 * planeSize, -0.15 * planeSize) to
+                        hit.hitVec.addVec(0.02, 0.15 * planeSize, 0.15 * planeSize)
             else -> return
         }
-        RenderUtils.drawFilledAABB(AxisAlignedBB(vec1.xCoord, vec1.yCoord, vec1.zCoord, vec2.xCoord, vec2.yCoord, vec2.zCoord), color.multiplyAlpha(0.5f), false)
+        RenderUtils.drawFilledAABB(AxisAlignedBB(vec1.xCoord, vec1.yCoord, vec1.zCoord, vec2.xCoord, vec2.yCoord, vec2.zCoord), color.multiplyAlpha(0.5f), depth)
     }
 
-    private fun drawPearlCollisionBox() {
-        pearlImpactPos?.let { aabb ->
-            Renderer.drawBox(aabb, color, width, depth = false, fillAlpha = 0)
-            pearlImpactPos = null
-        }
-    }
-
-    private fun drawBowCollisionBoxes() {
-        if (boxRenderQueue.isEmpty()) return
-        val renderVec = mc.thePlayer?.renderVec ?: return
-        for (axisAlignedBB in boxRenderQueue) {
-            if (
-                hypot(
-                    renderVec.xCoord - axisAlignedBB.minX,
-                    renderVec.yCoord + mc.thePlayer.eyeHeight - axisAlignedBB.minY,
-                    renderVec.zCoord - axisAlignedBB.minZ
-                ) < 2
-            ) {
-                boxRenderQueue.clear()
-                return
+    private fun drawCollisionBoxes(isPearl: Boolean) {
+        if (isPearl) {
+            pearlImpactPos?.let { aabb ->
+                Renderer.drawBox(aabb, color, width, depth = depth, fillAlpha = 0)
+                pearlImpactPos = null
             }
-
-            Renderer.drawBox(axisAlignedBB, color, width, depth = true, fillAlpha = 0)
+        } else {
+            if (boxRenderQueue.isEmpty()) return
+            val renderVec = mc.thePlayer?.renderVec ?: return
+            for (axisAlignedBB in boxRenderQueue) {
+                if (axisAlignedBB.middle.distanceTo(getPositionEyes(renderVec)) < 2) {
+                    boxRenderQueue.clear()
+                    return
+                }
+                Renderer.drawBox(axisAlignedBB, color, width, depth = depth, fillAlpha = 0)
+            }
+            boxRenderQueue.clear()
         }
-        boxRenderQueue.clear()
     }
 
     @SubscribeEvent
@@ -280,5 +216,4 @@ object Trajectories : Module(
         OutlineUtils.outlineEntity(event, color, width, depth)
     }
 
-    private fun hypot(x: Double, y: Double, d: Double): Double = sqrt(x * x + y * y + d * d)
 }
