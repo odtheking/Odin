@@ -35,7 +35,7 @@ object BlessingDisplay : Module(
         BlessingData(Blessing.WISDOM, { wisdom }, { wisdomColor })
     )
 
-    private val hud by HUD("Display", "Displays the current active blessings of the dungeon.") { example ->
+    private val hud by HUD("Blessing HUD", "Displays the current active blessings of the dungeon.") { example ->
         if (!DungeonUtils.inDungeons && !example) return@HUD 0f to 0f
         (0..5).reduce { acc, index ->
             val blessing = blessings[index - 1].takeIf { it.enabled.invoke() } ?: return@reduce acc

@@ -19,7 +19,7 @@ object InvincibilityTimer : Module(
 )  {
     private val showCooldown by BooleanSetting("Show Cooldown", true, desc = "Shows the cooldown of the mask.")
     private val invincibilityAnnounce by BooleanSetting("Announce Invincibility", true, desc = "Announces when you get invincibility.")
-    private val hud by HUD("Timer Hud", "Shows the timer in the HUD.") {
+    private val hud by HUD("Invincibility Hud", "Shows the invincibility time in the HUD.") {
         if (invincibilityTime.time <= 0 && !it) return@HUD 0f to 0f
         val invincibilityType = if (invincibilityTime.type == "Bonzo") "§bBonzo§f:" else if (invincibilityTime.type == "Phoenix") "§6Phoenix§f:" else "§5Spirit§f:"
         drawStringWidth("${if (showPrefix) invincibilityType else ""} ${if (it) 59 else invincibilityTime.time}t", 1f, 1f, Colors.WHITE) + 2f to 10f

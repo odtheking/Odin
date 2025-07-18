@@ -23,7 +23,7 @@ open class HudElement(
         GlStateManager.scale(scale, scale, 1f)
         val (width, height) = render(example).let { (w, h) -> w.toFloat() to h.toFloat() }
 
-        if (example) RenderUtils.hollowRect(0f, 0f, width, height, 1 / scale + if (isHovered()) 0.5f else 0f, Colors.WHITE)
+        if (example) RenderUtils.hollowRect(0f, 0f, width, height, 1 / scale + if (isHovered()) 2f else 0f, Colors.WHITE)
 
         GlStateManager.popMatrix()
 

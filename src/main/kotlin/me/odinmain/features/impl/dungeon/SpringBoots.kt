@@ -25,7 +25,7 @@ object SpringBoots : Module(
     name = "Spring Boots",
     description = "Shows the current jump height of your spring boots."
 ) {
-    private val hud by HUD("Display", "Display the current jump height in the HUD.") { example ->
+    private val hud by HUD("Spring boots", "Display the current jump height in the HUD.") { example ->
         if (example) return@HUD drawStringWidth("Jump: ${colorHud(6.5)}", 1f, 1f, Colors.WHITE) + 2f to 10f
         val blockAmount = blocksList.getSafe(pitchCounts.sum()).takeIf { it != 0.0 } ?: return@HUD 0f to 0f
         RenderUtils.drawText("Jump: ${colorHud(blockAmount)}", 1f, 1f, Colors.WHITE)

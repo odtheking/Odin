@@ -70,8 +70,7 @@ object Trajectories : Module(
     fun onRenderWorldLast(event: RenderWorldLastEvent) {
         entityRenderQueue.clear()
         planePos = null
-        val player = mc.thePlayer ?: return
-        val heldItem = player.heldItem ?: return
+        val heldItem = mc.thePlayer?.heldItem ?: return
 
         if (bows && heldItem.item is ItemBow) {
             val pairs = if (heldItem.isShortbow) {
@@ -81,13 +80,13 @@ object Trajectories : Module(
                     if (isHolding("TERMINATOR")) calculateTrajectory(5f, false) else null
                 )
             } else {
-                if (player.itemInUseDuration == 0) return
+                if (mc.thePlayer?.itemInUseDuration != 0) return
                 listOf(calculateTrajectory(0f, isPearl = false, useCharge = true))
             }
 
             if (boxes) drawCollisionBoxes(isPearl = false)
             pairs.forEach { pair ->
-                if (plane) drawPlaneCollision(pair.second)
+                if (plane) pair.second?.let { drawPlaneCollision(it)  }
                 if (lines) Renderer.draw3DLine(pair.first, color, width, depth)
             }
         }
@@ -96,7 +95,7 @@ object Trajectories : Module(
             val pair = calculateTrajectory(0f, isPearl = true)
             if (boxes) drawCollisionBoxes(isPearl = true)
             if (lines) Renderer.draw3DLine(pair.first, color, width, depth)
-            if (plane) drawPlaneCollision(pair.second)
+            if (plane) pair.second?.let { drawPlaneCollision(it)  }
         }
     }
 
@@ -105,12 +104,9 @@ object Trajectories : Module(
         val offset = Vec3(-cos(yaw) * 0.16, mc.thePlayer.eyeHeight - 0.1, -sin(yaw) * 0.16)
         var pos = mc.thePlayer.renderVec.add(offset)
 
-        val velocityMultiplier = if (isPearl) {
-            1.5f
-        } else {
-            val interpolatedCharge = if (!useCharge) 2f else lastCharge + (charge - lastCharge) * RenderUtils.partialTicks
-            interpolatedCharge * 1.5f
-        }
+        val velocityMultiplier = if (isPearl) 1.5f
+        else (if (!useCharge) 2f else lastCharge + (charge - lastCharge) * RenderUtils.partialTicks) * 1.5f
+
         var motion = getLook().normalize().multiply(velocityMultiplier)
 
         var hitResult = false
@@ -122,10 +118,8 @@ object Trajectories : Module(
             lines.add(pos)
 
             if (!isPearl) {
-                val aabb = AxisAlignedBB(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
-                    .offset(pos.xCoord, pos.yCoord, pos.zCoord)
-                    .addCoord(motion.xCoord, motion.yCoord, motion.zCoord)
-                    .expand(0.01, 0.01, 0.01)
+
+                val aabb = pos.add(motion).toAABB(1.01)
                 val entityHit = mc.theWorld?.getEntitiesWithinAABBExcludingEntity(mc.thePlayer, aabb)
                     ?.filter { it !is EntityArrow && it !is EntityArmorStand }.orEmpty()
                 if (entityHit.isNotEmpty()) {
@@ -143,29 +137,21 @@ object Trajectories : Module(
                         it.hitVec.xCoord - 0.15 * boxSize, it.hitVec.yCoord - 0.15 * boxSize, it.hitVec.zCoord - 0.15 * boxSize,
                         it.hitVec.xCoord + 0.15 * boxSize, it.hitVec.yCoord + 0.15 * boxSize, it.hitVec.zCoord + 0.15 * boxSize
                     )
-                    if (isPearl) {
-                        pearlImpactPos = box
-                    } else {
-                        boxRenderQueue.add(box)
-                    }
+                    if (isPearl) pearlImpactPos = box
+                    else boxRenderQueue.add(box)
                 }
                 hitResult = true
             }
 
             pos = pos.add(motion)
-            motion = if (isPearl) {
-                Vec3(motion.xCoord * 0.99, motion.yCoord * 0.99 - 0.03, motion.zCoord * 0.99)
-            } else {
-                Vec3(motion.xCoord * 0.99, motion.yCoord * 0.99 - 0.05, motion.zCoord * 0.99)
-            }
+            motion = if (isPearl) Vec3(motion.xCoord * 0.99, motion.yCoord * 0.99 - 0.03, motion.zCoord * 0.99)
+            else Vec3(motion.xCoord * 0.99, motion.yCoord * 0.99 - 0.05, motion.zCoord * 0.99)
         }
 
         return lines to rayTraceHit
     }
 
-    private fun drawPlaneCollision(hit: MovingObjectPosition?) {
-        hit ?: return
-
+    private fun drawPlaneCollision(hit: MovingObjectPosition) {
         val (vec1, vec2) = when (hit.sideHit) {
             EnumFacing.DOWN, EnumFacing.UP ->
                 hit.hitVec.addVec(-0.15 * planeSize, -0.02, -0.15 * planeSize) to

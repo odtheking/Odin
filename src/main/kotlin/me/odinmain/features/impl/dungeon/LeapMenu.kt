@@ -35,7 +35,7 @@ object LeapMenu : Module(
     name = "Leap Menu",
     description = "Renders a custom leap menu when in the Spirit Leap gui."
 ) {
-    val type by SelectorSetting("Sorting", "Odin Sorting", arrayListOf("Odin Sorting", "A-Z Class (BetterMap)", "A-Z Name", "Custom sorting", "No Sorting"), desc = "How to sort the leap menu. /od leaporder to configure custom sorting.")
+    val type by SelectorSetting("Sorting", "Odin Sorting", arrayListOf("Odin Sorting", "A-Z Class", "A-Z Name", "Custom sorting", "No Sorting"), desc = "How to sort the leap menu. /od leaporder to configure custom sorting.")
     private val onlyClass by BooleanSetting("Only Classes", false, desc = "Renders classes instead of names.")
     private val colorStyle by BooleanSetting("Color Style", false, desc = "Which color style to use.")
     private val backgroundColor by ColorSetting("Background Color", Colors.MINECRAFT_DARK_GRAY.withAlpha(0.75f), true, desc = "Color of the background of the leap menu.").withDependency { !colorStyle }
@@ -92,7 +92,7 @@ object LeapMenu : Module(
                 NVGRenderer.image(glTextureId, 64, 64, 8, 8, 8, 8, x + 30f, y + 30f, 240f, 240f, 9f)
             }
 
-            NVGRenderer.text(player.name, x + 275f, y + 130f, 45f, if (!colorStyle) player.clazz.color.rgba else backgroundColor.rgba, NVGRenderer.defaultFont)
+            NVGRenderer.text(if (!onlyClass) player.name else player.clazz.name, x + 275f, y + 130f, 45f, if (!colorStyle) player.clazz.color.rgba else backgroundColor.rgba, NVGRenderer.defaultFont)
             if (!onlyClass || player.isDead) NVGRenderer.text(if (player.isDead) "§cDEAD" else player.clazz.name, x + 275f, y + 180f, 30f, Colors.WHITE.rgba, NVGRenderer.defaultFont)
         }
         NVGRenderer.endFrame()
