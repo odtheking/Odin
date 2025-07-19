@@ -24,7 +24,14 @@ object NVGRenderer : Lwjgl3Wrapper by Lwjgl3Loader.load() {
     private val nvgColor2: NanoVGColorWrapper = createColor()
     private val nvgPaint: NanoVGPaintWrapper = createPaint()
 
-    val defaultFont = Font("Inter", mc.resourceManager.getResource(ResourceLocation("odinmain", "font.ttf")).inputStream)
+    val defaultFont = getInputStream()
+
+    private fun getInputStream(): Font {
+        try {
+            return Font("Default", mc.resourceManager.getResource(ResourceLocation("odinmain", "assets/odinmain/font.ttf")).inputStream)
+        } catch (_: Exception) { }
+        return Font("Default", "/assets/odinmain/font.ttf")
+    }
 
     private val fontMap = HashMap<Font, NVGFont>()
     private val fontBounds = FloatArray(4)

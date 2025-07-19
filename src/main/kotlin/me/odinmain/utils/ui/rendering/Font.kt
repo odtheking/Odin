@@ -35,18 +35,10 @@ class Font {
     }
 
     override fun hashCode(): Int {
-        return resourcePath?.hashCode() ?: cachedBytes.contentHashCode()
+        return name.hashCode()
     }
 
     override fun equals(other: Any?): Boolean {
-        if (other !is Font) return false
-
-        if (resourcePath != null && other.resourcePath != null)
-            return resourcePath == other.resourcePath
-
-        if (cachedBytes != null && other.cachedBytes != null)
-            return cachedBytes.contentEquals(other.cachedBytes)
-
-        return false
+        return other is Font && name == other.name
     }
 }
