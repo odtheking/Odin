@@ -22,8 +22,8 @@ object SlotBinds: Module (
     description = "Bind slots together for quick access.",
     key = null
 ) {
-    private val setNewSlotbind by KeybindSetting("Bind set key", Keyboard.KEY_NONE, desc = "Key to set new bindings.")
-    private val lineColor by ColorSetting("LineColor", Colors.MINECRAFT_GOLD, desc = "Color of the line drawn between slots.")
+    private val setNewSlotbind by KeybindSetting("Bind set", Keyboard.KEY_NONE, desc = "Key to set new bindings.")
+    private val lineColor by ColorSetting("Line Color", Colors.MINECRAFT_GOLD, desc = "Color of the line drawn between slots.")
     private val slotBinds by MapSetting("slotBinds", mutableMapOf<Int, Int>())
 
     private var previousSlot: Int? = null
@@ -58,7 +58,7 @@ object SlotBinds: Module (
             Config.save()
             previousSlot = null
         } ?: run {
-                slotBinds.entries.firstOrNull { it.key == clickedSlot }?.let {
+            slotBinds.entries.firstOrNull { it.key == clickedSlot }?.let {
                 slotBinds.remove(it.key)
                 Config.save()
                 return modMessage("§cRemoved bind from slot §b${it.key} §cto §d${it.value}.")

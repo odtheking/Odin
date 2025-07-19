@@ -45,7 +45,7 @@ object KuudraDisplay : Module(
 
         KuudraUtils.kuudraEntity?.let {
             if (highlightKuudra)
-                Renderer.drawBox(it.renderBoundingBox, kuudraColor, depth = false, fillAlpha = 0, outlineWidth = 3f)
+                Renderer.drawBox(it.renderBoundingBox, kuudraColor, depth = true, fillAlpha = 0, outlineWidth = 3f)
 
             if (kuudraHPDisplay)
                 Renderer.drawStringInWorld(getCurrentHealthDisplay(it.health), it.positionVector.addVec(y = 10), Colors.WHITE, depth = false, scale = healthSize, shadow = true)

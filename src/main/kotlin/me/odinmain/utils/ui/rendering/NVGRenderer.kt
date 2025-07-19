@@ -11,6 +11,7 @@ import me.odinmain.utils.render.Color.Companion.blue
 import me.odinmain.utils.render.Color.Companion.green
 import me.odinmain.utils.render.Color.Companion.red
 import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL13
 import java.nio.ByteBuffer
@@ -23,7 +24,7 @@ object NVGRenderer : Lwjgl3Wrapper by Lwjgl3Loader.load() {
     private val nvgColor2: NanoVGColorWrapper = createColor()
     private val nvgPaint: NanoVGPaintWrapper = createPaint()
 
-    val defaultFont = Font("Inter", "/assets/odinmain/Inter.otf")
+    val defaultFont = Font("Inter", mc.resourceManager.getResource(ResourceLocation("odinmain", "font.ttf")).inputStream)
 
     private val fontMap = HashMap<Font, NVGFont>()
     private val fontBounds = FloatArray(4)
