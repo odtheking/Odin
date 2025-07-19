@@ -21,6 +21,7 @@ import net.minecraft.network.play.server.S29PacketSoundEffect
 import net.minecraft.util.MovingObjectPosition.MovingObjectType
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
+import net.minecraftforge.fml.common.eventhandler.EventPriority
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.util.*
 
@@ -52,7 +53,7 @@ object EtherWarpHelper : Module(
     private val soundPitch by NumberSetting("Pitch", 2f, 0, 2, .01f, desc = "Pitch of the sound.").withDependency { sounds && dropdown }
     private val reset by ActionSetting("Play sound", desc = "Plays the selected sound.") { playLoudSound(if (sound == defaultSounds.size - 1) customSound else defaultSounds[sound], soundVolume, soundPitch) }.withDependency { sounds && dropdown }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.LOW)
     fun onRenderWorldLast(event: RenderWorldLastEvent) {
         if (mc.thePlayer?.usingEtherWarp == false || !render) return
         val player = mc.thePlayer as? IEntityPlayerSPAccessor ?: return

@@ -82,10 +82,9 @@ object LeapMenu : Module(
                 else -> ((Display.getHeight() - (boxHeight * 2f)) / 8f)
             }
 
-            val color = if (colorStyle) player.clazz.color else backgroundColor
             val expandValue = hoverHandler[index].anim.get(0f, 15f, !hoverHandler[index].hasStarted)
             NVGRenderer.dropShadow(x - expandValue, y - expandValue, boxWidth + expandValue * 2, boxHeight + expandValue * 2, 2f, 2f, 12f)
-            NVGRenderer.rect(x - expandValue ,y - expandValue, boxWidth + expandValue * 2, boxHeight + expandValue * 2, color.rgba, 12f)
+            NVGRenderer.rect(x - expandValue ,y - expandValue, boxWidth + expandValue * 2, boxHeight + expandValue * 2, (if (colorStyle) player.clazz.color else backgroundColor).rgba, 12f)
             imageCacheMap.getOrPut(player.locationSkin.resourcePath) {
                 createNVGImage(mc.textureManager.getTexture(player.locationSkin)?.glTextureId ?: return@getOrPut 0, 64, 64)
             }.let { glTextureId ->
@@ -93,7 +92,7 @@ object LeapMenu : Module(
             }
 
             NVGRenderer.text(if (!onlyClass) player.name else player.clazz.name, x + 275f, y + 130f, 45f, if (!colorStyle) player.clazz.color.rgba else backgroundColor.rgba, NVGRenderer.defaultFont)
-            if (!onlyClass || player.isDead) NVGRenderer.text(if (player.isDead) "§cDEAD" else player.clazz.name, x + 275f, y + 180f, 30f, Colors.WHITE.rgba, NVGRenderer.defaultFont)
+            if (!onlyClass || player.isDead) NVGRenderer.text(if (player.isDead) "DEAD" else player.clazz.name, x + 275f, y + 180f, 30f, if (player.isDead) Colors.MINECRAFT_RED.rgba else Colors.WHITE.rgba, NVGRenderer.defaultFont)
         }
         NVGRenderer.endFrame()
         event.isCanceled = true

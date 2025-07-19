@@ -32,6 +32,7 @@ import net.minecraft.util.MathHelper
 import net.minecraft.util.MovingObjectPosition.MovingObjectType
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
+import net.minecraftforge.fml.common.eventhandler.EventPriority
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.util.*
 import kotlin.math.abs
@@ -76,7 +77,7 @@ object EtherWarpHelper : Module(
 
     private val tbClock = Clock(etherWarpTBDelay)
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.LOW)
     fun onRenderWorldLast(event: RenderWorldLastEvent) {
         if (
             etherWarpTriggerBot &&

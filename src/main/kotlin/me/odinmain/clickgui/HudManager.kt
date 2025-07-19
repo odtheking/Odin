@@ -34,7 +34,7 @@ object HudManager : Screen() {
             if (hudSetting.isEnabled) hudSetting.value.draw(true)
             if (!hudSetting.value.isHovered()) continue
             GlStateManager.pushMatrix()
-            GlStateManager.translate((hudSetting.value.x + hudSetting.value.width * hudSetting.value.scale + 10f), hudSetting.value.y, 1f)
+            GlStateManager.translate(hudSetting.value.x + hudSetting.value.width * hudSetting.value.scale + 10f, hudSetting.value.y, 1f)
             GlStateManager.scale(1.5f, 1.5f, 1f)
             mc.fontRendererObj.drawString(hudSetting.name, 0, 0, Colors.WHITE.rgba)
             mc.fontRendererObj.drawSplitString(hudSetting.description, 0, 20, 150, Colors.WHITE.rgba)
