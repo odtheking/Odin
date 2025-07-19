@@ -23,7 +23,7 @@ import kotlin.math.floor
  *
  * see [RenderableSetting]
  */
-class ModuleButton(val module: Module, val panel: Panel) {
+class ModuleButton(val module: Module, private val panel: Panel) {
 
     val representableSettings = module.settings.filterIsInstance<RenderableSetting<*>>()
 

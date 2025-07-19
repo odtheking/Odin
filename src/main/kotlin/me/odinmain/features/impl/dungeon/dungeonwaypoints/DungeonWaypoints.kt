@@ -25,6 +25,7 @@ import me.odinmain.utils.skyblock.dungeon.DungeonUtils.getRealCoords
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils.getRelativeCoords
 import me.odinmain.utils.skyblock.dungeon.tiles.Room
 import me.odinmain.utils.ui.getMCTextHeight
+import me.odinmain.utils.ui.getTextWidth
 import net.minecraft.block.BlockSign
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiScreen
@@ -216,14 +217,14 @@ object DungeonWaypoints : Module(
         } ?: ("" to "Editing Waypoints")
 
         GlStateManager.scale(2f / sr.scaleFactor, 2f / sr.scaleFactor, 1f)
-        RenderUtils.drawText(editText, mc.displayWidth / 4f, mc.displayHeight  / 4f + 10, Colors.WHITE.withAlpha(.8f))
-        RenderUtils.drawText(text, mc.displayWidth / 4f, mc.displayHeight / 4f + 20, selectedColor)
+        RenderUtils.drawText(editText, mc.displayWidth / 4f - getTextWidth(editText) / 2f, mc.displayHeight / 4f + 10, Colors.WHITE.withAlpha(.8f))
+        RenderUtils.drawText(text, mc.displayWidth / 4f - getTextWidth(text) / 2f, mc.displayHeight / 4f + 20, selectedColor)
         GlStateManager.scale(sr.scaleFactor / 2f, sr.scaleFactor / 2f, 1f)
     }
 
     @SubscribeEvent
     fun onMouseInput(event: MouseEvent) {
-        if (!allowEdits || event.dwheel.sign == 0 || DungeonUtils.currentRoom == null) return
+        if (!allowEdits || !allowMidair || event.dwheel.sign == 0 || DungeonUtils.currentRoom == null) return
         distance = (distance + event.dwheel.sign).coerceIn(0.0, 100.0)
         event.isCanceled = true
     }

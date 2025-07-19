@@ -56,7 +56,7 @@ object RenderOptimizer : Module(
     private val hide0HealthNames by BooleanSetting("Hide 0 Health", true, desc = "Hides the names of entities with 0 health.")
     private val hideWitherMinerName by BooleanSetting("Hide WitherMiner Name", true, desc = "Hides the wither miner name.")
     private val hideTerracottaName by BooleanSetting("Hide Terracota Name", true, desc = "Hides the terracota name.")
-    private val hideNonStarredMobName by BooleanSetting("Hide Non-Starred Mob Name", true, desc = "Hides the non-starred mob name.")
+    private val hideNonStarredMobName by BooleanSetting("Hide UnStarred Name", true, desc = "Hides the non-starred mob name.")
     private val hideDeadMobs by BooleanSetting("Hide Dead Mobs", true, desc = "Hides dead mobs in dungeons.")
     private val removePuzzleBlazeNames by BooleanSetting("Hide blazes names", false, desc = "Hides the blazes in the blaze puzzle room.")
     private val removePuzzleBlaze by BooleanSetting("Hide blazes", true, desc = "Removes the blaze in the blaze puzzle room.")

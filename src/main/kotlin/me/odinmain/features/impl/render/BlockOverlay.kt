@@ -28,7 +28,7 @@ object BlockOverlay : Module(
     private val lineWidth by NumberSetting("Block Line Width", 2f, 0.1f, 10f, 0.1f, desc = "The width of the box's lines.").withDependency { blockOverlayToggle }
     private val depthCheck by BooleanSetting("Depth check", true, desc = "Boxes show through walls.").withDependency { blockOverlayToggle }
     private val lineSmoothing by BooleanSetting("Line Smoothing", true, desc = "Makes the lines smoother.").withDependency { blockOverlayToggle && (style == 1 || style == 2) }
-    private val disableWhenEtherwarping by BooleanSetting("Disable When Etherwarping", true, desc = "Disables the block overlay when etherwarping.").withDependency { blockOverlayToggle }
+    private val disableWhenEtherwarping by BooleanSetting("Disable on Etherwarp", true, desc = "Disables the block overlay when etherwarping.").withDependency { blockOverlayToggle }
 
     private val entityToggle by BooleanSetting("Entity Hover", false, desc = "Master toggle for Entity Hover feature.")
 
