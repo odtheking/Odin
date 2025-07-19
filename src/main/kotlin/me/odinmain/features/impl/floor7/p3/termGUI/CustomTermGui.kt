@@ -21,9 +21,9 @@ abstract class TermGui(val name: String) {
 
     protected fun renderBackground(slotCount: Int) {
         val slotSize = 55f * TerminalSolver.customTermSize
-        val backgroundStartX = Display.getWidth() / 2f + (-4 * slotSize) - 25f * TerminalSolver.customTermSize - 75f * TerminalSolver.customTermSize
-        val backgroundStartY = Display.getHeight() / 2f + (-getRowOffset(slotCount) * slotSize) - 25f * TerminalSolver.customTermSize - 25f * TerminalSolver.customTermSize
-        val backgroundWidth = 9 * slotSize - 5f * TerminalSolver.customTermSize + 150f * TerminalSolver.customTermSize
+        val backgroundStartX = Display.getWidth() / 2f + (-4 * slotSize) - 50f * TerminalSolver.customTermSize
+        val backgroundStartY = Display.getHeight() / 2f + (-getRowOffset(slotCount) * slotSize) - 50f * TerminalSolver.customTermSize
+        val backgroundWidth = 9 * slotSize - 5f * TerminalSolver.customTermSize + 50f * TerminalSolver.customTermSize
         val backgroundHeight = ((slotCount + 9) / 9) * slotSize - 5f * TerminalSolver.customTermSize + 55f * TerminalSolver.customTermSize
 
         NVGRenderer.rect(backgroundStartX, backgroundStartY, backgroundWidth, backgroundHeight, Colors.gray26.rgba, 12f * TerminalSolver.customTermSize)
