@@ -74,13 +74,14 @@ object Trajectories : Module(
 
         if (bows && heldItem.item is ItemBow) {
             val pairs = if (heldItem.isShortbow) {
+                val isTerminator = isHolding("TERMINATOR")
                 listOfNotNull(
-                    calculateTrajectory(0f, false),
-                    if (isHolding("TERMINATOR")) calculateTrajectory(-5f, false) else null,
-                    if (isHolding("TERMINATOR")) calculateTrajectory(5f, false) else null
+                    calculateTrajectory(0f, false, isTerminator = isTerminator),
+                    if (isTerminator) calculateTrajectory(-5f, isPearl = false, isTerminator = true) else null,
+                    if (isTerminator) calculateTrajectory(5f, isPearl = false, isTerminator = true) else null
                 )
             } else {
-                if (mc.thePlayer?.itemInUseDuration != 0) return
+                if (mc.thePlayer?.itemInUseDuration == 0) return
                 listOf(calculateTrajectory(0f, isPearl = false, useCharge = true))
             }
 
@@ -99,15 +100,24 @@ object Trajectories : Module(
         }
     }
 
-    private fun calculateTrajectory(yawOffset: Float, isPearl: Boolean, useCharge: Boolean = false): Pair<ArrayList<Vec3>, MovingObjectPosition?> {
-        val yaw = Math.toRadians((mc.thePlayer.rotationYaw + yawOffset).toDouble())
-        val offset = Vec3(-cos(yaw) * 0.16, mc.thePlayer.eyeHeight - 0.1, -sin(yaw) * 0.16)
+    private fun calculateTrajectory(yawOffset: Float, isPearl: Boolean, useCharge: Boolean = false, isTerminator: Boolean = false): Pair<ArrayList<Vec3>, MovingObjectPosition?> {
+
+        val yaw = Math.toRadians((mc.thePlayer.rotationYaw).toDouble())
+        var x = -cos(yaw) * 0.16
+        var y = fastEyeHeight() - 0.1
+        var z = -sin(yaw) * 0.16
+        if (isTerminator) {
+            x = 0.0
+            y = fastEyeHeight().toDouble() -0.01
+            z = 0.0
+        }
+        val offset = Vec3(x, y, z)
         var pos = mc.thePlayer.renderVec.add(offset)
 
         val velocityMultiplier = if (isPearl) 1.5f
         else (if (!useCharge) 2f else lastCharge + (charge - lastCharge) * RenderUtils.partialTicks) * 1.5f
 
-        var motion = getLook().normalize().multiply(velocityMultiplier)
+        var motion = getLook(mc.thePlayer.rotationYaw + yawOffset, mc.thePlayer.rotationPitch).normalize().multiply(velocityMultiplier)
 
         var hitResult = false
         val lines = arrayListOf<Vec3>()
