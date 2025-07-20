@@ -28,7 +28,7 @@ object NVGRenderer : Lwjgl3Wrapper by Lwjgl3Loader.load() {
 
     private fun getInputStream(): Font {
         try {
-            return Font("Default", mc.resourceManager.getResource(ResourceLocation("odinmain", "assets/odinmain/font.ttf")).inputStream)
+            return Font("Default", mc.resourceManager.getResource(ResourceLocation("odinmain", "font.ttf")).inputStream)
         } catch (_: Exception) { }
         return Font("Default", "/assets/odinmain/font.ttf")
     }
