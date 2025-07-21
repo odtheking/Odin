@@ -25,7 +25,6 @@ object TeammatesHighlight : Module(
     private val showClass by BooleanSetting("Show class", true, desc = "Shows the class of the teammate.")
     private val showHighlight by BooleanSetting("Show highlight", true, desc = "Highlights teammates with an outline.")
     private val showName by BooleanSetting("Show name", true, desc = "Highlights teammates with a name tag.")
-    private val nameStyle by SelectorSetting("Name Style", "Plain Text", arrayListOf("Plain Text", "Oringo Style"), desc = "The style of the name tag to render.").withDependency { showName }
     private val depthCheck by BooleanSetting("Depth check", false, desc = "Highlights teammates only when they are visible.")
     private val inBoss by BooleanSetting("In boss", true, desc = "Highlights teammates in boss rooms.")
 
@@ -43,7 +42,7 @@ object TeammatesHighlight : Module(
         if (!showName || !shouldRender) return
         val teammate = dungeonTeammatesNoSelf.find { it.entity == event.entity } ?: return
         event.isCanceled = true
-        if (nameStyle == 0) RenderUtils.drawMinecraftLabel(
+        RenderUtils.drawMinecraftLabel(
             if (showClass) "§${teammate.clazz.colorCode}${teammate.name} §e[${teammate.clazz.name[0]}]" else "§${teammate.clazz.colorCode}${teammate.name}",
             Vec3(event.x, event.y + 0.5, event.z), 0.05, false
         )
