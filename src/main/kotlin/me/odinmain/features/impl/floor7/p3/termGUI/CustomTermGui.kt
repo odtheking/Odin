@@ -1,5 +1,6 @@
 package me.odinmain.features.impl.floor7.p3.termGUI
 
+import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.GuiEvent
 import me.odinmain.features.impl.floor7.p3.TerminalSolver
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.hideClicked
@@ -10,7 +11,6 @@ import me.odinmain.utils.skyblock.ClickType
 import me.odinmain.utils.ui.animations.ColorAnimation
 import me.odinmain.utils.ui.isAreaHovered
 import me.odinmain.utils.ui.rendering.NVGRenderer
-import org.lwjgl.opengl.Display
 
 abstract class TermGui(val name: String) {
     protected val itemIndexMap: MutableMap<Int, Box> = mutableMapOf()
@@ -21,20 +21,20 @@ abstract class TermGui(val name: String) {
 
     protected fun renderBackground(slotCount: Int) {
         val slotSize = 55f * TerminalSolver.customTermSize
-        val backgroundStartX = Display.getWidth() / 2f + (-4 * slotSize) - 50f * TerminalSolver.customTermSize
-        val backgroundStartY = Display.getHeight() / 2f + (-getRowOffset(slotCount) * slotSize) - 50f * TerminalSolver.customTermSize
+        val backgroundStartX = mc.displayWidth / 2f + (-4 * slotSize) - 50f * TerminalSolver.customTermSize
+        val backgroundStartY = mc.displayHeight / 2f + (-getRowOffset(slotCount) * slotSize) - 50f * TerminalSolver.customTermSize
         val backgroundWidth = 9 * slotSize - 5f * TerminalSolver.customTermSize + 50f * TerminalSolver.customTermSize
         val backgroundHeight = ((slotCount + 9) / 9) * slotSize - 5f * TerminalSolver.customTermSize + 55f * TerminalSolver.customTermSize
 
         NVGRenderer.rect(backgroundStartX, backgroundStartY, backgroundWidth, backgroundHeight, Colors.gray26.rgba, 12f * TerminalSolver.customTermSize)
-        NVGRenderer.text(name, Display.getWidth() / 2f - NVGRenderer.textWidth(name, 30f * TerminalSolver.customTermSize, NVGRenderer.defaultFont) / 2, backgroundStartY + (12.5f + 15f) * TerminalSolver.customTermSize, 30f * TerminalSolver.customTermSize, Colors.WHITE.rgba, NVGRenderer.defaultFont)
+        NVGRenderer.text(name, mc.displayWidth / 2f - NVGRenderer.textWidth(name, 30f * TerminalSolver.customTermSize, NVGRenderer.defaultFont) / 2, backgroundStartY + (12.5f + 15f) * TerminalSolver.customTermSize, 30f * TerminalSolver.customTermSize, Colors.WHITE.rgba, NVGRenderer.defaultFont)
     }
 
     protected fun renderSlot(index: Int, startColor: Color, endColor: Color): Pair<Float, Float> {
         val slotSize = 55f * TerminalSolver.customTermSize
         val slotInnerSize = 50f * TerminalSolver.customTermSize
-        val x = (index % 9 - 4) * slotSize + Display.getWidth() / 2f - slotInnerSize / 2
-        val y = (index / 9 - 2) * slotSize + Display.getHeight() / 2f - slotInnerSize / 2
+        val x = (index % 9 - 4) * slotSize + mc.displayWidth / 2f - slotInnerSize / 2
+        val y = (index / 9 - 2) * slotSize + mc.displayHeight / 2f - slotInnerSize / 2
         itemIndexMap[index] = Box(x - 2.5f * TerminalSolver.customTermSize, y - 2.5f * TerminalSolver.customTermSize, slotInnerSize + 5f * TerminalSolver.customTermSize, slotInnerSize + 5f * TerminalSolver.customTermSize)
 
         val colorAnim = colorAnimations.getOrPut(index) { ColorAnimation(250) }

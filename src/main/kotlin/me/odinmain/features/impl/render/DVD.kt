@@ -11,7 +11,6 @@ import me.odinmain.utils.ui.getTextWidth
 import net.minecraft.client.gui.Gui
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
-import org.lwjgl.opengl.Display
 import java.awt.Color.getHSBColor
 
 object DVD : Module(
@@ -32,8 +31,8 @@ object DVD : Module(
     private var dy = 1
 
     override fun onEnable() {
-        x = Display.getWidth() / 4
-        y = Display.getHeight() / 4
+        x = mc.displayWidth / 4
+        y = mc.displayHeight / 4
         lastUpdateTime = System.nanoTime()
         super.onEnable()
     }
@@ -60,8 +59,8 @@ object DVD : Module(
         x += (dx * movement.toFloat()).toInt()
         y += (dy * movement.toFloat()).toInt()
 
-        val screenWidth = Display.getWidth() / 2
-        val screenHeight = Display.getHeight() / 2
+        val screenWidth = mc.displayWidth / 2
+        val screenHeight = mc.displayHeight / 2
 
         if (x <= 0) {
             x = 0

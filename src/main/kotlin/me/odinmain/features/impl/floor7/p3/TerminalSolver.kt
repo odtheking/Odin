@@ -39,7 +39,6 @@ import net.minecraftforge.fml.common.Loader
 import net.minecraftforge.fml.common.eventhandler.EventPriority
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.input.Keyboard
-import org.lwjgl.opengl.Display
 
 @AlwaysActive // So it can be used in other modules
 object TerminalSolver : Module(
@@ -160,7 +159,7 @@ object TerminalSolver : Module(
                 GlStateManager.translate(-event.guiLeft.toFloat(), -event.guiTop.toFloat(), -399f)
             }
             3 -> {
-                NVGRenderer.beginFrame(Display.getWidth().toFloat(), Display.getHeight().toFloat())
+                NVGRenderer.beginFrame(mc.displayWidth.toFloat(), mc.displayHeight.toFloat())
                 currentTerm?.type?.getGUI()?.render()
                 NVGRenderer.endFrame()
                 event.isCanceled = true

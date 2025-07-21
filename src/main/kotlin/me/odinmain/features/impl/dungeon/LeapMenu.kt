@@ -29,7 +29,6 @@ import net.minecraftforge.client.event.GuiOpenEvent
 import net.minecraftforge.fml.common.Loader
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import org.lwjgl.input.Keyboard
-import org.lwjgl.opengl.Display
 
 object LeapMenu : Module(
     name = "Leap Menu",
@@ -57,15 +56,15 @@ object LeapMenu : Module(
         val chest = (event.gui as? GuiChest)?.inventorySlots ?: return
         if (chest !is ContainerChest || !chest.name.equalsOneOf("Spirit Leap", "Teleport to Player") || leapTeammates.isEmpty() || leapTeammates.all { it == EMPTY }) return
 
-        val halfWidth = Display.getWidth() / 2f
-        val halfHeight = Display.getHeight() / 2f
+        val halfWidth = mc.displayWidth / 2f
+        val halfHeight = mc.displayHeight / 2f
 
         hoverHandler[0].handle(0f, 0f, halfWidth, halfHeight)
         hoverHandler[1].handle(halfWidth, 0f, halfWidth, halfHeight)
         hoverHandler[2].handle(0f, halfHeight, halfWidth, halfHeight)
         hoverHandler[3].handle(halfWidth, halfHeight, halfWidth, halfHeight)
 
-        NVGRenderer.beginFrame(Display.getWidth().toFloat(), Display.getHeight().toFloat())
+        NVGRenderer.beginFrame(mc.displayWidth.toFloat(), mc.displayHeight.toFloat())
         NVGRenderer.scale(scale, scale)
         NVGRenderer.translate(halfWidth / scale, halfHeight / scale)
         val boxWidth = 800f
@@ -74,12 +73,12 @@ object LeapMenu : Module(
             if (player == EMPTY) return@forEachIndexed
 
             val x = when (index) {
-                0, 2 -> -((Display.getWidth() - (boxWidth * 2f)) / 6f + boxWidth)
-                else -> ((Display.getWidth() - (boxWidth * 2f)) / 6f)
+                0, 2 -> -((mc.displayWidth - (boxWidth * 2f)) / 6f + boxWidth)
+                else -> ((mc.displayWidth - (boxWidth * 2f)) / 6f)
             }
             val y = when (index) {
-                0, 1 -> -((Display.getHeight() - (boxHeight * 2f)) / 8f + boxHeight)
-                else -> ((Display.getHeight() - (boxHeight * 2f)) / 8f)
+                0, 1 -> -((mc.displayHeight - (boxHeight * 2f)) / 8f + boxHeight)
+                else -> ((mc.displayHeight - (boxHeight * 2f)) / 8f)
             }
 
             val expandValue = hoverHandler[index].anim.get(0f, 15f, !hoverHandler[index].hasStarted)

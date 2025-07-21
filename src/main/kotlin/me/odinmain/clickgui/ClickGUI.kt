@@ -13,7 +13,6 @@ import me.odinmain.utils.ui.mouseX
 import me.odinmain.utils.ui.mouseY
 import me.odinmain.utils.ui.rendering.NVGRenderer
 import net.minecraftforge.common.MinecraftForge
-import org.lwjgl.opengl.Display
 import kotlin.math.sign
 
 /**
@@ -41,14 +40,14 @@ object ClickGUI : Screen() {
     }
 
     override fun draw() {
-        NVGRenderer.beginFrame(Display.getWidth().toFloat(), Display.getHeight().toFloat())
+        NVGRenderer.beginFrame(mc.displayWidth.toFloat(), mc.displayHeight.toFloat())
         if (openAnim.isAnimating()) {
             NVGRenderer.translate(0f, openAnim.get(-10f, 0f))
             NVGRenderer.globalAlpha(openAnim.get(0f, 1f))
         }
 
         for (i in 0 until panels.size) { panels[i].draw(mouseX, mouseY) }
-        SearchBar.draw(Display.getWidth() / 2f - 175f, Display.getHeight() - 110f, mouseX, mouseY)
+        SearchBar.draw(mc.displayWidth / 2f - 175f, mc.displayHeight - 110f, mouseX, mouseY)
         desc.render()
 
         NVGRenderer.endFrame()

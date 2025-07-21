@@ -32,7 +32,7 @@ class StartsWithSim(private val letter: String = listOf("A", "B", "C", "G", "D",
             return modMessage("§cThat item does not start with: \'$letter\'!")
         }
 
-        createNewGui { if (it == slot) ItemStack(item, stackSize, metadata).apply { addEnchantment(Enchantment.infinity, 1) } else it.stack }
+        createNewGui { if (it == slot && it.stack != null) ItemStack(item, stackSize, metadata).apply { addEnchantment(Enchantment.infinity, 1) } else it.stack }
         playTermSimSound()
         if (guiInventorySlots.none { it?.stack?.displayName?.startsWith(letter, true) == true && !it.stack.isItemEnchanted })
             TerminalSolver.lastTermOpened?.let { TerminalEvent.Solved(it).postAndCatch() }

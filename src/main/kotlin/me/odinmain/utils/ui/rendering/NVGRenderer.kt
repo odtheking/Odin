@@ -13,7 +13,6 @@ import me.odinmain.utils.render.Color.Companion.red
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.GL11
-import org.lwjgl.opengl.GL13
 import java.nio.ByteBuffer
 import kotlin.math.max
 import kotlin.math.min
@@ -28,7 +27,7 @@ object NVGRenderer : Lwjgl3Wrapper by Lwjgl3Loader.load() {
 
     private fun getInputStream(): Font {
         try {
-            return Font("Default", mc.resourceManager.getResource(ResourceLocation("odinmain", "font.ttf")).inputStream)
+            return Font("Default", mc.resourceManager.getResource(ResourceLocation("odinmain:font.ttf")).inputStream)
         } catch (_: Exception) { }
         return Font("Default", "/assets/odinmain/font.ttf")
     }
@@ -39,10 +38,6 @@ object NVGRenderer : Lwjgl3Wrapper by Lwjgl3Loader.load() {
     private val images = HashMap<Image, NVGImage>()
 
     private var scissor: Scissor? = null
-
-    private var depthState: Boolean? = null
-    private var activeTexture: Int? = null
-    private var textureState: Int? = null
 
     private var vg = -1L
 
@@ -59,9 +54,6 @@ object NVGRenderer : Lwjgl3Wrapper by Lwjgl3Loader.load() {
         GlStateManager.pushMatrix()
         if (!mc.framebuffer.isStencilEnabled) mc.framebuffer.enableStencil()
         GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS)
-        depthState = GL11.glIsEnabled(GL11.GL_DEPTH_TEST)
-        activeTexture = GL11.glGetInteger(GL13.GL_ACTIVE_TEXTURE)
-        textureState = GL11.glGetInteger(GL11.GL_TEXTURE_BINDING_2D)
         GlStateManager.disableAlpha()
 
         nvgBeginFrame(vg, width, height, 1f)
@@ -72,9 +64,9 @@ object NVGRenderer : Lwjgl3Wrapper by Lwjgl3Loader.load() {
     fun endFrame() {
         if (!drawing) throw IllegalStateException("[NVGRenderer] Not drawing, but called endFrame")
         nvgEndFrame(vg)
-        depthState?.let { if (it) GL11.glEnable( GL11.GL_DEPTH_TEST) else  GL11.glDisable( GL11.GL_DEPTH_TEST) }
-        activeTexture?.let { GL13.glActiveTexture(it) }
-        textureState?.let { GL11.glBindTexture(GL11.GL_TEXTURE_2D, it) }
+        GlStateManager.enableDepth()
+        GlStateManager.setActiveTexture(33984)
+        GlStateManager.bindTexture(5)
         GL11.glPopAttrib()
         GlStateManager.enableAlpha()
         GlStateManager.popMatrix()

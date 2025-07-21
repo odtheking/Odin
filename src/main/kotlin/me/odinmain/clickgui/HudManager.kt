@@ -8,7 +8,6 @@ import me.odinmain.utils.ui.Screen
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import org.lwjgl.input.Keyboard
-import org.lwjgl.opengl.Display
 import kotlin.math.sign
 import me.odinmain.utils.ui.mouseX as odinMouseX
 import me.odinmain.utils.ui.mouseY as odinMouseY
@@ -22,8 +21,8 @@ object HudManager : Screen() {
 
     override fun draw() {
         dragging?.let {
-            it.x = (odinMouseX + deltaX).coerceIn(0f, Display.getWidth() - (it.width * it.scale))
-            it.y = (odinMouseY + deltaY).coerceIn(0f, Display.getHeight() - (it.height * it.scale))
+            it.x = (odinMouseX + deltaX).coerceIn(0f, mc.displayWidth - (it.width * it.scale))
+            it.y = (odinMouseY + deltaY).coerceIn(0f, mc.displayHeight - (it.height * it.scale))
         }
 
         GlStateManager.pushMatrix()

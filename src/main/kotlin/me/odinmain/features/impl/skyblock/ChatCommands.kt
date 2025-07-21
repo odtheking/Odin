@@ -129,7 +129,7 @@ object ChatCommands : Module(
                 }
             }
             "allinvite", "allinv" -> if (allinvite && channel == ChatChannel.PARTY) sendCommand("p settings allinvite")
-            "pt", "ptme", "transfer" -> if (pt && channel == ChatChannel.PARTY) sendCommand("p transfer $name")
+            "pt", "ptme", "transfer" -> if (pt && channel == ChatChannel.PARTY) sendCommand("p transfer ${words.getOrNull(1) ?: name}")
             "downtime", "dt" -> {
                 if (!dt || channel != ChatChannel.PARTY) return
                 val reason = words.drop(1).joinToString(" ").takeIf { it.isNotBlank() } ?: "No reason given"

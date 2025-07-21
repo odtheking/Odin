@@ -2,7 +2,6 @@ package me.odinmain.utils.ui
 
 import me.odinmain.OdinMain.mc
 import org.lwjgl.input.Mouse
-import org.lwjgl.opengl.Display
 
 inline val mouseX: Float get() =
     Mouse.getX().toFloat()
@@ -18,6 +17,6 @@ fun isAreaHovered(x: Float, y: Float, w: Float): Boolean =
 
 fun getQuadrant(): Int =
     when {
-        mouseX >= Display.getWidth() / 2 -> if (mouseY >= Display.getHeight() / 2) 4 else 2
-        else -> if (mouseY >= Display.getHeight() / 2) 3 else 1
+        mouseX >= mc.displayWidth / 2 -> if (mouseY >= mc.displayHeight / 2) 4 else 2
+        else -> if (mouseY >= mc.displayHeight / 2) 3 else 1
     }
