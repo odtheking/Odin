@@ -29,10 +29,11 @@ object RenderUtils2D {
 
     private val modelViewMatrix: FloatBuffer = BufferUtils.createFloatBuffer(16)
     private val projectionMatrix: FloatBuffer = BufferUtils.createFloatBuffer(16)
-    private val viewportDims: IntBuffer = BufferUtils.createIntBuffer(16)
+    private var viewportDims: IntBuffer = BufferUtils.createIntBuffer(16)
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     fun onRenderWorld(event: RenderWorldLastEvent) {
+        if (HighlightRenderer.entities[HighlightRenderer.HighlightType.Box2d]?.isEmpty() == true) return
         val (x, y, z) = mc.thePlayer?.renderVec ?: return
         GlStateManager.pushMatrix()
         GlStateManager.translate(-x, -y, -z)
@@ -41,7 +42,13 @@ object RenderUtils2D {
         GL11.glGetFloat(GL11.GL_PROJECTION_MATRIX, projectionMatrix)
 
         GlStateManager.popMatrix()
-        GL11.glGetInteger(GL11.GL_VIEWPORT, viewportDims)
+        viewportDims = BufferUtils.createIntBuffer(4).apply {
+            put(0)
+            put(0)
+            put(mc.displayWidth)
+            put(mc.displayHeight)
+            flip()
+        }
     }
 
     /**
