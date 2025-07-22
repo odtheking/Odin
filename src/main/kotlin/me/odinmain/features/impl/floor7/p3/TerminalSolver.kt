@@ -53,7 +53,7 @@ object TerminalSolver : Module(
     private val cancelMelodySolver by BooleanSetting("Stop Melody Solver", false, desc = "Stops rendering the melody solver.")
     val showNumbers by BooleanSetting("Show Numbers", true, desc = "Shows numbers in the order terminal.")
     private val terminalReloadThreshold by NumberSetting("Reload Threshold", 600, 300, 1000, 10, unit = "ms", desc = "The amount of time in seconds before the terminal reloads.")
-    val customTermSize by NumberSetting("Custom Term Size", 1f, 1, 3, 0.2, desc = "The size of the custom terminal GUI.").withDependency { renderType == 3 }
+    val customTermSize by NumberSetting("Custom Term Size", 1f, 0.5f, 3f, 0.1f, desc = "The size of the custom terminal GUI.").withDependency { renderType == 3 }
     val customAnimations by BooleanSetting("Custom Animations", true, desc = "Enables animations for the custom terminal gui.").withDependency { renderType == 3 }
 
     private val showRemoveWrongSettings by DropdownSetting("Render Wrong Settings").withDependency { renderType == 1 }
