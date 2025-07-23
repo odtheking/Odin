@@ -261,7 +261,9 @@ fun formatNumber(unFormatNumber: Any): String {
     }
 }
 
+private val oneDecimalFormat = DecimalFormat("#.#")
+
 fun Double.formatOneOrNoDecimal(): String {
-    val df = DecimalFormat("#.#")
-    return df.format(this)
+    return oneDecimalFormat.format(this)
+}
 }
