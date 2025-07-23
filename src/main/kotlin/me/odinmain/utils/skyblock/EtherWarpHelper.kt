@@ -74,9 +74,7 @@ object EtherWarpHelper {
             val currentBlock = chunk.getBlock(BlockPos(x, y, z))
             val currentBlockId = Block.getIdFromBlock(currentBlock)
 
-            if (currentBlockId != 0) {
-                if (validEtherwarpFeetIds.get(currentBlockId)) return EtherPos(false, BlockPos(x, y, z), currentBlock.blockState)
-
+            if (!validEtherwarpFeetIds.get(currentBlockId)) {
                 val footBlockId = Block.getIdFromBlock(chunk.getBlock(BlockPos(x, y + 1, z)))
                 if (!validEtherwarpFeetIds.get(footBlockId)) return EtherPos(false, BlockPos(x, y, z), currentBlock.blockState)
 
