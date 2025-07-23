@@ -150,14 +150,14 @@ object ExtraStats : Module(
         var combatStats: MutableList<String> = mutableListOf(),
         var damage: String? = "0",
         var damagePB: Boolean = false,
-        var enemyKill : String? = "0",
-        var enemyKillPB : Boolean = false,
-        var heal : String? = "0",
-        var healPB : Boolean = false,
+        var enemyKill: String? = "0",
+        var enemyKillPB: Boolean = false,
+        var heal: String? = "0",
+        var healPB: Boolean = false,
         var skillStats: MutableList<String> = mutableListOf(),
-        var deaths: Int =0,
+        var deaths: Int = 0,
         var secretsFound: Int = 0,
-        var bits : String? =null
+        var bits: String? = null
     ) {
         fun reset() {
             scoreLetter = null
