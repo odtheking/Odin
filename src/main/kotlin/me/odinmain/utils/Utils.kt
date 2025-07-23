@@ -247,8 +247,9 @@ fun EntityLivingBase?.getSBMaxHealth(): Float {
 
 fun formatNumber(unFormatNumber: Any): String {
     val number: Double = when (unFormatNumber) {
-        is String -> { unFormatNumber.replace(",", "").toDouble() }
-        else -> { unFormatNumber.toString().toDouble() }
+        is String -> unFormatNumber.replace(",", "").toDoubleOrNull() ?: 0.0
+        is Number -> unFormatNumber.toDouble()
+        else -> unFormatNumber.toString().toDoubleOrNull() ?: 0.0
     }
 
     return when {
