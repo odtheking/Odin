@@ -38,9 +38,8 @@ object ExtraStats : Module(
 
         if (teamStats != 0)
             modMessage(getCenteredText(
-                if (teamStats==1 || teamStats==3) "§b${extraStats.secretsFound}§r-§c${extraStats.deaths}" else "" +
-                if (teamStats==3) " §r/ " else "" +
-                if (teamStats==2 || teamStats==3) "§b${DungeonUtils.secretCount}§r-§6${DungeonUtils.cryptCount}§r-§c${DungeonUtils.deathCount}" else ""
+                (if (teamStats==1 || teamStats==3) "§b${extraStats.secretsFound}§r-§c${extraStats.deaths}" else "") + (if (teamStats==3) " §r/ " else "") +
+                        (if (teamStats==2 || teamStats==3) "§b${DungeonUtils.secretCount}§r-§6${DungeonUtils.cryptCount}§r-§c${DungeonUtils.deathCount}" else "")
             ), prefix = "" , chatStyle = createClickStyle(ClickEvent.Action.SUGGEST_COMMAND, extraStats.skillStats.joinToString("\n")))
 
         if (showTeammates) modMessage(getCenteredText(if (DungeonUtils.dungeonTeammatesNoSelf.isNotEmpty()) DungeonUtils.dungeonTeammatesNoSelf.joinToString(separator = "§r, ") { "§${it.clazz.colorCode}${it.name}" } else "§3Solo"), prefix = "")
