@@ -36,11 +36,15 @@ object ExtraStats : Module(
         modMessage(getCenteredText("${extraStats.xp.firstOrNull()}${if (showClassEXP) "  ${extraStats.xp.getOrNull(1)}" else "" }"), prefix = "", chatStyle = createClickStyle(ClickEvent.Action.SUGGEST_COMMAND, extraStats.xp.joinToString("\n")))
         if (showCombatStats) modMessage(getCenteredText("§e${extraStats.damage}§r-§b${extraStats.enemyKill}§r-§a${extraStats.heal}"), prefix = "", chatStyle = createClickStyle(ClickEvent.Action.SUGGEST_COMMAND, extraStats.combatStats.joinToString("\n")))
 
-        if (teamStats != 0)
-            modMessage(getCenteredText(
-                (if (teamStats==1 || teamStats==3) "§b${extraStats.secretsFound}§r-§c${extraStats.deaths}" else "") + (if (teamStats==3) " §r/ " else "") +
-                        (if (teamStats==2 || teamStats==3) "§b${DungeonUtils.secretCount}§r-§6${DungeonUtils.cryptCount}§r-§c${DungeonUtils.deathCount}" else "")
-            ), prefix = "" , chatStyle = createClickStyle(ClickEvent.Action.SUGGEST_COMMAND, extraStats.skillStats.joinToString("\n")))
+        if (teamStats != 0) {
+            val statsText = when (teamStats) {
+                1 -> "§b${extraStats.secretsFound}§r-§c${extraStats.deaths}" // Personal
+                2 -> "§b${DungeonUtils.secretCount}§r-§6${DungeonUtils.cryptCount}§r-§c${DungeonUtils.deathCount}" // Team
+                3 -> "§b${extraStats.secretsFound}§r-§c${extraStats.deaths} §r/ §b${DungeonUtils.secretCount}§r-§6${DungeonUtils.cryptCount}§r-§c${DungeonUtils.deathCount}" // Both
+                else -> ""
+            }
+            modMessage(getCenteredText(statsText), prefix = "" , chatStyle = createClickStyle(ClickEvent.Action.SUGGEST_COMMAND, extraStats.skillStats.joinToString("\n")))
+        }
 
         if (showTeammates) modMessage(getCenteredText(if (DungeonUtils.dungeonTeammatesNoSelf.isNotEmpty()) DungeonUtils.dungeonTeammatesNoSelf.joinToString(separator = "§r, ") { "§${it.clazz.colorCode}${it.name}" } else "§3Solo"), prefix = "")
         modMessage("", prefix = "")
