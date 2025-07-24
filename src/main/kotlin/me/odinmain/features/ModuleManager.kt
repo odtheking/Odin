@@ -87,7 +87,7 @@ object ModuleManager {
     fun addModules(vararg module: Module) {
         for (i in module) {
             modules.add(i)
-            i.key?.let { i.register(KeybindSetting("Keybind", it, "Toggles the module")) }
+            i.key?.let { i.register(KeybindSetting("Keybind", it, "Toggles the module").apply { value.onPress = { i.onKeybind() } }) }
             for (setting in i.settings) {
                 if (setting is KeybindSetting) keybindSettingsCache.add(setting)
                 if (setting is HUDSetting) hudSettingsCache.add(setting)
