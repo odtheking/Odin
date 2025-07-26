@@ -116,6 +116,9 @@ object DungeonListener {
                     "mimic killed", "mimic slain", "mimic killed!", "mimic dead", "mimic dead!", "\$skytils-dungeon-score-mimic\$", Mimic.mimicMessage ->
                         dungeonStats.mimicKilled = true
 
+                    "prince killed", "prince slain", "prince killed!", "prince dead", "prince dead!", "\$skytils-dungeon-score-prince\$", Mimic.princeMessage ->
+                        dungeonStats.princeKilled = true
+
                     "blaze done!", "blaze done", "blaze puzzle solved!" ->
                         puzzles.find { it == Puzzle.BLAZE }.let { it?.status = PuzzleStatus.Completed }
                 }
@@ -203,6 +206,7 @@ object DungeonListener {
         var percentCleared: Int = 0,
         var elapsedTime: String = "0s",
         var mimicKilled: Boolean = false,
+        var princeKilled: Boolean = false,
         var doorOpener: String = "Unknown",
         var bloodDone: Boolean = false,
         var puzzleCount: Int = 0,
