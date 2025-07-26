@@ -52,8 +52,6 @@ object Mimic : Module(
             this is EntityOtherPlayerMP && getEntityTexture(this) == PRINCE_TEXTURE -> princeKilled()
             this is EntityZombie && isChild && (0..3).all { getCurrentArmor(it) == null } -> mimicKilled()
         }
-
-        if (DungeonUtils.inDungeons && this is EntityZombie && isChild && (0..3).all { getCurrentArmor(it) == null }) mimicKilled()
     }
 
     @SubscribeEvent
