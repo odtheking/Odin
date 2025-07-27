@@ -112,10 +112,10 @@ object ChocolateFactory : Module(
         val texture: String, val type: String, val color: Color
     ) {
         Breakfast(BunnyEggTextures.BREAKFAST_EGG_TEXTURE, "§6Breakfast Egg", Colors.MINECRAFT_GOLD),
-        Lunch(BunnyEggTextures.LUNCH_EGG_TEXTURE, "§9Lunch Egg ", Colors.MINECRAFT_BLUE),
+        Lunch(BunnyEggTextures.LUNCH_EGG_TEXTURE, "§9Lunch Egg", Colors.MINECRAFT_BLUE),
         Dinner(BunnyEggTextures.DINNER_EGG_TEXTURE, "§aDinner Egg", Colors.MINECRAFT_GREEN),
         Brunch(BunnyEggTextures.BREAKFAST_EGG_TEXTURE, "§6Brunch Egg", Colors.MINECRAFT_GOLD),
-        Dejeuner(BunnyEggTextures.LUNCH_EGG_TEXTURE, "§9Déjeuner Egg ", Colors.MINECRAFT_BLUE),
+        Dejeuner(BunnyEggTextures.LUNCH_EGG_TEXTURE, "§9Déjeuner Egg", Colors.MINECRAFT_BLUE),
         Supper(BunnyEggTextures.DINNER_EGG_TEXTURE, "§aSupper Egg", Colors.MINECRAFT_GREEN),
     }
 
