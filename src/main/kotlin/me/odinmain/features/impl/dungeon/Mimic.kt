@@ -14,7 +14,6 @@ import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.getSkullValue
 import me.odinmain.utils.skyblock.partyMessage
 import me.odinmain.utils.toAABB
-import me.odinmain.utils.writeToClipboard
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.entity.monster.EntityZombie
 import net.minecraft.entity.player.EntityPlayer
@@ -33,7 +32,7 @@ object Mimic : Module(
     private val color by ColorSetting("Color", Colors.MINECRAFT_RED.withAlpha(0.5f), allowAlpha = true, desc = "The color of the box.").withDependency { mimicBox }
     private val lineWidth by NumberSetting("Line Width", 2f, 0.1f, 10f, 0.1f, desc = "The width of the box's lines.").withDependency { mimicBox }
 
-    private val princeDetection by BooleanSetting("Prince Detection", default = false, desc = "Enables prince detection. Only enable if you have 100% extra score chance from princes.")
+    private val princeDetection by BooleanSetting("Max Reborn Attribute", default = false, desc = "Enables prince detection. Only enable if you have 100% extra score chance from princes.")
     private val princeMessageToggle by BooleanSetting("Toggle Prince Message", false, desc = "Toggles the prince killed message.").withDependency { princeDetection }
     val princeMessage by StringSetting("Prince Message", "Prince Killed!", 128, desc = "Message sent when prince is detected as killed.").withDependency { princeDetection && princeMessageToggle }
     val range by NumberSetting("Range", 10f, 2f, 30f, 1f, desc = "The range at which princes will be detected.", unit = " Blocks").withDependency { princeDetection && princeMessageToggle }
