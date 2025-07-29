@@ -32,7 +32,7 @@ object GyroWand : Module(
     @SubscribeEvent
     fun onRenderWorld(event: RenderWorldLastEvent) {
         if (!isHolding("GYROKINETIC_WAND")) return
-        val position = EtherWarpHelper.getEtherPos(distance = 25.0).pos?.takeIf { !isAir(it) }?.toVec3() ?: return
+        val position = EtherWarpHelper.getEtherPos(distance = 25.0, etherWarp = false).pos?.takeIf { !isAir(it) }?.toVec3() ?: return
 
         Renderer.drawCylinder(
             position.addVector(0.5, 1.0, 0.5),

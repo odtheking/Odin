@@ -28,21 +28,21 @@ object EtherWarpHelper {
      * @param pitch The pitch angle representing the player's vertical viewing direction.
      * @return An `EtherPos` representing the calculated position in the "ether" or `EtherPos.NONE` if the player is not present.
      */
-    fun getEtherPos(pos: Vec3, yaw: Float, pitch: Float, distance: Double = 60.0, returnEnd: Boolean = false): EtherPos {
+    fun getEtherPos(pos: Vec3, yaw: Float, pitch: Float, distance: Double = 60.0, etherWarp: Boolean = false, returnEnd: Boolean = false): EtherPos {
         val endPos = getLook(yaw = yaw, pitch = pitch).normalize().multiply(factor = distance).add(pos)
 
-        return traverseVoxels(pos, endPos).takeUnless { it == EtherPos.NONE && returnEnd } ?: EtherPos(true, endPos.toBlockPos(), null)
+        return traverseVoxels(pos, endPos, etherWarp).takeUnless { it == EtherPos.NONE && returnEnd } ?: EtherPos(true, endPos.toBlockPos(), null)
     }
 
-    fun getEtherPos(positionLook: PositionLook = PositionLook(mc.thePlayer.positionVector, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch), distance: Double =  56.0 + mc.thePlayer.heldItem.getTunerBonus): EtherPos {
-        return getEtherPos(getPositionEyes(positionLook.pos), positionLook.yaw, positionLook.pitch, distance)
+    fun getEtherPos(positionLook: PositionLook = PositionLook(mc.thePlayer.positionVector, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch), distance: Double =  56.0 + mc.thePlayer.heldItem.getTunerBonus, etherWarp: Boolean = false): EtherPos {
+        return getEtherPos(getPositionEyes(positionLook.pos), positionLook.yaw, positionLook.pitch, distance, etherWarp)
     }
 
     /**
      * Traverses voxels from start to end and returns the first non-air block it hits.
      * @author Bloom
      */
-    private fun traverseVoxels(start: Vec3, end: Vec3): EtherPos {
+    private fun traverseVoxels(start: Vec3, end: Vec3, etherWarp: Boolean): EtherPos {
         val (x0, y0, z0) = start
         val (x1, y1, z1) = end
 
@@ -74,8 +74,8 @@ object EtherWarpHelper {
             val currentBlock = chunk.getBlock(BlockPos(x, y, z))
             val currentBlockId = Block.getIdFromBlock(currentBlock)
 
-            if (currentBlockId != 0) {
-                if (validEtherwarpFeetIds.get(currentBlockId)) return EtherPos(false, BlockPos(x, y, z), currentBlock.blockState)
+            if ((!validEtherwarpFeetIds.get(currentBlockId) && etherWarp) || (currentBlockId != 0 && !etherWarp)) {
+                if (!etherWarp && validEtherwarpFeetIds.get(currentBlockId)) return EtherPos(false, BlockPos(x, y, z), currentBlock.blockState)
 
                 val footBlockId = Block.getIdFromBlock(chunk.getBlock(BlockPos(x, y + 1, z)))
                 if (!validEtherwarpFeetIds.get(footBlockId)) return EtherPos(false, BlockPos(x, y, z), currentBlock.blockState)

@@ -99,7 +99,7 @@ object EtherWarpHelper : Module(
 
         if (!render) return
 
-        etherPos = EtherWarpHelper.getEtherPos(positionLook)
+        etherPos = EtherWarpHelper.getEtherPos(positionLook, etherWarp = true)
         val succeeded =
             etherPos.succeeded && (!interactBlocks || mc.objectMouseOver?.typeOfHit != MovingObjectType.BLOCK || etherPos.state?.block?.let { invalidBlocks.get(getIdFromBlock(it)) } != true)
 
