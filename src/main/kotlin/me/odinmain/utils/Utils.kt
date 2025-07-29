@@ -266,4 +266,3 @@ private val oneDecimalFormat = DecimalFormat("#.#")
 fun Double.formatOneOrNoDecimal(): String {
     return oneDecimalFormat.format(this)
 }
-}
