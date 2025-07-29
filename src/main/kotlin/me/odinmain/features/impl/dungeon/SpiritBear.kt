@@ -50,8 +50,14 @@ object SpiritBear : Module(
     private var timer = -1 // state: -1=NotSpawned, 0=Alive, 1+=Spawning
 
     init {
-        onPacket<S32PacketConfirmTransaction> { if (timer > 0) timer-- }
-        onWorldLoad { kills = 0; timer = -1 }
+        onPacket<S32PacketConfirmTransaction> {
+            if (timer > 0) timer--
+        }
+        
+        onWorldLoad {
+            kills = 0
+            timer = -1
+        }
     }
 
     @SubscribeEvent
