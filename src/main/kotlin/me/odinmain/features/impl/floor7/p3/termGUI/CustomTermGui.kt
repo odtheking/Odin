@@ -46,7 +46,7 @@ abstract class TermGui(val name: String) {
     fun mouseClicked(button: Int) {
         getHoveredItem()?.let { slot ->
             TerminalSolver.currentTerm?.let {
-                if (System.currentTimeMillis() - it.timeOpened >= 300 && !GuiEvent.CustomTermGuiClick(slot, button).postAndCatch() && it.canClick(slot, button)) {
+                if (System.currentTimeMillis() - it.timeOpened >= 350 && !GuiEvent.CustomTermGuiClick(slot, button).postAndCatch() && it.canClick(slot, button)) {
                     it.click(slot, if (button == 0) ClickType.Middle else ClickType.Right, hideClicked && !it.isClicked)
                     if (TerminalSolver.customAnimations) colorAnimations[slot]?.start()
                 }
