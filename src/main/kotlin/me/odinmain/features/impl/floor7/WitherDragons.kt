@@ -11,6 +11,7 @@ import me.odinmain.features.impl.floor7.DragonCheck.dragonSpawn
 import me.odinmain.features.impl.floor7.DragonCheck.dragonSprayed
 import me.odinmain.features.impl.floor7.DragonCheck.dragonUpdate
 import me.odinmain.features.impl.floor7.DragonCheck.lastDragonDeath
+import me.odinmain.features.impl.floor7.KingRelics.relicEquipment
 import me.odinmain.features.impl.floor7.KingRelics.relicsBlockPlace
 import me.odinmain.features.impl.floor7.KingRelics.relicsOnMessage
 import me.odinmain.features.impl.floor7.KingRelics.relicsOnWorldLast
@@ -113,6 +114,7 @@ object WitherDragons : Module(
 
         onPacket<S04PacketEntityEquipment> ({ DungeonUtils.getF7Phase() == M7Phases.P5 && enabled }) {
             dragonSprayed(it)
+            if (relicAnnounce || relicAnnounceTime) relicEquipment(it)
         }
 
         onPacket<S0FPacketSpawnMob> ({ DungeonUtils.getF7Phase() == M7Phases.P5 && enabled }) {

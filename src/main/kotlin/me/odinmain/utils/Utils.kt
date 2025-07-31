@@ -21,7 +21,9 @@ import net.minecraft.util.ChatComponentText
 import net.minecraft.util.ChatStyle
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.eventhandler.Event
+import java.text.DecimalFormat
 import java.util.*
+import kotlin.math.absoluteValue
 import kotlin.math.pow
 import kotlin.math.round
 
@@ -241,4 +243,26 @@ fun EntityPlayer?.isOtherPlayer(): Boolean {
 
 fun EntityLivingBase?.getSBMaxHealth(): Float {
     return this?.getEntityAttribute(SharedMonsterAttributes.maxHealth)?.baseValue?.toFloat() ?: 0f
+}
+
+fun formatNumber(unFormatNumber: Any): String {
+    val number: Double = when (unFormatNumber) {
+        is String -> unFormatNumber.replace(",", "").toDoubleOrNull() ?: 0.0
+        is Number -> unFormatNumber.toDouble()
+        else -> unFormatNumber.toString().toDoubleOrNull() ?: 0.0
+    }
+
+    return when {
+        number.absoluteValue < 1000 -> number.formatOneOrNoDecimal()
+        number.absoluteValue >= 1_000_000_000 -> (number / 1_000_000_000).formatOneOrNoDecimal()+"B"
+        number.absoluteValue >= 1_000_000 -> (number / 1_000_000).formatOneOrNoDecimal()+"M"
+        number.absoluteValue >= 1000 -> (number / 1000).formatOneOrNoDecimal()+"K"
+        else -> number.toString()
+    }
+}
+
+private val oneDecimalFormat = DecimalFormat("#.#")
+
+fun Double.formatOneOrNoDecimal(): String {
+    return oneDecimalFormat.format(this)
 }
