@@ -1,37 +1,40 @@
 package me.odinmain.utils
 
 import me.odinmain.events.impl.ChatPacketEvent
+import me.odinmain.events.impl.PacketEvent
 import me.odinmain.features.impl.skyblock.Splits
 import me.odinmain.features.impl.skyblock.Splits.sendSplits
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonListener
+import net.minecraft.network.play.server.S32PacketConfirmTransaction
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
-data class Split(val regex: Regex, val name: String, var time: Long = 0L)
+data class Split(val regex: Regex, val name: String, var ticks: Long = 0L)
 data class SplitsGroup(val splits: List<Split>, val personalBest: PersonalBest?)
 
 object SplitsManager {
 
     var currentSplits: SplitsGroup = SplitsGroup(emptyList(), null)
+    private var tickCounter: Long = 0L
 
     @SubscribeEvent(receiveCanceled = true)
     fun onChatPacket(event: ChatPacketEvent) {
         val currentSplit = currentSplits.splits.find { it.regex.matches(event.message) } ?: return
-        if (currentSplit.time != 0L) return
-        currentSplit.time = System.currentTimeMillis()
+        if (currentSplit.ticks != 0L) return
+        currentSplit.ticks = tickCounter
 
         val index = currentSplits.splits.indexOf(currentSplit).takeIf { it != 0 } ?: return
-        val currentSplitTime = (currentSplit.time - currentSplits.splits[index - 1].time) / 1000.0
+        val currentSplitTime = (currentSplit.ticks - currentSplits.splits[index - 1].ticks) / 20.0
 
         if (index == currentSplits.splits.size - 1) {
             val (times, _) = getAndUpdateSplitsTimes(currentSplits)
             runIn(10) {
                 currentSplits.personalBest?.time(index - 1, currentSplitTime, "s§7!", "§6${currentSplits.splits[index - 1].name} §7took §6", addPBString = true, addOldPBString = true, alwaysSendPB = true, sendOnlyPB = Splits.sendOnlyPB, sendMessage = Splits.enabled)
-                currentSplits.personalBest?.time(index, times.last() / 1000.0, "s§7!", "§6Total time §7took §6", addPBString = true, addOldPBString = true, alwaysSendPB = true, sendOnlyPB = Splits.sendOnlyPB, sendMessage = Splits.enabled)
+                currentSplits.personalBest?.time(index, times.last() / 20.0, "s§7!", "§6Total time §7took §6", addPBString = true, addOldPBString = true, alwaysSendPB = true, sendOnlyPB = Splits.sendOnlyPB, sendMessage = Splits.enabled)
                 times.forEachIndexed { i, it ->
                     val name = if (i == currentSplits.splits.size - 1) "Total" else currentSplits.splits.getSafe(i)?.name
-                    if (sendSplits && Splits.enabled) modMessage("§6$name §7took §6${formatTime(it)} §7to complete.")
+                    if (sendSplits && Splits.enabled) modMessage("§6$name §7took §6${formatTime((it / 20f).toLong() * 1000L)} §7to complete.")
                 }
             }
         } else currentSplits.personalBest?.time(index - 1, currentSplitTime, "s§7!", "§6${currentSplits.splits[index - 1].name} §7took §6", addPBString = true, addOldPBString = true, alwaysSendPB = true, sendOnlyPB = Splits.sendOnlyPB, sendMessage = Splits.enabled)
@@ -41,6 +44,7 @@ object SplitsManager {
     fun onChat(event: ChatPacketEvent) {
         if (event.message != "Starting in 1 second.") return
 
+        tickCounter = 0L
         currentSplits = when (LocationUtils.currentArea) {
             Island.Dungeon -> {
                 val floor = DungeonListener.floor ?: return modMessage("§cFailed to get dungeon floor!")
@@ -52,16 +56,16 @@ object SplitsManager {
                         Split(Regex("\\[BOSS] The Watcher: You have proven yourself\\. You may pass\\."), "§dPortal Entry")
                     ))
                     add(Split(Regex("^\\s*☠ Defeated (.+) in 0?([\\dhms ]+?)\\s*(\\(NEW RECORD!\\))?\$"), "§1Total"))
-                    SplitsGroup(map { it.copy(time = 0L) }, floor.personalBest)
+                    SplitsGroup(map { it.copy(ticks = 0L) }, floor.personalBest)
                 }
             }
 
             Island.Kuudra -> when (KuudraUtils.kuudraTier) {
-                5 -> SplitsGroup(kuudraT5SplitsGroup.map { it.copy(time = 0L) }, kuudraT5PBs)
-                4 -> SplitsGroup(kuudraSplitsGroup.map   { it.copy(time = 0L) }, kuudraT4PBs)
-                3 -> SplitsGroup(kuudraSplitsGroup.map   { it.copy(time = 0L) }, kuudraT3PBs)
-                2 -> SplitsGroup(kuudraSplitsGroup.map   { it.copy(time = 0L) }, kuudraT2PBs)
-                1 -> SplitsGroup(kuudraSplitsGroup.map   { it.copy(time = 0L) }, kuudraT1PBs)
+                5 -> SplitsGroup(kuudraT5SplitsGroup.map { it.copy(ticks = 0L) }, kuudraT5PBs)
+                4 -> SplitsGroup(kuudraSplitsGroup.map   { it.copy(ticks = 0L) }, kuudraT4PBs)
+                3 -> SplitsGroup(kuudraSplitsGroup.map   { it.copy(ticks = 0L) }, kuudraT3PBs)
+                2 -> SplitsGroup(kuudraSplitsGroup.map   { it.copy(ticks = 0L) }, kuudraT2PBs)
+                1 -> SplitsGroup(kuudraSplitsGroup.map   { it.copy(ticks = 0L) }, kuudraT1PBs)
                 else -> SplitsGroup(emptyList(), null)
             }
 
@@ -70,16 +74,16 @@ object SplitsManager {
     }
 
     fun getAndUpdateSplitsTimes(currentSplits: SplitsGroup): Pair<List<Long>, Int> {
-        if (currentSplits.splits.isEmpty() || currentSplits.splits[0].time == 0L) return List(currentSplits.splits.size) { 0L } to -1
-        val latestTime = if (currentSplits.splits.last().time == 0L) System.currentTimeMillis() else currentSplits.splits.last().time
-        val times = MutableList(currentSplits.splits.size) { 0L }.apply { this[size - 1] = latestTime - currentSplits.splits.first().time }
+        if (currentSplits.splits.isEmpty() || currentSplits.splits[0].ticks == 0L) return List(currentSplits.splits.size) { 0L } to -1
+        val latestTick = if (currentSplits.splits.last().ticks == 0L) tickCounter else currentSplits.splits.last().ticks
+        val times = MutableList(currentSplits.splits.size) { 0L }.apply { this[size - 1] = latestTick - currentSplits.splits.first().ticks }
         var current = currentSplits.splits.size
         for (i in 0 until currentSplits.splits.size - 1) {
-            if (currentSplits.splits[i + 1].time != 0L)
-                times[i] = currentSplits.splits[i + 1].time - currentSplits.splits[i].time
+            if (currentSplits.splits[i + 1].ticks != 0L)
+                times[i] = currentSplits.splits[i + 1].ticks - currentSplits.splits[i].ticks
             else {
                 current = i
-                times[i] = latestTime - currentSplits.splits[i].time
+                times[i] = latestTick - currentSplits.splits[i].ticks
                 break
             }
         }
@@ -89,6 +93,12 @@ object SplitsManager {
     @SubscribeEvent
     fun onWorldLoad(event: WorldEvent.Load) {
         currentSplits = SplitsGroup(mutableListOf(), null)
+        tickCounter = 0L
+    }
+
+    @SubscribeEvent
+    fun onPacketReceived(event: PacketEvent.Receive) {
+        if (event.packet is S32PacketConfirmTransaction) tickCounter++
     }
 }
 

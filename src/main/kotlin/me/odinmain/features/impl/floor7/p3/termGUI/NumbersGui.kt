@@ -5,10 +5,10 @@ import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.render.Colors
 import me.odinmain.utils.ui.rendering.NVGRenderer
 
-object NumbersGui : TermGui("Click in order!") {
+object NumbersGui : TermGui() {
 
     override fun renderTerminal(slotCount: Int) {
-        renderBackground(slotCount)
+        renderBackground(slotCount, 7)
 
         for (index in 9..slotCount) {
             if ((index % 9).equalsOneOf(0, 8)) continue
@@ -20,16 +20,18 @@ object NumbersGui : TermGui("Click in order!") {
                 0 -> TerminalSolver.orderColor
                 1 -> TerminalSolver.orderColor2
                 2 -> TerminalSolver.orderColor3
-                else -> Colors.gray38
+                else -> Colors.TRANSPARENT
             }
 
-            val (slotX, slotY) = renderSlot(index, color, TerminalSolver.orderColor).let {
-                it.first + (50f * TerminalSolver.customTermSize  - NVGRenderer.textWidth(amount.toString(), 30f * TerminalSolver.customTermSize, NVGRenderer.defaultFont)) / 2f to
-                        it.second + (50f * TerminalSolver.customTermSize  / 2f + 30f * TerminalSolver.customTermSize  / 2f) / 2f - 6f * TerminalSolver.customTermSize
-            }
+            val (slotX, slotY) = renderSlot(index, color, TerminalSolver.orderColor)
+            val slotSize = 55f * TerminalSolver.customTermSize
+            val fontSize = 30f * TerminalSolver.customTermSize
+
+            val textX = slotX + (slotSize - NVGRenderer.textWidth(amount.toString(), fontSize, NVGRenderer.defaultFont)) / 2f
+            val textY = slotY + (slotSize + fontSize) / 2f - fontSize * 0.9f
 
             if (TerminalSolver.showNumbers && solutionIndex != -1)
-                NVGRenderer.text(amount.toString(), slotX, slotY, 30f * TerminalSolver.customTermSize, Colors.WHITE.rgba, NVGRenderer.defaultFont)
+                NVGRenderer.textShadow(amount.toString(), textX, textY, 30f * TerminalSolver.customTermSize, Colors.WHITE.rgba, NVGRenderer.defaultFont)
         }
     }
 }

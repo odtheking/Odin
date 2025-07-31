@@ -55,6 +55,8 @@ object TerminalSolver : Module(
     private val terminalReloadThreshold by NumberSetting("Reload Threshold", 600, 300, 1000, 10, unit = "ms", desc = "The amount of time in seconds before the terminal reloads.")
     val customTermSize by NumberSetting("Custom Term Size", 1f, 0.5f, 3f, 0.1f, desc = "The size of the custom terminal GUI.").withDependency { renderType == 3 }
     val customAnimations by BooleanSetting("Custom Animations", true, desc = "Enables animations for the custom terminal gui.").withDependency { renderType == 3 }
+    val roundness by NumberSetting("Roundness", 9f, 0f, 15f, 1f, desc = "The roundness of the custom terminal gui.").withDependency { renderType == 3 }
+    val gap by NumberSetting("Gap", 5f, 0f, 15f, 1f, desc = "The gap between the slots in the custom terminal gui.").withDependency { renderType == 3 }
 
     private val showRemoveWrongSettings by DropdownSetting("Render Wrong Settings").withDependency { renderType == 1 }
     private val removeWrong by BooleanSetting("Stop Rendering Wrong", true, desc = "Main toggle for stopping the rendering of incorrect items in terminals.").withDependency { renderType == 1 && showRemoveWrongSettings }
@@ -65,7 +67,7 @@ object TerminalSolver : Module(
     private val removeWrongMelody by BooleanSetting("Stop Melody", true, desc = "Stops rendering wrong items in the melody terminal.").withDependency { renderType == 1 && showRemoveWrongSettings && removeWrong }
 
     private val showColors by DropdownSetting("Color Settings")
-    private val backgroundColor by ColorSetting("Background", Colors.MINECRAFT_DARK_GRAY, true, desc = "Background color of the terminal solver.").withDependency { renderType == 0 && showColors }
+    val backgroundColor by ColorSetting("Background", Colors.gray26, true, desc = "Background color of the terminal solver.").withDependency { renderType.equalsOneOf(1, 3) && showColors }
 
     val panesColor by ColorSetting("Panes", Colors.MINECRAFT_GREEN, true, desc = "Color of the panes terminal solver.").withDependency { showColors }
 

@@ -7,16 +7,17 @@ import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Colors
 import me.odinmain.utils.render.Renderer
-import me.odinmain.utils.skyblock.PersonalBest
-import me.odinmain.utils.skyblock.getBlockAt
-import me.odinmain.utils.skyblock.partyMessage
-import me.odinmain.utils.skyblock.skyblockID
+import me.odinmain.utils.skyblock.*
 import net.minecraft.init.Blocks
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
+import net.minecraft.network.play.server.S04PacketEntityEquipment
 import net.minecraft.util.Vec3
 
 object KingRelics {
     private var currentRelic = Relic.None
+    private var serverTickCounter = 0L
+    private var relicPlaceTick = 0L
+    var relicTicksToSpawn = 0
 
     enum class Relic (
         val id: String,
@@ -34,22 +35,29 @@ object KingRelics {
     }
 
     private val relicPBs = PersonalBest("Relics", 5)
-    private var relicPlaceTimer = 0L
-    var relicTicksToSpawn = 0
 
-    fun relicsOnMessage(){
+    fun relicsOnMessage() {
         if (WitherDragons.relicAnnounce) partyMessage("${Relic.entries[selected]} Relic")
-        relicPlaceTimer = System.currentTimeMillis()
+        relicPlaceTick = serverTickCounter
         relicTicksToSpawn = WitherDragons.relicSpawnTicks
     }
 
     fun relicsBlockPlace(packet: C08PacketPlayerBlockPlacement) {
-        if (relicPlaceTimer == 0L || !getBlockAt(packet.position).equalsOneOf(Blocks.cauldron, Blocks.anvil)) return
+        if (relicPlaceTick == 0L || !getBlockAt(packet.position).equalsOneOf(Blocks.cauldron, Blocks.anvil) || Relic.entries.none { mc.thePlayer?.heldItem?.skyblockID == it.id }) return
 
         Relic.entries.find { it.id == currentRelic.id }?.let {
             if (it == Relic.None) return
-            relicPBs.time(it.ordinal, (System.currentTimeMillis() - relicPlaceTimer) / 1000.0, "s§7!", "§${it.colorCode}${it.name} relic §7took §6", addPBString = true, addOldPBString = true, sendOnlyPB = false, sendMessage = relicAnnounceTime)
-            relicPlaceTimer = 0L
+            relicPBs.time(it.ordinal, (serverTickCounter - relicPlaceTick) / 20.0, "s§7!", "§${it.colorCode}${it.name} relic §7took §6", addPBString = true, addOldPBString = true, sendOnlyPB = false, sendMessage = relicAnnounceTime)
+            relicPlaceTick = 0L
+        }
+    }
+
+    fun relicEquipment(packet: S04PacketEntityEquipment) {
+        if (packet.equipmentSlot != 4) return
+
+        Relic.entries.find { it.id == packet.itemStack?.skyblockID }?.let { relic ->
+            if (relic != Relic.None && relicPlaceTick > 0)
+                modMessage("§${relic.colorCode}${relic.name} relic §7placed in §6${(serverTickCounter - relicPlaceTick) / 20f}s")
         }
     }
 
@@ -63,5 +71,6 @@ object KingRelics {
     fun onServerTick() {
         relicTicksToSpawn = (relicTicksToSpawn - 1).coerceAtLeast(0)
         currentRelic = Relic.entries.find { mc.thePlayer?.inventory?.mainInventory?.any { item -> item.skyblockID == it.id } == true } ?: Relic.None
+        serverTickCounter++
     }
 }

@@ -1,5 +1,8 @@
 package me.odinmain.utils.skyblock
 
+import com.google.gson.JsonObject
+import com.mojang.authlib.GameProfile
+import com.mojang.authlib.properties.Property
 import me.odinmain.OdinMain.mc
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.noControlCodes
@@ -10,12 +13,15 @@ import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.RenderHelper
 import net.minecraft.entity.Entity
+import net.minecraft.init.Items
 import net.minecraft.inventory.ContainerChest
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
 import net.minecraft.nbt.NBTTagList
 import net.minecraft.nbt.NBTTagString
+import net.minecraft.nbt.NBTUtil
 import net.minecraftforge.common.util.Constants
+import java.util.*
 
 /**
  * Returns the ExtraAttribute Compound
@@ -211,7 +217,7 @@ fun ItemStack.setLoreWidth(lines: List<String>, width: Int): ItemStack {
     return this
 }
 
-fun ItemStack.drawItem(x: Float = 0f, y: Float = 0f, scale: Float = 1f, z: Float = 200f) {
+fun drawItem(itemStack: ItemStack, x: Float = 0f, y: Float = 0f, scale: Float = 1f, z: Float = 200f) {
     GlStateManager.pushMatrix()
     GlStateManager.scale(scale, scale, 1f)
     GlStateManager.translate(x / scale, y / scale, 0f)
@@ -221,7 +227,7 @@ fun ItemStack.drawItem(x: Float = 0f, y: Float = 0f, scale: Float = 1f, z: Float
     RenderHelper.enableGUIStandardItemLighting()
 
     mc.renderItem.zLevel = z
-    mc.renderItem.renderItemIntoGUI(this, 0, 0)
+    mc.renderItem.renderItemIntoGUI(itemStack, 0, 0)
     RenderHelper.disableStandardItemLighting()
     GlStateManager.popMatrix()
 }
@@ -233,4 +239,30 @@ inline val ItemStack.skullTexture: String? get() {
         ?.getTagList("textures", Constants.NBT.TAG_COMPOUND)
         ?.getCompoundTagAt(0)
         ?.getString("Value")
+}
+
+private fun makeTexturesValue(url: String): String {
+    val root = JsonObject().apply {
+        addProperty("timestamp", System.currentTimeMillis())
+        addProperty("profileId", UUID.randomUUID().toString().replace("-", ""))
+        addProperty("profileName", "customskin")
+        addProperty("signatureRequired", false)
+        add("textures", JsonObject().apply {
+            add("SKIN", JsonObject().apply { addProperty("url", url) })
+        })
+    }.toString().toByteArray(Charsets.UTF_8)
+    return Base64.getEncoder().encodeToString(root)
+}
+
+fun skullStackFromUrl(url: String): ItemStack {
+    val profile = GameProfile(UUID.randomUUID(), "customskin").also {
+        it.properties.put("textures", Property("textures", makeTexturesValue(url)))
+    }
+    val stack = ItemStack(Items.skull, 1, 3) // meta 3 = player head
+    val tag = NBTTagCompound()
+    val owner = NBTTagCompound()
+    NBTUtil.writeGameProfile(owner, profile)
+    tag.setTag("SkullOwner", owner)
+    stack.tagCompound = tag
+    return stack
 }
