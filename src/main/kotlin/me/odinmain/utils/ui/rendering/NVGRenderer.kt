@@ -16,6 +16,7 @@ import org.lwjgl.opengl.GL11
 import java.nio.ByteBuffer
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.math.round
 
 object NVGRenderer : Lwjgl3Wrapper by Lwjgl3Loader.load() {
 
@@ -133,17 +134,9 @@ object NVGRenderer : Lwjgl3Wrapper by Lwjgl3Loader.load() {
         nvgFill(vg)
     }
 
-    fun rect(x: Float, y: Float, w: Float, h: Float, color: Int, radius: Float) {
+    fun rect(x: Float, y: Float, w: Float, h: Float, color: Int, tr: Float = 0f, tl: Float = tr, br: Float = tr, bl: Float = tr) {
         nvgBeginPath(vg)
-        nvgRoundedRect(vg, x, y, w, h + .5f, radius)
-        color(color)
-        nvgFillColor(vg, nvgColor)
-        nvgFill(vg)
-    }
-
-    fun rect(x: Float, y: Float, w: Float, h: Float, color: Int) {
-        nvgBeginPath(vg)
-        nvgRect(vg, x, y, w, h + .5f)
+        nvgRoundedRectVarying(vg, round(x), round(y), round(w), round(h), tr, tl, br, bl)
         color(color)
         nvgFillColor(vg, nvgColor)
         nvgFill(vg)
@@ -193,7 +186,19 @@ object NVGRenderer : Lwjgl3Wrapper by Lwjgl3Loader.load() {
         nvgFontFaceId(vg, getFontID(font))
         color(color)
         nvgFillColor(vg, nvgColor)
-        nvgText(vg, x, y + .5f, text)
+        nvgText(vg, round(x), round(y + 0.5f), text)
+    }
+
+    fun textShadow(text: String, x: Float, y: Float, size: Float, color: Int, font: Font) {
+        nvgFontFaceId(vg, getFontID(font))
+        nvgFontSize(vg, size)
+        color(-16777216)
+        nvgFillColor(vg, nvgColor)
+        nvgText(vg, round(x + 1f), round(y + 1f), text)
+
+        color(color)
+        nvgFillColor(vg, nvgColor)
+        nvgText(vg, round(x), round(y), text)
     }
 
     fun textWidth(text: String, size: Float, font: Font): Float {
@@ -243,18 +248,10 @@ object NVGRenderer : Lwjgl3Wrapper by Lwjgl3Loader.load() {
     fun createNVGImage(textureId: Int, textureWidth: Int, textureHeight: Int): Int =
         nvglCreateImageFromHandle(vg, textureId, textureWidth, textureHeight, NVG_IMAGE_NEAREST or NVG_IMAGE_NODELETE)
 
-    fun image(image: Image, x: Float, y: Float, w: Float, h: Float, radius: Float) {
+    fun image(image: Image, x: Float, y: Float, w: Float, h: Float, tr: Float = 0f, tl: Float = tr, br: Float = tr, bl: Float = tr) {
         nvgImagePattern(vg, x, y, w, h, 0f, getImage(image), 1f, nvgPaint)
         nvgBeginPath(vg)
-        nvgRoundedRect(vg, x, y, w, h + .5f, radius)
-        nvgFillPaint(vg, nvgPaint)
-        nvgFill(vg)
-    }
-
-    fun image(image: Image, x: Float, y: Float, w: Float, h: Float) {
-        nvgImagePattern(vg, x, y, w, h, 0f, getImage(image), 1f, nvgPaint)
-        nvgBeginPath(vg)
-        nvgRect(vg, x, y, w, h + .5f)
+        nvgRoundedRectVarying(vg, x, y, w, h + .5f, tr, tl, br, bl)
         nvgFillPaint(vg, nvgPaint)
         nvgFill(vg)
     }

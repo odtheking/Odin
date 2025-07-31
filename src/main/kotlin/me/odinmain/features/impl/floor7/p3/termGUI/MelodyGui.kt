@@ -4,7 +4,7 @@ import me.odinmain.features.impl.floor7.p3.TerminalSolver
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.render.Colors
 
-object MelodyGui : TermGui("Click the button on time!") {
+object MelodyGui : TermGui() {
 
     override fun render() {
         setCurrentGui(this)
@@ -14,7 +14,7 @@ object MelodyGui : TermGui("Click the button on time!") {
     }
 
     override fun renderTerminal(slotCount: Int) {
-        renderBackground(slotCount)
+        renderBackground(slotCount, 7)
 
         TerminalSolver.currentTerm?.items?.forEachIndexed { index, item ->
             if ((index % 9).equalsOneOf(0, 6, 8) || ((index / 9).equalsOneOf(0, 6) && index % 9 == 7)) return@forEachIndexed

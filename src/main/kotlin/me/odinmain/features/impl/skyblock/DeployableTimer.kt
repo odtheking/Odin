@@ -22,7 +22,7 @@ object DeployableTimer : Module(
         if (it) {
             RenderUtils.drawText("§l§5SOS Flare", 40f, 10f, Colors.WHITE)
             RenderUtils.drawText("§e179s", 40f, 25f, Colors.WHITE)
-            ItemStack(firework).drawItem(x= -10f, y= -4f, scale = 3.5f)
+            drawItem(ItemStack(firework), -10f, -4f, scale = 3.5f)
             getTextWidth("SOS Flare") + 45f to 52f
         } else {
             val activeDeployable = activeDeployables.firstOrNull { dep -> mc.thePlayer.getDistanceToEntity(dep.entity) <= dep.deployable.range } ?: return@HUD 0f to 0f
@@ -35,7 +35,7 @@ object DeployableTimer : Module(
             }
             RenderUtils.drawText(activeDeployable.deployable.displayName, 40f, 10f, Colors.WHITE)
             RenderUtils.drawText("§e${timeLeft}s", 40f, 25f, Colors.WHITE)
-            activeDeployable.entity.inventory?.get(4)?.drawItem(x= -10f, y= -4f, scale = 3.5f)
+            activeDeployable.entity.inventory?.get(4)?.let { itemStack -> drawItem(itemStack, -10f, -4f, scale = 3.5f) }
             getTextWidth(activeDeployable.deployable.displayName.noControlCodes) + 45f to 52f
         }
     }

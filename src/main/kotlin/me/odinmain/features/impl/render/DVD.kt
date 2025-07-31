@@ -20,7 +20,7 @@ object DVD : Module(
     private val boxWidth by NumberSetting("Box Width", 50, 0, 150, 1, desc = "Width of the DVD box.")
     private val boxHeight by NumberSetting("Box Height", 50, 0, 150, 1, desc = "Height of the DVD box.")
 
-    private val speed by NumberSetting("Speed", 1, .1, 2, .1, desc = "Speed of the DVD box.")
+    private val speed by NumberSetting("Speed", 1f, 1, 3, .1, desc = "Speed of the DVD box.")
     private val text by StringSetting("Text", "ODVD", desc = "Text to display on the DVD box.")
 
     private var lastUpdateTime = System.nanoTime()

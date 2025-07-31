@@ -16,12 +16,13 @@ object ExtraStats : Module(
     name = "Extra Stats",
     description = "Shows additional dungeon stats at the end of the run in chat."
 ) {
-    private val extraStats = PostDungeonStats()
     private val showBits by BooleanSetting("Show Bits", true, desc = "Show bits earned.")
     private val showClassEXP by BooleanSetting("Show Class EXP", true, desc = "Show class experience.")
     private val showCombatStats by BooleanSetting("Show Combat Stats", true, desc = "Show damage, enemy kills and healing.")
     private val teamStats by SelectorSetting("Show Team Stats", "both", options = arrayListOf("Off", "Personal", "Team", "Both"), desc = "Toggle how show team stats.")
     private val showTeammates by BooleanSetting("Show Teammates", false, desc = "Show teammates.")
+
+    private val extraStats = PostDungeonStats()
 
     private fun printEndStats() {
         val defeatedText = if (extraStats.bossKilled == null) "§c§lFAILED §a- §e${DungeonUtils.dungeonTime}"
@@ -95,14 +96,14 @@ object ExtraStats : Module(
 
         onMessage(Regex("^\\s*(Deaths: (\\d+))\$")) {
             extraStats.deaths = it.groupValues[2].toIntOrNull() ?: 0
-            if (teamStats == 1 || teamStats == 3) extraStats.skillStats.add("§c${it.groupValues[1]}")
+            if (teamStats.equalsOneOf(1, 3)) extraStats.skillStats.add("§c${it.groupValues[1]}")
         }
 
         onMessage(Regex("^\\s*(Secrets Found: (\\d+))\$")) {
             extraStats.secretsFound = it.groupValues[2].toIntOrNull() ?: 0
-            if (teamStats == 1 || teamStats == 3) extraStats.skillStats.add(0,"§b"+it.groupValues[1])
+            if (teamStats.equalsOneOf(1, 3)) extraStats.skillStats.add(0,"§b"+it.groupValues[1])
             if (teamStats == 3) extraStats.skillStats.add("")
-            if (teamStats==2 || teamStats==3) {
+            if (teamStats.equalsOneOf(2, 3)) {
                 extraStats.skillStats.add("§bTeam Secrets Found: ${DungeonUtils.secretCount}")
                 extraStats.skillStats.add("§6Crypt: ${DungeonUtils.cryptCount}")
                 extraStats.skillStats.add("§cTeam Deaths: ${DungeonUtils.deathCount}")
