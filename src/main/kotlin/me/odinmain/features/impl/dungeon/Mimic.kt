@@ -33,7 +33,7 @@ object Mimic : Module(
     private val mimicDropdown by DropdownSetting("Mimic Dropdown")
     private val mimicMessageToggle by BooleanSetting("Toggle Mimic Message", true, desc = "Toggles the mimic killed message.").withDependency { mimicDropdown }
     val mimicMessage by StringSetting("Mimic Message", "Mimic Killed!", 128, desc = "Message sent when mimic is detected as killed.").withDependency { mimicDropdown && mimicMessageToggle }
-    private val mimicReset by ActionSetting("Mimic Killed", desc = "Sends Mimic killed message in party chat.") { mimicKilled() }.withDependency{ mimicDropdown }
+    private val mimicReset by ActionSetting("Mimic Killed", desc = "Sends Mimic killed message in party chat.") { mimicKilled() }.withDependency { mimicDropdown }
 
     private val princeDropdown by DropdownSetting("Prince Dropdown")
     private val princeDetection by BooleanSetting("Max Reborn Attribute", false, desc = "Enables prince detection. Only enable if you have 100% extra score chance from princes.").withDependency { princeDropdown }
@@ -60,7 +60,7 @@ object Mimic : Module(
             this is EntityOtherPlayerMP && getEntityTexture(this) == PRINCE_TEXTURE && princeDetection -> {
                 val dist = mc.thePlayer.getDistanceToEntity(this)
                 if ((dist > princeRange) ||
-                    (princeStrict && DungeonUtils.dungeonTeammatesNoSelf.any {(it.entity?.getDistanceToEntity(this) ?: 999f) <= dist })
+                    (princeStrict && DungeonUtils.dungeonTeammatesNoSelf.any {(it.entity?.getDistanceToEntity(this) ?: Float.MAX_VALUE) <= dist })
                 ) return@with
                 princeKilled()
             }

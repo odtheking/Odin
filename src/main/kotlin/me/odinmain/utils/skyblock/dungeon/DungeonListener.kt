@@ -129,17 +129,15 @@ object DungeonListener {
 
     @SubscribeEvent
     fun onEntityJoin(event: EntityJoinWorldEvent) {
-        with (event.entity as? EntityPlayer ?: return) {
-            val teammate = dungeonTeammatesNoSelf.find { it.name == event.entity.name } ?: return
-            teammate.entity = this
+        (event.entity as? EntityPlayer)?.let { player ->
+            dungeonTeammatesNoSelf.find { it.name == player.name }?.let { it.entity = player }
         }
     }
 
     @SubscribeEvent
     fun onEntityLeave(event: EntityLeaveWorldEvent) {
-        with (event.entity as? EntityPlayer ?: return) {
-            val teammate = dungeonTeammatesNoSelf.find { it.name == event.entity.name } ?: return
-            teammate.entity = null
+        (event.entity as? EntityPlayer)?.let { player ->
+            dungeonTeammatesNoSelf.find { it.name == player.name }?.let { it.entity = null }
         }
     }
 
