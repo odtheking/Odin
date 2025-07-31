@@ -23,7 +23,7 @@ object NumbersSim : TermSimGUI(
         if (guiInventorySlots.minByOrNull { if (it.stack?.metadata == 14) it.stack?.stackSize ?: 999 else 1000 } != slot) return
         createNewGui {
             if (it == slot) ItemStack(pane, slot.stack.stackSize, 5).apply { setStackDisplayName("") }
-            else it.stack
+            else it.stack ?: blackPane
         }
         playTermSimSound()
         if (guiInventorySlots.none { it?.stack?.metadata == 14 })

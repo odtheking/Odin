@@ -26,7 +26,7 @@ object CanClip : Module(
     description = "Tells you if you are currently able to clip through a stair under you."
 ) {
     private val line by BooleanSetting("Line", true, desc = "Draws a line where you can clip.")
-    private val hud by HUD("Display", "Displays if you can clip in the HUD.") {
+    private val hud by HUD("Can Clip", "Displays if you can clip in the HUD.") {
         if (canClip || it) RenderUtils.drawText("Can Clip", 1f, 1f, Colors.WHITE)
         getTextWidth("Can Clip") + 2f to 10f
     }

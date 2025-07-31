@@ -41,7 +41,7 @@ object SimonSays : Module(
     private val depthCheck by BooleanSetting("Depth check", false, desc = "Boxes show through walls.")
     private val start by BooleanSetting("Start", false, desc = "Automatically starts the device when it can be started.")
     private val startClicks by NumberSetting("Start Clicks", 3, 1, 10, desc = "Amount of clicks to start the device.").withDependency { start }
-    private val startClickDelay by NumberSetting("Start Click Delay", 3, 1, 5, desc = "Delay between each start click.").withDependency { start }
+    private val startClickDelay by NumberSetting("Start Click Delay", 3, 1, 25, unit = "ticks", desc = "Delay between each start click.").withDependency { start }
     private val triggerBot by BooleanSetting("Triggerbot", false, desc = "Automatically clicks the correct button when you look at it.")
     private val triggerBotDelay by NumberSetting("Triggerbot Delay", 200L, 70, 500, unit = "ms", desc = "The delay between each click.").withDependency { triggerBot }
     private val autoSS by BooleanSetting("Auto SS", false, desc = "Automatically clicks the correct button when you are in range.")

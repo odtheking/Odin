@@ -1,7 +1,6 @@
 package me.odinmain.features.impl.skyblock
 
 import me.odinmain.clickgui.settings.impl.BooleanSetting
-import me.odinmain.clickgui.settings.impl.NumberSetting
 import me.odinmain.features.Module
 import me.odinmain.utils.SplitsManager.currentSplits
 import me.odinmain.utils.SplitsManager.getAndUpdateSplitsTimes
@@ -26,18 +25,18 @@ object Splits : Module(
         if (currentSplits.splits.isEmpty()) return@HUD 0f to 0f
         val x = getTextWidth("Professor: 0m 00s")
         currentSplits.splits.dropLast(1).forEachIndexed { index, split ->
-            val time = formatTime(if (index >= times.size) 0 else times[index], numbersAfterDecimal)
+            val seconds = times[index] / 20f
+            val time = formatTime((seconds * 1000).toLong())
             RenderUtils.drawText(split.name, 1f, 1f + index * 9f, Colors.WHITE, shadow = true)
             RenderUtils.drawText(time, x.toFloat(), 1f + index * 9f, Colors.WHITE, shadow = true)
         }
         if (bossEntrySplit && currentSplits.splits.size > 3) {
-            RenderUtils.drawText("§9Boss Entry", 1f, (currentSplits.splits.size) * 9f, Colors.WHITE, shadow = true)
-            RenderUtils.drawText(formatTime(times.take(3).sum(), numbersAfterDecimal), x.toFloat(), (currentSplits.splits.size) * 9f, Colors.WHITE, shadow = true)
+            RenderUtils.drawText("§9Boss Entry", 1f, (currentSplits.splits.size - 1) * 9f, Colors.WHITE, shadow = true)
+            RenderUtils.drawText(formatTime(((times.take(3).sum() / 20f) * 1000).toLong()), x.toFloat(), (currentSplits.splits.size - 1) * 9f, Colors.WHITE, shadow = true)
         }
         getTextWidth("Split 0: 0h 00m 00s") + 2f to 9f * 5
     }
     private val bossEntrySplit by BooleanSetting("Boss Entry Split", true, desc = "Split for boss entry.")
     val sendSplits by BooleanSetting("Send Splits", true, desc = "Send splits to chat.")
     val sendOnlyPB by BooleanSetting("Send Only PB", false, desc = "Send only personal bests.")
-    private val numbersAfterDecimal by NumberSetting("Numbers After Decimal", 2, 0, 5, 1, desc = "Numbers after decimal in time.")
 }

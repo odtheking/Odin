@@ -4,6 +4,7 @@ import me.odinmain.OdinMain.mc
 import me.odinmain.utils.*
 import net.minecraft.block.Block
 import net.minecraft.block.state.BlockState
+import net.minecraft.init.Blocks
 import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
 import java.util.*
@@ -109,8 +110,16 @@ object EtherWarpHelper {
 
     private val validEtherwarpFeetIds = BitSet(176).apply {
         arrayOf(
-            0, 6, 9, 11, 30, 31, 32, 36, 37, 38, 39, 40, 50, 51, 55, 59, 65, 66, 69, 76, 77, 78,
-            93, 94, 104, 105, 106, 111, 115, 131, 132, 140, 141, 142, 143, 144, 149, 150, 157, 171, 175
-        ).forEach { set(it) }
+            Blocks.activator_rail, Blocks.air, Blocks.brown_mushroom, Blocks.carpet,
+            Blocks.carrots, Blocks.cocoa, Blocks.deadbush, Blocks.double_plant, Blocks.fire,
+            Blocks.flower_pot, Blocks.flowing_lava, Blocks.ladder, Blocks.lava, Blocks.lever,
+            Blocks.melon_stem, Blocks.nether_wart, Blocks.piston_extension, Blocks.portal,
+            Blocks.potatoes, Blocks.powered_comparator, Blocks.powered_repeater, Blocks.pumpkin_stem,
+            Blocks.rail, Blocks.red_flower, Blocks.red_mushroom, Blocks.redstone_torch,
+            Blocks.redstone_wire, Blocks.reeds, Blocks.sapling, Blocks.skull, Blocks.snow_layer,
+            Blocks.stone_button, Blocks.tallgrass, Blocks.torch, Blocks.tripwire, Blocks.tripwire_hook,
+            Blocks.unpowered_comparator, Blocks.unpowered_repeater, Blocks.vine, Blocks.water, Blocks.web,
+            Blocks.wheat, Blocks.wooden_button, Blocks.yellow_flower
+        ).forEach { set(Block.getIdFromBlock(it)) }
     }
 }
