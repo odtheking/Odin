@@ -4,6 +4,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import me.odinmain.OdinMain.mc
 import me.odinmain.OdinMain.scope
+import me.odinmain.events.impl.EntityLeaveWorldEvent
 import me.odinmain.events.impl.PacketEvent
 import me.odinmain.events.impl.RoomEnterEvent
 import me.odinmain.features.impl.dungeon.LeapMenu
@@ -119,7 +120,7 @@ object DungeonListener {
                     "prince killed", "prince slain", "prince killed!", "prince dead", "prince dead!", "\$skytils-dungeon-score-prince\$", Mimic.princeMessage ->
                         dungeonStats.princeKilled = true
 
-                    "blaze done!", "blaze done", "blaze puzzle solved!" ->
+                    "blaze done!", "blaze done", "blaze puzzle solved!", "blaze puzzle finished!", "blaze finished!" ->
                         puzzles.find { it == Puzzle.BLAZE }.let { it?.status = PuzzleStatus.Completed }
                 }
             }
@@ -128,8 +129,18 @@ object DungeonListener {
 
     @SubscribeEvent
     fun onEntityJoin(event: EntityJoinWorldEvent) {
-        val teammate = dungeonTeammatesNoSelf.find { it.name == event.entity.name } ?: return
-        teammate.entity = event.entity as? EntityPlayer ?: return
+        with (event.entity as? EntityPlayer ?: return) {
+            val teammate = dungeonTeammatesNoSelf.find { it.name == event.entity.name } ?: return
+            teammate.entity = this
+        }
+    }
+
+    @SubscribeEvent
+    fun onEntityLeave(event: EntityLeaveWorldEvent) {
+        with (event.entity as? EntityPlayer ?: return) {
+            val teammate = dungeonTeammatesNoSelf.find { it.name == event.entity.name } ?: return
+            teammate.entity = null
+        }
     }
 
     private fun getDungeonPuzzles(tabList: List<String>) {
