@@ -25,6 +25,7 @@ object AutoExperiments : Module(
     private val delay by NumberSetting("Click Delay", 200, 0, 1000, 10, unit = "ms", desc = "Time in ms between automatic test clicks.")
     private val autoClose by BooleanSetting("Auto Close", true, desc = "Automatically close the GUI after completing the experiment.")
     private val serumCount by NumberSetting("Serum Count", 0, 0, 3, 1, desc = "Consumed Metaphysical Serum count.")
+    private val getMaxXp by BooleanSetting("Get Max XP", false, desc = "Solve Chronomatron to 15 and Ultrasequencer to 20 for max XP.")
 
     private var ultrasequencerOrder = HashMap<Int, Int>()
     private val chronomatronOrder = ArrayList<Int>(28)
@@ -63,8 +64,9 @@ object AutoExperiments : Module(
     }
 
     private fun solveChronomatron(invSlots: List<Slot>) {
+        val maxChronomatron = if (getMaxXp) 15 else 11 - serumCount
         if (invSlots[49].stack?.item == Item.getItemFromBlock(Blocks.glowstone) && invSlots[lastAdded].stack?.isItemEnchanted == false) {
-            if (autoClose && chronomatronOrder.size > 11 - serumCount) mc.thePlayer?.closeScreen()
+            if (autoClose && chronomatronOrder.size > maxChronomatron) mc.thePlayer?.closeScreen()
             hasAdded = false
         }
         if (!hasAdded && invSlots[49].stack?.item == Items.clock) {
@@ -83,6 +85,7 @@ object AutoExperiments : Module(
     }
 
     private fun solveUltraSequencer(invSlots: List<Slot>) {
+        val maxUltraSequencer = if (getMaxXp) 20 else 9 - serumCount
         if (invSlots[49].stack?.item == Items.clock) hasAdded = false
 
         if (!hasAdded && invSlots[49].stack?.item == Item.getItemFromBlock(Blocks.glowstone)) {
@@ -93,7 +96,7 @@ object AutoExperiments : Module(
             }
             hasAdded = true
             clicks = 0
-            if (ultrasequencerOrder.size > 9 - serumCount && autoClose) mc.thePlayer?.closeScreen()
+            if (ultrasequencerOrder.size > maxUltraSequencer && autoClose) mc.thePlayer?.closeScreen()
         }
         if (invSlots[49].stack?.item == Items.clock && ultrasequencerOrder.contains(clicks) && System.currentTimeMillis() - lastClickTime > delay) {
             ultrasequencerOrder[clicks]?.let { windowClick(it, ClickType.Middle) }
