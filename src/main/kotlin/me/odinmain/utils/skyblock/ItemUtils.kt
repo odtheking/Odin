@@ -8,7 +8,6 @@ import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Colors
-import me.odinmain.utils.render.RenderUtils.bind
 import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.RenderHelper
@@ -221,7 +220,6 @@ fun drawItem(itemStack: ItemStack, x: Float = 0f, y: Float = 0f, scale: Float = 
     GlStateManager.pushMatrix()
     GlStateManager.scale(scale, scale, 1f)
     GlStateManager.translate(x / scale, y / scale, 0f)
-    Colors.WHITE.bind()
 
     RenderHelper.enableStandardItemLighting()
     RenderHelper.enableGUIStandardItemLighting()
