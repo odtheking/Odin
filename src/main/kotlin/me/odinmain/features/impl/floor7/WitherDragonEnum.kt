@@ -40,7 +40,7 @@ enum class WitherDragonsEnum (
     var isSprayed: Boolean = false,
     var spawnedTime: Long = 0,
     val skipKillTime: Int = 0,
-    val arrowsHit: HashMap<String, Int> = HashMap()
+    val arrowsHit: HashMap<String, ArrowsHit> = HashMap()
 ) {
     Red(   Vec3(27.0, 14.0, 59.0), AxisAlignedBB(14.5, 13.0, 45.5, 39.5, 28.0, 70.5),   'c', Colors.MINECRAFT_RED,   24.0..30.0, 56.0..62.0,  skipKillTime = 50),
 
@@ -67,7 +67,7 @@ enum class WitherDragonsEnum (
         if (resetOnDragons && WitherDragons.enabled) onDragonSpawn()
         if (sendArrowHit && WitherDragons.enabled) {
             runIn(skipKillTime, true) {
-                if (entity?.isEntityAlive == true) modMessage("§fArrows Hit on §${colorCode}${name}§f in §c${(skipKillTime / 20f).toFixed()}s§7: ${arrowsHit.entries.joinToString(", ") { "§f${it.key}§7: §6${it.value}§7" }}.")
+                if (entity?.isEntityAlive == true) modMessage("§fArrows Hit on §${colorCode}${name}§f in §c${(skipKillTime / 20f).toFixed()}s§7: ${arrowsHit.entries.joinToString(", ") { "§f${it.key}§7: §6${it.value.good}${it.value.late.let { if (it > 0) " §8(§7${it}§8)" else "" }}§7" }}.")
             }
         }
         if (sendSpawned && WitherDragons.enabled) {
@@ -88,7 +88,7 @@ enum class WitherDragonsEnum (
         entity = null
         lastDragonDeath = this
         if (sendArrowHit && WitherDragons.enabled && currentTick - spawnedTime < skipKillTime)
-            modMessage("§fArrows Hit on §${colorCode}${name}§7: ${arrowsHit.entries.joinToString(", ") { "§f${it.key}§7: §6${it.value}§7" }}.")
+            modMessage("§fArrows Hit on §${colorCode}${name}§7: ${arrowsHit.entries.joinToString(", ") { "§f${it.key}§7: §6${it.value.good}${it.value.late.let { if (it > 0) " §8(§7${it}§8)" else "" }}§7" }}.")
         if (priorityDragon == this) priorityDragon = None
 
         if (sendTime && WitherDragons.enabled)
@@ -121,6 +121,8 @@ enum class WitherDragonsEnum (
         }
     }
 }
+
+data class ArrowsHit(var good: Int = 0, var late: Int = 0)
 
 enum class WitherDragonState {
     SPAWNING,
