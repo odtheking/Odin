@@ -177,7 +177,7 @@ object WitherDragons : Module(
                 modMessage("§a${event.owner.name} §fhit their first arrow on §${dragon.colorCode}${dragon.name}§f after §c${timeSinceSpawn.let { "$it §ftick${if (it > 1) "s" else ""}" }}.")
 
             val hit = dragon.arrowsHit.getOrPut(event.owner.name) { ArrowsHit() }
-            if (event.owner.heldItem.skyblockID in validShortBowIds || timeSinceSpawn <= debuffTime) hit.good += hits
+            if (event.owner.heldItem?.skyblockID in validShortBowIds || timeSinceSpawn <= debuffTime) hit.good += hits
             else hit.late += hits
         }
     }
