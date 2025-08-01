@@ -35,13 +35,14 @@ object MapInfo : Module(
         val mimicText = "§7M: ${if (DungeonUtils.mimicKilled) "§a✔" else "§c✘"} §8| §7P: ${if (DungeonUtils.princeKilled) "§a✔" else "§c✘"}"
         val cryptText = "§7Crypts: ${colorizeCrypts(DungeonUtils.cryptCount.coerceAtMost(5))}"
 
-        val (trText, brText) = if (alternate) listOf(cryptText, scoreText) else listOf(scoreText, cryptText)
+        val trText = if (alternate) cryptText else scoreText
+        val brText = if (alternate) scoreText else cryptText
 
         if (fullBackground) Gui.drawRect((-fullMargin).toInt(), 0, (fullWidth + (fullMargin * 2)).toInt(), 19, fullColor.rgba)
         val brWidth = getTextWidth(brText)
-        val trWidth = getTextWidth(trText)
+
         RenderUtils.drawText(secretText, 1f, 1f, Colors.WHITE)
-        RenderUtils.drawText(trText, fullWidth - 1f - trWidth, 1f, Colors.WHITE)
+        RenderUtils.drawText(trText, fullWidth - 1f - getTextWidth(trText), 1f, Colors.WHITE)
         val unknownWidth = drawStringWidth(unknownSecretsText, 1, 10, Colors.WHITE)
         val centerX = (unknownWidth + 1 + (fullWidth - 1 - unknownWidth - brWidth) / 2) - getTextWidth(mimicText) / 2
         RenderUtils.drawText(mimicText, centerX, 10f, Colors.WHITE)
