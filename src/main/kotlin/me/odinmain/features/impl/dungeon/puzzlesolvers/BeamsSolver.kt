@@ -58,13 +58,13 @@ object BeamsSolver {
         if (DungeonUtils.currentRoomName != "Creeper Beams" || currentLanternPairs.isEmpty()) return
 
         currentLanternPairs.entries.forEach { positions ->
-            val color = positions.value.second
+            val color = positions.value.second.withAlpha(beamsAlpha)
 
             Renderer.drawStyledBlock(positions.key, color, depth = true, style = beamStyle)
             Renderer.drawStyledBlock(positions.value.first, color, depth = true, style = beamStyle)
 
             if (beamsTracer)
-                Renderer.draw3DLine(listOf(positions.key.toVec3().addVec(0.5, 0.5, 0.5), positions.value.first.toVec3().addVec(0.5, 0.5, 0.5)), color = color.withAlpha(beamsAlpha), depth = false, lineWidth = 2f)
+                Renderer.draw3DLine(listOf(positions.key.toVec3().addVec(0.5, 0.5, 0.5), positions.value.first.toVec3().addVec(0.5, 0.5, 0.5)), color = color, depth = false, lineWidth = 2f)
         }
     }
 

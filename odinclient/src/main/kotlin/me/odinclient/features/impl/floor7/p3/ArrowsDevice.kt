@@ -167,7 +167,7 @@ object ArrowsDevice : Module(
         motionY = motionY / lengthOffset * 3
         motionZ = motionZ / lengthOffset * 3
 
-        calculateBowTrajectory(Vec3(motionX,motionY,motionZ),Vec3(posX,posY,posZ))
+        calculateBowTrajectory(Vec3(motionX, motionY, motionZ), Vec3(posX, posY, posZ))
     }
 
     private fun calculateBowTrajectory(mV: Vec3, pV: Vec3) {
@@ -424,6 +424,12 @@ object ArrowsDevice : Module(
             Renderer.drawBlock(it, targetPositionColor, depth = depthCheck)
         }
     }
+
+    private val aimPositions = listOf(
+        BlockPos(67, 130, 50), BlockPos(65, 130, 50), BlockPos(63, 130, 50),
+        BlockPos(67, 128, 50), BlockPos(65, 128, 50), BlockPos(63, 128, 50),
+        BlockPos(67, 126, 50), BlockPos(65, 126, 50), BlockPos(63, 126, 50)
+    )
 
     // This is order dependent
     private val positions = listOf(

@@ -28,6 +28,10 @@ object WarpCooldown : Module(
             partyMessage(kickText)
         }
 
+        onMessage(Regex("^You are no longer allowed to access this instance!$"), { enabled && announceKick }) {
+            partyMessage(kickText)
+        }
+
         onMessage(Regex("^-*\\n\\[[^]]+] (\\w+) entered (?:MM )?\\w+ Catacombs, Floor (\\w+)!\\n-*$")) {
             warpTimer.updateCD()
         }

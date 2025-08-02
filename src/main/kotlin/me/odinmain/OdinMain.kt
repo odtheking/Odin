@@ -47,7 +47,7 @@ object OdinMain {
             LocationUtils, ServerUtils, PlayerUtils,
             RenderUtils, Renderer, DungeonUtils, KuudraUtils,
             EventDispatcher, Executor, ModuleManager,
-            WaypointManager, SkyblockPlayer,
+            WaypointManager, SkyblockPlayer, PartyUtils,
             ScanUtils, HighlightRenderer, DungeonListener,
             SplitsManager, RenderUtils2D, ArrowTracker,
             this

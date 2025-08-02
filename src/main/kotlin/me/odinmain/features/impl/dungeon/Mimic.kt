@@ -14,9 +14,7 @@ import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.getSkullValue
 import me.odinmain.utils.skyblock.partyMessage
 import me.odinmain.utils.toAABB
-import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.entity.monster.EntityZombie
-import net.minecraft.entity.player.EntityPlayer
 import net.minecraftforge.event.entity.living.LivingDeathEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -37,10 +35,9 @@ object Mimic : Module(
     private val princeReset by ActionSetting("Prince Killed", desc = "Sends Prince killed message in party chat.") { princeKilled() }
 
     private const val MIMIC_TEXTURE = "ewogICJ0aW1lc3RhbXAiIDogMTY3Mjc2NTM1NTU0MCwKICAicHJvZmlsZUlkIiA6ICJhNWVmNzE3YWI0MjA0MTQ4ODlhOTI5ZDA5OTA0MzcwMyIsCiAgInByb2ZpbGVOYW1lIiA6ICJXaW5zdHJlYWtlcnoiLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTE5YzEyNTQzYmM3NzkyNjA1ZWY2OGUxZjg3NDlhZThmMmEzODFkOTA4NWQ0ZDRiNzgwYmExMjgyZDM1OTdhMCIsCiAgICAgICJtZXRhZGF0YSIgOiB7CiAgICAgICAgIm1vZGVsIiA6ICJzbGltIgogICAgICB9CiAgICB9CiAgfQp9"
-    private val princeProcMessage = Regex("A Prince falls\\. \\+1 Bonus Score")
 
     init {
-        onMessage(princeProcMessage, { enabled && DungeonUtils.inDungeons }) { princeKilled() }
+        onMessage(Regex("A Prince falls\\. \\+1 Bonus Score"), { enabled && DungeonUtils.inDungeons }) { princeKilled() }
     }
 
     @SubscribeEvent
@@ -55,8 +52,8 @@ object Mimic : Module(
 
     @SubscribeEvent
     fun onRenderLast(event: RenderChestEvent.Post) {
-        if (!mimicBox || !DungeonUtils.inDungeons || DungeonUtils.inBoss || event.chest.chestType != 1) return
-        Renderer.drawStyledBox(event.chest.pos.toAABB(), color = color, style =  style, width = lineWidth, depth = isLegitVersion)
+        if (mimicBox && DungeonUtils.inDungeons && !DungeonUtils.inBoss && event.chest.chestType == 1)
+            Renderer.drawStyledBox(event.chest.pos.toAABB(), color, style =  style, width = lineWidth, depth = isLegitVersion)
     }
 
     private fun mimicKilled() {
