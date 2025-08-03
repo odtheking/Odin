@@ -66,7 +66,7 @@ object TerminalSounds : Module(
     init {
         onMessage(Regex("The gate has been destroyed!"), { enabled && shouldReplaceSounds }) { mc.thePlayer.playSound("note.pling", 8f, 4f) }
 
-        onMessage(Regex("The Core entrance is opening!"), { enabled && shouldReplaceSounds }) { mc.thePlayer.playSound("note.pling", 8f, 4f) }
+        onMessage(Regex("^The Core entrance is opening!\$"), { enabled && shouldReplaceSounds }) { mc.thePlayer.playSound("note.pling", 8f, 4f) }
     }
 
     private fun playSoundForSlot(slot: Int, button: Int) {

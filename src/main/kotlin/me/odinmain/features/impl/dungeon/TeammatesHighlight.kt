@@ -44,7 +44,7 @@ object TeammatesHighlight : Module(
         event.isCanceled = true
         RenderUtils.drawMinecraftLabel(
             if (showClass) "§${teammate.clazz.colorCode}${teammate.name} §e[${teammate.clazz.name[0]}]" else "§${teammate.clazz.colorCode}${teammate.name}",
-            Vec3(event.x, event.y + 0.5, event.z), 0.05, false
+            Vec3(event.x, event.y + 0.5, event.z), 0.05, depth = false
         )
     }
 }

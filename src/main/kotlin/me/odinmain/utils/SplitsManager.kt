@@ -169,8 +169,8 @@ private val floor6SplitGroup = mutableListOf(
 private val floor7SplitGroup = mutableListOf(
     Split(entryRegexes[6], "§5Maxor"),
     Split(Regex("\\[BOSS] Storm: Pathetic Maxor, just like expected\\."), "§3Storm"),
-    Split(Regex("\\[BOSS] Goldor: Who dares trespass into my domain\\?"), "§6Terminals"),
-    Split(Regex("The Core entrance is opening!"), "§7Goldor"),
+    Split(Regex("^\\[BOSS] Goldor: Who dares trespass into my domain\\?\$"), "§6Terminals"),
+    Split(Regex("^The Core entrance is opening!\$"), "§7Goldor"),
     Split(Regex("\\[BOSS] Necron: You went further than any human before, congratulations\\."), "§cNecron"),
     Split(Regex("\\[BOSS] Necron: All this, for nothing\\.\\.\\."), "§4Cleared"),
 )

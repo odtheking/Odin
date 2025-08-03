@@ -80,7 +80,7 @@ object SimonSays : Module(
     }
 
     init {
-        onMessage(Regex("\\[BOSS] Goldor: Who dares trespass into my domain\\?"), { start && enabled }) {
+        onMessage(Regex("^\\[BOSS] Goldor: Who dares trespass into my domain\\?\$"), { start && enabled }) {
             start()
             modMessage("Starting Simon Says")
         }
