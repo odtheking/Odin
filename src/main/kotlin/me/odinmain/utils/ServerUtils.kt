@@ -1,5 +1,6 @@
 package me.odinmain.utils
 
+import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.PacketEvent
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.clock.Executor.Companion.register
@@ -23,6 +24,7 @@ object ServerUtils {
 
     init {
         Executor(2000, "ServerUtils") {
+            if (mc.isSingleplayer) return@Executor
             pingStartTime = System.nanoTime()
             isPinging = true
 

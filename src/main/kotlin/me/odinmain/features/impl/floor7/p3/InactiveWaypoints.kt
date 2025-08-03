@@ -12,6 +12,7 @@ import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.M7Phases
+import me.odinmain.utils.ui.drawStringWidth
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.util.Vec3
@@ -34,7 +35,27 @@ object InactiveWaypoints : Module(
     private val lineWidth by NumberSetting("Line Width", 2f, 0.1f, 10f, 0.1f, desc = "The width of the box's lines.")
     private val depthCheck by BooleanSetting("Depth check", false, desc = "Boxes show through walls.")
 
+    private val hud by HUD("Term Info", "Shows information about the terminals, levers and devices in the dungeon.") {
+        if (!shouldRender && !it) return@HUD 0f to 0f
+        val y = 1f
+        val width = drawStringWidth("§6Levers ${if (levers == 2) "§a" else "§c"}${levers}§8/§a2", 1f, y, Colors.WHITE)
+        RenderUtils.drawText("§6Terms ${if ((section == 2 && terminals == 5) || (section != 2 && terminals == 4)) "§a" else "§c"}${terminals}§8/§a${if (section == 2) 5 else 4}", 1f, y + 10f, Colors.WHITE)
+        RenderUtils.drawText("§6Device ${if (device) "§a✔" else "§c✘"}", 1f, y + 20f, Colors.WHITE)
+        RenderUtils.drawText("§6Gate ${if (gate) "§a✔" else "§c✘"}", 1f, y + 30f, Colors.WHITE)
+
+        width + 1f to 40f
+    }
+
     private var inactiveList = setOf<Entity>()
+    private var firstInSection = false
+    private var shouldRender = false
+    private var isComplete = false
+    private var lastCompleted = 0
+    private var device = false
+    private var terminals = 0
+    private var gate = false
+    private var section = 1
+    private var levers = 0
 
     init {
         execute(500) {
@@ -43,7 +64,66 @@ object InactiveWaypoints : Module(
                 it is EntityArmorStand && it.name.noControlCodes.containsOneOf("Inactive", "Not Activated", "CLICK HERE", ignoreCase = true) }?.toSet().orEmpty()
         }
 
-        onWorldLoad { inactiveList = emptySet() }
+        onMessage(Regex("^(.{1,16}) (activated|completed) a (terminal|lever|device)! \\((\\d)/(\\d)\\)$")) {
+            val completed = (it.groupValues[4].toIntOrNull() ?: 0).apply { if (this == 1) firstInSection = true }
+
+            if (completed == (it.groupValues[5].toIntOrNull() ?: 0)) {
+                if (gate) newSection()
+                else isComplete = true
+                return@onMessage
+            }
+
+            when (it.groupValues[3]) {
+                "lever" -> levers++
+
+                "terminal" -> terminals++
+
+                "device" -> if (!firstInSection || lastCompleted != completed) device = true
+            }
+            lastCompleted = completed
+        }
+
+        onMessage(Regex("^The gate has been destroyed!$")) {
+            gate = true
+            if (isComplete) newSection()
+        }
+
+        onWorldLoad {
+            resetState()
+        }
+
+        onMessage(Regex("^\\[BOSS] Goldor: Who dares trespass into my domain\\?\$")) {
+            shouldRender = true
+            resetState()
+            section = 1
+        }
+
+        onMessage(Regex("^The Core entrance is opening!$")) {
+            shouldRender = false
+            resetState()
+        }
+    }
+
+    private fun resetState() {
+        inactiveList = emptySet()
+        firstInSection = false
+        lastCompleted = 0
+        isComplete = false
+        device = false
+        terminals = 0
+        gate = false
+        section = 1
+        levers = 0
+    }
+
+    private fun newSection() {
+        firstInSection = false
+        isComplete = false
+        device = false
+        terminals = 0
+        gate = false
+        levers = 0
+        section++
     }
 
     @SubscribeEvent

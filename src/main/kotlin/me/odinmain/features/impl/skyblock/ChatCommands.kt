@@ -52,8 +52,8 @@ object ChatCommands : Module(
     private val time by BooleanSetting("Time", false, desc = "Sends the current time.").withDependency { showSettings }
     private val demote by BooleanSetting("Demote", false, desc = "Executes the /party demote command.").withDependency { showSettings }
     private val promote by BooleanSetting("Promote", false, desc = "Executes the /party promote command.").withDependency { showSettings }
-    private val location by BooleanSetting("Location", true, desc = "Sends your current location.").withDependency { showSettings }
-    private val holding by BooleanSetting("Holding", true, desc = "Sends the item you are holding.").withDependency { showSettings }
+    private val location by BooleanSetting("Location", false, desc = "Sends your current location.").withDependency { showSettings }
+    private val holding by BooleanSetting("Holding", false, desc = "Sends the item you are holding.").withDependency { showSettings }
 
     private val dtReason = mutableListOf<Pair<String, String>>()
     val blacklist: MutableList<String> by ListSetting("Blacklist", mutableListOf())
