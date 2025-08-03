@@ -11,11 +11,15 @@ import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Colors
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
+import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.skyblock.partyMessage
+import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
+import net.minecraft.network.play.client.C03PacketPlayer.C06PacketPlayerPosLook
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
+import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.util.*
 import kotlin.concurrent.schedule
@@ -25,6 +29,7 @@ object PositionalMessages : Module(
     description = "Sends a message when you're near a certain position. /posmsg"
 ) {
     private val onlyDungeons by BooleanSetting("Only in Dungeons", true, desc = "Only sends messages when you're in a dungeon.")
+    private val oncePerWorld by BooleanSetting("Once Per World", false, desc = "Whether or not to only send each message once per world.")
     private val showPositions by BooleanSetting("Show Positions", true, desc = "Draws boxes/lines around the positions.")
     private val cylinderHeight by NumberSetting("Height", 0.2, 0.1, 5.0, 0.1, desc = "Height of the cylinder for in messages.").withDependency { showPositions }
     private val boxThickness by NumberSetting("Box line width", 1f, 0.1f, 5f, 0.1f, desc = "Line width of the box for at messages.").withDependency { showPositions }
@@ -36,10 +41,19 @@ object PositionalMessages : Module(
     val posMessageStrings by ListSetting("Pos Messages", mutableListOf<PosMessage>())
     private val sentMessages = mutableMapOf<PosMessage, Boolean>()
 
-    @SubscribeEvent
-    fun posMessageSend(event: PacketEvent.Send) {
-        if (event.packet !is C04PacketPlayerPosition || (onlyDungeons && !DungeonUtils.inDungeons)) return
-        posMessageStrings.forEach {  message ->
+    init {
+        onPacket<C04PacketPlayerPosition> {
+            posMessageSend()
+        }
+
+        onPacket<C06PacketPlayerPosLook> {
+            posMessageSend()
+        }
+    }
+
+    private fun posMessageSend() {
+        if (onlyDungeons && !DungeonUtils.inDungeons) return
+        posMessageStrings.forEach { message ->
             message.x2?.let { handleInString(message) } ?: handleAtString(message)
         }
     }
@@ -73,7 +87,7 @@ object PositionalMessages : Module(
                     partyMessage(posMessage.message)
             }
             sentMessages[posMessage] = true
-        } else sentMessages[posMessage] = false
+        } else if (!oncePerWorld) sentMessages[posMessage] = false
     }
 
     private fun handleInString(posMessage: PosMessage) {
@@ -84,6 +98,14 @@ object PositionalMessages : Module(
                     partyMessage(posMessage.message)
             }
             sentMessages[posMessage] = true
-        } else sentMessages[posMessage] = false
+        } else if (!oncePerWorld) sentMessages[posMessage] = false
+    }
+
+    @SubscribeEvent
+    fun onWorldLoad(event: WorldEvent.Load) {
+        if (!oncePerWorld) return
+        sentMessages.forEach { (message, _) ->
+            sentMessages[message] = false
+        }
     }
 }
