@@ -102,7 +102,7 @@ object ModuleManager {
     }
 
     private fun tickTaskTick(server: Boolean = false) {
-        tickTasks.removeAll { tickTask ->
+        tickTasks.removeIf { tickTask ->
             if (tickTask.server != server) return@removeAll false
             if (tickTask.ticksLeft <= 0) {
                 runCatching { tickTask.function() }.onFailure { logError(it, this) }
