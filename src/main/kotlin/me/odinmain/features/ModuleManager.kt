@@ -111,8 +111,6 @@ object ModuleManager {
             tickTask.ticksLeft--
             false
         }
-
-        if (tasksToRemove.isNotEmpty()) tickTasks.removeAll(tasksToRemove.toSet())
     }
 
     @SubscribeEvent(receiveCanceled = true)
