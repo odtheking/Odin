@@ -7,10 +7,7 @@ import me.odinmain.clickgui.settings.impl.ListSetting
 import me.odinmain.events.impl.MessageSentEvent
 import me.odinmain.features.Module
 import me.odinmain.features.impl.dungeon.DungeonRequeue.disableRequeue
-import me.odinmain.utils.ServerUtils
-import me.odinmain.utils.capitalizeFirst
-import me.odinmain.utils.noControlCodes
-import me.odinmain.utils.runIn
+import me.odinmain.utils.*
 import me.odinmain.utils.skyblock.*
 import net.minecraft.event.ClickEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -113,11 +110,11 @@ object ChatCommands : Module(
             "8ball" -> if (eightball) channelMessage(responses.random(), name, channel)
             "dice" -> if (dice) channelMessage((1..6).random(), name, channel)
             "racism" -> if (racism) channelMessage("$name is ${Random.nextInt(1, 101)}% racist. Racism is not allowed!", name, channel)
-            "ping" -> if (ping) channelMessage("Current Ping: ${floor(ServerUtils.averagePing).toInt()}ms", name, channel)
-            "tps" -> if (tps) channelMessage("Current TPS: ${ServerUtils.averageTps.toInt()}", name, channel)
-            "fps" -> if (fps) channelMessage("Current FPS: ${mc.debug.split(" ")[0].toIntOrNull() ?: 0}", name, channel)
-            "time" -> if (time) channelMessage("Current Time: ${ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss z"))}", name, channel)
-            "location" -> if (location) channelMessage("Current Location: ${LocationUtils.currentArea.displayName}", name, channel)
+            "ping" -> if (ping) channelMessage("Ping: ${floor(ServerUtils.averagePing).toInt()}ms", name, channel)
+            "tps" -> if (tps) channelMessage("TPS: ${ServerUtils.averageTps.toFixed(1)}", name, channel)
+            "fps" -> if (fps) channelMessage("FPS: ${mc.debug.split(" ")[0].toIntOrNull() ?: 0}", name, channel)
+            "time" -> if (time) channelMessage("Time: ${ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss z"))}", name, channel)
+            "location" -> if (location) channelMessage("Location: ${LocationUtils.currentArea.displayName}", name, channel)
             "holding" -> if (holding) channelMessage("Holding: ${mc.thePlayer?.heldItem?.displayName?.noControlCodes ?: "Nothing :("}", name, channel)
 
             // Party cmds only

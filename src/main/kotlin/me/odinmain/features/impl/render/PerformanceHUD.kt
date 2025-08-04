@@ -7,6 +7,7 @@ import me.odinmain.features.Module
 import me.odinmain.utils.ServerUtils
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Colors
+import me.odinmain.utils.toFixed
 import me.odinmain.utils.ui.drawStringWidth
 
 object PerformanceHUD : Module(
@@ -39,7 +40,7 @@ object PerformanceHUD : Module(
         }
 
         if (showFPS) renderMetric("FPS: ", "${mc.debug?.split(" ")?.get(0)?.toIntOrNull() ?: 0} ")
-        if (showTPS) renderMetric("TPS: ", "${ServerUtils.averageTps.toInt()} ")
+        if (showTPS) renderMetric("TPS: ", "${ServerUtils.averageTps.toFixed(1)} ")
         if (showPing) renderMetric("Ping: ", "${ServerUtils.averagePing.toInt()}ms ")
 
         width to if (direction == HORIZONTAL) lineHeight else height

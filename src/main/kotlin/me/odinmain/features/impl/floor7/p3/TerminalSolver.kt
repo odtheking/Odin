@@ -284,9 +284,16 @@ object TerminalSolver : Module(
 
     @SubscribeEvent
     fun onGuiKeyPress(event: GuiEvent.KeyPress) {
-        if (!enabled || currentTerm == null || (currentTerm?.type == TerminalTypes.MELODY && cancelMelodySolver) || renderType != 3) return
-        if ((event.key == mc.gameSettings?.keyBindDrop?.keyCode || (event.key in 2..10))) {
-            currentTerm?.type?.getGUI()?.mouseClicked(if (event.key == Keyboard.KEY_LCONTROL && event.key == mc.gameSettings.keyBindDrop.keyCode) 1 else 0)
+        if (!enabled || currentTerm == null || (currentTerm?.type == TerminalTypes.MELODY && cancelMelodySolver)) return
+
+        if (renderType != 3 && blockIncorrectClicks &&
+            currentTerm?.canClick((event.gui as? GuiChest)?.slotUnderMouse?.slotIndex ?: return, if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) && event.key == mc.gameSettings.keyBindDrop.keyCode) 1 else 0) == false) {
+            event.isCanceled = true
+            return
+        }
+
+        if (renderType == 3 && (event.key == mc.gameSettings?.keyBindDrop?.keyCode || (event.key in 2..10))) {
+            currentTerm?.type?.getGUI()?.mouseClicked(if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) && event.key == mc.gameSettings.keyBindDrop.keyCode) 1 else 0)
             event.isCanceled = true
         }
     }
