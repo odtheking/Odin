@@ -4,12 +4,13 @@ import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.ArrowEvent
 import me.odinmain.events.impl.PacketEvent
 import me.odinmain.events.impl.PostEntityMetadata
-import me.odinmain.utils.*
+import me.odinmain.events.impl.ServerTickEvent
+import me.odinmain.utils.addVec
+import me.odinmain.utils.postAndCatch
 import net.minecraft.entity.Entity
 import net.minecraft.entity.projectile.EntityArrow
 import net.minecraft.network.play.server.S0EPacketSpawnObject
 import net.minecraft.network.play.server.S13PacketDestroyEntities
-import net.minecraft.network.play.server.S32PacketConfirmTransaction
 import net.minecraft.util.Vec3i
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.util.concurrent.ConcurrentHashMap
@@ -44,12 +45,13 @@ object ArrowTracker {
                     ArrowEvent.Despawn(arrow ?: return@run, owner ?: return@run, entitiesHit).postAndCatch()
                 }
             }
-            is S32PacketConfirmTransaction -> {
-                currentTick++
-                ownedArrows.entries.removeAll { currentTick - it.value.addedTime > 12 }
-            }
-            else -> return@with
         }
+    }
+
+    @SubscribeEvent
+    fun onServerTick(event: ServerTickEvent) {
+        currentTick++
+        ownedArrows.entries.removeAll { currentTick - it.value.addedTime > 12 }
     }
 
     private fun findOwner(packet: EntityArrow): Entity? = with(packet) {

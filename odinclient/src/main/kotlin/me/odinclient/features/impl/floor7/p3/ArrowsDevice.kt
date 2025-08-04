@@ -4,6 +4,7 @@ import me.odinclient.utils.skyblock.PlayerUtils.rightClick
 import me.odinmain.clickgui.settings.Setting.Companion.withDependency
 import me.odinmain.clickgui.settings.impl.*
 import me.odinmain.events.impl.BlockChangeEvent
+import me.odinmain.events.impl.ServerTickEvent
 import me.odinmain.features.Module
 import me.odinmain.utils.*
 import me.odinmain.utils.clock.Clock
@@ -21,7 +22,6 @@ import net.minecraft.client.settings.KeyBinding
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.init.Blocks
 import net.minecraft.inventory.ContainerChest
-import net.minecraft.network.play.server.S32PacketConfirmTransaction
 import net.minecraft.util.*
 import net.minecraftforge.client.event.GuiOpenEvent
 import net.minecraftforge.client.event.RenderWorldLastEvent
@@ -120,24 +120,6 @@ object ArrowsDevice : Module(
             isDeviceComplete = false
         }
 
-        onPacket<S32PacketConfirmTransaction> {
-            serverTicksSinceLastTargetDisappeared = serverTicksSinceLastTargetDisappeared?.let {
-                // There was no target last tick (or the count would be null)
-
-                if (targetPosition != null) return@let null // A target appeared
-                else if (it < 10)  return@let it + 1 // No target yet, count the ticks
-                else if (it == 10) {
-                    // We reached 10 ticks, device is either done, or the player left the stand
-                    if (isPlayerOnStand) onComplete("Device Ticks")
-                    return@let 11
-                } else return@let 11
-            } ?: run {
-                // There was a target last tick (or one appeared this tick
-                // Check if target disappeared, set count accordingly
-                return@run if (targetPosition == null) 0 else null
-            }
-        }
-
         execute(10) {
             if (!triggerBot || !triggerBotClock.hasTimePassed(triggerBotDelay) || mc.thePlayer?.heldItem?.isShortbow == false || DungeonUtils.getF7Phase() != M7Phases.P3) return@execute
             setBowTrajectoryHeading(0f)
@@ -220,7 +202,7 @@ object ArrowsDevice : Module(
     private fun phoenixSwap() {
         val rodSlot = mc.thePlayer?.inventory?.mainInventory?.indexOfFirst { it.isFishingRod } ?: -1
 
-        if (rodSlot < 0 || rodSlot >= 9) return modMessage("§cCouldn't find rod for phoenix swap")
+        if (rodSlot !in 0..<9) return modMessage("§cCouldn't find rod for phoenix swap")
         releaseClick()
 
         isPhoenixSwapping = true
@@ -245,7 +227,7 @@ object ArrowsDevice : Module(
     private fun leap() {
         val leapSlot = mc.thePlayer?.inventory?.mainInventory?.indexOfFirst { it.isLeap } ?: -1
 
-        if (leapSlot < 0 || leapSlot >= 9) return modMessage("§cCouldn't find leap for auto leap")
+        if (leapSlot !in 0..<9) return modMessage("§cCouldn't find leap for auto leap")
 
         if (DungeonUtils.dungeonTeammatesNoSelf.isEmpty()) modMessage("§cNo leap teammates found")
 
@@ -317,6 +299,26 @@ object ArrowsDevice : Module(
         autoState = AutoState.Stopped
 
         if (auto && autoLeap && (!autoLeapOnlyPre || !isDeviceRoomOpen)) leap()
+    }
+
+
+    @SubscribeEvent
+    fun onServerTick(event: ServerTickEvent) {
+        serverTicksSinceLastTargetDisappeared = serverTicksSinceLastTargetDisappeared?.let {
+            // There was no target last tick (or the count would be null)
+
+            if (targetPosition != null) return@let null // A target appeared
+            else if (it < 10)  return@let it + 1 // No target yet, count the ticks
+            else if (it == 10) {
+                // We reached 10 ticks, device is either done, or the player left the stand
+                if (isPlayerOnStand) onComplete("Device Ticks")
+                return@let 11
+            } else return@let 11
+        } ?: run {
+            // There was a target last tick (or one appeared this tick
+            // Check if target disappeared, set count accordingly
+            return@run if (targetPosition == null) 0 else null
+        }
     }
 
     @SubscribeEvent

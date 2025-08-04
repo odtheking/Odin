@@ -6,6 +6,7 @@ import me.odinmain.clickgui.settings.impl.DropdownSetting
 import me.odinmain.clickgui.settings.impl.NumberSetting
 import me.odinmain.clickgui.settings.impl.SelectorSetting
 import me.odinmain.events.impl.ArrowEvent
+import me.odinmain.events.impl.ServerTickEvent
 import me.odinmain.features.Module
 import me.odinmain.features.impl.floor7.DragonCheck.dragonSpawn
 import me.odinmain.features.impl.floor7.DragonCheck.dragonSprayed
@@ -32,7 +33,10 @@ import me.odinmain.utils.ui.getTextWidth
 import net.minecraft.entity.boss.EntityDragonPart
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
-import net.minecraft.network.play.server.*
+import net.minecraft.network.play.server.S04PacketEntityEquipment
+import net.minecraft.network.play.server.S0FPacketSpawnMob
+import net.minecraft.network.play.server.S1CPacketEntityMetadata
+import net.minecraft.network.play.server.S2APacketParticles
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -137,12 +141,13 @@ object WitherDragons : Module(
                 if (sendNotification) modMessage("§${it.colorCode}${it.name} dragon counts.")
             }
         }
+    }
 
-        onPacket<S32PacketConfirmTransaction> {
-            WitherDragonsEnum.entries.forEach { if (it.state == WitherDragonState.SPAWNING && it.timeToSpawn > 0) it.timeToSpawn-- }
-            KingRelics.onServerTick()
-            currentTick++
-        }
+    @SubscribeEvent
+    fun onServerTick(event: ServerTickEvent) {
+        WitherDragonsEnum.entries.forEach { if (it.state == WitherDragonState.SPAWNING && it.timeToSpawn > 0) it.timeToSpawn-- }
+        KingRelics.onServerTick()
+        currentTick++
     }
 
     @SubscribeEvent

@@ -3,6 +3,7 @@ package me.odinmain.features.impl.skyblock
 import me.odinmain.clickgui.settings.impl.BooleanSetting
 import me.odinmain.clickgui.settings.impl.ColorSetting
 import me.odinmain.events.impl.GuiEvent
+import me.odinmain.events.impl.ServerTickEvent
 import me.odinmain.features.Module
 import me.odinmain.utils.capitalizeFirst
 import me.odinmain.utils.equalsOneOf
@@ -15,7 +16,6 @@ import me.odinmain.utils.toFixed
 import me.odinmain.utils.ui.drawStringWidth
 import net.minecraft.client.gui.Gui
 import net.minecraft.item.ItemStack
-import net.minecraft.network.play.server.S32PacketConfirmTransaction
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object InvincibilityTimer : Module(
@@ -79,10 +79,11 @@ object InvincibilityTimer : Module(
                 type.proc()
             }
         }
+    }
 
-        onPacket<S32PacketConfirmTransaction> {
-            InvincibilityType.entries.forEach { it.tick() }
-        }
+    @SubscribeEvent
+    fun onServerTick(event: ServerTickEvent) {
+        InvincibilityType.entries.forEach { it.tick() }
     }
 
     @SubscribeEvent

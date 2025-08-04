@@ -6,6 +6,7 @@ import me.odinmain.clickgui.settings.impl.BooleanSetting
 import me.odinmain.clickgui.settings.impl.ColorSetting
 import me.odinmain.clickgui.settings.impl.KeybindSetting
 import me.odinmain.events.impl.BlockChangeEvent
+import me.odinmain.events.impl.ServerTickEvent
 import me.odinmain.features.Module
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.render.Colors
@@ -17,7 +18,6 @@ import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.toVec3
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.init.Blocks
-import net.minecraft.network.play.server.S32PacketConfirmTransaction
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
 import net.minecraftforge.client.event.RenderWorldLastEvent
@@ -73,27 +73,6 @@ object ArrowsDevice : Module(
             }
         }
 
-        onPacket<S32PacketConfirmTransaction> {
-            serverTicksSinceLastTargetDisappeared = serverTicksSinceLastTargetDisappeared?.let {
-                // There was no target last tick (or the count would be null)
-
-                when {
-                    targetPosition != null -> return@let null // A target appeared
-                    it < 10 -> return@let it + 1 // No target yet, count the ticks
-                    it == 10 -> {
-                        // We reached 10 ticks, device is either done, or the player left the stand
-                        if (isPlayerOnStand) onComplete("Device Ticks")
-                        return@let 11
-                    }
-                    else -> return@let 11
-                }
-            } ?: run {
-                // There was a target last tick (or one appeared this tick
-                // Check if target disappeared, set count accordingly
-                return@run if (targetPosition == null) 0 else null
-            }
-        }
-
         onWorldLoad {
             markedPositions.clear()
             // Reset is called when leaving the device room, but device remains complete across an entire run, so this doesn't belong in reset
@@ -131,6 +110,28 @@ object ArrowsDevice : Module(
         if (!isPlayerInRoom) return markedPositions.clear()
 
         if (!isDeviceComplete && activeArmorStand?.name == ACTIVE_DEVICE_STRING) onComplete("Armor Stand")
+    }
+
+    @SubscribeEvent
+    fun onServerTick(event: ServerTickEvent) {
+        serverTicksSinceLastTargetDisappeared = serverTicksSinceLastTargetDisappeared?.let {
+            // There was no target last tick (or the count would be null)
+
+            when {
+                targetPosition != null -> return@let null // A target appeared
+                it < 10 -> return@let it + 1 // No target yet, count the ticks
+                it == 10 -> {
+                    // We reached 10 ticks, device is either done, or the player left the stand
+                    if (isPlayerOnStand) onComplete("Device Ticks")
+                    return@let 11
+                }
+                else -> return@let 11
+            }
+        } ?: run {
+            // There was a target last tick (or one appeared this tick
+            // Check if target disappeared, set count accordingly
+            return@run if (targetPosition == null) 0 else null
+        }
     }
 
     @SubscribeEvent

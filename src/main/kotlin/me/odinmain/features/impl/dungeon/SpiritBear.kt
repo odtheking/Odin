@@ -1,13 +1,13 @@
 package me.odinmain.features.impl.dungeon
 
 import me.odinmain.events.impl.BlockChangeEvent
+import me.odinmain.events.impl.ServerTickEvent
 import me.odinmain.features.Module
 import me.odinmain.utils.render.Colors
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.toFixed
 import me.odinmain.utils.ui.drawStringWidth
 import net.minecraft.init.Blocks
-import net.minecraft.network.play.server.S32PacketConfirmTransaction
 import net.minecraft.util.BlockPos
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -50,10 +50,6 @@ object SpiritBear : Module(
     private var timer = -1 // state: -1=NotSpawned, 0=Alive, 1+=Spawning
 
     init {
-        onPacket<S32PacketConfirmTransaction> {
-            if (timer > 0) timer--
-        }
-        
         onWorldLoad {
             kills = 0
             timer = -1
@@ -74,5 +70,10 @@ object SpiritBear : Module(
                 if (event.pos == lastBlockLocation) timer = -1
             }
         }
+    }
+
+    @SubscribeEvent
+    fun onServerTick(event: ServerTickEvent) {
+        if (timer > 0) timer--
     }
 }

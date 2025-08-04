@@ -4,6 +4,7 @@ import me.odinmain.clickgui.settings.Setting.Companion.withDependency
 import me.odinmain.clickgui.settings.impl.*
 import me.odinmain.events.impl.BlockChangeEvent
 import me.odinmain.events.impl.RoomEnterEvent
+import me.odinmain.events.impl.ServerTickEvent
 import me.odinmain.features.Module
 import me.odinmain.features.impl.dungeon.puzzlesolvers.WaterSolver.waterInteract
 import me.odinmain.utils.equalsOneOf
@@ -22,7 +23,6 @@ import net.minecraft.block.BlockChest
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
 import net.minecraft.network.play.server.S24PacketBlockAction
-import net.minecraft.network.play.server.S32PacketConfirmTransaction
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -140,11 +140,6 @@ object PuzzleSolvers : Module(
             QuizSolver.onMessage(it.value)
         }
 
-        onPacket<S32PacketConfirmTransaction> {
-            if (!inDungeons || inBoss) return@onPacket
-            if (waterSolver) WaterSolver.onServerTick()
-        }
-
         onPacket<S24PacketBlockAction> { packet ->
             if (!inDungeons || inBoss || packet.blockType !is BlockChest) return@onPacket
             val room = DungeonUtils.currentRoom?.takeIf { room -> room.data.type == RoomType.PUZZLE } ?: return@onPacket
@@ -171,6 +166,12 @@ object PuzzleSolvers : Module(
             QuizSolver.reset()
             TTTSolver.reset()
         }
+    }
+
+    @SubscribeEvent
+    fun onServerTick(event: ServerTickEvent) {
+        if (!inDungeons || inBoss) return
+        if (waterSolver) WaterSolver.onServerTick()
     }
 
     @SubscribeEvent

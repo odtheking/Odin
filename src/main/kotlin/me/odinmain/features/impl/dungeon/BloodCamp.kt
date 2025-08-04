@@ -8,6 +8,7 @@ import me.odinmain.clickgui.settings.impl.DropdownSetting
 import me.odinmain.clickgui.settings.impl.NumberSetting
 import me.odinmain.events.impl.EntityLeaveWorldEvent
 import me.odinmain.events.impl.PostEntityMetadata
+import me.odinmain.events.impl.ServerTickEvent
 import me.odinmain.features.Module
 import me.odinmain.utils.*
 import me.odinmain.utils.ServerUtils.averagePing
@@ -26,7 +27,6 @@ import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.entity.monster.EntityZombie
 import net.minecraft.init.Items
 import net.minecraft.network.play.server.S14PacketEntity.S17PacketEntityLookMove
-import net.minecraft.network.play.server.S32PacketConfirmTransaction
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderGameOverlayEvent
@@ -168,10 +168,6 @@ object BloodCamp : Module(
             }
         }
 
-        onPacket<S32PacketConfirmTransaction> {
-            currentTickTime += 50
-        }
-
         onWorldLoad {
             currentWatcherEntity = null
             entityDataMap.clear()
@@ -188,6 +184,11 @@ object BloodCamp : Module(
         if (!watcherBar || !inDungeons || inBoss || event.type != RenderGameOverlayEvent.ElementType.BOSSHEALTH || BossStatus.bossName.noControlCodes != "The Watcher") return
         val amount = 12 + (DungeonUtils.floor?.floorNumber ?: 0)
         BossStatus.bossName += BossStatus.healthScale.takeIf { it >= 0.05 }?.let { " ${(amount * it).roundToInt()}/$amount" } ?: ""
+    }
+
+    @SubscribeEvent
+    fun onServerTick(event: ServerTickEvent) {
+        currentTickTime += 50
     }
 
     private var startTime: Pair<Long, Long>? = null

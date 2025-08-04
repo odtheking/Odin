@@ -2,6 +2,7 @@ package me.odinmain.features.impl.skyblock
 
 import me.odinmain.clickgui.settings.Setting.Companion.withDependency
 import me.odinmain.clickgui.settings.impl.BooleanSetting
+import me.odinmain.events.impl.ServerTickEvent
 import me.odinmain.features.Module
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.render.Colors
@@ -12,7 +13,7 @@ import me.odinmain.utils.toFixed
 import me.odinmain.utils.ui.drawStringWidth
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.server.S29PacketSoundEffect
-import net.minecraft.network.play.server.S32PacketConfirmTransaction
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import kotlin.math.ceil
 
 object AbilityTimers : Module(
@@ -56,17 +57,18 @@ object AbilityTimers : Module(
             witherImpactTicks = 0
         }
 
-        onPacket<S32PacketConfirmTransaction> {
-            if (witherImpactTicks > 0 && witherHud.enabled) witherImpactTicks--
-            if (enrageTimer > 0  && enrageHud.enabled) enrageTimer--
-            if (tacTimer > 0 && tacHud.enabled) tacTimer--
-        }
-
         onWorldLoad {
             witherImpactTicks = -1
             enrageTimer = 0
             tacTimer = 0
         }
+    }
+
+    @SubscribeEvent
+    fun onServerTick(event: ServerTickEvent) {
+        if (witherImpactTicks > 0 && witherHud.enabled) witherImpactTicks--
+        if (enrageTimer > 0  && enrageHud.enabled) enrageTimer--
+        if (tacTimer > 0 && tacHud.enabled) tacTimer--
     }
 
     private inline val witherImpactText: String get() =

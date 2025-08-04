@@ -1,12 +1,11 @@
 package me.odinmain.utils
 
 import me.odinmain.events.impl.ChatPacketEvent
-import me.odinmain.events.impl.PacketEvent
+import me.odinmain.events.impl.ServerTickEvent
 import me.odinmain.features.impl.skyblock.Splits
 import me.odinmain.features.impl.skyblock.Splits.sendSplits
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonListener
-import net.minecraft.network.play.server.S32PacketConfirmTransaction
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
@@ -97,8 +96,8 @@ object SplitsManager {
     }
 
     @SubscribeEvent
-    fun onPacketReceived(event: PacketEvent.Receive) {
-        if (event.packet is S32PacketConfirmTransaction) tickCounter++
+    fun onServerTick(event: ServerTickEvent) {
+        tickCounter++
     }
 }
 
