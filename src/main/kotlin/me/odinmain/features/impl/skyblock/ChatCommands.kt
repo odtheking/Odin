@@ -129,7 +129,8 @@ object ChatCommands : Module(
                 }
             }
             "allinvite", "allinv" -> if (allinvite && channel == ChatChannel.PARTY && PartyUtils.isLeader()) sendCommand("p settings allinvite")
-            "pt", "ptme", "transfer" -> if (pt && channel == ChatChannel.PARTY && PartyUtils.isLeader()) sendCommand("p transfer ${words.getOrNull(1)?.let { partialName -> findPartyMember(partialName) } ?: name}")
+            "pt", "ptme", "transfer" -> if (pt && channel == ChatChannel.PARTY && PartyUtils.isLeader())
+                sendCommand("p transfer ${words.getOrNull(1)?.let { findPartyMember(it) } ?: name}")
             "downtime", "dt" -> {
                 if (!dt || channel != ChatChannel.PARTY) return
                 val reason = words.drop(1).joinToString(" ").takeIf { it.isNotBlank() } ?: "No reason given"
@@ -146,13 +147,14 @@ object ChatCommands : Module(
                 if (dtReason.isEmpty()) disableRequeue = false
             }
             "f1", "f2", "f3", "f4", "f5", "f6", "f7", "m1", "m2", "m3", "m4", "m5", "m6", "m7", "t1", "t2", "t3", "t4", "t5" -> {
-                if (!queInstance || channel != ChatChannel.PARTY && PartyUtils.isLeader()) return
+                if (!queInstance || channel != ChatChannel.PARTY || !PartyUtils.isLeader()) return
                 modMessage("§8Entering -> §e${words[0].capitalizeFirst()}")
                 sendCommand("od ${words[0].lowercase()}", true)
             }
             "demote" -> if (demote && channel == ChatChannel.PARTY && PartyUtils.isLeader()) sendCommand("p demote $name")
             "promote" -> if (promote && channel == ChatChannel.PARTY && PartyUtils.isLeader()) sendCommand("p promote $name")
-            "kick", "k" -> if (kick && channel == ChatChannel.PARTY && PartyUtils.isLeader()) words.getOrNull(1)?.let { sendCommand("p kick ${words.getOrNull(1)?.let { partialName -> findPartyMember(partialName) ?: partialName } ?: name}") }
+            "kick", "k" -> if (kick && channel == ChatChannel.PARTY && PartyUtils.isLeader())
+                words.getOrNull(1)?.let { sendCommand("p kick ${words.getOrNull(1)?.let { findPartyMember(it) ?: it } ?: name}") }
 
             // Private cmds only
             "invite", "inv" -> if (invite && channel == ChatChannel.PRIVATE) {
@@ -170,7 +172,7 @@ object ChatCommands : Module(
 
     @SubscribeEvent
     fun onMessageSent(event: MessageSentEvent) {
-        if (!chatEmotes ||( event.message.startsWith("/") && !listOf("/pc", "/ac", "/gc", "/msg", "/w", "/r").any { event.message.startsWith(it) })) return
+        if (!chatEmotes || (event.message.startsWith("/") && !listOf("/pc", "/ac", "/gc", "/msg", "/w", "/r").any { event.message.startsWith(it) })) return
 
         var replaced = false
         val words = event.message.split(" ").toMutableList()

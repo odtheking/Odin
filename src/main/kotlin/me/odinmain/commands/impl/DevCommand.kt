@@ -155,6 +155,10 @@ val devCommand = Commodore("oddev") {
         """.trimIndent(), "")
     }
 
+    literal("party").runs {
+        modMessage("${PartyUtils.isInParty}, ${PartyUtils.partyLeader}, ${PartyUtils.partyMembers}")
+    }
+
     literal("simulate").runs { str: GreedyString ->
         mc.thePlayer.addChatMessage(ChatComponentText(str.string))
         PacketEvent.Receive(S02PacketChat(ChatComponentText(str.string))).postAndCatch()
