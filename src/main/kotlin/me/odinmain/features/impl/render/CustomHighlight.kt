@@ -71,7 +71,7 @@ object CustomHighlight : Module(
     }
 
     private fun checkStarred(entity: Entity) {
-        if (entity !is EntityArmorStand || !entity.name.startsWith("§6✯ ") || !entity.name.endsWith("§c❤") || currentEntities.any { it.entity == entity} || (!entity.alwaysRenderNameTag && depthCheck)) return
+        if (entity !is EntityArmorStand || !entity.name.contains("§6✯ ") || !entity.name.endsWith("§c❤") || currentEntities.any { it.entity == entity} || (!entity.alwaysRenderNameTag && depthCheck)) return
         currentEntities.add(HighlightEntity(getMobEntity(entity) ?: return, starredColor, thickness, depthCheck, style))
     }
 
