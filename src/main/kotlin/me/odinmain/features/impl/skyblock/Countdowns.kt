@@ -24,7 +24,7 @@ object Countdowns : Module(
         countdowns.forEach {
             w = maxOf(w, drawStringWidth(
                 "§r${it.prefix}${it.time.toFixed(divisor = 20)}",
-                1f, w, Colors.WHITE
+                1f, h, Colors.WHITE
             ))
             h += lineHeight
         }

@@ -1,19 +1,17 @@
 package me.odinmain.commands.impl
 
 import com.github.stivais.commodore.Commodore
-import com.github.stivais.commodore.utils.GreedyString
 import me.odinmain.config.Config
 import me.odinmain.features.impl.skyblock.Countdowns.countdownTriggers
 import me.odinmain.features.impl.skyblock.Countdowns.CountdownTrigger
 import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.toFixed
 
-
 val CountdownsCommand = Commodore("countdowns") {
-    literal("add").runs { prefix: String, time: Int, message: GreedyString ->
-        countdownTriggers.add(CountdownTrigger(prefix, time, message.string).takeUnless { it in countdownTriggers }
+    literal("add").runs { prefix: String, time: Int, message: String ->
+        countdownTriggers.add(CountdownTrigger(prefix, time, message).takeUnless { it in countdownTriggers }
             ?: return@runs modMessage("This message already exists!"))
-        modMessage("$prefix${time.toFixed(divisor = 20)}, Triggers by \"$message.string\"")
+        modMessage("$prefix${time.toFixed(divisor = 20)}, Triggers by \"$message\"")
         Config.save()
     }
 
