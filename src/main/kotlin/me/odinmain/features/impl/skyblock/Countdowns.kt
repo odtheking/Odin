@@ -6,6 +6,7 @@ import me.odinmain.features.Module
 import me.odinmain.utils.render.Colors
 import me.odinmain.utils.toFixed
 import me.odinmain.utils.ui.drawStringWidth
+import me.odinmain.utils.ui.getMCTextHeight
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.util.concurrent.CopyOnWriteArrayList
 
@@ -14,18 +15,21 @@ object Countdowns : Module(
     description = "Starts a countdown in HUD when you receive certain chat messages." // "/countdowns (coming soon)"
 ) {
     private val hud by HUD("Hud", "Displays something i can't tell.", false) { example ->
-        if (example) {
-            "Some Timer: 4.30s"
-        } else {
-            countdowns.joinToString("\n") {
-                "§r${it.prefix}${it.time.toFixed(divisor = 20)}"
-            }
-        }.let {
-            if (it.isNotEmpty())
-                drawStringWidth(it, 1f, 1f, Colors.WHITE) + 2f to 10f
-            else
-                0f to 0f
+        if (example) return@HUD drawStringWidth("Some Countdown: 3.50s", 1f, 1f, Colors.WHITE) to 10f
+
+        var w = 1f
+        var h = 1f
+        val lineHeight = getMCTextHeight()
+
+        countdowns.forEach {
+            w = maxOf(w, drawStringWidth(
+                "§r${it.prefix}${it.time.toFixed(divisor = 20)}",
+                1f, w, Colors.WHITE
+            ))
+            h += lineHeight
         }
+
+        if (h == 1f) (0f to 0f) else (w to h)
     }
 
     data class CountdownTrigger(val prefix: String, val time: Int, val message: String)
@@ -41,6 +45,10 @@ object Countdowns : Module(
             }?.let {
                 countdowns.add(Countdown(it.prefix, it.time))
             }
+        }
+
+        onWorldLoad {
+            countdowns.clear()
         }
     }
 

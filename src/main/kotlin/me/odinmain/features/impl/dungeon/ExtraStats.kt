@@ -84,6 +84,7 @@ object ExtraStats : Module(
 
         onMessage(Regex("^\\s*(Ally Healing: ([\\d,.]+)\\s?(\\(NEW RECORD!\\))?)\$")) {
             extraStats.healPB = it.groupValues[3].isNotEmpty()
+            formatNumber(it.groupValues[2])
             extraStats.heal = formatNumber(it.groupValues[2]) + if (extraStats.healPB) "(NEW PB!)" else ""
             extraStats.combatStats.add("§a${it.groupValues[1]}")
         }

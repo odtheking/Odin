@@ -204,9 +204,10 @@ object ChatCommands : Module(
     fun onPacket(event: PacketEvent.Send) {
         (event.packet as? C01PacketChatMessage)?.let {
             if (!noMoreLocraw || it.message != "/locraw") return
-            when (locrawSent) {
-                true -> event.isCanceled = true
-                else -> locrawSent = true
+            if (locrawSent) {
+                event.isCanceled = true
+            } else {
+                locrawSent = true
             }
         }
     }

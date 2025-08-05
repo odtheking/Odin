@@ -248,24 +248,25 @@ fun EntityLivingBase?.getSBMaxHealth(): Float {
     return this?.getEntityAttribute(SharedMonsterAttributes.maxHealth)?.baseValue?.toFloat() ?: 0f
 }
 
-fun formatNumber(unFormatNumber: Any): String { // todo: cleanup
-    val number: Double = when (unFormatNumber) {
-        is String -> unFormatNumber.replace(",", "").toDoubleOrNull() ?: 0.0
-        is Number -> unFormatNumber.toDouble()
-        else -> unFormatNumber.toString().toDoubleOrNull() ?: 0.0
-    }
+private val oneDecimalFormat = DecimalFormat("#.#")
 
-    return when {
-        number.absoluteValue < 1000 -> number.formatOneOrNoDecimal()
-        number.absoluteValue >= 1_000_000_000 -> (number / 1_000_000_000).formatOneOrNoDecimal()+"B"
-        number.absoluteValue >= 1_000_000 -> (number / 1_000_000).formatOneOrNoDecimal()+"M"
-        number.absoluteValue >= 1000 -> (number / 1000).formatOneOrNoDecimal()+"K"
-        else -> number.toString()
+fun Number.formatOneOrNoDecimal(): String {
+    return oneDecimalFormat.format(this)
+}
+
+fun formatNumber(number: Number): String {
+    val number = number.toDouble()
+    number.absoluteValue.let {
+        return when {
+            it >= 1_000_000_000_000 ->  (number / 1_000_000_000_000).formatOneOrNoDecimal() + "T"
+            it >= 1_000_000_000 ->      (number / 1_000_000_000).formatOneOrNoDecimal() + "B"
+            it >= 1_000_000 ->          (number / 1_000_000).formatOneOrNoDecimal() + "M"
+            it >= 1_000 ->              (number / 1_000).formatOneOrNoDecimal() + "K"
+            else -> number.formatOneOrNoDecimal()
+        }
     }
 }
 
-private val oneDecimalFormat = DecimalFormat("#.#")
-
-fun Double.formatOneOrNoDecimal(): String {
-    return oneDecimalFormat.format(this)
+fun formatNumber(number: String): String{
+    return formatNumber(number.replace(",", "").replace(" ", "").toDoubleOrNull() ?: 0.0)
 }
