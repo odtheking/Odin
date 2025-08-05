@@ -58,6 +58,9 @@ fun String.containsOneOf(options: Collection<String>, ignoreCase: Boolean = fals
 fun Number.toFixed(decimals: Int = 2): String =
     "%.${decimals}f".format(Locale.US, this)
 
+fun Number.toFixed(decimals: Int = 2, divisor: Int): String =
+    "%.${decimals}f".format(Locale.US, this / divisor)
+
 fun String.startsWithOneOf(vararg options: String, ignoreCase: Boolean = false): Boolean =
     options.any { this.startsWith(it, ignoreCase) }
 
@@ -245,7 +248,7 @@ fun EntityLivingBase?.getSBMaxHealth(): Float {
     return this?.getEntityAttribute(SharedMonsterAttributes.maxHealth)?.baseValue?.toFloat() ?: 0f
 }
 
-fun formatNumber(unFormatNumber: Any): String {
+fun formatNumber(unFormatNumber: Any): String { // todo: cleanup
     val number: Double = when (unFormatNumber) {
         is String -> unFormatNumber.replace(",", "").toDoubleOrNull() ?: 0.0
         is Number -> unFormatNumber.toDouble()

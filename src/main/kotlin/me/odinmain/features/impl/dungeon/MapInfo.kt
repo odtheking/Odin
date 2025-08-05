@@ -115,7 +115,8 @@ object MapInfo : Module(
         return when {
             score < 270 -> "§c${score}"
             score < 300 -> "§e${score}"
-            else -> "§a${score}"
+            score < 305 -> "§a${score}"
+            else -> "§b${score}"
         }
     }
 
