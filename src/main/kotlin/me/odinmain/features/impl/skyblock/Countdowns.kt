@@ -1,5 +1,6 @@
 package me.odinmain.features.impl.skyblock
 
+
 import me.odinmain.clickgui.settings.Setting.Companion.withDependency
 import me.odinmain.clickgui.settings.impl.ActionSetting
 import me.odinmain.clickgui.settings.impl.DropdownSetting
@@ -8,7 +9,6 @@ import me.odinmain.events.impl.ServerTickEvent
 import me.odinmain.features.Module
 import me.odinmain.utils.addOrNull
 import me.odinmain.utils.render.Colors
-import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.toFixed
 import me.odinmain.utils.ui.drawStringWidth
 import me.odinmain.utils.ui.getMCTextHeight
@@ -39,14 +39,11 @@ object Countdowns : Module(
     }
 
     data class CountdownTrigger(val prefix: String, val time: Int, val regex: Boolean, val message: String) {
-        val a = modMessage("wtf? created")
         @Transient
-        val realRegex: Regex? = if (regex) {
+        var realRegex: Regex? = if (regex) {
             try {
-                modMessage("Recompiling regex for message: $message")
                 Regex(message)
             } catch (e: PatternSyntaxException) {
-                modMessage("Bad regex for message: $message")
                 null
             }
         } else {
@@ -65,6 +62,16 @@ object Countdowns : Module(
     private val countdowns = CopyOnWriteArrayList<Countdown>()
 
     init {
+        countdownTriggers.forEach{ it.realRegex = if (it.regex) {
+            try {
+                Regex(it.message)
+            } catch (e: PatternSyntaxException) {
+                null
+            }
+        } else {
+            null
+        }}
+
         onMessage(Regex(".*")) { result ->
             countdownTriggers.firstOrNull {
                 if (it.regex) (it.realRegex?.let { regex -> result.value.matches(regex) } ?: false) else (it.message == result.value)
