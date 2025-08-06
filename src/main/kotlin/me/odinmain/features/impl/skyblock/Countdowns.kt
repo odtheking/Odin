@@ -40,8 +40,10 @@ object Countdowns : Module(
     data class CountdownTrigger(val prefix: String, val time: Int, val regex: Boolean, val message: String) {
         @Transient
         var realRegex: Regex? = try {
+            print(message)
             if (regex) Regex(message) else null
         } catch(e: PatternSyntaxException) { // it refuses to work
+            print(false)
             null
         }
     }
