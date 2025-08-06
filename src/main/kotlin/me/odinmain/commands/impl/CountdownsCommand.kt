@@ -1,6 +1,7 @@
 package me.odinmain.commands.impl
 
 import com.github.stivais.commodore.Commodore
+import com.github.stivais.commodore.utils.GreedyString
 import me.odinmain.config.Config
 import me.odinmain.features.impl.skyblock.Countdowns.countdownTriggers
 import me.odinmain.features.impl.skyblock.Countdowns.CountdownTrigger
@@ -9,15 +10,15 @@ import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.toFixed
 
 val CountdownsCommand = Commodore("countdowns") {
-    literal("add").runs { prefix: String, time: Int, message: String ->
-        countdownTriggers.addOrNull(CountdownTrigger(prefix, time, false, message)) ?: return@runs modMessage("This thing already exists!")
+    literal("add").runs { prefix: String, time: Int, message: GreedyString ->
+        countdownTriggers.addOrNull(CountdownTrigger(prefix, time, false, message.string)) ?: return@runs modMessage("This thing already exists!")
         modMessage("$prefix${time.toFixed(divisor = 20)}, Triggers by \"$message\"")
         Config.save()
     }
 
-    literal("addregex").runs { prefix: String, time: Int, message: String ->
-        if (runCatching { Regex(message) }.isFailure) return@runs modMessage("Bad regex!")
-        countdownTriggers.addOrNull(CountdownTrigger(prefix, time, true, message)) ?: return@runs modMessage("This thing already exists!")
+    literal("addregex").runs { prefix: String, time: Int, message: GreedyString ->
+        if (runCatching { Regex(message.string) }.isFailure) return@runs modMessage("Bad regex!")
+        countdownTriggers.addOrNull(CountdownTrigger(prefix, time, true, message.string)) ?: return@runs modMessage("This thing already exists!")
         modMessage("$prefix${time.toFixed(divisor = 20)}, Triggers by regex \"$message\"")
         Config.save()
     }
@@ -38,7 +39,7 @@ val CountdownsCommand = Commodore("countdowns") {
     literal("list").runs {
         var i = 0
         val output = countdownTriggers.joinToString("\n") {
-            "${++i}: ${it.prefix}${it.time.toFixed(divisor = 20)}, \"${it.message}\""
+            "${++i}: ${it.prefix}${it.time.toFixed(divisor = 20)}, ${if (it.regex) "regex" else "normal"} \"${it.message}\""
         }
         modMessage(if (countdownTriggers.isEmpty()) "The list is empty!" else "Countdown Trigger list:\n$output")
     }

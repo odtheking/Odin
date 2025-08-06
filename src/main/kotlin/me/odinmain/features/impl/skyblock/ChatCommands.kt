@@ -111,9 +111,6 @@ object ChatCommands : Module(
             ChatChannel.PRIVATE -> mapOf ("coords" to coords, "odin" to odin, "boop" to boop, "cf" to cf, "8ball" to eightball, "dice" to dice, "racism" to racism, "ping" to ping, "tps" to tps, "invite" to invite, "time" to time)
         }
 
-        modMessage(message.drop(1))
-        modMessage(message.drop(1).length)
-        modMessage(message.drop(1).split(""))// i mean i don't understand, doesn't split sometimes result you an empty list
         val words = message.drop(1).split(" ").map { it.lowercase() }
 
         when (words[0]) {

@@ -41,7 +41,7 @@ object Countdowns : Module(
         @Transient
         var realRegex: Regex? = try {
             if (regex) Regex(message) else null
-        } catch(e: PatternSyntaxException) { // it refused to work
+        } catch(e: PatternSyntaxException) { // it refuses to work
             null
         }
     }
@@ -49,8 +49,8 @@ object Countdowns : Module(
 
     private val presetsDropdown by DropdownSetting("Add Presets")
     private val presetQuiz by ActionSetting("Quiz", desc = "wtf") {
-        countdownTriggers.addOrNull(CountdownTrigger("§eQuiz: §f", 240, false, "[STATUE] Oruo the Omniscient: I am Oruo the Omniscient. I have lived many lives. I have learned all there is to know."))
-        countdownTriggers.addOrNull(CountdownTrigger("§eQuiz: §f", 164, true, "[STATUE] Oruo the Omniscient: FlyMode answered Question #2 correctly!"))
+        countdownTriggers.addOrNull(CountdownTrigger("§eQuiz: §f", 220, false, "[STATUE] Oruo the Omniscient: I am Oruo the Omniscient. I have lived many lives. I have learned all there is to know."))
+        countdownTriggers.addOrNull(CountdownTrigger("§eQuiz: §f", 140, true, "\\[STATUE\\] Oruo the Omniscient: \\w{1,16} answered Question #[12] correctly!"))
     }.withDependency { presetsDropdown }
 
     private data class Countdown(val prefix: String, var time: Int)
