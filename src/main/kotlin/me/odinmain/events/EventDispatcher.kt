@@ -52,9 +52,4 @@ object EventDispatcher {
             event.isCanceled = true
 
     }
-
-    @SubscribeEvent
-    fun onServerTick(event: ServerTickEvent) {
-
-    }
 }

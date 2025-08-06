@@ -10,6 +10,7 @@ import me.odinmain.utils.skyblock.ClickType
 import me.odinmain.utils.ui.animations.ColorAnimation
 import me.odinmain.utils.ui.isAreaHovered
 import me.odinmain.utils.ui.rendering.NVGRenderer
+import kotlin.math.ceil
 import kotlin.math.floor
 
 abstract class TermGui {
@@ -43,7 +44,7 @@ abstract class TermGui {
 
         val colorAnim = colorAnimations.getOrPut(index) { ColorAnimation(250) }
 
-        NVGRenderer.rect(floor(x), floor(y), floor(slotSize), floor(slotSize), colorAnim.get(startColor, endColor, true).rgba, TerminalSolver.roundness)
+        NVGRenderer.rect(floor(x), floor(y), ceil(slotSize), ceil(slotSize), colorAnim.get(startColor, endColor, true).rgba, TerminalSolver.roundness)
         return x to y
     }
 

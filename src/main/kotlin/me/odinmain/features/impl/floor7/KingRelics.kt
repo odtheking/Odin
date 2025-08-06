@@ -47,7 +47,7 @@ object KingRelics {
 
         Relic.entries.find { it.id == currentRelic.id }?.let {
             if (it == Relic.None) return
-            relicPBs.time(it.ordinal, (serverTickCounter - relicPlaceTick) / 20.0, "s§7!", "§${it.colorCode}${it.name} relic §7took §6", addPBString = true, addOldPBString = true, sendOnlyPB = false, sendMessage = relicAnnounceTime)
+            relicPBs.time(it.ordinal, (serverTickCounter - relicPlaceTick) / 20.0, "s§7!", "§${it.colorCode}${it.name} relic §7placed in §6", addPBString = true, addOldPBString = true, sendOnlyPB = false, sendMessage = relicAnnounceTime)
             relicPlaceTick = 0L
         }
     }
@@ -57,7 +57,7 @@ object KingRelics {
 
         Relic.entries.find { it.id == packet.itemStack?.skyblockID }?.let { relic ->
             if (relic != Relic.None && relicPlaceTick > 0)
-                modMessage("§${relic.colorCode}${relic.name} relic §7placed in §6${(serverTickCounter - relicPlaceTick) / 20f}s")
+                modMessage("§${relic.colorCode}${relic.name} relic §7spawned in §6${(serverTickCounter - relicPlaceTick) / 20f}s")
         }
     }
 
