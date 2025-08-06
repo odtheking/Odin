@@ -1,18 +1,23 @@
 package me.odinmain.features.impl.skyblock
 
+import me.odinmain.clickgui.settings.Setting.Companion.withDependency
+import me.odinmain.clickgui.settings.impl.ActionSetting
+import me.odinmain.clickgui.settings.impl.DropdownSetting
 import me.odinmain.clickgui.settings.impl.ListSetting
 import me.odinmain.events.impl.ServerTickEvent
 import me.odinmain.features.Module
+import me.odinmain.utils.addOrNull
 import me.odinmain.utils.render.Colors
 import me.odinmain.utils.toFixed
 import me.odinmain.utils.ui.drawStringWidth
 import me.odinmain.utils.ui.getMCTextHeight
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.util.concurrent.CopyOnWriteArrayList
+import java.util.regex.PatternSyntaxException
 
 object Countdowns : Module(
     name = "Countdowns",
-    description = "Starts a countdown in HUD when you receive certain chat messages." // "/countdowns (coming soon)"
+    description = "Starts a countdown in HUD when you trigger certain chat message, or regex expressions."
 ) {
     private val hud by HUD("Hud", "Displays something i can't tell.", false) { example ->
         if (example) return@HUD drawStringWidth("Some Countdown: 3.50s", 1f, 1f, Colors.WHITE) to 10f
@@ -32,8 +37,21 @@ object Countdowns : Module(
         if (h == 1f) (0f to 0f) else (w to h)
     }
 
-    data class CountdownTrigger(val prefix: String, val time: Int, val message: String)
+    data class CountdownTrigger(val prefix: String, val time: Int, val regex: Boolean, val message: String) {
+        @Transient
+        var realRegex: Regex? = try {
+            if (regex) Regex(message) else null
+        } catch(e: PatternSyntaxException) { // it refused to work
+            null
+        }
+    }
     val countdownTriggers by ListSetting("Countdowns", mutableListOf<CountdownTrigger>())
+
+    private val presetsDropdown by DropdownSetting("Add Presets")
+    private val presetQuiz by ActionSetting("Quiz", desc = "wtf") {
+        countdownTriggers.addOrNull(CountdownTrigger("§eQuiz: §f", 240, false, "[STATUE] Oruo the Omniscient: I am Oruo the Omniscient. I have lived many lives. I have learned all there is to know."))
+        countdownTriggers.addOrNull(CountdownTrigger("§eQuiz: §f", 164, true, "[STATUE] Oruo the Omniscient: FlyMode answered Question #2 correctly!"))
+    }.withDependency { presetsDropdown }
 
     private data class Countdown(val prefix: String, var time: Int)
     private val countdowns = CopyOnWriteArrayList<Countdown>()
@@ -41,7 +59,7 @@ object Countdowns : Module(
     init {
         onMessage(Regex(".*")) { result ->
             countdownTriggers.firstOrNull {
-                it.message == result.value
+                if (it.regex) (it.realRegex?.let { regex -> result.value.matches(regex) } ?: false) else (it.message == result.value)
             }?.let {
                 countdowns.add(Countdown(it.prefix, it.time))
             }

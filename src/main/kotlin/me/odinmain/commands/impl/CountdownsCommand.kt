@@ -4,14 +4,21 @@ import com.github.stivais.commodore.Commodore
 import me.odinmain.config.Config
 import me.odinmain.features.impl.skyblock.Countdowns.countdownTriggers
 import me.odinmain.features.impl.skyblock.Countdowns.CountdownTrigger
+import me.odinmain.utils.addOrNull
 import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.toFixed
 
 val CountdownsCommand = Commodore("countdowns") {
     literal("add").runs { prefix: String, time: Int, message: String ->
-        countdownTriggers.add(CountdownTrigger(prefix, time, message).takeUnless { it in countdownTriggers }
-            ?: return@runs modMessage("This message already exists!"))
+        countdownTriggers.addOrNull(CountdownTrigger(prefix, time, false, message)) ?: return@runs modMessage("This thing already exists!")
         modMessage("$prefix${time.toFixed(divisor = 20)}, Triggers by \"$message\"")
+        Config.save()
+    }
+
+    literal("addregex").runs { prefix: String, time: Int, message: String ->
+        if (runCatching { Regex(message) }.isFailure) return@runs modMessage("Bad regex!")
+        countdownTriggers.addOrNull(CountdownTrigger(prefix, time, true, message)) ?: return@runs modMessage("This thing already exists!")
+        modMessage("$prefix${time.toFixed(divisor = 20)}, Triggers by regex \"$message\"")
         Config.save()
     }
 

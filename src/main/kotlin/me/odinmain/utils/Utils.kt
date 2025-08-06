@@ -234,6 +234,15 @@ inline fun <T> MutableCollection<T>.removeFirstOrNull(predicate: (T) -> Boolean)
     return first
 }
 
+fun <T> MutableList<T>.addOrNull(element: T): T? {
+    return if (element in this) {
+        null
+    } else {
+        this.add(element)
+        element
+    }
+}
+
 fun Int.addRange(add: Int): IntRange = this..this+add
 
 fun runOnMCThread(run: () -> Unit) {
