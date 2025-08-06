@@ -345,7 +345,7 @@ object RenderOptimizer : Module(
                 entity.lastTickPosZ = entity.posZ
             }
 
-            if (showStarredNametags && entity is EntityArmorStand && entity.name.startsWith("§6✯ ")) {
+            if (showStarredNametags && entity is EntityArmorStand && entity.name.matches(starredRegex)) {
                 mc.renderManager.renderEntitySimple(entity, partialTicks)
                 continue
             }
