@@ -4,7 +4,7 @@ package me.odinmain.features.impl.skyblock
 import me.odinmain.clickgui.settings.Setting.Companion.withDependency
 import me.odinmain.clickgui.settings.impl.ActionSetting
 import me.odinmain.clickgui.settings.impl.DropdownSetting
-import me.odinmain.clickgui.settings.impl.ListSettingWithReload
+import me.odinmain.clickgui.settings.impl.ListSetting
 import me.odinmain.events.impl.ServerTickEvent
 import me.odinmain.features.Module
 import me.odinmain.utils.addOrNull
@@ -50,7 +50,7 @@ object Countdowns : Module(
             null
         }
     }
-    val countdownTriggers by ListSettingWithReload("Countdowns", mutableListOf<CountdownTrigger>()) { it.copy() }
+    val countdownTriggers by ListSetting("Countdowns", mutableListOf<CountdownTrigger>()) { it.copy() }
 
     private val presetsDropdown by DropdownSetting("Add Presets")
     private val presetQuiz by ActionSetting("Quiz", desc = "Quiz puzzle in dungeons.") {

@@ -39,7 +39,7 @@ val CountdownsCommand = Commodore("countdowns") {
     literal("list").runs {
         var i = 0
         val output = countdownTriggers.joinToString("\n") {
-            "${++i}: ${it.prefix}${it.time.toFixed(divisor = 20)}, ${if (it.regex) "regex" else "normal"} \"${it.message}\", $it.realRegex"
+            "${++i}: ${it.prefix}${it.time.toFixed(divisor = 20)}, ${if (it.regex) "regex" else "normal"} \"${it.message}\""
         }
         modMessage(if (countdownTriggers.isEmpty()) "The list is empty!" else "Countdown Trigger list:\n$output")
     }

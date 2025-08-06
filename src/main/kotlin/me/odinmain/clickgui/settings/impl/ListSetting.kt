@@ -11,10 +11,11 @@ import java.lang.reflect.Type
  *
  * @author Stivais
  */
-open class ListSetting<E, T : MutableCollection<E>>(
+class ListSetting<E, T : MutableCollection<E>>(
     name: String,
     override val default: T,
-    protected val type: Type,
+    private val type: Type,
+    private val reloader: ((E) -> E)? = null
 ) : Setting<T>(name, description = ""), Saving {
 
     override var value: T = default
@@ -22,10 +23,10 @@ open class ListSetting<E, T : MutableCollection<E>>(
     override fun write(): JsonElement = gson.toJsonTree(value)
 
     override fun read(element: JsonElement?) {
-        element?.asJsonArray?.let {
-            val temp = gson.fromJson<T>(it, type)
+        element?.asJsonArray?.let { ja ->
+            val temp = gson.fromJson<T>(ja, type)
             value.clear()
-            value.addAll(temp)
+            value.addAll(reloader?.let{ temp.map(it) } ?: temp)
         }
     }
 }
@@ -33,27 +34,5 @@ open class ListSetting<E, T : MutableCollection<E>>(
 inline fun <reified E : Any, reified T : MutableCollection<E>> ListSetting(
     name: String,
     default: T,
-): ListSetting<E, T> = ListSetting(name, default, object : TypeToken<T>() {}.type)
-
-
-class ListSettingWithReload<E, T : MutableCollection<E>>(
-    name: String,
-    default: T,
-    type: Type,
-    private val reconstructor: (E) -> E
-) : ListSetting<E, T>(name, default, type) {
-
-    override fun read(element: JsonElement?) {
-        element?.asJsonArray?.let {
-            val temp = gson.fromJson<T>(it, type)
-            value.clear()
-            value.addAll(temp.map(reconstructor))
-        }
-    }
-}
-
-inline fun <reified E : Any, reified T : MutableCollection<E>> ListSettingWithReload(
-    name: String,
-    default: T,
-    noinline reconstructor: (E) -> E
-): ListSettingWithReload<E, T> = ListSettingWithReload(name, default, object : TypeToken<T>() {}.type, reconstructor)
+    noinline reloader: ((E) -> E)? = null
+): ListSetting<E, T> = ListSetting(name, default, object : TypeToken<T>() {}.type, reloader)
