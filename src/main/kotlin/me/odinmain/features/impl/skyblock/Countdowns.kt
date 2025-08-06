@@ -4,7 +4,7 @@ package me.odinmain.features.impl.skyblock
 import me.odinmain.clickgui.settings.Setting.Companion.withDependency
 import me.odinmain.clickgui.settings.impl.ActionSetting
 import me.odinmain.clickgui.settings.impl.DropdownSetting
-import me.odinmain.clickgui.settings.impl.ListSetting
+import me.odinmain.clickgui.settings.impl.ListSettingWithReload
 import me.odinmain.events.impl.ServerTickEvent
 import me.odinmain.features.Module
 import me.odinmain.utils.addOrNull
@@ -50,10 +50,10 @@ object Countdowns : Module(
             null
         }
     }
-    val countdownTriggers by ListSetting("Countdowns", mutableListOf<CountdownTrigger>())
+    val countdownTriggers by ListSettingWithReload("Countdowns", mutableListOf<CountdownTrigger>()) { it.copy() }
 
     private val presetsDropdown by DropdownSetting("Add Presets")
-    private val presetQuiz by ActionSetting("Quiz", desc = "wtf") {
+    private val presetQuiz by ActionSetting("Quiz", desc = "Quiz puzzle in dungeons.") {
         countdownTriggers.addOrNull(CountdownTrigger("§eQuiz: §f", 220, false, "[STATUE] Oruo the Omniscient: I am Oruo the Omniscient. I have lived many lives. I have learned all there is to know."))
         countdownTriggers.addOrNull(CountdownTrigger("§eQuiz: §f", 140, true, "\\[STATUE\\] Oruo the Omniscient: \\w{1,16} answered Question #[12] correctly!"))
     }.withDependency { presetsDropdown }
@@ -62,16 +62,6 @@ object Countdowns : Module(
     private val countdowns = CopyOnWriteArrayList<Countdown>()
 
     init {
-        countdownTriggers.forEach{ it.realRegex = if (it.regex) {
-            try {
-                Regex(it.message)
-            } catch (e: PatternSyntaxException) {
-                null
-            }
-        } else {
-            null
-        }}
-
         onMessage(Regex(".*")) { result ->
             countdownTriggers.firstOrNull {
                 if (it.regex) (it.realRegex?.let { regex -> result.value.matches(regex) } ?: false) else (it.message == result.value)

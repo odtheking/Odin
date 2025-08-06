@@ -11,10 +11,10 @@ import java.lang.reflect.Type
  *
  * @author Stivais
  */
-class ListSetting<E, T : MutableCollection<E>>(
+open class ListSetting<E, T : MutableCollection<E>>(
     name: String,
     override val default: T,
-    private val type: Type
+    protected val type: Type,
 ) : Setting<T>(name, description = ""), Saving {
 
     override var value: T = default
@@ -34,3 +34,26 @@ inline fun <reified E : Any, reified T : MutableCollection<E>> ListSetting(
     name: String,
     default: T,
 ): ListSetting<E, T> = ListSetting(name, default, object : TypeToken<T>() {}.type)
+
+
+class ListSettingWithReload<E, T : MutableCollection<E>>(
+    name: String,
+    default: T,
+    type: Type,
+    private val reconstructor: (E) -> E
+) : ListSetting<E, T>(name, default, type) {
+
+    override fun read(element: JsonElement?) {
+        element?.asJsonArray?.let {
+            val temp = gson.fromJson<T>(it, type)
+            value.clear()
+            value.addAll(temp.map(reconstructor))
+        }
+    }
+}
+
+inline fun <reified E : Any, reified T : MutableCollection<E>> ListSettingWithReload(
+    name: String,
+    default: T,
+    noinline reconstructor: (E) -> E
+): ListSettingWithReload<E, T> = ListSettingWithReload(name, default, object : TypeToken<T>() {}.type, reconstructor)
