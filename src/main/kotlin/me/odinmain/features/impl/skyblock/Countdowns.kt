@@ -8,6 +8,7 @@ import me.odinmain.events.impl.ServerTickEvent
 import me.odinmain.features.Module
 import me.odinmain.utils.addOrNull
 import me.odinmain.utils.render.Colors
+import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.toFixed
 import me.odinmain.utils.ui.drawStringWidth
 import me.odinmain.utils.ui.getMCTextHeight
@@ -38,13 +39,20 @@ object Countdowns : Module(
     }
 
     data class CountdownTrigger(val prefix: String, val time: Int, val regex: Boolean, val message: String) {
-        @Transient
-        var realRegex: Regex? = try {
-            print(message)
-            if (regex) Regex(message) else null
-        } catch(e: PatternSyntaxException) { // it refuses to work
-            print(false)
-            null
+        val a = modMessage("wtf? created")
+        @delegate:Transient
+        val realRegex: Regex? by lazy {
+            if (regex) {
+                try {
+                    modMessage("Recompiling regex for message: $message")
+                    Regex(message)
+                } catch (e: PatternSyntaxException) {
+                    modMessage("Bad regex for message: $message")
+                    null
+                }
+            } else {
+                null
+            }
         }
     }
     val countdownTriggers by ListSetting("Countdowns", mutableListOf<CountdownTrigger>())
