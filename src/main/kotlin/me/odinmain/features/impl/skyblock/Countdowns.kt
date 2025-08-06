@@ -41,11 +41,7 @@ object Countdowns : Module(
     data class CountdownTrigger(val prefix: String, val time: Int, val regex: Boolean, val message: String) {
         @Transient
         var realRegex: Regex? = if (regex) {
-            try {
-                Regex(message)
-            } catch (e: PatternSyntaxException) {
-                null
-            }
+            runCatching { Regex(message) }.getOrNull()
         } else {
             null
         }
