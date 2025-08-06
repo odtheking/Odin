@@ -40,6 +40,8 @@ object CustomHighlight : Module(
     private inline val depthCheck get() = if (isLegitVersion) true else xray
     val currentEntities = mutableSetOf<HighlightEntity>()
 
+    val starredRegex = Regex("^(?:.* )?§6✯ .+ .*§c❤$")
+
     init {
         execute({ scanDelay }) {
             if (highlightMap.isEmpty() && ((!DungeonUtils.inDungeons || !starredMobESP && !shadowAssassin) )) return@execute
@@ -71,7 +73,7 @@ object CustomHighlight : Module(
     }
 
     private fun checkStarred(entity: Entity) {
-        if (entity !is EntityArmorStand || !entity.name.matches(Regex("^(?:.* )?§6✯ .+ .*§c❤$")) || currentEntities.any { it.entity == entity} || (!entity.alwaysRenderNameTag && depthCheck)) return
+        if (entity !is EntityArmorStand || !entity.name.matches(starredRegex) || currentEntities.any { it.entity == entity} || (!entity.alwaysRenderNameTag && depthCheck)) return
         currentEntities.add(HighlightEntity(getMobEntity(entity) ?: return, starredColor, thickness, depthCheck, style))
     }
 

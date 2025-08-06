@@ -6,6 +6,7 @@ import me.odinmain.clickgui.settings.impl.ColorSetting
 import me.odinmain.clickgui.settings.impl.DropdownSetting
 import me.odinmain.events.impl.PacketEvent
 import me.odinmain.features.Module
+import me.odinmain.features.impl.render.CustomHighlight.starredRegex
 import me.odinmain.utils.containsOneOf
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.noControlCodes
@@ -402,13 +403,13 @@ object RenderOptimizer : Module(
 
     private fun hideNonStarredMob(entity: Entity) {
         val name = entity.customNameTag
-        if (!DungeonUtils.inBoss && !entity.name.matches(Regex("^(?:.* )?§6✯ .+ .*§c❤$")) && name.contains("§c❤") && dungeonMobSpawns.any { it in name })
+        if (!DungeonUtils.inBoss && !entity.name.matches(starredRegex) && name.contains("§c❤") && dungeonMobSpawns.any { it in name })
             entity.setDead()
     }
 
     private fun removeBlazePuzzleNames(entity: Entity) {
         if (removePuzzleBlaze && entity is EntityBlaze) entity.setDead()
-        if (removePuzzleBlazeNames && entity.customNameTag.noControlCodes.startsWith("[Lv15] Blaze "))
+        if (removePuzzleBlazeNames && entity.customNameTag.noControlCodes.startsWith("[Lv15] ♨ Blaze "))
             entity.alwaysRenderNameTag = false
     }
 }
