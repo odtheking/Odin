@@ -40,19 +40,17 @@ object Countdowns : Module(
 
     data class CountdownTrigger(val prefix: String, val time: Int, val regex: Boolean, val message: String) {
         val a = modMessage("wtf? created")
-        @delegate:Transient
-        val realRegex: Regex? by lazy {
-            if (regex) {
-                try {
-                    modMessage("Recompiling regex for message: $message")
-                    Regex(message)
-                } catch (e: PatternSyntaxException) {
-                    modMessage("Bad regex for message: $message")
-                    null
-                }
-            } else {
+        @Transient
+        val realRegex: Regex? = if (regex) {
+            try {
+                modMessage("Recompiling regex for message: $message")
+                Regex(message)
+            } catch (e: PatternSyntaxException) {
+                modMessage("Bad regex for message: $message")
                 null
             }
+        } else {
+            null
         }
     }
     val countdownTriggers by ListSetting("Countdowns", mutableListOf<CountdownTrigger>())
