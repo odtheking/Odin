@@ -36,7 +36,7 @@ object InactiveWaypoints : Module(
     private val depthCheck by BooleanSetting("Depth check", false, desc = "Boxes show through walls.")
 
     private val hud by HUD("Term Info", "Shows information about the terminals, levers and devices in the dungeon.") {
-        if (!shouldRender && !it) return@HUD 0f to 0f
+        if (!(DungeonUtils.inDungeons && shouldRender) && !it) return@HUD 0f to 0f
         val y = 1f
         val width = drawStringWidth("§6Levers ${if (levers == 2) "§a" else "§c"}${levers}§8/§a2", 1f, y, Colors.WHITE)
         RenderUtils.drawText("§6Terms ${if ((section == 2 && terminals == 5) || (section != 2 && terminals == 4)) "§a" else "§c"}${terminals}§8/§a${if (section == 2) 5 else 4}", 1f, y + 10f, Colors.WHITE)

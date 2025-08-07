@@ -23,7 +23,6 @@ object SearchBar {
         textSetter = { currentSearch = it }
     )
 
-
     fun draw(x: Float, y: Float, mouseX: Float, mouseY: Float) {
         NVGRenderer.dropShadow(x, y, 350f, 40f, 10f, 0.75f, 9f)
         NVGRenderer.rect(x, y, 350f, 40f, gray38.rgba, 9f)
@@ -33,7 +32,7 @@ object SearchBar {
 
         if (currentSearch.isEmpty()) NVGRenderer.text("Search here...", x + 175f - placeHolderWidth / 2, textY, 20f, Colors.WHITE.rgba, NVGRenderer.defaultFont)
         textInputHandler.x = (x + 175f - searchWidth / 2 - if (currentSearch.isEmpty()) placeHolderWidth / 2 + 2f else 0f).coerceAtLeast(x)
-        textInputHandler.y = textY
+        textInputHandler.y = textY - 1
         textInputHandler.width = 250f
         textInputHandler.height = 22f
         textInputHandler.draw(mouseX, mouseY)
