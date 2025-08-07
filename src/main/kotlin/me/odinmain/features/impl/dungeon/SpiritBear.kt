@@ -15,7 +15,7 @@ object SpiritBear : Module(
     name = "Spirit Bear",
     description = "Displays the current state of Spirit Bear."
 ) {
-    private val hud by HUD("Hud", "Displays the current state of Spirit Bear in the HUD.", false) { example ->
+    private val hud by HUD("Hud", "Displays the current state of Spirit Bear in the HUD.", toggleable = false) { example ->
         when {
             example -> "§e1.45s"
             !DungeonUtils.isFloor(4) || !DungeonUtils.inBoss -> null

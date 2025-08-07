@@ -104,12 +104,13 @@ abstract class Module(
     fun HUD(
         name: String,
         desc: String,
+        default: Boolean = true,
         toggleable: Boolean = true,
         x: Float = 10f,
         y: Float = 10f,
         scale: Float = 2f,
         block: (example: Boolean) -> Pair<Number, Number>
-    ): HUDSetting = HUDSetting(name, x, y, scale, toggleable, desc, this, block)
+    ): HUDSetting = HUDSetting(name, x, y, scale, default, toggleable, desc, this, block)
 
     /**
      * Helper function to make cleaner code, and better performance, since we don't need multiple registers for packet received events.

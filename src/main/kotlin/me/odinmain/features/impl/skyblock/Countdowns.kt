@@ -19,7 +19,7 @@ object Countdowns : Module(
     name = "Countdowns",
     description = "Starts a countdown in HUD when you trigger certain chat message, or regex expressions."
 ) {
-    private val hud by HUD("Hud", "Displays something i can't tell.", false) { example ->
+    private val hud by HUD("Hud", "Displays something i can't tell.", toggleable = false) { example ->
         if (example) return@HUD drawStringWidth("Some Countdown: 3.50s", 1f, 1f, Colors.WHITE) to 10f
         if (countdowns.isEmpty()) return@HUD 0f to 0f
 
