@@ -11,13 +11,15 @@ import me.odinmain.utils.toFixed
 
 val CountdownsCommand = Commodore("countdowns") {
     literal("add").runs { prefix: String, time: Int, message: GreedyString ->
-        countdownTriggers.addOrNull(CountdownTrigger(prefix, time, false, message.string))
+        val prefix = prefix.replace("&", "§")
+        countdownTriggers.addOrNull(CountdownTrigger(prefix.replace("&", "§"), time, false, message.string))
             ?: return@runs modMessage("This thing already exists!")
         modMessage("$prefix${time.toFixed(divisor = 20)}, Triggers by \"$message\"")
         Config.save()
     }
 
     literal("addregex").runs { prefix: String, time: Int, message: GreedyString ->
+        val prefix = prefix.replace("&", "§")
         runCatching {
             Regex(message.string)
         }.onSuccess {
@@ -49,7 +51,7 @@ val CountdownsCommand = Commodore("countdowns") {
 
     literal("list").runs {
         val output = countdownTriggers.withIndex().joinToString("\n") { (i, it) ->
-            "$i: ${it.prefix}${it.time.toFixed(divisor = 20)}, ${if (it.regex) "regex" else "normal"} \"${it.message}\""
+            "$i: ${it.prefix}${it.time.toFixed(divisor = 20)}&r, ${if (it.regex) "regex" else "normal"} \"${it.message}\""
         }
         modMessage(if (countdownTriggers.isEmpty()) "The list is empty!" else "Countdown Trigger list:\n$output")
     }

@@ -49,13 +49,16 @@ object Countdowns : Module(
     val countdownTriggers by ListSetting("Countdowns", mutableListOf<CountdownTrigger>()) { it.copy() }
 
     private val presetsDropdown by DropdownSetting("Add Presets")
-    private val presetQuiz by ActionSetting("Quiz", desc = "Quiz puzzle in dungeons.") {
+    private val presetQuiz by ActionSetting("Quiz", desc = "Quiz puzzle in dungeons. (2)") {
         countdownTriggers.addOrNull(CountdownTrigger("§eQuiz: §f", 220, false, "[STATUE] Oruo the Omniscient: I am Oruo the Omniscient. I have lived many lives. I have learned all there is to know."))
         countdownTriggers.addOrNull(CountdownTrigger("§eQuiz: §f", 140, true, "\\[STATUE\\] Oruo the Omniscient: \\w{1,16} answered Question #[12] correctly!"))
     }.withDependency { presetsDropdown }
-    private val presetEndIsland by ActionSetting("End Island", desc = "Endstone & Dragon Protector spawn.") {
+    private val presetEndIsland by ActionSetting("End Island", desc = "Endstone & Dragon Protector spawn. (2)") {
         countdownTriggers.addOrNull(CountdownTrigger("§eEndstone Protector: §f", 400, false, "The ground begins to shake as an Endstone Protector rises from below!"))
         countdownTriggers.addOrNull(CountdownTrigger("§eDragon: §f", 174, true, "☬ \\w{1,16} placed a Summoning Eye! Brace yourselves! \\(8/8\\)"))
+    }.withDependency { presetsDropdown }
+    private val presetM3FireFreeze by ActionSetting("M3 Fire Freeze", desc = "The Professor. (1)") {
+        countdownTriggers.addOrNull(CountdownTrigger("§eFire Freeze: §f", 106, false, "[BOSS] The Professor: Oh? You found my Guardians' one weakness?"))
     }.withDependency { presetsDropdown }
 
     private data class Countdown(val prefix: String, var time: Int)

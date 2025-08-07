@@ -70,6 +70,7 @@ val mainCommand = Commodore("od", "odin") {
              §3- /posmsg §7» §8Position message command.
              §3- /chatclist §7» §8Used to configure your blacklist/whitelist.
              §3- /highlight §7» §8Used to configure Highlight list.
+             §3- /countdowns §7» §8Make custom countdowns by chat triggers.
              §3- /waypoint §7» §8Configure waypoints.
              §3- /termsim <ping>? §7» §8Simulates terminals so you can practice them.
              §3- /od rq §7» §8Requeues dungeon run.

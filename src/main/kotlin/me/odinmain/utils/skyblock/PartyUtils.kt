@@ -35,6 +35,9 @@ object PartyUtils {
         Regex("^You are not currently in a party.$")
     )
 
+    var forceInParty = false
+    var forceIsLeader = false
+
     private val members = mutableListOf<String>()
 
     var partyLeader: String? = null
@@ -44,6 +47,7 @@ object PartyUtils {
 
     var isInParty: Boolean = false
         private set
+        get() = (forceInParty || field)
 
     @SubscribeEvent
     fun onChatPacket(event: ChatPacketEvent) = with(event.message) {
@@ -154,5 +158,5 @@ object PartyUtils {
         isInParty = false
     }
 
-    fun isLeader(): Boolean = partyLeader == mc.thePlayer.name
+    fun isLeader(): Boolean = (forceIsLeader || partyLeader == mc.thePlayer.name)
 }
