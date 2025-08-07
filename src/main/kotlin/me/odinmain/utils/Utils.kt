@@ -265,14 +265,12 @@ fun Number.formatOneOrNoDecimal(): String {
 
 fun formatNumber(number: Number): String {
     val number = number.toDouble()
-    number.absoluteValue.let {
-        return when {
-            it >= 1_000_000_000_000 ->  (number / 1_000_000_000_000).formatOneOrNoDecimal() + "T"
-            it >= 1_000_000_000 ->      (number / 1_000_000_000).formatOneOrNoDecimal() + "B"
-            it >= 1_000_000 ->          (number / 1_000_000).formatOneOrNoDecimal() + "M"
-            it >= 1_000 ->              (number / 1_000).formatOneOrNoDecimal() + "K"
-            else -> number.formatOneOrNoDecimal()
-        }
+    return when {
+        number.absoluteValue >= 1_000_000_000_000 ->  (number / 1_000_000_000_000).formatOneOrNoDecimal() + "T"
+        number.absoluteValue >= 1_000_000_000 ->      (number / 1_000_000_000).formatOneOrNoDecimal() + "B"
+        number.absoluteValue >= 1_000_000 ->          (number / 1_000_000).formatOneOrNoDecimal() + "M"
+        number.absoluteValue >= 1_000 ->              (number / 1_000).formatOneOrNoDecimal() + "K"
+        else -> number.formatOneOrNoDecimal()
     }
 }
 

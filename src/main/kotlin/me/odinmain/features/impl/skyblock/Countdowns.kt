@@ -14,7 +14,6 @@ import me.odinmain.utils.ui.drawStringWidth
 import me.odinmain.utils.ui.getMCTextHeight
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.util.concurrent.CopyOnWriteArrayList
-import java.util.regex.PatternSyntaxException
 
 object Countdowns : Module(
     name = "Countdowns",
@@ -22,6 +21,7 @@ object Countdowns : Module(
 ) {
     private val hud by HUD("Hud", "Displays something i can't tell.", false) { example ->
         if (example) return@HUD drawStringWidth("Some Countdown: 3.50s", 1f, 1f, Colors.WHITE) to 10f
+        if (countdowns.isEmpty()) return@HUD 0f to 0f
 
         var w = 1f
         var h = 1f
@@ -35,7 +35,7 @@ object Countdowns : Module(
             h += lineHeight
         }
 
-        if (h == 1f) (0f to 0f) else (w to h)
+        w to h
     }
 
     data class CountdownTrigger(val prefix: String, val time: Int, val regex: Boolean, val message: String) {
@@ -52,6 +52,10 @@ object Countdowns : Module(
     private val presetQuiz by ActionSetting("Quiz", desc = "Quiz puzzle in dungeons.") {
         countdownTriggers.addOrNull(CountdownTrigger("§eQuiz: §f", 220, false, "[STATUE] Oruo the Omniscient: I am Oruo the Omniscient. I have lived many lives. I have learned all there is to know."))
         countdownTriggers.addOrNull(CountdownTrigger("§eQuiz: §f", 140, true, "\\[STATUE\\] Oruo the Omniscient: \\w{1,16} answered Question #[12] correctly!"))
+    }.withDependency { presetsDropdown }
+    private val presetEndIsland by ActionSetting("End Island", desc = "Endstone & Dragon Protector spawn.") {
+        countdownTriggers.addOrNull(CountdownTrigger("§eEndstone Protector: §f", 400, false, "The ground begins to shake as an Endstone Protector rises from below!"))
+        countdownTriggers.addOrNull(CountdownTrigger("§eDragon: §f", 174, true, "☬ \\w{1,16} placed a Summoning Eye! Brace yourselves! \\(8/8\\)"))
     }.withDependency { presetsDropdown }
 
     private data class Countdown(val prefix: String, var time: Int)
