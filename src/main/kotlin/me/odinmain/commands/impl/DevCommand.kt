@@ -155,8 +155,20 @@ val devCommand = Commodore("oddev") {
         """.trimIndent(), "")
     }
 
-    literal("party").runs {
-        modMessage("${PartyUtils.isInParty}, ${PartyUtils.partyLeader}, ${PartyUtils.partyMembers}")
+    literal("party"){
+        runs {
+            modMessage("${PartyUtils.isInParty}, ${PartyUtils.partyLeader}, ${PartyUtils.partyMembers}")
+        }
+
+        literal("forceInParty").runs {
+            PartyUtils.forceInParty = !PartyUtils.forceInParty
+            modMessage("forceInParty is now: $PartyUtils.forceInParty")
+        }
+
+        literal("forceIsLeader").runs {
+            PartyUtils.forceIsLeader = !PartyUtils.forceIsLeader
+            modMessage("forceIsLeader is now: $PartyUtils.forceIsLeader")
+        }
     }
 
     literal("simulate").runs { str: GreedyString ->

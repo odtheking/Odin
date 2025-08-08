@@ -24,8 +24,8 @@ class HUDSetting(
     val module: Module,
 ) : RenderableSetting<HudElement>(name, description), Saving {
 
-    constructor(name: String, x: Float, y: Float, scale: Float, toggleable: Boolean, description: String, module: Module, draw: (Boolean) -> Pair<Number, Number>)
-            : this(name, HudElement(x, y, scale, toggleable, draw), toggleable, description, module)
+    constructor(name: String, x: Float, y: Float, scale: Float, default: Boolean, toggleable: Boolean, description: String, module: Module, draw: (Boolean) -> Pair<Number, Number>)
+            : this(name, HudElement(x, y, scale, default, draw), toggleable, description, module)
 
     override val default: HudElement = hud
     override var value: HudElement = default

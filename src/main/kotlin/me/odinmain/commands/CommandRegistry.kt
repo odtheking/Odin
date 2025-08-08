@@ -20,7 +20,8 @@ object CommandRegistry {
         termSimCommand, chatCommandsCommand,
         devCommand, highlightCommand,
         waypointCommand, dungeonWaypointsCommand,
-        petCommand, visualWordsCommand, PosMsgCommand
+        petCommand, visualWordsCommand, PosMsgCommand,
+        CountdownsCommand
     )
 
     fun add(vararg commands: Commodore) {

@@ -5,11 +5,13 @@ import me.odinmain.clickgui.settings.impl.BooleanSetting
 import me.odinmain.clickgui.settings.impl.DropdownSetting
 import me.odinmain.clickgui.settings.impl.ListSetting
 import me.odinmain.events.impl.MessageSentEvent
+import me.odinmain.events.impl.PacketEvent
 import me.odinmain.features.Module
 import me.odinmain.features.impl.dungeon.DungeonRequeue.disableRequeue
 import me.odinmain.utils.*
 import me.odinmain.utils.skyblock.*
 import net.minecraft.event.ClickEvent
+import net.minecraft.network.play.client.C01PacketChatMessage
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
@@ -52,6 +54,10 @@ object ChatCommands : Module(
     private val location by BooleanSetting("Location", false, desc = "Sends your current location.").withDependency { showSettings }
     private val holding by BooleanSetting("Holding", false, desc = "Sends the item you are holding.").withDependency { showSettings }
 
+    private val showExtraStuff by DropdownSetting("Show Extra Stuff", false)
+    private val noMoreLocraw by BooleanSetting("No More Locraw", false, desc = "Cancel repetitive /locraw commands.").withDependency { showExtraStuff }
+
+    private var locrawSent = false
     private val dtReason = mutableListOf<Pair<String, String>>()
     val blacklist: MutableList<String> by ListSetting("Blacklist", mutableListOf())
 
@@ -85,7 +91,10 @@ object ChatCommands : Module(
             runIn(5) { handleChatCommands(msg, ign, channel) }
         }
 
-        onWorldLoad { dtReason.clear() }
+        onWorldLoad {
+            locrawSent = false
+            dtReason.clear()
+        }
     }
 
     private fun handleChatCommands(message: String, name: String, channel: ChatChannel) {
@@ -185,6 +194,18 @@ object ChatCommands : Module(
 
         event.isCanceled = true
         sendChatMessage(words.joinToString(" "))
+    }
+
+    @SubscribeEvent
+    fun onPacket(event: PacketEvent.Send) {
+        (event.packet as? C01PacketChatMessage)?.let {
+            if (!noMoreLocraw || it.message != "/locraw") return
+            if (locrawSent) {
+                event.isCanceled = true
+            } else {
+                locrawSent = true
+            }
+        }
     }
 
     private val replacements = mapOf(

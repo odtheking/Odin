@@ -58,6 +58,9 @@ fun String.containsOneOf(options: Collection<String>, ignoreCase: Boolean = fals
 fun Number.toFixed(decimals: Int = 2): String =
     "%.${decimals}f".format(Locale.US, this)
 
+fun Number.toFixed(decimals: Int = 2, divisor: Int): String =
+    "%.${decimals}f".format(Locale.US, this / divisor)
+
 fun String.startsWithOneOf(vararg options: String, ignoreCase: Boolean = false): Boolean =
     options.any { this.startsWith(it, ignoreCase) }
 
@@ -231,6 +234,15 @@ inline fun <T> MutableCollection<T>.removeFirstOrNull(predicate: (T) -> Boolean)
     return first
 }
 
+fun <T> MutableList<T>.addOrNull(element: T): T? {
+    return if (element in this) {
+        null
+    } else {
+        this.add(element)
+        element
+    }
+}
+
 fun Int.addRange(add: Int): IntRange = this..this+add
 
 fun runOnMCThread(run: () -> Unit) {
@@ -245,24 +257,23 @@ fun EntityLivingBase?.getSBMaxHealth(): Float {
     return this?.getEntityAttribute(SharedMonsterAttributes.maxHealth)?.baseValue?.toFloat() ?: 0f
 }
 
-fun formatNumber(unFormatNumber: Any): String {
-    val number: Double = when (unFormatNumber) {
-        is String -> unFormatNumber.replace(",", "").toDoubleOrNull() ?: 0.0
-        is Number -> unFormatNumber.toDouble()
-        else -> unFormatNumber.toString().toDoubleOrNull() ?: 0.0
-    }
+private val oneDecimalFormat = DecimalFormat("#.#")
 
+fun Number.formatOneOrNoDecimal(): String {
+    return oneDecimalFormat.format(this)
+}
+
+fun formatNumber(number: Number): String {
+    val number = number.toDouble()
     return when {
-        number.absoluteValue < 1000 -> number.formatOneOrNoDecimal()
-        number.absoluteValue >= 1_000_000_000 -> (number / 1_000_000_000).formatOneOrNoDecimal()+"B"
-        number.absoluteValue >= 1_000_000 -> (number / 1_000_000).formatOneOrNoDecimal()+"M"
-        number.absoluteValue >= 1000 -> (number / 1000).formatOneOrNoDecimal()+"K"
-        else -> number.toString()
+        number.absoluteValue >= 1_000_000_000_000 ->  (number / 1_000_000_000_000).formatOneOrNoDecimal() + "T"
+        number.absoluteValue >= 1_000_000_000 ->      (number / 1_000_000_000).formatOneOrNoDecimal() + "B"
+        number.absoluteValue >= 1_000_000 ->          (number / 1_000_000).formatOneOrNoDecimal() + "M"
+        number.absoluteValue >= 1_000 ->              (number / 1_000).formatOneOrNoDecimal() + "K"
+        else -> number.formatOneOrNoDecimal()
     }
 }
 
-private val oneDecimalFormat = DecimalFormat("#.#")
-
-fun Double.formatOneOrNoDecimal(): String {
-    return oneDecimalFormat.format(this)
+fun formatNumber(number: String): String{
+    return formatNumber(number.replace(",", "").replace(" ", "").toDoubleOrNull() ?: 0.0)
 }

@@ -14,7 +14,8 @@ import java.lang.reflect.Type
 class ListSetting<E, T : MutableCollection<E>>(
     name: String,
     override val default: T,
-    private val type: Type
+    private val type: Type,
+    private val reloader: ((E) -> E)? = null
 ) : Setting<T>(name, description = ""), Saving {
 
     override var value: T = default
@@ -22,10 +23,10 @@ class ListSetting<E, T : MutableCollection<E>>(
     override fun write(): JsonElement = gson.toJsonTree(value)
 
     override fun read(element: JsonElement?) {
-        element?.asJsonArray?.let {
-            val temp = gson.fromJson<T>(it, type)
+        element?.asJsonArray?.let { ja ->
+            val temp = gson.fromJson<T>(ja, type)
             value.clear()
-            value.addAll(temp)
+            value.addAll(reloader?.let{ temp.map(it) } ?: temp)
         }
     }
 }
@@ -33,4 +34,5 @@ class ListSetting<E, T : MutableCollection<E>>(
 inline fun <reified E : Any, reified T : MutableCollection<E>> ListSetting(
     name: String,
     default: T,
-): ListSetting<E, T> = ListSetting(name, default, object : TypeToken<T>() {}.type)
+    noinline reloader: ((E) -> E)? = null
+): ListSetting<E, T> = ListSetting(name, default, object : TypeToken<T>() {}.type, reloader)

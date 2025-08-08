@@ -119,7 +119,7 @@ object DungeonListener {
                     "prince killed", "prince slain", "prince killed!", "prince dead", "prince dead!", "\$skytils-dungeon-score-prince\$", Mimic.princeMessage ->
                         dungeonStats.princeKilled = true
 
-                    "blaze done!", "blaze done", "blaze puzzle solved!" ->
+                    "blaze done!", "blaze done", "blaze puzzle solved!", "blaze puzzle finished!", "blaze finished!" ->
                         puzzles.find { it == Puzzle.BLAZE }.let { it?.status = PuzzleStatus.Completed }
                 }
             }
