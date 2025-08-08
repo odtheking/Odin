@@ -1,9 +1,9 @@
 package me.odinmain.utils
 
-import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.PacketEvent
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.clock.Executor.Companion.register
+import me.odinmain.utils.skyblock.LocationUtils
 import me.odinmain.utils.skyblock.sendCommand
 import net.minecraft.network.play.server.S02PacketChat
 import net.minecraft.network.play.server.S03PacketTimeUpdate
@@ -24,7 +24,7 @@ object ServerUtils {
 
     init {
         Executor(2000, "ServerUtils") {
-            if (mc.isSingleplayer) return@Executor
+            if (!LocationUtils.isOnHypixel) return@Executor
             pingStartTime = System.nanoTime()
             isPinging = true
 

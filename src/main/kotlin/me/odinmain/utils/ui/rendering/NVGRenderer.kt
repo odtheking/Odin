@@ -194,7 +194,7 @@ object NVGRenderer : Lwjgl3Wrapper by Lwjgl3Loader.load() {
         nvgFontSize(vg, size)
         color(-16777216)
         nvgFillColor(vg, nvgColor)
-        nvgText(vg, round(x + 1f), round(y + 1f), text)
+        nvgText(vg, round(x + 3f), round(y + 3f), text)
 
         color(color)
         nvgFillColor(vg, nvgColor)

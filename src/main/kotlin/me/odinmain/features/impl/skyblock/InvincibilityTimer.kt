@@ -25,7 +25,7 @@ object InvincibilityTimer : Module(
 ) {
     private val invincibilityAnnounce by BooleanSetting("Announce Invincibility", true, desc = "Announces when you get invincibility.")
     private val showCooldown by BooleanSetting("Durability Cooldown", true, desc = "Shows the durability of the mask in the inventory as a durability bar.")
-    private val showWhen by SelectorSetting("Show", "Always", listOf("Always", "When Active", "On Cooldown"), "Controls when invincibility items are shown.")
+    private val showWhen by SelectorSetting("Show", "Always", listOf("Always", "Any", "When Active", "On Cooldown"), "Controls when invincibility items are shown.")
     private val equippedMaskColor by ColorSetting("Equipped Mask", Colors.MINECRAFT_DARK_PURPLE, desc = "Color of the equipped mask in the HUD. (Bonzo/Spirit)")
 
     private val showSpirit by BooleanSetting("Show Spirit Mask", true, desc = "Shows the Spirit Mask in the HUD.")
@@ -43,8 +43,9 @@ object InvincibilityTimer : Module(
                 InvincibilityType.PHOENIX -> showPhoenix
             } && (when (showWhen) {
                 0 -> true
-                1 -> type.activeTime > 0
-                2 -> type.currentCooldown > 0
+                1 -> type.activeTime > 0 || type.currentCooldown > 0
+                2 -> type.activeTime > 0
+                3 -> type.currentCooldown > 0
                 else -> true
             } || example)
         }.ifEmpty { return@HUD 0f to 0f }
@@ -64,9 +65,8 @@ object InvincibilityTimer : Module(
                     else -> "✔"
                 },
                 16f, y,
-                color = if (type.activeTime == 0 && type.currentCooldown == 0) Colors.MINECRAFT_GREEN
-                else if (type.activeTime > 0) Colors.MINECRAFT_GOLD
-                else Colors.MINECRAFT_RED
+                if (type.activeTime == 0 && type.currentCooldown == 0) Colors.MINECRAFT_GREEN
+                else if (type.activeTime > 0) Colors.MINECRAFT_GOLD else Colors.MINECRAFT_RED
             ).let { if (it > width) width = it }
         }
 

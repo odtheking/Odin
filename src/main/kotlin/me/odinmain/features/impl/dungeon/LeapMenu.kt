@@ -90,8 +90,8 @@ object LeapMenu : Module(
                 NVGRenderer.image(glTextureId, 64, 64, 8, 8, 8, 8, x + 30f, y + 30f, 240f, 240f, 9f)
             }
 
-            NVGRenderer.textShadow(if (!onlyClass) player.name else player.clazz.name, x + 275f, y + 110f, 70f, if (!colorStyle) player.clazz.color.rgba else backgroundColor.rgba, NVGRenderer.defaultFont)
-            if (!onlyClass || player.isDead) NVGRenderer.textShadow(if (player.isDead) "DEAD" else player.clazz.name, x + 275f, y + 180f, 55f, if (player.isDead) Colors.MINECRAFT_RED.rgba else Colors.WHITE.rgba, NVGRenderer.defaultFont)
+            NVGRenderer.textShadow(if (!onlyClass) player.name else player.clazz.name, x + 275f, y + 110f, 50f, if (!colorStyle) player.clazz.color.rgba else backgroundColor.rgba, NVGRenderer.defaultFont)
+            if (!onlyClass || player.isDead) NVGRenderer.textShadow(if (player.isDead) "DEAD" else player.clazz.name, x + 275f, y + 180f, 40f, if (player.isDead) Colors.MINECRAFT_RED.rgba else Colors.WHITE.rgba, NVGRenderer.defaultFont)
         }
         NVGRenderer.endFrame()
         event.isCanceled = true

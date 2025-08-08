@@ -33,7 +33,7 @@ object SplitsManager {
                 currentSplits.personalBest?.time(index, times.last() / 20.0, "s§7!", "§6Total time §7took §6", addPBString = true, addOldPBString = true, alwaysSendPB = true, sendOnlyPB = Splits.sendOnlyPB, sendMessage = Splits.enabled)
                 times.forEachIndexed { i, it ->
                     val name = if (i == currentSplits.splits.size - 1) "Total" else currentSplits.splits.getSafe(i)?.name
-                    if (sendSplits && Splits.enabled) modMessage("§6$name §7took §6${formatTime((it / 20f).toLong() * 1000L)} §7to complete.")
+                    if (sendSplits && Splits.enabled) modMessage("§6$name §7took §6${formatTime((it / 20f * 1000).toLong())} §7to complete.")
                 }
             }
         } else currentSplits.personalBest?.time(index - 1, currentSplitTime, "s§7!", "§6${currentSplits.splits[index - 1].name} §7took §6", addPBString = true, addOldPBString = true, alwaysSendPB = true, sendOnlyPB = Splits.sendOnlyPB, sendMessage = Splits.enabled)
@@ -54,7 +54,7 @@ object SplitsManager {
                         Split(Regex(BLOOD_OPEN_REGEX), "§bBlood Clear"),
                         Split(Regex("\\[BOSS] The Watcher: You have proven yourself\\. You may pass\\."), "§dPortal Entry")
                     ))
-                    add(Split(Regex("^\\s*☠ Defeated (.+) in 0?([\\dhms ]+?)\\s*(\\(NEW RECORD!\\))?\$"), "§1Total"))
+                    add(Split(Regex("^\\s*☠ Defeated (.+) in 0?([\\dhms ]+?)\\s*(\\(NEW RECORD!\\))?$"), "§1Total"))
                     SplitsGroup(map { it.copy(ticks = 0L) }, floor.personalBest)
                 }
             }
@@ -111,16 +111,16 @@ val kuudraT5SplitsGroup = mutableListOf(
     Split(Regex("^\\[NPC] Elle: Okay adventurers, I will go and fish up Kuudra!$"), "§2Supplies"),
     Split(Regex("^\\[NPC] Elle: OMG! Great work collecting my supplies!$"), "§bBuild"),
     Split(Regex("^\\[NPC] Elle: Phew! The Ballista is finally ready! It should be strong enough to tank Kuudra's blows now!$"), "§dEaten"),
-    Split(Regex("^(?!Elle has been eaten by Kuudra!\$)(.{1,16}) has been eaten by Kuudra!$"), "§cStun"),
-    Split(Regex("^(.{1,16}) destroyed one of Kuudra's pods!\$"), "§4DPS"),
-    Split(Regex("^\\[NPC] Elle: POW! SURELY THAT'S IT! I don't think he has any more in him!\$"), "§4Cleared"),
+    Split(Regex("^(?!Elle has been eaten by Kuudra!$)(.{1,16}) has been eaten by Kuudra!$"), "§cStun"),
+    Split(Regex("^(.{1,16}) destroyed one of Kuudra's pods!$"), "§4DPS"),
+    Split(Regex("^\\[NPC] Elle: POW! SURELY THAT'S IT! I don't think he has any more in him!$"), "§4Cleared"),
     Split(Regex("^\\[NPC] Elle: Good job everyone. A hard fought battle come to an end. Let's get out of here before we run into any more trouble!$"), "Total"))
 
 val kuudraSplitsGroup = mutableListOf(
     Split(Regex("^\\[NPC] Elle: Okay adventurers, I will go and fish up Kuudra!$"), "§2Supplies"),
     Split(Regex("^\\[NPC] Elle: OMG! Great work collecting my supplies!$"), "§bBuild"),
     Split(Regex("^\\[NPC] Elle: Phew! The Ballista is finally ready! It should be strong enough to tank Kuudra's blows now!$"), "§cStun"),
-    Split(Regex("^\\[NPC] Elle: POW! SURELY THAT'S IT! I don't think he has any more in him!\$"), "§4Cleared"),
+    Split(Regex("^\\[NPC] Elle: POW! SURELY THAT'S IT! I don't think he has any more in him!$"), "§4Cleared"),
     Split(Regex("^\\[NPC] Elle: Good job everyone. A hard fought battle come to an end. Let's get out of here before we run into any more trouble!$"), "Total"))
 
 private val entryRegexes = listOf(
@@ -168,8 +168,8 @@ private val floor6SplitGroup = mutableListOf(
 private val floor7SplitGroup = mutableListOf(
     Split(entryRegexes[6], "§5Maxor"),
     Split(Regex("\\[BOSS] Storm: Pathetic Maxor, just like expected\\."), "§3Storm"),
-    Split(Regex("^\\[BOSS] Goldor: Who dares trespass into my domain\\?\$"), "§6Terminals"),
-    Split(Regex("^The Core entrance is opening!\$"), "§7Goldor"),
+    Split(Regex("^\\[BOSS] Goldor: Who dares trespass into my domain\\?$"), "§6Terminals"),
+    Split(Regex("^The Core entrance is opening!$"), "§7Goldor"),
     Split(Regex("\\[BOSS] Necron: You went further than any human before, congratulations\\."), "§cNecron"),
     Split(Regex("\\[BOSS] Necron: All this, for nothing\\.\\.\\."), "§4Cleared"),
 )
