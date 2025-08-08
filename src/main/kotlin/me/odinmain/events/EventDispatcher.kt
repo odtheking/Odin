@@ -48,7 +48,7 @@ object EventDispatcher {
 
         if (event.packet is S29PacketSoundEffect && inDungeons && !inBoss && (event.packet.soundName.equalsOneOf("mob.bat.hurt", "mob.bat.death") && event.packet.volume == 0.1f)) SecretPickupEvent.Bat(event.packet).postAndCatch()
 
-        if (event.packet is S02PacketChat && event.packet.isChat && ChatPacketEvent(event.packet.chatComponent.unformattedText.noControlCodes).postAndCatch())
+        if (event.packet is S02PacketChat && event.packet.type != 2.toByte() && ChatPacketEvent(event.packet.chatComponent.unformattedText.noControlCodes).postAndCatch())
             event.isCanceled = true
 
     }
