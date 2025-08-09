@@ -1,6 +1,7 @@
 package me.odinclient.features.impl.floor7.p3
 
 import me.odinclient.utils.skyblock.PlayerUtils.rightClick
+import me.odinmain.utils.skyblock.partyMessage
 import me.odinmain.clickgui.settings.Setting.Companion.withDependency
 import me.odinmain.clickgui.settings.impl.BooleanSetting
 import me.odinmain.clickgui.settings.impl.ColorSetting
@@ -25,6 +26,7 @@ import net.minecraft.item.Item
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
+import net.minecraft.util.Vec3i
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.event.entity.player.PlayerInteractEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
@@ -49,6 +51,8 @@ object SimonSays : Module(
     private val autoSSRotateTime by NumberSetting("Rotate Time", 150, 0, 400, unit = "ms", desc = "The time it takes to rotate to the correct button.").withDependency { autoSS }
     private val blockWrong by BooleanSetting("Block Wrong Clicks", false, desc = "Blocks Any Wrong Clicks (sneak to disable).")
     private val optimizeSolution by BooleanSetting("Optimize Solution", false, desc = "Use optimized solution, might fix ss-skip")
+    private val sendSSMessage by BooleanSetting("Send SS Message", true, desc = "Sends Simon Says progress in party chat.")
+    private val showPercent by BooleanSetting("Progress As Percent", false, desc = "Show progress as percentage instead of fraction.").withDependency { sendSSMessage }
     private val faceToFirst by BooleanSetting("Face To First", false, desc = "Face to the first button after the last button is click (except the last phase was clicked)").withDependency { autoSS && optimizeSolution }
 
     private val triggerBotClock = Clock(triggerBotDelay)
@@ -61,6 +65,7 @@ object SimonSays : Module(
     private val clickInOrder = ArrayList<BlockPos>()
     private var clickNeeded = 0
     private var firstButton: BlockPos? = null
+    private var initialRoundSize: Int = -1 // 1 when normal, 2 when skip detected
 
     private fun start() {
         if (mc.objectMouseOver?.blockPos == startButton)
@@ -119,6 +124,24 @@ object SimonSays : Module(
                     if (!optimizeSolution) resetSolution()
                 } else if (old.block == Blocks.stone_button && updated.getValue(BlockButtonStone.POWERED)) {
                     clickNeeded = clickInOrder.indexOf(pos.add(1, 0, 0)) + 1
+
+                    //Simon Says Round-Sender-Logic
+
+                    // Check if round finished and send progress message
+                    if (sendSSMessage && clickInOrder.isNotEmpty() && clickNeeded == clickInOrder.size) {
+                        if (initialRoundSize == -1) initialRoundSize = clickInOrder.size
+
+                        val offset = initialRoundSize - 1 // 0 if first round size 1, 1 if size 2
+                        val round = clickInOrder.size - offset
+                        val totalRounds = 5 - offset
+
+                        val msg = if (round >= totalRounds) {
+                            "SS done"
+                        } else {
+                            if (showPercent) "${(round * 100) / totalRounds}%" else "$round/$totalRounds"
+                        }
+                        partyMessage(msg)
+                    }
                     if (clickNeeded >= clickInOrder.size) if (optimizeSolution) resetSolution(clickNeeded < 5) else clickNeeded = 0
                 }
         }
