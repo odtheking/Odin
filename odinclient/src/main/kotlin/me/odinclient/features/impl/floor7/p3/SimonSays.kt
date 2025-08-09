@@ -7,6 +7,7 @@ import me.odinmain.clickgui.settings.impl.BooleanSetting
 import me.odinmain.clickgui.settings.impl.ColorSetting
 import me.odinmain.clickgui.settings.impl.NumberSetting
 import me.odinmain.clickgui.settings.impl.SelectorSetting
+import me.odinmain.clickgui.settings.impl.StringSetting
 import me.odinmain.events.impl.BlockChangeEvent
 import me.odinmain.events.impl.PostEntityMetadata
 import me.odinmain.features.Module
@@ -53,6 +54,7 @@ object SimonSays : Module(
     private val optimizeSolution by BooleanSetting("Optimize Solution", false, desc = "Use optimized solution, might fix ss-skip")
     private val sendSSMessage by BooleanSetting("Send SS Message", true, desc = "Sends Simon Says progress in party chat.")
     private val showPercent by BooleanSetting("Progress As Percent", false, desc = "Show progress as percentage instead of fraction.").withDependency { sendSSMessage }
+    private val doneMessage by StringSetting("Done Message", "SS done", 64, desc = "Message sent when Simon Says is completed.").withDependency { sendSSMessage }
     private val faceToFirst by BooleanSetting("Face To First", false, desc = "Face to the first button after the last button is click (except the last phase was clicked)").withDependency { autoSS && optimizeSolution }
 
     private val triggerBotClock = Clock(triggerBotDelay)
@@ -136,7 +138,7 @@ object SimonSays : Module(
                         val totalRounds = 5 - offset
 
                         val msg = if (round >= totalRounds) {
-                            "SS done"
+                            doneMessage
                         } else {
                             if (showPercent) "${(round * 100) / totalRounds}%" else "$round/$totalRounds"
                         }
