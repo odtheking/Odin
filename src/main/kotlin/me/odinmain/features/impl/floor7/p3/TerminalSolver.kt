@@ -284,16 +284,17 @@ object TerminalSolver : Module(
 
     @SubscribeEvent
     fun onGuiKeyPress(event: GuiEvent.KeyPress) {
-        if (!enabled || currentTerm == null || (currentTerm?.type == TerminalTypes.MELODY && cancelMelodySolver)) return
+        if (!enabled || currentTerm == null || (currentTerm?.type == TerminalTypes.MELODY && cancelMelodySolver) || (event.key != mc.gameSettings?.keyBindDrop?.keyCode && (event.key !in 2..10))) return
 
-        if (renderType != 3 && blockIncorrectClicks &&
-            currentTerm?.canClick((event.gui as? GuiChest)?.slotUnderMouse?.slotIndex ?: return, if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) && event.key == mc.gameSettings.keyBindDrop.keyCode) 1 else 0) == false) {
+        val button = if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) && event.key == mc.gameSettings.keyBindDrop.keyCode) 1 else 0
+
+        if (renderType != 3 && blockIncorrectClicks && currentTerm?.canClick((event.gui as? GuiChest)?.slotUnderMouse?.slotIndex ?: return, button) == false) {
             event.isCanceled = true
             return
         }
 
-        if (renderType == 3 && (event.key == mc.gameSettings?.keyBindDrop?.keyCode || (event.key in 2..10))) {
-            currentTerm?.type?.getGUI()?.mouseClicked(if (Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) && event.key == mc.gameSettings.keyBindDrop.keyCode) 1 else 0)
+        if (renderType == 3) {
+            currentTerm?.type?.getGUI()?.mouseClicked(button)
             event.isCanceled = true
         }
     }
