@@ -70,7 +70,7 @@ object GhostBlocks : Module(
     private val speed by NumberSetting("Swap back speed", 2, 1, 5, desc = "Delay between swapping back.", unit = " ticks").withDependency { swapStonk &&  swapStonkDropDown}
     private val swapStonkKey by KeybindSetting("Swap Stonk Keybind", Keyboard.KEY_NONE, "Press to perform a swap stonk.")
         .onPress {
-            if (!enabled) return@onPress
+            if (!enabled || !swapStonk) return@onPress
             val slot = getItemSlot(if (pickaxe == 1) "Stonk" else "Pickaxe", true) ?: return@onPress
             if (slot !in 0..8) return@onPress modMessage("Couldn't find pickaxe.")
             val originalItem = mc.thePlayer?.inventory?.currentItem ?: 0

@@ -34,7 +34,7 @@ object TerminalTimes : Module(
         pbs.time(event.terminal.type.ordinal, (System.currentTimeMillis() - event.terminal.timeOpened) / 1000.0, "s§7!", "§a${event.terminal.type.windowName}${if (mc.currentScreen is TermSimGUI) " §7(termsim)" else ""} §7solved in §6", addPBString = true, addOldPBString = true, sendOnlyPB = sendMessage)
     }
 
-    private val terminalCompleteRegex = Regex("^(.{1,16}) (activated|completed) a (terminal|lever|device)! \\((\\d)/(\\d)\\)\$")
+    private val terminalCompleteRegex = Regex("^(.{1,16}) (activated|completed) a (terminal|lever|device)! \\((\\d)/(\\d)\\)$")
 
     private var completed: Pair<Int, Int> = Pair(0, 7)
     private val times = mutableListOf<Double>()
@@ -53,7 +53,7 @@ object TerminalTimes : Module(
             if (completed.first == completed.second) resetSection() else gateBlown = true
         }
 
-        onMessage(Regex("^\\[BOSS] Goldor: Who dares trespass into my domain\\?\$"), { enabled && terminalSplits }) {
+        onMessage(Regex("^\\[BOSS] Goldor: Who dares trespass into my domain\\?$"), { enabled && terminalSplits }) {
             resetSection(true)
         }
 
@@ -64,7 +64,7 @@ object TerminalTimes : Module(
             else completed = Pair(current.toIntOrNull() ?: return@onMessage, total.toIntOrNull() ?: return@onMessage)
         }
 
-        onMessage(Regex("^The Core entrance is opening!\$"), { enabled && terminalSplits }) {
+        onMessage(Regex("^The Core entrance is opening!$"), { enabled && terminalSplits }) {
             resetSection()
             modMessage("§bTimes: §a${times.joinToString(" §8| ") { "§a${it}s" }}§8, §bTotal: §a${phaseTimer.seconds}s")
         }

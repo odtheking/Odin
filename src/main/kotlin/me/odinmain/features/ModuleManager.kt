@@ -63,7 +63,7 @@ object ModuleManager {
         BlockOverlay, VisualWords, DVD, HideArmor, PlayerSize,
 
         //skyblock
-        NoCursorReset, AutoSprint, BlazeAttunement, ChatCommands, DeployableTimer, DianaHelper, ArrowHit,
+        NoCursorReset, AutoSprint, BlazeAttunement, ChatCommands, DeployableTimer, DianaHelper,
         Ragnarock, MobSpawn, Splits, WardrobeKeybinds, InvincibilityTimer, ItemsHighlight, PlayerDisplay,
         FarmKeys, PetKeybinds, CommandKeybinds, SpringBoots, AbilityTimers, SlotBinds,
 

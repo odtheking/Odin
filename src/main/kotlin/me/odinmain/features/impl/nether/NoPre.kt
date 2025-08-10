@@ -62,7 +62,7 @@ object NoPre : Module(
             partyMessage(msg)
         }
 
-        onMessage(Regex("^Party > (\\[[^]]*?])? ?(\\w{1,16}): No ?(Triangle|X|Equals|Slash|xCannon|Square|Shop)!\$")) {
+        onMessage(Regex("^Party > (\\[[^]]*?])? ?(\\w{1,16}): No ?(Triangle|X|Equals|Slash|xCannon|Square|Shop)!$")) {
             missing = Supply.valueOf(it.groupValues.lastOrNull() ?: return@onMessage)
             if (!showCratePriority) return@onMessage
             val cratePriority = cratePriority(missing).ifEmpty { return@onMessage }

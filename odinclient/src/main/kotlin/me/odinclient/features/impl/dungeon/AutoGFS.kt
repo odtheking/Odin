@@ -35,7 +35,7 @@ object AutoGFS : Module(
             if (refillOnDungeonStart) refill()
         }
 
-        onMessage(Regex("^PUZZLE FAIL! (\\w{1,16}) .+\$|^\\[STATUE\\] Oruo the Omniscient: (\\w{1,16}) chose the wrong answer! I shall never forget this moment of misrememberance\\.\$")) {
+        onMessage(Regex("^PUZZLE FAIL! (\\w{1,16}) .+$|^\\[STATUE\\] Oruo the Omniscient: (\\w{1,16}) chose the wrong answer! I shall never forget this moment of misrememberance\\.$")) {
             if (!autoGetDraft || DungeonUtils.currentRoom?.data?.type != RoomType.PUZZLE) return@onMessage
             runIn(30) {
                 modMessage("§7Fetching Draft from sack...")

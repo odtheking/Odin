@@ -48,7 +48,7 @@ object SimonSays : Module(
     private val autoSSDelay by NumberSetting("Delay Between Clicks", 200L, 50, 500, unit = "ms", desc = "The delay between each click.").withDependency { autoSS }
     private val autoSSRotateTime by NumberSetting("Rotate Time", 150, 0, 400, unit = "ms", desc = "The time it takes to rotate to the correct button.").withDependency { autoSS }
     private val blockWrong by BooleanSetting("Block Wrong Clicks", false, desc = "Blocks Any Wrong Clicks (sneak to disable).")
-    private val optimizeSolution by BooleanSetting("Optimize Solution", false, desc = "Use optimized solution, might fix ss-skip")
+    private val optimizeSolution by BooleanSetting("Optimized Solution", true, desc = "Use optimized solution, might fix ss-skip")
     private val faceToFirst by BooleanSetting("Face To First", false, desc = "Face to the first button after the last button is click (except the last phase was clicked)").withDependency { autoSS && optimizeSolution }
 
     private val triggerBotClock = Clock(triggerBotDelay)
@@ -80,7 +80,7 @@ object SimonSays : Module(
     }
 
     init {
-        onMessage(Regex("^\\[BOSS] Goldor: Who dares trespass into my domain\\?\$"), { start && enabled }) {
+        onMessage(Regex("^\\[BOSS] Goldor: Who dares trespass into my domain\\?$"), { start && enabled }) {
             start()
             modMessage("Starting Simon Says")
         }
@@ -154,18 +154,9 @@ object SimonSays : Module(
             1, 0f, 90f, 90f, (if (isInSSRange) Colors.MINECRAFT_GREEN else Colors.MINECRAFT_GOLD).withAlpha(.5f)
         )
 
-        if (
-            !isInSSRange ||
-            !autoSSClock.hasTimePassed(autoSSDelay) ||
-            mc.currentScreen != null ||
-            autoSSClickInQueue ||
-            !autoSSLastClickClock.hasTimePassed()
-        ) return
+        if (!isInSSRange || !autoSSClock.hasTimePassed(autoSSDelay) || mc.currentScreen != null || autoSSClickInQueue || !autoSSLastClickClock.hasTimePassed()) return
 
-        if (
-            clickInOrder.isEmpty() ||
-            clickNeeded >= clickInOrder.size
-        ) {
+        if (clickInOrder.isEmpty() || clickNeeded >= clickInOrder.size) {
             if (!faceToFirst) return
             firstButton?.let {
                 firstButton = null
@@ -191,11 +182,7 @@ object SimonSays : Module(
 
     @SubscribeEvent
     fun onInteract(event: PlayerInteractEvent) {
-        if (
-            event.pos == null ||
-            event.action != PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK ||
-            event.world != mc.theWorld
-        ) return
+        if (event.pos == null || event.action != PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK || event.world != mc.theWorld) return
 
         if (event.pos == startButton) {
             if (optimizeSolution) resetSolution()
@@ -228,6 +215,11 @@ object SimonSays : Module(
                         else -> thirdColor
                     }, style, lineWidth, depthCheck
                 )
+            }
+        }
+        clickInOrder.forEachIndexed { index, pos ->
+            with(pos) {
+                Renderer.drawStringInWorld(index.toString(), Vec3(x + 0.05, y + 0.5, z + 0.5), Colors.WHITE)
             }
         }
     }

@@ -22,7 +22,7 @@ object PartyUtils {
     private val partyWith = Regex("^You'll be partying with: (.+)$")
 
     private val queuedInFinder = Regex("^Party Finder > Your party has been queued in the dungeon finder!$")
-    private val dungeonJoin = Regex("^Party Finder > (\\w{1,16}) joined the dungeon group! \\((\\w+) Level (\\d+)\\)\$")
+    private val dungeonJoin = Regex("^Party Finder > (\\w{1,16}) joined the dungeon group! \\((\\w+) Level (\\d+)\\)$")
     private val kuudraJoin = Regex("^Party Finder > ((?:\\[[^]]*?])? ?)?(\\w{1,16}) joined the group! \\(Combat Level (\\d+)\\)$")
     private val membersList = Regex("^Party (Leader|Moderators|Members): (.+)$")
 

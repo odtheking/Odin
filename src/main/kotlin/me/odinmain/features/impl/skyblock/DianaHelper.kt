@@ -89,12 +89,12 @@ object DianaHelper : Module(
             renderPos = null
         }
 
-        onMessage(Regex("^(Uh oh!|Woah!|Yikes!|Oi!|Danger!|Good Grief!|Oh!) You dug out a Minos Inquisitor!\$")) {
+        onMessage(Regex("^(Uh oh!|Woah!|Yikes!|Oi!|Danger!|Good Grief!|Oh!) You dug out a Minos Inquisitor!$")) {
             if (sendInqMsg) partyMessage("${PlayerUtils.getPositionString()} I dug up an inquisitor come over here!")
             PlayerUtils.alert("§6§lInquisitor!")
         }
 
-        onMessage(Regex("^(You dug out a Griffin Burrow! .+|You finished the Griffin burrow chain! \\(4\\/4\\))\$")) {
+        onMessage(Regex("^(You dug out a Griffin Burrow! .+|You finished the Griffin burrow chain! \\(4\\/4\\))$")) {
             DianaBurrowEstimate.onBurrowDug()
         }
     }

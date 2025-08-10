@@ -37,7 +37,7 @@ object SimonSays : Module(
     private val lineWidth by NumberSetting("Line Width", 2f, 0.1f, 10f, 0.1f, desc = "The width of the box's lines.")
     private val depthCheck by BooleanSetting("Depth check", false, desc = "Boxes show through walls.")
     private val blockWrong by BooleanSetting("Block Wrong Clicks", false, desc = "Blocks wrong clicks, shift will override this.")
-    private val optimizeSolution by BooleanSetting("Optimize Solution", false, desc = "Use optimized solution, might fix ss-skip")
+    private val optimizeSolution by BooleanSetting("Optimized Solution", true, desc = "Use optimized solution, might fix ss-skip")
 
     private val startButton = BlockPos(110, 121, 91)
     private val clickInOrder = ArrayList<BlockPos>()
@@ -68,7 +68,10 @@ object SimonSays : Module(
 
         when (pos.x) {
             111 ->
-                if ((if (optimizeSolution) updated.block == Blocks.sea_lantern && old.block == Blocks.obsidian else updated.block == Blocks.obsidian && old.block == Blocks.sea_lantern) && pos !in clickInOrder) clickInOrder.add(pos)
+                if (optimizeSolution) {
+                    if (updated.block == Blocks.sea_lantern && old.block == Blocks.obsidian && (clickInOrder.isEmpty() || pos !in clickInOrder))
+                        clickInOrder.add(pos)
+                } else if (updated.block == Blocks.obsidian && old.block == Blocks.sea_lantern && pos !in clickInOrder) clickInOrder.add(pos)
 
             110 ->
                 if (updated.block == Blocks.air) {

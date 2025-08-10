@@ -9,7 +9,7 @@ import me.odinmain.utils.skyblock.dungeon.DungeonListener
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
-data class Split(val regex: Regex, val name: String, var ticks: Long = 0L)
+data class Split(val regex: Regex, val name: String, var time: Long = 0L, var ticks: Long = 0L)
 data class SplitsGroup(val splits: List<Split>, val personalBest: PersonalBest?)
 
 object SplitsManager {
@@ -20,14 +20,15 @@ object SplitsManager {
     @SubscribeEvent(receiveCanceled = true)
     fun onChatPacket(event: ChatPacketEvent) {
         val currentSplit = currentSplits.splits.find { it.regex.matches(event.message) } ?: return
-        if (currentSplit.ticks != 0L) return
+        if (currentSplit.time != 0L) return
+        currentSplit.time = System.currentTimeMillis()
         currentSplit.ticks = tickCounter
 
         val index = currentSplits.splits.indexOf(currentSplit).takeIf { it != 0 } ?: return
-        val currentSplitTime = (currentSplit.ticks - currentSplits.splits[index - 1].ticks) / 20.0
+        val currentSplitTime = (currentSplit.time - currentSplits.splits[index - 1].time) / 1000.0
 
         if (index == currentSplits.splits.size - 1) {
-            val (times, _) = getAndUpdateSplitsTimes(currentSplits)
+            val (times, _, _) = getAndUpdateSplitsTimes(currentSplits)
             runIn(10) {
                 currentSplits.personalBest?.time(index - 1, currentSplitTime, "s§7!", "§6${currentSplits.splits[index - 1].name} §7took §6", addPBString = true, addOldPBString = true, alwaysSendPB = true, sendOnlyPB = Splits.sendOnlyPB, sendMessage = Splits.enabled)
                 currentSplits.personalBest?.time(index, times.last() / 20.0, "s§7!", "§6Total time §7took §6", addPBString = true, addOldPBString = true, alwaysSendPB = true, sendOnlyPB = Splits.sendOnlyPB, sendMessage = Splits.enabled)
@@ -55,16 +56,16 @@ object SplitsManager {
                         Split(Regex("\\[BOSS] The Watcher: You have proven yourself\\. You may pass\\."), "§dPortal Entry")
                     ))
                     add(Split(Regex("^\\s*☠ Defeated (.+) in 0?([\\dhms ]+?)\\s*(\\(NEW RECORD!\\))?$"), "§1Total"))
-                    SplitsGroup(map { it.copy(ticks = 0L) }, floor.personalBest)
+                    SplitsGroup(map { it.copy(time = 0L, ticks = 0L) }, floor.personalBest)
                 }
             }
 
             Island.Kuudra -> when (KuudraUtils.kuudraTier) {
-                5 -> SplitsGroup(kuudraT5SplitsGroup.map { it.copy(ticks = 0L) }, kuudraT5PBs)
-                4 -> SplitsGroup(kuudraSplitsGroup.map   { it.copy(ticks = 0L) }, kuudraT4PBs)
-                3 -> SplitsGroup(kuudraSplitsGroup.map   { it.copy(ticks = 0L) }, kuudraT3PBs)
-                2 -> SplitsGroup(kuudraSplitsGroup.map   { it.copy(ticks = 0L) }, kuudraT2PBs)
-                1 -> SplitsGroup(kuudraSplitsGroup.map   { it.copy(ticks = 0L) }, kuudraT1PBs)
+                5 -> SplitsGroup(kuudraT5SplitsGroup.map { it.copy(time = 0L, ticks = 0L) }, kuudraT5PBs)
+                4 -> SplitsGroup(kuudraSplitsGroup.map   { it.copy(time = 0L, ticks = 0L) }, kuudraT4PBs)
+                3 -> SplitsGroup(kuudraSplitsGroup.map   { it.copy(time = 0L, ticks = 0L) }, kuudraT3PBs)
+                2 -> SplitsGroup(kuudraSplitsGroup.map   { it.copy(time = 0L, ticks = 0L) }, kuudraT2PBs)
+                1 -> SplitsGroup(kuudraSplitsGroup.map   { it.copy(time = 0L, ticks = 0L) }, kuudraT1PBs)
                 else -> SplitsGroup(emptyList(), null)
             }
 
@@ -72,21 +73,29 @@ object SplitsManager {
         }
     }
 
-    fun getAndUpdateSplitsTimes(currentSplits: SplitsGroup): Pair<List<Long>, Int> {
-        if (currentSplits.splits.isEmpty() || currentSplits.splits[0].ticks == 0L) return List(currentSplits.splits.size) { 0L } to -1
+    fun getAndUpdateSplitsTimes(currentSplits: SplitsGroup): Triple<List<Long>, List<Long>, Int> {
+        if (currentSplits.splits.isEmpty() || currentSplits.splits[0].time == 0L)
+            return Triple(List(currentSplits.splits.size) { 0L }, List(currentSplits.splits.size) { 0L }, -1)
+
+        val latestTime = if (currentSplits.splits.last().time == 0L) System.currentTimeMillis() else currentSplits.splits.last().time
         val latestTick = if (currentSplits.splits.last().ticks == 0L) tickCounter else currentSplits.splits.last().ticks
-        val times = MutableList(currentSplits.splits.size) { 0L }.apply { this[size - 1] = latestTick - currentSplits.splits.first().ticks }
+
+        val times = MutableList(currentSplits.splits.size) { 0L }.apply { this[size - 1] = latestTime - currentSplits.splits.first().time }
+        val tickTimes = MutableList(currentSplits.splits.size) { 0L }.apply { this[size - 1] = latestTick - currentSplits.splits.first().ticks }
+
         var current = currentSplits.splits.size
         for (i in 0 until currentSplits.splits.size - 1) {
-            if (currentSplits.splits[i + 1].ticks != 0L)
-                times[i] = currentSplits.splits[i + 1].ticks - currentSplits.splits[i].ticks
-            else {
+            if (currentSplits.splits[i + 1].time != 0L) {
+                times[i] = currentSplits.splits[i + 1].time - currentSplits.splits[i].time
+                tickTimes[i] = currentSplits.splits[i + 1].ticks - currentSplits.splits[i].ticks
+            } else {
                 current = i
-                times[i] = latestTick - currentSplits.splits[i].ticks
+                times[i] = latestTime - currentSplits.splits[i].time
+                tickTimes[i] = latestTick - currentSplits.splits[i].ticks
                 break
             }
         }
-        return times to current
+        return Triple(times, tickTimes, current)
     }
 
     @SubscribeEvent
@@ -168,8 +177,8 @@ private val floor6SplitGroup = mutableListOf(
 private val floor7SplitGroup = mutableListOf(
     Split(entryRegexes[6], "§5Maxor"),
     Split(Regex("\\[BOSS] Storm: Pathetic Maxor, just like expected\\."), "§3Storm"),
-    Split(Regex("^\\[BOSS] Goldor: Who dares trespass into my domain\\?$"), "§6Terminals"),
-    Split(Regex("^The Core entrance is opening!$"), "§7Goldor"),
+    Split(Regex("\\[BOSS] Goldor: Who dares trespass into my domain\\?"), "§6Terminals"),
+    Split(Regex("The Core entrance is opening!"), "§7Goldor"),
     Split(Regex("\\[BOSS] Necron: You went further than any human before, congratulations\\."), "§cNecron"),
     Split(Regex("\\[BOSS] Necron: All this, for nothing\\.\\.\\."), "§4Cleared"),
 )

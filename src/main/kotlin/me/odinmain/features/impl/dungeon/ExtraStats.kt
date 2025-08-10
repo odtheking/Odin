@@ -57,49 +57,49 @@ object ExtraStats : Module(
             sendCommand("showextrastats")
         }
 
-        onMessage(Regex("^\\s*☠ Defeated (.+) in 0?([\\dhms ]+?)\\s*(\\(NEW RECORD!\\))?\$")) {
+        onMessage(Regex("^\\s*☠ Defeated (.+) in 0?([\\dhms ]+?)\\s*(\\(NEW RECORD!\\))?$")) {
             extraStats.timePB = it.groupValues[3].isNotEmpty()
             extraStats.bossKilled = it.groupValues[1]
         }
 
-        onMessage(Regex("^\\s*Team Score: (\\d+) \\((.{1,2})\\)\\s?(\\(NEW RECORD!\\))?\$")) {
+        onMessage(Regex("^\\s*Team Score: (\\d+) \\((.{1,2})\\)\\s?(\\(NEW RECORD!\\))?$")) {
             extraStats.score = it.groupValues[1].toIntOrNull() ?: 0
             extraStats.scorePB = it.groupValues[3].isNotEmpty()
             extraStats.scoreLetter = it.groupValues[2]
         }
 
-        onMessage(Regex("^\\s*(\\+[\\d,.]+\\s?\\w+ Experience)\\s?(?:\\(.+\\))?\$")) {
+        onMessage(Regex("^\\s*(\\+[\\d,.]+\\s?\\w+ Experience)\\s?(?:\\(.+\\))?$")) {
             extraStats.xp.add("§3${it.groupValues[1].replace("Experience", "EXP").replace("Catacombs", "Cata")}")
         }
 
-        onMessage(Regex("^\\s*(\\+\\d+ Bits)\$")) {
+        onMessage(Regex("^\\s*(\\+\\d+ Bits)$")) {
             extraStats.bits = it.groupValues[1]
         }
 
-        onMessage(Regex("^\\s*(Total Damage as .+: ([\\d,.]+)\\s?(\\(NEW RECORD!\\))?)\$")) {
+        onMessage(Regex("^\\s*(Total Damage as .+: ([\\d,.]+)\\s?(\\(NEW RECORD!\\))?)$")) {
             extraStats.damagePB = it.groupValues[3].isNotEmpty()
             extraStats.damage = formatNumber(it.groupValues[2]) + if (extraStats.damagePB) "(NEW PB!)" else ""
             extraStats.combatStats.add("§e${it.groupValues[1]}")
         }
 
-        onMessage(Regex("^\\s*(Ally Healing: ([\\d,.]+)\\s?(\\(NEW RECORD!\\))?)\$")) {
+        onMessage(Regex("^\\s*(Ally Healing: ([\\d,.]+)\\s?(\\(NEW RECORD!\\))?)$")) {
             extraStats.healPB = it.groupValues[3].isNotEmpty()
             extraStats.heal = formatNumber(it.groupValues[2]) + if (extraStats.healPB) "(NEW PB!)" else ""
             extraStats.combatStats.add("§a${it.groupValues[1]}")
         }
 
-        onMessage(Regex("^\\s*(Enemies Killed: (\\d+)\\s?(\\(NEW RECORD!\\))?)\$")) {
+        onMessage(Regex("^\\s*(Enemies Killed: (\\d+)\\s?(\\(NEW RECORD!\\))?)$")) {
             extraStats.enemyKillPB = it.groupValues[3].isNotEmpty()
             extraStats.enemyKill = (it.groupValues[2].toIntOrNull()?:0).toString() + if (extraStats.enemyKillPB) "(NEW PB!)" else ""
             extraStats.combatStats.add(1,"§b${it.groupValues[1]}")
         }
 
-        onMessage(Regex("^\\s*(Deaths: (\\d+))\$")) {
+        onMessage(Regex("^\\s*(Deaths: (\\d+))$")) {
             extraStats.deaths = it.groupValues[2].toIntOrNull() ?: 0
             if (teamStats.equalsOneOf(1, 3)) extraStats.skillStats.add("§c${it.groupValues[1]}")
         }
 
-        onMessage(Regex("^\\s*(Secrets Found: (\\d+))\$")) {
+        onMessage(Regex("^\\s*(Secrets Found: (\\d+))$")) {
             extraStats.secretsFound = it.groupValues[2].toIntOrNull() ?: 0
             if (teamStats.equalsOneOf(1, 3)) extraStats.skillStats.add(0,"§b"+it.groupValues[1])
             if (teamStats == 3) extraStats.skillStats.add("")
@@ -123,22 +123,22 @@ object ExtraStats : Module(
 
     private val regexes = listOf(
         Regex(" {29}> EXTRA STATS <"),
-        Regex("^\\s*☠ Defeated (.+) in 0?([\\dhms ]+?)\\s*(\\(NEW RECORD!\\))?\$"),
-        Regex("^\\s*Team Score: \\d+ \\(.{1,2}\\)\\s?(?:\\(NEW RECORD!\\))?\$"),
-        Regex("^\\s*(\\+[\\d,.]+\\s?\\w+ Experience)\\s?(?:\\(.+\\))?\$"),
-        Regex("^\\s*(Master Mode)? ?(?:The)? Catacombs - (Entrance|Floor .{1,3})\$"),
-        Regex("^\\s*Secrets Found: \\d+\$"),
+        Regex("^\\s*☠ Defeated (.+) in 0?([\\dhms ]+?)\\s*(\\(NEW RECORD!\\))?$"),
+        Regex("^\\s*Team Score: \\d+ \\(.{1,2}\\)\\s?(?:\\(NEW RECORD!\\))?$"),
+        Regex("^\\s*(\\+[\\d,.]+\\s?\\w+ Experience)\\s?(?:\\(.+\\))?$"),
+        Regex("^\\s*(Master Mode)? ?(?:The)? Catacombs - (Entrance|Floor .{1,3})$"),
+        Regex("^\\s*Secrets Found: \\d+$"),
 
-        Regex("^▬+\$"),
-        Regex("^\\s*Total Damage as .+: [\\d,.]+\\s?(?:\\(NEW RECORD!\\))?\$"),
-        Regex("^\\s*Ally Healing: [\\d,.]+\\s?(?:\\(NEW RECORD!\\))?\$"),
-        Regex("^\\s*\\+0 Experience \\(No Class Milestone Reached\\)\$"),
-        Regex("^\\s*The Catacombs - .+ Stats\$"),
-        Regex("^\\s*Deaths: \\d+\$"),
-        Regex("^\\s*Master Mode Catacombs - .+ Stats\$"),
-        Regex("^\\s*Master Mode The Catacombs - .+ Stats\$"),
-        Regex("^\\s*\\+(\\d+) Bits\$"),
-        Regex("^\\s*Enemies Killed: \\d+\\s?(?:\\(NEW RECORD!\\))?\$")
+        Regex("^▬+$"),
+        Regex("^\\s*Total Damage as .+: [\\d,.]+\\s?(?:\\(NEW RECORD!\\))?$"),
+        Regex("^\\s*Ally Healing: [\\d,.]+\\s?(?:\\(NEW RECORD!\\))?$"),
+        Regex("^\\s*\\+0 Experience \\(No Class Milestone Reached\\)$"),
+        Regex("^\\s*The Catacombs - .+ Stats$"),
+        Regex("^\\s*Deaths: \\d+$"),
+        Regex("^\\s*Master Mode Catacombs - .+ Stats$"),
+        Regex("^\\s*Master Mode The Catacombs - .+ Stats$"),
+        Regex("^\\s*\\+(\\d+) Bits$"),
+        Regex("^\\s*Enemies Killed: \\d+\\s?(?:\\(NEW RECORD!\\))?$")
     )
 
     private data class PostDungeonStats(

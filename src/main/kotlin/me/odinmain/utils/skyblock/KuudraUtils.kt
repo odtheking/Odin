@@ -33,9 +33,9 @@ object KuudraUtils {
 
     var kuudraTier: Int = 0
         private set
-    private val tierRegex = Regex("Kuudra's Hollow \\(T(\\d)\\)\$")
+    private val tierRegex = Regex("Kuudra's Hollow \\(T(\\d)\\)$")
 
-    private val freshRegex = Regex("^Party > (\\[[^]]*?])? ?(\\w{1,16}): FRESH\$")
+    private val freshRegex = Regex("^Party > (\\[[^]]*?])? ?(\\w{1,16}): FRESH$")
     private val buildRegex = Regex("Building Progress (\\d+)% \\((\\d+) Players Helping\\)")
     private val progressRegex = Regex("PROGRESS: (\\d+)%")
 

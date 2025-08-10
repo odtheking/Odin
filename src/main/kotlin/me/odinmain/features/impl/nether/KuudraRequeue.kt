@@ -16,7 +16,7 @@ object KuudraRequeue : Module(
     private val disablePartyLeave by BooleanSetting("Disable Party Leave", false, desc = "Disables the requeue on party leave message.")
 
     init {
-        onMessage(Regex("^\\[NPC] Elle: Good job everyone. A hard fought battle come to an end. Let's get out of here before we run into any more trouble!\$")) {
+        onMessage(Regex("^\\[NPC] Elle: Good job everyone. A hard fought battle come to an end. Let's get out of here before we run into any more trouble!$")) {
             if (disableRequeue) {
                 disableRequeue = false
                 return@onMessage
