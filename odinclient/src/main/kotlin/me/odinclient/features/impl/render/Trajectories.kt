@@ -49,6 +49,7 @@ object Trajectories : Module(
     private val boxSize by NumberSetting("Box Size", 0.5f, 0.5f, 3.0f, 0.1f, desc = "The size of the box.").withDependency { boxes }
     private val color by ColorSetting("Color", Colors.MINECRAFT_DARK_AQUA, true, desc = "The color of the trajectory.")
     private val depth by BooleanSetting("Depth Check", true, desc = "Whether or not to depth check the trajectory.")
+    private val legacyTerm by BooleanSetting("Legacy Terminator", false, desc = "Displays old terminator arrow trajectories")
 
     private var boxRenderQueue: MutableList<AxisAlignedBB> = mutableListOf()
     private var entityRenderQueue = mutableListOf<Entity>()
@@ -106,7 +107,7 @@ object Trajectories : Module(
         var x = -cos(yaw) * 0.16
         var y = fastEyeHeight() - 0.1
         var z = -sin(yaw) * 0.16
-        if (isTerminator) {
+        if (isTerminator && !legacyTerm) {
             x = 0.0
             y = fastEyeHeight().toDouble() -0.01
             z = 0.0
