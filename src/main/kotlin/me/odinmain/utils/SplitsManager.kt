@@ -30,14 +30,14 @@ object SplitsManager {
         if (index == currentSplits.splits.size - 1) {
             val (times, _, _) = getAndUpdateSplitsTimes(currentSplits)
             runIn(10) {
-                currentSplits.personalBest?.time(index - 1, currentSplitTime, "s§7!", "§6${currentSplits.splits[index - 1].name} §7took §6", addPBString = true, addOldPBString = true, alwaysSendPB = true, sendOnlyPB = Splits.sendOnlyPB, sendMessage = Splits.enabled)
-                currentSplits.personalBest?.time(index, times.last() / 20.0, "s§7!", "§6Total time §7took §6", addPBString = true, addOldPBString = true, alwaysSendPB = true, sendOnlyPB = Splits.sendOnlyPB, sendMessage = Splits.enabled)
+                currentSplits.personalBest?.time(index - 1, currentSplitTime, "s§7!", "§6${currentSplits.splits[index - 1].name} §7took §6", alwaysSendPB = true, sendOnlyPB = Splits.sendOnlyPB, sendMessage = Splits.enabled)
+                currentSplits.personalBest?.time(index, times.last() / 20.0, "s§7!", "§6Total time §7took §6", alwaysSendPB = true, sendOnlyPB = Splits.sendOnlyPB, sendMessage = Splits.enabled)
                 times.forEachIndexed { i, it ->
                     val name = if (i == currentSplits.splits.size - 1) "Total" else currentSplits.splits.getSafe(i)?.name
-                    if (sendSplits && Splits.enabled) modMessage("§6$name §7took §6${formatTime((it / 20f * 1000).toLong())} §7to complete.")
+                    if (sendSplits && Splits.enabled) modMessage("§6$name §7took §6${formatTime((it / 20f).toLong())} §7to complete.")
                 }
             }
-        } else currentSplits.personalBest?.time(index - 1, currentSplitTime, "s§7!", "§6${currentSplits.splits[index - 1].name} §7took §6", addPBString = true, addOldPBString = true, alwaysSendPB = true, sendOnlyPB = Splits.sendOnlyPB, sendMessage = Splits.enabled)
+        } else currentSplits.personalBest?.time(index - 1, currentSplitTime, "s§7!", "§6${currentSplits.splits[index - 1].name} §7took §6", alwaysSendPB = true, sendOnlyPB = Splits.sendOnlyPB, sendMessage = Splits.enabled)
     }
 
     @SubscribeEvent(receiveCanceled = true)

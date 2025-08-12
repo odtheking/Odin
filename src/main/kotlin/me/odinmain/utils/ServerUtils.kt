@@ -8,6 +8,7 @@ import me.odinmain.utils.skyblock.sendCommand
 import net.minecraft.network.play.server.S02PacketChat
 import net.minecraft.network.play.server.S03PacketTimeUpdate
 import net.minecraftforge.event.world.WorldEvent
+import net.minecraftforge.fml.common.eventhandler.EventPriority
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object ServerUtils {
@@ -17,22 +18,22 @@ object ServerUtils {
     var averagePing = 0f
         private set
 
-    private val unknownCommandRegex = Regex("^/?Unknown command\\. Type \"/?help\" for help\\. \\('odingetpingcommand-----'\\)$")
+    private val unknownCommandRegex = Regex("^/?Unknown command\\. Type \"/?help\" for help\\. \\('getpingunknowncommand'\\)$")
     private var pingStartTime = 0L
     private var isPinging = false
     private var prevTime = 0L
 
     init {
         Executor(2000, "ServerUtils") {
-            if (!LocationUtils.isOnHypixel) return@Executor
+            if (!LocationUtils.isOnHypixel || isPinging) return@Executor
             pingStartTime = System.nanoTime()
             isPinging = true
 
-            sendCommand("odingetpingcommand-----")
+            sendCommand("getpingunknowncommand")
         }.register()
     }
 
-    @SubscribeEvent
+    @SubscribeEvent(priority = EventPriority.HIGHEST)
     fun onPacket(event: PacketEvent.Receive) {
         when (event.packet) {
             is S02PacketChat -> {

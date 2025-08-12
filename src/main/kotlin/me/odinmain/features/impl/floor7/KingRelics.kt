@@ -47,7 +47,7 @@ object KingRelics {
 
         Relic.entries.find { it.id == currentRelic.id }?.let {
             if (it == Relic.None) return
-            relicPBs.time(it.ordinal, (serverTickCounter - relicPlaceTick) / 20.0, "s§7!", "§${it.colorCode}${it.name} relic §7placed in §6", addPBString = true, addOldPBString = true, sendOnlyPB = false, sendMessage = relicAnnounceTime)
+            relicPBs.time(it.ordinal, (serverTickCounter - relicPlaceTick) / 20.0, "s§7!", "§${it.colorCode}${it.name} relic §7placed in §6", sendOnlyPB = false, sendMessage = relicAnnounceTime)
             relicPlaceTick = 0L
         }
     }

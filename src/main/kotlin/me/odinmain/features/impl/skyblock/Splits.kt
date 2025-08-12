@@ -26,7 +26,7 @@ object Splits : Module(
         val (times, tickTimes, current) = getAndUpdateSplitsTimes(currentSplits)
         if (currentSplits.splits.isEmpty()) return@HUD 0f to 0f
 
-        val maxWidth = getTextWidth("Scarf's minions: ")
+        val maxWidth = currentSplits.splits.dropLast(1).maxOf { getTextWidth(it.name) }
 
         currentSplits.splits.dropLast(1).forEachIndexed { index, split ->
             val time = formatTime(if (index >= times.size) 0 else times[index], numbersAfterDecimal)

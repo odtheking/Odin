@@ -217,10 +217,5 @@ object SimonSays : Module(
                 )
             }
         }
-        clickInOrder.forEachIndexed { index, pos ->
-            with(pos) {
-                Renderer.drawStringInWorld(index.toString(), Vec3(x + 0.05, y + 0.5, z + 0.5), Colors.WHITE)
-            }
-        }
     }
 }

@@ -427,12 +427,6 @@ object ArrowsDevice : Module(
         }
     }
 
-    private val aimPositions = listOf(
-        BlockPos(67, 130, 50), BlockPos(65, 130, 50), BlockPos(63, 130, 50),
-        BlockPos(67, 128, 50), BlockPos(65, 128, 50), BlockPos(63, 128, 50),
-        BlockPos(67, 126, 50), BlockPos(65, 126, 50), BlockPos(63, 126, 50)
-    )
-
     // This is order dependent
     private val positions = listOf(
         BlockPos(68, 130, 50), BlockPos(66, 130, 50), BlockPos(64, 130, 50),

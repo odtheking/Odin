@@ -89,7 +89,7 @@ enum class WitherDragonsEnum (
         if (priorityDragon == this) priorityDragon = None
 
         if (sendTime && WitherDragons.enabled)
-            dragonPBs.time(ordinal, (currentTick - spawnedTime) / 20.0, "s§7!", "§${colorCode}${name} §7was alive for §6", addPBString = true, addOldPBString = true)
+            dragonPBs.time(ordinal, (currentTick - spawnedTime) / 20.0, "s§7!", "§${colorCode}${name} §7was alive for §6")
     }
 
     fun updateEntity(entityId: Int) {
