@@ -13,6 +13,7 @@ import me.odinmain.utils.ui.mouseX
 import me.odinmain.utils.ui.mouseY
 import me.odinmain.utils.ui.rendering.NVGRenderer
 import net.minecraftforge.common.MinecraftForge
+import me.odinmain.utils.ui.SearchBar
 import kotlin.math.sign
 
 /**
@@ -25,6 +26,7 @@ import kotlin.math.sign
  * @see [Panel]
  */
 object ClickGUI : Screen() {
+    val searchBar = SearchBar()
 
     private val panels: ArrayList<Panel> = arrayListOf<Panel>().apply {
         if (Category.entries.any { ClickGUIModule.panelSetting[it] == null }) ClickGUIModule.resetPositions()
@@ -47,7 +49,7 @@ object ClickGUI : Screen() {
         }
 
         for (i in 0 until panels.size) { panels[i].draw(mouseX, mouseY) }
-        SearchBar.draw(mc.displayWidth / 2f - 175f, mc.displayHeight - 110f, mouseX, mouseY)
+        searchBar.draw(mc.displayWidth / 2f - 175f, mc.displayHeight - 110f, 350f, 40f, mouseX, mouseY)
         desc.render()
 
         NVGRenderer.endFrame()
@@ -62,7 +64,7 @@ object ClickGUI : Screen() {
     }
 
     override fun mouseClicked(x: Int, y: Int, mouseButton: Int) {
-        SearchBar.mouseClicked(mouseX, mouseY, mouseButton)
+        searchBar.mouseClicked(mouseX, mouseY, mouseButton)
         for (i in panels.size - 1 downTo 0) {
             if (panels[i].mouseClicked(mouseX, mouseY, mouseButton)) return
         }
@@ -70,7 +72,7 @@ object ClickGUI : Screen() {
     }
 
     override fun mouseReleased(mouseX: Int, mouseY: Int, state: Int) {
-        SearchBar.mouseReleased()
+        searchBar.mouseReleased()
         for (i in panels.size - 1 downTo 0) {
             panels[i].mouseReleased(state)
         }
@@ -78,8 +80,8 @@ object ClickGUI : Screen() {
     }
 
     override fun keyTyped(typedChar: Char, keyCode: Int) {
-        val searchTyped = SearchBar.keyTyped(typedChar)
-        val searchPressed = SearchBar.keyPressed(keyCode)
+        val searchTyped = searchBar.keyTyped(typedChar)
+        val searchPressed = searchBar.keyPressed(keyCode)
         if (searchTyped || searchPressed) return
 
         for (i in panels.size - 1 downTo 0) {
