@@ -55,6 +55,7 @@ object ServerUtils {
 
     @SubscribeEvent
     fun onWorldLoad(event: WorldEvent.Load) {
+        isPinging = false
         averagePing = 0f
         averageTps = 20f
         prevTime = 0L

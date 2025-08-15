@@ -16,7 +16,7 @@ object PanesSim : TermSimGUI(
 
     override fun create() {
         createNewGui {
-            if (floor(it.slotIndex / 9.0) in 1.0..3.0 && it.slotIndex % 9 in 2..6) if (Math.random() > 0.75) greenPane else redPane else blackPane
+            if (floor(it.slotIndex / 9f) in 1f..3f && it.slotIndex % 9 in 2..6) if (Math.random() > 0.75) greenPane else redPane else blackPane
         }
     }
 
