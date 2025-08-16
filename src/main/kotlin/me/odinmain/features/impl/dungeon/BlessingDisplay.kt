@@ -40,7 +40,7 @@ object BlessingDisplay : Module(
         (0..5).reduce { acc, index ->
             val blessing = blessings[index - 1].takeIf { it.enabled.invoke() } ?: return@reduce acc
             val level = if (example) 19 else if (blessing.type.current > 0) blessing.type.current else return@reduce acc
-            RenderUtils.drawText("${blessing.type.displayString} §a$level§r", 1f, 1 + 12f * acc, blessing.color.invoke())
+            RenderUtils.drawText("${blessing.type.displayString} §a$level§r", 1f, 1 + 10f * acc, blessing.color.invoke())
             acc + 1
         }.let { getTextWidth("Power: 19") to 1 + 10f * it }
     }

@@ -18,7 +18,7 @@ class StartsWithSim(private val letter: String = listOf("A", "B", "C", "G", "D",
     override fun create() {
         createNewGui {
             when {
-                floor(it.slotIndex / 9.0) !in 1.0..3.0 || it.slotIndex % 9 !in 1..7 -> blackPane
+                floor(it.slotIndex / 9f) !in 1f..3f || it.slotIndex % 9 !in 1..7 -> blackPane
                 it.slotIndex == (10..16).random() -> getLetterItemStack()
                 Math.random() > .7 -> getLetterItemStack()
                 else -> getLetterItemStack(true)

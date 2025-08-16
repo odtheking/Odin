@@ -14,7 +14,7 @@ object NumbersSim : TermSimGUI(
     override fun create() {
         val used = (1..14).shuffled().toMutableList()
         createNewGui {
-            if (floor(it.slotIndex / 9.0) in 1.0..2.0 && it.slotIndex % 9 in 1..7) ItemStack(pane, used.removeFirst(), 14).apply { setStackDisplayName("") }
+            if (floor(it.slotIndex / 9f) in 1f..2f && it.slotIndex % 9 in 1..7) ItemStack(pane, used.removeFirst(), 14).apply { setStackDisplayName("") }
             else blackPane
         }
     }
