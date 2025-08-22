@@ -102,6 +102,7 @@ object MapInfo : Module(
     init {
         execute(250) {
             if (!DungeonUtils.inDungeons || DungeonUtils.score < 300) return@execute
+            if ((!printWhenScore || printedScore) && (!scoreTitle || shownTitle) && (!announceScore || announcedScore)) return@execute
 
             if (!printedScore && printWhenScore) {
                 modMessage("§b${DungeonUtils.score} §ascore reached in §6${DungeonUtils.dungeonTime} || ${DungeonUtils.floor?.name}.")
