@@ -15,6 +15,7 @@ object AutoTerms : Module(
     description = "Automatically solves terminals."
 ) {
     private val autoDelay by NumberSetting("Delay", 170L, 100, 300, unit = "ms", desc = "Delay between clicks.")
+    private val delayVariety by NumberSetting("Delay Variety", 70L, 0, 150, unit = "ms", desc = "Variety in the delay between clicks.")
     private val firstClickDelay by NumberSetting("First Click Delay", 350L, 300, 500, unit = "ms", desc = "Delay before first click.")
     private val breakThreshold by NumberSetting("Break Threshold", 500L, 350L, 1000L, 10L, unit = "ms", desc = "Time before breaking the click.")
     private val disableMelody by BooleanSetting("Disable Melody", false, desc = "Disables melody terminals.")
@@ -35,7 +36,7 @@ object AutoTerms : Module(
 
         val item = solution.firstOrNull() ?: return
 
-        lastClickTime = System.currentTimeMillis()
+        lastClickTime = System.currentTimeMillis() + (0..delayVariety).random()
         firstClick = false
 
         when (type) {
