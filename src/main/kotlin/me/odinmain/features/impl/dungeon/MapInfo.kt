@@ -97,15 +97,19 @@ object MapInfo : Module(
 
     var shownTitle = false
     var announcedScore = false
+    var printedScore = false
 
     init {
         execute(250) {
             if (!DungeonUtils.inDungeons || DungeonUtils.score < 300) return@execute
 
-            if (printWhenScore) modMessage("§b${DungeonUtils.score} §ascore reached in §6${DungeonUtils.dungeonTime} || ${DungeonUtils.floor?.name}.")
+            if (!printedScore && printWhenScore) {
+                modMessage("§b${DungeonUtils.score} §ascore reached in §6${DungeonUtils.dungeonTime} || ${DungeonUtils.floor?.name}.")
+                printedScore = true
+            }
 
             if (!shownTitle && scoreTitle) {
-                if (scoreTitle) PlayerUtils.alert(scoreText.replace("&", "§"))
+                PlayerUtils.alert(scoreText.replace("&", "§"))
                 shownTitle = true
             }
 
