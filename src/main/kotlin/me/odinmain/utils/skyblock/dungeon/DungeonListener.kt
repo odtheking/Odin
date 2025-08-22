@@ -9,6 +9,7 @@ import me.odinmain.events.impl.RoomEnterEvent
 import me.odinmain.features.impl.dungeon.LeapMenu
 import me.odinmain.features.impl.dungeon.LeapMenu.odinSorting
 import me.odinmain.features.impl.dungeon.MapInfo.shownTitle
+import me.odinmain.features.impl.dungeon.MapInfo.announcedScore
 import me.odinmain.features.impl.dungeon.Mimic
 import me.odinmain.utils.equalsOneOf
 import me.odinmain.utils.hasBonusPaulScore
@@ -61,6 +62,7 @@ object DungeonListener {
         leapTeammates = emptyList()
         dungeonTeammates.clear()
         shownTitle = false
+        announcedScore = false
         puzzles.clear()
         floor = null
         paul = false
