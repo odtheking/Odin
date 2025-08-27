@@ -2,6 +2,7 @@ package me.odin.mixin.mixins;
 
 import io.netty.channel.ChannelHandlerContext;
 import me.odinmain.events.impl.PacketEvent;
+import me.odinmain.utils.ServerUtils;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import org.spongepowered.asm.mixin.Mixin;
@@ -21,6 +22,7 @@ public class MixinNetworkManager {
 
     @Inject(method = {"sendPacket(Lnet/minecraft/network/Packet;)V"}, at = {@At("HEAD")}, cancellable = true)
     private void onSendPacket(Packet<?> packet, CallbackInfo ci) {
-        if (postAndCatch(new PacketEvent.Send(packet)) && !ci.isCancelled()) ci.cancel();
+        if (!ServerUtils.handleSendPacket(packet))
+            if (postAndCatch(new PacketEvent.Send(packet)) && !ci.isCancelled()) ci.cancel();
     }
 }

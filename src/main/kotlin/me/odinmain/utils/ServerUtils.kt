@@ -1,47 +1,58 @@
 package me.odinmain.utils
 
+import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.PacketEvent
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.clock.Executor.Companion.register
-import me.odinmain.utils.skyblock.LocationUtils
-import me.odinmain.utils.skyblock.sendCommand
-import net.minecraft.network.play.server.S02PacketChat
+import net.minecraft.network.Packet
+import net.minecraft.network.play.client.C16PacketClientStatus
+import net.minecraft.network.play.server.S01PacketJoinGame
 import net.minecraft.network.play.server.S03PacketTimeUpdate
+import net.minecraft.network.play.server.S37PacketStatistics
 import net.minecraftforge.event.world.WorldEvent
-import net.minecraftforge.fml.common.eventhandler.EventPriority
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object ServerUtils {
+    private val packets = ArrayList<Packet<*>>()
 
+    @JvmStatic
+    fun handleSendPacket(packet: Packet<*>): Boolean {
+        return packets.remove(packet)
+    }
+
+    private fun sendPacketNoEvent(packet: Packet<*>) {
+        packets.add(packet)
+        mc.netHandler?.addToSendQueue(packet)
+    }
+    private var pingStartTime = 0L
+    private var isPinging = false
+    private var prevTime = 0L
     var averageTps = 20f
         private set
     var averagePing = 0f
         private set
 
-    private val unknownCommandRegex = Regex("^/?Unknown command\\. Type \"/?help\" for help\\. \\('getpingunknowncommand'\\)$")
-    private var pingStartTime = 0L
-    private var isPinging = false
-    private var prevTime = 0L
+    @SubscribeEvent
+    fun onWorldLoad(event: WorldEvent.Load) {
+        reset()
+    }
 
     init {
         Executor(2000, "ServerUtils") {
-            if (!LocationUtils.isOnHypixel || isPinging) return@Executor
+            if (isPinging || mc.thePlayer == null) return@Executor
+            if (pingStartTime - System.nanoTime() > 10e6) reset()
             pingStartTime = System.nanoTime()
             isPinging = true
-
-            sendCommand("getpingunknowncommand")
+            sendPacketNoEvent(C16PacketClientStatus(C16PacketClientStatus.EnumState.REQUEST_STATS))
         }.register()
     }
 
-    @SubscribeEvent(priority = EventPriority.HIGHEST)
+    @SubscribeEvent
     fun onPacket(event: PacketEvent.Receive) {
         when (event.packet) {
-            is S02PacketChat -> {
-                if (event.packet.chatComponent?.unformattedText?.noControlCodes?.let { unknownCommandRegex.matches(it) } == false) return
-                averagePing = (System.nanoTime() - pingStartTime) / 1e6f
-                event.isCanceled = true
-                isPinging = false
-            }
+            is S37PacketStatistics -> averagePing = (System.nanoTime() - pingStartTime) / 1e6f
+
+            is S01PacketJoinGame -> averagePing = 0f
 
             is S03PacketTimeUpdate -> {
                 if (prevTime != 0L)
@@ -51,13 +62,12 @@ object ServerUtils {
             }
             else -> return
         }
+        isPinging = false
     }
 
-    @SubscribeEvent
-    fun onWorldLoad(event: WorldEvent.Load) {
-        isPinging = false
-        averagePing = 0f
+    private fun reset() {
         averageTps = 20f
+        averagePing = 0f
         prevTime = 0L
     }
 }
