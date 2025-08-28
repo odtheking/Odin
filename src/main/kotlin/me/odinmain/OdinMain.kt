@@ -1,5 +1,7 @@
 package me.odinmain
 
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import kotlinx.coroutines.*
 import me.odinmain.commands.CommandRegistry
 import me.odinmain.config.Config
@@ -12,6 +14,7 @@ import me.odinmain.features.impl.render.WaypointManager
 import me.odinmain.utils.ServerUtils
 import me.odinmain.utils.SplitsManager
 import me.odinmain.utils.clock.Executor
+import me.odinmain.utils.network.WebUtils.createClient
 import me.odinmain.utils.render.HighlightRenderer
 import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.render.RenderUtils2D
@@ -36,6 +39,9 @@ object OdinMain {
     const val VERSION = "@VER@"
     val scope = CoroutineScope(SupervisorJob() + EmptyCoroutineContext)
     val logger: Logger = LogManager.getLogger("Odin")
+
+    val okClient = createClient()
+    val gson: Gson = GsonBuilder().setPrettyPrinting().create()
 
     var display: GuiScreen? = null
     inline val isLegitVersion: Boolean

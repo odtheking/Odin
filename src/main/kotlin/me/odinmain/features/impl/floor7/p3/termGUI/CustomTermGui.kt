@@ -14,6 +14,8 @@ import kotlin.math.ceil
 import kotlin.math.floor
 
 abstract class TermGui {
+    var firstClickProt = 350L
+
     protected val itemIndexMap: MutableMap<Int, Box> = mutableMapOf()
     inline val currentSolution get() = TerminalSolver.currentTerm?.solution.orEmpty()
     val colorAnimations = mutableMapOf<Int, ColorAnimation>()

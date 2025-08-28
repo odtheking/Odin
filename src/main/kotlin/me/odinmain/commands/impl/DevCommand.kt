@@ -14,7 +14,10 @@ import me.odinmain.features.impl.floor7.DragonPriority.findPriority
 import me.odinmain.features.impl.floor7.WitherDragonState
 import me.odinmain.features.impl.floor7.WitherDragons.priorityDragon
 import me.odinmain.features.impl.floor7.WitherDragonsEnum
+import me.odinmain.features.impl.floor7.p3.MelodyMessage.webSocket
+import me.odinmain.features.impl.floor7.p3.termGUI.MelodyGui.firstClickProt
 import me.odinmain.features.impl.nether.NoPre
+import me.odinmain.features.impl.render.ClickGUIModule.wsServer
 import me.odinmain.features.impl.render.PlayerSize
 import me.odinmain.utils.isOtherPlayer
 import me.odinmain.utils.postAndCatch
@@ -32,6 +35,20 @@ import net.minecraft.network.play.server.S02PacketChat
 import net.minecraft.util.ChatComponentText
 
 val devCommand = Commodore("oddev") {
+
+    literal("firstclick").runs { time: Long ->
+        firstClickProt = time
+    }
+
+    literal("ws") {
+        literal("send").runs { message: GreedyString ->
+            webSocket.send(message.string)
+        }
+
+        literal("connect").runs { lobby: String ->
+            webSocket.connect("${wsServer}$lobby")
+        }
+    }
 
     literal("drags") {
         runs { text: GreedyString ->
