@@ -20,8 +20,8 @@ import me.odinmain.features.impl.nether.NoPre
 import me.odinmain.features.impl.render.ClickGUIModule.wsServer
 import me.odinmain.features.impl.render.PlayerSize
 import me.odinmain.utils.isOtherPlayer
+import me.odinmain.utils.network.WebUtils.postData
 import me.odinmain.utils.postAndCatch
-import me.odinmain.utils.sendDataToServer
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.PlayerUtils.posX
 import me.odinmain.utils.skyblock.PlayerUtils.posZ
@@ -36,15 +36,11 @@ import net.minecraft.util.ChatComponentText
 
 val devCommand = Commodore("oddev") {
 
-    literal("firstclick").runs { time: Long ->
+    literal("firstclickprot").runs { time: Long ->
         firstClickProt = time
     }
 
     literal("ws") {
-        literal("send").runs { message: GreedyString ->
-            webSocket.send(message.string)
-        }
-
         literal("connect").runs { lobby: String ->
             webSocket.connect("${wsServer}$lobby")
         }
@@ -103,7 +99,9 @@ val devCommand = Commodore("oddev") {
     }
 
     literal("updatedevs").runs {
-       PlayerSize.updateCustomProperties()
+        scope.launch {
+            PlayerSize.updateCustomProperties()
+        }
     }
 
     literal("adddev").runs { name: String, password: String, xSize: Float?, ySize: Float?, zSize: Float? ->
@@ -112,7 +110,7 @@ val devCommand = Commodore("oddev") {
         val z = zSize ?: 0.6
         modMessage("Sending data... name: $name, password: $password")
         scope.launch {
-            modMessage(sendDataToServer("$name, [1,2,3], [$x,$y,$z], false, , $password", "https://tj4yzotqjuanubvfcrfo7h5qlq0opcyk.lambda-url.eu-north-1.on.aws/"))
+            modMessage(postData("https://tj4yzotqjuanubvfcrfo7h5qlq0opcyk.lambda-url.eu-north-1.on.aws/", "$name, [1,2,3], [$x,$y,$z], false, , $password"))
         }
     }
 
@@ -122,7 +120,7 @@ val devCommand = Commodore("oddev") {
         val z = zSize ?: 0.6
         val name = customName ?: ""
         scope.launch {
-            modMessage(sendDataToServer(body = "${mc.thePlayer.name}, [1,2,3], [$x,$y,$z], false, $name, $password", "https://tj4yzotqjuanubvfcrfo7h5qlq0opcyk.lambda-url.eu-north-1.on.aws/"))
+            modMessage(postData("https://tj4yzotqjuanubvfcrfo7h5qlq0opcyk.lambda-url.eu-north-1.on.aws/", "${mc.thePlayer.name}, [1,2,3], [$x,$y,$z], false, $name, $password").getOrNull())
             PlayerSize.updateCustomProperties()
         }
     }

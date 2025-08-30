@@ -7,10 +7,10 @@ import me.odinmain.clickgui.settings.AlwaysActive
 import me.odinmain.clickgui.settings.Setting.Companion.withDependency
 import me.odinmain.clickgui.settings.impl.*
 import me.odinmain.features.Module
-import me.odinmain.utils.fetchData
+import me.odinmain.utils.network.WebUtils.fetchString
+import me.odinmain.utils.network.WebUtils.postData
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Colors
-import me.odinmain.utils.sendDataToServer
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.client.entity.AbstractClientPlayer
 import net.minecraft.client.model.ModelBase
@@ -40,7 +40,7 @@ object PlayerSize : Module(
     private val sendDevData by ActionSetting("Send Dev Data", desc = "Sends dev data to the server.") {
         showHidden = false
         OdinMain.scope.launch {
-            modMessage(sendDataToServer(body = "${mc.thePlayer.name}, [${devWingsColor.red},${devWingsColor.green},${devWingsColor.blue}], [$devSizeX,$devSizeY,$devSizeZ], $devWings, , $passcode", "https://tj4yzotqjuanubvfcrfo7h5qlq0opcyk.lambda-url.eu-north-1.on.aws/"))
+            modMessage(postData("https://tj4yzotqjuanubvfcrfo7h5qlq0opcyk.lambda-url.eu-north-1.on.aws/", "${mc.thePlayer.name}, [${devWingsColor.red},${devWingsColor.green},${devWingsColor.blue}], [$devSizeX,$devSizeY,$devSizeZ], $devWings, , $passcode"))
             updateCustomProperties()
         }
     }.withDependency { isRandom }
@@ -65,8 +65,8 @@ object PlayerSize : Module(
 
     private val pattern = Regex("Decimal\\('(-?\\d+(?:\\.\\d+)?)'\\)")
 
-    fun updateCustomProperties() {
-        val data = fetchData("https://tj4yzotqjuanubvfcrfo7h5qlq0opcyk.lambda-url.eu-north-1.on.aws/").replace(pattern) { match -> match.groupValues[1] }.ifEmpty { null } ?: return
+    suspend fun updateCustomProperties() {
+        val data = fetchString("https://tj4yzotqjuanubvfcrfo7h5qlq0opcyk.lambda-url.eu-north-1.on.aws/").getOrNull()?.replace(pattern) { match -> match.groupValues[1] }?.ifEmpty { null } ?: return
         JsonParser().parse(data)?.asJsonArray?.forEach {
             val jsonElement = it.asJsonObject
             val randomsName = jsonElement.get("DevName")?.asString ?: return@forEach

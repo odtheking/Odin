@@ -1,6 +1,7 @@
 package me.odinmain.utils.ui.rendering
 
-import me.odinmain.utils.setupConnection
+import kotlinx.coroutines.runBlocking
+import me.odinmain.utils.network.WebUtils.getInputStream
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.InputStream
@@ -10,16 +11,11 @@ import java.nio.file.Files
 
 class Image(
     val identifier: String,
-    var isSVG: Boolean = false,
+    val isSVG: Boolean = identifier.endsWith(".svg", true),
     var stream: InputStream = getStream(identifier),
     private var buffer: ByteBuffer? = null
 ) {
-
     constructor(inputStream: InputStream, identifier: String) : this(identifier, false, inputStream) { stream = inputStream }
-
-    init {
-        isSVG = identifier.endsWith(".svg", true)
-    }
 
     fun buffer(): ByteBuffer {
         if (buffer == null) {
@@ -44,7 +40,7 @@ class Image(
 
         private fun getStream(path: String): InputStream {
             val trimmedPath = path.trim()
-            return if (trimmedPath.startsWith("http")) setupConnection(trimmedPath)
+            return if (trimmedPath.startsWith("http")) runBlocking { getInputStream(trimmedPath).getOrThrow() } // this is really weird but the old one behaved the same...
             else {
                 val file = File(trimmedPath)
                 if (file.exists() && file.isFile) Files.newInputStream(file.toPath())

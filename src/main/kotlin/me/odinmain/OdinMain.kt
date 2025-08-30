@@ -15,11 +15,11 @@ import me.odinmain.utils.ServerUtils
 import me.odinmain.utils.SplitsManager
 import me.odinmain.utils.clock.Executor
 import me.odinmain.utils.network.WebUtils.createClient
+import me.odinmain.utils.network.WebUtils.postData
 import me.odinmain.utils.render.HighlightRenderer
 import me.odinmain.utils.render.RenderUtils
 import me.odinmain.utils.render.RenderUtils2D
 import me.odinmain.utils.render.Renderer
-import me.odinmain.utils.sendDataToServer
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.dungeon.DungeonListener
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
@@ -76,7 +76,7 @@ object OdinMain {
         scope.launch(Dispatchers.IO) {
             DungeonWaypointConfig.loadConfig()
             ClickGUIModule.latestVersionNumber = ClickGUIModule.checkNewerVersion(VERSION)
-            sendDataToServer(body = """{"username": "$name", "version": "${if (isLegitVersion) "legit" else "cheater"} $VERSION"}""")
+            postData("https://gi2wsqbyse6tnfhqakbnq6f2su0vujgz.lambda-url.eu-north-1.on.aws/", """{"username": "$name", "version": "${if (isLegitVersion) "legit" else "cheater"} $VERSION"}""")
         }
     }
 

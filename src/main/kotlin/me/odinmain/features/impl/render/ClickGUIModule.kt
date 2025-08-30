@@ -1,6 +1,5 @@
 package me.odinmain.features.impl.render
 
-import com.google.gson.JsonParser
 import com.google.gson.annotations.SerializedName
 import me.odinmain.OdinMain
 import me.odinmain.clickgui.ClickGUI
@@ -11,9 +10,7 @@ import me.odinmain.clickgui.settings.impl.*
 import me.odinmain.config.Config
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.utils.fetchURLData
-import me.odinmain.utils.network.WebUtils
-import me.odinmain.utils.network.WebUtils.streamAndRead
+import me.odinmain.utils.network.WebUtils.fetchJson
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.skyblock.*
 import net.minecraft.event.ClickEvent
@@ -30,7 +27,7 @@ object ClickGUIModule: Module(
     val hudChat by BooleanSetting("Show HUDs in GUIs", true, desc = "Shows HUDs in GUIs.")
 
     val apiSettings by DropdownSetting("Api Settings")
-    val apiServer by StringSetting("Api Server", "https://api.odtheking.com/", 128, desc = "The server to fetch data from. Only change this if you know what you're doing").withDependency { apiSettings }
+    // val apiServer by StringSetting("Api Server", "https://api.odtheking.com/", 128, desc = "The server to fetch data from. Only change this if you know what you're doing").withDependency { apiSettings }
     val wsServer by StringSetting("WebSocket Server", "wss://api.odtheking.com/ws/", 128, desc = "The websocket server to connect to. Only change this if you know what you're doing.").withDependency { apiSettings }
 
     private val action by ActionSetting("Open Example Hud", desc = "Opens an example hud to allow configuration of huds.") {
@@ -108,7 +105,7 @@ object ClickGUIModule: Module(
     }
 
     suspend fun checkNewerVersion(currentVersion: String): String? {
-        val newest = streamAndRead<Release>("https://api.github.com/repos/odtheking/Odin/releases/latest").getOrElse { return null }
+        val newest = fetchJson<Release>("https://api.github.com/repos/odtheking/Odin/releases/latest").getOrElse { return null }
 
         if (isSecondNewer(currentVersion, newest.tagName)) return newest.tagName.replace("\"", "")
         return null
