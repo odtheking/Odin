@@ -29,14 +29,10 @@ object WebUtils {
     private const val USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"
 
     suspend inline fun <reified T> fetchJson(url: String, json: Gson = gson): Result<T> = runCatching {
-        return getInputStream(url).map {
-            json.fromJson<T>(it.bufferedReader().use { reader -> reader.readText() }, T::class.java)
-        }
+        json.fromJson<T>(fetchString(url).getOrElse { return Result.failure(it) }, T::class.java)
     }
 
-    suspend inline fun fetchString(url: String): Result<String> = runCatching {
-        return getInputStream(url).map { it.bufferedReader().use { reader -> reader.readText() } }
-    }
+    suspend inline fun fetchString(url: String): Result<String> = getInputStream(url).map { it.bufferedReader().use { reader -> reader.readText() } }
 
     suspend fun getInputStream(url: String): Result<InputStream> =
         clientCall(Request.Builder().url(url).build())

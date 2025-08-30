@@ -36,11 +36,15 @@ object MelodyMessage : Module(
         }
 
         if (!broadcast || !webSocket.connected) return@HUD 0f to 0f
-        melodies.entries.forEachIndexed { i, (_, data) ->
+        melodies.entries.forEachIndexed { i, (name, data) ->
+            if (!showOwn && name == mc.session.username) return@forEachIndexed
             drawMelody(data, i)
         }
         45f to 25f
     }.withDependency { broadcast }
+
+    // explicit boolean because showOwn is broken or something
+    private val showOwn: Boolean by BooleanSetting("Show Own", false, desc = "Shows your own melody progress in the GUI.").withDependency { melodyGui.enabled && broadcast }
 
     val webSocket = webSocket {
         onMessage {
