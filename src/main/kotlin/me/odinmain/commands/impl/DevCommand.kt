@@ -110,7 +110,7 @@ val devCommand = Commodore("oddev") {
         val z = zSize ?: 0.6
         modMessage("Sending data... name: $name, password: $password")
         scope.launch {
-            modMessage(postData("https://tj4yzotqjuanubvfcrfo7h5qlq0opcyk.lambda-url.eu-north-1.on.aws/", "$name, [1,2,3], [$x,$y,$z], false, , $password"))
+            modMessage(postData("https://tj4yzotqjuanubvfcrfo7h5qlq0opcyk.lambda-url.eu-north-1.on.aws/", "$name, [1,2,3], [$x,$y,$z], false, , $password").getOrNull())
         }
     }
 
