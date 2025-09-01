@@ -19,6 +19,7 @@ import me.odinmain.utils.ui.getTextWidth
 import net.minecraft.item.Item
 import net.minecraft.network.play.server.S2FPacketSetSlot
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import java.util.concurrent.ConcurrentHashMap
 
 object MelodyMessage : Module(
     name = "Melody Message",
@@ -59,7 +60,7 @@ object MelodyMessage : Module(
         }
     }
 
-    val melodies = mutableMapOf<String, MelodyData>()
+    val melodies = ConcurrentHashMap<String, MelodyData>()
     val lastSent = MelodyData(null, null, null)
 
     init {
