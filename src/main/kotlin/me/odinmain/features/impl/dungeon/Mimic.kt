@@ -30,7 +30,7 @@ object Mimic : Module(
     private val color by ColorSetting("Color", Colors.MINECRAFT_RED.withAlpha(0.5f), allowAlpha = true, desc = "The color of the box.").withDependency { mimicBox }
     private val lineWidth by NumberSetting("Line Width", 2f, 0.1f, 10f, 0.1f, desc = "The width of the box's lines.").withDependency { mimicBox }
 
-    private val princeMessageToggle by BooleanSetting("Toggle Prince Message", false, desc = "Toggles the prince killed message.")
+    private val princeMessageToggle by BooleanSetting("Toggle Prince Message", true, desc = "Toggles the prince killed message.")
     val princeMessage by StringSetting("Prince Message", "Prince Killed!", 128, desc = "Message sent when prince is detected as killed.").withDependency { princeMessageToggle }
     private val princeReset by ActionSetting("Prince Killed", desc = "Sends Prince killed message in party chat.") { princeKilled() }
 

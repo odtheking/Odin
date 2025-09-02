@@ -1,15 +1,14 @@
 package me.odinmain.features.impl.render
 
-import com.google.gson.JsonParser
+import com.google.gson.annotations.SerializedName
 import kotlinx.coroutines.launch
 import me.odinmain.OdinMain
 import me.odinmain.clickgui.settings.AlwaysActive
 import me.odinmain.clickgui.settings.Setting.Companion.withDependency
 import me.odinmain.clickgui.settings.impl.*
 import me.odinmain.features.Module
-import me.odinmain.utils.network.WebUtils.fetchString
+import me.odinmain.utils.network.WebUtils.fetchJson
 import me.odinmain.utils.network.WebUtils.postData
-import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Colors
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.client.entity.AbstractClientPlayer
@@ -48,7 +47,14 @@ object PlayerSize : Module(
     private var randoms: HashMap<String, RandomPlayer> = HashMap()
     val isRandom get() = randoms.containsKey(mc.session?.username)
 
-    data class RandomPlayer(val scale: Triple<Float, Float, Float>, val wings: Boolean = false, val wingsColor: Color = Colors.WHITE, val customName: String, val isDev: Boolean)
+    data class RandomPlayer(
+        @SerializedName("CustomName")   val customName: String?,
+        @SerializedName("DevName")      val name: String,
+        @SerializedName("IsDev")        val isDev: Boolean?,
+        @SerializedName("WingsColor")   val wingsColor: Array<Int>,
+        @SerializedName("Size")         val scale: Array<Float>,
+        @SerializedName("Wings")        val wings: Boolean
+    )
 
     @JvmStatic
     fun preRenderCallbackScaleHook(entityLivingBaseIn: AbstractClientPlayer) {
@@ -59,23 +65,14 @@ object PlayerSize : Module(
         if (!randoms.containsKey(entityLivingBaseIn.name)) return
         if (!devSize && entityLivingBaseIn.name == mc.thePlayer.name) return
         val random = randoms[entityLivingBaseIn.name] ?: return
-        if (random.scale.second < 0) GlStateManager.translate(0f, random.scale.second * 2, 0f)
-        GlStateManager.scale(random.scale.first, random.scale.second, random.scale.third)
+        if (random.scale[1] < 0) GlStateManager.translate(0f, random.scale[1] * 2, 0f)
+        GlStateManager.scale(random.scale[0], random.scale[1], random.scale[2])
     }
 
-    private val pattern = Regex("Decimal\\('(-?\\d+(?:\\.\\d+)?)'\\)")
-
     suspend fun updateCustomProperties() {
-        val data = fetchString("https://tj4yzotqjuanubvfcrfo7h5qlq0opcyk.lambda-url.eu-north-1.on.aws/").getOrNull()?.replace(pattern) { match -> match.groupValues[1] }?.ifEmpty { null } ?: return
-        JsonParser().parse(data)?.asJsonArray?.forEach {
-            val jsonElement = it.asJsonObject
-            val randomsName = jsonElement.get("DevName")?.asString ?: return@forEach
-            val size = jsonElement.get("Size")?.asJsonArray?.let { sizeArray -> Triple(sizeArray[0].asFloat, sizeArray[1].asFloat, sizeArray[2].asFloat) } ?: return@forEach
-            val wings = jsonElement.get("Wings")?.asBoolean == true
-            val wingsColor = jsonElement.get("WingsColor")?.asJsonArray?.let { colorArray -> Color(colorArray[0].asInt, colorArray[1].asInt, colorArray[2].asInt) } ?: Colors.WHITE
-            val customName = jsonElement.get("CustomName")?.asString?.replace("COLOR", "§") ?: ""
-            val isDev = jsonElement.get("IsDev")?.asBoolean ?: false
-            randoms[randomsName] = RandomPlayer(size, wings, Color(wingsColor.red, wingsColor.green, wingsColor.blue), customName, isDev)
+        val data = fetchJson<Array<RandomPlayer>>("https://api.odtheking.com/devs/").getOrNull() ?: return
+        for (player in data) {
+            randoms[player.name] = player
         }
     }
 
@@ -97,8 +94,8 @@ object PlayerSize : Module(
     fun replaceText(text: String?): String? {
         var replacedText = text
         for (random in randoms) {
-            if (random.value.customName.isBlank()) continue
-            replacedText = randoms[random.key]?.let { replacedText?.replace(random.key, it.customName) }
+            if (random.value.customName?.isBlank() == false)
+                replacedText = randoms[random.key]?.let { replacedText?.replace(random.key, it.customName.toString()) }
         }
 
         return replacedText
@@ -136,11 +133,11 @@ object PlayerSize : Module(
             val x = player.lastTickPosX + (player.posX - player.lastTickPosX) * partialTicks
             val y = player.lastTickPosY + (player.posY - player.lastTickPosY) * partialTicks
             val z = player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * partialTicks
-            if (random.scale.second < 0) GlStateManager.translate(0f, random.scale.second * -2, 0f)
+            if (random.scale[1] < 0) GlStateManager.translate(0f, random.scale[1] * -2, 0f)
 
             GlStateManager.translate(-mc.renderManager.viewerPosX + x, -mc.renderManager.viewerPosY + y, -mc.renderManager.viewerPosZ + z)
             GlStateManager.scale(-0.2, -0.2, 0.2)
-            GlStateManager.scale(random.scale.first, random.scale.second, random.scale.third)
+            GlStateManager.scale(random.scale[0], random.scale[1], random.scale[2])
             GlStateManager.rotate(180 + rotation, 0f, 1f, 0f)
             GlStateManager.translate(0.0, -(1.25 / 0.2f), 0.0)
             GlStateManager.translate(0.0, 0.0, 0.25)
@@ -150,7 +147,7 @@ object PlayerSize : Module(
                 GlStateManager.translate(0.0, 1.0, -0.5)
             }
 
-            GlStateManager.color(random.wingsColor.red.toFloat()/255, random.wingsColor.green.toFloat()/255, random.wingsColor.blue.toFloat()/255, 1f)
+            GlStateManager.color(random.wingsColor[0].toFloat()/255, random.wingsColor[1].toFloat()/255, random.wingsColor[2].toFloat()/255, 1f)
             mc.textureManager.bindTexture(dragonWingTextureLocation)
 
             for (j in 0..1) {
