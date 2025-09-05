@@ -5,6 +5,7 @@ import me.odinmain.features.Module
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.render.Colors
 import me.odinmain.utils.render.RenderUtils
+import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.lore
 import me.odinmain.utils.skyblock.skyblockID
 import me.odinmain.utils.ui.getTextWidth
@@ -20,13 +21,13 @@ object DungeonBreakerCharge : Module(
     private var max = 0
 
     private val hud by HUD("Display", "Shows the amount of charges left in your Dungeon Breaker.") {
-        if (it || max != 0) RenderUtils.drawText("§cCharges: §e${if (it) 17 else charges}§7/§e${if (it) 20 else max}§c⸕", 1f, 1f, Colors.WHITE)
+        if (it || (max != 0 && DungeonUtils.inDungeons)) RenderUtils.drawText("§cCharges: §e${if (it) 17 else charges}§7/§e${if (it) 20 else max}§c⸕", 1f, 1f, Colors.WHITE)
         getTextWidth("Charges: 17/20⸕") + 2f to 10f
     }
 
     @SubscribeEvent
     fun handleTabListPacket(event: PacketEvent.Receive) {
-        if (event.packet !is S2FPacketSetSlot) return
+        if (event.packet !is S2FPacketSetSlot || !DungeonUtils.inDungeons) return
         mc.thePlayer?.inventory?.mainInventory
             ?.find { it.skyblockID.equals("DUNGEONBREAKER", true) }
             ?.lore?.firstOrNull { regex.containsMatchIn(it.noControlCodes) }
