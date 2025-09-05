@@ -28,14 +28,12 @@ object DungeonBreakerCharge : Module(
     @SubscribeEvent
     fun onPacketReceive(event: PacketEvent.Receive) {
         if (event.packet !is S2FPacketSetSlot || !DungeonUtils.inDungeons) return
-        mc.thePlayer?.inventory?.mainInventory
-            ?.find { it.skyblockID.equals("DUNGEONBREAKER", true) }
-            ?.lore?.firstOrNull { regex.containsMatchIn(it.noControlCodes) }
-            ?.let { lore ->
-                regex.find(lore.noControlCodes)?.let { match ->
-                    charges = match.groupValues[1].toInt()
-                    max = match.groupValues[2].toInt()
-                }
-            }
+        val stack = event.packet.func_149174_e() ?: return
+        if (!stack.skyblockID.equals("DUNGEONBREAKER", true)) return
+
+        stack.lore.firstNotNullOfOrNull { regex.find(it.noControlCodes) }?.let { match ->
+            charges = match.groupValues[1].toIntOrNull() ?: 0
+            max = match.groupValues[2].toIntOrNull() ?: 0
+        }
     }
 }
