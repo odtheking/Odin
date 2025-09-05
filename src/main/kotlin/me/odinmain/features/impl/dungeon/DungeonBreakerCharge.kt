@@ -26,7 +26,7 @@ object DungeonBreakerCharge : Module(
     }
 
     @SubscribeEvent
-    fun handleTabListPacket(event: PacketEvent.Receive) {
+    fun onPacketReceive(event: PacketEvent.Receive) {
         if (event.packet !is S2FPacketSetSlot || !DungeonUtils.inDungeons) return
         mc.thePlayer?.inventory?.mainInventory
             ?.find { it.skyblockID.equals("DUNGEONBREAKER", true) }
