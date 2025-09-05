@@ -11,7 +11,7 @@ import me.odinmain.features.impl.dungeon.LeapMenu.odinSorting
 import me.odinmain.features.impl.dungeon.MapInfo.shownTitle
 import me.odinmain.features.impl.dungeon.Mimic
 import me.odinmain.utils.equalsOneOf
-import me.odinmain.utils.hasBonusPaulScore
+import me.odinmain.utils.network.WebUtils.hasBonusPaulScore
 import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.romanToInt
 import me.odinmain.utils.skyblock.PlayerUtils.posX
