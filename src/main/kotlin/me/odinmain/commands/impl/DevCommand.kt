@@ -6,6 +6,7 @@ import kotlinx.coroutines.launch
 import me.odinmain.OdinMain.VERSION
 import me.odinmain.OdinMain.mc
 import me.odinmain.OdinMain.scope
+import me.odinmain.config.Config
 import me.odinmain.events.impl.PacketEvent
 import me.odinmain.features.ModuleManager.generateFeatureList
 import me.odinmain.features.impl.dungeon.MapInfo
@@ -15,10 +16,11 @@ import me.odinmain.features.impl.floor7.WitherDragonState
 import me.odinmain.features.impl.floor7.WitherDragons.priorityDragon
 import me.odinmain.features.impl.floor7.WitherDragonsEnum
 import me.odinmain.features.impl.floor7.p3.MelodyMessage.webSocket
-import me.odinmain.features.impl.floor7.p3.termGUI.MelodyGui.firstClickProt
+import me.odinmain.features.impl.floor7.p3.TerminalSolver.firstClickProt
 import me.odinmain.features.impl.nether.NoPre
 import me.odinmain.features.impl.render.ClickGUIModule.wsServer
 import me.odinmain.features.impl.render.PlayerSize
+import me.odinmain.features.impl.render.PlayerSize.DEV_SERVER
 import me.odinmain.utils.isOtherPlayer
 import me.odinmain.utils.network.WebUtils.postData
 import me.odinmain.utils.postAndCatch
@@ -38,6 +40,7 @@ val devCommand = Commodore("oddev") {
 
     literal("firstclickprot").runs { time: Long ->
         firstClickProt = time
+        Config.save()
     }
 
     literal("ws") {
@@ -110,7 +113,7 @@ val devCommand = Commodore("oddev") {
         val z = zSize ?: 0.6
         modMessage("Sending data... name: $name, password: $password")
         scope.launch {
-            modMessage(postData("https://tj4yzotqjuanubvfcrfo7h5qlq0opcyk.lambda-url.eu-north-1.on.aws/", "$name, [1,2,3], [$x,$y,$z], false, , $password").getOrNull())
+            modMessage(postData(DEV_SERVER, "$name, [1,2,3], [$x,$y,$z], false, , $password").getOrNull())
         }
     }
 
@@ -120,7 +123,7 @@ val devCommand = Commodore("oddev") {
         val z = zSize ?: 0.6
         val name = customName ?: ""
         scope.launch {
-            modMessage(postData("https://tj4yzotqjuanubvfcrfo7h5qlq0opcyk.lambda-url.eu-north-1.on.aws/", "${mc.thePlayer.name}, [1,2,3], [$x,$y,$z], false, $name, $password").getOrNull())
+            modMessage(postData(DEV_SERVER, "${mc.thePlayer.name}, [1,2,3], [$x,$y,$z], false, $name, $password").getOrNull())
             PlayerSize.updateCustomProperties()
         }
     }

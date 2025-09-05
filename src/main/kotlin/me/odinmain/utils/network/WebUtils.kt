@@ -2,7 +2,7 @@ package me.odinmain.utils.network
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import com.google.gson.JsonParser
+import com.google.gson.JsonObject
 import kotlinx.coroutines.withTimeoutOrNull
 import me.odinmain.OdinMain.logger
 import me.odinmain.OdinMain.okClient
@@ -13,12 +13,10 @@ import okhttp3.Callback
 import okhttp3.Dispatcher
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import org.apache.http.impl.EnglishReasonPhraseCatalog
 import java.io.InputStream
-import java.net.URL
 import java.util.concurrent.TimeUnit
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
@@ -64,8 +62,8 @@ object WebUtils {
         sslSocketFactory(createSslContext().socketFactory, getTrustManager())
 
         dispatcher(Dispatcher().apply {
-            maxRequests = 1
-            maxRequestsPerHost = 1
+            maxRequests = 10
+            maxRequestsPerHost = 5
         })
 
         readTimeout(10, TimeUnit.SECONDS)
@@ -82,9 +80,8 @@ object WebUtils {
     }.build()
 
     suspend fun hasBonusPaulScore(): Boolean = withTimeoutOrNull(5000) {
-        val response: String = fetchString("https://api.hypixel.net/resources/skyblock/election").getOrElse { return@withTimeoutOrNull false }
-        val jsonObject = JsonParser().parse(response).asJsonObject
-        val mayor = jsonObject.getAsJsonObject("mayor") ?: return@withTimeoutOrNull false
+        val response = fetchJson<JsonObject>("https://api.hypixel.net/resources/skyblock/election").getOrElse { return@withTimeoutOrNull false }
+        val mayor = response.getAsJsonObject("mayor") ?: return@withTimeoutOrNull false
         val name = mayor.get("name")?.asString ?: return@withTimeoutOrNull false
         return@withTimeoutOrNull if (name == "Paul") {
             mayor.getAsJsonArray("perks")?.any { it.asJsonObject.get("name")?.asString == "EZPZ" } == true

@@ -27,7 +27,7 @@ object MelodyMessage : Module(
 ) {
     private val sendMelodyMessage by BooleanSetting("Send Melody Message", true, desc = "Sends a message when the melody terminal opens.")
     private val melodyMessage by StringSetting("Melody Message", "Melody Terminal start!", 128, desc = "Message sent when the melody terminal opens.").withDependency { sendMelodyMessage }
-    private val melodyProgress by BooleanSetting("Melody Progress Message", false, desc = "Tells the party about melody terminal progress.")
+    private val melodyProgress by BooleanSetting("Melody Progress", false, desc = "Tells the party about melody terminal progress.")
     private val melodySendCoords by BooleanSetting("Melody Send Coords", false, desc = "Sends the coordinates of the melody terminal.").withDependency { melodyProgress }
     private val broadcast by BooleanSetting("Broadcast Progress", true, desc = "Broadcasts melody progress to all other odin users in your run using a websocket.")
     private val melodyGui by HUD("Progress GUI", "Shows a GUI with the progress of broadcasting odin users in the melody terminal.", true) {
@@ -80,7 +80,7 @@ object MelodyMessage : Module(
 
         onPacket<S2FPacketSetSlot>({ enabled && broadcast }) {
             val term = TerminalSolver.currentTerm ?: return@onPacket
-            if (/*DungeonUtils.getF7Phase() != M7Phases.P3 ||*/ term.type != TerminalTypes.MELODY || it.func_149173_d() !in 0 until term.type.windowSize) return@onPacket
+            if (DungeonUtils.getF7Phase() != M7Phases.P3 || term.type != TerminalTypes.MELODY || it.func_149173_d() !in 0 until term.type.windowSize || mc.currentScreen is TermSimGUI) return@onPacket
 
             val meta = it.func_149174_e()?.metadata ?: return@onPacket
 
@@ -92,6 +92,7 @@ object MelodyMessage : Module(
                 if (lastSent.clay == position) return@onPacket
                 webSocket.send(update(1, position))
                 lastSent.clay = position
+                if (melodyProgress) clayProgress[position]?.let { partyMessage(it) }
                 return@onPacket
             }
 
@@ -112,15 +113,6 @@ object MelodyMessage : Module(
                 5 -> lastSent.pane = index
             }
         }
-
-        execute(250) {
-            if (DungeonUtils.getF7Phase() != M7Phases.P3 || TerminalSolver.currentTerm?.type != TerminalTypes.MELODY || mc.currentScreen is TermSimGUI || !melodyProgress) return@execute
-
-            val greenClayIndices = claySlots.keys.filter { index -> TerminalSolver.currentTerm?.items?.get(index)?.metadata == 5 }.ifEmpty { return@execute }
-
-            partyMessage(claySlots[greenClayIndices.last()] ?: return@execute)
-            greenClayIndices.forEach { claySlots.remove(it) }
-        }
     }
 
     @SubscribeEvent
@@ -129,15 +121,13 @@ object MelodyMessage : Module(
         webSocket.send(update(0, 0))
     }
 
-    private var claySlots = hashMapOf(25 to "Melody 25%", 34 to "Melody 50%", 43 to "Melody 75%")
+    private val clayProgress = hashMapOf(1 to "Melody 25%", 2 to "Melody 50%", 3 to "Melody 75%")
 
     @SubscribeEvent
     fun onTermLoad(event: TerminalEvent.Opened) {
         if (DungeonUtils.getF7Phase() != M7Phases.P3 || event.terminal.type != TerminalTypes.MELODY || mc.currentScreen is TermSimGUI) return
         if (sendMelodyMessage) partyMessage(melodyMessage)
         if (melodySendCoords) sendCommand("od sendcoords", true)
-
-        claySlots = hashMapOf(25 to "Melody 25%", 34 to "Melody 50%", 43 to "Melody 75%")
     }
 
     fun update(type: Int, slot: Int): String = gson.toJson(UpdateMessage(mc.session.username, type, slot))

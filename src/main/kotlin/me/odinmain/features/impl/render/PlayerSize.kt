@@ -36,10 +36,12 @@ object PlayerSize : Module(
     private var showHidden by DropdownSetting("Show Hidden", false).withDependency { isRandom }
     private val passcode by StringSetting("Passcode", "odin", desc = "Passcode for dev features.").withDependency { showHidden && isRandom }
 
+    const val DEV_SERVER = "https://api.odtheking.com/devs/"
+
     private val sendDevData by ActionSetting("Send Dev Data", desc = "Sends dev data to the server.") {
         showHidden = false
         OdinMain.scope.launch {
-            modMessage(postData("https://tj4yzotqjuanubvfcrfo7h5qlq0opcyk.lambda-url.eu-north-1.on.aws/", "${mc.thePlayer.name}, [${devWingsColor.red},${devWingsColor.green},${devWingsColor.blue}], [$devSizeX,$devSizeY,$devSizeZ], $devWings, , $passcode").getOrNull())
+            modMessage(postData(DEV_SERVER, "${mc.thePlayer.name}, [${devWingsColor.red},${devWingsColor.green},${devWingsColor.blue}], [$devSizeX,$devSizeY,$devSizeZ], $devWings, , $passcode").getOrNull())
             updateCustomProperties()
         }
     }.withDependency { isRandom }
