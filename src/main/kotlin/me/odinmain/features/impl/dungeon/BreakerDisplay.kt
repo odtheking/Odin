@@ -12,11 +12,11 @@ import me.odinmain.utils.ui.getTextWidth
 import net.minecraft.network.play.server.S2FPacketSetSlot
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
-object DungeonBreakerCharge : Module(
-    name = "Stonk Charge Display",
+object BreakerDisplay : Module(
+    name = "Breaker Display",
     description = "Displays the amount of charges left in your Dungeon Breaker"
 ) {
-    private val regex = "Charges: (\\d+)/(\\d+)⸕".toRegex()
+    private val chargesRegex = Regex("Charges: (\\d+)/(\\d+)⸕")
     private var charges = 0
     private var max = 0
 
@@ -29,9 +29,9 @@ object DungeonBreakerCharge : Module(
     fun onPacketReceive(event: PacketEvent.Receive) {
         if (event.packet !is S2FPacketSetSlot || !DungeonUtils.inDungeons) return
         val stack = event.packet.func_149174_e() ?: return
-        if (!stack.skyblockID.equals("DUNGEONBREAKER", true)) return
+        if (stack.skyblockID != "DUNGEONBREAKER") return
 
-        stack.lore.firstNotNullOfOrNull { regex.find(it.noControlCodes) }?.let { match ->
+        stack.lore.firstNotNullOfOrNull { chargesRegex.find(it.noControlCodes) }?.let { match ->
             charges = match.groupValues[1].toIntOrNull() ?: 0
             max = match.groupValues[2].toIntOrNull() ?: 0
         }
