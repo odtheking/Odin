@@ -139,9 +139,8 @@ object WitherDragons : Module(
         onMessage(Regex("^\\[BOSS] Wither King: (Oh, this one hurts!|I have more of those\\.|My soul is disposable\\.)$"), { enabled && DungeonUtils.getF7Phase() == M7Phases.P5 } ) {
             WitherDragonsEnum.entries.find { lastDragonDeath == it && lastDragonDeath != WitherDragonsEnum.None }?.let {
                 if (sendNotification) modMessage("§${it.colorCode}${it.name} dragon counts.")
-                it.state = WitherDragonState.DEAD
-            }
-            WitherDragonsEnum.entries.find { it.state == WitherDragonState.ALIVE }?.let { it.state = WitherDragonState.DEAD }
+                lastDragonDeath = WitherDragonsEnum.None
+            } ?: WitherDragonsEnum.entries.find { it.state == WitherDragonState.ALIVE }?.setDead(true)
         }
     }
 

@@ -3,6 +3,7 @@ package me.odinmain.features.impl.floor7.p3.termGUI
 import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.GuiEvent
 import me.odinmain.features.impl.floor7.p3.TerminalSolver
+import me.odinmain.features.impl.floor7.p3.TerminalSolver.firstClickProt
 import me.odinmain.features.impl.floor7.p3.TerminalSolver.hideClicked
 import me.odinmain.utils.postAndCatch
 import me.odinmain.utils.render.Color
@@ -51,7 +52,7 @@ abstract class TermGui {
     fun mouseClicked(button: Int) {
         getHoveredItem()?.let { slot ->
             TerminalSolver.currentTerm?.let {
-                if (System.currentTimeMillis() - it.timeOpened >= 350 && !GuiEvent.CustomTermGuiClick(slot, button).postAndCatch() && it.canClick(slot, button)) {
+                if (System.currentTimeMillis() - it.timeOpened >= firstClickProt && !GuiEvent.CustomTermGuiClick(slot, button).postAndCatch() && it.canClick(slot, button)) {
                     it.click(slot, if (button == 0) ClickType.Middle else ClickType.Right, hideClicked && !it.isClicked)
                     if (TerminalSolver.customAnimations) colorAnimations[slot]?.start()
                 }
