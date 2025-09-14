@@ -8,6 +8,7 @@ import me.odinmain.utils.render.Colors
 import me.odinmain.utils.render.RenderUtils.partialTicks
 import net.minecraft.client.model.ModelDragon
 import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.client.renderer.RenderHelper
 import net.minecraft.entity.Entity
 import net.minecraft.util.MathHelper
 import net.minecraft.util.ResourceLocation
@@ -71,9 +72,9 @@ object PetDragon : Module(
             scale: Float
         ) {
             GlStateManager.pushMatrix()
-            //GlStateManager.shadeModel(7424)
-            //RenderHelper.enableStandardItemLighting()
-            //mc.entityRenderer.enableLightmap()
+            GlStateManager.shadeModel(7424)
+            RenderHelper.enableStandardItemLighting()
+            mc.entityRenderer.enableLightmap()
             GlStateManager.color(color.red / 255f, color.green / 255f, color.blue / 255f, color.alphaFloat)
             GL11.glFrontFace(GL11.GL_CW)
 
@@ -178,7 +179,7 @@ object PetDragon : Module(
             GlStateManager.popMatrix()
 
             GL11.glFrontFace(GL11.GL_CCW)
-            //mc.entityRenderer.disableLightmap()
+            mc.entityRenderer.disableLightmap()
             GlStateManager.popMatrix()
         }
 
