@@ -53,13 +53,14 @@ object ModuleManager {
         TerracottaTimer, BloodCamp, SecretClicked, DungeonWaypoints, LeapMenu, PuzzleSolvers, /*MageBeam,*/
         WarpCooldown, MapInfo, SwapSound, LividSolver, SpiritBear, BreakerDisplay,
 
+
         // floor 7
         TerminalSolver, TerminalTimes, MelodyMessage, TickTimers, InactiveWaypoints, WitherDragons,
         TerminalSimulator, TerminalSounds, ArrowAlign,
 
         // render
         BPSDisplay, ClickGUIModule, CustomHighlight, CPSDisplay, DragonHitboxes, GyroWand, NameChanger,
-        PersonalDragon, RenderOptimizer, PerformanceHUD, Waypoints, CanClip, Animations, SpaceHelmet,
+        PetDragon, RenderOptimizer, PerformanceHUD, Waypoints, CanClip, Animations, SpaceHelmet,
         BlockOverlay, VisualWords, DVD, HideArmor, PlayerSize,
 
         //skyblock

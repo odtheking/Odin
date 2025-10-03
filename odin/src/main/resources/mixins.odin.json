@@ -29,7 +29,6 @@
     "mixins.MixinModList",
     "mixins.MixinMouseHelper",
     "mixins.MixinNetworkManager",
-    "mixins.MixinRenderDragon",
     "mixins.MixinRenderEntityItem",
     "mixins.MixinRendererLivingEntity",
     "mixins.MixinRenderGlobal",
