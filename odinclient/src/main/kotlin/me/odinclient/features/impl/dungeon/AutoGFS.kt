@@ -24,7 +24,7 @@ object AutoGFS : Module(
     private val refillTNT by BooleanSetting("Refill TNT", true, desc = "Refill superboom tnt.")
     private val refillOnTimer by BooleanSetting("Refill on Timer", true, desc = "Refill on a 5s intervals.")
     private val timerIncrements by NumberSetting("Timer Increments", 5L, 1, 60, desc = "The interval in which to refill.", unit = "s")
-    private val autoGetDraft by BooleanSetting("Auto Get Draft", true, desc = "Automatically get draf from the sack.")
+    private val autoGetDraft by BooleanSetting("Auto Get Draft", true, desc = "Automatically get draft from the sack.")
 
     init {
         execute({ timerIncrements * 1000 }) {
