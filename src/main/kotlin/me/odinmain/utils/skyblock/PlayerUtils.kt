@@ -49,9 +49,10 @@ object PlayerUtils {
     inline val posY get() = mc.thePlayer?.posY ?: 0.0
     inline val posZ get() = mc.thePlayer?.posZ ?: 0.0
 
-    fun getPositionString(): String {
+    fun getPositionString(getExactCoordinates: Boolean = false): String {
         val blockPos = BlockPos(posX, posY, posZ)
-        return "x: ${blockPos.x}, y: ${blockPos.y}, z: ${blockPos.z}"
+        return if(getExactCoordinates) "x: $posX, y: $posY, z: $posZ"
+        else "x: ${blockPos.x}, y: ${blockPos.y}, z: ${blockPos.z}"
     }
 
     private var lastClickSent = 0L

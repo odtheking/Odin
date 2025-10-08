@@ -35,7 +35,7 @@ object HollowWand : Module(
         // Sending Ichor Pool Messages
         onMessage(outgoingIchorRegex) {
             if(!sendChatMessage) return@onMessage
-            sendCommand("pc Ichor Pool ${PlayerUtils.getPositionString()}")
+            sendCommand("pc Ichor Pool ${PlayerUtils.getPositionString(true)}")
         }
 
         // Receiving Ichor Pool Messages
