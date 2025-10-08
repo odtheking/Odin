@@ -11,6 +11,7 @@ import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.runIn
 import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.sendCommand
+import me.odinmain.utils.toFixed
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.event.world.WorldEvent
@@ -27,7 +28,7 @@ object HollowWand : Module(
     data class IchorPoolCoordinate(val x: Double, val y: Double, val z: Double)
     private val poolsToRender = mutableListOf<IchorPoolCoordinate>()
 
-    private val incomingIchorRegex = Regex("""^Party > (?:\[[\wዞ]+\+*] )?[\w_]+: Ichor Pool x: (-?\d+\.\d{3}), y: (-?\d+\.\d{3}), z: (-?\d+\.\d{3})$""")
+    private val incomingIchorRegex = Regex("""^Party > (?:\[[\wዞ]+\+*] )?[\w_]+: Ichor Pool x: (-?\d+\.\d{3}), y: (-?\d+), z: (-?\d+\.\d{3})$""")
     private val outgoingIchorRegex = Regex("""^Casting Spell: Ichor Pool!$""")
     private val messageSize by NumberSetting("Message Size", 1f, 0.1f, 4f, 0.1f, desc = "Whether or not to display the message size in the box.").withDependency { true }
 

@@ -53,7 +53,7 @@ object PlayerUtils {
 
     fun getPositionString(getSpecificCoordinates: Boolean = false): String {
         val blockPos = BlockPos(posX, posY, posZ)
-        return if(getSpecificCoordinates) "x: ${posX.toFixed(3)}, y: ${posY.toFixed(3)}, z: ${posZ.toFixed(3)}"
+        return if(getSpecificCoordinates) "x: ${posX.toFixed(3)}, y: ${posY.toFixed(0)}, z: ${posZ.toFixed(3)}"
         else "x: ${blockPos.x}, y: ${blockPos.y}, z: ${blockPos.z}"
     }
 
