@@ -22,7 +22,7 @@ object HollowWand : Module(
 ) {
     private val sendChatMessage by BooleanSetting("Send Message", false, "Sends a message when ichor pool is casted.")
     private val showWaypoint by BooleanSetting("Show Waypoint", false,"Sends a waypoint when party ichor pool message is detected.")
-    private val waypointColor by ColorSetting("Waypoint Color", Color(50, 150, 220), allowAlpha = false, desc = "Color of the ichor pool waypoint.").withDependency { showWaypoint }
+    private val waypointColor by ColorSetting("Waypoint Color", Color(166, 21, 3), allowAlpha = false, desc = "Color of the ichor pool waypoint.").withDependency { showWaypoint }
 
     data class IchorPoolCoordinate(val x: Double, val y: Double, val z: Double)
     private val poolsToRender = mutableListOf<IchorPoolCoordinate>()
