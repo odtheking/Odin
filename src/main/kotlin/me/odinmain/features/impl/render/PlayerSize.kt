@@ -95,9 +95,9 @@ object PlayerSize : Module(
 
     fun replaceText(text: String?): String? {
         var replacedText = text
-        for (random in randoms) {
-            if (random.value.customName?.isBlank() == false)
-                replacedText = randoms[random.key]?.let { replacedText?.replace(random.key, it.customName.toString()) }
+        for ((key, value) in randoms.toMap()) {
+            if (value.customName.isBlank()) continue
+            replacedText = value.customName.let { replacedText?.replace(key, it) }
         }
 
         return replacedText

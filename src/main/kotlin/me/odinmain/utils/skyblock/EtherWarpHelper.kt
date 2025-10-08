@@ -119,7 +119,7 @@ object EtherWarpHelper {
             Blocks.redstone_wire, Blocks.reeds, Blocks.sapling, Blocks.skull, Blocks.snow_layer,
             Blocks.stone_button, Blocks.tallgrass, Blocks.torch, Blocks.tripwire, Blocks.tripwire_hook,
             Blocks.unpowered_comparator, Blocks.unpowered_repeater, Blocks.vine, Blocks.water, Blocks.web,
-            Blocks.wheat, Blocks.wooden_button, Blocks.yellow_flower
+            Blocks.wheat, Blocks.wooden_button, Blocks.yellow_flower, Blocks.end_portal
         ).forEach { set(Block.getIdFromBlock(it)) }
     }
 }
