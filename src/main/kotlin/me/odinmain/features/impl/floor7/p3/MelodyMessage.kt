@@ -49,7 +49,7 @@ object MelodyMessage : Module(
 
     val webSocket = webSocket {
         onMessage {
-            val (user, type, slot) = try { gson.fromJson(it, UpdateMessage::class.java) } catch (e: Exception) { return@onMessage }
+            val (user, type, slot) = try { gson.fromJson(it, UpdateMessage::class.java) } catch (_: Exception) { return@onMessage }
             val entry = melodies.getOrPut(user) { MelodyData(null, null, null) }
             when (type) {
                 0 -> melodies.remove(user)
@@ -60,8 +60,8 @@ object MelodyMessage : Module(
         }
     }
 
-    val melodies = ConcurrentHashMap<String, MelodyData>()
-    val lastSent = MelodyData(null, null, null)
+    private val melodies = ConcurrentHashMap<String, MelodyData>()
+    private val lastSent = MelodyData(null, null, null)
 
     init {
         onMessage(Regex("^\\[BOSS] Goldor: Who dares trespass into my domain\\?$"), { enabled && broadcast }) {
@@ -141,7 +141,7 @@ object MelodyMessage : Module(
         return null
     }
 
-    val width = getTextWidth("§d■").toFloat()
+    private val width = getTextWidth("§d■").toFloat()
 
     fun drawMelody(data: MelodyData, index: Int) {
         val y = width * 2 * index

@@ -9,6 +9,7 @@ import me.odinmain.clickgui.settings.impl.*
 import me.odinmain.features.Module
 import me.odinmain.utils.network.WebUtils.fetchJson
 import me.odinmain.utils.network.WebUtils.postData
+import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Colors
 import me.odinmain.utils.skyblock.modMessage
 import net.minecraft.client.entity.AbstractClientPlayer
@@ -41,7 +42,13 @@ object PlayerSize : Module(
     private val sendDevData by ActionSetting("Send Dev Data", desc = "Sends dev data to the server.") {
         showHidden = false
         OdinMain.scope.launch {
-            modMessage(postData(DEV_SERVER, "${mc.thePlayer.name}, [${devWingsColor.red},${devWingsColor.green},${devWingsColor.blue}], [$devSizeX,$devSizeY,$devSizeZ], $devWings, , $passcode").getOrNull())
+            val body = buildDevBody(
+                mc.thePlayer?.name ?: return@launch,
+                devWingsColor, devSizeX, devSizeY,
+                devSizeZ, devWings, " ", passcode
+            )
+
+            modMessage(postData(DEV_SERVER, body).getOrNull())
             updateCustomProperties()
         }
     }.withDependency { isRandom }
@@ -72,10 +79,19 @@ object PlayerSize : Module(
     }
 
     suspend fun updateCustomProperties() {
-        val data = fetchJson<Array<RandomPlayer>>("https://api.odtheking.com/devs/").getOrNull() ?: return
-        for (player in data) {
-            randoms[player.name] = player
-        }
+        val response = fetchJson<Array<RandomPlayer>>("https://api.odtheking.com/devs/").getOrNull() ?: return
+        randoms.putAll(response.associateBy { it.name })
+    }
+
+    fun buildDevBody(devName: String, wingsColor: Color, sizeX: Float, sizeY: Float, sizeZ: Float, wings: Boolean, customName: String, password: String): String {
+        return """ {
+            "devName": "$devName",
+            "wingsColor": [${wingsColor.red}, ${wingsColor.green}, ${wingsColor.blue}],
+            "size": [$sizeX, $sizeY, $sizeZ],
+            "wings": $wings,
+            "customName": "$customName",
+            "password": "$password"
+        } """.trimIndent()
     }
 
     init {
@@ -96,8 +112,7 @@ object PlayerSize : Module(
     fun replaceText(text: String?): String? {
         var replacedText = text
         for ((key, value) in randoms.toMap()) {
-            if (value.customName.isBlank()) continue
-            replacedText = value.customName.let { replacedText?.replace(key, it) }
+            if (value.customName?.isBlank() == false) replacedText = value.customName.let { replacedText?.replace(key, it) }
         }
 
         return replacedText

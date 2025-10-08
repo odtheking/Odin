@@ -76,7 +76,7 @@ object OdinMain {
         scope.launch(Dispatchers.IO) {
             DungeonWaypointConfig.loadConfig()
             ClickGUIModule.latestVersionNumber = ClickGUIModule.checkNewerVersion(VERSION)
-            postData("https://gi2wsqbyse6tnfhqakbnq6f2su0vujgz.lambda-url.eu-north-1.on.aws/", """{"username": "$name", "version": "${if (isLegitVersion) "legit" else "cheater"} $VERSION"}""")
+            postData("https://api.odtheking.com/tele/", """{"username": "$name", "version": "${if (isLegitVersion) "legit" else "cheater"} $VERSION"}""")
         }
     }
 

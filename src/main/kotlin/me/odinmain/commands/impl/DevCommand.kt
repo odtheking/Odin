@@ -21,9 +21,11 @@ import me.odinmain.features.impl.nether.NoPre
 import me.odinmain.features.impl.render.ClickGUIModule.wsServer
 import me.odinmain.features.impl.render.PlayerSize
 import me.odinmain.features.impl.render.PlayerSize.DEV_SERVER
+import me.odinmain.features.impl.render.PlayerSize.buildDevBody
 import me.odinmain.utils.isOtherPlayer
 import me.odinmain.utils.network.WebUtils.postData
 import me.odinmain.utils.postAndCatch
+import me.odinmain.utils.render.Colors
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.PlayerUtils.posX
 import me.odinmain.utils.skyblock.PlayerUtils.posZ
@@ -108,23 +110,12 @@ val devCommand = Commodore("oddev") {
     }
 
     literal("adddev").runs { name: String, password: String, xSize: Float?, ySize: Float?, zSize: Float? ->
-        val x = xSize ?: 0.6
-        val y = ySize ?: 0.6
-        val z = zSize ?: 0.6
-        modMessage("Sending data... name: $name, password: $password")
+        val x = xSize ?: 0.6f
+        val y = ySize ?: 0.6f
+        val z = zSize ?: 0.6f
+        modMessage("Sending data... name: $name, x: $x, y: $y, z: $z")
         scope.launch {
-            modMessage(postData(DEV_SERVER, "$name, [1,2,3], [$x,$y,$z], false, , $password").getOrNull())
-        }
-    }
-
-    literal("customSize").runs { password: String, xSize: Float?, ySize: Float?, zSize: Float?, customName: String? ->
-        val x = xSize ?: 0.6
-        val y = ySize ?: 0.6
-        val z = zSize ?: 0.6
-        val name = customName ?: ""
-        scope.launch {
-            modMessage(postData(DEV_SERVER, "${mc.thePlayer.name}, [1,2,3], [$x,$y,$z], false, $name, $password").getOrNull())
-            PlayerSize.updateCustomProperties()
+            modMessage(postData(DEV_SERVER, buildDevBody(name, Colors.WHITE, x, y, z, false, " ", password)).getOrNull())
         }
     }
 

@@ -1,30 +1,25 @@
 package me.odinmain.utils.network
 
 import com.google.gson.Gson
-import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withTimeoutOrNull
+import me.odinmain.OdinMain.gson
 import me.odinmain.OdinMain.logger
 import me.odinmain.OdinMain.okClient
 import me.odinmain.utils.network.SslUtils.createSslContext
 import me.odinmain.utils.network.SslUtils.getTrustManager
-import okhttp3.Call
-import okhttp3.Callback
-import okhttp3.Dispatcher
-import okhttp3.OkHttpClient
-import okhttp3.Request
+import okhttp3.*
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
-import okhttp3.Response
 import org.apache.http.impl.EnglishReasonPhraseCatalog
 import java.io.InputStream
 import java.util.concurrent.TimeUnit
 import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 
 object WebUtils {
-    val gson = GsonBuilder().setPrettyPrinting().create()
-
     private const val USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"
+    private val JSON = "application/json; charset=utf-8".toMediaType()
 
     suspend inline fun <reified T> fetchJson(url: String, json: Gson = gson): Result<T> = runCatching {
         json.fromJson<T>(fetchString(url).getOrElse { return Result.failure(it) }, T::class.java)
@@ -37,11 +32,11 @@ object WebUtils {
             .onFailure { e -> logger.warn("Failed to get input stream. Error: ${e.message}") }
 
     suspend fun postData(url: String, body: String): Result<String> =
-        clientCall(Request.Builder().url(url).post(body.toRequestBody()).build())
+        clientCall(Request.Builder().url(url).post(body.toRequestBody(JSON)).build())
             .map { it.bufferedReader().use { reader -> reader.readText() } }
             .onFailure { e -> logger.warn("Failed to post data. Error: ${e.message}") }
 
-    private suspend fun clientCall(request: Request): Result<InputStream> = suspendCoroutine { cont ->
+    private suspend fun clientCall(request: Request): Result<InputStream> = suspendCancellableCoroutine { cont ->
         logger.info("Making request to ${request.url}")
 
         val callback = object : Callback {
