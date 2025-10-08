@@ -7,6 +7,8 @@ import me.odinmain.utils.postAndCatch
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Colors
 import me.odinmain.utils.render.Renderer
+import me.odinmain.utils.round
+import me.odinmain.utils.toFixed
 import net.minecraft.network.play.client.C0EPacketClickWindow
 import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
@@ -49,9 +51,9 @@ object PlayerUtils {
     inline val posY get() = mc.thePlayer?.posY ?: 0.0
     inline val posZ get() = mc.thePlayer?.posZ ?: 0.0
 
-    fun getPositionString(getExactCoordinates: Boolean = false): String {
+    fun getPositionString(getSpecificCoordinates: Boolean = false): String {
         val blockPos = BlockPos(posX, posY, posZ)
-        return if(getExactCoordinates) "x: $posX, y: $posY, z: $posZ"
+        return if(getSpecificCoordinates) "x: ${posX.toFixed(3)}, y: ${posY.toFixed(3)}, z: ${posZ.toFixed(3)}"
         else "x: ${blockPos.x}, y: ${blockPos.y}, z: ${blockPos.z}"
     }
 

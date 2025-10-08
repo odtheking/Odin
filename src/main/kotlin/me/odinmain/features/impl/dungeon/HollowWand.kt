@@ -18,7 +18,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 
 object HollowWand : Module(
     name = "Hollow Wand",
-    description = "Messages and waypoints for ichor pool casting"
+    description = "Messages and waypoints for ichor pool casting."
 ) {
     private val sendChatMessage by BooleanSetting("Send Message", false, "Sends a message when ichor pool is casted.")
     private val showWaypoint by BooleanSetting("Show Waypoint", false,"Sends a waypoint when party ichor pool message is detected.")
@@ -27,7 +27,7 @@ object HollowWand : Module(
     data class IchorPoolCoordinate(val x: Double, val y: Double, val z: Double)
     private val poolsToRender = mutableListOf<IchorPoolCoordinate>()
 
-    private val incomingIchorRegex = Regex("""^Party > (?:\[[\wዞ]+\+*] )?[\w_]+: Ichor Pool x: (-?\d+), y: (-?\d+), z: (-?\d+)""")
+    private val incomingIchorRegex = Regex("""^Party > (?:\[[\wዞ]+\+*] )?[\w_]+: Ichor Pool x: (-?\d+\.\d{3}), y: (-?\d+\.\d{3}), z: (-?\d+\.\d{3})$""")
     private val outgoingIchorRegex = Regex("""^Casting Spell: Ichor Pool!$""")
     private val messageSize by NumberSetting("Message Size", 1f, 0.1f, 4f, 0.1f, desc = "Whether or not to display the message size in the box.").withDependency { true }
 
