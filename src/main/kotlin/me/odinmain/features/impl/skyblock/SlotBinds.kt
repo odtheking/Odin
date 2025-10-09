@@ -30,7 +30,7 @@ object SlotBinds: Module (
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     fun onGuiClick(event: GuiEvent.MouseClick) {
-        if (event.gui !is GuiInventory || !Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) return
+        if (event.gui !is GuiInventory || !(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT))) return
         val clickedSlot = event.gui.slotUnderMouse?.slotNumber?.takeIf { it in 5 until 45 } ?: return
         val boundSlot = slotBinds[clickedSlot] ?: return
 
@@ -79,7 +79,7 @@ object SlotBinds: Module (
         val (endX, endY) = previousSlot?.let { event.mouseX to event.mouseY } ?: boundSlotNumber?.let { slot ->
             gui.inventorySlots.getSlot(slot)?.let { it.xDisplayPosition + event.guiLeft + 8 to it.yDisplayPosition + event.guiTop + 8 } } ?: return
 
-        if (previousSlot == null && !(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) && boundSlotNumber != null)) return
+        if (previousSlot == null && !(Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT))) return
         GlStateManager.translate(0f, 0f, 999f)
         RenderUtils.drawLine(startX, startY, endX, endY, lineColor, 2f)
         GlStateManager.translate(0f, 0f, -999f)
