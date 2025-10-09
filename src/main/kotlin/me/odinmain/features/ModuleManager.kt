@@ -51,7 +51,7 @@ object ModuleManager {
         // dungeon
         DungeonRequeue, BlessingDisplay, PositionalMessages, ExtraStats, KeyHighlight, Mimic, TeammatesHighlight,
         TerracottaTimer, BloodCamp, SecretClicked, DungeonWaypoints, LeapMenu, PuzzleSolvers, MageBeam,
-        WarpCooldown, MapInfo, SwapSound, LividSolver, SpiritBear, HollowWand,
+        WarpCooldown, MapInfo, SwapSound, LividSolver, SpiritBear,
 
         // floor 7
         TerminalSolver, TerminalTimes, MelodyMessage, TickTimers, InactiveWaypoints, WitherDragons,
@@ -65,7 +65,7 @@ object ModuleManager {
         //skyblock
         NoCursorReset, AutoSprint, BlazeAttunement, ChatCommands, DeployableTimer, DianaHelper,
         Ragnarock, MobSpawn, Splits, WardrobeKeybinds, InvincibilityTimer, ItemsHighlight, PlayerDisplay,
-        FarmKeys, PetKeybinds, CommandKeybinds, SpringBoots, AbilityTimers, SlotBinds,
+        FarmKeys, PetKeybinds, CommandKeybinds, SpringBoots, AbilityTimers, SlotBinds, HollowWand,
 
         // kuudra
         BuildHelper, FreshTools, KuudraDisplay, NoPre, PearlWaypoints, RemovePerks, SupplyHelper, TeamHighlight,

@@ -1,4 +1,4 @@
-package me.odinmain.features.impl.dungeon
+package me.odinmain.features.impl.skyblock
 
 import me.odinmain.clickgui.settings.Setting.Companion.withDependency
 import me.odinmain.clickgui.settings.impl.BooleanSetting
@@ -11,7 +11,6 @@ import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.runIn
 import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.sendCommand
-import me.odinmain.utils.toFixed
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.event.world.WorldEvent
@@ -53,7 +52,6 @@ object HollowWand : Module(
     }
 
     // Waypoint rendering and management
-
     @SubscribeEvent
     fun onRenderWorldLast(event: RenderWorldLastEvent) {
         if(!showWaypoint) return
