@@ -28,6 +28,7 @@ import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 import org.lwjgl.input.Keyboard
+import kotlin.math.abs
 import kotlin.math.sqrt
 
 object ArrowsDevice : Module(
@@ -48,8 +49,10 @@ object ArrowsDevice : Module(
         markedPositions.clear()
         autoState = AutoState.Stopped
         actionQueue.clear()
+        optimalAimPositions = emptyList()
     }.withDependency { solver && solverDropdown }
     private val alertOnDeviceComplete by BooleanSetting("Device complete alert", true, desc = "Send an alert when device is complete.").withDependency { solverDropdown }
+    private val showAimPositions by BooleanSetting("Show Aim Positions", false, desc = "Shows optimal aim positions for hitting marked blocks.").withDependency { solver && solverDropdown }
 
     private val autoDropdown by DropdownSetting("Auto Device")
     private val auto by BooleanSetting("Auto Enabled", desc = "Automatically complete device.").withDependency { autoDropdown }
@@ -83,6 +86,18 @@ object ArrowsDevice : Module(
 
     // Number of server ticks since the last target disappeared, or null if there is a target
     private var serverTicksSinceLastTargetDisappeared: Int? = null
+
+    private data class AimPosition(val position: Vec3, val coveredBlocks: Set<BlockPos>, val distance: Double)
+
+    private var optimalAimPositions: List<AimPosition> = emptyList()
+
+    private val adjacentPairs by lazy {
+        positions.flatMapIndexed { i, block1 ->
+            positions.drop(i + 1).mapNotNull { block2 ->
+                if (abs(block1.x - block2.x) == 2 && block1.y == block2.y && block1.z == block2.z) block1 to block2 else null
+            }
+        }
+    }
 
     init {
         onMessage(
@@ -118,6 +133,7 @@ object ArrowsDevice : Module(
             actionQueue.clear()
             // Reset is called when leaving the device room, but device remains complete across an entire run, so this doesn't belong in reset
             isDeviceComplete = false
+            optimalAimPositions = calculateOptimalAimPositions()
         }
 
         execute(10) {
@@ -389,6 +405,7 @@ object ArrowsDevice : Module(
 
                 if (autoState != AutoState.Stopped) autoState = AutoState.Aiming
             }
+            if (showAimPositions) optimalAimPositions = calculateOptimalAimPositions()
         }
 
         // New target appeared
@@ -401,7 +418,7 @@ object ArrowsDevice : Module(
                 if (autoState == AutoState.Stopped) {
                     bowSlot = mc.thePlayer?.inventory?.mainInventory?.indexOfFirst { it.isShortbow } ?: -1
 
-                    if (bowSlot < 0 || bowSlot >= 9) return modMessage("§cCouldn't find bow for auto sharp shooter")
+                    if (bowSlot !in 0..<9) return modMessage("§cCouldn't find bow for auto sharp shooter")
 
                     modMessage("§aStarting sharp shooter")
                 }
@@ -413,6 +430,7 @@ object ArrowsDevice : Module(
                     autoState = AutoState.Shooting
                 }
             }
+            if (showAimPositions) optimalAimPositions = calculateOptimalAimPositions()
         }
     }
 
@@ -425,7 +443,47 @@ object ArrowsDevice : Module(
         targetPosition?.let {
             Renderer.drawBlock(it, targetPositionColor, depth = depthCheck)
         }
+        if (showAimPositions) {
+            val colors = listOf(Colors.MINECRAFT_GREEN, Colors.MINECRAFT_GOLD, Colors.MINECRAFT_RED)
+            optimalAimPositions.take(3).forEachIndexed { index, aimPos ->
+                Renderer.drawBox(aimPos.position.toAABB(0.2), colors[index], depth = true, fillAlpha = 0.3f, outlineAlpha = 0.8f)
+            }
+        }
     }
+
+    private fun calculateOptimalAimPositions(): List<AimPosition> {
+        val unmarkedBlocks = positions.filterNot { it in markedPositions }.ifEmpty { return emptyList() }
+
+        return findBestCombination(buildList {
+            adjacentPairs.forEach { (block1, block2) ->
+                add(AimPosition(block1.midpoint(block2), listOf(block1, block2).filter { it in unmarkedBlocks }.toSet().ifEmpty { return@forEach }, 0.0))
+            }
+        })
+    }
+
+    private fun findBestCombination(aimPositions: List<AimPosition>): List<AimPosition> {
+        val result = mutableListOf<AimPosition>()
+        val covered = mutableSetOf<BlockPos>()
+
+        repeat(3) {
+            val best = aimPositions.filterNot { it in result }
+                .maxWithOrNull(compareBy(
+                    { it.coveredBlocks.count { block -> block !in covered } }, // New unmarked blocks
+                    { it.coveredBlocks.size }, // Total blocks covered
+                    { -(result.lastOrNull()?.position?.distanceTo(it.position) ?: 0.0) } // Closer to last position
+                )) ?: return@repeat
+
+            result.add(best)
+            covered.addAll(best.coveredBlocks)
+        }
+
+        return result.mapIndexed { index, aimPos ->
+            AimPosition(aimPos.position, aimPos.coveredBlocks,  if (index == 0) 0.0 else aimPos.position.distanceTo(result[index - 1].position))
+        }
+    }
+
+    private fun BlockPos.midpoint(other: BlockPos): Vec3 =
+        Vec3((x + other.x) / 2.0 + 0.5, y.toDouble() + 0.5, z.toDouble() + 0.5)
 
     // This is order dependent
     private val positions = listOf(
