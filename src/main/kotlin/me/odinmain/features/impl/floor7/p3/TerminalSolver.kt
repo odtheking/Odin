@@ -88,6 +88,8 @@ object TerminalSolver : Module(
     val melodyRowColor by ColorSetting("Melody Row", Colors.MINECRAFT_RED, true, desc = "Color of the row indicator for melody.").withDependency { showColors && !cancelMelodySolver }
     val melodyPointerColor by ColorSetting("Melody Pointer", Colors.MINECRAFT_GREEN, true, desc = "Color of the location for pressing for melody.").withDependency { showColors && !cancelMelodySolver }
 
+    var firstClickProt by NumberSetting("First Click Protection", 350L, 0, 500, 10, unit = "ms", desc = "The amount of time before you can click in a terminal.").hide()
+
     var currentTerm: TerminalHandler? = null
         private set
     var lastTermOpened: TerminalHandler? = null

@@ -40,6 +40,9 @@ allprojects {
         implementation(kotlin("reflect"))
         implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0-RC")
 
+        implementation("com.squareup.okhttp3:okhttp:4.9.3")
+        implementation("com.squareup.okio:okio:3.4.0")
+
         compileOnly("com.github.NotEnoughUpdates:NotEnoughUpdates:2.4.0:all")
 
         annotationProcessor("org.spongepowered:mixin:0.8.5-SNAPSHOT")
