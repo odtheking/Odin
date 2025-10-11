@@ -93,7 +93,6 @@ object ArrowsDevice : Module(
             markedPositions.clear()
             // Reset is called when leaving the device room, but device remains complete across an entire run, so this doesn't belong in reset
             isDeviceComplete = false
-            optimalAimPositions = calculateOptimalAimPositions()
         }
     }
 
@@ -155,18 +154,15 @@ object ArrowsDevice : Module(
     fun onBlockChange(event: BlockChangeEvent) {
         if (!DungeonUtils.inDungeons || DungeonUtils.getF7Phase() != M7Phases.P3 || !positions.contains(event.pos)) return
 
-        // Target was hit
         if (event.old.block == Blocks.emerald_block && event.updated.block == Blocks.stained_hardened_clay) {
             markedPositions.add(event.pos)
             if (targetPosition == event.pos) targetPosition = null
-            if (showAimPositions) optimalAimPositions = calculateOptimalAimPositions()
         }
 
-        // New target appeared
         if (event.old.block == Blocks.stained_hardened_clay && event.updated.block == Blocks.emerald_block) {
             markedPositions.remove(event.pos)
             targetPosition = event.pos
-            if (showAimPositions) optimalAimPositions = calculateOptimalAimPositions()
+            if (showAimPositions) optimalAimPositions = calculateOptimalAimPositions(event.pos)
         }
     }
 
@@ -187,26 +183,36 @@ object ArrowsDevice : Module(
         }
     }
 
-    private fun calculateOptimalAimPositions(): List<AimPosition> {
-        val unmarkedBlocks = positions.filterNot { it in markedPositions }.ifEmpty { return emptyList() }
+    private fun calculateOptimalAimPositions(target: BlockPos): List<AimPosition> {
+        val unmarkedBlocks = positions.filterNot { it in markedPositions }
 
-        return findBestCombination(buildList {
-            adjacentPairs.forEach { (block1, block2) ->
-                add(AimPosition(block1.midpoint(block2), listOf(block1, block2).filter { it in unmarkedBlocks }.toSet().ifEmpty { return@forEach }, 0.0))
+        fun createAimPosition(block1: BlockPos, block2: BlockPos): AimPosition? =
+            listOf(block1, block2).filter { it in unmarkedBlocks }.takeIf { it.isNotEmpty() }?.let {
+                AimPosition(block1.midpoint(block2), it.toSet(), 0.0)
             }
-        })
+
+        val greenAim = adjacentPairs
+            .filter { (block1, block2) -> target in listOf(block1, block2) }
+            .mapNotNull { (block1, block2) -> createAimPosition(block1, block2) }
+            .maxByOrNull { it.coveredBlocks.size } ?: return emptyList()
+
+        val remainingAimPositions = adjacentPairs
+            .filterNot { (block1, block2) -> target in listOf(block1, block2) }
+            .mapNotNull { (block1, block2) -> createAimPosition(block1, block2) }
+
+        return findBestCombination(greenAim, remainingAimPositions)
     }
 
-    private fun findBestCombination(aimPositions: List<AimPosition>): List<AimPosition> {
-        val result = mutableListOf<AimPosition>()
-        val covered = mutableSetOf<BlockPos>()
+    private fun findBestCombination(greenAim: AimPosition, aimPositions: List<AimPosition>): List<AimPosition> {
+        val result = mutableListOf(greenAim)
+        val covered = greenAim.coveredBlocks.toMutableSet()
 
-        repeat(3) {
+        repeat(2) {
             val best = aimPositions.filterNot { it in result }
                 .maxWithOrNull(compareBy(
                     { it.coveredBlocks.count { block -> block !in covered } }, // New unmarked blocks
                     { it.coveredBlocks.size }, // Total blocks covered
-                    { -(result.lastOrNull()?.position?.distanceTo(it.position) ?: 0.0) } // Closer to last position
+                    { -(result.last().position.distanceTo(it.position)) } // Closer to last position
                 )) ?: return@repeat
 
             result.add(best)
@@ -214,7 +220,7 @@ object ArrowsDevice : Module(
         }
 
         return result.mapIndexed { index, aimPos ->
-            AimPosition(aimPos.position, aimPos.coveredBlocks,  if (index == 0) 0.0 else aimPos.position.distanceTo(result[index - 1].position))
+            AimPosition(aimPos.position, aimPos.coveredBlocks, if (index == 0) 0.0 else aimPos.position.distanceTo(result[index - 1].position))
         }
     }
 
