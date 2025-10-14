@@ -572,7 +572,7 @@ footer {
 }
 
 .module-name {
-    font-size: 30px;
+    font-size: clamp(14px, 1.5vw, 18px);
     font-weight: bold;
     color: #ffffff;
     transition: all 0.2s ease;
