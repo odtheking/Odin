@@ -1,0 +1,4 @@
+<svg width="160" height="160" viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+    <!-- Pink ice path (navigating around walls, open start-end) -->
+    <path d="M80 160V80H60V140H40V120H20V100H40V80H20V20H40V60H60V40H120V80H100V140H140V120H120V100H140V20H80V0" fill="none" stroke="#ff66ff" stroke-width="2" stroke-linejoin="miter" stroke-linecap="square"/>
+</svg>

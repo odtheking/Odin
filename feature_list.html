@@ -1,47 +1,293 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-89HTB3MLVF"></script>
-  <script>
-    window.dataLayer = window.dataLayer || []
-    function gtag(){dataLayer.push(arguments)}
-    gtag('js', new Date())
-    gtag('config', 'G-89HTB3MLVF')
-  </script>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-89HTB3MLVF"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-89HTB3MLVF');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Complete list of Odin's features">
+    <meta name="keywords" content="skyblock, mod, forge, client, features, hypixel, Odin">
 
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Introducing Odin - Full list of Odin's features">
-  <meta name="keywords" content="skyblock,cheat, mod, forge, client, legit, feature, hypixel, Odin">
+    <title>Odin Features - Official Website</title>
+    <link rel="icon" href="assets/od.webp">
 
-  <title>Odin Features - Official Website</title>
-  <link rel="icon" href="assets/od.webp">
+    <link rel="stylesheet" href="home_style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        .feature-list-container {
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 2rem;
+            background: var(--color-bg);
+        }
 
-  <!-- Stylesheets -->
-  <link rel="stylesheet" href="feature_list/feature_list_style.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.0/css/bulma.min.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fork-awesome@1.1.7/css/fork-awesome.min.css" integrity="sha256-gsmEoJAws/Kd3CjuOQzLie5Q3yshhvmo7YNtBG7aaEY=" crossorigin="anonymous">
+        #module-container {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 4rem;
+            padding: 0 1rem;
+        }
 
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        .module-category {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 0 10px rgba(6, 182, 212, 0.1);
+        }
+
+        .category-header {
+            font-size: clamp(20px, 2vw, 28px);
+            font-weight: bold;
+            color: #06b6d4;
+            text-align: center;
+            user-select: none;
+            margin-bottom: 1rem;
+            font-family: Arial, sans-serif;
+        }
+
+        .module-item {
+            margin-bottom: 1rem;
+            cursor: pointer;
+        }
+
+        .module-name {
+            font-size: clamp(14px, 1.5vw, 18px);
+            font-weight: bold;
+            color: #ffffff;
+            transition: all 0.2s ease;
+            user-select: none;
+            text-align: center;
+            padding: 0.5rem;
+            border-radius: 5px;
+        }
+
+        .module-name:hover {
+            background: rgba(6, 182, 212, 0.2);
+            color: #06b6d4;
+        }
+
+        .module-description {
+            font-size: clamp(12px, 1.2vw, 15px);
+            font-weight: lighter;
+            color: rgba(255, 255, 255, 0.6);
+            padding: 0.5rem;
+            margin-top: 0.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            display: none;
+            text-align: center;
+        }
+
+        .loading {
+            text-align: center;
+            font-size: 24px;
+            color: white;
+            padding: 4rem;
+        }
+
+        @media (max-width: 1400px) {
+            #module-container {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 900px) {
+            #module-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            #module-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
-<body>
+<body><svg xmlns="http://www.w3.org/2000/svg" style="display: none;"><defs><symbol id="discord-icon" viewBox="0 0 24 24"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515a.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0a12.64 12.64 0 0 0-.617-1.25a.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057a19.9 19.9 0 0 0 5.993 3.03a.078.078 0 0 0 .084-.028a14.09 14.09 0 0 0 1.226-1.994a.076.076 0 0 0-.041-.106a13.107 13.107 0 0 1-1.872-.892a.077.077 0 0 1-.008-.128a10.2 10.2 0 0 0 .372-.292a.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127a12.299 12.299 0 0 1-1.873.892a.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028a19.839 19.839 0 0 0 6.002-3.03a.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.956-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.955-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.946 2.418-2.157 2.418z"/></symbol><symbol id="github-icon" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></symbol></defs></svg>
+<header>
+    <nav class="navbar">
+        <div class="logo">
+            <a href="index.html">
+                <img src="assets/OdinLogo.webp" alt="Odin Logo">
+            </a>
+        </div>
+        <div class="nav-links">
+            <a href="https://discord.gg/2nCbC9hkxT" target="_blank" rel="noopener noreferrer" class="tooltip">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515a.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0a12.64 12.64 0 0 0-.617-1.25a.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057a19.9 19.9 0 0 0 5.993 3.03a.078.078 0 0 0 .084-.028a14.09 14.09 0 0 0 1.226-1.994a.076.076 0 0 0-.041-.106a13.107 13.107 0 0 1-1.872-.892a.077.077 0 0 1-.008-.128a10.2 10.2 0 0 0 .372-.292a.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127a12.299 12.299 0 0 1-1.873.892a.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028a19.839 19.839 0 0 0 6.002-3.03a.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.956-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.955-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.946 2.418-2.157 2.418z"/></svg>
+                <span class="tooltiptext">Discord</span>
+            </a>
+            <a href="https://github.com/odtheking/Odin" target="_blank" rel="noopener noreferrer" class="tooltip">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                <span class="tooltiptext">GitHub</span>
+            </a>
+        </div>
+    </nav>
+    <div class="divider"></div>
 
-  <div id="navbar-placeholder"></div>
+    <div class="version-container">
+        <button class="version-btn active" id="legit" aria-label="Switch to Legit version">Legit</button>
+        <button class="version-btn" id="cheater" aria-label="Switch to Cheat version">Cheat</button>
+    </div>
+</header>
 
-  <div class="container-divider"></div>
+<main>
+    <div class="feature-list-container">
+        <div id="module-container">
+            <div class="loading">Loading features...</div>
+        </div>
+    </div>
+</main>
 
-  <div class="version-container">
-    <div class="legit" id="legit">Legit</div>
-    <div class="cheater" id="cheater">Cheat</div>
-  </div>
+<footer>
+    <div class="cat-container">
+        <img id="cat" src="https://cdn2.thecatapi.com/images/dte.jpg" alt="Random cat image" title="Click me!">
+    </div>
+    <p class="copyright">Copyright &copy; <span id="year"></span></p>
+    <div>
+        <a class="footer-link" href="index.html">Home</a> |
+        <a class="footer-link" href="installation_guide.html">Installation Guide</a>
+    </div>
+</footer>
 
-  <div id="module-container"></div>
+<script src="components/script.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const legitElement = document.getElementById('legit');
+        const cheaterElement = document.getElementById('cheater');
+        const moduleContainer = document.getElementById('module-container');
 
-  <div id="footer-placeholder"></div>
+        // Version switcher
+        function setActiveView(view) {
+            if (view === 'legit') {
+                legitElement.classList.add('active');
+                cheaterElement.classList.remove('active');
+            } else {
+                cheaterElement.classList.add('active');
+                legitElement.classList.remove('active');
+            }
 
-  <script src="components/script.js"></script>
-  <script src="feature_list/feature_list_script.js"></script>
+            document.querySelectorAll('.module-category').forEach(category => {
+                const isLegit = category.getAttribute('data-type') === 'legit';
+                category.style.display = (view === 'legit' && isLegit) || (view === 'cheat' && !isLegit) ? 'block' : 'none';
+            });
+        }
+
+        legitElement.addEventListener('click', () => setActiveView('legit'));
+        cheaterElement.addEventListener('click', () => setActiveView('cheat'));
+
+        // Load features from GitHub
+        function loadAllModules() {
+            fetch("https://raw.githubusercontent.com/odtheking/Odin/main/FEATURELISTS.md")
+                .then(response => {
+                    if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+                    return response.text();
+                })
+                .then(data => {
+                    const modulePairs = parseReadmeContent(data);
+                    const groupedModules = {};
+
+                    // Group modules by type and category
+                    modulePairs.forEach(module => {
+                        const type = module.isLegitCategory ? 'legit' : 'cheat';
+                        if (!groupedModules[type]) groupedModules[type] = {};
+                        if (!groupedModules[type][module.category]) groupedModules[type][module.category] = [];
+                        groupedModules[type][module.category].push(module);
+                    });
+
+                    // Clear loading message
+                    moduleContainer.innerHTML = '';
+
+                    // Create UI for each category
+                    for (const type in groupedModules) {
+                        for (const categoryName in groupedModules[type]) {
+                            const categoryContainer = document.createElement('div');
+                            categoryContainer.classList.add('module-category');
+                            categoryContainer.setAttribute('data-type', type);
+
+                            const categoryHeader = document.createElement('div');
+                            categoryHeader.classList.add('category-header');
+                            categoryHeader.textContent = categoryName;
+                            categoryContainer.appendChild(categoryHeader);
+
+                            groupedModules[type][categoryName].forEach(module => {
+                                const moduleItem = document.createElement('div');
+                                moduleItem.classList.add('module-item');
+
+                                const moduleName = document.createElement('div');
+                                moduleName.classList.add('module-name');
+                                moduleName.textContent = module.name;
+
+                                const moduleDescription = document.createElement('div');
+                                moduleDescription.classList.add('module-description');
+                                moduleDescription.textContent = module.description;
+
+                                moduleName.addEventListener('click', () => {
+                                    moduleDescription.style.display =
+                                        moduleDescription.style.display === 'block' ? 'none' : 'block';
+                                });
+
+                                moduleItem.appendChild(moduleName);
+                                moduleItem.appendChild(moduleDescription);
+                                categoryContainer.appendChild(moduleItem);
+                            });
+
+                            moduleContainer.appendChild(categoryContainer);
+                        }
+                    }
+
+                    setActiveView('legit');
+                })
+                .catch(error => {
+                    console.error('Error fetching features:', error);
+                    moduleContainer.innerHTML = '<div class="loading">Error loading features. Please try again later.</div>';
+                });
+        }
+
+        // Parse markdown content
+        function parseReadmeContent(content) {
+            const lines = content.split('\n');
+            let isLegitCategory = true;
+            let currentCategory = '';
+            const modulePairs = [];
+
+            for (const line of lines) {
+                if (line.startsWith('Category')) {
+                    if (currentCategory === 'Nether' && line === 'Category: Dungeon') {
+                        isLegitCategory = false;
+                    }
+                    currentCategory = line.replace('Category: ', '').trim();
+                } else if (line.startsWith('- ')) {
+                    const match = /^- (.+?): (.+)$/.exec(line);
+                    if (match) {
+                        const [, moduleName, moduleDescription] = match;
+                        modulePairs.push({
+                            isLegitCategory,
+                            category: currentCategory,
+                            name: moduleName.trim(),
+                            description: moduleDescription.trim()
+                        });
+                    }
+                }
+            }
+
+            return modulePairs;
+        }
+
+        loadAllModules();
+    });
+</script>
 </body>
 </html>
+
+
+
+
+

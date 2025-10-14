@@ -1,76 +1,47 @@
-document.addEventListener("DOMContentLoaded", () => {
-    loadNavbar()
-    loadFooter()
-})
+document.addEventListener('DOMContentLoaded', () => {
+    const legitButton = document.getElementById('legit');
+    const cheaterButton = document.getElementById('cheater');
+    const legitContent = document.getElementById('legit-content');
+    const cheaterContent = document.getElementById('cheater-content');
 
-const loadNavbar = () => {
-    const navbarPlaceholder = document.getElementById('navbar-placeholder')
-
-    fetch('components/navbar.html')
-        .then(response => response.text())
-        .then(data => {
-            navbarPlaceholder.innerHTML = data
-
-            adjustNavbarPaths()
-        }).catch(error => console.error('Error loading navbar:', error))
-}
-
-const adjustNavbarPaths = () => {
-    const isSubdirectory = window.location.pathname.split('/').length > 2
-
-    if (isSubdirectory) {
-        document.querySelectorAll('#navbar-placeholder img').forEach(img => {
-            if (img.src.startsWith('http')) return // Skip absolute URLs
-            img.src = img.src.replace('/assets', '../assets')
-        })
+    function switchVersion(isLegit) {
+        if (isLegit) {
+            legitButton.classList.add('active');
+            cheaterButton.classList.remove('active');
+            legitContent.classList.add('active');
+            cheaterContent.classList.remove('active');
+            document.title = "Odin Download - Official Website";
+        } else {
+            cheaterButton.classList.add('active');
+            legitButton.classList.remove('active');
+            cheaterContent.classList.add('active');
+            legitContent.classList.remove('active');
+            document.title = "OdinClient Download - Official Website";
+        }
     }
-}
 
-const loadFooter = () => {
-    const footerPlaceholder = document.getElementById('footer-placeholder')
+    legitButton.addEventListener('click', () => switchVersion(true));
+    cheaterButton.addEventListener('click', () => switchVersion(false));
 
-    fetch('components/footer.html')
-        .then(response => response.text())
-        .then(data => {
-            footerPlaceholder.innerHTML = data
+    const yearElement = document.getElementById('year');
+    if (yearElement) {
+        yearElement.textContent = new Date().getFullYear();
+    }
 
-            adjustFooterPaths()
-
-            const catElement = document.getElementById('cat')
-            if (catElement) {
-                catElement.addEventListener("click", () => {
-                    console.log("Cat image clicked")
-                    loadCatImage()
+    const catElement = document.getElementById('cat');
+    if (catElement) {
+        function loadCatImage() {
+            fetch('https://api.thecatapi.com/v1/images/search')
+                .then(response => response.json())
+                .then(data => {
+                    if (Array.isArray(data) && data.length > 0) {
+                        catElement.src = data[0].url;
+                    }
                 })
-            }
-            loadCatImage()
-        }).catch(error => console.error('Error loading footer:', error))
-}
+                .catch(error => console.error('Error loading cat image:', error));
+        }
 
-const adjustFooterPaths = () => {
-    const isSubdirectory = window.location.pathname.split('/').length > 2
-
-    if (isSubdirectory) {
-        document.querySelectorAll('#footer-placeholder a').forEach(link => {
-            if (link.href.startsWith('http')) return // Skip absolute URLs
-            link.href = '../' + link.getAttribute('href')
-        })
+        catElement.addEventListener('click', loadCatImage);
+        loadCatImage();
     }
-}
-
-const loadCatImage = () => {
-    const catElement = document.getElementById('cat')
-    if (!catElement) return console.warn("Cat image element not found")
-
-    catElement.addEventListener("click", () => {
-        console.log("Cat image clicked")
-        loadCatImage()
-    })
-
-    fetch('https://api.thecatapi.com/v1/images/search')
-        .then(response => response.json())
-        .then(data => {
-            if (Array.isArray(data) && data.length > 0) catElement.src = data[0].url
-            else console.error('No cat images found in the response')
-        }).catch(error => console.error('Error loading cat image:', error.toString()))
-}
+});
