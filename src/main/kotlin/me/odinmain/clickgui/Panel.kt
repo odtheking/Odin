@@ -1,6 +1,7 @@
 package me.odinmain.clickgui
 
 import me.odinmain.clickgui.ClickGUI.gray26
+import me.odinmain.clickgui.ClickGUI.searchBar
 import me.odinmain.clickgui.settings.ModuleButton
 import me.odinmain.features.Category
 import me.odinmain.features.ModuleManager
@@ -21,7 +22,6 @@ import kotlin.math.floor
  * @see [ModuleButton]
  */
 class Panel(private val category: Category) {
-
     val moduleButtons: ArrayList<ModuleButton> = ArrayList<ModuleButton>().apply {
         ModuleManager.modules
             .filter { it.category == category && (!it.isDevModule || PlayerSize.isRandom) }
@@ -55,7 +55,7 @@ class Panel(private val category: Category) {
         var startY = scrollOffset + HEIGHT
         if (panelSetting.extended) {
             for (button in moduleButtons) {
-                if (!button.module.name.contains(SearchBar.currentSearch, true)) continue
+                if (!button.module.name.contains(searchBar.currentSearch, true)) continue
                 startY += button.draw(panelSetting.x, startY + panelSetting.y)
             }
         }
@@ -84,7 +84,7 @@ class Panel(private val category: Category) {
             }
         } else if (isMouseOverExtended) {
             return moduleButtons.reversed().any {
-                if (!it.module.name.contains(SearchBar.currentSearch, true)) return@any false
+                if (!it.module.name.contains(searchBar.currentSearch, true)) return@any false
                 it.mouseClicked(mouseX, mouseY, button)
             }
         }
@@ -96,7 +96,7 @@ class Panel(private val category: Category) {
 
         if (panelSetting.extended)
             moduleButtons.reversed().forEach {
-                if (!it.module.name.contains(SearchBar.currentSearch, true)) return@forEach
+                if (!it.module.name.contains(searchBar.currentSearch, true)) return@forEach
                 it.mouseReleased(state)
             }
     }
@@ -105,7 +105,7 @@ class Panel(private val category: Category) {
         if (!panelSetting.extended) return false
 
         return moduleButtons.reversed().any {
-            if (!it.module.name.contains(SearchBar.currentSearch, true)) return@any false
+            if (!it.module.name.contains(searchBar.currentSearch, true)) return@any false
             it.keyTyped(typedChar)
         }
     }
@@ -114,7 +114,7 @@ class Panel(private val category: Category) {
         if (!panelSetting.extended) return false
 
         return moduleButtons.reversed().any {
-            if (!it.module.name.contains(SearchBar.currentSearch, true)) return@any false
+            if (!it.module.name.contains(searchBar.currentSearch, true)) return@any false
             it.keyPressed(keyCode)
         }
     }
