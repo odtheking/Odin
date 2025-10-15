@@ -3,9 +3,11 @@ package me.odinmain.utils.skyblock
 import me.odinmain.OdinMain.mc
 import me.odinmain.events.impl.PacketEvent
 import me.odinmain.utils.equalsOneOf
+import me.odinmain.utils.noControlCodes
 import me.odinmain.utils.startsWithOneOf
 import net.minecraft.network.play.server.S38PacketPlayerListItem
 import net.minecraft.network.play.server.S3BPacketScoreboardObjective
+import net.minecraft.network.play.server.S3EPacketTeams
 import net.minecraft.network.play.server.S3FPacketCustomPayload
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.EventPriority
@@ -19,6 +21,11 @@ object LocationUtils {
         private set
     var currentArea: Island = Island.Unknown
         private set
+
+    var lobbyId: String? = null
+        private set
+
+    val lobbyRegex = Regex("\\d\\d/\\d\\d/\\d\\d (\\w{0,6}) *")
 
     @SubscribeEvent
     fun onDisconnect(event: FMLNetworkEvent.ClientDisconnectionFromServerEvent) {
@@ -65,6 +72,13 @@ object LocationUtils {
             is S3BPacketScoreboardObjective ->
                 if (!isInSkyblock)
                     isInSkyblock = isOnHypixel && event.packet.func_149339_c() == "SBScoreboard"
+
+            is S3EPacketTeams -> {
+                if (!currentArea.isArea(Island.Unknown) || event.packet.action != 2) return
+                val text = event.packet.prefix?.plus(event.packet.suffix)?.noControlCodes ?: return
+
+                lobbyRegex.find(text)?.groupValues?.get(1)?.let { lobbyId = it } ?: return
+            }
         }
     }
 }
