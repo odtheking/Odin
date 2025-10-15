@@ -1,15 +1,16 @@
 package me.odinmain.features.impl.render
 
-import com.google.gson.JsonParser
+import com.google.gson.annotations.SerializedName
 import me.odinmain.OdinMain
 import me.odinmain.clickgui.ClickGUI
 import me.odinmain.clickgui.HudManager
 import me.odinmain.clickgui.settings.AlwaysActive
+import me.odinmain.clickgui.settings.Setting.Companion.withDependency
 import me.odinmain.clickgui.settings.impl.*
 import me.odinmain.config.Config
 import me.odinmain.features.Category
 import me.odinmain.features.Module
-import me.odinmain.utils.fetchURLData
+import me.odinmain.utils.network.WebUtils.fetchJson
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.skyblock.*
 import net.minecraft.event.ClickEvent
@@ -24,6 +25,10 @@ object ClickGUIModule: Module(
     val enableNotification by BooleanSetting("Enable notifications", true, desc = "Shows you a notification in chat when you toggle an option with a keybind.")
     val clickGUIColor by ColorSetting("Gui Color", Color(50, 150, 220), allowAlpha = false, desc = "Color theme in the gui.")
     val hudChat by BooleanSetting("Show HUDs in GUIs", true, desc = "Shows HUDs in GUIs.")
+
+    val apiSettings by DropdownSetting("Api Settings")
+    // val apiServer by StringSetting("Api Server", "https://api.odtheking.com/", 128, desc = "The server to fetch data from. Only change this if you know what you're doing").withDependency { apiSettings }
+    val wsServer by StringSetting("WebSocket Server", "wss://api.odtheking.com/ws/", 128, desc = "The websocket server to connect to. Only change this if you know what you're doing.").withDependency { apiSettings }
 
     private val action by ActionSetting("Open Example Hud", desc = "Opens an example hud to allow configuration of huds.") {
         OdinMain.display = HudManager
@@ -99,12 +104,10 @@ object ClickGUIModule: Module(
         resetPositions()
     }
 
-    fun checkNewerVersion(currentVersion: String): String? {
-        val newestVersion = try {
-            JsonParser().parse(fetchURLData("https://api.github.com/repos/odtheking/Odin/releases/latest")).asJsonObject
-        } catch (e: Exception) { return null }
+    suspend fun checkNewerVersion(currentVersion: String): String? {
+        val newest = fetchJson<Release>("https://api.github.com/repos/odtheking/Odin/releases/latest").getOrElse { return null }
 
-        if (isSecondNewer(currentVersion, newestVersion.get("tag_name").asString)) return newestVersion.get("tag_name").asString.toString().replace("\"", "")
+        if (isSecondNewer(currentVersion, newest.tagName)) return newest.tagName.replace("\"", "")
         return null
     }
 
@@ -125,8 +128,6 @@ object ClickGUIModule: Module(
         }
     }
 
-
-
     override fun onKeybind() {
         this.toggle()
     }
@@ -136,4 +137,9 @@ object ClickGUIModule: Module(
         super.onEnable()
         toggle()
     }
+
+    data class Release(
+        @SerializedName("tag_name")
+        val tagName: String
+    )
 }
