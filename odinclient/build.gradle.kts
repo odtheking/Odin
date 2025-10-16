@@ -1,7 +1,6 @@
 import org.apache.commons.lang3.SystemUtils
 
 group = "me.odinclient"
-val transformerFile = file("src/main/resources/accesstransformer.cfg")
 
 val shadowImpl: Configuration by configurations.creating {
     configurations.implementation.get().extendsFrom(this)
@@ -27,10 +26,6 @@ loom {
     }
     forge {
         mixinConfig("mixins.odinclient.json")
-        if (transformerFile.exists()) {
-            println("Installing access transformer")
-            accessTransformer(transformerFile)
-        }
     }
     @Suppress("UnstableApiUsage")
     mixin.defaultRefmapName.set("mixins.odinclient.refmap.json")
@@ -43,8 +38,6 @@ tasks {
         filesMatching("mcmod.info") {
             expand(inputs.properties)
         }
-
-        rename("accesstransformer.cfg", "META-INF/odclient_at.cfg")
 
         dependsOn(compileJava)
     }

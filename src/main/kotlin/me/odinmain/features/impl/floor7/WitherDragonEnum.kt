@@ -78,12 +78,12 @@ enum class WitherDragonsEnum (
         }
     }
 
-    fun setDead() {
+    fun setDead(deathless: Boolean = false) {
         state = WitherDragonState.DEAD
         dragonEntityList.remove(entity)
         entityId = null
         entity = null
-        lastDragonDeath = this
+        if (!deathless) lastDragonDeath = this
         if (sendArrowHit && WitherDragons.enabled && currentTick - spawnedTime < skipKillTime)
             modMessage("§fArrows Hit on §${colorCode}${name}§7: ${arrowsHit.entries.joinToString(", ") { "§f${it.key}§7: §6${it.value.good}${it.value.late.let { if (it > 0) " §8(§7${it}§8)" else "" }}§7" }}.")
         if (priorityDragon == this) priorityDragon = None

@@ -6,6 +6,7 @@ import kotlinx.coroutines.launch
 import me.odinmain.OdinMain.VERSION
 import me.odinmain.OdinMain.mc
 import me.odinmain.OdinMain.scope
+import me.odinmain.config.Config
 import me.odinmain.events.impl.PacketEvent
 import me.odinmain.features.ModuleManager.generateFeatureList
 import me.odinmain.features.impl.dungeon.MapInfo
@@ -14,11 +15,17 @@ import me.odinmain.features.impl.floor7.DragonPriority.findPriority
 import me.odinmain.features.impl.floor7.WitherDragonState
 import me.odinmain.features.impl.floor7.WitherDragons.priorityDragon
 import me.odinmain.features.impl.floor7.WitherDragonsEnum
+import me.odinmain.features.impl.floor7.p3.MelodyMessage.webSocket
+import me.odinmain.features.impl.floor7.p3.TerminalSolver.firstClickProt
 import me.odinmain.features.impl.nether.NoPre
+import me.odinmain.features.impl.render.ClickGUIModule.wsServer
 import me.odinmain.features.impl.render.PlayerSize
+import me.odinmain.features.impl.render.PlayerSize.DEV_SERVER
+import me.odinmain.features.impl.render.PlayerSize.buildDevBody
 import me.odinmain.utils.isOtherPlayer
+import me.odinmain.utils.network.WebUtils.postData
 import me.odinmain.utils.postAndCatch
-import me.odinmain.utils.sendDataToServer
+import me.odinmain.utils.render.Colors
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.PlayerUtils.posX
 import me.odinmain.utils.skyblock.PlayerUtils.posZ
@@ -32,6 +39,17 @@ import net.minecraft.network.play.server.S02PacketChat
 import net.minecraft.util.ChatComponentText
 
 val devCommand = Commodore("oddev") {
+
+    literal("firstclickprot").runs { time: Long ->
+        firstClickProt = time
+        Config.save()
+    }
+
+    literal("ws") {
+        literal("connect").runs { lobby: String ->
+            webSocket.connect("${wsServer}$lobby")
+        }
+    }
 
     literal("drags") {
         runs { text: GreedyString ->
@@ -86,27 +104,18 @@ val devCommand = Commodore("oddev") {
     }
 
     literal("updatedevs").runs {
-       PlayerSize.updateCustomProperties()
-    }
-
-    literal("adddev").runs { name: String, password: String, xSize: Float?, ySize: Float?, zSize: Float? ->
-        val x = xSize ?: 0.6
-        val y = ySize ?: 0.6
-        val z = zSize ?: 0.6
-        modMessage("Sending data... name: $name, password: $password")
         scope.launch {
-            modMessage(sendDataToServer("$name, [1,2,3], [$x,$y,$z], false, , $password", "https://tj4yzotqjuanubvfcrfo7h5qlq0opcyk.lambda-url.eu-north-1.on.aws/"))
+            PlayerSize.updateCustomProperties()
         }
     }
 
-    literal("customSize").runs { password: String, xSize: Float?, ySize: Float?, zSize: Float?, customName: String? ->
-        val x = xSize ?: 0.6
-        val y = ySize ?: 0.6
-        val z = zSize ?: 0.6
-        val name = customName ?: ""
+    literal("adddev").runs { name: String, password: String, xSize: Float?, ySize: Float?, zSize: Float? ->
+        val x = xSize ?: 0.6f
+        val y = ySize ?: 0.6f
+        val z = zSize ?: 0.6f
+        modMessage("Sending data... name: $name, x: $x, y: $y, z: $z")
         scope.launch {
-            modMessage(sendDataToServer(body = "${mc.thePlayer.name}, [1,2,3], [$x,$y,$z], false, $name, $password", "https://tj4yzotqjuanubvfcrfo7h5qlq0opcyk.lambda-url.eu-north-1.on.aws/"))
-            PlayerSize.updateCustomProperties()
+            modMessage(postData(DEV_SERVER, buildDevBody(name, Colors.WHITE, x, y, z, false, " ", password)).getOrNull())
         }
     }
 
