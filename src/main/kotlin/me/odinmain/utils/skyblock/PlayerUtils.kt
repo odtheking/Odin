@@ -52,9 +52,13 @@ object PlayerUtils {
     inline val posZ get() = mc.thePlayer?.posZ ?: 0.0
 
     fun getPositionString(getSpecificCoordinates: Boolean = false): String {
-        val blockPos = BlockPos(posX, posY, posZ)
-        return if(getSpecificCoordinates) "x: ${posX.toFixed(3)}, y: ${posY.toFixed(0)}, z: ${posZ.toFixed(3)}"
-        else "x: ${blockPos.x}, y: ${blockPos.y}, z: ${blockPos.z}"
+        return if(getSpecificCoordinates) {
+            "x: ${posX.toFixed(3)}, y: ${posY.toFixed(0)}, z: ${posZ.toFixed(3)}"
+        }
+        else {
+            val blockPos = BlockPos(posX, posY, posZ)
+            "x: ${blockPos.x}, y: ${blockPos.y}, z: ${blockPos.z}"
+        }
     }
 
     private var lastClickSent = 0L
