@@ -61,8 +61,8 @@ object HollowWand : Module(
     @SubscribeEvent
     fun onRenderWorldLast(event: RenderWorldLastEvent) {
         if(!showWaypoint) return
-        val fps = mc.debug?.split(" ")?.get(0)?.toIntOrNull() ?: 60
-        val windIncrement = 25 / fps
+        val fps = mc.debug?.split(" ")?.get(0)?.toDoubleOrNull() ?: 60.0
+        val windIncrement = 25.0 / fps
 
         poolsToRender.forEach { pool ->
             Renderer.drawCylinder(Vec3(pool.x, pool.y, pool.z), 8, 8, 0.05, 80f, 1f, 0f, 90f, 90f, waypointColor, true)
