@@ -7,10 +7,14 @@ import me.odinmain.utils.postAndCatch
 import me.odinmain.utils.render.Color
 import me.odinmain.utils.render.Colors
 import me.odinmain.utils.render.Renderer
+import me.odinmain.utils.round
+import me.odinmain.utils.toFixed
 import net.minecraft.network.play.client.C0EPacketClickWindow
 import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import kotlin.math.pow
+import kotlin.math.sqrt
 
 object PlayerUtils {
     var shouldBypassVolume = false
@@ -49,9 +53,21 @@ object PlayerUtils {
     inline val posY get() = mc.thePlayer?.posY ?: 0.0
     inline val posZ get() = mc.thePlayer?.posZ ?: 0.0
 
-    fun getPositionString(): String {
-        val blockPos = BlockPos(posX, posY, posZ)
-        return "x: ${blockPos.x}, y: ${blockPos.y}, z: ${blockPos.z}"
+    fun getPositionString(getSpecificCoordinates: Boolean = false): String {
+        return if(getSpecificCoordinates) {
+            "x: ${posX.toFixed(3)}, y: ${posY.toFixed(0)}, z: ${posZ.toFixed(3)}"
+        }
+        else {
+            val blockPos = BlockPos(posX, posY, posZ)
+            "x: ${blockPos.x}, y: ${blockPos.y}, z: ${blockPos.z}"
+        }
+    }
+
+    fun getDistanceTo(x: Double, y: Double, z: Double): Double {
+        val xDist = (posX - x).pow(2)
+        val yDist = (posY - y).pow(2)
+        val zDist = (posZ - z).pow(2)
+        return sqrt(xDist + yDist + zDist)
     }
 
     private var lastClickSent = 0L
