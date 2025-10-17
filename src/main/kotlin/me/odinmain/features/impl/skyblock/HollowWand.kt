@@ -46,6 +46,7 @@ object HollowWand : Module(
             when(type) {
                 "Raging Wind" -> {
                     windsToRender.add(thisCast)
+
                 }
                 "Ichor Pool" -> {
                     poolsToRender.add(thisCast)
@@ -60,6 +61,8 @@ object HollowWand : Module(
     @SubscribeEvent
     fun onRenderWorldLast(event: RenderWorldLastEvent) {
         if(!showWaypoint) return
+        val fps = mc.debug?.split(" ")?.get(0)?.toIntOrNull() ?: 60
+        val windIncrement = 25 / fps
 
         poolsToRender.forEach { pool ->
             Renderer.drawCylinder(Vec3(pool.x, pool.y, pool.z), 8, 8, 0.05, 80f, 1f, 0f, 90f, 90f, waypointColor, true)
@@ -67,7 +70,7 @@ object HollowWand : Module(
         }
 
         windsToRender.toList().forEach { wind ->
-            wind.radius += 0.15
+            wind.radius += windIncrement
             if(wind.radius > 25) {
                 windsToRender.remove(wind)
                 return@forEach
@@ -75,7 +78,6 @@ object HollowWand : Module(
 
             Renderer.drawCylinder(Vec3(wind.x, wind.y, wind.z), wind.radius, wind.radius, 0.05, 80f, 1f, 0f, 90f, 90f, waypointColor, true)
             Renderer.drawStringInWorld("Raging Wind", Vec3(wind.x, wind.y + 0.5, wind.z), Colors.WHITE, true, 0.03f * messageSize)
-
         }
     }
 
