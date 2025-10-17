@@ -15,6 +15,7 @@ import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
 import net.minecraftforge.event.world.WorldEvent
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import kotlin.math.max
 
 object HollowWand : Module(
     name = "Hollow Wand",
@@ -68,7 +69,7 @@ object HollowWand : Module(
     fun onRenderWorldLast(event: RenderWorldLastEvent) {
         if(!showWaypoint) return
         val fps = mc.debug?.split(" ")?.get(0)?.toDoubleOrNull() ?: 60.0
-        val windIncrement = 25.0 / fps
+        val windIncrement = 25.0 / max(60.0, fps)
 
         poolsToRender.forEach { pool ->
             Renderer.drawCylinder(Vec3(pool.x, pool.y, pool.z), 8, 8, 0.05, 80f, 1f, 0f, 90f, 90f, waypointColor, true)
@@ -90,5 +91,6 @@ object HollowWand : Module(
     @SubscribeEvent
     fun onWorldLoad(event: WorldEvent.Load) {
         poolsToRender.clear()
+        windsToRender.clear()
     }
 }
