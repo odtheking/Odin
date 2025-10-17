@@ -9,6 +9,7 @@ import me.odinmain.utils.render.Colors
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.runIn
 import me.odinmain.utils.skyblock.PlayerUtils
+import me.odinmain.utils.skyblock.modMessage
 import me.odinmain.utils.skyblock.sendCommand
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.RenderWorldLastEvent
@@ -33,11 +34,13 @@ object HollowWand : Module(
 
     init {
         onMessage(outgoingHollowRegex) {
+            if(!sendChatMessage) return@onMessage
             val type = it.groups[1]?.value ?: return@onMessage
-            if(sendChatMessage) sendCommand("pc $type ${PlayerUtils.getPositionString(true)}")
+            sendCommand("pc $type ${PlayerUtils.getPositionString(true)}")
         }
 
         onMessage(incomingHollowRegex) {
+            if(!showWaypoint) return@onMessage
             val type = it.groups[1]?.value ?: return@onMessage
             val x = it.groups[2]?.value?.toDouble() ?: return@onMessage
             val y = it.groups[3]?.value?.toDouble() ?: return@onMessage
@@ -46,7 +49,10 @@ object HollowWand : Module(
             when(type) {
                 "Raging Wind" -> {
                     windsToRender.add(thisCast)
-
+                    if(PlayerUtils.getDistanceTo(x, y, z) <= 25) {
+                        PlayerUtils.alert("Raging Winds", color = Colors.MINECRAFT_RED)
+                        modMessage("Raging Winds applied")
+                    }
                 }
                 "Ichor Pool" -> {
                     poolsToRender.add(thisCast)

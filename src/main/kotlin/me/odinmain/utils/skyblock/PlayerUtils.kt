@@ -13,6 +13,8 @@ import net.minecraft.network.play.client.C0EPacketClickWindow
 import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import kotlin.math.pow
+import kotlin.math.sqrt
 
 object PlayerUtils {
     var shouldBypassVolume = false
@@ -59,6 +61,13 @@ object PlayerUtils {
             val blockPos = BlockPos(posX, posY, posZ)
             "x: ${blockPos.x}, y: ${blockPos.y}, z: ${blockPos.z}"
         }
+    }
+
+    fun getDistanceTo(x: Double, y: Double, z: Double): Double {
+        val xDist = (posX - x).pow(2)
+        val yDist = (posY - y).pow(2)
+        val zDist = (posZ - z).pow(2)
+        return sqrt(xDist + yDist + zDist)
     }
 
     private var lastClickSent = 0L
