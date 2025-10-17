@@ -66,7 +66,7 @@ object HollowWand : Module(
             Renderer.drawStringInWorld("Ichor Pool", Vec3(pool.x, pool.y + 0.5, pool.z), Colors.WHITE, true, 0.03f * messageSize)
         }
 
-        windsToRender.forEach { wind ->
+        windsToRender.toList().forEach { wind ->
             wind.radius += 0.15
             if(wind.radius > 25) {
                 windsToRender.remove(wind)
