@@ -121,7 +121,7 @@ object MelodyMessage : Module(
         webSocket.send(update(0, 0))
     }
 
-    private val clayProgress = hashMapOf(1 to "Melody 25%", 2 to "Melody 50%", 3 to "Melody 75%")
+    private val clayProgress = hashMapOf(2 to "Melody 25%", 3 to "Melody 50%", 4 to "Melody 75%")
 
     @SubscribeEvent
     fun onTermLoad(event: TerminalEvent.Opened) {
