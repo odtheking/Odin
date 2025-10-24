@@ -54,7 +54,7 @@ object DianaBurrowEstimate {
     }
 
     fun blockEvent(pos: BlockPos) {
-        if (pos !in activeBurrows.keys || !isHolding("ANCESTRAL_SPADE")) return
+        if (pos !in activeBurrows.keys || !isHolding("ANCESTRAL_SPADE", "DEIFIC_SPADE")) return
         lastDugBurrow = pos
         if (pos != pendingBurrow) return
         pendingBurrow = null

@@ -9,13 +9,14 @@ import me.odinmain.events.impl.BlockChangeEvent
 import me.odinmain.events.impl.ServerTickEvent
 import me.odinmain.features.Module
 import me.odinmain.utils.equalsOneOf
+import me.odinmain.utils.render.Color.Companion.withAlpha
 import me.odinmain.utils.render.Colors
 import me.odinmain.utils.render.Renderer
 import me.odinmain.utils.skyblock.PlayerUtils
 import me.odinmain.utils.skyblock.dungeon.DungeonUtils
 import me.odinmain.utils.skyblock.dungeon.M7Phases
 import me.odinmain.utils.skyblock.modMessage
-import me.odinmain.utils.toAABB
+import me.odinmain.utils.toBlockPos
 import me.odinmain.utils.toVec3
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.init.Blocks
@@ -32,18 +33,20 @@ object ArrowsDevice : Module(
     name = "Arrows Device",
     description = "Shows a solution for the Sharp Shooter puzzle in floor 7."
 ) {
-    private val solver by BooleanSetting("Solver", desc = "Enables the solver.")
-    private val markedPositionColor by ColorSetting("Marked Position", Colors.MINECRAFT_RED, true, desc = "Color of the marked position.").withDependency { solver }
-    private val targetPositionColor by ColorSetting("Target Position", Colors.MINECRAFT_GREEN, true, desc = "Color of the target position.").withDependency { solver }
+    private val markedPositionColor by ColorSetting("Marked Position", Colors.MINECRAFT_AQUA.withAlpha(0.5f), true, desc = "Color of the marked position.")
+    private val targetPositionColor by ColorSetting("Target Position", Colors.MINECRAFT_LIGHT_PURPLE.withAlpha(0.5f), true, desc = "Color of the target position.")
     private val resetKey by KeybindSetting("Reset", Keyboard.KEY_NONE, desc = "Resets the solver.").onPress {
         markedPositions.clear()
-    }.withDependency { solver }
-    private val depthCheck by BooleanSetting("Depth check", true, desc = "Marked positions show through walls.").withDependency { solver }
+    }
+    private val depthCheck by BooleanSetting("Depth check", true, desc = "Marked positions show through walls.")
     private val reset by ActionSetting("Reset", desc = "Resets the solver.") {
         markedPositions.clear()
-    }.withDependency { solver }
+    }
     private val alertOnDeviceComplete by BooleanSetting("Device complete alert", true, desc = "Send an alert when device is complete.")
     private val showAimPositions by BooleanSetting("Show Aim Positions", false, desc = "Shows optimal aim positions for hitting marked blocks.")
+    private val firstAimPositionColor by ColorSetting("First Aim Position", Colors.MINECRAFT_GREEN, true, desc = "Color of the first (green) aim position.").withDependency { showAimPositions }
+    private val secondAimPositionColor by ColorSetting("Second Aim Position", Colors.MINECRAFT_GOLD, true, desc = "Color of the second (gold) aim position.").withDependency { showAimPositions }
+    private val thirdAimPositionColor by ColorSetting("Third Aim Position", Colors.MINECRAFT_RED, true, desc = "Color of the third (red) aim position.").withDependency { showAimPositions }
 
     private val markedPositions = mutableSetOf<BlockPos>()
     private var targetPosition: BlockPos? = null
@@ -166,19 +169,20 @@ object ArrowsDevice : Module(
         }
     }
 
+    private val colors = listOf(firstAimPositionColor, secondAimPositionColor, thirdAimPositionColor)
+
     @SubscribeEvent
     fun onRenderWorldLast(event: RenderWorldLastEvent) {
-        if (!DungeonUtils.inDungeons || DungeonUtils.getF7Phase() != M7Phases.P3 || !solver) return
+        if (!DungeonUtils.inDungeons || DungeonUtils.getF7Phase() != M7Phases.P3) return
         markedPositions.forEach {
-            Renderer.drawBlock(it, markedPositionColor, depth = depthCheck)
+            Renderer.drawBlock(it, markedPositionColor, depth = depthCheck, fillAlpha = markedPositionColor.alphaFloat, outlineAlpha = markedPositionColor.alphaFloat)
         }
         targetPosition?.let {
-            Renderer.drawBlock(it, targetPositionColor, depth = depthCheck)
+            Renderer.drawBlock(it, targetPositionColor, depth = depthCheck, fillAlpha = targetPositionColor.alphaFloat, outlineAlpha = targetPositionColor.alphaFloat)
         }
         if (showAimPositions) {
-            val colors = listOf(Colors.MINECRAFT_GREEN, Colors.MINECRAFT_GOLD, Colors.MINECRAFT_RED)
             optimalAimPositions.take(3).forEachIndexed { index, aimPos ->
-                Renderer.drawBox(aimPos.position.toAABB(0.2), colors[index], depth = true, fillAlpha = 0.3f, outlineAlpha = 0.8f)
+                Renderer.drawBlock(aimPos.position.toBlockPos(), colors[index], depth = true, fillAlpha = colors[index].alphaFloat, outlineAlpha = colors[index].alphaFloat)
             }
         }
     }

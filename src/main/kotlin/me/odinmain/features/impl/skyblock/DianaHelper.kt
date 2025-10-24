@@ -5,16 +5,13 @@ import me.odinmain.clickgui.settings.Setting.Companion.withDependency
 import me.odinmain.clickgui.settings.impl.*
 import me.odinmain.events.impl.ClickEvent
 import me.odinmain.features.Module
-import me.odinmain.utils.addVec
+import me.odinmain.utils.*
 import me.odinmain.utils.clock.Clock
-import me.odinmain.utils.findNearestGrassBlock
 import me.odinmain.utils.render.Color.Companion.withAlpha
 import me.odinmain.utils.render.Colors
 import me.odinmain.utils.render.Renderer
-import me.odinmain.utils.runIn
 import me.odinmain.utils.skyblock.*
 import me.odinmain.utils.skyblock.DianaBurrowEstimate.activeBurrows
-import me.odinmain.utils.toVec3
 import net.minecraft.network.play.client.C07PacketPlayerDigging
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.server.S29PacketSoundEffect
@@ -58,7 +55,7 @@ object DianaHelper : Module(
     var renderPos: Vec3? = null
 
     private inline val hasSpade: Boolean
-        get() = mc.thePlayer?.inventory?.mainInventory?.find { it.skyblockID == "ANCESTRAL_SPADE" } != null
+        get() = mc.thePlayer?.inventory?.mainInventory?.find { it.skyblockID.equalsOneOf( "ANCESTRAL_SPADE", "DEIFIC_SPADE") } != null
 
     init {
         execute(2000) {
@@ -126,7 +123,7 @@ object DianaHelper : Module(
 
     @SubscribeEvent
     fun onRightClick(event: ClickEvent.Right) {
-        if (!isDoingDiana || !isHolding("ANCESTRAL_SPADE") || !autoWarp || isLegitVersion) return
+        if (!isDoingDiana || !isHolding("ANCESTRAL_SPADE", "DEIFIC_SPADE") || !autoWarp || isLegitVersion) return
         runIn((autoWarpWaitTime * 20).roundToInt()) {
             if (!cmdCooldown.hasTimePassed()) return@runIn
             modMessage("§6Warping to ${warpLocation?.displayName ?: return@runIn}")

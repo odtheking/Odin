@@ -8,6 +8,7 @@ import me.odinmain.events.impl.ServerTickEvent
 import me.odinmain.features.Module
 import me.odinmain.utils.*
 import me.odinmain.utils.clock.Clock
+import me.odinmain.utils.render.Color.Companion.withAlpha
 import me.odinmain.utils.render.Colors
 import me.odinmain.utils.render.RenderUtils.renderX
 import me.odinmain.utils.render.RenderUtils.renderY
@@ -37,8 +38,8 @@ object ArrowsDevice : Module(
 ) {
     private val solverDropdown by DropdownSetting("Solver")
     private val solver by BooleanSetting("Solver Enabled", true, desc = "Automatically solve the puzzle.").withDependency { solverDropdown }
-    private val markedPositionColor by ColorSetting("Marked Position", Colors.MINECRAFT_RED, desc = "Color of the marked position.").withDependency { solver && solverDropdown }
-    private val targetPositionColor by ColorSetting("Target Position", Colors.MINECRAFT_GREEN, desc = "Color of the target position.").withDependency { solver && solverDropdown }
+    private val markedPositionColor by ColorSetting("Marked Position", Colors.MINECRAFT_AQUA.withAlpha(0.5f), true, desc = "Color of the marked position.").withDependency { solver && solverDropdown }
+    private val targetPositionColor by ColorSetting("Target Position", Colors.MINECRAFT_LIGHT_PURPLE.withAlpha(0.5f), true, desc = "Color of the target position.").withDependency { solver && solverDropdown }
     private val resetKey by KeybindSetting("Reset", Keyboard.KEY_NONE, desc = "Resets the solver.").onPress {
         markedPositions.clear()
         autoState = AutoState.Stopped
@@ -53,6 +54,9 @@ object ArrowsDevice : Module(
     }.withDependency { solver && solverDropdown }
     private val alertOnDeviceComplete by BooleanSetting("Device complete alert", true, desc = "Send an alert when device is complete.").withDependency { solverDropdown }
     private val showAimPositions by BooleanSetting("Show Aim Positions", false, desc = "Shows optimal aim positions for hitting marked blocks.").withDependency { solver && solverDropdown }
+    private val firstAimPositionColor by ColorSetting("First Aim Position", Colors.MINECRAFT_GREEN, true, desc = "Color of the first (green) aim position.").withDependency { showAimPositions && solver && solverDropdown }
+    private val secondAimPositionColor by ColorSetting("Second Aim Position", Colors.MINECRAFT_GOLD, true, desc = "Color of the second (gold) aim position.").withDependency { showAimPositions && solver && solverDropdown }
+    private val thirdAimPositionColor by ColorSetting("Third Aim Position", Colors.MINECRAFT_RED, true, desc = "Color of the third (red) aim position.").withDependency { showAimPositions && solver && solverDropdown }
 
     private val autoDropdown by DropdownSetting("Auto Device")
     private val auto by BooleanSetting("Auto Enabled", desc = "Automatically complete device.").withDependency { autoDropdown }
@@ -432,19 +436,20 @@ object ArrowsDevice : Module(
         }
     }
 
+    private val colors = listOf(firstAimPositionColor, secondAimPositionColor, thirdAimPositionColor)
+
     @SubscribeEvent
     fun onRenderWorldLast(event: RenderWorldLastEvent) {
         if (!DungeonUtils.inDungeons || DungeonUtils.getF7Phase() != M7Phases.P3 || !solver) return
         markedPositions.forEach {
-            Renderer.drawBlock(it, markedPositionColor, depth = depthCheck)
+            Renderer.drawBlock(it, markedPositionColor, depth = depthCheck, fillAlpha = markedPositionColor.alphaFloat, outlineAlpha = markedPositionColor.alphaFloat)
         }
         targetPosition?.let {
-            Renderer.drawBlock(it, targetPositionColor, depth = depthCheck)
+            Renderer.drawBlock(it, targetPositionColor, depth = depthCheck, fillAlpha = targetPositionColor.alphaFloat, outlineAlpha = targetPositionColor.alphaFloat)
         }
         if (showAimPositions) {
-            val colors = listOf(Colors.MINECRAFT_GREEN, Colors.MINECRAFT_GOLD, Colors.MINECRAFT_RED)
             optimalAimPositions.take(3).forEachIndexed { index, aimPos ->
-                Renderer.drawBox(aimPos.position.toAABB(0.2), colors[index], depth = true, fillAlpha = 0.3f, outlineAlpha = 0.8f)
+                Renderer.drawBlock(aimPos.position.toBlockPos(), colors[index], depth = true, fillAlpha = colors[index].alphaFloat, outlineAlpha = colors[index].alphaFloat)
             }
         }
     }

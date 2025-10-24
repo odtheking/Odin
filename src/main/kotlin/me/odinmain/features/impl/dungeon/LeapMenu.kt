@@ -145,7 +145,7 @@ object LeapMenu : Module(
     }
 
     init {
-        onMessage(Regex("You have teleported to (\\w{1,16})!")) {
+        onMessage(Regex("^You have teleported to (\\w{1,16})!$")) {
             if (leapAnnounce) partyMessage("Leaped to ${it.groupValues[1]}!")
         }
     }
