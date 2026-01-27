@@ -12,6 +12,7 @@ import com.odtheking.odin.utils.render.ItemStateRenderer
 import com.odtheking.odin.utils.render.RenderBatchManager
 import com.odtheking.odin.utils.skyblock.*
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonListener
+import com.odtheking.odin.utils.skyblock.dungeon.DungeonScan
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.skyblock.dungeon.ScanUtils
 import com.odtheking.odin.utils.ui.rendering.NVGSpecialRenderer
@@ -67,7 +68,7 @@ object OdinMod : ClientModInitializer {
         listOf(
             this, LocationUtils, TickTasks, KuudraUtils,
             SkyblockPlayer, ServerUtils, EventDispatcher,
-            DungeonListener, PartyUtils,
+            DungeonListener, PartyUtils, DungeonScan,
             ScanUtils, DungeonUtils, SplitsManager,
             IrisCompatability, RenderBatchManager,
             ModuleManager
