@@ -6,7 +6,7 @@ import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalTypes
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalUtils
 import net.minecraft.core.component.DataComponents
 import net.minecraft.core.registries.BuiltInRegistries
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import net.minecraft.world.inventory.Slot
 import net.minecraft.world.item.DyeColor
 import net.minecraft.world.item.Item
@@ -37,15 +37,15 @@ class SelectAllSim(
 
     private fun getPossibleItems(color: DyeColor): List<Item> {
         return listOf(
-            BuiltInRegistries.ITEM.get(ResourceLocation.fromNamespaceAndPath("minecraft", "${color.name.lowercase()}_stained_glass")).get().value(),
-            BuiltInRegistries.ITEM.get(ResourceLocation.fromNamespaceAndPath("minecraft", "${color.name.lowercase()}_wool")).get().value(),
-            BuiltInRegistries.ITEM.get(ResourceLocation.fromNamespaceAndPath("minecraft", "${color.name.lowercase()}_concrete")).get().value(),
+            BuiltInRegistries.ITEM.get(Identifier.fromNamespaceAndPath("minecraft", "${color.name.lowercase()}_stained_glass")).get().value(),
+            BuiltInRegistries.ITEM.get(Identifier.fromNamespaceAndPath("minecraft", "${color.name.lowercase()}_wool")).get().value(),
+            BuiltInRegistries.ITEM.get(Identifier.fromNamespaceAndPath("minecraft", "${color.name.lowercase()}_concrete")).get().value(),
             when (color) {
                 DyeColor.WHITE -> Items.BONE_MEAL
                 DyeColor.BLUE -> Items.LAPIS_LAZULI
                 DyeColor.BLACK -> Items.INK_SAC
                 DyeColor.BROWN -> Items.COCOA_BEANS
-                else -> BuiltInRegistries.ITEM.get(ResourceLocation.fromNamespaceAndPath("minecraft", "${color.name.lowercase()}_dye")).get().value()
+                else -> BuiltInRegistries.ITEM.get(Identifier.fromNamespaceAndPath("minecraft", "${color.name.lowercase()}_dye")).get().value()
             }
         )
     }

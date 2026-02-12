@@ -2,6 +2,9 @@ package com.odtheking.odin.utils.render
 
 import com.mojang.blaze3d.platform.Lighting
 import com.mojang.blaze3d.systems.RenderSystem
+import com.mojang.blaze3d.textures.AddressMode
+import com.mojang.blaze3d.textures.FilterMode
+import com.mojang.blaze3d.textures.GpuSampler
 import com.mojang.blaze3d.textures.GpuTextureView
 import com.mojang.blaze3d.vertex.PoseStack
 import com.odtheking.odin.OdinMod.mc
@@ -27,6 +30,7 @@ class ItemStateRenderer(vertexConsumers: MultiBufferSource.BufferSource)
     : PictureInPictureRenderer<ItemStateRenderer.State>(vertexConsumers) {
 
     private var textureView: GpuTextureView? = null
+    private var textureSampler: GpuSampler = RenderSystem.getSamplerCache().getSampler(AddressMode.REPEAT, AddressMode.REPEAT, FilterMode.NEAREST, FilterMode.LINEAR, false)
     private var lastState: State? = null
 
     override fun renderToTexture(state: State, poseStack: PoseStack) {
@@ -45,7 +49,7 @@ class ItemStateRenderer(vertexConsumers: MultiBufferSource.BufferSource)
     override fun blitTexture(element: State, state: GuiRenderState) {
         state.submitBlitToCurrentLayer(
             BlitRenderState(
-                RenderPipelines.GUI_TEXTURED_PREMULTIPLIED_ALPHA, TextureSetup.singleTexture(textureView),
+                RenderPipelines.GUI_TEXTURED_PREMULTIPLIED_ALPHA, TextureSetup.singleTexture(textureView!!, textureSampler),
                 element.pose(), element.x0(), element.y0(), element.x0() + 16, element.y0() + 16,
                 0.0f, 1.0f, 1.0f, 0.0f, -1, element.scissorArea(), null
             )

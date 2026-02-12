@@ -9,7 +9,6 @@
   "client": [
     "accessors.AbstractContainerScreenAccessor",
     "accessors.BeaconBeamAccessor",
-    "accessors.CompositeRenderTypeAccessor",
     "mixins.AbstractContainerScreenMixin",
     "mixins.AvatarRendererMixin",
     "mixins.BossBarHealthOverlayMixin",

@@ -2,6 +2,7 @@ package com.odtheking.odin.utils
 
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.features.impl.render.ClickGUIModule
+import net.minecraft.client.gui.components.ChatComponent
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.Style
 
@@ -34,7 +35,7 @@ fun getCenteredText(text: String): String {
     val strippedText = text.noControlCodes
     if (strippedText.isEmpty()) return text
     val textWidth = mc.font.width(strippedText)
-    val chatWidth = mc.gui.chat.width
+    val chatWidth = ChatComponent.getWidth(mc.options.chatWidth().get())
 
     if (textWidth >= chatWidth) return text
 
@@ -43,6 +44,6 @@ fun getCenteredText(text: String): String {
 }
 
 fun getChatBreak(): String =
-    mc.gui?.chat?.width?.let {
+    ChatComponent.getWidth(mc.options.chatWidth().get()).let {
         "§9§m" + "-".repeat(it / mc.font.width("-"))
-    } ?: ""
+    }

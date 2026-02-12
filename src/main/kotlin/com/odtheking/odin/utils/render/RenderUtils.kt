@@ -17,7 +17,7 @@ import net.minecraft.client.gui.Font
 import net.minecraft.client.renderer.LightTexture
 import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.core.BlockPos
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.Vec3
 import org.joml.Vector3f
@@ -29,7 +29,7 @@ import kotlin.math.sqrt
 private const val DEPTH = 0
 private const val NO_DEPTH = 1
 
-private val BEAM_TEXTURE = ResourceLocation.withDefaultNamespace("textures/entity/beacon_beam.png")
+private val BEAM_TEXTURE = Identifier.withDefaultNamespace("textures/entity/beacon_beam.png")
 
 internal data class LineData(val from: Vec3, val to: Vec3, val color1: Int, val color2: Int, val thickness: Float)
 internal data class BoxData(val aabb: AABB, val r: Float, val g: Float, val b: Float, val a: Float, val thickness: Float)
@@ -60,7 +60,7 @@ object RenderBatchManager {
         on<RenderEvent.Last> {
             val matrix = context.matrices() ?: return@on
             val bufferSource = context.consumers() as? MultiBufferSource.BufferSource ?: return@on
-            val camera = context.gameRenderer().mainCamera?.position ?: return@on
+            val camera = context.gameRenderer().mainCamera?.position() ?: return@on
 
             matrix.pushPose()
             matrix.translate(-camera.x, -camera.y, -camera.z)

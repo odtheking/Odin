@@ -12,7 +12,7 @@ import com.odtheking.odin.utils.sendCommand
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonListener
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.network.protocol.game.ClientboundEntityEventPacket
-import net.minecraft.world.entity.monster.Zombie
+import net.minecraft.world.entity.monster.zombie.Zombie
 
 object Mimic : Module(
     name = "Mimic",
@@ -33,7 +33,7 @@ object Mimic : Module(
             if (!DungeonUtils.isFloor(6, 7) || DungeonUtils.inBoss || DungeonUtils.mimicKilled) return@onReceive
             if (eventId != (3).toByte()) return@onReceive
 
-            val entity = getEntity(mc.level) as? Zombie ?: return@onReceive
+            val entity = getEntity(mc.level as net.minecraft.world.level.Level) as? Zombie ?: return@onReceive
             if (!entity.isBaby) return@onReceive
 
             mimicKilled()

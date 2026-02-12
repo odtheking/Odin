@@ -18,7 +18,7 @@ import com.odtheking.odin.utils.ui.getQuadrant
 import com.odtheking.odin.utils.ui.rendering.NVGPIPRenderer
 import com.odtheking.odin.utils.ui.rendering.NVGRenderer
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import org.lwjgl.glfw.GLFW
 
 object LeapMenu : Module(
@@ -47,7 +47,7 @@ object LeapMenu : Module(
     private val leapAnnounce by BooleanSetting("Leap Announce", false, desc = "Announces when you leap to a player.")
     private val hoverHandler = List(4) { HoverHandler(200L) }
 
-    private val EMPTY = DungeonPlayer("Empty", DungeonClass.Unknown, 0, ResourceLocation.withDefaultNamespace("textures/entity/steve.png"))
+    private val EMPTY = DungeonPlayer("Empty", DungeonClass.Unknown, 0, Identifier.withDefaultNamespace("textures/entity/steve.png"))
     private val leapedRegex = Regex("You have teleported to (\\w{1,16})!")
     private val imageCacheMap = mutableMapOf<String, Int>()
     const val BOX_WIDTH = 800f

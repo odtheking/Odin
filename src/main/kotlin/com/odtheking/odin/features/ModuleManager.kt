@@ -23,8 +23,8 @@ import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements
 import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.client.DeltaTracker
 import net.minecraft.client.gui.GuiGraphics
-import net.minecraft.resources.ResourceLocation
-import net.minecraft.resources.ResourceLocation.fromNamespaceAndPath
+import net.minecraft.resources.Identifier
+import net.minecraft.resources.Identifier.fromNamespaceAndPath
 import java.io.File
 
 /**
@@ -53,7 +53,7 @@ object ModuleManager {
     val keybindSettingsCache: ArrayList<KeybindSetting> = arrayListOf()
     val hudSettingsCache: ArrayList<HUDSetting> = arrayListOf()
 
-    private val HUD_LAYER: ResourceLocation = fromNamespaceAndPath(OdinMod.MOD_ID, "odin_hud")
+    private val HUD_LAYER: Identifier = fromNamespaceAndPath(OdinMod.MOD_ID, "odin_hud")
 
     init {
         registerModules(config = ModuleConfig(file = File(OdinMod.configFile, "odin-config.json")),

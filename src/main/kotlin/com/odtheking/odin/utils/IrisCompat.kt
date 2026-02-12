@@ -1,20 +1,19 @@
 package com.odtheking.odin.utils
 
 import com.mojang.blaze3d.pipeline.RenderPipeline
-import com.odtheking.mixin.accessors.CompositeRenderTypeAccessor
 import com.odtheking.odin.utils.render.CustomRenderLayer
 import net.fabricmc.loader.api.FabricLoader
 import net.irisshaders.iris.api.v0.IrisApi
 import net.irisshaders.iris.api.v0.IrisProgram
-import net.minecraft.client.renderer.RenderType
+import net.minecraft.client.renderer.rendertype.RenderType
 
 /**
  * Created by @j10a1n15
  */
 interface IrisCompatability {
     fun registerPipeline(pipeline: RenderPipeline, shaderType: IrisShaderType) {}
-    fun registerRenderType(pipeline: RenderType.CompositeRenderType, shaderType: IrisShaderType) {
-        registerPipeline((pipeline as CompositeRenderTypeAccessor).renderPipeline, shaderType)
+    fun registerRenderType(pipeline: RenderType, shaderType: IrisShaderType) {
+        registerPipeline(pipeline.pipeline(), shaderType)
     }
 
     companion object : IrisCompatability by resolve() {

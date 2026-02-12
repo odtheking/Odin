@@ -1,48 +1,40 @@
 package com.odtheking.odin.utils.render
 
-import net.minecraft.client.renderer.RenderStateShard
-import net.minecraft.client.renderer.RenderType
-import java.util.*
+import net.minecraft.client.renderer.rendertype.LayeringTransform
+import net.minecraft.client.renderer.rendertype.RenderSetup
+import net.minecraft.client.renderer.rendertype.RenderType
 
 object CustomRenderLayer {
 
-    val LINE_LIST: RenderType.CompositeRenderType = RenderType.create(
+    val LINE_LIST: RenderType = RenderType.create(
         "line-list",
-        RenderType.BIG_BUFFER_SIZE,
-        CustomRenderPipelines.LINE_LIST,
-        RenderType.CompositeState.builder()
-            .setLayeringState(RenderType.VIEW_OFFSET_Z_LAYERING)
-            .setLineState(RenderStateShard.LineStateShard(OptionalDouble.of(3.0)))
-            .createCompositeState(false)
+        RenderSetup.builder(CustomRenderPipelines.LINE_LIST)
+            .bufferSize(RenderType.BIG_BUFFER_SIZE)
+            .setLayeringTransform(LayeringTransform.VIEW_OFFSET_Z_LAYERING)
+            .createRenderSetup()
     )
 
-    val LINE_LIST_ESP: RenderType.CompositeRenderType = RenderType.create(
+    val LINE_LIST_ESP: RenderType = RenderType.create(
         "line-list-esp",
-        RenderType.BIG_BUFFER_SIZE,
-        CustomRenderPipelines.LINE_LIST_ESP,
-        RenderType.CompositeState
-            .builder()
-            .setLineState(RenderStateShard.LineStateShard(OptionalDouble.of(3.0)))
-            .createCompositeState(false)
+        RenderSetup.builder(CustomRenderPipelines.LINE_LIST_ESP)
+            .bufferSize(RenderType.BIG_BUFFER_SIZE)
+            .setLayeringTransform(LayeringTransform.VIEW_OFFSET_Z_LAYERING)
+            .createRenderSetup()
     )
 
-    val TRIANGLE_STRIP: RenderType.CompositeRenderType = RenderType.create(
+    val TRIANGLE_STRIP: RenderType = RenderType.create(
         "triangle_strip",
-        RenderType.BIG_BUFFER_SIZE,
-        false,
-        true,
-        CustomRenderPipelines.TRIANGLE_STRIP,
-        RenderType.CompositeState.builder()
-            .setLayeringState(RenderType.VIEW_OFFSET_Z_LAYERING)
-            .createCompositeState(false)
+        RenderSetup.builder(CustomRenderPipelines.TRIANGLE_STRIP)
+            .bufferSize(RenderType.BIG_BUFFER_SIZE)
+            .setLayeringTransform(LayeringTransform.VIEW_OFFSET_Z_LAYERING)
+            .createRenderSetup()
     )
 
-    val TRIANGLE_STRIP_ESP: RenderType.CompositeRenderType = RenderType.create(
+    val TRIANGLE_STRIP_ESP: RenderType = RenderType.create(
         "triangle_strip_esp",
-        RenderType.BIG_BUFFER_SIZE,
-        false,
-        true,
-        CustomRenderPipelines.TRIANGLE_STRIP_ESP,
-        RenderType.CompositeState.builder().createCompositeState(false)
+        RenderSetup.builder(CustomRenderPipelines.TRIANGLE_STRIP_ESP)
+            .bufferSize(RenderType.BIG_BUFFER_SIZE)
+            .setLayeringTransform(LayeringTransform.VIEW_OFFSET_Z_LAYERING)
+            .createRenderSetup()
     )
 }

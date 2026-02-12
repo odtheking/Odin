@@ -5,7 +5,7 @@ import com.odtheking.odin.features.impl.dungeon.map.DungMap.roomSize
 import com.odtheking.odin.features.impl.dungeon.map.Vec2i
 import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.Colors
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import net.minecraft.world.entity.player.Player
 
 /**
@@ -20,7 +20,7 @@ data class DungeonPlayer(
     val name: String,
     val clazz: DungeonClass,
     val clazzLvl: Int,
-    val locationSkin: ResourceLocation?,
+    val locationSkin: Identifier?,
     var entity: Player? = null,
     var isDead: Boolean = false,
     var deaths: Int = 0,
