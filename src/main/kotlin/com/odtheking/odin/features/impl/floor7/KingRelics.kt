@@ -2,12 +2,8 @@ package com.odtheking.odin.features.impl.floor7
 
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.NumberSetting
-import com.odtheking.odin.events.ChatPacketEvent
-import com.odtheking.odin.events.RenderEvent
-import com.odtheking.odin.events.TickEvent
-import com.odtheking.odin.events.WorldEvent
+import com.odtheking.odin.events.*
 import com.odtheking.odin.events.core.on
-import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.events.core.onSend
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.*
@@ -16,7 +12,6 @@ import com.odtheking.odin.utils.render.textDim
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.skyblock.dungeon.M7Phases
 import net.minecraft.core.BlockPos
-import net.minecraft.network.protocol.game.ClientboundSetEquipmentPacket
 import net.minecraft.network.protocol.game.ServerboundUseItemOnPacket
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.item.Items
@@ -66,12 +61,11 @@ object KingRelics : Module(
             }
         }
 
-        onReceive<ClientboundSetEquipmentPacket> {
-            if (DungeonUtils.getF7Phase() != M7Phases.P5 || currentRelic == null) return@onReceive
+        on<EntityEvent.SetItemSlot> {
+            if (DungeonUtils.getF7Phase() != M7Phases.P5 || currentRelic == null) return@on
 
-            val equipmentSlot = slots.find { it.second == Items.PLAYER_HEAD } ?: return@onReceive
-
-            Relic.entries.find { it.id == equipmentSlot.second.itemId }?.let { relic ->
+            if (stack.item != Items.PLAYER_HEAD) return@on
+            Relic.entries.find { it.id == stack.itemId }?.let { relic ->
                 if (relicPlaceTick > 0 && !hasAnnouncedSpawn) {
                     modMessage("§${relic.colorCode}${relic.name} relic §7spawned in §6${(serverTickCounter - relicPlaceTick) / 20f}s")
                     hasAnnouncedSpawn = true

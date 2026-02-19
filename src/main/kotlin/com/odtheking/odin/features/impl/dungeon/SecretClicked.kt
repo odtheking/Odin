@@ -16,6 +16,7 @@ import com.odtheking.odin.utils.handlers.schedule
 import com.odtheking.odin.utils.playSoundSettings
 import com.odtheking.odin.utils.render.drawStyledBox
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
+import com.odtheking.odin.utils.toBlockPos
 import net.minecraft.core.BlockPos
 import net.minecraft.world.phys.AABB
 import java.util.concurrent.CopyOnWriteArrayList
@@ -50,7 +51,7 @@ object SecretClicked : Module(
         }
 
         on<SecretPickupEvent.Bat> {
-            secretBox(BlockPos(packet.x.toInt(), packet.y.toInt(), packet.z.toInt()))
+            secretBox(position.toBlockPos())
             secretChime()
         }
 

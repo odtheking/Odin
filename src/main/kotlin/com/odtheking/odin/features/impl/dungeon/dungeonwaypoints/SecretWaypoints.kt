@@ -19,7 +19,7 @@ object SecretWaypoints {
     fun onSecret(event: SecretPickupEvent) {
         when (event) {
             is SecretPickupEvent.Interact -> clickSecret(event.blockPos, 0)
-            is SecretPickupEvent.Bat -> clickSecret(BlockPos.containing(event.packet.x, event.packet.y, event.packet.z), 5)
+            is SecretPickupEvent.Bat -> clickSecret(BlockPos.containing(event.position), 5)
             is SecretPickupEvent.Item -> clickSecret(event.entity.blockPosition(), 3)
         }
     }

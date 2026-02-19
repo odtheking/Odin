@@ -1,10 +1,8 @@
 package com.odtheking.odin.features.impl.nether
 
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
-
 import com.odtheking.odin.events.GuiEvent
 import com.odtheking.odin.events.core.on
-import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.features.impl.dungeon.Croesus.cachedPrices
 import com.odtheking.odin.utils.*
@@ -12,8 +10,6 @@ import com.odtheking.odin.utils.render.text
 import net.minecraft.ChatFormatting
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.network.chat.Component
-import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket
-import net.minecraft.network.protocol.game.ClientboundOpenScreenPacket
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.Items
 
@@ -68,14 +64,12 @@ object Vesuvius : Module(
             }
         }
 
-        onReceive<ClientboundContainerSetSlotPacket> {
-            val title = mc.screen?.title?.string ?:return@onReceive
-            if (slot == 31 && item.item == Items.CHEST && title.matches(chestRegex)) handleKuudraChest(item)
+        on<GuiEvent.SlotUpdate> {
+            val title = screen.title.string ?: return@on
+            if (packet.slot == 31 && packet.item.item == Items.CHEST && title.matches(chestRegex)) handleKuudraChest(packet.item)
         }
 
-        onReceive<ClientboundOpenScreenPacket> {
-            currentChest = null
-        }
+        on<GuiEvent.Open> { currentChest = null }
     }
 
     private fun parseItemValue(item: String): Double? {

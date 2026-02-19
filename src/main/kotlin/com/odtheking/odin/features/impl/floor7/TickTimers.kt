@@ -4,16 +4,15 @@ import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.HudElement
 import com.odtheking.odin.events.ChatPacketEvent
+import com.odtheking.odin.events.GameTimeUpdateEvent
 import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.WorldEvent
 import com.odtheking.odin.events.core.on
-import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.render.textDim
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.toFixed
-import net.minecraft.network.protocol.game.ClientboundSetTimePacket
 
 object TickTimers : Module(
     name = "Tick Timers",
@@ -130,8 +129,8 @@ object TickTimers : Module(
             if (necronTime >= 0 && necronHud.enabled) necronTime--
         }
 
-        onReceive<ClientboundSetTimePacket> {
-            if (!DungeonUtils.inClear) return@onReceive
+        on<GameTimeUpdateEvent> {
+            if (!DungeonUtils.inClear) return@on
             val gameTime = mc.level?.gameTime ?: -1
             if (DungeonUtils.openRoomCount == 0) {
                 if (outboundsHud.enabled) outboundsTime = 40 - (gameTime % 40).toInt()

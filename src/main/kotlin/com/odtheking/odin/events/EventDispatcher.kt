@@ -1,6 +1,7 @@
 package com.odtheking.odin.events
 
 import com.odtheking.odin.OdinMod.mc
+import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.events.core.onSend
 import com.odtheking.odin.utils.ChatManager
@@ -10,11 +11,13 @@ import com.odtheking.odin.utils.noControlCodes
 import com.odtheking.odin.utils.render.RenderBatchManager
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils.isSecret
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents
 import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents
-import net.minecraft.network.protocol.game.*
+import net.minecraft.network.protocol.game.ClientboundTakeItemEntityPacket
+import net.minecraft.network.protocol.game.ServerboundUseItemOnPacket
 import net.minecraft.sounds.SoundEvents
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.entity.item.ItemEntity
@@ -46,9 +49,19 @@ object EventDispatcher {
             mc.level?.let { RenderEvent.Last(context).postAndCatch() }
         }
 
+        ClientReceiveMessageEvents.MODIFY_GAME.register { component, overlay ->
+            if (!overlay) return@register component
+            component.string.noControlCodes.let { OverlayPacketEvent(it, component).postAndCatch() }
+            return@register component
+        }
+
         ClientReceiveMessageEvents.ALLOW_GAME.register { text, overlay ->
             if (overlay) return@register true
-            !ChatManager.shouldCancelMessage(text)
+            !(ChatManager.shouldCancelMessage(text) || text.string.noControlCodes.let { ChatPacketEvent(it, text).postAndCatch() })
+        }
+
+        ClientEntityEvents.ENTITY_UNLOAD.register { entity, _ ->
+            EntityEvent.Remove(entity).postAndCatch()
         }
 
         onReceive<ClientboundTakeItemEntityPacket> {
@@ -58,19 +71,19 @@ object EventDispatcher {
                 SecretPickupEvent.Item(itemEntity).postAndCatch()
         }
 
-        onReceive<ClientboundRemoveEntitiesPacket> {
-            if (mc.player == null || !DungeonUtils.inClear) return@onReceive
-            entityIds.forEach { id ->
-                val entity = mc.level?.getEntity(id) as? ItemEntity ?: return@forEach
-                if (entity.item?.hoverName?.string?.containsOneOf(dungeonItemDrops, true) == true && entity.distanceTo(mc.player ?: return@onReceive) <= 6)
-                    SecretPickupEvent.Item(entity).postAndCatch()
-            }
+        on<EntityEvent.Remove> {
+            if (mc.player == null || !DungeonUtils.inClear) return@on
+            val entity = entity as? ItemEntity ?: return@on
+            if (
+                entity.item?.hoverName?.string?.containsOneOf(dungeonItemDrops, true) == true &&
+                entity.distanceTo(mc.player ?: return@on) <= 6
+            ) SecretPickupEvent.Item(entity).postAndCatch()
         }
 
-        onReceive<ClientboundSoundPacket> {
-            if (!DungeonUtils.inClear) return@onReceive
-            if (sound.value().equalsOneOf(SoundEvents.BAT_HURT, SoundEvents.BAT_DEATH) && volume == 0.1f)
-                SecretPickupEvent.Bat(this).postAndCatch()
+        on<PlaySoundEvent> {
+            if (!DungeonUtils.inClear) return@on
+            if (sound.equalsOneOf(SoundEvents.BAT_HURT, SoundEvents.BAT_DEATH) && volume == 0.1f)
+                SecretPickupEvent.Bat(pos).postAndCatch()
         }
 
         onSend<ServerboundUseItemOnPacket> {
@@ -79,10 +92,6 @@ object EventDispatcher {
                 hitResult.blockPos,
                 mc.level?.getBlockState(hitResult.blockPos)?.takeIf { isSecret(it, hitResult.blockPos) } ?: return@onSend
             ).postAndCatch()
-        }
-
-        onReceive<ClientboundSystemChatPacket> {
-            if (!overlay) content?.string?.noControlCodes?.let { ChatPacketEvent(it, content).postAndCatch() }
         }
     }
 

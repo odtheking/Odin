@@ -5,11 +5,13 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.odtheking.odin.events.GuiEvent;
 import com.odtheking.odin.events.PacketEvent;
+import com.odtheking.odin.events.TabListUpdateEvent;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.PacketListener;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
+import net.minecraft.network.protocol.game.ClientboundTabListPacket;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -35,5 +37,16 @@ public class ClientPacketListenerMixin {
     private void wrapPacketHandle(Packet<?> packet, PacketListener listener, Operation<Void> original) {
         if (new PacketEvent.Receive(packet).postAndCatch()) return;
         original.call(packet, listener);
+    }
+
+    @Inject(
+            method = "handleTabListCustomisation",
+            at = @At("TAIL")
+    )
+    private void onTabListCustomisation(ClientboundTabListPacket clientboundTabListPacket, CallbackInfo ci) {
+        new TabListUpdateEvent(
+                clientboundTabListPacket.header().getString().isEmpty() ? null : clientboundTabListPacket.header(),
+                clientboundTabListPacket.footer().getString().isEmpty() ? null : clientboundTabListPacket.footer()
+        ).postAndCatch();
     }
 }

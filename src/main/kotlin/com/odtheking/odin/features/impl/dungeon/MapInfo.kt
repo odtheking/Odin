@@ -2,18 +2,17 @@ package com.odtheking.odin.features.impl.dungeon
 
 import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.*
+import com.odtheking.odin.events.OverlayPacketEvent
 import com.odtheking.odin.events.RenderEvent
 import com.odtheking.odin.events.RoomEnterEvent
 import com.odtheking.odin.events.WorldEvent
 import com.odtheking.odin.events.core.on
-import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Color.Companion.withAlpha
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.alert
 import com.odtheking.odin.utils.handlers.TickTask
 import com.odtheking.odin.utils.modMessage
-import com.odtheking.odin.utils.noControlCodes
 import com.odtheking.odin.utils.render.drawFilledBox
 import com.odtheking.odin.utils.render.getStringWidth
 import com.odtheking.odin.utils.render.text
@@ -22,7 +21,6 @@ import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils.getRealCoords
 import com.odtheking.odin.utils.skyblock.dungeon.tiles.RoomType
 import net.minecraft.core.BlockPos
-import net.minecraft.network.protocol.game.ClientboundSystemChatPacket
 import net.minecraft.world.phys.AABB
 
 object MapInfo : Module(
@@ -248,10 +246,8 @@ object MapInfo : Module(
             shownTitle = true
         }
 
-        onReceive<ClientboundSystemChatPacket> {
-            if (!overlay) return@onReceive
-            val msg = content?.string?.noControlCodes ?: return@onReceive
-            secretRegex.find(msg)?.destructured?.let { (found, total) ->
+        on<OverlayPacketEvent> {
+            secretRegex.find(value)?.destructured?.let { (found, total) ->
                 currentRoomSecrets = Pair(found.toIntOrNull() ?: 0, total.toIntOrNull() ?: 0)
             }
         }

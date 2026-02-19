@@ -9,10 +9,12 @@ import com.odtheking.odin.clickgui.settings.impl.ActionSetting
 import com.odtheking.odin.clickgui.settings.impl.NumberSetting
 import com.odtheking.odin.clickgui.settings.impl.StringSetting
 import com.odtheking.odin.features.Module
+import net.minecraft.client.resources.sounds.Sound
 import net.minecraft.core.BlockPos
 import net.minecraft.network.chat.ClickEvent
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.HoverEvent
+import net.minecraft.sounds.SoundEvent
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.inventory.ClickType
@@ -74,6 +76,9 @@ fun String.startsWithOneOf(vararg options: String, ignoreCase: Boolean = false):
  */
 fun Any?.equalsOneOf(vararg options: Any?): Boolean =
     options.any { this == it }
+
+fun Sound?.equalsOneOf(vararg options: SoundEvent?): Boolean =
+    options.any { this?.location == it?.location }
 
 fun String.matchesOneOf(vararg options: Regex): Boolean =
     options.any { this.matches(it) }

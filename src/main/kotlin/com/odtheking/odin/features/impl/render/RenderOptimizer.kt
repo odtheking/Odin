@@ -2,15 +2,13 @@ package com.odtheking.odin.features.impl.render
 
 import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
-import com.odtheking.odin.events.core.onReceive
+import com.odtheking.odin.events.EntityEvent
+import com.odtheking.odin.events.ParticleAddEvent
+import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.texture
 import net.minecraft.core.particles.ParticleTypes
-import net.minecraft.network.protocol.game.ClientboundAddEntityPacket
-import net.minecraft.network.protocol.game.ClientboundLevelParticlesPacket
-import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket
-import net.minecraft.network.protocol.game.ClientboundSetEquipmentPacket
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.EquipmentSlot
@@ -41,40 +39,40 @@ object RenderOptimizer : Module(
     private const val SOUL_WEAVER_TEXTURE = "eyJ0aW1lc3RhbXAiOjE1NTk1ODAzNjI1NTMsInByb2ZpbGVJZCI6ImU3NmYwZDlhZjc4MjQyYzM5NDY2ZDY3MjE3MzBmNDUzIiwicHJvZmlsZU5hbWUiOiJLbGxscmFoIiwic2lnbmF0dXJlUmVxdWlyZWQiOnRydWUsInRleHR1cmVzIjp7IlNLSU4iOnsidXJsIjoiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS8yZjI0ZWQ2ODc1MzA0ZmE0YTFmMGM3ODViMmNiNmE2YTcyNTYzZTlmM2UyNGVhNTVlMTgxNzg0NTIxMTlhYTY2In19fQ=="
 
     init {
-        onReceive<ClientboundAddEntityPacket> {
-            when (type) {
-                EntityType.FALLING_BLOCK if hideFallingBlocks -> it.cancel()
-                EntityType.LIGHTNING_BOLT if hideLightning -> it.cancel()
-                EntityType.EXPERIENCE_ORB if hideExperienceOrbs -> it.cancel()
+        on<EntityEvent.Add> {
+            when (entity.type) {
+                EntityType.FALLING_BLOCK if hideFallingBlocks -> cancel()
+                EntityType.LIGHTNING_BOLT if hideLightning -> cancel()
+                EntityType.EXPERIENCE_ORB if hideExperienceOrbs -> cancel()
             }
         }
 
-        onReceive<ClientboundSetEntityDataPacket> {
+        on<EntityEvent.SetData> {
             if (hideArcherBoneMeal && DungeonUtils.inDungeons) {
-                val item = packedItems.find { it.id == 8 }?.value as? ItemStack ?: return@onReceive
+                val item = synchedDataValues.find { it.id == 8 }?.value as? ItemStack ?: return@on
                 if (!item.isEmpty && item.item == Items.BONE_MEAL) mc.execute {
-                        mc.level?.removeEntity(id, Entity.RemovalReason.DISCARDED)
+                        mc.level?.removeEntity(entity.id, Entity.RemovalReason.DISCARDED)
                     }
             }
         }
 
-        onReceive<ClientboundLevelParticlesPacket> {
+        on<ParticleAddEvent> {
             if (disableExplosion && particle == ParticleTypes.EXPLOSION || particle == ParticleTypes.EXPLOSION_EMITTER)
-                it.cancel()
+                cancel()
         }
 
-        onReceive<ClientboundSetEquipmentPacket> {
-            if (!DungeonUtils.inDungeons) return@onReceive
-            slots.forEach { slot ->
-                if (slot.second.isEmpty) return@forEach
-                val texture = slot.second.texture ?: return@forEach
+        on<EntityEvent.SetItemSlot> {
+            if (!DungeonUtils.inDungeons) return@on
 
-                if (
-                    (hideFairy && slot.first == EquipmentSlot.MAINHAND && texture == HEALER_FAIRY_TEXTURE) ||
-                    (hideWeaver && slot.first == EquipmentSlot.HEAD && texture == SOUL_WEAVER_TEXTURE) ||
-                    (hideTentacle && slot.first == EquipmentSlot.HEAD && texture == TENTACLE_TEXTURE)
-                ) mc.execute { mc.level?.removeEntity(entity, Entity.RemovalReason.DISCARDED) }
-            }
+            if (stack.isEmpty) return@on
+            val texture = stack.texture ?: return@on
+
+            if (
+                (hideFairy && slot == EquipmentSlot.MAINHAND && texture == HEALER_FAIRY_TEXTURE) ||
+                (hideWeaver && slot == EquipmentSlot.HEAD && texture == SOUL_WEAVER_TEXTURE) ||
+                (hideTentacle && slot == EquipmentSlot.HEAD && texture == TENTACLE_TEXTURE)
+            ) mc.execute { mc.level?.removeEntity(entity.id, Entity.RemovalReason.DISCARDED) }
+
         }
     }
 

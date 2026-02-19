@@ -1,6 +1,7 @@
 package com.odtheking.odin.utils.skyblock
 
 import com.odtheking.odin.OdinMod.mc
+import com.odtheking.odin.events.PlayerTeamEvent
 import com.odtheking.odin.events.WorldEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
@@ -9,8 +10,6 @@ import com.odtheking.odin.utils.noControlCodes
 import com.odtheking.odin.utils.startsWithOneOf
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket
 import net.minecraft.network.protocol.game.ClientboundSetObjectivePacket
-import net.minecraft.network.protocol.game.ClientboundSetPlayerTeamPacket
-import kotlin.jvm.optionals.getOrNull
 
 object LocationUtils {
 
@@ -36,9 +35,9 @@ object LocationUtils {
             if (!isInSkyblock) isInSkyblock = objectiveName == "SBScoreboard"
         }
 
-        onReceive<ClientboundSetPlayerTeamPacket> {
-            if (!isCurrentArea(Island.Unknown)) return@onReceive
-            val text = parameters?.getOrNull()?.let { it.playerPrefix?.string?.plus(it.playerSuffix?.string).noControlCodes } ?: return@onReceive
+        on<PlayerTeamEvent.UpdateParameters> {
+            if (!isCurrentArea(Island.Unknown)) return@on
+            val text = (team.playerPrefix.string + team.playerSuffix.string).noControlCodes
 
             lobbyRegex.find(text)?.groupValues?.get(1)?.let { lobbyId = it }
         }

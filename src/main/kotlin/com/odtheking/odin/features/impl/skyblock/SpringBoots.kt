@@ -1,9 +1,9 @@
 package com.odtheking.odin.features.impl.skyblock
 
+import com.odtheking.odin.events.PlaySoundEvent
 import com.odtheking.odin.events.RenderEvent
 import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.core.on
-import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.addVec
@@ -12,7 +12,6 @@ import com.odtheking.odin.utils.isItem
 import com.odtheking.odin.utils.render.drawWireFrameBox
 import com.odtheking.odin.utils.render.textDim
 import com.odtheking.odin.utils.skyblock.LocationUtils
-import net.minecraft.network.protocol.game.ClientboundSoundPacket
 import net.minecraft.sounds.SoundEvents
 import net.minecraft.world.entity.EquipmentSlot
 import net.minecraft.world.phys.AABB
@@ -35,9 +34,9 @@ object SpringBoots : Module(
     private var lowCount = 0
 
     init {
-        onReceive<ClientboundSoundPacket> {
-            if (!LocationUtils.isInSkyblock) return@onReceive
-            val id = sound.value().location
+        on<PlaySoundEvent> {
+            if (!LocationUtils.isInSkyblock) return@on
+            val id = sound.location ?: return@on
 
             when {
                 SoundEvents.NOTE_BLOCK_PLING.`is`(id) && mc.player?.isCrouching == true && EquipmentSlot.FEET.isItem("SPRING_BOOTS") ->

@@ -3,18 +3,16 @@ package com.odtheking.odin.features.impl.render
 import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.ColorSetting
+import com.odtheking.odin.events.OverlayPacketEvent
 import com.odtheking.odin.events.RenderEvent
 import com.odtheking.odin.events.WorldEvent
 import com.odtheking.odin.events.core.on
-import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Color.Companion.withAlpha
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.itemId
-import com.odtheking.odin.utils.noControlCodes
 import com.odtheking.odin.utils.render.drawCylinder
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils.getAbilityCooldown
-import net.minecraft.network.protocol.game.ClientboundSystemChatPacket
 import net.minecraft.world.item.Items
 
 object GyroWand : Module(
@@ -30,10 +28,8 @@ object GyroWand : Module(
     private var cooldownTimer = 0L
 
     init {
-        onReceive<ClientboundSystemChatPacket> {
-            if (!overlay) return@onReceive
-            val msg = content?.string?.noControlCodes ?: return@onReceive
-            if (msg.matches(gravityStormRegex)) cooldownTimer = System.currentTimeMillis()
+        on<OverlayPacketEvent> {
+            if (value.matches(gravityStormRegex)) cooldownTimer = System.currentTimeMillis()
         }
 
         on<RenderEvent.Extract> {

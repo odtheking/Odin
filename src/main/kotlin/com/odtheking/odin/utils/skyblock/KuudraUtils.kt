@@ -2,18 +2,16 @@ package com.odtheking.odin.utils.skyblock
 
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.events.ChatPacketEvent
+import com.odtheking.odin.events.PlayerTeamEvent
 import com.odtheking.odin.events.WorldEvent
 import com.odtheking.odin.events.core.on
-import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.utils.handlers.TickTask
 import com.odtheking.odin.utils.handlers.schedule
 import com.odtheking.odin.utils.noControlCodes
-import net.minecraft.network.protocol.game.ClientboundSetPlayerTeamPacket
 import net.minecraft.world.entity.ai.attributes.Attributes
 import net.minecraft.world.entity.decoration.ArmorStand
 import net.minecraft.world.entity.monster.Giant
 import net.minecraft.world.entity.monster.MagmaCube
-import kotlin.jvm.optionals.getOrNull
 
 object KuudraUtils {
 
@@ -109,10 +107,9 @@ object KuudraUtils {
             }
         }
 
-        onReceive<ClientboundSetPlayerTeamPacket> {
-            if (!inKuudra) return@onReceive
-            val teamLine = parameters.getOrNull() ?: return@onReceive
-            val text = teamLine.playerPrefix.string?.plus(teamLine.playerSuffix.string)?.noControlCodes ?: return@onReceive
+        on<PlayerTeamEvent.UpdateParameters> {
+            if (!inKuudra) return@on
+            val text = (team.playerPrefix.string + team.playerSuffix.string).noControlCodes
 
             tierRegex.find(text)?.groupValues?.get(1)?.let { kuudraTier = it.toInt() }
         }

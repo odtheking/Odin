@@ -19,10 +19,7 @@ import com.odtheking.odin.utils.render.textDim
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.skyblock.dungeon.M7Phases
 import com.odtheking.odin.utils.toFixed
-import net.minecraft.network.protocol.game.ClientboundAddEntityPacket
 import net.minecraft.network.protocol.game.ClientboundLevelParticlesPacket
-import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket
-import net.minecraft.network.protocol.game.ClientboundSetEquipmentPacket
 
 object WitherDragons : Module(
     name = "Wither Dragons",
@@ -76,15 +73,15 @@ object WitherDragons : Module(
             if (DungeonUtils.getF7Phase() == M7Phases.P5) handleSpawnPacket(this)
         }
 
-        onReceive<ClientboundSetEquipmentPacket> {
+        on<EntityEvent.SetItemSlot> {
             if (DungeonUtils.getF7Phase() == M7Phases.P5) DragonCheck.dragonSprayed(this)
         }
 
-        onReceive<ClientboundAddEntityPacket> {
+        on<EntityEvent.Add> {
             if (DungeonUtils.getF7Phase() == M7Phases.P5) DragonCheck.dragonSpawn(this)
         }
 
-        onReceive<ClientboundSetEntityDataPacket> {
+        on<EntityEvent.SetData> {
             if (DungeonUtils.getF7Phase() == M7Phases.P5) DragonCheck.dragonUpdate(this)
         }
 

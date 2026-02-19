@@ -5,13 +5,12 @@ import com.odtheking.odin.clickgui.settings.impl.ActionSetting
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.StringSetting
 import com.odtheking.odin.events.ChatPacketEvent
+import com.odtheking.odin.events.EntityEvent
 import com.odtheking.odin.events.core.on
-import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.sendCommand
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonListener
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
-import net.minecraft.network.protocol.game.ClientboundEntityEventPacket
 import net.minecraft.world.entity.monster.Zombie
 
 object Mimic : Module(
@@ -29,12 +28,12 @@ object Mimic : Module(
     private val princeRegex = Regex("^A Prince falls\\. \\+1 Bonus Score$")
 
     init {
-        onReceive<ClientboundEntityEventPacket> {
-            if (!DungeonUtils.isFloor(6, 7) || DungeonUtils.inBoss || DungeonUtils.mimicKilled) return@onReceive
-            if (eventId != (3).toByte()) return@onReceive
+        on<EntityEvent.Event> {
+            if (!DungeonUtils.isFloor(6, 7) || DungeonUtils.inBoss || DungeonUtils.mimicKilled) return@on
+            if (id != 3.toByte()) return@on
 
-            val entity = getEntity(mc.level) as? Zombie ?: return@onReceive
-            if (!entity.isBaby) return@onReceive
+            val entity = entity as? Zombie ?: return@on
+            if (!entity.isBaby) return@on
 
             mimicKilled()
         }

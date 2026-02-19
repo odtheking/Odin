@@ -15,6 +15,7 @@
     "mixins.BossBarHealthOverlayMixin",
     "mixins.ChatListenerMixin",
     "mixins.ChatScreenMixin",
+    "mixins.ClientLevelMixin",
     "mixins.ClientPacketListenerMixin",
     "mixins.EntityRendererMixin",
     "mixins.ExperienceBarRendererMixin",
@@ -23,13 +24,17 @@
     "mixins.LocalPlayerMixin",
     "mixins.MinecraftMixin",
     "mixins.MouseHandlerMixin",
-    "mixins.ScreenEffectRendererMixin"
+    "mixins.ScreenEffectRendererMixin",
+    "mixins.SoundEngineMixin"
   ],
   "mixins": [
     "accessors.ServerboundInteractPacketAccessor",
     "mixins.ConnectionMixin",
     "mixins.EntityMixin",
     "mixins.LevelChunkMixin",
+    "mixins.LivingEntityMixin",
+    "mixins.ScoreboardMixin",
+    "mixins.SynchedEntityDataMixin",
     "mixins.YggdrasilSignatureIgnoreMixin"
   ]
 }

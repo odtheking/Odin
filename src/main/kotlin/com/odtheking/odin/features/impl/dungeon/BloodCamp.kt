@@ -7,7 +7,6 @@ import com.odtheking.odin.clickgui.settings.impl.DropdownSetting
 import com.odtheking.odin.clickgui.settings.impl.NumberSetting
 import com.odtheking.odin.events.*
 import com.odtheking.odin.events.core.on
-import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.*
 import com.odtheking.odin.utils.handlers.schedule
@@ -17,9 +16,6 @@ import com.odtheking.odin.utils.render.drawWireFrameBox
 import com.odtheking.odin.utils.render.textDim
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.network.chat.Component
-import net.minecraft.network.protocol.game.ClientboundMoveEntityPacket
-import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket
-import net.minecraft.network.protocol.game.ClientboundSetEquipmentPacket
 import net.minecraft.world.entity.EquipmentSlot
 import net.minecraft.world.entity.decoration.ArmorStand
 import net.minecraft.world.entity.monster.Zombie
@@ -68,19 +64,20 @@ object BloodCamp : Module(
     private var currentWatcherEntity: Zombie? = null
 
     init {
-        onReceive<ClientboundMoveEntityPacket> {
-            if (xa == 0.toShort() && ya == 0.toShort() && za == 0.toShort()) return@onReceive
-            val level = mc.level ?: return@onReceive
-            if (!DungeonUtils.inClear) return@onReceive
+        on<EntityEvent.Move> {
+            if (newPos == Vec3.ZERO) return@on
+            if (!DungeonUtils.inClear) return@on
 
-            val entity = getEntity(level) as? ArmorStand ?: return@onReceive
-            if (currentWatcherEntity?.let { it.distanceTo(entity) <= 20 } != true || entity.getItemBySlot(EquipmentSlot.HEAD).item != Items.PLAYER_HEAD || entity.getItemBySlot(EquipmentSlot.HEAD)?.texture !in allowedMobSkulls) return@onReceive
+            val entity = entity as? ArmorStand ?: return@on
+            if (currentWatcherEntity?.let {
+                it.distanceTo(entity) <= 20 } != true ||
+                entity.getItemBySlot(EquipmentSlot.HEAD).item != Items.PLAYER_HEAD ||
+                entity.getItemBySlot(EquipmentSlot.HEAD)?.texture !in allowedMobSkulls
+            ) return@on
 
-            val packetVector = Vec3(entity.x + (xa / 4096), entity.y + (ya / 4096), entity.z + (za / 4096))
-
-            val data = entityDataMap.getOrPut(entity) { EntityData(packetVector, currentTickTime, firstSpawns, lastPosition = packetVector) }
-            val delta = packetVector.subtract(data.lastPosition)
-            data.lastPosition = packetVector
+            val data = entityDataMap.getOrPut(entity) { EntityData(newPos, currentTickTime, firstSpawns, lastPosition = newPos) }
+            val delta = newPos.subtract(data.lastPosition)
+            data.lastPosition = newPos
 
             if (delta.lengthSqr() > 0) data.deltaHistory.addLast(delta)
 
@@ -88,16 +85,16 @@ object BloodCamp : Module(
             val endpoint = data.startVector.add((if (totalDelta.lengthSqr() > 0) totalDelta.normalize() else Vec3.ZERO).scale(if (data.firstSpawns) 16.1 else 11.9))
             val timeTook = currentTickTime - data.started
             val speedVectors = Vec3(
-                (packetVector.x - data.startVector.x) / timeTook,
-                (packetVector.y - data.startVector.y) / timeTook,
-                (packetVector.z - data.startVector.z) / timeTook
+                (newPos.x - data.startVector.x) / timeTook,
+                (newPos.y - data.startVector.y) / timeTook,
+                (newPos.z - data.startVector.z) / timeTook
             )
 
-            renderDataMap.getOrPut(entity) { RenderEData(packetVector, endpoint, currentTickTime, speedVectors) }.apply {
+            renderDataMap.getOrPut(entity) { RenderEData(newPos, endpoint, currentTickTime, speedVectors) }.apply {
                 lastEndVector = endVector
                 endVecUpdated = currentTickTime
                 this.speedVectors = speedVectors
-                currVector = packetVector
+                currVector = newPos
                 endVector = endpoint
             }
         }
@@ -130,21 +127,19 @@ object BloodCamp : Module(
             }
         }
 
-        onReceive<ClientboundSetEquipmentPacket> {
-            if (!bloodAssist || currentWatcherEntity != null || !DungeonUtils.inClear) return@onReceive
-            slots.forEach { slot ->
-                if (slot.second.isEmpty) return@forEach
-                val texture = slot.second.texture ?: return@forEach
-                if ((slot.first == EquipmentSlot.HEAD && texture in watcherSkulls)) mc.execute {
-                    currentWatcherEntity = (mc.level?.getEntity(entity) as? Zombie)
-                    devMessage("Watcher found at ${currentWatcherEntity?.position()}")
-                }
+        on<EntityEvent.SetItemSlot> {
+            if (!bloodAssist || currentWatcherEntity != null || !DungeonUtils.inClear) return@on
+            if (stack.isEmpty) return@on
+            val texture = stack.texture ?: return@on
+            if ((slot == EquipmentSlot.HEAD && texture in watcherSkulls)) mc.execute {
+                currentWatcherEntity = (entity as? Zombie)
+                devMessage("Watcher found at ${currentWatcherEntity?.position()}")
             }
         }
 
-        onReceive<ClientboundRemoveEntitiesPacket> {
-            if (currentWatcherEntity == null) return@onReceive
-            if (entityIds.any { it == currentWatcherEntity?.id }) currentWatcherEntity = null
+        on<EntityEvent.Remove> {
+            if (currentWatcherEntity == null) return@on
+            if (entity.id == currentWatcherEntity?.id) currentWatcherEntity = null
         }
 
         on<TickEvent.Server> {

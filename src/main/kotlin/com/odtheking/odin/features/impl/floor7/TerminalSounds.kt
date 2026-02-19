@@ -4,18 +4,18 @@ import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.events.ChatPacketEvent
 import com.odtheking.odin.events.GuiEvent
+import com.odtheking.odin.events.PlaySoundEvent
 import com.odtheking.odin.events.TerminalEvent
 import com.odtheking.odin.events.core.EventPriority
 import com.odtheking.odin.events.core.on
-import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.createSoundSettings
+import com.odtheking.odin.utils.equalsOneOf
 import com.odtheking.odin.utils.playSoundAtPlayer
 import com.odtheking.odin.utils.playSoundSettings
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalTypes
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalUtils
-import net.minecraft.network.protocol.game.ClientboundSoundPacket
 import net.minecraft.sounds.SoundEvents
 
 object TerminalSounds : Module(
@@ -46,9 +46,9 @@ object TerminalSounds : Module(
             if (shouldReplaceSounds) playSoundForSlot(slot, button)
         }
 
-        onReceive<ClientboundSoundPacket> {
-            if (sound.value() == SoundEvents.NOTE_BLOCK_PLING.value() && volume == 8f && pitch == 4.047619f && shouldReplaceSounds)
-                it.cancel()
+        on<PlaySoundEvent> {
+            if (sound.equalsOneOf(SoundEvents.NOTE_BLOCK_PLING) && volume == 8f && pitch == 4.047619f && shouldReplaceSounds)
+                cancel()
         }
 
         on<ChatPacketEvent> {

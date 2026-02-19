@@ -1,11 +1,9 @@
 package com.odtheking.odin.utils.skyblock
 
 import com.odtheking.odin.OdinMod.mc
+import com.odtheking.odin.events.OverlayPacketEvent
 import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.core.on
-import com.odtheking.odin.events.core.onReceive
-import com.odtheking.odin.utils.noControlCodes
-import net.minecraft.network.protocol.game.ClientboundSystemChatPacket
 import net.minecraft.world.entity.ai.attributes.Attributes
 import kotlin.math.floor
 
@@ -43,24 +41,21 @@ object SkyblockPlayer {
             currentSpeed = floor((mc.player?.getAttribute(Attributes.MOVEMENT_SPEED)?.baseValue?.toFloat() ?: 0f) * 1000f).toInt()
         }
 
-        onReceive<ClientboundSystemChatPacket> {
-            if (!overlay) return@onReceive
-            val msg = content?.string?.noControlCodes ?: return@onReceive
-
-            HEALTH_REGEX.find(msg)?.destructured?.let { (_, maxHp) ->
+        on<OverlayPacketEvent> {
+            HEALTH_REGEX.find(value)?.destructured?.let { (_, maxHp) ->
                 maxHealth = maxHp.replace(",", "").toIntOrNull() ?: maxHealth
             }
 
-            MANA_REGEX.find(msg)?.destructured?.let { (cMana, mMana) ->
+            MANA_REGEX.find(value)?.destructured?.let { (cMana, mMana) ->
                 currentMana = cMana.replace(",", "").toIntOrNull() ?: currentMana
                 maxMana = mMana.replace(",", "").toIntOrNull() ?: maxMana
             }
 
-            OVERFLOW_MANA_REGEX.find(msg)?.groupValues?.get(1)?.let {
+            OVERFLOW_MANA_REGEX.find(value)?.groupValues?.get(1)?.let {
                 overflowMana = it.replace(",", "").toIntOrNull() ?: overflowMana
             }
 
-            DEFENSE_REGEX.find(msg)?.groupValues?.get(1)?.let {
+            DEFENSE_REGEX.find(value)?.groupValues?.get(1)?.let {
                 currentDefense = it.replace(",", "").toIntOrNull() ?: currentDefense
             }
 

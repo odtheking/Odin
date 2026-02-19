@@ -2,7 +2,6 @@ package com.odtheking.odin.features.impl.dungeon
 
 import com.odtheking.odin.events.*
 import com.odtheking.odin.events.core.on
-import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.Colors
@@ -12,7 +11,6 @@ import com.odtheking.odin.utils.render.drawWireFrameBox
 import com.odtheking.odin.utils.render.textDim
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.core.BlockPos
-import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket
 import net.minecraft.world.effect.MobEffects
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.level.block.Block
@@ -53,10 +51,10 @@ object LividSolver : Module(
             }
         }
 
-        onReceive<ClientboundSetEntityDataPacket> {
-            if (!DungeonUtils.inBoss || !DungeonUtils.isFloor(5)) return@onReceive
+        on<EntityEvent.SetData> {
+            if (!DungeonUtils.inBoss || !DungeonUtils.isFloor(5)) return@on
             schedule((mc.player?.getEffect(MobEffects.BLINDNESS)?.duration ?: 0) - 20) {
-                currentLivid.entity = (mc.level?.getEntity(id) as? Player)?.takeIf { it.name.string == "${currentLivid.entityName} Livid" } ?: return@schedule
+                currentLivid.entity = (entity as? Player)?.takeIf { it.name.string == "${currentLivid.entityName} Livid" } ?: return@schedule
             }
         }
 

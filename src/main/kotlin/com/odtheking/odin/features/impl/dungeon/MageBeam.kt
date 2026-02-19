@@ -3,18 +3,17 @@ package com.odtheking.odin.features.impl.dungeon
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.ColorSetting
 import com.odtheking.odin.clickgui.settings.impl.NumberSetting
+import com.odtheking.odin.events.ParticleAddEvent
 import com.odtheking.odin.events.RenderEvent
 import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.WorldEvent
 import com.odtheking.odin.events.core.on
-import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.handlers.schedule
 import com.odtheking.odin.utils.render.drawLine
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.core.particles.ParticleTypes
-import net.minecraft.network.protocol.game.ClientboundLevelParticlesPacket
 import net.minecraft.world.phys.Vec3
 import java.util.concurrent.CopyOnWriteArrayList
 
@@ -66,24 +65,23 @@ object MageBeam : Module(
     private var currentTick = 0
 
     init {
-        onReceive<ClientboundLevelParticlesPacket> {
-            if (!DungeonUtils.inDungeons || particle != ParticleTypes.FIREWORK) return@onReceive
+        on<ParticleAddEvent> {
+            if (!DungeonUtils.inDungeons || particle != ParticleTypes.FIREWORK) return@on
 
             val recentBeam = activeBeams.lastOrNull()
-            val newPoint = Vec3(x, y, z)
 
-            if (recentBeam != null && (currentTick - recentBeam.lastUpdateTick) < 1 && isPointInBeamDirection(recentBeam.points, newPoint)) {
-                recentBeam.points.add(newPoint)
+            if (recentBeam != null && (currentTick - recentBeam.lastUpdateTick) < 1 && isPointInBeamDirection(recentBeam.points, pos)) {
+                recentBeam.points.add(pos)
                 recentBeam.lastUpdateTick = currentTick
             } else {
-                val newBeam = MageBeamData(CopyOnWriteArrayList<Vec3>().apply { add(newPoint) }, currentTick)
+                val newBeam = MageBeamData(CopyOnWriteArrayList<Vec3>().apply { add(pos) }, currentTick)
                 activeBeams.add(newBeam)
                 schedule(duration, true) {
                     activeBeams.remove(newBeam)
                 }
             }
 
-            if (hideParticles) it.cancel()
+            if (hideParticles) cancel()
         }
 
         on<TickEvent.Server> {

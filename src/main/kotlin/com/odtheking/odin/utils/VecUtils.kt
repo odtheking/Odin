@@ -21,6 +21,9 @@ operator fun BlockPos.component3(): Int = z
 
 operator fun Vec3.unaryMinus(): Vec3 = Vec3(-x, -y, -z)
 
+fun Vec3.toBlockPos(): BlockPos =
+    BlockPos(floor(x).toInt(), floor(y).toInt(), floor(z).toInt())
+
 fun Vec3.floorVec(): Vec3 =
     Vec3(floor(x), floor(y), floor(z))
 

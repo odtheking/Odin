@@ -1,9 +1,10 @@
 package com.odtheking.odin.utils
 
 import com.odtheking.odin.OdinMod.mc
+import com.odtheking.odin.events.GameTimeUpdateEvent
+import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
 import net.minecraft.Util
-import net.minecraft.network.protocol.game.ClientboundSetTimePacket
 import net.minecraft.network.protocol.ping.ClientboundPongResponsePacket
 import kotlin.math.min
 
@@ -19,7 +20,7 @@ object ServerUtils {
         private set
 
     init {
-        onReceive<ClientboundSetTimePacket> {
+        on<GameTimeUpdateEvent> {
             if (prevTime != 0L)
                 averageTps = (20000f / (System.currentTimeMillis() - prevTime + 1)).coerceIn(0f, 20f)
 

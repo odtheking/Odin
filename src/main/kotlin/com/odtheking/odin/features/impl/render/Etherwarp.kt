@@ -5,10 +5,10 @@ import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.ColorSetting
 import com.odtheking.odin.clickgui.settings.impl.DropdownSetting
 import com.odtheking.odin.clickgui.settings.impl.SelectorSetting
+import com.odtheking.odin.events.PlaySoundEvent
 import com.odtheking.odin.events.RenderEvent
 import com.odtheking.odin.events.core.EventPriority
 import com.odtheking.odin.events.core.on
-import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.events.core.onSend
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.*
@@ -20,7 +20,6 @@ import net.minecraft.core.BlockPos
 import net.minecraft.core.SectionPos
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.nbt.CompoundTag
-import net.minecraft.network.protocol.game.ClientboundSoundPacket
 import net.minecraft.network.protocol.game.ServerboundMovePlayerPacket
 import net.minecraft.network.protocol.game.ServerboundUseItemPacket
 import net.minecraft.sounds.SoundEvents
@@ -57,10 +56,10 @@ object Etherwarp : Module(
     private var cachedEtherData: CompoundTag? = null
 
     init {
-        onReceive<ClientboundSoundPacket> {
-            if (!sounds || sound.value() != SoundEvents.ENDER_DRAGON_HURT || volume != 1f || pitch != 0.53968257f) return@onReceive
+        on<PlaySoundEvent> {
+            if (!sounds || !sound.equalsOneOf(SoundEvents.ENDER_DRAGON_HURT) || volume != 1f || pitch != 0.53968257f) return@on
             playSoundSettings(soundSettings())
-            it.cancel()
+            cancel()
         }
 
         on<RenderEvent.Extract> (EventPriority.LOW) {
