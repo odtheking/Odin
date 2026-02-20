@@ -44,6 +44,7 @@ object OdinMod : ClientModInitializer {
      */
     val configFile: File = File(mc.gameDirectory, "config/odin/").apply {
         try {
+            if (isFile()) delete() // Delete old bugged files that prevent creating the directory
             if (!exists()) mkdirs()
         } catch (e: Exception) {
             println("Error initializing module config\n${e.message}")
