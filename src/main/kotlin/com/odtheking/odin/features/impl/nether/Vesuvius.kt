@@ -12,6 +12,9 @@ import com.odtheking.odin.utils.render.text
 import net.minecraft.ChatFormatting
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.network.chat.Component
+import net.minecraft.network.chat.Style
+import net.minecraft.network.chat.TextColor
+import java.util.Optional
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket
 import net.minecraft.network.protocol.game.ClientboundOpenScreenPacket
 import net.minecraft.world.item.ItemStack
@@ -22,6 +25,7 @@ object Vesuvius : Module(
     description = "Enhances the Vesuvius chest menu with profit calculations and highlights."
 ) {
     private val hideClaimed by BooleanSetting("Hide Claimed", true, desc = "Hides chests that have already been claimed.")
+    private val useSalvagePrices by BooleanSetting("Use Salvaged", false, desc = "Uses the essence you would get by salvaging the piece instead.")
 
     private val vesuviusHud by HUD("Croesus Chest HUD", "Displays all chest contents with prices, sorted by profit.") {
         if (!it) return@HUD 0 to 0
@@ -35,6 +39,7 @@ object Vesuvius : Module(
     private val pearlRegex = Regex("^Heavy Pearl x(\\d+)$")
     private val chestRegex = Regex("^((Free|Paid) Chest Chest)|(Kuudra - .+)$")
     private val uselessLinesRegex = Regex("^Contents|Cost|Click to open!|FREE|Already opened!|Can't open another chest!|Paid Chest|")
+    private val salvageItemsRegex = Regex("^Molten|Boots|Chestplate|Helmet|Cloak|Aurora Staff|Hollow Wand")
 
     private val ultimateEnchants = setOf(
         "Fatal Tempo", "Inferno"
@@ -78,7 +83,24 @@ object Vesuvius : Module(
         }
     }
 
-    private fun parseItemValue(item: String): Double? {
+    private fun parseItemValue(component: Component): Double? {
+
+        var starCount = 0
+        val salvage = salvageItemsRegex.containsMatchIn(component.string)
+
+        component.visit({ style, str ->
+            val count = str.count { it == '✪' }
+            if (count > 0) {
+                when (style.color) {
+                    TextColor.fromLegacyFormat(ChatFormatting.GOLD) -> starCount += count
+                    TextColor.fromLegacyFormat(ChatFormatting.LIGHT_PURPLE) -> starCount += count * 2
+                    }
+                }
+            Optional.empty<Unit>()
+            }, Style.EMPTY)
+
+        val item = component.string.replace("✪", "").trim()
+
         previewEnchantedBookRegex.find(item)?.destructured?.let { (name, level) ->
             val ult = if (name in ultimateEnchants) "ULTIMATE_" else ""
             return cachedPrices["ENCHANTED_BOOK-$ult${name.uppercase().replace(" ", "_")}-${romanToInt(level)}"]
@@ -102,6 +124,12 @@ object Vesuvius : Module(
         pearlRegex.find(item)?.destructured?.let { (quantity) ->
             val price = cachedPrices["HEAVY_PEARL"] ?: 0.0
             return price * quantity.toDouble()
+        }
+
+        if (useSalvagePrices && salvage) {
+            val price = cachedPrices["ESSENCE_CRIMSON"] ?: 0.0
+            val quantity = starCountToEssence[starCount] ?: 0.0
+            return price * quantity
         }
 
         itemReplacements[item]?.let { itemId -> return cachedPrices[itemId] }
@@ -136,7 +164,7 @@ object Vesuvius : Module(
 
             if (string.matches(uselessLinesRegex)) return@forEach
 
-            val price = parseItemValue(string.replace("✪", "").trim()) ?: 0.0
+            val price = parseItemValue(component) ?: 0.0
                 profit += price
                 chestItems.add(ChestItem(component, price))
             }
@@ -182,6 +210,17 @@ object Vesuvius : Module(
     private val itemReplacements = mapOf(
         "Hellstorm Wand" to "HELLSTORM_STAFF",
         "Aurora Staff" to "RUNIC_STAFF",
+    )
+
+    private val starCountToEssence = mapOf(
+        0 to 120.0,
+        1 to 138.0,
+        2 to 158.0,
+        3 to 182.0,
+        4 to 210.0,
+        5 to 240.0,
+        6 to 272.0,
+        7 to 308.0
     )
 
     private val sampleChestData = ChestData(
