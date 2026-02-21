@@ -209,7 +209,7 @@ object Croesus : Module(
 
         itemReplacements[item]?.let { itemId -> return cachedPrices[itemId] }
 
-        return cachedPrices[item.uppercase().replace(" ", "_")]
+        return cachedPrices[item.uppercase().replace(" -", "").replace(" ", "_")]
     }
 
     private fun handleChestContents(items: List<ItemStack>) {

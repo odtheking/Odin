@@ -64,7 +64,7 @@ object Etherwarp : Module(
         }
 
         on<RenderEvent.Extract> (EventPriority.LOW) {
-            if (mc.player?.isShiftKeyDown == false || mc.screen != null || !render) return@on
+            if (mc.screen != null || !render) return@on
 
             val mainHandItem = mc.player?.mainHandItem ?: return@on
 
@@ -73,7 +73,7 @@ object Etherwarp : Module(
                 cachedEtherData = mainHandItem.isEtherwarpItem()
             }
 
-            if (cachedEtherData == null) return@on
+            if (cachedEtherData == null || (mc.player?.isShiftKeyDown == false && cachedEtherData?.itemId != "ETHERWARP_CONDUIT")) return@on
 
             etherPos = getEtherPos(
                 if (useServerPosition) mc.player?.oldPosition() else mc.player?.position(),
@@ -90,7 +90,7 @@ object Etherwarp : Module(
         }
 
         onSend<ServerboundUseItemPacket> {
-            if (!LocationUtils.isCurrentArea(Island.SinglePlayer) || mc.player?.isShiftKeyDown == false || cachedEtherData == null) return@onSend
+            if (!LocationUtils.isCurrentArea(Island.SinglePlayer)) return@onSend
 
             etherPos?.pos?.let {
                 if (etherPos?.succeeded == false) return@onSend

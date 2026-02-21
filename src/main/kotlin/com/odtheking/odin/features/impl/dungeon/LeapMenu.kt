@@ -27,6 +27,7 @@ object LeapMenu : Module(
     key = GLFW.GLFW_KEY_UNKNOWN
 ) {
     val type by SelectorSetting("Sorting", "Odin Sorting", arrayListOf("Odin Sorting", "A-Z Class", "A-Z Name", "Custom sorting", "No Sorting"), desc = "How to sort the leap menu. /od leaporder to configure custom sorting.")
+    private val onRelease by BooleanSetting("On Key Release", false, desc = "Whether to trigger the leap on key release instead of key press.")
     private val onlyClass by BooleanSetting("Only Classes", false, desc = "Renders classes instead of names.")
     private val colorStyle by BooleanSetting("Color Style", false, desc = "Which color style to use.")
     private val backgroundColor by ColorSetting("Background Color", Colors.gray38.withAlpha(0.75f), true, desc = "Color of the background of the leap menu.").withDependency { !colorStyle }
@@ -104,18 +105,11 @@ object LeapMenu : Module(
         }
 
         on<GuiEvent.MouseClick> {
-            val chest = (screen as? AbstractContainerScreen<*>) ?: return@on
-            if (chest.title?.string?.equalsOneOf("Spirit Leap", "Teleport to Player") == false || leapTeammates.isEmpty() || leapTeammates.all { it == EMPTY }) return@on
+            if (!onRelease) mouseTrigger()
+        }
 
-            val quadrant = getQuadrant()
-            if ((type.equalsOneOf(1,2,3)) && leapTeammates.size < quadrant) return@on
-
-            val playerToLeap = leapTeammates[quadrant - 1]
-            if (playerToLeap == EMPTY) return@on
-            if (playerToLeap.isDead) return@on modMessage("This player is dead, can't leap.")
-
-            leapTo(playerToLeap.name, chest)
-            cancel()
+        on<GuiEvent.MouseRelease> {
+            if (onRelease) mouseTrigger()
         }
 
         on<GuiEvent.KeyPress> {
@@ -140,6 +134,21 @@ object LeapMenu : Module(
             if (!leapAnnounce || !DungeonUtils.inDungeons) return@on
             leapedRegex.find(value)?.groupValues?.get(1)?.let { sendCommand("pc Leaped to ${it}!") }
         }
+    }
+
+    fun GuiEvent.mouseTrigger() {
+        val chest = (screen as? AbstractContainerScreen<*>) ?: return
+        if (chest.title?.string?.equalsOneOf("Spirit Leap", "Teleport to Player") == false || leapTeammates.isEmpty() || leapTeammates.all { it == EMPTY }) return
+
+        val quadrant = getQuadrant()
+        if ((type.equalsOneOf(1,2,3)) && leapTeammates.size < quadrant) return
+
+        val playerToLeap = leapTeammates[quadrant - 1]
+        if (playerToLeap == EMPTY) return
+        if (playerToLeap.isDead) return modMessage("This player is dead, can't leap.")
+
+        leapTo(playerToLeap.name, chest)
+        cancel()
     }
 
     private fun leapTo(name: String, screenHandler: AbstractContainerScreen<*>) {
