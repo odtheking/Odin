@@ -24,7 +24,7 @@ import kotlin.math.floor
  */
 class Panel(private val category: Category) {
 
-    val panelSetting get() = ClickGUIModule.panelSetting[category.name] ?: throw IllegalStateException("Panel setting for category $category is not initialized")
+    val panelSetting = ClickGUIModule.panelSetting[category.name] ?: throw IllegalStateException("Panel setting for category $category is not initialized")
     val moduleButtons = ModuleManager.modulesByCategory[category]
         ?.sortedByDescending { NVGRenderer.textWidth(it.name, 16f, NVGRenderer.defaultFont) }
         ?.map { ModuleButton(it, this@Panel) } ?: listOf()

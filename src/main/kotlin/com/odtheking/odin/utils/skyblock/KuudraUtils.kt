@@ -68,7 +68,7 @@ object KuudraUtils {
                                 buildDonePercentage = it.groupValues[1].toIntOrNull() ?: 0
                             }
                         }
-                        if (phase != 1 || entity.name.string != "✓ SUPPLIES RECEIVED ✓") return@forEach
+                        if (phase != 1 || entity.name?.string != "✓ SUPPLIES RECEIVED ✓") return@forEach
                         val x = entity.x.toInt()
                         val z = entity.z.toInt()
                         when (x) {

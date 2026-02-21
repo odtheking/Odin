@@ -1,6 +1,5 @@
 package com.odtheking.odin.features.impl.dungeon.dungeonwaypoints
 
-import com.odtheking.odin.config.DungeonWaypointConfig
 import com.odtheking.odin.events.SecretPickupEvent
 import com.odtheking.odin.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.DungeonWaypoint
 import com.odtheking.odin.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.WaypointType
@@ -60,7 +59,7 @@ object SecretWaypoints {
     }
 
     fun resetSecrets() {
-        DungeonWaypointConfig.waypoints.values.forEach { roomWaypoints ->
+        DungeonWaypoints.allWaypoints.values.forEach { roomWaypoints ->
             roomWaypoints.forEach { it.isClicked = false }
         }
 

@@ -2,19 +2,12 @@ package com.odtheking.odin.config
 
 import com.google.gson.*
 import com.google.gson.reflect.TypeToken
-import com.odtheking.odin.OdinMod
-import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints
 import com.odtheking.odin.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.DungeonWaypoint
 import com.odtheking.odin.utils.Color
-import com.odtheking.odin.utils.modMessage
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import net.minecraft.core.BlockPos
 import net.minecraft.world.phys.AABB
 import java.io.ByteArrayOutputStream
-import java.io.File
-import java.io.IOException
 import java.lang.reflect.Type
 import java.util.zip.GZIPInputStream
 import java.util.zip.GZIPOutputStream
@@ -26,54 +19,11 @@ object DungeonWaypointConfig {
         .registerTypeAdapter(DungeonWaypoint::class.java, DungeonWaypointDeserializer())
         .setPrettyPrinting().create()
 
-    var waypoints: MutableMap<String, MutableList<DungeonWaypoint>> = mutableMapOf()
-
-    private val configFile = File(mc.gameDirectory, "config/odin/dungeon-waypoint-config.json").apply {
-        try {
-            parentFile?.mkdirs()
-            createNewFile()
-        } catch (_: Exception) {
-            println("Error creating dungeon waypoints config file.")
-        }
-    }
-
-    fun loadConfig() {
-        try {
-            with(configFile.bufferedReader().use { it.readText() }) {
-                if (isEmpty()) return
-
-                waypoints = gson.fromJson(
-                    this,
-                    object : TypeToken<MutableMap<String, MutableList<DungeonWaypoint>>>() {}.type
-                )
-
-                // Migrate old data to new format by saving immediately
-                // This ensures that after first load, all data is in the new format
-                saveConfig()
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
-
-    fun saveConfig() {
-        OdinMod.scope.launch(Dispatchers.IO) {
-            try {
-                configFile.bufferedWriter().use {
-                    it.write(gson.toJson(waypoints))
-                }
-            } catch (e: IOException) {
-                e.printStackTrace()
-            }
-        }
-    }
-
-    fun encodeWaypoints(waypointsMap: MutableMap<String, MutableList<DungeonWaypoint>> = waypoints): String? {
+    fun encodeWaypoints(waypointsMap: MutableMap<String, MutableList<DungeonWaypoint>>): String? {
         return try {
             Base64.encode(compress(gson.toJson(waypointsMap)))
         } catch (e: Exception) {
             e.printStackTrace()
-            modMessage("Error encoding waypoints. ${e.message}")
             null
         }
     }
@@ -105,7 +55,7 @@ object DungeonWaypointConfig {
         }
     }
 
-    private class DungeonWaypointDeserializer : JsonDeserializer<DungeonWaypoint> {
+    internal class DungeonWaypointDeserializer : JsonDeserializer<DungeonWaypoint> {
         override fun deserialize(json: JsonElement, type: Type, context: JsonDeserializationContext): DungeonWaypoint {
             val jsonObj = json.asJsonObject
 
@@ -133,7 +83,7 @@ object DungeonWaypointConfig {
         }
     }
 
-    private class AABBSerializer : JsonSerializer<AABB>, JsonDeserializer<AABB> {
+    internal class AABBSerializer : JsonSerializer<AABB>, JsonDeserializer<AABB> {
         override fun deserialize(json: JsonElement, type: Type, context: JsonDeserializationContext): AABB {
             val jsonObj = json.asJsonObject
 

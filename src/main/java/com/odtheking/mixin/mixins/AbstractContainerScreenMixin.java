@@ -53,6 +53,12 @@ public class AbstractContainerScreenMixin {
             cir.cancel();
     }
 
+    @Inject(method = "mouseReleased", at = @At("HEAD"), cancellable = true)
+    public void onMouseReleased(MouseButtonEvent mouseButtonEvent, CallbackInfoReturnable<Boolean> cir) {
+        if (new GuiEvent.MouseRelease((Screen) (Object) this, mouseButtonEvent).postAndCatch())
+            cir.cancel();
+    }
+
     @Inject(method = "keyPressed", at = @At("HEAD"), cancellable = true)
     public void onKeyPressed(KeyEvent input, CallbackInfoReturnable<Boolean> cir) {
         if (new GuiEvent.KeyPress((Screen) (Object) this, input).postAndCatch()) cir.cancel();

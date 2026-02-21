@@ -24,7 +24,7 @@ object TerminalSolver : Module(
     description = "Renders solution for terminals in floor 7."
 ) {
     val renderType by SelectorSetting("Mode", "Normal", arrayListOf("Normal", "Custom GUI"), desc = "How the terminal solver should render.")
-    val customTermSize by NumberSetting("Term Size", 1f, 1f, 3f, 0.1f, desc = "The size of the custom terminal GUI.").withDependency { renderType == 1 }
+    val customTermSize by NumberSetting("Term Size", 2f, 1f, 3f, 0.1f, desc = "The size of the custom terminal GUI.").withDependency { renderType == 1 }
     private val normalTermSize by NumberSetting("Normal Term Size", 3, 1, 5, 1, desc = "The GUI scale increase for normal terminal GUI.").withDependency { renderType != 1 }
     val roundness by NumberSetting("Roundness", 9f, 0f, 15f, 1f, desc = "The roundness of the custom terminal gui.").withDependency { renderType == 1 }
     val gap by NumberSetting("Gap", 5f, 0f, 15f, 1f, desc = "The gap between the slots in the custom terminal gui.").withDependency { renderType == 1 }
@@ -45,18 +45,18 @@ object TerminalSolver : Module(
 
     val panesColor by ColorSetting("Panes", Colors.MINECRAFT_GREEN, true, desc = "Color of the panes terminal solver.").withDependency { showColors }
 
-    val rubixColor1 by ColorSetting("Rubix 1", Colors.MINECRAFT_DARK_AQUA, true, desc = "Color of the rubix terminal solver for 1 click.").withDependency { showColors }
-    val rubixColor2 by ColorSetting("Rubix 2", Colors.MINECRAFT_DARK_AQUA.darker(), true, desc = "Color of the rubix terminal solver for 2 click.").withDependency { showColors }
-    val oppositeRubixColor1 by ColorSetting("Rubix -1", Colors.MINECRAFT_GOLD, true, desc = "Color of the rubix terminal solver for -1 click.").withDependency { showColors }
-    val oppositeRubixColor2 by ColorSetting("Rubix -2", Colors.MINECRAFT_GOLD.darker(), true, desc = "Color of the rubix terminal solver for -2 click.").withDependency { showColors }
+    val rubixColor1 by ColorSetting("Rubix 1", Colors.MINECRAFT_GREEN, true, desc = "Color of the rubix terminal solver for 1 click.").withDependency { showColors }
+    val rubixColor2 by ColorSetting("Rubix 2", Colors.MINECRAFT_GREEN.darker(), true, desc = "Color of the rubix terminal solver for 2 click.").withDependency { showColors }
+    val oppositeRubixColor1 by ColorSetting("Rubix -1", Colors.MINECRAFT_DARK_RED, true, desc = "Color of the rubix terminal solver for -1 click.").withDependency { showColors }
+    val oppositeRubixColor2 by ColorSetting("Rubix -2", Colors.MINECRAFT_DARK_RED.darker(), true, desc = "Color of the rubix terminal solver for -2 click.").withDependency { showColors }
 
     val orderColor by ColorSetting("Order 1", Colors.MINECRAFT_GREEN, true, desc = "Color of the order terminal solver for 1st item.").withDependency { showColors }
     val orderColor2 by ColorSetting("Order 2", Colors.MINECRAFT_GREEN.darker(), true, desc = "Color of the order terminal solver for 2nd item.").withDependency { showColors }
     val orderColor3 by ColorSetting("Order 3", Colors.MINECRAFT_GREEN.darker().darker(), true, desc = "Color of the order terminal solver for 3rd item.").withDependency { showColors }
 
-    val startsWithColor by ColorSetting("Starts With", Colors.MINECRAFT_DARK_AQUA, true, desc = "Color of the starts with terminal solver.").withDependency { showColors }
+    val startsWithColor by ColorSetting("Starts With", Colors.MINECRAFT_GREEN, true, desc = "Color of the starts with terminal solver.").withDependency { showColors }
 
-    val selectColor by ColorSetting("Select", Colors.MINECRAFT_DARK_AQUA, true, desc = "Color of the select terminal solver.").withDependency { showColors }
+    val selectColor by ColorSetting("Select", Colors.MINECRAFT_GREEN, true, desc = "Color of the select terminal solver.").withDependency { showColors }
 
     val melodyColumColor by ColorSetting("Melody Column", Colors.MINECRAFT_DARK_PURPLE, true, desc = "Color of the colum indicator for melody.").withDependency { showColors && !cancelMelodySolver }
     val melodyPointerColor by ColorSetting("Melody Pointer", Colors.MINECRAFT_GREEN, true, desc = "Color of the location for pressing for melody.").withDependency { showColors && !cancelMelodySolver }
@@ -67,7 +67,6 @@ object TerminalSolver : Module(
 
     init {
         on<GuiEvent.SlotClick> (EventPriority.HIGH) {
-            if (!renderMelody) return@on
             val term = TerminalUtils.currentTerm ?: return@on
 
             if (
@@ -176,7 +175,6 @@ object TerminalSolver : Module(
         on<GuiEvent.DrawTooltip> {
             if (cancelToolTip && TerminalUtils.currentTerm != null) cancel()
         }
-
 
         on<GuiEvent.DrawBackground> {
             if (TerminalUtils.currentTerm == null || renderType != 1 || !renderMelody) return@on

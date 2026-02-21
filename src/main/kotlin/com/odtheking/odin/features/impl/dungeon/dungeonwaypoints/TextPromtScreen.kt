@@ -1,44 +1,76 @@
 package com.odtheking.odin.features.impl.dungeon.dungeonwaypoints
 
 import com.odtheking.odin.OdinMod.mc
-import com.odtheking.odin.utils.Colors
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.Button
 import net.minecraft.client.gui.components.EditBox
+import net.minecraft.client.gui.components.StringWidget
+import net.minecraft.client.gui.layouts.FrameLayout
+import net.minecraft.client.gui.layouts.LinearLayout
 import net.minecraft.client.gui.screens.Screen
-import net.minecraft.client.input.CharacterEvent
 import net.minecraft.client.input.KeyEvent
+import net.minecraft.network.chat.CommonComponents
 import net.minecraft.network.chat.Component
 import org.lwjgl.glfw.GLFW
 
-object TextPromptScreen : Screen(Component.literal("Enter Waypoint Text")) {
+class TextPromptScreen(val promptTitle: String) : Screen(Component.literal(promptTitle)) {
     private lateinit var textField: EditBox
     private var callback: (String) -> Unit = {}
+    private lateinit var layout: LinearLayout
 
     override fun init() {
         super.init()
 
-        val fieldWidth = 200
-        val fieldHeight = 20
+        layout = LinearLayout.vertical().spacing(8)
+        layout.defaultCellSetting().alignHorizontallyCenter()
+
+        layout.addChild(StringWidget(Component.literal("§6§l$promptTitle"), font))
+
         textField = EditBox(
-            font, width / 2 - fieldWidth / 2, height / 2 - 10,
-            fieldWidth, fieldHeight, Component.literal("Enter text")
+            font, 0, 0,
+            200, 20, Component.literal("Enter text")
         )
+        textField.setMaxLength(32)
+        layout.addChild(textField)
 
-        val submitButton = Button.builder(Component.literal("Submit")) { _ ->
+        val buttonLayout = layout.addChild(LinearLayout.horizontal().spacing(8))
+        buttonLayout.defaultCellSetting().paddingTop(8)
+
+        buttonLayout.addChild(Button.builder(CommonComponents.GUI_DONE) { _ ->
             callback.invoke(textField.value)
+        }.width(100).build())
+
+        buttonLayout.addChild(Button.builder(CommonComponents.GUI_CANCEL) { _ ->
             mc.setScreen(null)
-        }.bounds(width / 2 - 50, height / 2 + 20, 100, 20).build()
+        }.width(100).build())
 
-        addRenderableWidget(textField)
-        addRenderableWidget(submitButton)
+        layout.visitWidgets(this::addRenderableWidget)
+        repositionElements()
 
-        focused = textField
+        setInitialFocus(textField)
+    }
+
+    override fun repositionElements() {
+        layout.arrangeElements()
+        FrameLayout.centerInRectangle(layout, rectangle)
     }
 
     override fun render(context: GuiGraphics, mouseX: Int, mouseY: Int, delta: Float) {
+        renderBackground(context, mouseX, mouseY, delta)
+
+        val dialogWidth = 300
+        val dialogHeight = 140
+        val dialogX = (width - dialogWidth) / 2
+        val dialogY = (height - dialogHeight) / 2
+
+        context.fill(dialogX, dialogY, dialogX + dialogWidth, dialogY + dialogHeight, 0xE0101010.toInt())
+
+        context.fill(dialogX - 1, dialogY - 1, dialogX + dialogWidth + 1, dialogY, 0xFF404040.toInt())
+        context.fill(dialogX - 1, dialogY + dialogHeight, dialogX + dialogWidth + 1, dialogY + dialogHeight + 1, 0xFF404040.toInt())
+        context.fill(dialogX - 1, dialogY, dialogX, dialogY + dialogHeight, 0xFF404040.toInt())
+        context.fill(dialogX + dialogWidth, dialogY, dialogX + dialogWidth + 1, dialogY + dialogHeight, 0xFF404040.toInt())
+
         super.render(context, mouseX, mouseY, delta)
-        context.drawCenteredString(font, title, width / 2, height / 2 - 40, Colors.WHITE.rgba)
     }
 
     override fun keyPressed(input: KeyEvent): Boolean {
@@ -49,16 +81,12 @@ object TextPromptScreen : Screen(Component.literal("Enter Waypoint Text")) {
 
         if (input.key == GLFW.GLFW_KEY_ENTER || input.key == GLFW.GLFW_KEY_KP_ENTER) {
             callback.invoke(textField.value)
-            mc.setScreen(null)
             return true
         }
 
         return super.keyPressed(input)
     }
 
-    override fun charTyped(input: CharacterEvent): Boolean {
-        return super.charTyped(input)
-    }
 
     override fun isPauseScreen(): Boolean = false
 

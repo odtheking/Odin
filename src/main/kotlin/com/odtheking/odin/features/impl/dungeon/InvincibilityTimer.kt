@@ -53,7 +53,7 @@ object InvincibilityTimer : Module(
 
             if (type == InvincibilityType.BONZO && mc.player?.getItemBySlot(EquipmentSlot.HEAD)?.itemId?.equalsOneOf("BONZO_MASK", "STARRED_BONZO_MASK") == true ||
                 type == InvincibilityType.SPIRIT && mc.player?.getItemBySlot(EquipmentSlot.HEAD)?.itemId?.equalsOneOf("SPIRIT_MASK", "STARRED_SPIRIT_MASK") == true) {
-                fill(13, y, 14, y + 8, equippedMaskColor.rgba)
+                fill(14, y, 15, y + 9, equippedMaskColor.rgba)
             }
             textDim(
                 text = when {

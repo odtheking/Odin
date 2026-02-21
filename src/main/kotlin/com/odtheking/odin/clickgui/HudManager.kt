@@ -22,6 +22,16 @@ object HudManager : Screen(Component.literal("HUD Manager")) {
     private var deltaX = 0f
     private var deltaY = 0f
 
+    override fun init() {
+        for (hud in hudSettingsCache) {
+            if (hud.isEnabled) {
+                hud.value.x = hud.value.x.coerceIn(0, (mc.window.screenWidth - (hud.value.width * hud.value.scale)).toInt())
+                hud.value.y = hud.value.y.coerceIn(0, (mc.window.screenHeight - (hud.value.height * hud.value.scale)).toInt())
+            }
+        }
+        super.init()
+    }
+
     override fun render(context: GuiGraphics, mouseX: Int, mouseY: Int, deltaTicks: Float) {
         super.render(context, mouseX, mouseY, deltaTicks)
 
