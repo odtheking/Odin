@@ -224,8 +224,6 @@ class WaypointPackSelectorScreen(private val parent: Screen?) : Screen(Component
     }
 
     override fun render(context: GuiGraphics, mouseX: Int, mouseY: Int, delta: Float) {
-        renderBackground(context, mouseX, mouseY, delta)
-
         if (loading) {
             context.drawCenteredString(font, "§7Loading...", width / 2, height / 2, Colors.WHITE.rgba)
             return

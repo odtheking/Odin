@@ -31,4 +31,8 @@ object CommandKeybinds : Module(
         if (!enabled || !LocationUtils.isInSkyblock) return@onPress
         sendCommand("warp dungeon_hub")
     }
+    private val potion by KeybindSetting("Potion Bag", GLFW.GLFW_KEY_UNKNOWN, desc = "Open the potion bag.").onPress {
+        if (!enabled || !LocationUtils.isInSkyblock) return@onPress
+        sendCommand("potionbag")
+    }
 }
