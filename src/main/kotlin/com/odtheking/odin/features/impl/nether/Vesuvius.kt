@@ -39,7 +39,7 @@ object Vesuvius : Module(
     private val pearlRegex = Regex("^Heavy Pearl x(\\d+)$")
     private val chestRegex = Regex("^((Free|Paid) Chest Chest)|(Kuudra - .+)$")
     private val uselessLinesRegex = Regex("^Contents|Cost|Click to open!|FREE|Already opened!|Can't open another chest!|Paid Chest|")
-    private val salvageItemsRegex = Regex("^Molten|Boots|Chestplate|Helmet|Cloak|Aurora Staff|Hollow Wand")
+    private val salvageItemsRegex = Regex("^Boots|Chestplate|Helmet|Cloak|Aurora Staff|Hollow Wand")
 
     private val ultimateEnchants = setOf(
         "Fatal Tempo", "Inferno"
@@ -100,6 +100,10 @@ object Vesuvius : Module(
             }, Style.EMPTY)
 
         val item = component.string.replace("✪", "").trim()
+
+        if (item.contains("Molten") && useSalvagePrices) {
+            return (cachedPrices["ESSENCE_CRIMSON"] ?: 0.0) * 600.0
+        }
 
         previewEnchantedBookRegex.find(item)?.destructured?.let { (name, level) ->
             val ult = if (name in ultimateEnchants) "ULTIMATE_" else ""
