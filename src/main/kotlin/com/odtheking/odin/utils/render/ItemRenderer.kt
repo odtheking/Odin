@@ -83,7 +83,7 @@ class ItemStateRenderer(vertexConsumers: MultiBufferSource.BufferSource)
     }
 
     companion object {
-        fun draw(context: GuiGraphics, item: ItemStack, x: Int, y: Int) {
+        fun GuiGraphics.drawItemStack(item: ItemStack, x: Int, y: Int) {
             if (item.isEmpty) return
 
             val tracking = TrackingItemStackRenderState()
@@ -92,12 +92,12 @@ class ItemStateRenderer(vertexConsumers: MultiBufferSource.BufferSource)
             val state = State(
                 GuiItemRenderState(
                     item.item.name.string,
-                    Matrix3x2f(context.pose()),
+                    Matrix3x2f(pose()),
                     tracking, x, y,
-                    context.scissorStack.peek()
+                    scissorStack.peek()
                 )
             )
-            context.guiRenderState.submitPicturesInPictureState(state)
+            guiRenderState.submitPicturesInPictureState(state)
         }
     }
 }

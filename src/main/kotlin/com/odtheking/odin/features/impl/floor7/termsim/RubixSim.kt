@@ -1,6 +1,5 @@
 package com.odtheking.odin.features.impl.floor7.termsim
 
-import com.odtheking.odin.events.TerminalEvent
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalTypes
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalUtils
 import net.minecraft.core.component.DataComponents
@@ -38,7 +37,7 @@ object RubixSim : TermSimGUI(
 
         playTermSimSound()
         if (indices.all { guiInventorySlots[it]?.item?.item == guiInventorySlots[12]?.item?.item })
-            TerminalUtils.lastTermOpened?.let { TerminalEvent.Solve(it).postAndCatch() }
+            TerminalUtils.lastTermOpened?.onComplete()
     }
 
     private fun getPane(): ItemStack {

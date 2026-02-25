@@ -76,5 +76,5 @@ object TerminalSounds : Module(
         lastPlayed = System.currentTimeMillis()
     }
 
-    private inline val shouldReplaceSounds get() = (TerminalUtils.currentTerm != null && clickSounds)
+    private inline val shouldReplaceSounds get() = TerminalUtils.currentTerm != null && clickSounds
 }

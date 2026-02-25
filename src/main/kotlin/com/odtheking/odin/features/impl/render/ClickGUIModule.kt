@@ -23,6 +23,7 @@ import net.minecraft.network.chat.HoverEvent
 import org.lwjgl.glfw.GLFW
 import java.net.URI
 import kotlin.math.max
+import kotlin.math.round
 
 @AlwaysActive
 object ClickGUIModule : Module(
@@ -56,7 +57,10 @@ object ClickGUIModule : Module(
 
     fun resetPositions() {
         Category.categories.entries.forEachIndexed { index, (categoryName, _) ->
-            panelSetting[categoryName] = PanelData(10f + 260f * index, 10f, true)
+            val setting = panelSetting.getOrPut(categoryName) { PanelData() }
+            setting.x = 10f + 260f * index
+            setting.y = 10f
+            setting.extended = true
         }
     }
 
@@ -94,9 +98,9 @@ object ClickGUIModule : Module(
     }
 
     fun getStandardGuiScale(): Float {
-        val verticalScale = (mc.window.height.toFloat() / 1080f) / NVGRenderer.devicePixelRatio()
-        val horizontalScale = (mc.window.width.toFloat() / 1920f) / NVGRenderer.devicePixelRatio()
-        return max(verticalScale, horizontalScale).coerceIn(1f, 3f)
+        val verticalScale = (mc.window.screenHeight.toFloat() / 1080f) / NVGRenderer.devicePixelRatio()
+        val horizontalScale = (mc.window.screenWidth.toFloat() / 1920f) / NVGRenderer.devicePixelRatio()
+        return round(max(verticalScale, horizontalScale).coerceIn(1f, 3f) * 10f) / 10f
     }
 
     private suspend fun checkNewerVersion(currentVersion: String): String? {

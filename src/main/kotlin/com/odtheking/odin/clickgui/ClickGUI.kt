@@ -9,8 +9,8 @@ import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.ui.HoverHandler
 import com.odtheking.odin.utils.ui.animations.EaseOutAnimation
+import com.odtheking.odin.utils.ui.rendering.NVGPIPRenderer
 import com.odtheking.odin.utils.ui.rendering.NVGRenderer
-import com.odtheking.odin.utils.ui.rendering.NVGSpecialRenderer
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.screens.Screen
 import net.minecraft.client.input.CharacterEvent
@@ -36,15 +36,15 @@ object ClickGUI : Screen(Component.literal("Click GUI")) {
     val gray26 = Color(26, 26, 26)
 
     override fun render(context: GuiGraphics, mouseX: Int, mouseY: Int, deltaTicks: Float) {
-        NVGSpecialRenderer.draw(context, 0, 0, context.guiWidth(), context.guiHeight()) {
+        NVGPIPRenderer.draw(context, 0, 0, context.guiWidth(), context.guiHeight()) {
             val scaledMouseX = odinMouseX / ClickGUIModule.getStandardGuiScale()
             val scaledMouseY = odinMouseY / ClickGUIModule.getStandardGuiScale()
 
             NVGRenderer.scale(ClickGUIModule.getStandardGuiScale(), ClickGUIModule.getStandardGuiScale())
 
             SearchBar.draw(
-                mc.window.width / (2f * ClickGUIModule.getStandardGuiScale()) - 175f,
-                (mc.window.height - 110f) / ClickGUIModule.getStandardGuiScale() - 20f,
+                mc.window.screenWidth / (2f * ClickGUIModule.getStandardGuiScale()) - 175f,
+                (mc.window.screenHeight - 110f) / ClickGUIModule.getStandardGuiScale() - 20f,
                 scaledMouseX,
                 scaledMouseY
             )

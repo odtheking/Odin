@@ -19,10 +19,10 @@ object WardrobeKeybinds : Module(
 ) {
     private val nextPageKeybind by KeybindSetting("Next Page", GLFW.GLFW_KEY_RIGHT, desc = "Keybind to go to the next page in the wardrobe.")
     private val previousPageKeybind by KeybindSetting("Previous Page", GLFW.GLFW_KEY_LEFT, desc = "Keybind to go to the previous page in the wardrobe.")
-    private val unequipKeybind by KeybindSetting("Unequip", GLFW.GLFW_KEY_U, desc = "Keybind to unequip the currently equipped item in the wardrobe.")
-    private val disallowUnequippingEquipped by BooleanSetting("Disable Unequip", false, desc = "Prevents unequipping equipped armor.")
+    private val unequipKeybind by KeybindSetting("Unequip", GLFW.GLFW_KEY_UNKNOWN, desc = "Keybind to unequip the currently equipped item in the wardrobe.")
+    private val disallowUnequippingEquipped by BooleanSetting("Disable Unequip", desc = "Prevents unequipping equipped armor.")
 
-    private val advanced by DropdownSetting("Show Settings", false)
+    private val advanced by DropdownSetting("Show Settings")
     private val wardrobe1 by KeybindSetting("Wardrobe 1", GLFW.GLFW_KEY_1, desc = "Keybind to equip the first wardrobe slot.").withDependency { advanced }
     private val wardrobe2 by KeybindSetting("Wardrobe 2", GLFW.GLFW_KEY_2, desc = "Keybind to equip the second wardrobe slot.").withDependency { advanced }
     private val wardrobe3 by KeybindSetting("Wardrobe 3", GLFW.GLFW_KEY_3, desc = "Keybind to equip the third wardrobe slot.").withDependency { advanced }
@@ -66,7 +66,7 @@ object WardrobeKeybinds : Module(
                 keyIndex + 36
             }
         }
-
+        if (disallowUnequippingEquipped && screen.menu.slots[index].item?.isEmpty == true) return false
         mc.player?.clickSlot(screen.menu.containerId, index)
         return true
     }

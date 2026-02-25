@@ -1,6 +1,5 @@
 package com.odtheking.odin.features.impl.floor7.termsim
 
-import com.odtheking.odin.events.TerminalEvent
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalTypes
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalUtils
 import net.minecraft.core.component.DataComponents
@@ -50,7 +49,7 @@ object MelodySim : TermSimGUI(
         updateGui()
 
         playTermSimSound()
-        if (currentRow >= 5) TerminalUtils.lastTermOpened?.let { TerminalEvent.Solve(it).postAndCatch() }
+        if (currentRow >= 5) TerminalUtils.lastTermOpened?.onComplete()
     }
 
     private fun updateGui() {

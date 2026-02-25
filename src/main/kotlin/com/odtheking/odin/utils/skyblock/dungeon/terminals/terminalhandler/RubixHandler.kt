@@ -39,10 +39,7 @@ class RubixHandler : TerminalHandler(TerminalTypes.RUBIX) {
                     if (paneIdx != goalIndex) List(dist(paneIdx, goalIndex)) { pane } else emptyList()
                 }.map { items.indexOf(it) }
 
-                val size2 = getRealSize(temp2)
-                val sizeBest = getRealSize(temp)
-
-                if (size2 < sizeBest) {
+                if (getRealSize(temp2) < getRealSize(temp)) {
                     temp = temp2
                     lastRubixSolution = color
                 }
@@ -51,7 +48,6 @@ class RubixHandler : TerminalHandler(TerminalTypes.RUBIX) {
 
         return temp
     }
-
 
     override fun simulateClick(slotIndex: Int, clickType: Int) {
         if (slotIndex !in solution) return

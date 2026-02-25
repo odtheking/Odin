@@ -4,17 +4,16 @@ import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.events.GuiEvent
 import com.odtheking.odin.events.PacketEvent
 import com.odtheking.odin.events.TerminalEvent
-import com.odtheking.odin.events.core.*
 import com.odtheking.odin.features.impl.floor7.TerminalSounds
 import com.odtheking.odin.utils.handlers.schedule
 import com.odtheking.odin.utils.playSoundAtPlayer
+import com.odtheking.odin.utils.skyblock.dungeon.terminals.terminalhandler.TerminalHandler
 import net.minecraft.client.gui.screens.inventory.ContainerScreen
 import net.minecraft.core.component.DataComponents
 import net.minecraft.network.chat.Component
 import net.minecraft.network.protocol.game.ClientboundContainerClosePacket
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket
 import net.minecraft.network.protocol.game.ClientboundOpenScreenPacket
-import net.minecraft.network.protocol.game.ServerboundContainerClickPacket
 import net.minecraft.sounds.SoundEvents
 import net.minecraft.world.SimpleContainer
 import net.minecraft.world.entity.player.Inventory
@@ -63,45 +62,25 @@ open class TermSimGUI(
 
     open fun slotClick(slot: Slot, button: Int) {}
 
+    internal fun TerminalHandler.onComplete() {
+        PacketEvent.Receive(ClientboundContainerClosePacket(-2)).postAndCatch()
+        TerminalEvent.Solve(this).postAndCatch()
+        StartGUI.open(ping)
+    }
+
     override fun onClose() {
-        EventBus.unsubscribe(this)
         doesAcceptClick = true
         super.onClose()
     }
 
-    override fun init() {
-        super.init()
-        EventBus.subscribe(this)
+    override fun slotClicked(slot: Slot?, slotId: Int, button: Int, actionType: ClickType) {
+        if (GuiEvent.SlotClick(this, slotId, button).postAndCatch()) return
+        slot?.let { delaySlotClick(it, button) }
     }
 
-    override fun removed() {
-        EventBus.unsubscribe(this)
-        super.removed()
-    }
-
-    override fun slotClicked(slot: Slot, i: Int, j: Int, actionType: ClickType) {
-        if (GuiEvent.SlotClick(this, i, j).postAndCatch()) return
-        slot?.let { delaySlotClick(it, j) }
-    }
-
-    init {
-        on<TerminalEvent.Solve> {
-            if (mc.screen !== this@TermSimGUI) return@on
-            PacketEvent.Receive(ClientboundContainerClosePacket(-2)).postAndCatch()
-            StartGUI.open(ping)
-        }
-
-        onSend<ServerboundContainerClickPacket> (EventPriority.LOW) {
-            if (mc.screen !== this@TermSimGUI || clickType == ClickType.PICKUP_ALL) return@onSend
-            delaySlotClick(guiInventorySlots.getOrNull(slotNum.toInt()) ?: return@onSend, buttonNum.toInt())
-            it.cancel()
-        }
-
-        onReceive<ClientboundContainerSetSlotPacket> (EventPriority.HIGH) {
-            if (mc.screen !== this@TermSimGUI || containerId == -2 || slot !in 0 until size) return@onReceive
-            item?.let { item -> mc.player?.inventoryMenu?.setItem(slot, stateId, item) }
-            it.cancel()
-        }
+    fun clickIndex(index: Int, button: Int) {
+        val slot = guiInventorySlots.getOrNull(index) ?: return
+        delaySlotClick(slot, button)
     }
 
     private fun delaySlotClick(slot: Slot, button: Int) {

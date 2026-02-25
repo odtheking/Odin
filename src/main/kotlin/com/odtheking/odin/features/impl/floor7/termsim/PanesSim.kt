@@ -1,6 +1,5 @@
 package com.odtheking.odin.features.impl.floor7.termsim
 
-import com.odtheking.odin.events.TerminalEvent
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalTypes
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalUtils
 import net.minecraft.core.component.DataComponents
@@ -27,6 +26,6 @@ object PanesSim : TermSimGUI(
 
         playTermSimSound()
         if (guiInventorySlots.none { it?.item?.item == Items.RED_STAINED_GLASS_PANE })
-            TerminalUtils.lastTermOpened?.let { TerminalEvent.Solve(it).postAndCatch() }
+            TerminalUtils.lastTermOpened?.onComplete()
     }
 }

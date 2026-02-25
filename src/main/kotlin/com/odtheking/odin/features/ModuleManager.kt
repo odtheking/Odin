@@ -138,14 +138,15 @@ object ModuleManager {
         }
     }
 
-    fun render(context: GuiGraphics, tickCounter: DeltaTracker) {
+    fun render(guiGraphics: GuiGraphics, tickCounter: DeltaTracker) {
         if (mc.level == null || mc.player == null || mc.screen == HudManager || mc.options.hideGui) return
-        context.pose().pushMatrix()
+
+        guiGraphics.pose().pushMatrix()
         val sf = mc.window.guiScale
-        context.pose().scale(1f / sf, 1f / sf)
+        guiGraphics.pose().scale(1f / sf, 1f / sf)
         for (hudSettings in hudSettingsCache) {
-            if (hudSettings.isEnabled) hudSettings.value.draw(context, false)
+            if (hudSettings.isEnabled) hudSettings.value.draw(guiGraphics, false)
         }
-        context.pose().popMatrix()
+        guiGraphics.pose().popMatrix()
     }
 }

@@ -2,9 +2,9 @@ package com.odtheking.odin.events.core
 
 import com.odtheking.odin.utils.logError
 
-abstract class Event {
+interface Event {
 
-    open fun postAndCatch(): Boolean {
+    fun postAndCatch(): Boolean {
         runCatching {
             EventBus.post(this)
         }.onFailure {

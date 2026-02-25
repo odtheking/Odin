@@ -102,7 +102,9 @@ object MelodyMessage : Module(
             melodies.clear()
         }
 
-        if (p3StartRegex.matches(value)) melodyWebSocket.connect("${ClickGUIModule.webSocketUrl}${LocationUtils.lobbyId}")
+        if (p3StartRegex.matches(value)) LocationUtils.lobbyId?.let {
+            melodyWebSocket.connect("${ClickGUIModule.webSocketUrl}${it}")
+        }
     }
 
     private fun onSlotUpdate(packet: ClientboundContainerSetSlotPacket) {

@@ -1,6 +1,5 @@
 package com.odtheking.odin.features.impl.floor7.termsim
 
-import com.odtheking.odin.events.TerminalEvent
 import com.odtheking.odin.utils.hasGlint
 import com.odtheking.odin.utils.modMessage
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalTypes
@@ -65,6 +64,6 @@ class SelectAllSim(
         playTermSimSound()
 
         if (guiInventorySlots.none { it?.item?.hasGlint() == false && possibleItems.contains(it.item?.item) })
-            TerminalUtils.lastTermOpened?.let { TerminalEvent.Solve(it).postAndCatch() }
+            TerminalUtils.lastTermOpened?.onComplete()
     }
 }

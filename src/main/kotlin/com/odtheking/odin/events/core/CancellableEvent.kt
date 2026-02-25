@@ -2,7 +2,7 @@ package com.odtheking.odin.events.core
 
 import com.odtheking.odin.utils.logError
 
-abstract class CancellableEvent : Event() {
+abstract class CancellableEvent : Event {
     var isCancelled = false
         private set
 

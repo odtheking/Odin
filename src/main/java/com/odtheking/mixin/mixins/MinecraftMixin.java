@@ -35,13 +35,7 @@ public abstract class MinecraftMixin {
         if (new EntityInteractEvent(entityHitResult.getLocation(), entityHitResult.getEntity()).postAndCatch()) ci.cancel();
     }
 
-    @ModifyExpressionValue(
-            method = "resizeDisplay",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/client/OptionInstance;get()Ljava/lang/Object;"
-            )
-    )
+    @ModifyExpressionValue(method = "resizeDisplay", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/OptionInstance;get()Ljava/lang/Object;"))
     private Object modifyGuiScaleValue(Object original) {
         if (TerminalUtils.getCurrentTerm() != null && TerminalSolver.getTermSize() != (Integer) original) return TerminalSolver.getTermSize();
         return original;

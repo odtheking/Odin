@@ -5,11 +5,8 @@ import com.odtheking.odin.clickgui.settings.impl.*
 import com.odtheking.odin.events.*
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
+import com.odtheking.odin.utils.*
 import com.odtheking.odin.utils.Color.Companion.withAlpha
-import com.odtheking.odin.utils.Colors
-import com.odtheking.odin.utils.createSoundSettings
-import com.odtheking.odin.utils.devMessage
-import com.odtheking.odin.utils.playSoundSettings
 import com.odtheking.odin.utils.render.drawStyledBox
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.skyblock.dungeon.M7Phases
@@ -26,6 +23,7 @@ object SimonSays : Module(
     private val secondColor by ColorSetting("Second Color", Colors.MINECRAFT_GOLD.withAlpha(0.5f), true, desc = "The color of the second button.")
     private val thirdColor by ColorSetting("Third Color", Colors.MINECRAFT_RED.withAlpha(0.5f), true, desc = "The color of the buttons after the second.")
     private val style by SelectorSetting("Style", "Filled Outline", arrayListOf("Filled", "Outline", "Filled Outline"), desc = "The style of the box rendering.")
+    private val announceProgress by BooleanSetting("Announce Progress", true, desc = "Sends a message in chat when you click a button, showing your progress.")
     private val blockWrong by BooleanSetting("Block Wrong Clicks", false, desc = "Blocks wrong clicks, shift will override this.")
     private val blockWrongStart by BooleanSetting("Block Wrong on Start", false, desc = "Blocks wrong clicks on the start button during first phase.")
     private val maxStartClicks by NumberSetting("Max Start Clicks", 4, 1, 10, 1, desc = "Maximum number of start button clicks allowed during first phase.").withDependency { blockWrongStart }
@@ -116,6 +114,9 @@ object SimonSays : Module(
             }
 
             if (pos.x == 110 && pos.y in 120..123 && pos.z in 92..95) {
+                if (announceProgress && clickInOrder.isNotEmpty()) {
+                    if (pos == clickInOrder[clickInOrder.size - 1]) sendCommand("pc SS ${clickInOrder.size}/5")
+                }
                 if (blockWrong && mc.player?.isShiftKeyDown == false && pos.east() != clickInOrder.getOrNull(clickNeeded)) {
                     if (customClickSounds) playSoundSettings(blockedClick())
                     cancel()

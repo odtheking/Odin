@@ -10,9 +10,11 @@ import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.events.core.onSend
 import com.odtheking.odin.features.impl.floor7.TerminalSolver
+import com.odtheking.odin.features.impl.floor7.termsim.TermSimGUI
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.terminalhandler.TerminalHandler
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 import net.minecraft.network.protocol.game.*
+import net.minecraft.world.inventory.ClickType
 import net.minecraft.world.item.ItemStack
 
 object TerminalUtils {
@@ -52,14 +54,15 @@ object TerminalUtils {
         }
 
         on<TickEvent.End> {
-            if (System.currentTimeMillis() - lastClickTime >= TerminalSolver.terminalReloadThreshold && currentTerm?.isClicked == true) currentTerm?.let {
-                val screen = (mc.screen as? AbstractContainerScreen<*>) ?: return@let
+            val term = currentTerm ?: return@on
+            if (System.currentTimeMillis() - lastClickTime >= TerminalSolver.terminalReloadThreshold && term.isClicked) {
+                val screen = (mc.screen as? AbstractContainerScreen<*>) ?: return@on
                 GuiEvent.SlotUpdate(
                     screen,
-                    ClientboundContainerSetSlotPacket(screen.menu.containerId, 0, 0, ItemStack.EMPTY),
+                    ClientboundContainerSetSlotPacket(screen.menu.containerId, 0, term.type.windowSize - 1, ItemStack.EMPTY),
                     screen.menu
                 ).postAndCatch()
-                it.isClicked = false
+                term.isClicked = false
             }
         }
 
@@ -69,6 +72,19 @@ object TerminalUtils {
                     TerminalEvent.Solve(it).postAndCatch()
                 }
             }
+        }
+
+        onSend<ServerboundContainerClickPacket> (EventPriority.LOW) {
+            val termSimScreen = mc.screen as? TermSimGUI ?: return@onSend
+            if (clickType != ClickType.PICKUP_ALL) termSimScreen.clickIndex(slotNum.toInt(), buttonNum.toInt())
+            it.cancel()
+        }
+
+        onReceive<ClientboundContainerSetSlotPacket> (EventPriority.HIGH) {
+            val termSimScreen = mc.screen as? TermSimGUI ?: return@onReceive
+            if (slot !in 0 until termSimScreen.size) return@onReceive
+            item?.let { item -> mc.player?.inventoryMenu?.setItem(slot, stateId, item) }
+            it.cancel()
         }
     }
 

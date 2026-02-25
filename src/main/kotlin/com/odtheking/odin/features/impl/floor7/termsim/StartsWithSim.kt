@@ -1,6 +1,5 @@
 package com.odtheking.odin.features.impl.floor7.termsim
 
-import com.odtheking.odin.events.TerminalEvent
 import com.odtheking.odin.utils.hasGlint
 import com.odtheking.odin.utils.modMessage
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalTypes
@@ -33,7 +32,7 @@ class StartsWithSim(private val letter: String = listOf("A", "B", "C", "G", "D",
         createNewGui { if (it == slot) apply { set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, false) } else it.item }
         playTermSimSound()
         if (guiInventorySlots.none { it?.item?.hoverName?.string?.startsWith(letter, true) == true && !it.item.hasGlint() })
-            TerminalUtils.lastTermOpened?.let { TerminalEvent.Solve(it).postAndCatch() }
+            TerminalUtils.lastTermOpened?.onComplete()
     }
 
     private fun getLetterItemStack(filterNot: Boolean = false): ItemStack {

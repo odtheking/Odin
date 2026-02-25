@@ -37,9 +37,9 @@ import kotlin.math.sign
 
 object Etherwarp : Module(
     name = "Etherwarp",
-    description = "Provides configurable visual feedback for etherwarp."
+    description = "Provides configurable visual feedback for Etherwarp."
 ) {
-    private val render by BooleanSetting("Show Guess", true, desc = "Shows where etherwarp will take you.")
+    private val render by BooleanSetting("Show Guess", true, desc = "Shows where Etherwarp will take you.")
     private val color by ColorSetting("Color", Colors.MINECRAFT_GOLD.withAlpha(.5f), true, desc = "Color of the box.").withDependency { render }
     private val renderFail by BooleanSetting("Show when failed", true, desc = "Shows the box even when the guess failed.").withDependency { render }
     private val failColor by ColorSetting("Fail Color", Colors.MINECRAFT_RED.withAlpha(.5f), true, desc = "Color of the box if guess failed.").withDependency { renderFail }
@@ -64,7 +64,7 @@ object Etherwarp : Module(
         }
 
         on<RenderEvent.Extract> (EventPriority.LOW) {
-            if (mc.player?.isShiftKeyDown == false || mc.screen != null || !render) return@on
+            if (mc.screen != null || !render) return@on
 
             val mainHandItem = mc.player?.mainHandItem ?: return@on
 
@@ -73,7 +73,7 @@ object Etherwarp : Module(
                 cachedEtherData = mainHandItem.isEtherwarpItem()
             }
 
-            if (cachedEtherData == null) return@on
+            if (cachedEtherData == null || (mc.player?.isShiftKeyDown == false && cachedEtherData?.itemId != "ETHERWARP_CONDUIT")) return@on
 
             etherPos = getEtherPos(
                 if (useServerPosition) mc.player?.oldPosition() else mc.player?.position(),
@@ -90,7 +90,8 @@ object Etherwarp : Module(
         }
 
         onSend<ServerboundUseItemPacket> {
-            if (!LocationUtils.isCurrentArea(Island.SinglePlayer) || mc.player?.isShiftKeyDown == false || cachedEtherData == null) return@onSend
+            if (!LocationUtils.isCurrentArea(Island.SinglePlayer)) return@onSend
+            if (cachedEtherData == null || (mc.player?.isShiftKeyDown == false && cachedEtherData?.itemId != "ETHERWARP_CONDUIT")) return@onSend
 
             etherPos?.pos?.let {
                 if (etherPos?.succeeded == false) return@onSend
@@ -238,7 +239,7 @@ object Etherwarp : Module(
         AirBlock::class, TorchBlock::class, FlowerPotBlock::class,
         TallFlowerBlock::class, TallGrassBlock::class, BushBlock::class,
         SeagrassBlock::class, TallSeagrassBlock::class, SugarCaneBlock::class,
-        LiquidBlock::class, VineBlock::class, MushroomBlock::class,
+        LiquidBlock::class, VineBlock::class, MushroomBlock::class, GrowingPlantBlock::class,
         PistonHeadBlock::class, WoolCarpetBlock::class, WebBlock::class,
         DryVegetationBlock::class, SmallDripleafBlock::class, LeverBlock::class,
         NetherWartBlock::class, NetherPortalBlock::class, RedStoneWireBlock::class,

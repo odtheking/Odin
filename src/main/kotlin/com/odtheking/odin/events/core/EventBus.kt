@@ -26,11 +26,8 @@ object EventBus {
     }
 
     fun unsubscribe(subscriber: Any) {
-        if (activeSubscribers.remove(subscriber)) {
-            subscriberClasses.remove(subscriber)?.let {
-                rebuildAffectedCaches(it)
-            }
-        }
+        if (activeSubscribers.remove(subscriber))
+            subscriberClasses.remove(subscriber)?.let { rebuildAffectedCaches(it) }
     }
 
     @JvmStatic

@@ -33,7 +33,7 @@ object Vesuvius : Module(
     private val shardRegex = Regex("^([A-Za-z' ]+) Shard(?: x(\\d+))?$")
     private val teethRegex = Regex("^Kuudra Teeth x(\\d+)$")
     private val pearlRegex = Regex("^Heavy Pearl x(\\d+)$")
-    private val chestRegex = Regex("^(Free|Paid) Chest Chest$")
+    private val chestRegex = Regex("^((Free|Paid) Chest Chest)|(Kuudra - .+)$")
     private val uselessLinesRegex = Regex("^Contents|Cost|Click to open!|FREE|Already opened!|Can't open another chest!|Paid Chest|")
 
     private val ultimateEnchants = setOf(
@@ -49,7 +49,7 @@ object Vesuvius : Module(
     init {
         on<GuiEvent.DrawTooltip> {
             val title = screen.title?.string ?: return@on
-            if (vesuviusHud.enabled && title.matches(chestRegex)) {
+            if (vesuviusHud.enabled && title.matches(chestRegex) && currentChest != null) {
                 guiGraphics.pose().pushMatrix()
                 val sf = mc.window.guiScale
                 guiGraphics.pose().scale(1f / sf, 1f / sf)

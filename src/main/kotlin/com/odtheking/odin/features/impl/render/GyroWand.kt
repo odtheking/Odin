@@ -3,16 +3,18 @@ package com.odtheking.odin.features.impl.render
 import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.ColorSetting
-import com.odtheking.odin.events.ChatPacketEvent
 import com.odtheking.odin.events.RenderEvent
 import com.odtheking.odin.events.WorldEvent
 import com.odtheking.odin.events.core.on
+import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Color.Companion.withAlpha
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.itemId
+import com.odtheking.odin.utils.noControlCodes
 import com.odtheking.odin.utils.render.drawCylinder
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils.getAbilityCooldown
+import net.minecraft.network.protocol.game.ClientboundSystemChatPacket
 import net.minecraft.world.item.Items
 
 object GyroWand : Module(
@@ -28,8 +30,10 @@ object GyroWand : Module(
     private var cooldownTimer = 0L
 
     init {
-        on<ChatPacketEvent> {
-            if (value.matches(gravityStormRegex)) cooldownTimer = System.currentTimeMillis()
+        onReceive<ClientboundSystemChatPacket> {
+            if (!overlay) return@onReceive
+            val msg = content?.string?.noControlCodes ?: return@onReceive
+            if (msg.matches(gravityStormRegex)) cooldownTimer = System.currentTimeMillis()
         }
 
         on<RenderEvent.Extract> {
@@ -38,7 +42,7 @@ object GyroWand : Module(
             val position = Etherwarp.getEtherPos(mc.player?.position(), distance = 25.0, etherWarp = false).takeIf { it.state?.isAir == false }?: return@on
             drawCylinder(
                 position.vec3.add(0.5, 1.0, 0.5), 10f, 0.3f,
-                if (showCooldown && System.currentTimeMillis() - cooldownTimer > getAbilityCooldown(30_000L)) color else cooldownColor, 64, depth = depthCheck
+                if (showCooldown && System.currentTimeMillis() - cooldownTimer < getAbilityCooldown(30_000L)) cooldownColor else color, 64, depth = depthCheck
             )
         }
 
