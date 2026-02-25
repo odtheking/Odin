@@ -11,7 +11,8 @@ import net.minecraft.util.StringUtil
 
 fun playSoundSettings(soundSettings: Triple<String, Float, Float>) {
     val (soundName, volume, pitch) = soundSettings
-    val soundEvent = SoundEvent.createVariableRangeEvent(Identifier.parse(StringUtil.filterText(soundName))) ?: return
+    val identifier = Identifier.tryParse(StringUtil.filterText(soundName)) ?: return
+    val soundEvent = SoundEvent.createVariableRangeEvent(identifier) ?: return
     playSoundAtPlayer(soundEvent, volume, pitch)
 }
 

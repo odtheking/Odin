@@ -16,7 +16,6 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList
 import net.minecraft.client.gui.Font
 import net.minecraft.client.renderer.LightTexture
 import net.minecraft.client.renderer.MultiBufferSource
-import net.minecraft.client.renderer.rendertype.RenderTypes
 import net.minecraft.core.BlockPos
 import net.minecraft.resources.Identifier
 import net.minecraft.world.phys.AABB
@@ -82,7 +81,7 @@ private fun PoseStack.renderBatchedLinesAndWireBoxes(
     wireBoxes: List<List<BoxData>>,
     bufferSource: MultiBufferSource.BufferSource
 ) {
-    val lineRenderLayers = listOf(RenderTypes.lines(), RenderTypes.linesTranslucent())
+    val lineRenderLayers = listOf(CustomRenderLayer.LINE_LIST, CustomRenderLayer.LINE_LIST_ESP)
     val last = this.last()
     for (depthState in 0..1) {
         if (lines[depthState].isEmpty() && wireBoxes[depthState].isEmpty()) continue
@@ -107,13 +106,11 @@ private fun PoseStack.renderBatchedLinesAndWireBoxes(
                 box.r, box.g, box.b, box.a, box.thickness
             )
         }
-
-        bufferSource.endBatch(lineRenderLayers[depthState])
     }
 }
 
 private fun PoseStack.renderBatchedFilledBoxes(consumer: List<List<BoxData>>, bufferSource: MultiBufferSource.BufferSource) {
-    val filledBoxRenderLayers = listOf(CustomRenderLayer.DEBUG_FILLED_BOX_DEPTH, CustomRenderLayer.DEBUG_FILLED_BOX_NO_DEPTH)
+    val filledBoxRenderLayers = listOf(CustomRenderLayer.TRIANGLE_STRIP, CustomRenderLayer.TRIANGLE_STRIP_ESP)
     val last = this.last()
     for ((depthState, boxes) in consumer.withIndex()) {
         if (boxes.isEmpty()) continue
@@ -127,8 +124,6 @@ private fun PoseStack.renderBatchedFilledBoxes(consumer: List<List<BoxData>>, bu
                 box.r, box.g, box.b, box.a
             )
         }
-
-        bufferSource.endBatch(filledBoxRenderLayers[depthState])
     }
 }
 
@@ -389,47 +384,34 @@ object PrimitiveRenderer {
         }
 
         vertex(minX, minY, minZ)
-        vertex(minX, minY, minZ)
-        vertex(minX, minY, minZ)
-
         vertex(minX, minY, maxZ)
-        vertex(minX, maxY, minZ)
         vertex(minX, maxY, maxZ)
-
-        vertex(minX, maxY, maxZ)
-
-        vertex(minX, minY, maxZ)
-        vertex(maxX, maxY, maxZ)
-        vertex(maxX, minY, maxZ)
-
-        vertex(maxX, minY, maxZ)
-
-        vertex(maxX, minY, minZ)
-        vertex(maxX, maxY, maxZ)
-        vertex(maxX, maxY, minZ)
-
-        vertex(maxX, maxY, minZ)
-
-        vertex(maxX, minY, minZ)
         vertex(minX, maxY, minZ)
-        vertex(minX, minY, minZ)
 
-        vertex(minX, minY, minZ)
-
+        vertex(maxX, minY, maxZ)
         vertex(maxX, minY, minZ)
-        vertex(minX, minY, maxZ)
-        vertex(maxX, minY, maxZ)
-
-        vertex(maxX, minY, maxZ)
-
-        vertex(minX, maxY, minZ)
-        vertex(minX, maxY, minZ)
-        vertex(minX, maxY, maxZ)
         vertex(maxX, maxY, minZ)
         vertex(maxX, maxY, maxZ)
 
+        vertex(minX, minY, minZ)
+        vertex(minX, maxY, minZ)
+        vertex(maxX, maxY, minZ)
+        vertex(maxX, minY, minZ)
+
+        vertex(maxX, minY, maxZ)
         vertex(maxX, maxY, maxZ)
+        vertex(minX, maxY, maxZ)
+        vertex(minX, minY, maxZ)
+
+        vertex(minX, minY, minZ)
+        vertex(maxX, minY, minZ)
+        vertex(maxX, minY, maxZ)
+        vertex(minX, minY, maxZ)
+
+        vertex(minX, maxY, maxZ)
         vertex(maxX, maxY, maxZ)
+        vertex(maxX, maxY, minZ)
+        vertex(minX, maxY, minZ)
     }
 
     fun renderVector(

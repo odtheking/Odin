@@ -13,7 +13,7 @@ import net.minecraft.client.renderer.rendertype.RenderType
 interface IrisCompatability {
     fun registerPipeline(pipeline: RenderPipeline, shaderType: IrisShaderType) {}
     fun registerRenderType(pipeline: RenderType, shaderType: IrisShaderType) {
-      //  registerPipeline((pipeline as CompositeRenderTypeAccessor).renderPipeline, shaderType)
+        registerPipeline(pipeline.pipeline(), shaderType)
     }
 
     companion object : IrisCompatability by resolve() {
@@ -22,8 +22,6 @@ interface IrisCompatability {
             registerRenderType(CustomRenderLayer.LINE_LIST_ESP, IrisShaderType.LINES)
             registerRenderType(CustomRenderLayer.TRIANGLE_STRIP, IrisShaderType.BASIC)
             registerRenderType(CustomRenderLayer.TRIANGLE_STRIP_ESP, IrisShaderType.BASIC)
-            registerRenderType(CustomRenderLayer.DEBUG_FILLED_BOX_DEPTH, IrisShaderType.BASIC)
-            registerRenderType(CustomRenderLayer.DEBUG_FILLED_BOX_NO_DEPTH, IrisShaderType.BASIC)
         }
     }
 }
