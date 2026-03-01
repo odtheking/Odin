@@ -17,7 +17,7 @@ import kotlinx.coroutines.launch
 
 val dungeonWaypointsCommand = Commodore("dwp", "dungeonwaypoints") {
     runs {
-        DungeonWaypoints.onKeybind()
+        schedule(0) { mc.setScreen(WaypointPackSelectorScreen(mc.screen)) }
     }
 
     literal("fill").runs {
@@ -82,9 +82,5 @@ val dungeonWaypointsCommand = Commodore("dwp", "dungeonwaypoints") {
             DungeonUtils.currentRoom?.setWaypoints()
             modMessage("Imported waypoints from clipboard!${if (!DungeonWaypoints.enabled) "§7(Make sure to enable the DungeonWaypoints module)" else ""}")
         }
-    }
-
-    literal("gui").runs {
-        schedule(0) { mc.setScreen(WaypointPackSelectorScreen(mc.screen)) }
     }
 }

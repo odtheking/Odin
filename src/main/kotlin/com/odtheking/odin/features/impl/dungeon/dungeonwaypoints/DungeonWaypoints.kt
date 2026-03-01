@@ -42,9 +42,10 @@ object DungeonWaypoints : Module(
     internal var activePacks by StringSetting("Active Packs", "", 1000, "").hide()
     internal var activeEditPack by StringSetting("Active Edit Pack", "", 100, "").hide()
 
-    internal var allWaypoints: MutableMap<String, MutableList<DungeonWaypoint>> = mutableMapOf()
+    internal var allActiveWaypoints: MutableMap<String, MutableList<DungeonWaypoint>> = mutableMapOf()
         private set
-    var editWaypoints: MutableMap<String, MutableList<DungeonWaypoint>> = mutableMapOf()
+
+    internal var editWaypoints: MutableMap<String, MutableList<DungeonWaypoint>> = mutableMapOf()
 
     private var allowEdits by BooleanSetting("Allow Edits", false, desc = "Allows you to edit waypoints.")
     private var allowMidair by BooleanSetting("Allow Midair", false, desc = "Allows waypoints to be placed midair if they reach the end of distance without hitting a block.").withDependency { allowEdits }
@@ -124,19 +125,24 @@ object DungeonWaypoints : Module(
 
     suspend fun loadWaypoints() = withContext(Dispatchers.IO) {
         val packNames = activePacks.split(",").filter { it.isNotBlank() }
-        allWaypoints = if (packNames.isNotEmpty()) WaypointPackFileUtils.mergeActivePacks(packNames)
+        allActiveWaypoints = if (packNames.isNotEmpty()) WaypointPackFileUtils.mergeActivePacks(packNames)
         else mutableMapOf()
 
-        editWaypoints = if (activeEditPack.isNotBlank()) WaypointPackFileUtils.loadPack(activeEditPack)
-        else mutableMapOf()
+        editWaypoints = allActiveWaypoints[activeEditPack]?.let {
+            mutableMapOf(activeEditPack to it)
+        } ?: mutableMapOf()
     }
 
     suspend fun saveWaypoints() = withContext(Dispatchers.IO) {
-        if (activeEditPack.isNotBlank()) WaypointPackFileUtils.savePack(activeEditPack, editWaypoints)
+        allActiveWaypoints[activeEditPack]?.let { roomWaypoints ->
+            WaypointPackFileUtils.savePack(activeEditPack, mutableMapOf(activeEditPack to roomWaypoints))
+        }
 
         val packNames = activePacks.split(",").filter { it.isNotBlank() }
-        allWaypoints = if (packNames.isNotEmpty()) WaypointPackFileUtils.mergeActivePacks(packNames)
+        allActiveWaypoints = if (packNames.isNotEmpty()) WaypointPackFileUtils.mergeActivePacks(packNames)
         else mutableMapOf()
+
+        editWaypoints = allActiveWaypoints[activeEditPack]?.let { mutableMapOf(activeEditPack to it) } ?: mutableMapOf()
     }
 
     init {
@@ -265,10 +271,9 @@ object DungeonWaypoints : Module(
                 else -> null
             }
         }
-
     fun Room.setWaypoints() {
         waypoints = mutableSetOf<DungeonWaypoint>().apply {
-            allWaypoints[data.name]?.let { waypoints ->
+            allActiveWaypoints[data.name]?.let { waypoints ->
                 addAll(waypoints.map { waypoint ->
                     waypoint.copy(blockPos = getRealCoords(waypoint.blockPos))
                 })
@@ -277,7 +282,7 @@ object DungeonWaypoints : Module(
     }
 
     fun getWaypoints(room: Room): MutableList<DungeonWaypoint> =
-        editWaypoints.getOrPut(room.data.name) { mutableListOf() }
+        editWaypoints[room.data.name] ?: allActiveWaypoints.getOrPut(room.data.name) { mutableListOf() }
 
     enum class WaypointType {
         NONE, NORMAL, SECRET, ETHERWARP;

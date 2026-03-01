@@ -59,11 +59,10 @@ object SecretWaypoints {
     }
 
     fun resetSecrets() {
-        DungeonWaypoints.allWaypoints.values.forEach { roomWaypoints ->
+        DungeonWaypoints.allActiveWaypoints.values.forEach { roomWaypoints ->
             roomWaypoints.forEach { it.isClicked = false }
         }
 
         DungeonUtils.currentRoom?.setWaypoints()
     }
 }
-
