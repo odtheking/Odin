@@ -5,6 +5,7 @@ import com.odtheking.odin.events.LocationChangeEvent
 import com.odtheking.odin.events.WorldEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.utils.IVec2
+import com.odtheking.odin.utils.equalsOneOf
 import com.odtheking.odin.utils.skyblock.dungeon.door.DoorRotation
 import com.odtheking.odin.utils.skyblock.dungeon.door.DoorType
 import com.odtheking.odin.utils.skyblock.dungeon.door.DungeonDoor
@@ -16,7 +17,6 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientChunkEvents
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.chunk.LevelChunk
-
 
 /*
 pseudocode
@@ -98,19 +98,11 @@ object DungeonScan {
             // if dungeon isn't loaded, yet we add it to chunksToScan
             // otherwise just directly load it, no need to scan every tick
 
-
-            if (!DungeonUtils.inDungeons) {
-                val pos = IVec2(chunk.pos.x, chunk.pos.z)
-                chunksToScan.add(pos)
-            } else {
-                scanChunk(chunk)
-            }
+            if (!DungeonUtils.inDungeons) chunksToScan.add(IVec2(chunk.pos.x, chunk.pos.z))
+            else scanChunk(chunk)
         }
         ClientChunkEvents.CHUNK_UNLOAD.register { _, chunk ->
-            if (!DungeonUtils.inDungeons) {
-                val pos = IVec2(chunk.pos.x, chunk.pos.z)
-                chunksToScan.remove(pos)
-            }
+            if (!DungeonUtils.inDungeons) chunksToScan.remove(IVec2(chunk.pos.x, chunk.pos.z))
         }
         // in case chunks are somehow unloaded before area is loaded
         // remove from chunksToScan, if dungeon has started no need to do this.
@@ -119,8 +111,7 @@ object DungeonScan {
             if (DungeonUtils.inDungeons) {
                 val level = mc.level ?: return@on
                 for (position in chunksToScan) {
-                    val chunk = level.getChunk(position.x, position.z) ?: continue
-                    scanChunk(chunk)
+                    level.getChunk(position.x, position.z)?.let { chunk -> scanChunk(chunk) }
                 }
             }
             chunksToScan.clear()
@@ -136,13 +127,9 @@ object DungeonScan {
         val columnEven = chunkPosition.z % 2 == 0
 
         if (chunkPosition.x in -12..-2 && chunkPosition.z in -12..-2) {
-            if (rowEven && columnEven) {
-                scanRoom(chunk, chunkPosition)
-            }
-            if (rowEven || columnEven) {
-                val rotation = if (columnEven) DoorRotation.Horizontal else DoorRotation.Vertical
-                scanDoor(chunk, chunkPosition, rotation)
-            }
+            if (rowEven && columnEven) scanRoom(chunk, chunkPosition)
+            if (rowEven || columnEven)
+                scanDoor(chunk, chunkPosition, if (columnEven) DoorRotation.Horizontal else DoorRotation.Vertical)
         }
     }
 
@@ -151,12 +138,9 @@ object DungeonScan {
         val position = (chunkPosition * 16) + 7
 
         for (y in 86..160) {
-            val block = chunk.getBlockState(position.x, y, position.z).block
-            if (block !== Blocks.AIR) return
+            if (!chunk.getBlockState(position.x, y, position.z).isAir) return
         }
-        if (chunk.getBlockState(position.x, 68, position.z).block === Blocks.AIR) {
-            return
-        }
+        if (chunk.getBlockState(position.x, 68, position.z).isAir) return
 
         val type = when (chunk.getBlockState(position.x, 69, position.z).block) {
             Blocks.COAL_BLOCK -> DoorType.Wither
@@ -181,9 +165,7 @@ object DungeonScan {
             tile.room = room
             room.segments.add(tile)
 
-            if (room.hasAllSegments()) {
-                room.setShapeAndRotation(chunk, chunkPosition, highestBlock)
-            }
+            if (room.hasAllSegments()) room.setShapeAndRotation(chunk, chunkPosition, highestBlock)
         }
     }
 
@@ -206,9 +188,7 @@ object DungeonScan {
                 if (block !== Blocks.AIR && block !== Blocks.GOLD_BLOCK) {
                     foundHighest = true
                     highestBlock = y
-                } else {
-                    stringBuilder.append('0')
-                }
+                } else stringBuilder.append('0')
             }
 
             if (foundHighest) {
@@ -219,13 +199,10 @@ object DungeonScan {
                     break
                 }
 
-                if (block === Blocks.BEDROCK) {
-                    bedrock++
-                } else {
+                if (block === Blocks.BEDROCK) bedrock++
+                else {
                     bedrock = 0
-                    if (block === Blocks.OAK_PLANKS || block === Blocks.TRAPPED_CHEST || block === Blocks.CHEST) {
-                        continue
-                    }
+                    if (block.equalsOneOf(Blocks.OAK_PLANKS, Blocks.TRAPPED_CHEST, Blocks.CHEST)) continue
                 }
 
                 stringBuilder.append(block)
@@ -239,9 +216,7 @@ object DungeonScan {
         val sectionIndex = getSectionIndex(y)
         if (sectionIndex >= 0 && sectionIndex < sections.size) {
             val section = sections[sectionIndex]
-            if (!section.hasOnlyAir()) {
-                return section.getBlockState(x and 15, y and 15, z and 15)
-            }
+            if (!section.hasOnlyAir()) return section.getBlockState(x and 15, y and 15, z and 15)
         }
         return Blocks.AIR.defaultBlockState()
     }

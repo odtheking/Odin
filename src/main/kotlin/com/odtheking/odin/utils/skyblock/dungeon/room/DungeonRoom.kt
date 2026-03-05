@@ -14,13 +14,30 @@ class DungeonTile(
     var room: DungeonRoom? = null
 )
 
+enum class MapCheckmark(val mapColor: Byte, val symbol: String) {
+    NONE(-1, "§0N"),
+    WHITE(34, "W"),
+    GREEN(30, "§aG"),
+    RED(18, "§cR"),
+    QUESTION_MARK(119, "§d?"),
+    UNDISCOVERED(-1, "§8X");
+
+    companion object {
+        private val BY_COLOR = entries.associateBy { it.mapColor }
+        fun fromMapColor(color: Byte) = BY_COLOR[color]
+    }
+}
+
 class DungeonRoom(
     var data: RoomData? = null,
     val segments: ArrayList<DungeonTile> = ArrayList(4),
 
     var shape: RoomShape = RoomShape.UNKNOWN,
-    var rotation: RoomRotation = RoomRotation.North,
+    var rotation: RoomRotation = RoomRotation.SOUTH,
     var position: IVec2 = IVec2(0, 0),
+
+    var checkmark: MapCheckmark = MapCheckmark.UNDISCOVERED,
+    var type: RoomType = RoomType.UNDISCOVERED,
 ) {
 
     init {
@@ -28,7 +45,7 @@ class DungeonRoom(
     }
 
     fun hasAllSegments(): Boolean {
-        return data?.shape?.segmentAmount() == segments.size
+        return data?.shape?.segments == segments.size
     }
 
     fun setShapeAndRotation(chunk: LevelChunk, chunkPosition: IVec2, highestBlock: Int) {
@@ -60,15 +77,15 @@ class DungeonRoom(
                 val pos = chunkPosition * 16
                 shape = RoomShape.OneByOne
                 rotation = when {
-                    chunk.getBlockState(pos.x + 14, highestBlock, pos.z).block === Blocks.BLUE_TERRACOTTA -> RoomRotation.East
-                    chunk.getBlockState(pos.x + 14, highestBlock, pos.z + 14).block === Blocks.BLUE_TERRACOTTA -> RoomRotation.South
-                    chunk.getBlockState(pos.x, highestBlock, pos.z + 14).block === Blocks.BLUE_TERRACOTTA -> RoomRotation.West
-                    else -> RoomRotation.North
+                    chunk.getBlockState(pos.x + 14, highestBlock, pos.z).block === Blocks.BLUE_TERRACOTTA -> RoomRotation.WEST
+                    chunk.getBlockState(pos.x + 14, highestBlock, pos.z + 14).block === Blocks.BLUE_TERRACOTTA -> RoomRotation.NORTH
+                    chunk.getBlockState(pos.x, highestBlock, pos.z + 14).block === Blocks.BLUE_TERRACOTTA -> RoomRotation.EAST
+                    else -> RoomRotation.SOUTH
                 }
             }
             2 -> {
                 shape = RoomShape.TwoByOne
-                rotation = if (length == 1) RoomRotation.North else RoomRotation.East
+                rotation = if (length == 1) RoomRotation.WEST else RoomRotation.SOUTH
             }
             3 -> {
                 if (length == 2 && height == 2) {
@@ -81,23 +98,23 @@ class DungeonRoom(
                     }.position
 
                     rotation = when (corner) {
-                        IVec2(minX, minZ) -> RoomRotation.East
-                        IVec2(maxX, minZ) -> RoomRotation.South
-                        IVec2(maxX, maxZ) -> RoomRotation.West
-                        else -> RoomRotation.North
+                        IVec2(minX, minZ) -> RoomRotation.SOUTH
+                        IVec2(maxX, minZ) -> RoomRotation.NORTH
+                        IVec2(maxX, maxZ) -> RoomRotation.EAST
+                        else -> RoomRotation.WEST
                     }
                 } else {
                     shape = RoomShape.ThreeByOne
-                    rotation = if (length == 1) RoomRotation.North else RoomRotation.East
+                    rotation = if (length == 1) RoomRotation.WEST else RoomRotation.SOUTH
                 }
             }
             4 -> {
                 if (length == 2 && height == 2) {
                     shape = RoomShape.TwoByTwo
-                    rotation = RoomRotation.North
+                    rotation = RoomRotation.SOUTH
                 } else {
                     shape = RoomShape.FourByOne
-                    rotation = if (length == 1) RoomRotation.North else RoomRotation.East
+                    rotation = if (length == 1) RoomRotation.WEST else RoomRotation.SOUTH
                 }
             }
         }

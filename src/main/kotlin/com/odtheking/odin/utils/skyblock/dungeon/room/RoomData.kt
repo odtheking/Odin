@@ -14,7 +14,7 @@ data class RoomData private constructor(
     val trappedChests: Int,
 ) {
     companion object {
-        private val coreToRoomData: HashMap<Int, RoomData> = kotlin.run {
+        private val coreToRoomData: HashMap<Int, RoomData> = run {
             val roomData: ArrayList<RoomData> = JsonResourceLoader.loadJson("/assets/odin/rooms.json", arrayListOf())
             val map: HashMap<Int, RoomData> = hashMapOf()
             for (room in roomData) {
@@ -25,54 +25,47 @@ data class RoomData private constructor(
             map
         }
 
-        fun getRoomData(core: Int): RoomData? {
-            return coreToRoomData[core]
-        }
+        fun getRoomData(core: Int): RoomData? = coreToRoomData[core]
     }
 }
 
+enum class RoomType(val mapColor: Byte) {
+    ENTRANCE(30),
+    FAIRY(82),
+    NORMAL(63),
+    BLOOD(18),
+    CHAMPION(74),
+    UNKNOWN(85),
+    PUZZLE(66),
+    TRAP(62),
+    UNDISCOVERED(-1);
 
-enum class RoomType {
-    ENTRANCE,
-    FAIRY,
-    NORMAL,
-    BLOOD,
-    CHAMPION,
-    PUZZLE,
-    TRAP,
-    RARE;
+    companion object {
+        private val BY_COLOR = entries.associateBy { it.mapColor }
+        fun fromMapColor(color: Byte) = BY_COLOR[color]
+    }
 }
 
-enum class RoomShape {
+enum class RoomShape(val segments: Int) {
     @SerializedName("Unknown")
-    UNKNOWN,
+    UNKNOWN(0),
     @SerializedName("L")
-    L,
+    L(3),
     @SerializedName("1x1")
-    OneByOne,
+    OneByOne(1),
     @SerializedName("1x2")
-    TwoByOne,
+    TwoByOne(2),
     @SerializedName("1x3")
-    ThreeByOne,
+    ThreeByOne(3),
     @SerializedName("1x4")
-    FourByOne,
+    FourByOne(4),
     @SerializedName("2x2")
-    TwoByTwo;
-
-    fun segmentAmount(): Int {
-        return when (this) {
-            UNKNOWN -> 0
-            OneByOne -> 1
-            TwoByOne -> 2
-            ThreeByOne, L -> 3
-            FourByOne, TwoByTwo -> 4
-        }
-    }
+    TwoByTwo(4);
 }
 
 enum class RoomRotation {
-    North,
-    East,
-    South,
-    West;
+    WEST,
+    SOUTH,
+    NORTH,
+    EAST;
 }

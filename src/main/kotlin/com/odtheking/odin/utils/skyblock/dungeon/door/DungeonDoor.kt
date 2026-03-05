@@ -15,7 +15,7 @@ enum class DoorType {
     Fairy,
 }
 
-enum class DoorRotation {
-    Horizontal,
-    Vertical,
+enum class DoorRotation(val offset: IVec2) {
+    Horizontal(IVec2(1, 0)),
+    Vertical(IVec2(0, 1)),
 }
