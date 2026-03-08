@@ -113,13 +113,15 @@ class MapRoom(val data: RoomData, val height: Int) {
         if (rotation == Rotations.NONE) return tiles.minBy { it.pos.x * 1000 + it.pos.z }.placement()
         val placements = tiles.map { it.placement() }
 
-        return when (data.shape) {
+        val x = (placements.minOf { it.x } + placements.maxOf { it.x }) / 2
+        val z = when (data.shape) {
             RoomShape.L ->
-                Vec2i(placements.sumOf { it.x } / placements.size, placements.sumOf { it.z } / placements.size)
+                if (rotation == Rotations.WEST || rotation == Rotations.NORTH) placements.minOf { it.z } else placements.maxOf { it.z }
 
             else ->
-                Vec2i((placements.minOf { it.x } + placements.maxOf { it.x }) / 2, (placements.minOf { it.z } + placements.maxOf { it.z }) / 2)
+                (placements.minOf { it.z } + placements.maxOf { it.z }) / 2
         }
+        return Vec2i(x, z)
     }
 }
 
