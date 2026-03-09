@@ -16,6 +16,7 @@ import com.odtheking.odin.features.impl.render.PlayerSize
 import com.odtheking.odin.features.impl.render.PlayerSize.DEV_SERVER
 import com.odtheking.odin.features.impl.render.PlayerSize.buildDevBody
 import com.odtheking.odin.utils.*
+import com.odtheking.odin.utils.network.WebUtils.fetchJson
 import com.odtheking.odin.utils.network.WebUtils.postData
 import com.odtheking.odin.utils.skyblock.KuudraUtils
 import com.odtheking.odin.utils.skyblock.LocationUtils
@@ -28,10 +29,14 @@ import com.odtheking.odin.utils.skyblock.dungeon.ScanUtils
 import com.odtheking.odin.utils.skyblock.dungeon.ScanUtils.getRoomCenter
 import com.odtheking.odin.utils.ui.rendering.NVGRenderer
 import kotlinx.coroutines.launch
+import com.google.gson.JsonObject
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.network.chat.Component
 import net.minecraft.world.phys.BlockHitResult
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
+@OptIn(ExperimentalUuidApi::class)
 val devCommand = Commodore("oddev") {
 
     literal("ws") {
@@ -64,13 +69,24 @@ val devCommand = Commodore("oddev") {
         PlayerSize.randoms.clear()
     }
 
+    suspend fun getUUID(name: String): String? {
+        val req = fetchJson<JsonObject>("https://api.mojang.com/users/profiles/minecraft/$name")
+        val uuid = req.getOrNull()?.get("id")?.asString ?: run {
+            modMessage("Failed to fetch UUID for $name")
+            return null
+        }
+        return Uuid.parse(uuid).toString()
+    }
+
     literal("adddev").runs { name: String, password: String, xSize: Float?, ySize: Float?, zSize: Float? ->
         val x = xSize ?: 0.6f
         val y = ySize ?: 0.6f
         val z = zSize ?: 0.6f
         modMessage("Sending data... name: $name, x: $x, y: $y, z: $z")
         OdinMod.scope.launch {
-            modMessage(postData(DEV_SERVER, buildDevBody(name, Colors.WHITE, x, y, z, false, " ", password)).getOrNull())
+            val uuid = getUUID(name) ?: return@launch
+            modMessage("Sending data for UUID: $uuid ($name, x: $x, y: $y, z: $z)")
+            modMessage(postData(DEV_SERVER, buildDevBody(uuid, Colors.WHITE, x, y, z, false, " ", password)).getOrNull())
         }
     }
 

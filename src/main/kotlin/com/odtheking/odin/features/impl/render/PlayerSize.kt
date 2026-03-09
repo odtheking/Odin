@@ -41,7 +41,7 @@ object PlayerSize : Module(
         }
         OdinMod.scope.launch {
             val body = buildDevBody(
-                mc.user.name ?: return@launch,
+                mc.user.profileId.toString(),
                 devWingsColor, devSizeX, devSizeY,
                 devSizeZ, devWings, " ", passcode
             )
@@ -53,11 +53,11 @@ object PlayerSize : Module(
 
 
     var randoms: HashMap<String, RandomPlayer> = HashMap()
-    val isRandom get() = randoms.containsKey(mc.user.name)
+    val isRandom get() = randoms.containsKey(mc.user.profileId.toString())
 
     data class RandomPlayer(
         @SerializedName("CustomName")   val customName: String?,
-        @SerializedName("DevName")      val name: String,
+        @SerializedName("DevName")      val uuid: String,
         @SerializedName("IsDev")        val isDev: Boolean?,
         @SerializedName("WingsColor")   val wingsColor: List<Int>,
         @SerializedName("Size")         val scale: List<Float>,
@@ -65,22 +65,25 @@ object PlayerSize : Module(
     )
 
     @JvmStatic
-    fun preRenderCallbackScaleHook(entityRenderer: AvatarRenderState, matrix: PoseStack) {
-        val gameProfile = entityRenderer.getData(GAME_PROFILE_KEY) ?: return
-        if (enabled && gameProfile.name == mc.player?.gameProfile?.name && !randoms.containsKey(gameProfile.name)) {
+    fun preRenderCallbackScaleHook(renderState: AvatarRenderState, matrix: PoseStack) {
+        val gameProfile = renderState.getData(GAME_PROFILE_KEY) ?: return
+
+        if (enabled && gameProfile.id == mc.player?.gameProfile?.id && !randoms.containsKey(gameProfile.id.toString())) {
             if (devSizeY < 0) matrix.translate(0f, devSizeY * 2, 0f)
             matrix.scale(devSizeX, devSizeY, devSizeZ)
         }
-        if (!randoms.containsKey(gameProfile.name)) return
-        if (!devSize && gameProfile.name == mc.player?.gameProfile?.name) return
-        val random = randoms[gameProfile.name] ?: return
+
+        if (!randoms.containsKey(gameProfile.id.toString())) return
+        if (!devSize && gameProfile.id == mc.player?.gameProfile?.id) return
+        val random = randoms[gameProfile.id.toString()] ?: return
+
         if (random.scale[1] < 0) matrix.translate(0f, random.scale[1] * 2, 1f)
         matrix.scale(random.scale[0], random.scale[1], random.scale[2])
     }
 
     suspend fun updateCustomProperties() {
         val response = fetchJson<Array<RandomPlayer>>("https://api.odtheking.com/devs/").getOrNull() ?: return
-        randoms.putAll(response.associateBy { it.name })
+        randoms.putAll(response.associateBy { it.uuid })
     }
 
     init {
