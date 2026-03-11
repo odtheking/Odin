@@ -1,6 +1,8 @@
 package com.odtheking.odin.utils.skyblock.dungeon.terminals.terminalhandler
 
 import com.odtheking.odin.OdinMod.mc
+import com.odtheking.odin.features.impl.floor7.TerminalSolver
+import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.hasGlint
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalTypes
 import net.minecraft.client.gui.screens.inventory.ContainerScreen
@@ -25,4 +27,6 @@ class StartsWithHandler(private val letter: String): TerminalHandler(TerminalTyp
         }
         super.click(slotIndex, button, simulateClick)
     }
+
+    override fun renderSlot(slotIndex: Int): Pair<Color, String?> = TerminalSolver.startsWithColor to null
 }

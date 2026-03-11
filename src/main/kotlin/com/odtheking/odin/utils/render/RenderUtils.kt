@@ -73,6 +73,8 @@ object RenderBatchManager {
             matrix.renderBatchedBeaconBeams(renderConsumer.beaconBeams, camera)
             matrix.renderBatchedTexts(renderConsumer.texts, bufferSource, camera)
             renderConsumer.clear()
+
+            ShaderRenderer.clear()
         }
     }
 }

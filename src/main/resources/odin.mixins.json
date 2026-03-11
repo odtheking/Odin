@@ -23,7 +23,8 @@
     "mixins.LocalPlayerMixin",
     "mixins.MinecraftMixin",
     "mixins.MouseHandlerMixin",
-    "mixins.ScreenEffectRendererMixin"
+    "mixins.ScreenEffectRendererMixin",
+    "mixins.ScreenMixin"
   ],
   "mixins": [
     "accessors.ServerboundInteractPacketAccessor",

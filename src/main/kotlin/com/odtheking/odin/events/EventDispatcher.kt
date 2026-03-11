@@ -14,6 +14,9 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents
 import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents
+import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents
+import net.fabricmc.fabric.api.client.screen.v1.ScreenKeyboardEvents
+import net.fabricmc.fabric.api.client.screen.v1.ScreenMouseEvents
 import net.minecraft.network.protocol.game.*
 import net.minecraft.sounds.SoundEvents
 import net.minecraft.world.InteractionHand
@@ -22,28 +25,30 @@ import net.minecraft.world.entity.item.ItemEntity
 object EventDispatcher {
 
     init {
-        ClientPlayConnectionEvents.JOIN.register { _, _, _ ->
-            WorldEvent.Load.postAndCatch()
-        }
+        ClientPlayConnectionEvents.JOIN.register { _, _, _ -> WorldEvent.Load.postAndCatch() }
+        ClientPlayConnectionEvents.DISCONNECT.register { _, _ -> WorldEvent.Unload.postAndCatch() }
 
-        ClientPlayConnectionEvents.DISCONNECT.register { _, _ ->
-            WorldEvent.Unload.postAndCatch()
-        }
+        ClientTickEvents.START_WORLD_TICK.register { world -> TickEvent.Start(world).postAndCatch() }
+        ClientTickEvents.END_WORLD_TICK.register { world -> TickEvent.End(world).postAndCatch() }
 
-        ClientTickEvents.START_WORLD_TICK.register { world ->
-            mc.level?.let { TickEvent.Start(world).postAndCatch() }
-        }
+        WorldRenderEvents.END_EXTRACTION.register { handler -> RenderEvent.Extract(handler, RenderBatchManager.renderConsumer).postAndCatch() }
+        WorldRenderEvents.END_MAIN.register { context -> RenderEvent.Last(context).postAndCatch() }
 
-        ClientTickEvents.END_WORLD_TICK.register { world ->
-            mc.level?.let { TickEvent.End(world).postAndCatch() }
-        }
+        ScreenEvents.AFTER_INIT.register { _, screen, _, _ -> ScreenEvent.Open(screen).postAndCatch() }
+        ScreenEvents.BEFORE_INIT.register { _, screen, _, _ ->
 
-        WorldRenderEvents.END_EXTRACTION.register { handler ->
-            mc.level?.let { RenderEvent.Extract(handler, RenderBatchManager.renderConsumer).postAndCatch() }
-        }
-
-        WorldRenderEvents.END_MAIN.register { context ->
-            mc.level?.let { RenderEvent.Last(context).postAndCatch() }
+            ScreenEvents.remove(screen).register {
+                ScreenEvent.Close(screen).postAndCatch()
+            }
+            ScreenMouseEvents.beforeMouseClick(screen).register { screen, event ->
+                ScreenEvent.MouseClick(screen, event, false).postAndCatch()
+            }
+            ScreenMouseEvents.beforeMouseRelease(screen).register { screen, event ->
+                ScreenEvent.MouseRelease(screen, event).postAndCatch()
+            }
+            ScreenKeyboardEvents.beforeKeyPress(screen).register { screen, event ->
+                ScreenEvent.KeyPress(screen, event).postAndCatch()
+            }
         }
 
         ClientReceiveMessageEvents.ALLOW_GAME.register { text, overlay ->

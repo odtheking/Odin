@@ -26,6 +26,8 @@ class PersonalBest(module: Module, name: String) {
         } else if (!sendOnlyPB && sendMessage) modMessage("$msg ${if (alwaysSendPB) "(§8$oldPB§7)" else ""}")
     }
 
+    fun get(index: String): Float? = mapSetting.value[index]
+
     fun set(index: String, time: Float) {
         mapSetting.value[index] = time
         ModuleManager.saveConfigurations()

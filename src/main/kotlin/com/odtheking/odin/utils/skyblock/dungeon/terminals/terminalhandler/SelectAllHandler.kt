@@ -1,5 +1,7 @@
 package com.odtheking.odin.utils.skyblock.dungeon.terminals.terminalhandler
 
+import com.odtheking.odin.features.impl.floor7.TerminalSolver
+import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.hasGlint
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalTypes
 import net.minecraft.world.item.DyeColor
@@ -22,4 +24,6 @@ class SelectAllHandler(private val color: DyeColor): TerminalHandler(TerminalTyp
                 })) index else null
         }
     }
+
+    override fun renderSlot(slotIndex: Int): Pair<Color, String?> = TerminalSolver.selectColor to null
 }

@@ -10,11 +10,8 @@ import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Color.Companion.darker
 import com.odtheking.odin.utils.Colors
-import com.odtheking.odin.utils.devMessage
-import com.odtheking.odin.utils.equalsOneOf
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalTypes
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalUtils
-import com.odtheking.odin.utils.ui.rendering.NVGPIPRenderer
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 import net.minecraft.network.chat.Component
 import org.lwjgl.glfw.GLFW
@@ -23,11 +20,11 @@ object TerminalSolver : Module(
     name = "Terminal Solver",
     description = "Renders solution for terminals in floor 7."
 ) {
-    val renderType by SelectorSetting("Mode", "Normal", arrayListOf("Normal", "Custom GUI"), desc = "How the terminal solver should render.")
+    private val renderType by SelectorSetting("Render mode", "Normal", arrayListOf("Normal", "Custom GUI"), desc = "How the terminal solver should render.")
     val customTermSize by NumberSetting("Term Size", 2f, 1f, 3f, 0.1f, desc = "The size of the custom terminal GUI.").withDependency { renderType == 1 }
     private val normalTermSize by NumberSetting("Normal Term Size", 3, 1, 5, 1, desc = "The GUI scale increase for normal terminal GUI.").withDependency { renderType != 1 }
-    val roundness by NumberSetting("Roundness", 9f, 0f, 15f, 1f, desc = "The roundness of the custom terminal gui.").withDependency { renderType == 1 }
-    val gap by NumberSetting("Gap", 5f, 0f, 15f, 1f, desc = "The gap between the slots in the custom terminal gui.").withDependency { renderType == 1 }
+    val roundness by NumberSetting("Roundness", 6, 0f, 15f, 1f, desc = "The roundness of the custom terminal gui.").withDependency { renderType == 1 }
+    val gap by NumberSetting("Gap", 5, 0f, 15f, 1f, desc = "The gap between the slots in the custom terminal gui.").withDependency { renderType == 1 }
 
     private val solverSettings by DropdownSetting("Solver Functionality")
     private val cancelToolTip by BooleanSetting("Stop Tooltips", true, desc = "Stops rendering tooltips in terminals.").withDependency { renderType == 0 && solverSettings }
@@ -82,7 +79,7 @@ object TerminalSolver : Module(
             if (hideClicked && !term.isClicked) term.simulateClick(slotId, button)
         }
 
-        on<GuiEvent.Draw> {
+        on<GuiEvent.Render> {
             if (TerminalUtils.currentTerm == null || !renderMelody) return@on
             if (debug) TerminalUtils.currentTerm?.let { term ->
                 val menu = (mc.screen as? AbstractContainerScreen<*>)?.menu ?: return@let
@@ -105,69 +102,21 @@ object TerminalSolver : Module(
                     guiGraphics.renderItemDecorations(mc.font, stack, 5 + (index % 9) * 18, 250 + (index / 9) * 18)
                 }
             }
-            if (renderType == 1) cancel()
-            else {
+            if (renderType == 0) {
                 val screen = (screen as? AbstractContainerScreen<*>) as? AbstractContainerScreenAccessor ?: return@on
                 guiGraphics.fill(screen.x + 7, screen.y + 16, screen.x + screen.width - 7, screen.y + screen.height - 96, backgroundColor.rgba)
             }
         }
 
-        on<GuiEvent.DrawSlot> {
-            val term = TerminalUtils.currentTerm ?: return@on
+        on<GuiEvent.RenderSlot> {
             if (!renderMelody) return@on
+            val currentTerm = TerminalUtils.currentTerm ?: return@on
 
-            val slotIndex = slot.index
-            val inventorySize = (screen as? AbstractContainerScreen<*>)?.menu?.slots?.size ?: return@on
-
-            if (slotIndex <= inventorySize - 37) cancel()
-            if (slotIndex !in term.solution) return@on
-
-            when (term.type) {
-                TerminalTypes.PANES -> guiGraphics.fill(slot.x, slot.y, slot.x + 16, slot.y + 16, panesColor.rgba)
-
-                TerminalTypes.STARTS_WITH ->
-                    guiGraphics.fill(slot.x, slot.y, slot.x + 16, slot.y + 16, startsWithColor.rgba)
-
-                TerminalTypes.SELECT ->
-                    guiGraphics.fill(slot.x, slot.y, slot.x + 16, slot.y + 16, selectColor.rgba)
-
-                TerminalTypes.NUMBERS -> {
-                    val index = term.solution.indexOf(slotIndex)
-                    if (index < 3) {
-                        val color = when (index) {
-                            0 -> orderColor
-                            1 -> orderColor2
-                            else -> orderColor3
-                        }.rgba
-                        guiGraphics.fill(slot.x, slot.y, slot.x + 16, slot.y + 16, color)
-                        cancel()
-                    }
-                    val amount = slot.item?.count?.toString() ?: ""
-                    if (showNumbers) guiGraphics.drawCenteredString(screen.font, amount, slot.x + 8, slot.y + 4, Colors.WHITE.rgba)
-                }
-
-                TerminalTypes.RUBIX -> {
-                    val needed = term.solution.count { it == slotIndex }
-                    val text = if (needed < 3) needed else (needed - 5)
-                    if (text != 0) {
-                        val color = when (text) {
-                            2 -> rubixColor2
-                            1 -> rubixColor1
-                            -2 -> oppositeRubixColor2
-                            else -> oppositeRubixColor1
-                        }
-
-                        guiGraphics.fill(slot.x, slot.y, slot.x + 16, slot.y + 16, color.rgba)
-                        guiGraphics.drawCenteredString(screen.font, text.toString(), slot.x + 8, slot.y + 4, Colors.WHITE.rgba)
-                    }
-                }
-
-                TerminalTypes.MELODY -> {
-                    guiGraphics.fill(slot.x, slot.y, slot.x + 16, slot.y + 16, when {
-                        (slotIndex / 9).equalsOneOf(0, 5) -> melodyColumColor
-                        (slotIndex % 9).equalsOneOf(1, 2, 3, 4, 5) -> melodyPointerColor
-                        else -> melodyPointerColor
-                    }.rgba)
+            if (slot.index <= currentTerm.type.windowSize - 1) {
+                currentTerm.getSlotRendering(slot.index)?.let { (color, text) ->
+                    guiGraphics.fill(slot.x, slot.y, slot.x + 16, slot.y + 16, color.rgba)
+                    text?.let { guiGraphics.drawCenteredString(screen.font, it, slot.x + 8, slot.y + 4, Colors.WHITE.rgba) }
+                    cancel()
                 }
             }
         }
@@ -176,37 +125,15 @@ object TerminalSolver : Module(
             if (cancelToolTip && TerminalUtils.currentTerm != null) cancel()
         }
 
-        on<GuiEvent.DrawBackground> {
-            if (TerminalUtils.currentTerm == null || renderType != 1 || !renderMelody) return@on
-
-            NVGPIPRenderer.draw(guiGraphics, 0, 0, guiGraphics.guiWidth(), guiGraphics.guiHeight()) {
-                TerminalUtils.currentTerm?.type?.getGUI()?.render()
-            }
-
-            cancel()
-        }
-
-        on<GuiEvent.KeyPress> {
-            if (TerminalUtils.currentTerm != null && renderType == 1 && renderMelody && mc.options.keyDrop.matches(input)) {
-                TerminalUtils.currentTerm?.type?.getGUI()?.mouseClicked(screen, if (input.hasControlDown()) GLFW.GLFW_MOUSE_BUTTON_2 else GLFW.GLFW_MOUSE_BUTTON_3)
-                cancel()
-            }
-        }
-
-        on<GuiEvent.MouseClick> (EventPriority.HIGH) {
-            if (TerminalUtils.currentTerm != null && renderType == 1 && renderMelody) {
-                TerminalUtils.currentTerm?.type?.getGUI()?.mouseClicked(screen, if (click.button() == 0) GLFW.GLFW_MOUSE_BUTTON_3 else click.button())
-                cancel()
-            }
+        on<TerminalEvent.Update> {
+            if (renderType == 1 && renderMelody) terminal.type.getGUI().build()
         }
 
         on<TerminalEvent.Open> {
-            devMessage("§aNew terminal: §6${terminal.type.name}")
             if (renderType == 0) mc.execute { mc.resizeDisplay() }
         }
 
         on<TerminalEvent.Close> {
-            devMessage("§cLeft terminal: §6${terminal.type.name}")
             if (renderType == 0) mc.execute { mc.resizeDisplay() }
         }
     }

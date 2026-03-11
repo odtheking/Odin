@@ -16,6 +16,7 @@ import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.skyblock.dungeon.ScanUtils
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalUtils
 import com.odtheking.odin.utils.ui.rendering.NVGPIPRenderer
+import com.odtheking.odin.utils.ui.widget.CustomGUIImpl
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
@@ -44,7 +45,7 @@ object OdinMod : ClientModInitializer {
      */
     val configFile: File = File(mc.gameDirectory, "config/odin/").apply {
         try {
-            if (isFile()) delete() // Delete old bugged files that prevent creating the directory
+            if (isFile) delete() // Delete old bugged files that prevent creating the directory
             if (!exists()) mkdirs()
         } catch (e: Exception) {
             println("Error initializing module config\n${e.message}")
@@ -72,7 +73,7 @@ object OdinMod : ClientModInitializer {
             DungeonListener, PartyUtils, TerminalUtils,
             ScanUtils, DungeonUtils, SplitsManager,
             IrisCompatability, RenderBatchManager,
-            ModuleManager
+            ModuleManager, CustomGUIImpl
         ).forEach { EventBus.subscribe(it) }
 
         SpecialGuiElementRegistry.register { context ->

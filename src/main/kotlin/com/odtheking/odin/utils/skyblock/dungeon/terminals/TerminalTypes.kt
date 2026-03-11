@@ -1,7 +1,9 @@
 package com.odtheking.odin.utils.skyblock.dungeon.terminals
 
 import com.github.stivais.commodore.parsers.CommandParsable
-import com.odtheking.odin.features.impl.floor7.termGUI.*
+import com.odtheking.odin.features.impl.floor7.termGUI.MelodyGui
+import com.odtheking.odin.features.impl.floor7.termGUI.TermGui
+import com.odtheking.odin.features.impl.floor7.termGUI.simpleTermGui
 import com.odtheking.odin.features.impl.floor7.termsim.*
 import com.odtheking.odin.utils.modMessage
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.terminalhandler.*
@@ -15,23 +17,23 @@ enum class TerminalTypes(
 ) : Type {
     PANES("Correct all the panes!", Regex("^Correct all the panes!$"), 45) {
         override fun getSimulator() = PanesSim
-        override fun getGUI() = PanesGui
+        override fun getGUI() = simpleTermGui(rows = 3, cols = 5, startRow = 1, startCol = 2)
     },
     RUBIX("Change all to same color!", Regex("^Change all to same color!$"), 45) {
         override fun getSimulator() = RubixSim
-        override fun getGUI() = RubixGui
+        override fun getGUI() = simpleTermGui(rows = 3, cols = 3, startRow = 1, startCol = 3)
     },
     NUMBERS("Click in order!", Regex("^Click in order!$"), 36) {
         override fun getSimulator() = NumbersSim
-        override fun getGUI() = NumbersGui
+        override fun getGUI() = simpleTermGui(rows = 2, cols = 7, startRow = 1, startCol = 1)
     },
-    STARTS_WITH("What starts with:", Regex("^What starts with: '(\\w)'\\?$"), 45) {
+    STARTS_WITH("What starts with: \"*\"?", Regex("^What starts with: '(\\w)'\\?$"), 45) {
         override fun getSimulator() = StartsWithSim()
-        override fun getGUI() = StartsWithGui
+        override fun getGUI() = simpleTermGui(rows = 3, cols = 7, startRow = 1, startCol = 1)
     },
-    SELECT("Select all the", Regex("^Select all the ([\\w ]+) items!$"), 54) {
+    SELECT("Select all the \"*\" items!", Regex("^Select all the ([\\w ]+) items!$"), 54) {
         override fun getSimulator() = SelectAllSim()
-        override fun getGUI() = SelectAllGui
+        override fun getGUI() = simpleTermGui(rows = 4, cols = 7, startRow = 1, startCol = 1)
     },
     MELODY("Click the button on time!", Regex("^Click the button on time!$"), 54) {
         override fun getSimulator() = MelodySim

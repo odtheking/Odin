@@ -32,35 +32,35 @@ object HudManager : Screen(Component.literal("HUD Manager")) {
         super.init()
     }
 
-    override fun render(context: GuiGraphics, mouseX: Int, mouseY: Int, deltaTicks: Float) {
-        super.render(context, mouseX, mouseY, deltaTicks)
+    override fun render(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, deltaTicks: Float) {
+        super.render(guiGraphics, mouseX, mouseY, deltaTicks)
 
         dragging?.let {
             it.x = (odinMouseX + deltaX).coerceIn(0f, (mc.window.screenWidth - (it.width * it.scale))).toInt()
             it.y = (odinMouseY + deltaY).coerceIn(0f, (mc.window.screenHeight - (it.height * it.scale))).toInt()
         }
 
-        context.pose()?.pushMatrix()
+        guiGraphics.pose()?.pushMatrix()
         val sf = mc.window.guiScale
-        context.pose().scale(1f / sf, 1f / sf)
+        guiGraphics.pose().scale(1f / sf, 1f / sf)
 
         for (hud in hudSettingsCache) {
-            if (hud.isEnabled) hud.value.draw(context, true)
+            if (hud.isEnabled) hud.value.draw(guiGraphics, true)
         }
 
         hudSettingsCache.firstOrNull { it.isEnabled && it.value.isHovered() }?.let { hoveredHud ->
-            context.pose().pushMatrix()
-            context.pose().translate(
+            guiGraphics.pose().pushMatrix()
+            guiGraphics.pose().translate(
                 (hoveredHud.value.x + hoveredHud.value.width * hoveredHud.value.scale + 10f),
                 hoveredHud.value.y.toFloat(),
             )
-            context.pose().scale(2f, 2f)
-            context.drawString(mc.font, hoveredHud.name, 0, 0, Colors.WHITE.rgba)
-            context.drawWordWrap(mc.font, Component.literal(hoveredHud.description), 0, 10, 150, Colors.WHITE.rgba)
-            context.pose().popMatrix()
+            guiGraphics.pose().scale(2f, 2f)
+            guiGraphics.drawString(mc.font, hoveredHud.name, 0, 0, Colors.WHITE.rgba)
+            guiGraphics.drawWordWrap(mc.font, Component.literal(hoveredHud.description), 0, 10, 150, Colors.WHITE.rgba)
+            guiGraphics.pose().popMatrix()
         }
 
-        context.pose().popMatrix()
+        guiGraphics.pose().popMatrix()
     }
 
     override fun mouseScrolled(mouseX: Double, mouseY: Double, horizontalAmount: Double, verticalAmount: Double): Boolean {

@@ -42,6 +42,7 @@ interface SecretPickupEvent : Event { // all are currently packet based but can 
 
 abstract class TerminalEvent(val terminal: TerminalHandler) : Event { // first 2 are packet based can use mixins
     class Open(terminal: TerminalHandler) : TerminalEvent(terminal)
+    class Update(terminal: TerminalHandler) : TerminalEvent(terminal)
     class Close(terminal: TerminalHandler) : TerminalEvent(terminal)
     class Solve(terminal: TerminalHandler) : TerminalEvent(terminal)
 }

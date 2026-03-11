@@ -15,7 +15,7 @@ object RemovePerks : Module(
     private val renderStun by BooleanSetting("Show Stun", false, desc = "Shows the stun role perks.")
 
     init {
-        on<GuiEvent.DrawSlot> {
+        on<GuiEvent.RenderSlot> {
             if (screen.title?.string == "Perk Menu" && slotCheck(slot.item?.hoverName?.string ?: return@on))
                 cancel()
         }

@@ -1,24 +1,23 @@
 package com.odtheking.odin.features.impl.dungeon
 
-import com.mojang.blaze3d.opengl.GlTexture
 import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.*
 import com.odtheking.odin.events.ChatPacketEvent
-import com.odtheking.odin.events.GuiEvent
+import com.odtheking.odin.events.ScreenEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.*
 import com.odtheking.odin.utils.Color.Companion.withAlpha
+import com.odtheking.odin.utils.render.roundedFill
+import com.odtheking.odin.utils.render.text
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonClass
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonPlayer
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
-import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils.leapTeammates
 import com.odtheking.odin.utils.ui.HoverHandler
-import com.odtheking.odin.utils.ui.getQuadrant
-import com.odtheking.odin.utils.ui.rendering.NVGPIPRenderer
-import com.odtheking.odin.utils.ui.rendering.NVGRenderer
+import com.odtheking.odin.utils.ui.widget.CustomGUIImpl
+import com.odtheking.odin.utils.ui.widget.simpleWidget
+import net.minecraft.client.gui.components.PlayerFaceRenderer
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
-import net.minecraft.resources.ResourceLocation
 import org.lwjgl.glfw.GLFW
 
 object LeapMenu : Module(
@@ -31,7 +30,7 @@ object LeapMenu : Module(
     private val onlyClass by BooleanSetting("Only Classes", false, desc = "Renders classes instead of names.")
     private val colorStyle by BooleanSetting("Color Style", false, desc = "Which color style to use.")
     private val backgroundColor by ColorSetting("Background Color", Colors.gray38.withAlpha(0.75f), true, desc = "Color of the background of the leap menu.").withDependency { !colorStyle }
-    private val scale by NumberSetting("Scale", 0.5f, 0.1f, 2f, 0.1f, desc = "Scale of the leap menu.", unit = "x")
+    private val scale by NumberSetting("Scale", 1f, 0.1f, 2f, 0.1f, desc = "Scale of the leap menu.", unit = "x")
     val keybindType by SelectorSetting("Mode", "Normal", arrayListOf("Corners", "Class"), desc = "How the keybinds should function.")
 
     private val topLeftKeybind by KeybindSetting("Top Left", GLFW.GLFW_KEY_UNKNOWN, "Used to click on the first person in the leap menu.").withDependency { keybindType == 0 }
@@ -48,107 +47,121 @@ object LeapMenu : Module(
     private val leapAnnounce by BooleanSetting("Leap Announce", false, desc = "Announces when you leap to a player.")
     private val hoverHandler = List(4) { HoverHandler(200L) }
 
-    private val EMPTY = DungeonPlayer("Empty", DungeonClass.Unknown, 0, ResourceLocation.withDefaultNamespace("textures/entity/steve.png"))
+    private val EMPTY = DungeonPlayer("Empty", DungeonClass.Unknown, 0, null)
     private val leapedRegex = Regex("You have teleported to (\\w{1,16})!")
-    private val imageCacheMap = mutableMapOf<String, Int>()
-    const val BOX_WIDTH = 800f
-    const val BOX_HEIGHT = 300f
+
+    const val BOX_WIDTH = 200
+    const val BOX_HEIGHT = 75
 
     init {
-        on<GuiEvent.Draw> {
+        on<ScreenEvent.Open> {
+            if (screen.title?.string?.equalsOneOf("Spirit Leap", "Teleport to Player") == false || leapTeammates.isEmpty() || leapTeammates.all { it == EMPTY }) return@on
             val chest = (screen as? AbstractContainerScreen<*>) ?: return@on
-            if (chest.title?.string?.equalsOneOf("Spirit Leap", "Teleport to Player") == false || leapTeammates.isEmpty() || leapTeammates.all { it == EMPTY }) return@on
 
-            val halfWidth = mc.window.screenWidth / 2f
-            val halfHeight = mc.window.screenHeight / 2f
+            val halfW = mc.window.guiScaledWidth / 2
+            val halfH = mc.window.guiScaledHeight / 2
+            val halfScreenW = mc.window.screenWidth / 2f
+            val halfScreenH = mc.window.screenHeight / 2f
+            val scaledPad = (24 * scale).toInt().coerceAtLeast(4)
+            val cardWidth = (BOX_WIDTH * scale).toInt().coerceAtLeast(80)
+            val cardHeight = (BOX_HEIGHT * scale).toInt().coerceAtLeast(30)
 
-            hoverHandler[0].handle(0f, 0f, halfWidth, halfHeight)
-            hoverHandler[1].handle(halfWidth, 0f, halfWidth, halfHeight)
-            hoverHandler[2].handle(0f, halfHeight, halfWidth, halfHeight)
-            hoverHandler[3].handle(halfWidth, halfHeight, halfWidth, halfHeight)
+            repeat(4) { i ->
+                val player = leapTeammates.getOrNull(i) ?: EMPTY
+                val row = i / 2
+                val col = i % 2
+                val quadrantX = col * halfW
+                val quadrantY = row * halfH
+                val hoverX = if (col == 0) 0f else halfScreenW
+                val hoverY = if (row == 0) 0f else halfScreenH
+                val cardHover = hoverHandler[i]
 
-            NVGPIPRenderer.draw(guiGraphics, 0, 0, guiGraphics.guiWidth(), guiGraphics.guiHeight()) {
-                NVGRenderer.scale(scale, scale)
-                NVGRenderer.translate(halfWidth / scale, halfHeight / scale)
-                leapTeammates.forEachIndexed { index, player ->
-                    if (player == EMPTY) return@forEachIndexed
-
-                    val x = when (index) {
-                        0, 2 -> -((mc.window.screenWidth - (BOX_WIDTH * 2f)) / 6f + BOX_WIDTH)
-                        else -> ((mc.window.screenWidth - (BOX_WIDTH * 2f)) / 6f)
+                CustomGUIImpl.register(screen, simpleWidget(quadrantX, quadrantY, halfW, halfH) {
+                    onClick { _, _ ->
+                        if (!onRelease) {
+                            chest.mouseTrigger(player, i)
+                            true
+                        } else false
                     }
-                    val y = when (index) {
-                        0, 1 -> -((mc.window.screenHeight - (BOX_HEIGHT * 2f)) / 8f + BOX_HEIGHT)
-                        else -> ((mc.window.screenHeight - (BOX_HEIGHT * 2f)) / 8f)
-                    }
+                    onMouseRelease { _ -> if (onRelease) chest.mouseTrigger(player, i) }
+                    onKeyPress { keyEvent ->
+                        val keybindList =
+                            if(keybindType == 0) listOf(topLeftKeybind, topRightKeybind, bottomLeftKeybind, bottomRightKeybind)
+                            else listOf(archerKeybind, berserkerKeybind, healerKeybind, mageKeybind, tankKeybind)
+                        if (keybindList.none { it.value == keyEvent.key() } || leapTeammates.isEmpty()) return@onKeyPress false
 
-                    val expandValue = hoverHandler[index].anim.get(0f, 15f, !hoverHandler[index].isHovered)
-                    NVGRenderer.rect(x - expandValue ,y - expandValue, BOX_WIDTH + expandValue * 2, BOX_HEIGHT + expandValue * 2, (if (colorStyle) player.clazz.color else backgroundColor).rgba, 12f)
-                    val locationSkin = player.locationSkin ?: mc.player?.skin?.body?.id() ?: return@forEachIndexed
-                    imageCacheMap.getOrPut(locationSkin.path) {
-                        NVGRenderer.createNVGImage((mc.textureManager?.getTexture(locationSkin)?.texture as? GlTexture)?.glId() ?: 0, 64, 64)
-                    }.let { glTextureId ->
-                        NVGRenderer.image(glTextureId, 64, 64, 8, 8, 8, 8, x + 30f, y + 30f, 240f, 240f, 9f)
-                    }
+                        val index = if (keybindType == 0) keybindList.indexOfFirst { it.value == keyEvent.key() }
+                        else DungeonClass.entries.find { clazz -> clazz.ordinal == keybindList.indexOfFirst { it.value == keyEvent.key() } }?.let { clazz -> leapTeammates.indexOfFirst { it.clazz == clazz } } ?: return@onKeyPress false
+                        if (index == -1) return@onKeyPress false
+                        val playerToLeap = leapTeammates[index]
+                        if (playerToLeap == EMPTY) return@onKeyPress false
+                        if (playerToLeap.isDead) {
+                            modMessage("This player is dead, can't leap.")
+                            return@onKeyPress false
+                        }
 
-                    NVGRenderer.textShadow(if (!onlyClass) player.name else player.clazz.name, x + 275f, y + 110f, 50f, if (!colorStyle) player.clazz.color.rgba else backgroundColor.rgba, NVGRenderer.defaultFont)
-                    if (!onlyClass || player.isDead) NVGRenderer.textShadow(if (player.isDead) "DEAD" else player.clazz.name, x + 275f, y + 180f, 40f, if (player.isDead) Colors.MINECRAFT_RED.rgba else Colors.WHITE.rgba, NVGRenderer.defaultFont)
+                        leapTo(playerToLeap.name, chest)
+                        true
+                    }
+                })
+
+                val cardWidget = simpleWidget(
+                    x = if (col == 0) quadrantX + halfW - scaledPad - cardWidth else quadrantX + scaledPad,
+                    y = if (row == 0) quadrantY + halfH - scaledPad - cardHeight else quadrantY + scaledPad,
+                    cardWidth, cardHeight
+                ) {
+                    onRender { x, y, w, h ->
+                        if (player == EMPTY) return@onRender
+                        cardHover.handle(hoverX, hoverY, halfScreenW, halfScreenH)
+
+                        val expand = cardHover.anim.get(0f, 5f, !cardHover.isHovered)
+                        val xScale = (w + expand * 2f) / w.toFloat()
+                        val yScale = (h + expand * 2f) / h.toFloat()
+                        val centerX = x + w / 2f
+                        val centerY = y + h / 2f
+
+                        pose().pushMatrix()
+                        pose().translate(centerX, centerY)
+                        pose().scale(xScale, yScale)
+                        pose().translate(-centerX, -centerY)
+                        roundedFill(x, y, x + w, y + h, (if (colorStyle) player.clazz.color else backgroundColor).rgba, 9)
+                        pose().popMatrix()
+
+                        val face = (h * 0.76).toInt()
+                        (player.playerSkin ?: mc.player?.skin)?.let { PlayerFaceRenderer.draw(this, it, x + 9, y + 9, face) }
+
+                        text(
+                            if (!onlyClass) player.name else player.clazz.name,
+                            x + 15 + face, (y + h / 2.5).toInt(),
+                            if (!colorStyle) player.clazz.color else backgroundColor
+                        )
+
+                        if (!onlyClass || player.isDead) {
+                            text(
+                                if (player.isDead) "DEAD" else player.clazz.name,
+                                x + 15 + face, (y + h / 1.7).toInt(),
+                                if (player.isDead) Colors.MINECRAFT_RED else Colors.WHITE
+                            )
+                        }
+                    }
                 }
+                CustomGUIImpl.register(screen, cardWidget)
             }
-            cancel()
-        }
-
-        on<GuiEvent.DrawBackground> {
-            val chest = (screen as? AbstractContainerScreen<*>) ?: return@on
-            if (chest.title?.string?.equalsOneOf("Spirit Leap", "Teleport to Player") == false || leapTeammates.isEmpty() || leapTeammates.all { it == EMPTY }) return@on
-            cancel()
-        }
-
-        on<GuiEvent.MouseClick> {
-            if (!onRelease) mouseTrigger()
-        }
-
-        on<GuiEvent.MouseRelease> {
-            if (onRelease) mouseTrigger()
-        }
-
-        on<GuiEvent.KeyPress> {
-            val chest = (screen as? AbstractContainerScreen<*>) ?: return@on
-            val keybindList =
-                if(keybindType == 0) listOf(topLeftKeybind, topRightKeybind, bottomLeftKeybind, bottomRightKeybind)
-                else listOf(archerKeybind, berserkerKeybind, healerKeybind, mageKeybind, tankKeybind)
-            if (chest.title?.string?.equalsOneOf("Spirit Leap", "Teleport to Player") == false || keybindList.none { it.value == input.key() } || leapTeammates.isEmpty()) return@on
-
-            val index = if(keybindType == 0) keybindList.indexOfFirst { it.value == input.key() }
-            else DungeonClass.entries.find { clazz -> clazz.ordinal == keybindList.indexOfFirst { it.value == input.key() } }?.let { clazz -> leapTeammates.indexOfFirst { it.clazz == clazz } } ?: return@on
-            if (index == -1) return@on
-            val playerToLeap = leapTeammates[index]
-            if (playerToLeap == EMPTY) return@on
-            if (playerToLeap.isDead) return@on modMessage("This player is dead, can't leap.")
-
-            leapTo(playerToLeap.name, chest)
-            cancel()
         }
 
         on<ChatPacketEvent> {
-            if (!leapAnnounce || !DungeonUtils.inDungeons) return@on
-            leapedRegex.find(value)?.groupValues?.get(1)?.let { sendCommand("pc Leaped to ${it}!") }
+            if (leapAnnounce && DungeonUtils.inDungeons)
+                leapedRegex.find(value)?.groupValues?.get(1)?.let { sendCommand("pc Leaped to ${it}!") }
         }
     }
 
-    fun GuiEvent.mouseTrigger() {
-        val chest = (screen as? AbstractContainerScreen<*>) ?: return
-        if (chest.title?.string?.equalsOneOf("Spirit Leap", "Teleport to Player") == false || leapTeammates.isEmpty() || leapTeammates.all { it == EMPTY }) return
-
-        val quadrant = getQuadrant()
+    fun AbstractContainerScreen<*>.mouseTrigger(player: DungeonPlayer, quadrant: Int) {
         if ((type.equalsOneOf(1,2,3)) && leapTeammates.size < quadrant) return
 
-        val playerToLeap = leapTeammates[quadrant - 1]
-        if (playerToLeap == EMPTY) return
-        if (playerToLeap.isDead) return modMessage("This player is dead, can't leap.")
+        if (player == EMPTY) return
+        if (player.isDead) return modMessage("This player is dead, can't leap.")
 
-        leapTo(playerToLeap.name, chest)
-        cancel()
+        leapTo(player.name, this)
     }
 
     private fun leapTo(name: String, screenHandler: AbstractContainerScreen<*>) {
@@ -159,12 +172,12 @@ object LeapMenu : Module(
         modMessage("Teleporting to $name.")
     }
 
-    /*private val leapTeammates: MutableList<DungeonPlayer> = mutableListOf(
+    private val leapTeammates: MutableList<DungeonPlayer> = mutableListOf(
         DungeonPlayer("Stiviaisd", DungeonClass.Healer, 50, null),
         DungeonPlayer("Odtheking", DungeonClass.Archer, 50, null),
         DungeonPlayer("Bonzi", DungeonClass.Mage, 47, null),
         DungeonPlayer("Cezar", DungeonClass.Tank, 38, null)
-    )*/
+    )
 
     /**
      * Sorts the list of players based on their default quadrant and class priority.

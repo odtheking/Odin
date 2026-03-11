@@ -202,7 +202,7 @@ object DungeonUtils {
                     previousTeammates.add(
                         DungeonPlayer(
                             name, DungeonClass.entries.find { it.name == clazz } ?: continue,
-                            romanToInt(clazzLevel), player.skin?.body?.id(),
+                            romanToInt(clazzLevel), player.skin,
                             entity = mc.level?.getPlayerByUUID(player.profile?.id)
                         )
                     )

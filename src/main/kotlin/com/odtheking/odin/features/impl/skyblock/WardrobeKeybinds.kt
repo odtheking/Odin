@@ -4,7 +4,7 @@ import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.DropdownSetting
 import com.odtheking.odin.clickgui.settings.impl.KeybindSetting
-import com.odtheking.odin.events.GuiEvent
+import com.odtheking.odin.events.ScreenEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.clickSlot
@@ -37,11 +37,11 @@ object WardrobeKeybinds : Module(
     private val equippedRegex = Regex("Slot (\\d): Equipped")
 
     init {
-        on<GuiEvent.MouseClick> {
+        on<ScreenEvent.MouseClick> {
             if (screen is AbstractContainerScreen<*> && onClick(screen, click.button())) cancel()
         }
 
-        on<GuiEvent.KeyPress> {
+        on<ScreenEvent.KeyPress> {
             if (screen is AbstractContainerScreen<*> && onClick(screen, input.key)) cancel()
         }
     }

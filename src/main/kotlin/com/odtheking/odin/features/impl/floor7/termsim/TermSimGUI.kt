@@ -53,11 +53,9 @@ open class TermSimGUI(
     }
 
     fun open(terminalPing: Long = 0L) {
-        schedule(0) {
-            mc.setScreen(this)
-            create()
-            ping = terminalPing
-        }
+        mc.setScreen(this)
+        create()
+        ping = terminalPing
     }
 
     open fun slotClick(slot: Slot, button: Int) {}

@@ -5,22 +5,22 @@ import com.odtheking.odin.features.impl.dungeon.map.DungMap.roomSize
 import com.odtheking.odin.features.impl.dungeon.map.Vec2i
 import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.Colors
-import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.entity.player.Player
+import net.minecraft.world.entity.player.PlayerSkin
 
 /**
  * Data class representing a player in a dungeon, including their name, class, skin location, and associated player entity.
  *
  * @property name The name of the player.
  * @property clazz The player's class, defined by the [DungeonClass] enum.
- * @property locationSkin The resource location of the player's skin.
+ * @property playerSkin The resource location of the player's skin.
  * @property isDead The player's death status. Defaults to `false`.
  */
 data class DungeonPlayer(
     val name: String,
     val clazz: DungeonClass,
     val clazzLvl: Int,
-    val locationSkin: ResourceLocation?,
+    val playerSkin: PlayerSkin?,
     var entity: Player? = null,
     var isDead: Boolean = false,
     var deaths: Int = 0,

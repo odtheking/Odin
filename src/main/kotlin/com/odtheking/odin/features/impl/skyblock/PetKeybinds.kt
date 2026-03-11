@@ -5,7 +5,7 @@ import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.DropdownSetting
 import com.odtheking.odin.clickgui.settings.impl.KeybindSetting
 import com.odtheking.odin.clickgui.settings.impl.ListSetting
-import com.odtheking.odin.events.GuiEvent
+import com.odtheking.odin.events.ScreenEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.clickSlot
@@ -41,11 +41,11 @@ object PetKeybinds : Module(
     val petList by ListSetting("PetKeys List", mutableListOf<String>())
 
     init {
-        on<GuiEvent.MouseClick> {
+        on<ScreenEvent.MouseClick> {
             if (screen is AbstractContainerScreen<*> && onClick(screen, click.button())) cancel()
         }
 
-        on<GuiEvent.KeyPress> {
+        on<ScreenEvent.KeyPress> {
             if (screen is AbstractContainerScreen<*> && onClick(screen, input.key)) cancel()
         }
     }
