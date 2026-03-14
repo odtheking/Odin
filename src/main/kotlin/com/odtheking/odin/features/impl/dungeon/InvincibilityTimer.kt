@@ -98,7 +98,7 @@ object InvincibilityTimer : Module(
     ) {
         SPIRIT(
             Regex("^Second Wind Activated! Your Spirit Mask saved your life!$"),
-            30, 600,
+            60, 600,
             createSkullStack("9bbe721d7ad8ab965f08cbec0b834f779b5197f79da4aea3d13d253ece9dec2")
         ),
         BONZO(
