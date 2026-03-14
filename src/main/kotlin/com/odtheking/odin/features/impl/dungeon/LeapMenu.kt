@@ -15,7 +15,6 @@ import com.odtheking.odin.utils.skyblock.dungeon.DungeonPlayer
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.ui.HoverHandler
 import com.odtheking.odin.utils.ui.widget.CustomGUIImpl
-import com.odtheking.odin.utils.ui.widget.simpleWidget
 import net.minecraft.client.gui.components.PlayerFaceRenderer
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 import org.lwjgl.glfw.GLFW
@@ -53,101 +52,117 @@ object LeapMenu : Module(
     const val BOX_WIDTH = 200
     const val BOX_HEIGHT = 75
 
+    private fun currentLeapScreen(): AbstractContainerScreen<*>? {
+        val screen = mc.screen as? AbstractContainerScreen<*> ?: return null
+        if (screen.title?.string?.equalsOneOf("Spirit Leap", "Teleport to Player") == false) return null
+        if (leapTeammates.isEmpty() || leapTeammates.all { it == EMPTY }) return null
+        return screen
+    }
+
     init {
-        on<ScreenEvent.Open> {
-            if (screen.title?.string?.equalsOneOf("Spirit Leap", "Teleport to Player") == false || leapTeammates.isEmpty() || leapTeammates.all { it == EMPTY }) return@on
-            val chest = (screen as? AbstractContainerScreen<*>) ?: return@on
+        fun triggerMouseQuadrant(chest: AbstractContainerScreen<*>, mouseX: Int, mouseY: Int) {
+            val quadrant = (if (mouseY >= mc.window.guiScaledHeight / 2) 2 else 0) +
+                    (if (mouseX >= mc.window.guiScaledWidth / 2) 1 else 0)
+            chest.mouseTrigger(leapTeammates.getOrNull(quadrant) ?: EMPTY, quadrant)
+        }
 
-            val halfW = mc.window.guiScaledWidth / 2
-            val halfH = mc.window.guiScaledHeight / 2
-            val halfScreenW = mc.window.screenWidth / 2f
-            val halfScreenH = mc.window.screenHeight / 2f
-            val scaledPad = (24 * scale).toInt().coerceAtLeast(4)
-            val cardWidth = (BOX_WIDTH * scale).toInt().coerceAtLeast(80)
-            val cardHeight = (BOX_HEIGHT * scale).toInt().coerceAtLeast(30)
+        CustomGUIImpl.register(
+            CustomGUIImpl.HandlerSet(enabled = { currentLeapScreen() != null },
+            click = fun ScreenEvent.MouseClick.(): Any {
+                val chest = currentLeapScreen() ?: return false
+                if (onRelease) return true
+                triggerMouseQuadrant(chest, click.x().toInt(), click.y().toInt())
+                return true
+            },
+            release = fun ScreenEvent.MouseRelease.(): Any {
+                val chest = currentLeapScreen() ?: return false
+                if (!onRelease) return true
+                triggerMouseQuadrant(chest, click.x().toInt(), click.y().toInt())
+                return true
+            },
+            key = fun ScreenEvent.KeyPress.(): Any {
+                if (leapTeammates.isEmpty()) return false
+                val keybindList = if (keybindType == 0) listOf(topLeftKeybind, topRightKeybind, bottomLeftKeybind, bottomRightKeybind)
+                else listOf(archerKeybind, berserkerKeybind, healerKeybind, mageKeybind, tankKeybind)
+                if (keybindList.none { it.value == input.key() }) return false
 
-            repeat(4) { i ->
-                val player = leapTeammates.getOrNull(i) ?: EMPTY
-                val row = i / 2
-                val col = i % 2
-                val quadrantX = col * halfW
-                val quadrantY = row * halfH
-                val hoverX = if (col == 0) 0f else halfScreenW
-                val hoverY = if (row == 0) 0f else halfScreenH
-                val cardHover = hoverHandler[i]
+                val chest = currentLeapScreen() ?: return false
 
-                CustomGUIImpl.register(screen, simpleWidget(quadrantX, quadrantY, halfW, halfH) {
-                    onClick { _, _ ->
-                        if (!onRelease) {
-                            chest.mouseTrigger(player, i)
-                            true
-                        } else false
+                val index = if (keybindType == 0) keybindList.indexOfFirst { it.value == input.key() }
+                else DungeonClass.entries.find { clazz -> clazz.ordinal == keybindList.indexOfFirst { it.value == input.key() } }
+                    ?.let { clazz -> leapTeammates.indexOfFirst { it.clazz == clazz } } ?: return false
+
+                if (index < 0) return false
+
+                val playerToLeap = leapTeammates.getOrNull(index) ?: return false
+                if (playerToLeap == EMPTY) return false
+                if (playerToLeap.isDead) return modMessage("This player is dead, can't leap.")
+                leapTo(playerToLeap.name, chest)
+                return true
+            },
+            render = fun ScreenEvent.Render.(): Any {
+                val halfW = mc.window.guiScaledWidth / 2
+                val halfH = mc.window.guiScaledHeight / 2
+                val scaledPad = (24 * scale).toInt()
+                val cardWidth = (BOX_WIDTH * scale).toInt()
+                val cardHeight = (BOX_HEIGHT * scale).toInt()
+
+                repeat(4) { i ->
+                    val player = leapTeammates.getOrNull(i) ?: EMPTY
+                    if (player == EMPTY) return@repeat
+
+                    val row = i / 2
+                    val col = i % 2
+                    val quadrantX = col * halfW
+                    val quadrantY = row * halfH
+                    val cardX = if (col == 0) quadrantX + halfW - scaledPad - cardWidth else quadrantX + scaledPad
+                    val cardY = if (row == 0) quadrantY + halfH - scaledPad - cardHeight else quadrantY + scaledPad
+
+                    val cardHover = hoverHandler[i]
+                    val hovered = mouseX in quadrantX..(quadrantX + halfW) && mouseY in quadrantY..(quadrantY + halfH)
+                    if (hovered != cardHover.isHovered) {
+                        cardHover.anim.start()
+                        cardHover.isHovered = hovered
                     }
-                    onMouseRelease { _ -> if (onRelease) chest.mouseTrigger(player, i) }
-                    onKeyPress { keyEvent ->
-                        val keybindList =
-                            if(keybindType == 0) listOf(topLeftKeybind, topRightKeybind, bottomLeftKeybind, bottomRightKeybind)
-                            else listOf(archerKeybind, berserkerKeybind, healerKeybind, mageKeybind, tankKeybind)
-                        if (keybindList.none { it.value == keyEvent.key() } || leapTeammates.isEmpty()) return@onKeyPress false
 
-                        val index = if (keybindType == 0) keybindList.indexOfFirst { it.value == keyEvent.key() }
-                        else DungeonClass.entries.find { clazz -> clazz.ordinal == keybindList.indexOfFirst { it.value == keyEvent.key() } }?.let { clazz -> leapTeammates.indexOfFirst { it.clazz == clazz } } ?: return@onKeyPress false
-                        if (index == -1) return@onKeyPress false
-                        val playerToLeap = leapTeammates[index]
-                        if (playerToLeap == EMPTY) return@onKeyPress false
-                        if (playerToLeap.isDead) {
-                            modMessage("This player is dead, can't leap.")
-                            return@onKeyPress false
-                        }
+                    val expand = cardHover.anim.get(0f, 5f, !cardHover.isHovered)
+                    val xScale = (cardWidth + expand * 2f) / cardWidth.toFloat()
+                    val yScale = (cardHeight + expand * 2f) / cardHeight.toFloat()
+                    val centerX = cardX + cardWidth / 2f
+                    val centerY = cardY + cardHeight / 2f
 
-                        leapTo(playerToLeap.name, chest)
-                        true
-                    }
-                })
+                    guiGraphics.pose().pushMatrix()
+                    guiGraphics.pose().translate(centerX, centerY)
+                    guiGraphics.pose().scale(xScale, yScale)
+                    guiGraphics.pose().translate(-centerX, -centerY)
+                    guiGraphics.roundedFill(
+                        cardX, cardY, cardX + cardWidth, cardY + cardHeight,
+                        (if (colorStyle) player.clazz.color else backgroundColor).rgba, 9
+                    )
+                    guiGraphics.pose().popMatrix()
 
-                val cardWidget = simpleWidget(
-                    x = if (col == 0) quadrantX + halfW - scaledPad - cardWidth else quadrantX + scaledPad,
-                    y = if (row == 0) quadrantY + halfH - scaledPad - cardHeight else quadrantY + scaledPad,
-                    cardWidth, cardHeight
-                ) {
-                    onRender { x, y, w, h ->
-                        if (player == EMPTY) return@onRender
-                        cardHover.handle(hoverX, hoverY, halfScreenW, halfScreenH)
+                    val face = (cardHeight * 0.76).toInt()
+                    (player.playerSkin ?: mc.player?.skin)?.let { PlayerFaceRenderer.draw(guiGraphics, it, cardX + 9, cardY + 9, face) }
 
-                        val expand = cardHover.anim.get(0f, 5f, !cardHover.isHovered)
-                        val xScale = (w + expand * 2f) / w.toFloat()
-                        val yScale = (h + expand * 2f) / h.toFloat()
-                        val centerX = x + w / 2f
-                        val centerY = y + h / 2f
+                    guiGraphics.text(
+                        if (!onlyClass) player.name else player.clazz.name,
+                        cardX + 15 + face,
+                        (cardY + cardHeight / 2.5).toInt(),
+                        if (!colorStyle) player.clazz.color else backgroundColor
+                    )
 
-                        pose().pushMatrix()
-                        pose().translate(centerX, centerY)
-                        pose().scale(xScale, yScale)
-                        pose().translate(-centerX, -centerY)
-                        roundedFill(x, y, x + w, y + h, (if (colorStyle) player.clazz.color else backgroundColor).rgba, 9)
-                        pose().popMatrix()
-
-                        val face = (h * 0.76).toInt()
-                        (player.playerSkin ?: mc.player?.skin)?.let { PlayerFaceRenderer.draw(this, it, x + 9, y + 9, face) }
-
-                        text(
-                            if (!onlyClass) player.name else player.clazz.name,
-                            x + 15 + face, (y + h / 2.5).toInt(),
-                            if (!colorStyle) player.clazz.color else backgroundColor
+                    if (!onlyClass || player.isDead) {
+                        guiGraphics.text(
+                            if (player.isDead) "DEAD" else player.clazz.name,
+                            cardX + 15 + face,
+                            (cardY + cardHeight / 1.7).toInt(),
+                            if (player.isDead) Colors.MINECRAFT_RED else Colors.WHITE
                         )
-
-                        if (!onlyClass || player.isDead) {
-                            text(
-                                if (player.isDead) "DEAD" else player.clazz.name,
-                                x + 15 + face, (y + h / 1.7).toInt(),
-                                if (player.isDead) Colors.MINECRAFT_RED else Colors.WHITE
-                            )
-                        }
                     }
                 }
-                CustomGUIImpl.register(screen, cardWidget)
-            }
-        }
+                return true
+            })
+        )
 
         on<ChatPacketEvent> {
             if (leapAnnounce && DungeonUtils.inDungeons)

@@ -12,7 +12,7 @@ abstract class ScreenEvent(val screen: Screen) : CancellableEvent() {
 
     class Close(screen: Screen) : ScreenEvent(screen)
 
-    class MouseClick(screen: Screen, val click: MouseButtonEvent, val doubled: Boolean) : ScreenEvent(screen)
+    class MouseClick(screen: Screen, val click: MouseButtonEvent) : ScreenEvent(screen)
 
     class MouseRelease(screen: Screen, val click: MouseButtonEvent) : ScreenEvent(screen)
 

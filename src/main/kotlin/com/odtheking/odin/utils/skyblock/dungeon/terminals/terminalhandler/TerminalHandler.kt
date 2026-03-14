@@ -5,7 +5,6 @@ import com.google.common.primitives.SignedBytes
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.events.GuiEvent
 import com.odtheking.odin.events.PacketEvent
-import com.odtheking.odin.events.TerminalEvent
 import com.odtheking.odin.features.impl.floor7.termsim.TermSimGUI
 import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.clickSlot
@@ -33,7 +32,6 @@ abstract class TerminalHandler(val type: TerminalTypes) {
         if (canSolve(items, event.packet.slot)) {
             solution.clear()
             solution.addAll(solve(items))
-            TerminalEvent.Update(this).postAndCatch()
         }
     }
 

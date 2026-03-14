@@ -2,6 +2,7 @@ package com.odtheking.odin.features.impl.floor7.termGUI
 
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.events.GuiEvent
+import com.odtheking.odin.events.ScreenEvent
 import com.odtheking.odin.features.impl.floor7.TerminalSolver
 import com.odtheking.odin.features.impl.floor7.TerminalSolver.hideClicked
 import com.odtheking.odin.utils.Color
@@ -10,34 +11,103 @@ import com.odtheking.odin.utils.render.roundedFill
 import com.odtheking.odin.utils.render.text
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalUtils
 import com.odtheking.odin.utils.ui.widget.CustomGUIImpl
-import com.odtheking.odin.utils.ui.widget.SimpleWidget
-import com.odtheking.odin.utils.ui.widget.simpleWidget
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
+import net.minecraft.client.input.KeyEvent
 import org.lwjgl.glfw.GLFW
-import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
 abstract class TermGui {
+    protected data class SlotVisual(
+        val resolve: () -> Pair<Color, String?>?,
+        val onRenderContent: (GuiGraphics.(Int, Int, Int, Int) -> Unit)? = null,
+    )
+
+    private data class SlotBox(
+        val slotIndex: Int,
+        val x: Int,
+        val y: Int,
+        val size: Int,
+        val visual: SlotVisual,
+    ) {
+        fun contains(mouseX: Int, mouseY: Int): Boolean =
+            mouseX >= x && mouseY >= y && mouseX < x + size && mouseY < y + size
+    }
+
+    private data class TermLayout(
+        val backgroundX: Int,
+        val backgroundY: Int,
+        val width: Int,
+        val height: Int,
+        val slots: List<SlotBox>,
+    )
+
+    private data class LayoutKey(
+        val screenWidth: Int,
+        val screenHeight: Int,
+        val scale: Float,
+        val gap: Float,
+    )
+
     inline val currentSolution get() = TerminalUtils.currentTerm?.solution.orEmpty()
-
-    protected val slotWidgets = ConcurrentHashMap<Int, SimpleWidget>()
-
+    private var layout: TermLayout? = null
+    private var layoutKey: LayoutKey? = null
+    private var hoveredSlotIndex: Int? = null
     open fun buildTerminal(screen: AbstractContainerScreen<*>) {}
 
-    open fun build() {
-        val screen = mc.screen as? AbstractContainerScreen<*> ?: return
+    init {
+        CustomGUIImpl.register(
+            CustomGUIImpl.HandlerSet(::isActiveTermScreen,
+            render = fun ScreenEvent.Render.(): Any {
+                val screen = currentTermScreen() ?: return false
+                ensureLayout(screen)
+                renderLayout(guiGraphics, mouseX, mouseY)
+                return true
+            },
+            click = fun ScreenEvent.MouseClick.(): Any {
+                val screen = currentTermScreen() ?: return false
+                ensureLayout(screen)
+                hoveredSlotIndex = layout?.slots?.firstOrNull { it.contains(click.x().toInt(), click.y().toInt()) }?.slotIndex
+                hoveredSlotIndex?.let { customTerminalClick(it, click.button()) }
+                return true
+            },
+            key = fun ScreenEvent.KeyPress.(): Any {
+                if (!isTerminalOverrideKey(input)) return false
+                hoveredSlotIndex?.let {
+                    customTerminalClick(it, if (!input.hasControlDown()) GLFW.GLFW_MOUSE_BUTTON_1 else GLFW.GLFW_MOUSE_BUTTON_2)
+                }
+                return true
+            })
+        )
+    }
 
-        slotWidgets.clear()
-        CustomGUIImpl.clear(screen)
+    private fun currentTermScreen(): AbstractContainerScreen<*>? = mc.screen as? AbstractContainerScreen<*>
+
+    private fun isActiveTermScreen(): Boolean {
+        if (!TerminalSolver.customGuiEnabled) return false
+        if (TerminalUtils.currentTerm == null) return false
+        if (currentTermScreen() == null) return false
+        return TerminalUtils.currentTerm?.type?.getGUI() === this
+    }
+
+    private fun isTerminalOverrideKey(event: KeyEvent): Boolean =
+        mc.options.keyDrop.matches(event) || mc.options.keyHotbarSlots.any { it.matches(event) }
+
+    private fun ensureLayout(screen: AbstractContainerScreen<*>) {
+        val key = LayoutKey(screen.width, screen.height, TerminalSolver.customTermSize, TerminalSolver.gap.toFloat())
+        if (layout != null && layoutKey == key) return
+
+        layout = null
+        layoutKey = key
+        hoveredSlotIndex = null
         buildTerminal(screen)
     }
 
     protected fun buildTerminalGrid(
         screen: AbstractContainerScreen<*>,
         rows: Int, cols: Int, startRow: Int,
-        startCol: Int, slotFactory: (index: Int) -> SimpleWidget?
+        startCol: Int, slotFactory: (index: Int) -> SlotVisual?
     ) {
         val scale = TerminalSolver.customTermSize
         val slotSize = (24f * scale).roundToInt()
@@ -50,51 +120,29 @@ abstract class TermGui {
 
         val backgroundX = (screen.width - totalWidth) / 2
         val backgroundY = (screen.height - totalHeight) / 2
-
-        CustomGUIImpl.register(screen, createBackgroundWidget(backgroundX, backgroundY, totalWidth, totalHeight))
+        val slotBoxes = mutableListOf<SlotBox>()
 
         for (row in 0 until rows) {
             for (col in 0 until cols) {
                 val index = (startRow + row) * 9 + (startCol + col)
-                val widget = slotFactory(index) ?: createSlotWidget(index, Colors.TRANSPARENT).apply { visible = false }
-
-                widget.x = backgroundX + padding + col * totalSlotSpace
-                widget.y = backgroundY + padding + row * totalSlotSpace
-                CustomGUIImpl.register(screen, widget)
+                val visual = slotFactory(index) ?: continue
+                slotBoxes += SlotBox(
+                    slotIndex = index,
+                    x = backgroundX + padding + col * totalSlotSpace,
+                    y = backgroundY + padding + row * totalSlotSpace,
+                    size = slotSize,
+                    visual = visual,
+                )
             }
         }
+
+        layout = TermLayout(backgroundX, backgroundY, totalWidth, totalHeight, slotBoxes)
     }
 
-    protected fun createSlotWidgetFromRendering(slotIndex: Int): SimpleWidget? {
-        val (color, text) = TerminalUtils.currentTerm?.getSlotRendering(slotIndex) ?: return null
-        return createSlotWidget(slotIndex, color) { guiX, guiY, width, height ->
-            text?.let { renderSlotText(it, guiX, guiY, width, height, Colors.WHITE) }
-        }
-    }
-
-    protected fun createSlotWidget(slotIndex: Int, color: Color, onRenderContent: (GuiGraphics.(Int, Int, Int, Int) -> Unit)? = null): SimpleWidget {
-        val slotSize = (24f * TerminalSolver.customTermSize).roundToInt().coerceAtLeast(1)
-
-        return simpleWidget(width = slotSize, height = slotSize) {
-            onClick { event, _ ->
-                customTerminalClick(slotIndex, event.button())
-                true
-            }
-            onKeyPress { event ->
-                if ((mc.options.keyDrop.matches(event) || mc.options.keyHotbarSlots.any { it.matches(event) }) && isHovered)
-                    customTerminalClick(slotIndex, if (!event.hasControlDown()) GLFW.GLFW_MOUSE_BUTTON_1 else GLFW.GLFW_MOUSE_BUTTON_2)
-                false
-            }
-            onRender { guiX, guiY, width, height ->
-                renderWithTerminalScale(guiX, guiY, width, height) { scaledX, scaledY, scaledW, scaledH ->
-                    val radius = TerminalSolver.roundness
-                    if (radius > 0) roundedFill(scaledX, scaledY, scaledX + scaledW, scaledY + scaledH, color.rgba, radius)
-                    else this.fill(scaledX, scaledY, scaledX + scaledW, scaledY + scaledH, color.rgba)
-                    onRenderContent?.invoke(this, scaledX, scaledY, scaledW, scaledH)
-                }
-            }
-        }.apply {
-            slotWidgets[slotIndex] = this
+    protected fun createSlotVisualFromRendering(slotIndex: Int): SlotVisual {
+        return SlotVisual(resolve = { TerminalUtils.currentTerm?.getSlotRendering(slotIndex) }) { guiX, guiY, width, height ->
+            TerminalUtils.currentTerm?.getSlotRendering(slotIndex)?.second
+                ?.let { renderSlotText(it, guiX, guiY, width, height, Colors.WHITE) }
         }
     }
 
@@ -109,16 +157,26 @@ abstract class TermGui {
         }
     }
 
-    protected fun createBackgroundWidget(x: Int, y: Int, width: Int, height: Int): SimpleWidget {
-        return simpleWidget(x, y, width, height) {
-            onRender { guiX, guiY, w, h ->
-                renderWithTerminalScale(guiX, guiY, w, h) { scaledX, scaledY, scaledW, scaledH ->
-                    val radius = TerminalSolver.roundness
-                    if (radius > 0) roundedFill(scaledX, scaledY, scaledX + scaledW, scaledY + scaledH, TerminalSolver.backgroundColor.rgba, radius)
-                    else this.fill(scaledX, scaledY, scaledX + scaledW, scaledY + scaledH, TerminalSolver.backgroundColor.rgba)
-                }
+    private fun renderLayout(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int) {
+        val termLayout = layout ?: return
+        hoveredSlotIndex = null
+
+        guiGraphics.renderWithTerminalScale(termLayout.backgroundX, termLayout.backgroundY, termLayout.width, termLayout.height) { x, y, w, h ->
+            val radius = TerminalSolver.roundness
+            if (radius > 0) roundedFill(x, y, x + w, y + h, TerminalSolver.backgroundColor.rgba, radius)
+            else fill(x, y, x + w, y + h, TerminalSolver.backgroundColor.rgba)
+        }
+
+        termLayout.slots.forEach { slot ->
+            val renderData = slot.visual.resolve() ?: return@forEach
+            if (slot.contains(mouseX, mouseY)) hoveredSlotIndex = slot.slotIndex
+            guiGraphics.renderWithTerminalScale(slot.x, slot.y, slot.size, slot.size) { x, y, w, h ->
+                val radius = TerminalSolver.roundness
+                if (radius > 0) roundedFill(x, y, x + w, y + h, renderData.first.rgba, radius)
+                else fill(x, y, x + w, y + h, renderData.first.rgba)
+                slot.visual.onRenderContent?.invoke(this, x, y, w, h)
             }
-        }.apply { this.active = false }
+        }
     }
 
     protected inline fun GuiGraphics.renderWithTerminalScale(x: Int, y: Int, width: Int, height: Int, block: GuiGraphics.(Int, Int, Int, Int) -> Unit) {
@@ -135,7 +193,7 @@ abstract class TermGui {
         val textX = x + (width -  mc.font.width(text)) / 2
         val textY = y + (height - mc.font.lineHeight) / 2 + 1
 
-        this.text(text, textX, textY, color)
+        text(text, textX, textY, color)
     }
 }
 
@@ -143,7 +201,7 @@ fun simpleTermGui(rows: Int, cols: Int, startRow: Int, startCol: Int): TermGui =
     object : TermGui() {
         override fun buildTerminal(screen: AbstractContainerScreen<*>) {
             buildTerminalGrid(screen, rows, cols, startRow, startCol) { index ->
-                createSlotWidgetFromRendering(index)
+                createSlotVisualFromRendering(index)
             }
         }
     }

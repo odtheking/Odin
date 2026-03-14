@@ -17,27 +17,33 @@ enum class TerminalTypes(
 ) : Type {
     PANES("Correct all the panes!", Regex("^Correct all the panes!$"), 45) {
         override fun getSimulator() = PanesSim
-        override fun getGUI() = simpleTermGui(rows = 3, cols = 5, startRow = 1, startCol = 2)
+        private val gui = simpleTermGui(rows = 3, cols = 5, startRow = 1, startCol = 2)
+        override fun getGUI() = gui
     },
     RUBIX("Change all to same color!", Regex("^Change all to same color!$"), 45) {
         override fun getSimulator() = RubixSim
-        override fun getGUI() = simpleTermGui(rows = 3, cols = 3, startRow = 1, startCol = 3)
+        private val gui = simpleTermGui(rows = 3, cols = 3, startRow = 1, startCol = 3)
+        override fun getGUI() = gui
     },
     NUMBERS("Click in order!", Regex("^Click in order!$"), 36) {
         override fun getSimulator() = NumbersSim
-        override fun getGUI() = simpleTermGui(rows = 2, cols = 7, startRow = 1, startCol = 1)
+        private val gui = simpleTermGui(rows = 2, cols = 7, startRow = 1, startCol = 1)
+        override fun getGUI() = gui
     },
     STARTS_WITH("What starts with: \"*\"?", Regex("^What starts with: '(\\w)'\\?$"), 45) {
         override fun getSimulator() = StartsWithSim()
-        override fun getGUI() = simpleTermGui(rows = 3, cols = 7, startRow = 1, startCol = 1)
+        private val gui = simpleTermGui(rows = 3, cols = 7, startRow = 1, startCol = 1)
+        override fun getGUI() = gui
     },
     SELECT("Select all the \"*\" items!", Regex("^Select all the ([\\w ]+) items!$"), 54) {
         override fun getSimulator() = SelectAllSim()
-        override fun getGUI() = simpleTermGui(rows = 4, cols = 7, startRow = 1, startCol = 1)
+        private val gui = simpleTermGui(rows = 4, cols = 7, startRow = 1, startCol = 1)
+        override fun getGUI() = gui
     },
     MELODY("Click the button on time!", Regex("^Click the button on time!$"), 54) {
         override fun getSimulator() = MelodySim
-        override fun getGUI() = MelodyGui
+        private val gui = MelodyGui
+        override fun getGUI() = gui
     };
 
     fun openHandler(guiName: String): TerminalHandler? {

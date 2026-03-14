@@ -36,18 +36,17 @@ object EventDispatcher {
 
         ScreenEvents.AFTER_INIT.register { _, screen, _, _ -> ScreenEvent.Open(screen).postAndCatch() }
         ScreenEvents.BEFORE_INIT.register { _, screen, _, _ ->
-
             ScreenEvents.remove(screen).register {
                 ScreenEvent.Close(screen).postAndCatch()
             }
-            ScreenMouseEvents.beforeMouseClick(screen).register { screen, event ->
-                ScreenEvent.MouseClick(screen, event, false).postAndCatch()
+            ScreenMouseEvents.allowMouseClick(screen).register { screen, event ->
+                !ScreenEvent.MouseClick(screen, event).postAndCatch()
             }
-            ScreenMouseEvents.beforeMouseRelease(screen).register { screen, event ->
-                ScreenEvent.MouseRelease(screen, event).postAndCatch()
+            ScreenMouseEvents.allowMouseRelease(screen).register { screen, event ->
+                !ScreenEvent.MouseRelease(screen, event).postAndCatch()
             }
-            ScreenKeyboardEvents.beforeKeyPress(screen).register { screen, event ->
-                ScreenEvent.KeyPress(screen, event).postAndCatch()
+            ScreenKeyboardEvents.allowKeyPress(screen).register { screen, event ->
+                !ScreenEvent.KeyPress(screen, event).postAndCatch()
             }
         }
 
