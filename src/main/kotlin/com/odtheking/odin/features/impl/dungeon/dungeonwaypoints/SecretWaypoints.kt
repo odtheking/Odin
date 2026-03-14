@@ -3,10 +3,6 @@ package com.odtheking.odin.features.impl.dungeon.dungeonwaypoints
 import com.odtheking.odin.events.SecretPickupEvent
 import com.odtheking.odin.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.DungeonWaypoint
 import com.odtheking.odin.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.WaypointType
-import com.odtheking.odin.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.getWaypoints
-import com.odtheking.odin.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.lastEtherPos
-import com.odtheking.odin.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.lastEtherTime
-import com.odtheking.odin.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.setWaypoints
 import com.odtheking.odin.utils.devMessage
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils.getRelativeCoords
@@ -27,14 +23,14 @@ object SecretWaypoints {
     fun onEtherwarp(packet: ClientboundPlayerPositionPacket) {
         if (!DungeonUtils.inClear) return
         val room = DungeonUtils.currentRoom ?: return
-        val etherPos = lastEtherPos ?: return
-        if (System.currentTimeMillis() - lastEtherTime > 1000 || packet.change.position.distanceTo(Vec3(etherPos)) > 3) return
-        val waypoints = getWaypoints(room)
+        val etherPos = DungeonWaypoints.lastEtherPos ?: return
+        if (System.currentTimeMillis() - DungeonWaypoints.lastEtherTime > 1000 || packet.change.position.distanceTo(Vec3(etherPos)) > 3) return
+        val waypoints = DungeonWaypoints.getWaypoints(room)
         waypoints.find { wp -> wp.blockPos == room.getRelativeCoords(etherPos) && wp.type == WaypointType.ETHERWARP }?.let {
             it.isClicked = true
-            lastEtherPos = null
+            DungeonWaypoints.lastEtherPos = null
             room.setWaypoints()
-            lastEtherTime = 0L
+            DungeonWaypoints.lastEtherTime = 0L
         }
     }
 
@@ -43,7 +39,7 @@ object SecretWaypoints {
         val room = DungeonUtils.currentRoom ?: return
         val blockPos = room.getRelativeCoords(pos)
 
-        val waypoints = getWaypoints(room)
+        val waypoints = DungeonWaypoints.getWaypoints(room)
         if (distance == 0) waypoints.find { wp -> wp.blockPos == blockPos && wp.isSecret && !wp.isClicked }
         else {
             waypoints.fold(null) { near: DungeonWaypoint?, wp ->
@@ -59,10 +55,6 @@ object SecretWaypoints {
     }
 
     fun resetSecrets() {
-        DungeonWaypoints.allActiveWaypoints.values.forEach { roomWaypoints ->
-            roomWaypoints.forEach { it.isClicked = false }
-        }
-
-        DungeonUtils.currentRoom?.setWaypoints()
+        DungeonWaypoints.resetClickedWaypoints()
     }
 }

@@ -12,6 +12,7 @@ import net.minecraft.client.gui.render.pip.PictureInPictureRenderer
 import net.minecraft.client.gui.render.state.pip.PictureInPictureRenderState
 import net.minecraft.client.renderer.MultiBufferSource
 import org.joml.Matrix3x2f
+import org.lwjgl.opengl.GL33C
 
 class NVGPIPRenderer(vertexConsumers: MultiBufferSource.BufferSource) : PictureInPictureRenderer<NVGPIPRenderer.NVGRenderState>(vertexConsumers) {
 
@@ -26,6 +27,7 @@ class NVGPIPRenderer(vertexConsumers: MultiBufferSource.BufferSource) : PictureI
             GlStateManager._viewport(0, 0, width, height)
         }
 
+        GL33C.glBindSampler(0, 0)
         NVGRenderer.beginFrame(width.toFloat(), height.toFloat())
         state.renderContent()
         NVGRenderer.endFrame()

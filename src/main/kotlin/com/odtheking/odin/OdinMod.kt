@@ -84,9 +84,8 @@ object OdinMod : ClientModInitializer {
             ItemStateRenderer(context.vertexConsumers())
         }
 
-        val name = mc.user?.name?.takeIf { !it.matches(Regex("Player\\d{2,3}")) } ?: return
         scope.launch {
-            postData("https://api.odtheking.com/tele/", """{"username": "$name", "version": "Fabric $version"}""")
+            postData("https://api.odtheking.com/tele/", """{"username": "${mc.user?.name?.takeIf { !it.matches(Regex("Player\\d{2,3}")) } ?: return@launch}", "version": "Fabric $version"}""")
         }
     }
 }

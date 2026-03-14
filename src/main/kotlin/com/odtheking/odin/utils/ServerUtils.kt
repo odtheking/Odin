@@ -2,9 +2,9 @@ package com.odtheking.odin.utils
 
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.events.core.onReceive
-import net.minecraft.Util
 import net.minecraft.network.protocol.game.ClientboundSetTimePacket
 import net.minecraft.network.protocol.ping.ClientboundPongResponsePacket
+import net.minecraft.util.Util
 import kotlin.math.min
 
 object ServerUtils {

@@ -55,13 +55,12 @@ val devCommand = Commodore("oddev") {
 
     literal("updatedevs").runs {
         OdinMod.scope.launch {
-            PlayerSize.updateCustomProperties()
-            modMessage("Updated devs.")
+            devMessage(PlayerSize.updateCustomProperties())
         }
     }
 
     literal("deletedevs").runs {
-        PlayerSize.randoms.clear()
+        PlayerSize.clearCustomProperties()
     }
 
     literal("adddev").runs { name: String, password: String, xSize: Float?, ySize: Float?, zSize: Float? ->

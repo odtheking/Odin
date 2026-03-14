@@ -4,14 +4,15 @@ import com.odtheking.odin.OdinMod.mc
 import net.minecraft.client.resources.sounds.SimpleSoundInstance
 import net.minecraft.core.BlockPos
 import net.minecraft.network.chat.Component
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import net.minecraft.sounds.SoundEvent
 import net.minecraft.sounds.SoundEvents
 import net.minecraft.util.StringUtil
 
 fun playSoundSettings(soundSettings: Triple<String, Float, Float>) {
     val (soundName, volume, pitch) = soundSettings
-    val soundEvent = SoundEvent.createVariableRangeEvent(ResourceLocation.parse(StringUtil.filterText(soundName))) ?: return
+    val identifier = Identifier.tryParse(StringUtil.filterText(soundName)) ?: return
+    val soundEvent = SoundEvent.createVariableRangeEvent(identifier) ?: return
     playSoundAtPlayer(soundEvent, volume, pitch)
 }
 

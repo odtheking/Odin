@@ -110,7 +110,7 @@ object Etherwarp : Module(
     }
 
     data class EtherPos(val succeeded: Boolean, val pos: BlockPos?, val state: BlockState?) {
-        val vec3: Vec3 by lazy { Vec3(pos) }
+        val vec3: Vec3 by lazy { Vec3(pos ?: BlockPos.ZERO)  }
 
         companion object {
             val NONE = EtherPos(false, null, null)
@@ -243,7 +243,7 @@ object Etherwarp : Module(
         PistonHeadBlock::class, WoolCarpetBlock::class, WebBlock::class,
         DryVegetationBlock::class, SmallDripleafBlock::class, LeverBlock::class,
         NetherWartBlock::class, NetherPortalBlock::class, RedStoneWireBlock::class,
-        ComparatorBlock::class, RedstoneTorchBlock::class, RepeaterBlock::class, VineBlock::class
+        ComparatorBlock::class, RedstoneTorchBlock::class, RepeaterBlock::class, BigDripleafStemBlock::class
     )
 
     private val validEtherwarpFeetIds = BitSet(0).apply {

@@ -78,9 +78,19 @@ object PlayerSize : Module(
         matrix.scale(random.scale[0], random.scale[1], random.scale[2])
     }
 
-    suspend fun updateCustomProperties() {
-        val response = fetchJson<Array<RandomPlayer>>("https://api.odtheking.com/devs/").getOrNull() ?: return
+    suspend fun updateCustomProperties(): String {
+        val response = fetchJson<Array<RandomPlayer>>("https://api.odtheking.com/devs/").getOrNull() ?: return "Failed to fetch custom properties!"
+
+        randoms.clear()
         randoms.putAll(response.associateBy { it.name })
+        CustomNameReplacer.rebuild(randoms.values)
+        return response.joinToString("\n")
+    }
+
+    @JvmStatic
+    fun clearCustomProperties() {
+        randoms.clear()
+        CustomNameReplacer.clear()
     }
 
     init {

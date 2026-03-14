@@ -43,8 +43,7 @@ object DungeonWaypointConfig {
                 if (isJson) input else decompress(Base64.decode(input)),
                 object : TypeToken<MutableMap<String, MutableList<DungeonWaypoint>>>() {}.type
             )
-        } catch (e: Exception) {
-            e.printStackTrace()
+        } catch (_: Exception) {
             null
         }
     }
