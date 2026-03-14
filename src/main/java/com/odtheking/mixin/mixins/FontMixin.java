@@ -18,7 +18,7 @@ public class FontMixin {
         return CustomNameReplacer.replaceStringIfNeeded(text);
     }
 
-    @ModifyVariable(method = "prepareText(Lnet/minecraft/util/FormattedCharSequence;FFIZI)Lnet/minecraft/client/gui/Font$PreparedText;", at = @At("HEAD"), argsOnly = true)
+    @ModifyVariable(method = "prepareText(Lnet/minecraft/util/FormattedCharSequence;FFIZZI)Lnet/minecraft/client/gui/Font$PreparedText;", at = @At("HEAD"), argsOnly = true)
     private FormattedCharSequence onPrepareTextSequence(FormattedCharSequence text) {
         if (!CustomNameReplacer.isEnabled()) return text;
         return CustomNameReplacer.replaceSequenceIfNeeded(text);
