@@ -59,7 +59,7 @@ object Croesus : Module(
     var cachedPrices = emptyMap<String, Double>()
     private var currentChestCount = 0
 
-    private val chestNameRegex = Regex("^(Wood|Iron|Gold|Diamond|Emerald|Obsidian|Bedrock) Chest$")
+    private val chestNameRegex = Regex("^(Wood|Iron|Gold|Diamond|Emerald|Obsidian|Bedrock)(?: Chest)?$")
     private val previewEnchantedBookRegex = Regex("^Enchanted Book \\(?([\\w ]+) (\\w+)\\)$")
     private val chestPreviewScreenRegex = Regex("^(?:Master )?Catacombs - ([FloorVI\\d ]*)$")
     private val chestStatusRegex = Regex("^Opened Chest: (.+)$|^No more chests to open!$")

@@ -65,6 +65,7 @@ object ClickGUIModule : Module(
     }
 
     private const val RELEASE_LINK = "https://github.com/odtheking/OdinFabric/releases/latest"
+    private const val MODRINTH_LINK = "https://modrinth.com/mod/odin/versions"
     private var latestVersionNumber: String? = null
     private var hasSentUpdateMessage = false
 
@@ -86,6 +87,10 @@ object ClickGUIModule : Module(
             modMessage(Component.literal("§b$RELEASE_LINK").withStyle {
                 it.withClickEvent(ClickEvent.OpenUrl(URI(RELEASE_LINK)))
                     .withHoverEvent(HoverEvent.ShowText(Component.literal(RELEASE_LINK)))
+            }, "")
+            modMessage(Component.literal("§b$MODRINTH_LINK").withStyle {
+                it.withClickEvent(ClickEvent.OpenUrl(URI(MODRINTH_LINK)))
+                    .withHoverEvent(HoverEvent.ShowText(Component.literal(MODRINTH_LINK)))
             }, "")
 
             modMessage("""
