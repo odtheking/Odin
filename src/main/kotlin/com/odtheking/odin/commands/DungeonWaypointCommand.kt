@@ -4,15 +4,11 @@ import com.github.stivais.commodore.Commodore
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.OdinMod.scope
 import com.odtheking.odin.config.DungeonWaypointConfig
-import com.odtheking.odin.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints
-import com.odtheking.odin.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.setWaypoints
-import com.odtheking.odin.features.impl.dungeon.dungeonwaypoints.SecretWaypoints
-import com.odtheking.odin.features.impl.dungeon.dungeonwaypoints.WaypointPackSelectorScreen
+import com.odtheking.odin.features.impl.dungeon.dungeonwaypoints.*
 import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.handlers.schedule
 import com.odtheking.odin.utils.modMessage
 import com.odtheking.odin.utils.setClipboardContent
-import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import kotlinx.coroutines.launch
 
 val dungeonWaypointsCommand = Commodore("dwp", "dungeonwaypoints") {
@@ -64,23 +60,21 @@ val dungeonWaypointsCommand = Commodore("dwp", "dungeonwaypoints") {
 
     literal("export").runs {
         scope.launch {
-            val encoded = DungeonWaypointConfig.encodeWaypoints(DungeonWaypoints.editWaypoints)
+            val encoded = DungeonWaypointConfig.encodeWaypoints(DungeonWaypoints.exportEditableWaypoints())
             if (encoded != null) {
                 setClipboardContent(encoded)
                 modMessage("Wrote waypoint config to clipboard.")
-            } else {
-                modMessage("Failed to write waypoint config to clipboard.")
-            }
+            } else modMessage("Failed to write waypoint config to clipboard.")
         }
     }
 
     literal("import").runs {
         scope.launch {
             val clipboard = mc.keyboardHandler?.clipboard?.trim()?.trim { it == '\n' } ?: return@launch modMessage("§cFailed to read a string from clipboard. §fDid you copy it correctly?")
-            DungeonWaypoints.editWaypoints = DungeonWaypointConfig.decodeWaypoints(clipboard, clipboard.startsWith("{")) ?: return@launch modMessage("§cFailed to decode waypoints from clipboard. §fIs the data valid?")
-            DungeonWaypoints.saveWaypoints()
-            DungeonUtils.currentRoom?.setWaypoints()
-            modMessage("Imported waypoints from clipboard!${if (!DungeonWaypoints.enabled) "§7(Make sure to enable the DungeonWaypoints module)" else ""}")
+            val waypoints = DungeonWaypointConfig.decodeWaypoints(clipboard, clipboard.startsWith("{"))
+                ?: return@launch modMessage("§cFailed to decode waypoints from clipboard. §fIs the data valid?")
+            DungeonWaypoints.importEditableWaypoints(waypoints)
+            modMessage("Imported waypoints from clipboard!${if (!DungeonWaypoints.enabled) "§7(Make sure to enable the DungeonWayPoints module)" else ""}")
         }
     }
 }

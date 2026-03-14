@@ -3,7 +3,6 @@ package com.odtheking.odin.config
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import com.odtheking.odin.OdinMod.mc
-import com.odtheking.odin.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints
 import com.odtheking.odin.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.DungeonWaypoint
 import com.odtheking.odin.utils.modMessage
 import kotlinx.coroutines.Dispatchers
@@ -28,19 +27,21 @@ object WaypointPackFileUtils {
     private val packType =
         object : TypeToken<MutableMap<String, MutableList<DungeonWaypoint>>>() {}.type
 
-    private val configFile = File(mc.gameDirectory, "config/odin/dungeon-waypoint-config.json")
+    private val legacyConfigFile = File(mc.gameDirectory, "config/odin/dungeon-waypoint-config.json")
     val packsFolder = File(mc.gameDirectory, "config/odin/dungeon-waypoints").apply { mkdirs() }
 
     init {
-        copyLegacyConfigIfExists()
+        migrateLegacyConfigIfNeeded()
     }
 
-    private fun copyLegacyConfigIfExists() {
-        if (!configFile.exists()) return
-        val target = File(packsFolder, configFile.name)
-        if (target.exists()) return
-        runCatching { configFile.copyTo(target) }.onFailure { it.printStackTrace() }
+    private fun migrateLegacyConfigIfNeeded() {
+        if (!legacyConfigFile.exists() || packsFolder.listFiles()?.isNotEmpty() == true) return
+        runCatching {
+            val target = File(packsFolder, "default.json")
+            target.writeText(legacyConfigFile.readText())
+        }.onFailure { it.printStackTrace() }
     }
+
 
     private fun packFile(name: String) = File(packsFolder, "$name.json")
     private fun emptyPack() = mutableMapOf<String, MutableList<DungeonWaypoint>>()
@@ -68,7 +69,7 @@ object WaypointPackFileUtils {
     suspend fun createPack(packName: String) = withContext(Dispatchers.IO) {
         when {
             !isValidPackName(packName) -> {
-                modMessage("§cInvalid pack name! Use only letters, numbers, hyphens, and underscores.")
+                modMessage("§cInvalid pack name! Use only letters, numbers, spaces, hyphens, and underscores.")
                 false
             }
             packFile(packName).exists() -> {
@@ -94,13 +95,7 @@ object WaypointPackFileUtils {
                 false
             }
             else -> runCatching {
-                packFile(packName).delete()
-                updateActivePacks { it.remove(packName) }
-
-                val remainingPacks = getAllPacks()
-                if (DungeonWaypoints.activeEditPack == packName)
-                    DungeonWaypoints.activeEditPack = remainingPacks.firstOrNull()?.name ?: ""
-
+                if (!packFile(packName).delete()) error("Failed to delete ${packFile(packName).path}")
                 modMessage("§aDeleted pack: $packName")
                 true
             }.getOrElse {
@@ -114,7 +109,7 @@ object WaypointPackFileUtils {
     suspend fun renamePack(oldName: String, newName: String) = withContext(Dispatchers.IO) {
         when {
             !isValidPackName(newName) -> {
-                modMessage("§cInvalid pack name! Use only letters, numbers, hyphens, and underscores.")
+                modMessage("§cInvalid pack name! Use only letters, numbers, spaces, hyphens, and underscores.")
                 false
             }
             !packFile(oldName).exists() -> {
@@ -126,14 +121,7 @@ object WaypointPackFileUtils {
                 false
             }
             else -> runCatching {
-                packFile(oldName).renameTo(packFile(newName))
-
-                updateActivePacks {
-                    val idx = it.indexOf(oldName)
-                    if (idx != -1) it[idx] = newName
-                }
-
-                if (DungeonWaypoints.activeEditPack == oldName) DungeonWaypoints.activeEditPack = newName
+                if (!packFile(oldName).renameTo(packFile(newName))) error("Failed to rename ${packFile(oldName).path}")
                 modMessage("§aRenamed pack from '$oldName' to '$newName'")
                 true
             }.getOrElse {
@@ -157,24 +145,7 @@ object WaypointPackFileUtils {
             } ?: emptyList()
     }
 
-    suspend fun mergeActivePacks(packNames: List<String>) = withContext(Dispatchers.IO) {
-        val merged = mutableMapOf<String, MutableList<DungeonWaypoint>>()
-        val packs = getAllPacks().associateBy { it.name }
-
-        for (name in packNames) {
-            packs[name]?.waypoints?.forEach { (room, points) ->
-                merged.getOrPut(room) { mutableListOf() }.addAll(points)
-            }
-        }
-        merged
-    }
-
-    private fun updateActivePacks(block: (MutableList<String>) -> Unit) {
-        val packs = DungeonWaypoints.activePacks.split(",").filter { it.isNotBlank() }.toMutableList()
-        block(packs)
-        DungeonWaypoints.activePacks = packs.joinToString(",")
-    }
 
     private fun isValidPackName(name: String) =
-        name.isNotEmpty() && name.all { it.isLetterOrDigit() || it == '-' || it == '_' }
+        name.isNotBlank() && name.all { it.isLetterOrDigit() || it == '-' || it == '_' || it == ' ' }
 }
