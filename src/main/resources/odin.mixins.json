@@ -18,6 +18,7 @@
     "mixins.ClientPacketListenerMixin",
     "mixins.EntityRendererMixin",
     "mixins.ExperienceBarRendererMixin",
+    "mixins.FontMixin",
     "mixins.GuiMixin",
     "mixins.KeyBindingMixin",
     "mixins.LocalPlayerMixin",

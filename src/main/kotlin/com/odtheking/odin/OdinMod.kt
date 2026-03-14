@@ -44,7 +44,7 @@ object OdinMod : ClientModInitializer {
      */
     val configFile: File = File(mc.gameDirectory, "config/odin/").apply {
         try {
-            if (isFile()) delete() // Delete old bugged files that prevent creating the directory
+            if (isFile) delete() // Delete old bugged files that prevent creating the directory
             if (!exists()) mkdirs()
         } catch (e: Exception) {
             println("Error initializing module config\n${e.message}")
@@ -83,9 +83,8 @@ object OdinMod : ClientModInitializer {
             ItemStateRenderer(context.vertexConsumers())
         }
 
-        val name = mc.user?.name?.takeIf { !it.matches(Regex("Player\\d{2,3}")) } ?: return
         scope.launch {
-            postData("https://api.odtheking.com/tele/", """{"username": "$name", "version": "Fabric $version"}""")
+            postData("https://api.odtheking.com/tele/", """{"username": "${mc.user?.name?.takeIf { !it.matches(Regex("Player\\d{2,3}")) } ?: return@launch}", "version": "Fabric $version"}""")
         }
     }
 }

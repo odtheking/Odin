@@ -119,7 +119,7 @@ object BloodCamp : Module(
                 if (partyMoveTime) sendCommand("pc Watcher will move in ${moveTimeSeconds?.toFixed()}s.")
                 if (sendMoveTime) modMessage("Watcher will move in ${moveTimeSeconds?.toFixed()}s.")
 
-                schedule(predTicks.toInt()) {
+                schedule(predTicks.toInt(), true) {
                     if (killTitle) alert("Kill Mobs")
                     moveTimeSeconds = null
                 }
