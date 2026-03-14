@@ -45,6 +45,8 @@ internal object ShaderRenderer {
         topLeftRadius: Float, topRightRadius: Float, bottomRightRadius: Float, bottomLeftRadius: Float,
         outlineColor: Int, outlineWidth: Float, renderTarget: RenderTarget
     ) {
+        val colorTextureView = RenderSystem.outputColorTextureOverride ?: renderTarget.colorTextureView ?: return
+
         val x0f = x0.toFloat()
         val y0f = y0.toFloat()
         val x1f = x1.toFloat()
@@ -75,8 +77,7 @@ internal object ShaderRenderer {
         )
 
         val dynamicTransforms = RenderSystem.getDynamicUniforms().writeTransform(
-            modelMatrix, colorModulator, lightDirection,
-            RenderSystem.getTextureMatrix(), RenderSystem.getShaderLineWidth()
+            modelMatrix, colorModulator, lightDirection, Matrix4f()
         )
 
         val uniforms = uniformStorage.writeUniform { buffer ->
@@ -94,7 +95,7 @@ internal object ShaderRenderer {
         mesh.use {
             val pass = RenderSystem.getDevice().createCommandEncoder().createRenderPass(
                 { "Odin Rounded Rectangle" },
-                RenderSystem.outputColorTextureOverride ?: renderTarget.colorTextureView,
+                colorTextureView,
                 OptionalInt.empty(),
                 if (renderTarget.useDepth) RenderSystem.outputDepthTextureOverride ?: renderTarget.depthTextureView else null,
                 OptionalDouble.empty()
