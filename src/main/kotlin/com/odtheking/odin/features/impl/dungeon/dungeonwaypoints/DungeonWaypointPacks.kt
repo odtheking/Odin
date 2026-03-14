@@ -109,11 +109,10 @@ private suspend fun DungeonWaypoints.ensurePackState(
         availablePacks = WaypointPackFileUtils.getAllPacks()
     }
 
-    val availablePackIds = availablePacks.map { it.name }
     val normalizedState = WaypointPackState(
         selectedPackIds = requestedSelection.ifEmpty { selectedPackIds }.toMutableList(),
         editPackId = requestedEditPackId.ifBlank { editPackId },
-    ).normalized(availablePackIds)
+    ).normalized(availablePacks.map { it.name })
 
     selectedPackIds = normalizedState.selectedPackIds.toMutableList()
     editPackId = normalizedState.editPackId

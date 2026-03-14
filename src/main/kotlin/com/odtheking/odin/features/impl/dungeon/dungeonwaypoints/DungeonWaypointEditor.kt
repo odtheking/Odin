@@ -104,6 +104,7 @@ private fun DungeonWaypoints.openWaypointTitlePrompt(
         editableWaypoints.add(createWaypoint(blockPos, aabb, text))
         devMessage("Added waypoint with $text at $blockPos")
         syncRoomToActive(room)
+        mc.setScreen(null)
         OdinMod.scope.launch { saveWaypoints() }
     })
 }

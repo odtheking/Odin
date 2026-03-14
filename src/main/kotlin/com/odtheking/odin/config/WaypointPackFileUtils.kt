@@ -42,7 +42,6 @@ object WaypointPackFileUtils {
         }.onFailure { it.printStackTrace() }
     }
 
-
     private fun packFile(name: String) = File(packsFolder, "$name.json")
     private fun emptyPack() = mutableMapOf<String, MutableList<DungeonWaypoint>>()
 
