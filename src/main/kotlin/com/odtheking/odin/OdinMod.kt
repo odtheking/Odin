@@ -11,9 +11,7 @@ import com.odtheking.odin.utils.network.WebUtils.postData
 import com.odtheking.odin.utils.render.ItemStateRenderer
 import com.odtheking.odin.utils.render.RenderBatchManager
 import com.odtheking.odin.utils.skyblock.*
-import com.odtheking.odin.utils.skyblock.dungeon.DungeonListener
-import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
-import com.odtheking.odin.utils.skyblock.dungeon.ScanUtils
+import com.odtheking.odin.utils.skyblock.dungeon.*
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalUtils
 import com.odtheking.odin.utils.ui.rendering.NVGPIPRenderer
 import kotlinx.coroutines.CoroutineScope
@@ -72,7 +70,7 @@ object OdinMod : ClientModInitializer {
             DungeonListener, PartyUtils, TerminalUtils,
             ScanUtils, DungeonUtils, SplitsManager,
             IrisCompatability, RenderBatchManager,
-            ModuleManager
+            ModuleManager, DungeonScan, DungeonMapScan
         ).forEach { EventBus.subscribe(it) }
 
         SpecialGuiElementRegistry.register { context ->
