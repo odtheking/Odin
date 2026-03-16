@@ -3,6 +3,7 @@ package com.odtheking.odin.utils.handlers
 import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.utils.logError
+import java.util.concurrent.CopyOnWriteArrayList
 
 open class TickTask(
     private val ticksPerCycle: Int,
@@ -35,8 +36,8 @@ fun schedule(ticks: Int, serverTick: Boolean = false, task: () -> Unit) {
 }
 
 object TickTasks {
-    private val clientTickTasks = mutableListOf<TickTask>()
-    private val serverTickTasks = mutableListOf<TickTask>()
+    private val clientTickTasks = CopyOnWriteArrayList<TickTask>()
+    private val serverTickTasks = CopyOnWriteArrayList<TickTask>()
 
     fun registerClientTask(task: TickTask) = clientTickTasks.add(task)
     fun registerServerTask(task: TickTask) = serverTickTasks.add(task)
@@ -48,12 +49,11 @@ object TickTasks {
 
     init {
         on<TickEvent.End> {
-            for (i in clientTickTasks.size - 1 downTo 0) clientTickTasks[i].run()
+            clientTickTasks.forEach { it.run() }
         }
 
         on<TickEvent.Server> {
-            for (i in serverTickTasks.size - 1 downTo 0)
-                serverTickTasks[i].run()
+            serverTickTasks.forEach { it.run() }
         }
     }
 }

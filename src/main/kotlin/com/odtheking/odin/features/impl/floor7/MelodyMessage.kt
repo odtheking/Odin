@@ -9,7 +9,6 @@ import com.odtheking.odin.events.WorldEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.features.Module
-import com.odtheking.odin.features.impl.floor7.terminalhandler.TerminalTypes
 import com.odtheking.odin.features.impl.floor7.termsim.TermSimGUI
 import com.odtheking.odin.features.impl.render.ClickGUIModule
 import com.odtheking.odin.utils.equalsOneOf
@@ -21,6 +20,8 @@ import com.odtheking.odin.utils.sendCommand
 import com.odtheking.odin.utils.skyblock.LocationUtils
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.skyblock.dungeon.M7Phases
+import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalTypes
+import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalUtils
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket
 import net.minecraft.world.item.Items
@@ -67,7 +68,7 @@ object MelodyMessage : Module(
     private val lastSent = MelodyData(null, null, null)
 
     init {
-        on<TerminalEvent.Opened> {
+        on<TerminalEvent.Open> {
             if (DungeonUtils.getF7Phase() != M7Phases.P3 || terminal.type != TerminalTypes.MELODY || mc.screen is TermSimGUI) return@on
             if (sendMelodyMessage) sendCommand("pc $melodyMessage")
             if (melodySendCoords) sendCommand("od sendcoords")
@@ -86,7 +87,7 @@ object MelodyMessage : Module(
             melodies.clear()
         }
 
-        on<TerminalEvent.Closed> {
+        on<TerminalEvent.Close> {
             if (terminal.type != TerminalTypes.MELODY) return@on
             melodyWebSocket.send(update(0, 0))
         }
@@ -101,14 +102,16 @@ object MelodyMessage : Module(
             melodies.clear()
         }
 
-        if (p3StartRegex.matches(value)) melodyWebSocket.connect("${ClickGUIModule.webSocketUrl}${LocationUtils.lobbyId}")
+        if (p3StartRegex.matches(value)) LocationUtils.lobbyId?.let {
+            melodyWebSocket.connect("${ClickGUIModule.webSocketUrl}${it}")
+        }
     }
 
     private fun onSlotUpdate(packet: ClientboundContainerSetSlotPacket) {
-        val term = TerminalSolver.currentTerm ?: return
+        val term = TerminalUtils.currentTerm ?: return
         if (DungeonUtils.getF7Phase() != M7Phases.P3 || term.type != TerminalTypes.MELODY || mc.screen is TermSimGUI) return
 
-        val item = packet.item?.item ?: return
+        val item = packet.item.item ?: return
         if (item == Items.LIME_TERRACOTTA) {
             val position = packet.slot / 9
             if (lastSent.clay == position) return

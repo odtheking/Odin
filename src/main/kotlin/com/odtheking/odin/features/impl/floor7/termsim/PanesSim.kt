@@ -1,8 +1,7 @@
 package com.odtheking.odin.features.impl.floor7.termsim
 
-import com.odtheking.odin.events.TerminalEvent
-import com.odtheking.odin.features.impl.floor7.TerminalSolver
-import com.odtheking.odin.features.impl.floor7.terminalhandler.TerminalTypes
+import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalTypes
+import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalUtils
 import net.minecraft.core.component.DataComponents
 import net.minecraft.network.chat.Component
 import net.minecraft.world.inventory.Slot
@@ -11,7 +10,7 @@ import net.minecraft.world.item.Items
 import kotlin.math.floor
 
 object PanesSim : TermSimGUI(
-    TerminalTypes.PANES.windowName, TerminalTypes.PANES.windowSize
+    TerminalTypes.PANES.termName, TerminalTypes.PANES.windowSize
 ) {
     private val greenPane get() = ItemStack(Items.LIME_STAINED_GLASS_PANE).apply { set(DataComponents.CUSTOM_NAME, Component.literal("")) }
     private val redPane   get() = ItemStack(Items.RED_STAINED_GLASS_PANE).apply { set(DataComponents.CUSTOM_NAME, Component.literal("")) }
@@ -23,10 +22,10 @@ object PanesSim : TermSimGUI(
     }
 
     override fun slotClick(slot: Slot, button: Int) {
-        createNewGui { if (it == slot) { if (slot.item?.item == Items.RED_STAINED_GLASS_PANE) greenPane else redPane } else it.item }
+        createNewGui { if (it == slot) { if (slot.item.item == Items.RED_STAINED_GLASS_PANE) greenPane else redPane } else it.item }
 
         playTermSimSound()
         if (guiInventorySlots.none { it?.item?.item == Items.RED_STAINED_GLASS_PANE })
-            TerminalSolver.lastTermOpened?.let { TerminalEvent.Solved(it).postAndCatch() }
+            TerminalUtils.lastTermOpened?.onComplete()
     }
 }

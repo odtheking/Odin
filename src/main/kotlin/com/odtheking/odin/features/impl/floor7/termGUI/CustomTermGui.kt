@@ -5,6 +5,7 @@ import com.odtheking.odin.events.GuiEvent
 import com.odtheking.odin.features.impl.floor7.TerminalSolver
 import com.odtheking.odin.features.impl.floor7.TerminalSolver.hideClicked
 import com.odtheking.odin.utils.Color
+import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalUtils
 import com.odtheking.odin.utils.ui.isAreaHovered
 import com.odtheking.odin.utils.ui.rendering.NVGRenderer
 import net.minecraft.client.gui.screens.Screen
@@ -13,7 +14,7 @@ import kotlin.math.floor
 
 abstract class TermGui {
     protected val itemIndexMap: MutableMap<Int, Box> = mutableMapOf()
-    inline val currentSolution get() = TerminalSolver.currentTerm?.solution.orEmpty()
+    inline val currentSolution get() = TerminalUtils.currentTerm?.solution.orEmpty()
 
     abstract fun renderTerminal(slotCount: Int)
 
@@ -22,8 +23,8 @@ abstract class TermGui {
         val gap = TerminalSolver.gap * TerminalSolver.customTermSize
         val totalSlotSpace = slotSize + gap
 
-        val backgroundStartX = mc.window.width / 2f + -(slotWidth / 2f) * totalSlotSpace - 7.5f * TerminalSolver.customTermSize
-        val backgroundStartY = mc.window.height / 2f + ((-rowOffset + 0.5f) * totalSlotSpace) - 7.5f * TerminalSolver.customTermSize
+        val backgroundStartX = mc.window.screenWidth / 2f + - (slotWidth / 2f) * totalSlotSpace - 7.5f * TerminalSolver.customTermSize
+        val backgroundStartY = mc.window.screenHeight / 2f + ((-rowOffset + 0.5f) * totalSlotSpace) - 7.5f * TerminalSolver.customTermSize
         val backgroundWidth = slotWidth * totalSlotSpace + 15f * TerminalSolver.customTermSize
         val backgroundHeight = ((slotCount) / 9) * totalSlotSpace + 15f * TerminalSolver.customTermSize
 
@@ -34,8 +35,8 @@ abstract class TermGui {
         val slotSize = 55f * TerminalSolver.customTermSize
         val totalSlotSpace = slotSize + TerminalSolver.gap * TerminalSolver.customTermSize
 
-        val x = (index % 9 - 4) * totalSlotSpace + mc.window.width / 2f - slotSize / 2
-        val y = (index / 9 - 2) * totalSlotSpace + mc.window.height / 2f - slotSize / 2
+        val x = (index % 9 - 4) * totalSlotSpace + mc.window.screenWidth / 2f - slotSize / 2
+        val y = (index / 9 - 2) * totalSlotSpace + mc.window.screenHeight / 2f - slotSize / 2
 
         itemIndexMap[index] = Box(x, y, slotSize, slotSize)
 
@@ -45,7 +46,7 @@ abstract class TermGui {
 
     fun mouseClicked(screen: Screen, button: Int) {
         getHoveredItem()?.let { slot ->
-            TerminalSolver.currentTerm?.let {
+            TerminalUtils.currentTerm?.let {
                 if (System.currentTimeMillis() - it.timeOpened >= TerminalSolver.firstClickProt && !GuiEvent.CustomTermGuiClick(screen, slot, button).postAndCatch() && it.canClick(slot, button))
                     it.click(slot, button, hideClicked && !it.isClicked)
             }
@@ -56,7 +57,7 @@ abstract class TermGui {
         setCurrentGui(this)
         itemIndexMap.clear()
 
-        renderTerminal(TerminalSolver.currentTerm?.type?.windowSize?.minus(10) ?: 0)
+        renderTerminal(TerminalUtils.currentTerm?.type?.windowSize?.minus(10) ?: 0)
     }
 
     companion object {

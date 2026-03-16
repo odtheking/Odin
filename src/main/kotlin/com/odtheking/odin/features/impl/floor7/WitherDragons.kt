@@ -116,7 +116,7 @@ object WitherDragons : Module(
 
             WitherDragonsEnum.entries.forEach { dragon ->
                 if (dragonHealth) {
-                    DragonCheck.dragonHealthMap.forEach { (_, data) ->
+                    DragonCheck.dragonHealthMap.toList().forEach { (_, data) ->
                         if (data.second > 0) drawText(colorHealth(data.second), data.first, 5f, false)
                     }
                 }

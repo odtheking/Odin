@@ -23,7 +23,7 @@ abstract class RenderableSetting<T>(
         lastX = x
         lastY = y
         val height = getHeight()
-        hoverHandler.handle(x, y, width, height)
+        hoverHandler.handle(x, y, width, height, true)
         if (hoverHandler.percent() > 0)
             ClickGUI.setDescription(description, x + width + 10f, y, hoverHandler)
 
@@ -36,5 +36,5 @@ abstract class RenderableSetting<T>(
     open fun keyPressed(input: KeyEvent): Boolean = false
     open fun getHeight(): Float = Panel.HEIGHT
 
-    open val isHovered get() = isAreaHovered(lastX, lastY, width, getHeight())
+    open val isHovered get() = isAreaHovered(lastX, lastY, width, getHeight(), true)
 }

@@ -22,12 +22,11 @@ import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket
 import net.minecraft.network.protocol.game.ClientboundSetEquipmentPacket
 import net.minecraft.world.entity.EquipmentSlot
 import net.minecraft.world.entity.decoration.ArmorStand
-import net.minecraft.world.entity.monster.Zombie
+import net.minecraft.world.entity.monster.zombie.Zombie
 import net.minecraft.world.item.Items
 import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.Vec3
 import java.util.concurrent.ConcurrentHashMap
-import kotlin.math.ceil
 import kotlin.math.min
 import kotlin.math.roundToInt
 
@@ -37,13 +36,13 @@ object BloodCamp : Module(
 ) {
     private val predictionDropdown by DropdownSetting("Prediction Dropdown", true)
     private val movePrediction by BooleanSetting("Move Prediction", true, desc = "Predicts when watcher will move after its initial spawns. Only works on f7.").withDependency { predictionDropdown }
-    private val moveTime by BooleanSetting("Move Message", true, desc = "Sends a message indicating when the watcher will move.").withDependency { movePrediction && predictionDropdown }
+    private val sendMoveTime by BooleanSetting("Move Message", true, desc = "Sends a message indicating when the watcher will move.").withDependency { movePrediction && predictionDropdown }
     private val partyMoveTime by BooleanSetting("Party Move Message", false, desc = "Sends a message indicating when the watcher will move to party members.").withDependency { movePrediction && predictionDropdown }
     private val killTitle by BooleanSetting("Kill Title", true, desc = "Shows a title for when to kill the initial spawns.").withDependency { movePrediction && predictionDropdown }
 
     private val moveTimer by HUD("Move HUD", "Displays the time until the watcher moves.") { example ->
         if (example) return@HUD textDim("Move Timer: 0.50s", 0, 0, Colors.MINECRAFT_RED)
-        finalTime?.let { textDim("Move Timer: ${((it - normalTickTime) * 0.05).toFixed()}s", 0, 0, Colors.MINECRAFT_RED) } ?: return@HUD 0 to 0
+        moveTimeSeconds?.let { if (it > 0f) textDim("Move Timer: ${it.toFixed()}s", 0, 0, Colors.MINECRAFT_RED) else null } ?: return@HUD 0 to 0
     }.withDependency { movePrediction && predictionDropdown }
 
     private val assistDropdown by DropdownSetting("Blood Assist Dropdown", true)
@@ -63,9 +62,8 @@ object BloodCamp : Module(
     private val manualOffset by NumberSetting("Mob Box Offset", 0f, 0.0, 300, 1, desc = "Manually offsets the mob box.").withDependency { advanced && bloodAssist && assistDropdown && !pingOffset}
     private val watcherBar by BooleanSetting("Watcher Bar", true, desc = "Shows the watcher's health.")
 
-    private val regexTwo = Regex("^\\[BOSS] The Watcher: Things feel a little more roomy now, eh\\?$")
-    private val regexOne = Regex("^\\[BOSS] The Watcher: Let's see how you can handle this\\.$")
     private var currentWatcherEntity: Zombie? = null
+    private var firstSpawns = true
 
     init {
         onReceive<ClientboundMoveEntityPacket> {
@@ -74,7 +72,7 @@ object BloodCamp : Module(
             if (!DungeonUtils.inClear) return@onReceive
 
             val entity = getEntity(level) as? ArmorStand ?: return@onReceive
-            if (currentWatcherEntity?.let { it.distanceTo(entity) <= 20 } != true || entity.getItemBySlot(EquipmentSlot.HEAD).item != Items.PLAYER_HEAD || entity.getItemBySlot(EquipmentSlot.HEAD)?.texture !in allowedMobSkulls) return@onReceive
+            if (currentWatcherEntity?.let { it.distanceTo(entity) <= 20 } != true || entity.getItemBySlot(EquipmentSlot.HEAD).item != Items.PLAYER_HEAD || entity.getItemBySlot(EquipmentSlot.HEAD).texture !in allowedMobSkulls) return@onReceive
 
             val packetVector = Vec3(entity.x + (xa / 4096), entity.y + (ya / 4096), entity.z + (za / 4096))
 
@@ -104,28 +102,26 @@ object BloodCamp : Module(
 
         on<ChatPacketEvent> {
             if (!DungeonUtils.inClear) return@on
-            if (regexTwo.matches(value)) startTime = System.currentTimeMillis() to normalTickTime
-            else if (regexOne.matches(value)) {
+            if (BLOOD_START_REGEX.matches(value)) startTime = currentTickTime
+            else if (BLOOD_MOVE_REGEX.matches(value)) {
                 firstSpawns = false
-                val (startTime, startTick) = startTime ?: return@on
-                val moveTicks = ((normalTickTime - startTick) * 0.05f + 0.1f)
-                val predictionTicks = when (moveTicks) {
-                    in 31f..<34f -> 36
-                    in 28f..<31f -> 33
-                    in 25f..<28f -> 30
-                    in 22f..<25f -> 27
-                    in 1f..<22f -> 24
-                    else -> return@on
-                } + (ceil((System.currentTimeMillis() - startTime) / 1000f) - moveTicks) / 2f - 0.6f
-                if (predictionTicks !in 20f..40f) return@on
-                if (partyMoveTime) sendCommand("pc Watcher will move in ${(predictionTicks * 0.05f).toFixed()}s.")
-                if (moveTime) modMessage("Watcher will move in ${(predictionTicks * 0.05f).toFixed()}s.")
-                val moveTime = ((predictionTicks - moveTicks) * 20 - 3).toInt()
-                finalTime = normalTickTime + moveTime
+                val tickTime = startTime ?: return@on
+                val predTicks = when (val moveTicks = (currentTickTime - tickTime) / 20 / 50) {
+                    in 31..<34 -> 36
+                    in 28..<31 -> 33
+                    in 25..<28 -> 30
+                    in 22..<25 -> 27
+                    in 1..<22 -> 24
+                    else -> moveTicks + 3
+                }
 
-                schedule(moveTime) {
+                moveTimeSeconds = predTicks / 20f
+                if (partyMoveTime) sendCommand("pc Watcher will move in ${moveTimeSeconds?.toFixed()}s.")
+                if (sendMoveTime) modMessage("Watcher will move in ${moveTimeSeconds?.toFixed()}s.")
+
+                schedule(predTicks.toInt(), true) {
                     if (killTitle) alert("Kill Mobs")
-                    finalTime = null
+                    moveTimeSeconds = null
                 }
             }
         }
@@ -147,7 +143,10 @@ object BloodCamp : Module(
             if (entityIds.any { it == currentWatcherEntity?.id }) currentWatcherEntity = null
         }
 
-        on<TickEvent.Server> { currentTickTime += 50 }
+        on<TickEvent.Server> {
+            currentTickTime += 50
+            moveTimeSeconds?.let { moveTimeSeconds = it - 0.05f }
+        }
 
         on<WorldEvent.Load> {
             currentWatcherEntity = null
@@ -155,12 +154,12 @@ object BloodCamp : Module(
             renderDataMap.clear()
             currentTickTime = 0
             firstSpawns = true
-            finalTime = null
+            moveTimeSeconds = null
             startTime = null
         }
 
         on<RenderBossBarEvent> {
-            if (!watcherBar || !DungeonUtils.inClear || bossBar.name == null || bossBar.name?.string != "§c§lThe Watcher") return@on
+            if (!watcherBar || !DungeonUtils.inClear || bossBar.name.string != "§c§lThe Watcher") return@on
             val amount = 12 + (DungeonUtils.floor?.floorNumber ?: 0)
             bossBar.name = Component.literal(bossBar.progress.takeIf { it >= 0.05 }?.let { "${bossBar.name.string} ${(amount * it).roundToInt()}/$amount" } ?: return@on)
         }
@@ -208,10 +207,9 @@ object BloodCamp : Module(
         }
     }
 
-    private var startTime: Pair<Long, Long>? = null
-    private var finalTime: Long? = null
+    private var moveTimeSeconds: Float? = null
     private var currentTickTime = 0L
-    private inline val normalTickTime get() = currentTickTime / 50
+    private var startTime: Long? = null
 
     private val renderDataMap = ConcurrentHashMap<ArmorStand, RenderEData>()
     private data class RenderEData(
@@ -228,8 +226,6 @@ object BloodCamp : Module(
         val deltaHistory: ArrayDeque<Vec3> = ArrayDeque(),
         var lastPosition: Vec3 = startVector
     )
-
-    private var firstSpawns = true
 
     private fun getTime(firstSpawn: Boolean, timeTook: Long) = (if (firstSpawn) 2000 else 0) + (tick * 50) - timeTook + offset
 
@@ -278,4 +274,7 @@ object BloodCamp : Module(
         "eyJ0aW1lc3RhbXAiOjE1NzQ0MTkzMTAxNjQsInByb2ZpbGVJZCI6Ijc1MTQ0NDgxOTFlNjQ1NDY4Yzk3MzlhNmUzOTU3YmViIiwicHJvZmlsZU5hbWUiOiJUaGFua3NNb2phbmciLCJzaWduYXR1cmVSZXF1aXJlZCI6dHJ1ZSwidGV4dHVyZXMiOnsiU0tJTiI6eyJ1cmwiOiJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzEyNzE2ZWNiZjViOGRhMDBiMDVmMzE2ZWM2YWY2MWU4YmQwMjgwNWIyMWViOGU0NDAxNTE0NjhkYzY1NjU0OWMifX19",
         "ewogICJ0aW1lc3RhbXAiIDogMTU5ODk3NzI1OTM1NywKICAicHJvZmlsZUlkIiA6ICJlNzkzYjJjYTdhMmY0MTI2YTA5ODA5MmQ3Yzk5NDE3YiIsCiAgInByb2ZpbGVOYW1lIiA6ICJUaGVfSG9zdGVyX01hbiIsCiAgInNpZ25hdHVyZVJlcXVpcmVkIiA6IHRydWUsCiAgInRleHR1cmVzIiA6IHsKICAgICJTS0lOIiA6IHsKICAgICAgInVybCIgOiAiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS9jMTAwN2M1YjcxMTRhYmVjNzM0MjA2ZDRmYzYxM2RhNGYzYTBlOTlmNzFmZjk0OWNlZGFkYzk5MDc5MTM1YTBiIgogICAgfQogIH0KfQ=="
     )
+
+    private val BLOOD_START_REGEX = Regex("^\\[BOSS] The Watcher: (Congratulations, you made it through the Entrance\\.|Ah, you've finally arrived\\.|Ah, we meet again\\.\\.\\.|So you made it this far\\.\\.\\. interesting\\.|You've managed to scratch and claw your way here, eh\\?|I'm starting to get tired of seeing you around here\\.\\.\\.|Oh\\.\\. hello\\?|Things feel a little more roomy now, eh\\?)$")
+    private val BLOOD_MOVE_REGEX = Regex("^\\[BOSS] The Watcher: Let's see how you can handle this\\.$")
 }

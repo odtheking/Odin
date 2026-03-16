@@ -38,7 +38,7 @@ public class AbstractContainerScreenMixin {
     }
 
     @Inject(method = "renderSlot", at = @At("HEAD"), cancellable = true)
-    private void onDrawSlot(GuiGraphics guiGraphics, Slot slot, CallbackInfo ci) {
+    private void onDrawSlot(GuiGraphics guiGraphics, Slot slot, int i, int j, CallbackInfo ci) {
         if (new GuiEvent.DrawSlot((Screen) (Object) this, guiGraphics, slot).postAndCatch()) ci.cancel();
     }
 
@@ -50,6 +50,12 @@ public class AbstractContainerScreenMixin {
     @Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)
     public void onMouseClicked(MouseButtonEvent click, boolean doubled, CallbackInfoReturnable<Boolean> cir) {
         if (new GuiEvent.MouseClick((Screen) (Object) this, click, doubled).postAndCatch())
+            cir.cancel();
+    }
+
+    @Inject(method = "mouseReleased", at = @At("HEAD"), cancellable = true)
+    public void onMouseReleased(MouseButtonEvent mouseButtonEvent, CallbackInfoReturnable<Boolean> cir) {
+        if (new GuiEvent.MouseRelease((Screen) (Object) this, mouseButtonEvent).postAndCatch())
             cir.cancel();
     }
 

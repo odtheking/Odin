@@ -42,14 +42,19 @@ class ModuleButton(val module: Module, val panel: Panel) {
     private val hover = HoverHandler(250)
     var extended = false
 
-    fun draw(x: Float, y: Float): Float {
-        hoverHandler.handle(x, y, Panel.WIDTH, Panel.HEIGHT - 1)
-        hover.handle(x, y, Panel.WIDTH, Panel.HEIGHT - 1)
+    fun draw(x: Float, y: Float, lastModule: Boolean = false): Float {
+        hoverHandler.handle(x, y, Panel.WIDTH, Panel.HEIGHT - 1, true)
+        hover.handle(x, y, Panel.WIDTH, Panel.HEIGHT - 1, true)
 
         if (hoverHandler.percent() >= 100 && y >= panel.panelSetting.y + Panel.HEIGHT)
             ClickGUI.setDescription(module.description, x + Panel.WIDTH + 10f, y, hoverHandler)
 
-        NVGRenderer.rect(x, y, Panel.WIDTH, Panel.HEIGHT, color.rgba)
+        if (!ClickGUIModule.roundedPanelBottom && lastModule) {
+            NVGRenderer.rect(x, y, Panel.WIDTH, Panel.HEIGHT - 10f, color.rgba)
+            NVGRenderer.drawHalfRoundedRect(x, y + Panel.HEIGHT - 10f, Panel.WIDTH, 10f, color.rgba, 5f, false)
+        } else {
+            NVGRenderer.rect(x, y, Panel.WIDTH, Panel.HEIGHT, color.rgba)
+        }
         NVGRenderer.text(module.name, x + Panel.WIDTH / 2 - nameWidth / 2, y + Panel.HEIGHT / 2 - 9f, 18f, Colors.WHITE.rgba, NVGRenderer.defaultFont)
 
         if (representableSettings.isEmpty()) return Panel.HEIGHT
@@ -61,7 +66,7 @@ class ModuleButton(val module: Module, val panel: Panel) {
 
         if (extendAnim.isAnimating() || extended) {
             for (setting in representableSettings) {
-                if (setting.isVisible) drawY += setting.render(x, y + drawY, mouseX, mouseY)
+                if (setting.isVisible) drawY += setting.render(x, y + drawY, mouseX / ClickGUIModule.getStandardGuiScale(), mouseY / ClickGUIModule.getStandardGuiScale())
             }
         }
 

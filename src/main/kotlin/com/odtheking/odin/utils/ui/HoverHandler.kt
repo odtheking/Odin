@@ -12,8 +12,8 @@ class HoverHandler(delay: Long) {
         return if (isHovered) anim.getPercent() else 100f - anim.getPercent()
     }
 
-    fun handle(x: Float, y: Float, w: Float, h: Float) {
-        val currentlyHovered = isAreaHovered(x, y, w, h)
+    fun handle(x: Float, y: Float, w: Float, h: Float, scaled: Boolean = false) {
+        val currentlyHovered = isAreaHovered(x, y, w, h, scaled)
 
         if (currentlyHovered != isHovered) {
             anim.start()

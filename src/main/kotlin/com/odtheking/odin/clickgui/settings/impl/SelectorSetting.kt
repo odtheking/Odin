@@ -52,14 +52,14 @@ class SelectorSetting(
     private val color: Color get() = gray38.brighter(1 + hover.percent() / 500f)
 
     private fun isSettingHovered(index: Int): Boolean =
-        isAreaHovered(lastX, lastY + 38f + 32f * index, width, 32f)
+        isAreaHovered(lastX, lastY + 38f + 32f * index, width, 32f, true)
 
     override fun render(x: Float, y: Float, mouseX: Float, mouseY: Float): Float {
         super.render(x, y, mouseX, mouseY)
 
         val currentWidth = elementWidths[index]
 
-        hover.handle(x + width - 20f - currentWidth, y + defaultHeight / 2f - 10f, currentWidth + 12f, 22f)
+        hover.handle(x + width - 20f - currentWidth, y + defaultHeight / 2f - 10f, currentWidth + 12f, 22f, true)
         NVGRenderer.rect(x + width - 20f - currentWidth, y + defaultHeight / 2f - 10f, currentWidth + 12f, 20f, color.rgba, 5f)
         NVGRenderer.hollowRect(x + width - 20f - currentWidth, y + defaultHeight / 2f - 10f, currentWidth + 12f, 20f, 1.5f, ClickGUIModule.clickGUIColor.rgba, 5f)
 
@@ -114,7 +114,7 @@ class SelectorSetting(
     private fun optionIndex(string: String): Int =
         options.map { it.lowercase() }.indexOf(string.lowercase()).coerceIn(0, options.size - 1)
 
-    override val isHovered: Boolean get() = isAreaHovered(lastX, lastY, width, defaultHeight)
+    override val isHovered: Boolean get() = isAreaHovered(lastX, lastY, width, defaultHeight, true)
 
     override fun getHeight(): Float =
         settingAnim.get(defaultHeight, options.size * 32f + 44, !extended)

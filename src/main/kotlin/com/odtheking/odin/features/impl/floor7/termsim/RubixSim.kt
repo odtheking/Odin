@@ -1,8 +1,7 @@
 package com.odtheking.odin.features.impl.floor7.termsim
 
-import com.odtheking.odin.events.TerminalEvent
-import com.odtheking.odin.features.impl.floor7.TerminalSolver
-import com.odtheking.odin.features.impl.floor7.terminalhandler.TerminalTypes
+import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalTypes
+import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalUtils
 import net.minecraft.core.component.DataComponents
 import net.minecraft.network.chat.Component
 import net.minecraft.world.inventory.Slot
@@ -14,7 +13,7 @@ import net.minecraft.world.level.block.StainedGlassPaneBlock
 import kotlin.math.floor
 
 object RubixSim : TermSimGUI(
-    TerminalTypes.RUBIX.windowName, TerminalTypes.RUBIX.windowSize
+    TerminalTypes.RUBIX.termName, TerminalTypes.RUBIX.windowSize
 ) {
     private val order = listOf(DyeColor.ORANGE, DyeColor.YELLOW, DyeColor.GREEN, DyeColor.BLUE, DyeColor.RED)
     private val panes = listOf(Items.ORANGE_STAINED_GLASS_PANE, Items.YELLOW_STAINED_GLASS_PANE, Items.GREEN_STAINED_GLASS_PANE, Items.BLUE_STAINED_GLASS_PANE, Items.RED_STAINED_GLASS_PANE)
@@ -28,17 +27,17 @@ object RubixSim : TermSimGUI(
     }
 
     override fun slotClick(slot: Slot, button: Int) {
-        val current = order.find { it == ((slot.item?.item as? BlockItem)?.block as? StainedGlassPaneBlock)?.color } ?: return
+        val current = order.find { it == ((slot.item.item as? BlockItem)?.block as? StainedGlassPaneBlock)?.color } ?: return
         createNewGui {
             if (it == slot) {
                 if (button == 1) genStack(order.indexOf(current) - 1)
                 else genStack((order.indexOf(current) + 1) % order.size)
-            } else it.item ?: blackPane
+            } else it.item
         }
 
         playTermSimSound()
         if (indices.all { guiInventorySlots[it]?.item?.item == guiInventorySlots[12]?.item?.item })
-            TerminalSolver.lastTermOpened?.let { TerminalEvent.Solved(it).postAndCatch() }
+            TerminalUtils.lastTermOpened?.onComplete()
     }
 
     private fun getPane(): ItemStack {

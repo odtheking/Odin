@@ -121,7 +121,10 @@ class ColorSetting(
 
         if (section != null) hexString = value.hex(allowAlpha)
 
-        val rectX = x + (width - width / 2) / 2
+        // main width - text input
+        val sidePadding = (width - width / 2) / 2f
+
+        val rectX = x + sidePadding
         val actualHeight = defaultHeight + if (allowAlpha) 250f else 230f
 
         NVGRenderer.rect(rectX, y + actualHeight - 28f, width / 2, 24f, gray38.rgba, 4f)
@@ -147,9 +150,9 @@ class ColorSetting(
         textInputHandler.mouseClicked(mouseX, mouseY, click)
 
         section = when {
-            isAreaHovered(lastX + 6f, lastY + 36f, width - 12f, 170f) -> 0 // sat & brightness
-            isAreaHovered(lastX + 6f, lastY + 212f, width - 12f, 15f) -> 1 // hue
-            isAreaHovered(lastX + 6f, lastY + 232, width - 12f, 15f) && allowAlpha -> 2 // alpha
+            isAreaHovered(lastX + 6f, lastY + 36f, width - 12f, 170f, true) -> 0 // sat & brightness
+            isAreaHovered(lastX + 6f, lastY + 212f, width - 12f, 15f, true) -> 1 // hue
+            isAreaHovered(lastX + 6f, lastY + 232, width - 12f, 15f, true) && allowAlpha -> 2 // alpha
             else -> null
         }
 
@@ -179,7 +182,8 @@ class ColorSetting(
             lastX + width - 40f,
             lastY + defaultHeight / 2f - 10f,
             34f,
-            20f
+            20f,
+            true
         )
 
     override fun write(gson: Gson): JsonElement = gson.toJsonTree(value, Color::class.java)

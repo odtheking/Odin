@@ -9,8 +9,8 @@ import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.ui.HoverHandler
 import com.odtheking.odin.utils.ui.animations.EaseOutAnimation
+import com.odtheking.odin.utils.ui.rendering.NVGPIPRenderer
 import com.odtheking.odin.utils.ui.rendering.NVGRenderer
-import com.odtheking.odin.utils.ui.rendering.NVGSpecialRenderer
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.screens.Screen
 import net.minecraft.client.input.CharacterEvent
@@ -36,8 +36,19 @@ object ClickGUI : Screen(Component.literal("Click GUI")) {
     val gray26 = Color(26, 26, 26)
 
     override fun render(context: GuiGraphics, mouseX: Int, mouseY: Int, deltaTicks: Float) {
-        NVGSpecialRenderer.draw(context, 0, 0, context.guiWidth(), context.guiHeight()) {
-            SearchBar.draw(mc.window.width / 2f - 175f, mc.window.height - 110f, odinMouseX, odinMouseY)
+        NVGPIPRenderer.draw(context, 0, 0, context.guiWidth(), context.guiHeight()) {
+            val scaledMouseX = odinMouseX / ClickGUIModule.getStandardGuiScale()
+            val scaledMouseY = odinMouseY / ClickGUIModule.getStandardGuiScale()
+
+            NVGRenderer.scale(ClickGUIModule.getStandardGuiScale(), ClickGUIModule.getStandardGuiScale())
+
+            SearchBar.draw(
+                mc.window.screenWidth / (2f * ClickGUIModule.getStandardGuiScale()) - 175f,
+                (mc.window.screenHeight - 110f) / ClickGUIModule.getStandardGuiScale() - 20f,
+                scaledMouseX,
+                scaledMouseY
+            )
+
             if (openAnim.isAnimating()) {
                 val scale = openAnim.get(0f, 1f)
 
@@ -50,10 +61,10 @@ object ClickGUI : Screen(Component.literal("Click GUI")) {
 
             val draggedPanel = panels.firstOrNull { it.dragging }
             for (panel in panels) {
-                if (panel != draggedPanel) panel.draw(odinMouseX, odinMouseY)
+                if (panel != draggedPanel) panel.draw(scaledMouseX, scaledMouseY)
             }
 
-            draggedPanel?.draw(odinMouseX, odinMouseY)
+            draggedPanel?.draw(scaledMouseX, scaledMouseY)
 
             desc.render()
         }
@@ -77,9 +88,11 @@ object ClickGUI : Screen(Component.literal("Click GUI")) {
         mouseButtonEvent: MouseButtonEvent,
         bl: Boolean
     ): Boolean {
-        SearchBar.mouseClicked(odinMouseX, odinMouseY, mouseButtonEvent)
+        val scaledMouseX = odinMouseX / ClickGUIModule.getStandardGuiScale()
+        val scaledMouseY = odinMouseY / ClickGUIModule.getStandardGuiScale()
+        SearchBar.mouseClicked(scaledMouseX, scaledMouseY, mouseButtonEvent)
         for (i in panels.size - 1 downTo 0) {
-            if (panels[i].mouseClicked(odinMouseX, odinMouseY, mouseButtonEvent)) return true
+            if (panels[i].mouseClicked(scaledMouseX, scaledMouseY, mouseButtonEvent)) return true
         }
         return super.mouseClicked(mouseButtonEvent, bl)
     }

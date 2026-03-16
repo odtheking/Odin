@@ -15,12 +15,15 @@ import com.odtheking.odin.utils.alert
 import com.odtheking.odin.utils.getChatBreak
 import com.odtheking.odin.utils.modMessage
 import com.odtheking.odin.utils.network.WebUtils.fetchJson
+import com.odtheking.odin.utils.ui.rendering.NVGRenderer
 import kotlinx.coroutines.launch
 import net.minecraft.network.chat.ClickEvent
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.HoverEvent
 import org.lwjgl.glfw.GLFW
 import java.net.URI
+import kotlin.math.max
+import kotlin.math.round
 
 @AlwaysActive
 object ClickGUIModule : Module(
@@ -30,6 +33,8 @@ object ClickGUIModule : Module(
 ) {
     val enableNotification by BooleanSetting("Chat notifications", true, desc = "Sends a message when you toggle a module with a keybind")
     val clickGUIColor by ColorSetting("Color", Color(50, 150, 220), desc = "The color of the Click GUI.")
+
+    val roundedPanelBottom by BooleanSetting("Rounded Panel Bottoms", true, desc = "Whether to extend panels to make them rounded at the bottom.")
 
     val hypixelApiUrl by StringSetting("API URL", "https://api.odtheking.com/hypixel/", 128, "The Hypixel API server to connect to.").hide()
     val webSocketUrl by StringSetting("WebSocket URL", "wss://api.odtheking.com/ws/", 128, "The Websocket server to connect to.").hide()
@@ -52,11 +57,15 @@ object ClickGUIModule : Module(
 
     fun resetPositions() {
         Category.categories.entries.forEachIndexed { index, (categoryName, _) ->
-            panelSetting[categoryName] = PanelData(10f + 260f * index, 10f, true)
+            val setting = panelSetting.getOrPut(categoryName) { PanelData() }
+            setting.x = 10f + 260f * index
+            setting.y = 10f
+            setting.extended = true
         }
     }
 
     private const val RELEASE_LINK = "https://github.com/odtheking/OdinFabric/releases/latest"
+    private const val MODRINTH_LINK = "https://modrinth.com/mod/odin/versions"
     private var latestVersionNumber: String? = null
     private var hasSentUpdateMessage = false
 
@@ -79,6 +88,10 @@ object ClickGUIModule : Module(
                 it.withClickEvent(ClickEvent.OpenUrl(URI(RELEASE_LINK)))
                     .withHoverEvent(HoverEvent.ShowText(Component.literal(RELEASE_LINK)))
             }, "")
+            modMessage(Component.literal("§b$MODRINTH_LINK").withStyle {
+                it.withClickEvent(ClickEvent.OpenUrl(URI(MODRINTH_LINK)))
+                    .withHoverEvent(HoverEvent.ShowText(Component.literal(MODRINTH_LINK)))
+            }, "")
 
             modMessage("""
             
@@ -87,6 +100,12 @@ object ClickGUIModule : Module(
             """.trimIndent(), "")
             alert("Odin Update Available")
         }
+    }
+
+    fun getStandardGuiScale(): Float {
+        val verticalScale = (mc.window.screenHeight.toFloat() / 1080f) / NVGRenderer.devicePixelRatio()
+        val horizontalScale = (mc.window.screenWidth.toFloat() / 1920f) / NVGRenderer.devicePixelRatio()
+        return round(max(verticalScale, horizontalScale).coerceIn(1f, 3f) * 10f) / 10f
     }
 
     private suspend fun checkNewerVersion(currentVersion: String): String? {

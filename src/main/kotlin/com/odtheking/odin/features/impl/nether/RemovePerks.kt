@@ -16,12 +16,12 @@ object RemovePerks : Module(
 
     init {
         on<GuiEvent.DrawSlot> {
-            if (screen.title?.string == "Perk Menu" && slotCheck(slot.item?.hoverName?.string ?: return@on))
+            if (screen.title.string == "Perk Menu" && slotCheck(slot.item.hoverName.string))
                 cancel()
         }
 
         on<GuiEvent.SlotClick> {
-            if (screen is AbstractContainerScreen<*> && screen.title?.string == "Perk Menu" && slotCheck(screen.menu?.getSlot(slotId)?.item?.hoverName?.string ?: return@on))
+            if (screen is AbstractContainerScreen<*> && screen.title.string == "Perk Menu" && slotCheck(screen.menu?.getSlot(slotId)?.item?.hoverName?.string ?: return@on))
                 cancel()
         }
     }

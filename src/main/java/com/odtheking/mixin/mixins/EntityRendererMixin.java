@@ -17,9 +17,7 @@ public abstract class EntityRendererMixin<T extends Entity> {
 
     @Inject(method = "shouldRender", at = @At("HEAD"), cancellable = true)
     private void onRender(T entity, Frustum frustum, double d, double e, double f, CallbackInfoReturnable<Boolean> cir) {
-        if (!HidePlayers.shouldRenderPlayer(entity)) {
-            cir.setReturnValue(false); // only return false if shouldRenderPlayer returns false - future reference: if any more things that hide entitiess are added in future, modify the condition to be true if any of them returns false
-        }
+        if (!HidePlayers.shouldRenderPlayer(entity)) cir.setReturnValue(false);
 
         if (RenderOptimizer.hideEntityDeathAnimation() && entity instanceof LivingEntity livingEntity && livingEntity.isDeadOrDying())
             cir.setReturnValue(false);

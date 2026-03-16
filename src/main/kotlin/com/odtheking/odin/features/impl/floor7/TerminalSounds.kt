@@ -9,11 +9,12 @@ import com.odtheking.odin.events.core.EventPriority
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.features.Module
-import com.odtheking.odin.features.impl.floor7.terminalhandler.TerminalTypes
 import com.odtheking.odin.utils.createSoundSettings
 import com.odtheking.odin.utils.playSoundAtPlayer
 import com.odtheking.odin.utils.playSoundSettings
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
+import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalTypes
+import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalUtils
 import net.minecraft.network.protocol.game.ClientboundSoundPacket
 import net.minecraft.sounds.SoundEvents
 
@@ -32,7 +33,7 @@ object TerminalSounds : Module(
     private var lastPlayed = System.currentTimeMillis()
 
     init {
-        on<TerminalEvent.Solved> {
+        on<TerminalEvent.Solve> {
             if (shouldReplaceSounds && (!completeSounds && !clickSounds)) playSoundAtPlayer(SoundEvents.NOTE_BLOCK_PLING.value(), 8f, 4f)
             else if (shouldReplaceSounds && completeSounds && !clickSounds) playSoundSettings(completeSoundSettings())
         }
@@ -60,7 +61,7 @@ object TerminalSounds : Module(
     }
 
     private fun playSoundForSlot(slot: Int, button: Int) {
-        with(TerminalSolver.currentTerm ?: return) {
+        with(TerminalUtils.currentTerm ?: return) {
             if ((isClicked && type != TerminalTypes.MELODY) || !canClick(slot, button)) return
             if ((solution.size == 1 || (type == TerminalTypes.MELODY && slot == 43)) && completeSounds) {
                 if (!cancelLastClick) playTerminalSound()
@@ -75,5 +76,5 @@ object TerminalSounds : Module(
         lastPlayed = System.currentTimeMillis()
     }
 
-    private inline val shouldReplaceSounds get() = (TerminalSolver.currentTerm != null && clickSounds)
+    private inline val shouldReplaceSounds get() = TerminalUtils.currentTerm != null && clickSounds
 }

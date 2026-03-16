@@ -7,6 +7,7 @@ import com.odtheking.odin.clickgui.ClickGUI.gray38
 import com.odtheking.odin.clickgui.settings.RenderableSetting
 import com.odtheking.odin.clickgui.settings.Saving
 import com.odtheking.odin.features.impl.render.ClickGUIModule
+import com.odtheking.odin.utils.Color.Companion.brighter
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.ui.animations.LinearAnimation
 import com.odtheking.odin.utils.ui.isAreaHovered
@@ -30,17 +31,19 @@ class BooleanSetting(
 
         NVGRenderer.text(name, x + 6f, y + height / 2f - 8f, 16f, Colors.WHITE.rgba, NVGRenderer.defaultFont)
 
-        NVGRenderer.rect(x + width - 40f, y + height / 2f - 10f, 34f, 20f, gray38.rgba, 9f)
+        NVGRenderer.rect(x + width - 40f, y + height / 2f - 10f, 34f, 20f, if (isHovered) gray38.brighter().rgba else gray38.rgba, 9f)
 
-        if (enabled || toggleAnimation.isAnimating())
+        if (enabled || toggleAnimation.isAnimating()) {
+            val color = ClickGUIModule.clickGUIColor
             NVGRenderer.rect(
                 x + width - 40f,
                 y + height / 2f - 10f,
                 toggleAnimation.get(34f, 9f, enabled),
                 20f,
-                ClickGUIModule.clickGUIColor.rgba,
+                if (isHovered) color.brighter().rgba else color.rgba,
                 9f
             )
+        }
 
         NVGRenderer.hollowRect(
             x + width - 40f,
@@ -65,7 +68,7 @@ class BooleanSetting(
         }
     }
 
-    override val isHovered: Boolean get() = isAreaHovered(lastX + width - 43f, lastY + getHeight() / 2f - 10f, 34f, 20f)
+    override val isHovered: Boolean get() = isAreaHovered(lastX + width - 43f, lastY + getHeight() / 2f - 10f, 34f, 20f, true)
 
     override fun write(gson: Gson): JsonElement = JsonPrimitive(enabled)
 

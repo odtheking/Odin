@@ -2,11 +2,15 @@ package com.odtheking.odin.features.impl.dungeon.puzzlesolvers
 
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.events.RenderEvent
-import com.odtheking.odin.utils.*
+import com.odtheking.odin.utils.Color
+import com.odtheking.odin.utils.JsonResourceLoader
+import com.odtheking.odin.utils.modMessage
 import com.odtheking.odin.utils.render.drawLine
 import com.odtheking.odin.utils.render.drawText
+import com.odtheking.odin.utils.render.drawTracer
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils.getRealCoords
+import com.odtheking.odin.utils.toFixed
 import net.minecraft.core.BlockPos
 import net.minecraft.network.protocol.game.ServerboundUseItemOnPacket
 import net.minecraft.world.level.block.Blocks
@@ -59,16 +63,21 @@ object WaterSolver {
 
         val solutionList = solutions
             .flatMap { (lever, times) -> times.drop(lever.i).map { Pair(lever, it) } }
-            .sortedBy { (lever, time) -> time + if (lever == LeverBlock.WATER) 0.01 else 0.0 }
-
+            .sortedWith(
+                compareBy(
+                    { it.second != 0.0 },
+                    { if (it.second == 0.0) it.first.ordinal else Int.MAX_VALUE },
+                    { if (it.second != 0.0) it.second else 0.0 }
+                )
+            )
         if (showTracer) {
             val firstSolution = solutionList.firstOrNull()?.first ?: return
-            mc.player?.let { event.drawLine(listOf(it.renderPos, Vec3(firstSolution.leverPos).add(.5, .5, .5)), color = tracerColorFirst, depth = true) }
+            mc.player?.let { event.drawTracer(Vec3(firstSolution.leverPos).add(.5, .5, .5), color = tracerColorFirst, depth = false) }
 
             if (solutionList.size > 1 && firstSolution.leverPos != solutionList[1].first.leverPos) {
                 event.drawLine(
                     listOf(Vec3(firstSolution.leverPos).add(.5, .5, .5), Vec3(solutionList[1].first.leverPos).add(.5, .5, .5)),
-                    color = tracerColorSecond, depth = true
+                    color = tracerColorSecond, depth = false
                 )
             }
         }
@@ -121,9 +130,9 @@ object WaterSolver {
     }
 
     private enum class LeverBlock(val relativePosition: BlockPos, var i: Int = 0) {
-        QUARTZ(BlockPos(20, 61, 20)),
-        GOLD(BlockPos(20, 61, 15)),
         COAL(BlockPos(20, 61, 10)),
+        GOLD(BlockPos(20, 61, 15)),
+        QUARTZ(BlockPos(20, 61, 20)),
         DIAMOND(BlockPos(10, 61, 20)),
         EMERALD(BlockPos(10, 61, 15)),
         CLAY(BlockPos(10, 61, 10)),

@@ -3,7 +3,6 @@ package com.odtheking.odin.utils.ui
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.ui.rendering.NVGRenderer
-import net.minecraft.client.gui.screens.Screen
 import net.minecraft.client.input.CharacterEvent
 import net.minecraft.client.input.KeyEvent
 import net.minecraft.client.input.MouseButtonEvent
@@ -88,7 +87,7 @@ class TextInputHandler(
     }
 
     fun mouseClicked(mouseX: Float, mouseY: Float, click: MouseButtonEvent): Boolean {
-        if (!isAreaHovered(x, y, width, height)) {
+        if (!isAreaHovered(x, y, width, height, true)) {
             resetState()
             return false
         }
@@ -190,20 +189,20 @@ class TextInputHandler(
                 if (input.hasControlDown() && !input.hasShiftDown()) {
                     when (input.key) {
                         GLFW.GLFW_KEY_V -> {
-                            mc.keyboardHandler?.clipboard?.let { insert(it) }
+                            mc.keyboardHandler.clipboard?.let { insert(it) }
                             true
                         }
 
                         GLFW.GLFW_KEY_C -> {
                             if (caret != selection) {
-                                mc.keyboardHandler?.clipboard = text.substringSafe(caret, selection)
+                                mc.keyboardHandler.clipboard = text.substringSafe(caret, selection)
                                 true
                             } else false
                         }
 
                         GLFW.GLFW_KEY_X -> {
                             if (caret != selection) {
-                                mc.keyboardHandler?.clipboard = text.substringSafe(caret, selection)
+                                mc.keyboardHandler.clipboard = text.substringSafe(caret, selection)
                                 deleteSelection()
                                 true
                             } else false

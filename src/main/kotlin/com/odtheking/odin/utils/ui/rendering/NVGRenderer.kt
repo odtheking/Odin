@@ -5,12 +5,13 @@ import com.odtheking.odin.utils.Color.Companion.alpha
 import com.odtheking.odin.utils.Color.Companion.blue
 import com.odtheking.odin.utils.Color.Companion.green
 import com.odtheking.odin.utils.Color.Companion.red
-import net.minecraft.resources.ResourceLocation
+import net.minecraft.resources.Identifier
 import org.lwjgl.nanovg.NVGColor
 import org.lwjgl.nanovg.NVGPaint
 import org.lwjgl.nanovg.NanoSVG.*
 import org.lwjgl.nanovg.NanoVG.*
 import org.lwjgl.nanovg.NanoVGGL3.*
+import org.lwjgl.opengl.GL33C
 import org.lwjgl.stb.STBImage.stbi_load_from_memory
 import org.lwjgl.system.MemoryUtil.memAlloc
 import org.lwjgl.system.MemoryUtil.memFree
@@ -25,7 +26,7 @@ object NVGRenderer {
     private val nvgColor = NVGColor.malloc()
     private val nvgColor2: NVGColor = NVGColor.malloc()
 
-    val defaultFont = Font("Default", mc.resourceManager.getResource(ResourceLocation.parse("odin:font.ttf")).get().open())
+    val defaultFont = Font("Default", mc.resourceManager.getResource(Identifier.parse("odin:font.ttf")).get().open())
 
     private val fontMap = HashMap<Font, NVGFont>()
     private val fontBounds = FloatArray(4)
@@ -41,10 +42,23 @@ object NVGRenderer {
         require(vg != -1L) { "Failed to initialize NanoVG" }
     }
 
+    fun devicePixelRatio(): Float {
+        return try {
+            val window = mc.window
+            val fbw = window.width
+            val ww = window.screenWidth
+            if (ww == 0) 1f else fbw.toFloat() / ww.toFloat()
+        } catch (_: Throwable) {
+            1f
+        }
+    }
+
     fun beginFrame(width: Float, height: Float) {
         if (drawing) throw IllegalStateException("[NVGRenderer] Already drawing, but called beginFrame")
 
-        nvgBeginFrame(vg, width, height, 1f)
+        val dpr = devicePixelRatio()
+
+        nvgBeginFrame(vg, width / dpr, height / dpr, dpr)
         nvgTextAlign(vg, NVG_ALIGN_LEFT or NVG_ALIGN_TOP)
         drawing = true
     }
@@ -257,8 +271,12 @@ object NVGRenderer {
         return bounds // [minX, minY, maxX, maxY]
     }
 
-    fun createNVGImage(textureId: Int, textureWidth: Int, textureHeight: Int): Int =
-        nvglCreateImageFromHandle(vg, textureId, textureWidth, textureHeight, NVG_IMAGE_NEAREST or NVG_IMAGE_NODELETE)
+    fun createNVGImage(textureId: Int, textureWidth: Int, textureHeight: Int): Int {
+        GL33C.glBindTexture(GL33C.GL_TEXTURE_2D, textureId)
+        GL33C.glTexParameteri(GL33C.GL_TEXTURE_2D, GL33C.GL_TEXTURE_MIN_FILTER, GL33C.GL_NEAREST)
+        GL33C.glTexParameteri(GL33C.GL_TEXTURE_2D, GL33C.GL_TEXTURE_MAG_FILTER, GL33C.GL_NEAREST)
+        return nvglCreateImageFromHandle(vg, textureId, textureWidth, textureHeight, NVG_IMAGE_NEAREST or NVG_IMAGE_NODELETE)
+    }
 
     fun image(image: Int, textureWidth: Int, textureHeight: Int, subX: Int, subY: Int, subW: Int, subH: Int, x: Float, y: Float, w: Float, h: Float, radius: Float) {
         if (image == -1) return

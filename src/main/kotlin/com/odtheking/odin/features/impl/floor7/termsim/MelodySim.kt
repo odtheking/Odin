@@ -1,8 +1,7 @@
 package com.odtheking.odin.features.impl.floor7.termsim
 
-import com.odtheking.odin.events.TerminalEvent
-import com.odtheking.odin.features.impl.floor7.TerminalSolver
-import com.odtheking.odin.features.impl.floor7.terminalhandler.TerminalTypes
+import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalTypes
+import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalUtils
 import net.minecraft.core.component.DataComponents
 import net.minecraft.network.chat.Component
 import net.minecraft.world.inventory.Slot
@@ -10,7 +9,7 @@ import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.Items
 
 object MelodySim : TermSimGUI(
-    TerminalTypes.MELODY.windowName, TerminalTypes.MELODY.windowSize
+    TerminalTypes.MELODY.termName, TerminalTypes.MELODY.windowSize
 ) {
     private val magentaPane get() = ItemStack(Items.MAGENTA_STAINED_GLASS_PANE).apply { set(DataComponents.CUSTOM_NAME, Component.literal("")) }
     private val greenPane   get() = ItemStack(Items.LIME_STAINED_GLASS_PANE).apply { set(DataComponents.CUSTOM_NAME, Component.literal("")) }
@@ -50,7 +49,7 @@ object MelodySim : TermSimGUI(
         updateGui()
 
         playTermSimSound()
-        if (currentRow >= 5) TerminalSolver.lastTermOpened?.let { TerminalEvent.Solved(it).postAndCatch() }
+        if (currentRow >= 5) TerminalUtils.lastTermOpened?.onComplete()
     }
 
     private fun updateGui() {

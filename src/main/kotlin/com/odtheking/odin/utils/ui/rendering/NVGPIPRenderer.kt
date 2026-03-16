@@ -12,8 +12,9 @@ import net.minecraft.client.gui.render.pip.PictureInPictureRenderer
 import net.minecraft.client.gui.render.state.pip.PictureInPictureRenderState
 import net.minecraft.client.renderer.MultiBufferSource
 import org.joml.Matrix3x2f
+import org.lwjgl.opengl.GL33C
 
-class NVGSpecialRenderer(vertexConsumers: MultiBufferSource.BufferSource) : PictureInPictureRenderer<NVGSpecialRenderer.NVGRenderState>(vertexConsumers) {
+class NVGPIPRenderer(vertexConsumers: MultiBufferSource.BufferSource) : PictureInPictureRenderer<NVGPIPRenderer.NVGRenderState>(vertexConsumers) {
 
     override fun renderToTexture(state: NVGRenderState, poseStack: PoseStack) {
         val colorTex = RenderSystem.outputColorTextureOverride ?: return
@@ -26,10 +27,13 @@ class NVGSpecialRenderer(vertexConsumers: MultiBufferSource.BufferSource) : Pict
             GlStateManager._viewport(0, 0, width, height)
         }
 
+        GL33C.glBindSampler(0, 0)
         NVGRenderer.beginFrame(width.toFloat(), height.toFloat())
         state.renderContent()
         NVGRenderer.endFrame()
+
         GlStateManager._disableDepthTest()
+        GlStateManager._disableCull()
         GlStateManager._enableBlend()
         GlStateManager._blendFuncSeparate(770, 771, 1, 0)
     }

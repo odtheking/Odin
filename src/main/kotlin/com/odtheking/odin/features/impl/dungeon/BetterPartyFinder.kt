@@ -33,13 +33,10 @@ object BetterPartyFinder : Module(
     private val floor by SelectorSetting("Floor", "F7", Floor.entries.mapNotNull { if (!it.isMM) it.name else null }, desc = "Determines which floor to check pb.").withDependency { autoKickToggle }
     private val mmToggle by BooleanSetting("Master Mode", true, desc = "Use master mode times").withDependency { autoKickToggle }
     private val informKicked by BooleanSetting("Inform Kicked", desc = "Informs the player why they were kicked.").withDependency { autoKickToggle }
-    private val maximumSeconds by NumberSetting("Maximum Seconds", 400, 60, 480, 5, desc = "Maximum of seconds for kicking.", unit = "s").withDependency { autoKickToggle }
+    private val maximumSeconds by NumberSetting("Minimum PB", 400, 60, 480, 5, desc = "Minimum amount of seconds before kicking.", unit = "s").withDependency { autoKickToggle }
     private val secretsMin by NumberSetting("Minimum Secrets", 0, 0, 200, desc = "Secret minimum in thousands for kicking.", unit = "k").withDependency { autoKickToggle }
-    private val apiOffKick by BooleanSetting("Api Off Kick", true, desc = "Kicks if the player's api is off. If this setting is disabled, it will ignore the item check when players have api disabled.").withDependency { autoKickToggle }
     private val magicalPowerReq by NumberSetting("Magical Power", 1300, 0, 2000, 20, desc = "Magical power minimum for kicking.").withDependency { autoKickToggle  }
-    private val spiritKick by BooleanSetting("Spirit Pet", desc = "Kicks if the player doesn't have spirit pet.").withDependency { autoKickToggle }
-
-    private val petMap = mapOf("SPIRIT" to { spiritKick })
+    private val apiOffKick by BooleanSetting("Api Off Kick", false, desc = "Kicks if the player's api is off. If this setting is disabled, it will ignore the item check when players have api disabled.").withDependency { autoKickToggle }
 
     private val kickCache by BooleanSetting("Kick Cache", true, desc = "Caches kicked players to automatically kick when they attempt to rejoin.").withDependency { autoKickToggle }
     private val action by ActionSetting("Clear Cache", desc = "Clears the kick list cache.") { kickedList.clear() }.withDependency { autoKickToggle && kickCache }
@@ -85,10 +82,6 @@ object BetterPartyFinder : Module(
                         if (it < (secretsMin * 1000)) kickedReasons.add("Did not meet secret req: ${formatNumber(it.toString())}/${secretsMin}k")
                     }
 
-                    val pets = currentProfile.pets.pets.mapNotNullTo(HashSet()) { if (it.tier != "LEGENDARY") null else it.type }
-
-                    for (entry in petMap) if (entry.value() && entry.key !in pets) kickedReasons.add("Did not have legendary ${entry.key}")
-
                     if (currentProfile.inventoryApi) {
                         val mp = currentProfile.magicalPower
                         if (mp < magicalPowerReq) kickedReasons.add("Did not meet mp req: ${mp}/$magicalPowerReq")
@@ -96,7 +89,7 @@ object BetterPartyFinder : Module(
 
                     if (kickedReasons.isNotEmpty()) {
                         if (informKicked) {
-                            schedule(5) { sendCommand("party kick $name") }
+                            schedule(6) { sendCommand("party kick $name") }
                             sendCommand("pc Kicked $name for: ${kickedReasons.joinToString(", ")}")
                         } else sendCommand("party kick $name")
 

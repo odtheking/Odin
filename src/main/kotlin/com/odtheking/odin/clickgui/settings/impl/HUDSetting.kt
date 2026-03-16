@@ -11,6 +11,7 @@ import com.odtheking.odin.clickgui.settings.RenderableSetting
 import com.odtheking.odin.clickgui.settings.Saving
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.features.impl.render.ClickGUIModule
+import com.odtheking.odin.utils.Color.Companion.brighter
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.ui.HoverHandler
 import com.odtheking.odin.utils.ui.animations.LinearAnimation
@@ -53,7 +54,7 @@ class HUDSetting(
 
         val iconX = x + width - 30f
         val iconY = y + height / 2f - 12f
-        hoverHandler.handle(iconX, iconY, 24f, 24f)
+        hoverHandler.handle(iconX, iconY, 24f, 24f, true)
 
         val imageSize = 24f + (6f * hoverHandler.percent() / 100f)
         val offset = (imageSize - 24f) / 2f
@@ -61,10 +62,20 @@ class HUDSetting(
         NVGRenderer.image(ClickGUI.movementImage, iconX - offset, iconY - offset, imageSize, imageSize)
 
         if (toggleable) {
-            NVGRenderer.rect(x + width - 70f, y + height / 2f - 10f, 34f, 20f, gray38.rgba, 9f)
+            val hovered = isAreaHovered(lastX + width - 70f, lastY + getHeight() / 2f - 10f, 34f, 20f, true)
+            NVGRenderer.rect(x + width - 70f, y + height / 2f - 10f, 34f, 20f, if (hovered) gray38.brighter().rgba else gray38.rgba, 9f)
 
-            if (value.enabled || toggleAnimation.isAnimating())
-                NVGRenderer.rect(x + width - 70f, y + height / 2f - 10f, toggleAnimation.get(34f, 9f, value.enabled), 20f, ClickGUIModule.clickGUIColor.rgba, 9f)
+            if (value.enabled || toggleAnimation.isAnimating()) {
+                val color = ClickGUIModule.clickGUIColor
+                NVGRenderer.rect(
+                    x + width - 70f,
+                    y + height / 2f - 10f,
+                    toggleAnimation.get(34f, 9f, value.enabled),
+                    20f,
+                    if (hovered) color.brighter().rgba else color.rgba,
+                    9f
+                )
+            }
 
             NVGRenderer.hollowRect(x + width - 70f, y + height / 2f - 10f, 34f, 20f, 2f, ClickGUIModule.clickGUIColor.rgba, 9f)
             NVGRenderer.circle(x + width - toggleAnimation.get(30f, 14f, !value.enabled) - 30f, y + height / 2f, 6f, Colors.WHITE.rgba)
@@ -77,7 +88,7 @@ class HUDSetting(
         return if (isHovered) {
             mc.setScreen(HudManager)
             true
-        } else if (toggleable && isAreaHovered(lastX + width - 70f, lastY + getHeight() / 2f - 10f, 34f, 20f)) {
+        } else if (toggleable && isAreaHovered(lastX + width - 70f, lastY + getHeight() / 2f - 10f, 34f, 20f, true)) {
             toggleAnimation.start()
             value.enabled = !value.enabled
             true
@@ -85,7 +96,7 @@ class HUDSetting(
         } else false
     }
 
-    override val isHovered: Boolean get() = isAreaHovered(lastX + width - 30F, lastY + getHeight() / 2f - 12f, 24f, 24f)
+    override val isHovered: Boolean get() = isAreaHovered(lastX + width - 30F, lastY + getHeight() / 2f - 12f, 24f, 24f, true)
 
     override fun write(gson: Gson): JsonElement = JsonObject().apply {
         addProperty("x", value.x)

@@ -7,6 +7,7 @@ import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.utils.handlers.TickTask
 import com.odtheking.odin.utils.handlers.schedule
+import com.odtheking.odin.utils.noControlCodes
 import net.minecraft.network.protocol.game.ClientboundSetPlayerTeamPacket
 import net.minecraft.world.entity.ai.attributes.Attributes
 import net.minecraft.world.entity.decoration.ArmorStand
@@ -52,7 +53,7 @@ object KuudraUtils {
             entities.forEach { entity ->
                 when (entity) {
                     is Giant ->
-                        if (entity.mainHandItem?.hoverName?.string?.endsWith("Head") == true) giantZombies.add(entity)
+                        if (entity.mainHandItem.hoverName.string.endsWith("Head")) giantZombies.add(entity)
 
                     is MagmaCube ->
                         if (entity.size == 30 && entity.getAttributeBaseValue(Attributes.MAX_HEALTH) == 100000.0)
@@ -111,7 +112,7 @@ object KuudraUtils {
         onReceive<ClientboundSetPlayerTeamPacket> {
             if (!inKuudra) return@onReceive
             val teamLine = parameters.getOrNull() ?: return@onReceive
-            val text = teamLine.playerPrefix.string?.plus(teamLine.playerSuffix.string) ?: return@onReceive
+            val text = teamLine.playerPrefix.string.plus(teamLine.playerSuffix.string).noControlCodes
 
             tierRegex.find(text)?.groupValues?.get(1)?.let { kuudraTier = it.toInt() }
         }

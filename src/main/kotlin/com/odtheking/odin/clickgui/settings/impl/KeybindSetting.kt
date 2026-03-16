@@ -90,7 +90,7 @@ class KeybindSetting(
 
     override val isHovered: Boolean
         get() =
-            isAreaHovered(lastX + width - 20 - keyNameWidth, lastY + getHeight() / 2f - 10f, keyNameWidth + 12f, 22f)
+            isAreaHovered(lastX + width - 20 - keyNameWidth, lastY + getHeight() / 2f - 10f, keyNameWidth + 12f, 22f, true)
 
     override fun write(gson: Gson): JsonElement = JsonPrimitive(value.name)
 

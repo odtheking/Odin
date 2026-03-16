@@ -56,10 +56,10 @@ object Croesus : Module(
         }
     }
 
-    private var cachedPrices = emptyMap<String, Double>()
+    var cachedPrices = emptyMap<String, Double>()
     private var currentChestCount = 0
 
-    private val chestNameRegex = Regex("^(Wood|Iron|Gold|Diamond|Emerald|Obsidian|Bedrock) Chest$")
+    private val chestNameRegex = Regex("^(Wood|Iron|Gold|Diamond|Emerald|Obsidian|Bedrock)(?: Chest)?$")
     private val previewEnchantedBookRegex = Regex("^Enchanted Book \\(?([\\w ]+) (\\w+)\\)$")
     private val chestPreviewScreenRegex = Regex("^(?:Master )?Catacombs - ([FloorVI\\d ]*)$")
     private val chestStatusRegex = Regex("^Opened Chest: (.+)$|^No more chests to open!$")
@@ -67,7 +67,7 @@ object Croesus : Module(
     private val unclaimedChestsRegex = Regex("^ Unclaimed chests: (\\d+)$")
     private val chestEnchantsRegex = Regex("^\\{([a-zA-Z0-9_]+):(\\d+)}$")
     private val previewEssenceRegex = Regex("^(\\w+) Essence x(\\d+)$")
-    private val previewShardRegex = Regex("^(\\w+) Shard x1$")
+    private val previewShardRegex = Regex("^([A-Za-z ]+) Shard x1$")
     private val extraStatsRegex = Regex(" {29}> EXTRA STATS <")
     private val chestCostRegex = Regex("^([\\d,]+) Coins$")
     private val shardRegex = Regex("^([A-Za-z ]+) Shard$")
@@ -90,7 +90,7 @@ object Croesus : Module(
         }
 
         on<GuiEvent.DrawTooltip> {
-            val title = screen.title?.string ?: return@on
+            val title = screen.title.string
             if (croesusHud.enabled && (title.matches(chestNameRegex) || title.matches(chestPreviewScreenRegex))) {
                 guiGraphics.pose().pushMatrix()
                 val sf = mc.window.guiScale
@@ -105,16 +105,15 @@ object Croesus : Module(
         }
 
         on<GuiEvent.DrawSlot> {
-            if (screen.title?.string == "Croesus" && slot.item?.hoverName?.string.equalsOneOf("The Catacombs", "Master Mode The Catacombs")) {
-                val lore = slot.item?.lore ?: return@on
-                val loreString = slot.item?.loreString ?: return@on
+            if (screen.title.string == "Croesus" && slot.item.hoverName?.string.equalsOneOf("The Catacombs", "Master Mode The Catacombs")) {
+                val loreString = slot.item.loreString
 
-                if (hideClaimed && loreString.any { it.matches(chestStatusRegex) } && (!includeKey || hasStrikeThrough("Dungeon Chest Key", lore))) cancel()
+                if (hideClaimed && loreString.any { it.matches(chestStatusRegex) } && (!includeKey || hasStrikeThrough("Dungeon Chest Key", slot.item.lore ))) cancel()
                 else if (highlightState)
                     guiGraphics.fill(slot.x, slot.y, slot.x + 16, slot.y + 16,
                         if (loreString.any { it.matches(chestOpenedRegex) }) Colors.MINECRAFT_GOLD.rgba else Colors.MINECRAFT_GREEN.rgba)
 
-            } else if (highlightProfitable && screen.title?.string?.matches(chestPreviewScreenRegex) == true && slot.index in mostProfitableSlots) {
+            } else if (highlightProfitable && screen.title.string.matches(chestPreviewScreenRegex) && slot.index in mostProfitableSlots) {
                 val color = when (mostProfitableSlots.indexOf(slot.index)) {
                     0 -> Colors.MINECRAFT_DARK_GREEN.rgba
                     1 -> Colors.MINECRAFT_YELLOW.rgba
@@ -142,8 +141,7 @@ object Croesus : Module(
 
         onReceive<ClientboundPlayerInfoUpdatePacket> {
             if (actions().none { it.equalsOneOf(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_DISPLAY_NAME, ClientboundPlayerInfoUpdatePacket.Action.ADD_PLAYER) }) return@onReceive
-            val tabListEntries = entries()?.mapNotNull { it.displayName?.string }?.ifEmpty { return@onReceive } ?: return@onReceive
-            tabListEntries.forEach { tabListEntry ->
+            entries().mapNotNull { it.displayName?.string }.ifEmpty { return@onReceive } .forEach { tabListEntry ->
                 unclaimedChestsRegex.find(tabListEntry)?.groupValues?.get(1)?.toIntOrNull()?.let { unclaimedChests ->
                     currentChestCount = unclaimedChests
                     if (currentChestCount > chestWarning) alert("§cChest limit reached!")
@@ -209,7 +207,7 @@ object Croesus : Module(
 
         itemReplacements[item]?.let { itemId -> return cachedPrices[itemId] }
 
-        return cachedPrices[item.uppercase().replace(" ", "_")]
+        return cachedPrices[item.uppercase().replace(" -", "").replace(" ", "_")]
     }
 
     private fun handleChestContents(items: List<ItemStack>) {

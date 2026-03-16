@@ -24,8 +24,8 @@ import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements
 import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.client.DeltaTracker
 import net.minecraft.client.gui.GuiGraphics
-import net.minecraft.resources.ResourceLocation
-import net.minecraft.resources.ResourceLocation.fromNamespaceAndPath
+import net.minecraft.resources.Identifier
+import net.minecraft.resources.Identifier.fromNamespaceAndPath
 import java.io.File
 
 /**
@@ -54,7 +54,7 @@ object ModuleManager {
     val keybindSettingsCache: ArrayList<KeybindSetting> = arrayListOf()
     val hudSettingsCache: ArrayList<HUDSetting> = arrayListOf()
 
-    private val HUD_LAYER: ResourceLocation = fromNamespaceAndPath(OdinMod.MOD_ID, "odin_hud")
+    private val HUD_LAYER: Identifier = fromNamespaceAndPath(OdinMod.MOD_ID, "odin_hud")
 
     init {
         registerModules(config = ModuleConfig(file = File(OdinMod.configFile, "odin-config.json")),
@@ -140,14 +140,15 @@ object ModuleManager {
         }
     }
 
-    fun render(context: GuiGraphics, tickCounter: DeltaTracker) {
+    fun render(guiGraphics: GuiGraphics, tickCounter: DeltaTracker) {
         if (mc.level == null || mc.player == null || mc.screen == HudManager || mc.options.hideGui) return
-        context.pose().pushMatrix()
+
+        guiGraphics.pose().pushMatrix()
         val sf = mc.window.guiScale
-        context.pose().scale(1f / sf, 1f / sf)
+        guiGraphics.pose().scale(1f / sf, 1f / sf)
         for (hudSettings in hudSettingsCache) {
-            if (hudSettings.isEnabled) hudSettings.value.draw(context, false)
+            if (hudSettings.isEnabled) hudSettings.value.draw(guiGraphics, false)
         }
-        context.pose().popMatrix()
+        guiGraphics.pose().popMatrix()
     }
 }

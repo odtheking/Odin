@@ -47,6 +47,10 @@ val mainCommand = Commodore("odin", "od") {
         fillItemFromSack(64, "SUPERBOOM_TNT", "superboom_tnt", true)
     }
 
+    literal("dd").runs {
+        fillItemFromSack(64, "DUNGEON_DECOY", "dungeon_decoy", true)
+    }
+
     literal("sendcoords").runs { message: GreedyString? ->
         sendChatMessage(getPositionString() + if (message == null) "" else " ${message.string}")
     }

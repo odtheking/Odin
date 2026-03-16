@@ -66,7 +66,7 @@ object DungeonMap : Module(
     var fairyRoomColor by ColorSetting("Fairy Room", Color(244, 19, 139), false, desc = "Color of fairy rooms.").withDependency { roomDropdown }
     var rareRoomColor by ColorSetting("Rare Room", Color(255, 203, 89), false, desc = "Color of rare rooms.").withDependency { roomDropdown }
 
-    private val mapHud by HUD("Dungeon Map", "Displays the dungeon map with customizable colors.") { example ->
+    private val mapHud by HUD("Dungeon Map", "Displays the dungeon map with customizable colors.", false) { example ->
         when {
             DungeonUtils.openRoomCount == 0 && !example -> 0 to 0
             example -> renderExampleMap()
@@ -223,7 +223,7 @@ object DungeonMap : Module(
         }
 
         onReceive<ClientboundMapItemDataPacket> {
-            DungMap.rescanMapItem(this)
+            mc.execute { DungMap.rescanMapItem(this) }
         }
     }
 }

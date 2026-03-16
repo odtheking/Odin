@@ -1,6 +1,7 @@
-package com.odtheking.odin.features.impl.floor7.terminalhandler
+package com.odtheking.odin.utils.skyblock.dungeon.terminals.terminalhandler
 
-import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket
+import com.odtheking.odin.utils.equalsOneOf
+import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalTypes
 import net.minecraft.world.item.BlockItem
 import net.minecraft.world.item.DyeColor
 import net.minecraft.world.item.ItemStack
@@ -8,11 +9,44 @@ import net.minecraft.world.level.block.StainedGlassPaneBlock
 
 class RubixHandler : TerminalHandler(TerminalTypes.RUBIX) {
 
-    override fun handleSlotUpdate(packet: ClientboundContainerSetSlotPacket, items: List<ItemStack>): Boolean {
-        if (items.lastOrNull() == null || packet.slot != type.windowSize - 1) return false
-        solution.clear()
-        solution.addAll(solveRubix(items))
-        return true
+    private val rubixColorOrder = listOf(DyeColor.ORANGE, DyeColor.YELLOW, DyeColor.GREEN, DyeColor.BLUE, DyeColor.RED)
+    private var lastRubixSolution: DyeColor? = null
+
+    override fun solve(items: List<ItemStack>): List<Int> {
+        val panes = items.mapNotNull { item ->
+            if (((item.item as? BlockItem)?.block as? StainedGlassPaneBlock)?.color != DyeColor.BLACK) item else null
+        }
+
+        var temp: List<Int> = List(100) { i -> i }
+
+        if (lastRubixSolution != null) {
+            val lastIndex = rubixColorOrder.indexOf(lastRubixSolution)
+
+            temp = panes.flatMap { pane ->
+                val paneDye = ((pane.item as? BlockItem)?.block as? StainedGlassPaneBlock)?.color ?: return@flatMap emptyList()
+                val paneIdx = rubixColorOrder.indexOf(paneDye)
+                if (paneIdx != lastIndex) List(dist(paneIdx, lastIndex)) { pane } else emptyList()
+            }.map { items.indexOf(it) }
+
+        } else {
+            for (color in rubixColorOrder) {
+                val goalIndex = rubixColorOrder.indexOf(color)
+
+                val temp2 = panes.flatMap { pane ->
+                    val paneDye = ((pane.item as? BlockItem)?.block as? StainedGlassPaneBlock)?.color
+                        ?: return@flatMap emptyList()
+                    val paneIdx = rubixColorOrder.indexOf(paneDye)
+                    if (paneIdx != goalIndex) List(dist(paneIdx, goalIndex)) { pane } else emptyList()
+                }.map { items.indexOf(it) }
+
+                if (getRealSize(temp2) < getRealSize(temp)) {
+                    temp = temp2
+                    lastRubixSolution = color
+                }
+            }
+        }
+
+        return temp
     }
 
     override fun simulateClick(slotIndex: Int, clickType: Int) {
@@ -21,39 +55,10 @@ class RubixHandler : TerminalHandler(TerminalTypes.RUBIX) {
         else solution.remove(slotIndex)
     }
 
-    private val rubixColorOrder = listOf(DyeColor.ORANGE, DyeColor.YELLOW, DyeColor.GREEN, DyeColor.BLUE, DyeColor.RED)
-    private var lastRubixSolution: DyeColor? = null
-
-    private fun solveRubix(items: List<ItemStack>): List<Int> {
-        val panes = items.mapNotNull { item ->
-            if (((item.item as? BlockItem)?.block as? StainedGlassPaneBlock)?.color != DyeColor.BLACK) return@mapNotNull item
-            null
-        }
-
-        var temp: List<Int> = List(100) { i -> i }
-
-        if (lastRubixSolution != null) {
-            val lastIndex = rubixColorOrder.indexOf(lastRubixSolution)
-            temp = panes.flatMap { pane ->
-                val paneDye = ((pane.item as? BlockItem)?.block as? StainedGlassPaneBlock)?.color ?: return@flatMap emptyList()
-                val paneIdx = rubixColorOrder.indexOf(paneDye)
-                if (paneIdx != lastIndex) List(dist(paneIdx, lastIndex)) { pane } else emptyList()
-            }.map { items.indexOf(it) }
-        } else {
-            for (color in rubixColorOrder) {
-                val goalIndex = rubixColorOrder.indexOf(color)
-                val temp2 = panes.flatMap { pane ->
-                    val paneDye = ((pane.item as? BlockItem)?.block as? StainedGlassPaneBlock)?.color ?: return@flatMap emptyList()
-                    val paneIdx = rubixColorOrder.indexOf(paneDye)
-                    if (paneIdx != goalIndex) List(dist(paneIdx, goalIndex)) { pane } else emptyList()
-                }.map { items.indexOf(it) }
-                if (getRealSize(temp2) < getRealSize(temp)) {
-                    temp = temp2
-                    lastRubixSolution = color
-                }
-            }
-        }
-        return temp
+    override fun canClick(slotIndex: Int, button: Int): Boolean {
+        if (slotIndex !in solution) return false
+        val needed = solution.count { it == slotIndex }
+        return !((needed < 3 && button == 1) || (needed.equalsOneOf(3, 4) && button != 1))
     }
 
     private fun getRealSize(list: List<Int>): Int {

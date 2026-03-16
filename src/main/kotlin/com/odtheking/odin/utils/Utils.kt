@@ -98,7 +98,7 @@ fun logError(throwable: Throwable, context: Any) {
 
 fun setClipboardContent(string: String) {
     try {
-        mc.keyboardHandler?.clipboard = string.ifEmpty { " " }
+        mc.keyboardHandler.clipboard = string.ifEmpty { " " }
     } catch (e: Exception) {
         OdinMod.logger.error("Failed to set Clipboard Content", e)
     }
@@ -147,7 +147,7 @@ inline val Entity.renderBoundingBox: AABB
     get() = boundingBox.move(renderX - x, renderY - y, renderZ - z)
 
 fun fillItemFromSack(amount: Int, itemId: String, sackName: String, sendMessage: Boolean) {
-    val needed = mc.player?.inventory?.find { it?.itemId == itemId }?.count ?: 0
+    val needed = mc.player?.inventory?.find { it.itemId == itemId }?.count ?: 0
     if (needed != amount) sendCommand("gfs $sackName ${amount - needed}") else if (sendMessage) modMessage("§cAlready at max stack size.")
 }
 
@@ -168,8 +168,7 @@ fun romanToInt(s: String): Int {
 
 fun BlockPos.getBlockBounds() =
     mc.level?.let { level ->
-        level.getBlockState(this)?.getShape(level, this)?.singleEncompassing()
-            ?.takeIf { !it.isEmpty }?.bounds()
+        level.getBlockState(this).getShape(level, this).singleEncompassing().takeIf { !it.isEmpty }?.bounds()
     }
 
 fun Player.clickSlot(containerId: Int, slotIndex: Int, button: Int = 0, clickType: ClickType = ClickType.PICKUP) {
@@ -189,7 +188,7 @@ fun formatNumber(numStr: String): String {
 fun Module.createSoundSettings(name: String, default: String, dependencies: () -> Boolean): () -> Triple<String, Float, Float> {
     val customSound = +StringSetting(name, default, desc = "Name of a custom sound to play.", length = 64).withDependency { dependencies() }
     val pitch = +NumberSetting("$name Pitch", 1f, 0.1f, 2f, 0.01f, desc = "Pitch of the sound to play.").withDependency { dependencies() }
-    val volume = +NumberSetting("$name Volume", 0.3f, 0.1f, 1f, 0.01f, desc = "Volume of the sound to play.").withDependency { dependencies() }
+    val volume = +NumberSetting("$name Volume", 1f, 0.1f, 1f, 0.01f, desc = "Volume of the sound to play.").withDependency { dependencies() }
     val soundSettings = { Triple(customSound.value, volume.value, pitch.value) }
     +ActionSetting("Play sound", desc = "Plays the selected sound.") { playSoundSettings(soundSettings()) }.withDependency { dependencies() }
     return soundSettings

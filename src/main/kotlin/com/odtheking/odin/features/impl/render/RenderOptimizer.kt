@@ -27,11 +27,11 @@ object RenderOptimizer : Module(
     private val hideLightning by BooleanSetting("Hide Lightning", true, desc = "Hides lightning bolts.")
     private val hideExperienceOrbs by BooleanSetting("Hide Experience Orbs", true, desc = "Hides experience orbs.")
     private val hideDeathAnimation by BooleanSetting("Hide Death Animation", true, desc = "Hides mobs that are dying.")
-    private val hideDyingMobsArmorStand by BooleanSetting("Hide Armor Stand", true, desc = "Hides Armor stands from mobs that are dying.").withDependency { hideDeathAnimation }
+    private val hideDyingMobsArmorStand by BooleanSetting("Hide Armor Stands", false, desc = "Hides Armor stands from mobs that are dying.").withDependency { hideDeathAnimation }
     private val disableExplosion by BooleanSetting("Hide Explosion Particles", false, desc = "Hides explosion particles to improve performance.")
-    private val hideArcherBoneMeal by BooleanSetting("Hide Archer Passive", false, desc = "Hides the archer passive's floating bone meal.")
-    private val hideFairy by BooleanSetting("Hide Healer Fairy", false, desc = "Hides the healer fairy held by some mobs.")
-    private val hideWeaver by BooleanSetting("Hide Soul Weaver", false, desc = "Hides the soul weaver helmet worn by some mobs.")
+    private val hideArcherBoneMeal by BooleanSetting("Hide Archer Passive", true, desc = "Hides the archer passive's floating bone meal.")
+    private val hideFairy by BooleanSetting("Hide Healer Fairy", true, desc = "Hides the healer fairy held by some mobs.")
+    private val hideWeaver by BooleanSetting("Hide Soul Weaver", true, desc = "Hides the soul weaver helmet worn by some mobs.")
     private val hideTentacle by BooleanSetting("Hide Tentacle Head", true, desc = "Hides the tentacle head worn by some mobs.")
 
     private val disableFireOverlay by BooleanSetting("Hide Fire Overlay", true, desc = "Hides the fire overlay to improve disability.")

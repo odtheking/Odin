@@ -2,27 +2,27 @@
   "false": {
     "0": {
       "012": {
-        "hardened_clay": [0.0],
-        "quartz_block": [0.0, 10.0],
-        "water": [0.0],
-        "diamond_block": [0.0],
         "gold_block": [0.0],
+        "quartz_block": [0.0, 10.0],
+        "diamond_block": [0.0],
+        "hardened_clay": [0.0],
+        "water": [0.0],
         "emerald_block": [7.9]
       },
       "013": {
-        "hardened_clay": [0.0, 6.5],
-        "gold_block": [0.0, 11.0],
-        "water": [0.0],
         "coal_block": [0.0],
-        "diamond_block": [0.0, 7.6]
+        "gold_block": [0.0, 11.0],
+        "diamond_block": [0.0, 7.6],
+        "hardened_clay": [0.0, 6.5],
+        "water": [0.0]
       },
       "014": {
         "water": [0.0],
-        "hardened_clay": [3.2],
         "gold_block": [4.7],
         "quartz_block": [7.5, 12.2],
         "diamond_block": [10.0],
-        "emerald_block": [11.1]
+        "emerald_block": [11.1],
+        "hardened_clay": [3.2]
       },
       "023": {
         "gold_block": [0.0],
@@ -34,23 +34,23 @@
       },
       "024": {
         "water": [0.0],
-        "hardened_clay": [2.9],
-        "gold_block": [4.3],
         "coal_block": [8.5],
+        "gold_block": [4.3],
         "quartz_block": [9.7],
-        "diamond_block": [12.5]
+        "diamond_block": [12.5],
+        "hardened_clay": [2.9]
       },
       "034": {
-        "diamond_block": [0.0, 8.4],
-        "quartz_block": [0.0, 9.6],
         "gold_block": [0.0, 2.6],
+        "quartz_block": [0.0, 9.6],
+        "diamond_block": [0.0, 8.4],
         "hardened_clay": [0.0, 6.5],
         "water": [0.0],
         "emerald_block": [13.1]
       },
       "123": {
-        "gold_block": [0.0, 8.7],
         "coal_block": [0.0],
+        "gold_block": [0.0, 8.7],
         "water": [0.0],
         "hardened_clay": [10.4]
       },
@@ -61,10 +61,10 @@
         "hardened_clay": [10.2]
       },
       "134": {
-        "emerald_block": [7.9],
         "water": [0.0],
         "coal_block": [3.2],
-        "gold_block": [9.4]
+        "gold_block": [9.4],
+        "emerald_block": [7.9]
       },
       "234": {
         "emerald_block": [0.0, 9.2],
@@ -87,8 +87,8 @@
       },
       "014": {
         "water": [0.0],
-        "emerald_block": [3.3, 7.8],
         "quartz_block": [4.2],
+        "emerald_block": [3.3, 7.8],
         "hardened_clay": [11.5]
       },
       "023": {
@@ -98,29 +98,29 @@
         "water": [0.0]
       },
       "024": {
-        "emerald_block": [0.0, 5.7],
-        "diamond_block": [0.0, 2.9, 8.7],
         "quartz_block": [0.0, 7.1, 12.2],
+        "diamond_block": [0.0, 2.9, 8.7],
+        "emerald_block": [0.0, 5.7],
         "water": [0.0],
         "hardened_clay": [9.8]
       },
       "034": {
         "water": [0.0],
-        "emerald_block": [2.9, 7.1],
         "quartz_block": [4.0],
+        "emerald_block": [2.9, 7.1],
         "hardened_clay": [12.2]
       },
       "123": {
-        "quartz_block": [0.0],
         "gold_block": [0.0, 9.0],
-        "diamond_block": [10.0],
+        "quartz_block": [0.0],
         "emerald_block": [0.0],
         "hardened_clay": [0.0, 5.6],
-        "water": [0.0, 6.9]
+        "water": [0.0, 6.9],
+        "diamond_block": [10.0]
       },
       "124": {
-        "quartz_block": [0.0],
         "gold_block": [0.0],
+        "quartz_block": [0.0],
         "diamond_block": [0.0, 3.0],
         "emerald_block": [0.0],
         "water": [0.0],
@@ -128,8 +128,8 @@
         "hardened_clay": [11.6]
       },
       "134": {
-        "quartz_block": [0.0],
         "gold_block": [0.0],
+        "quartz_block": [0.0],
         "diamond_block": [0.0, 2.7],
         "emerald_block": [0.0],
         "water": [0.0, 4.9],
@@ -166,27 +166,27 @@
       },
       "023": {
         "water": [0.0],
-        "quartz_block": [1.7],
         "gold_block": [3.8],
+        "quartz_block": [1.7],
         "diamond_block": [5.5, 7.4, 12.2]
       },
       "024": {
-        "quartz_block": [0.0],
         "gold_block": [0.0, 2.0, 3.5],
-        "emerald_block": [8.0],
+        "quartz_block": [0.0],
         "water": [0.0],
-        "diamond_block": [7.0]
+        "diamond_block": [7.0],
+        "emerald_block": [8.0]
       },
       "034": {
-        "quartz_block": [0.0],
         "gold_block": [0.0],
+        "quartz_block": [0.0],
         "emerald_block": [0.0, 3.2, 4.4, 10.2],
         "water": [0.0, 5.0],
         "diamond_block": [7.9, 11.9]
       },
       "123": {
-        "emerald_block": [6.2, 8.0, 10.4],
-        "water": [0.0, 3.8]
+        "water": [0.0, 3.8],
+        "emerald_block": [6.2, 8.0, 10.4]
       },
       "124": {
         "emerald_block": [0.0, 8.1, 9.4],
@@ -211,68 +211,68 @@
         "gold_block": [0.0],
         "quartz_block": [0.0],
         "water": [0.0],
-        "emerald_block": [8.2],
-        "coal_block": [9.3]
+        "coal_block": [9.3],
+        "emerald_block": [8.2]
       },
       "013": {
         "gold_block": [0.0],
         "quartz_block": [0.0],
-        "water": [0.0],
         "emerald_block": [0.0, 8.1],
-        "hardened_clay": [0.0, 5.6]
+        "hardened_clay": [0.0, 5.6],
+        "water": [0.0]
       },
       "014": {
-        "hardened_clay": [0.0],
-        "emerald_block": [0.0, 10.0],
         "gold_block": [0.0],
+        "emerald_block": [0.0, 10.0],
+        "hardened_clay": [0.0],
         "water": [0.0],
         "quartz_block": [2.9]
       },
       "023": {
-        "quartz_block": [0.0],
         "gold_block": [0.0],
+        "quartz_block": [0.0],
         "water": [0.0, 3.9],
         "emerald_block": [6.4],
         "hardened_clay": [9.2]
       },
       "024": {
-        "quartz_block": [0.0, 10.5],
         "gold_block": [0.0],
+        "quartz_block": [0.0, 10.5],
         "emerald_block": [0.0],
         "water": [0.0, 4.3],
         "coal_block": [8.6]
       },
-      "034":  {
+      "034": {
         "gold_block": [0.0],
-        "water": [0.0, 3.0],
-        "emerald_block": [0.0],
         "quartz_block": [0.0, 1.8],
+        "emerald_block": [0.0],
+        "water": [0.0, 3.0],
         "coal_block": [14.0]
       },
       "123": {
-        "quartz_block": [0.0],
         "gold_block": [0.0],
+        "quartz_block": [0.0],
         "water": [0.0],
         "hardened_clay": [9.2]
       },
       "124": {
-        "quartz_block": [0.0, 8.7],
         "gold_block": [0.0],
+        "quartz_block": [0.0, 8.7],
         "water": [0.0],
         "coal_block": [6.8],
-        "hardened_clay": [11.7],
-        "emerald_block": [10.1]
+        "emerald_block": [10.1],
+        "hardened_clay": [11.7]
       },
       "134": {
-        "quartz_block": [0.0, 8.6],
         "gold_block": [0.0],
+        "quartz_block": [0.0, 8.6],
         "water": [0.0, 2.7],
         "coal_block": [10.6],
         "emerald_block": [12.6]
       },
       "234": {
-        "emerald_block": [0.0],
         "coal_block": [0.0, 12.3],
+        "emerald_block": [0.0],
         "water": [0.0, 2.5],
         "gold_block": [3.5],
         "hardened_clay": [10.6]
@@ -284,23 +284,23 @@
       "012": {
         "water": [0.0],
         "coal_block": [1.0],
-        "diamond_block":[2.0, 4.0, 5.1],
-        "hardened_clay": [3.0],
-        "emerald_block": [6.0]
+        "diamond_block": [2.0, 4.0, 5.1],
+        "emerald_block": [6.0],
+        "hardened_clay": [3.0]
       },
       "013": {
         "water": [0.0],
         "coal_block": [1.0],
         "diamond_block": [2.0, 4.0, 5.0, 7.7],
-        "hardened_clay": [3.0, 6.7],
-        "emerald_block": [6.1, 7.2]
+        "emerald_block": [6.1, 7.2],
+        "hardened_clay": [3.0, 6.7]
       },
       "014": {
         "water": [0.0],
         "coal_block": [2.3],
         "diamond_block": [3.2, 4.1, 4.9],
-        "hardened_clay": [6.0, 6.8],
-        "emerald_block": [7.5]
+        "emerald_block": [7.5],
+        "hardened_clay": [6.0, 6.8]
       },
       "023": {
         "water": [0.0],
@@ -323,22 +323,22 @@
       "123": {
         "water": [0.0],
         "coal_block": [0.6],
-        "diamond_block": [2.0, 2.6],
         "gold_block": [6.0],
+        "diamond_block": [2.0, 2.6],
         "hardened_clay": [6.8]
       },
       "124": {
         "water": [0.0],
         "coal_block": [2.3],
-        "diamond_block": [3.2, 3.7],
         "gold_block": [6.2],
+        "diamond_block": [3.2, 3.7],
         "hardened_clay": [7.3]
       },
       "134": {
         "water": [0.0],
         "coal_block": [2.3],
-        "diamond_block": [3.2, 3.7],
-        "gold_block": [7.1]
+        "gold_block": [7.1],
+        "diamond_block": [3.2, 3.7]
       },
       "234": {
         "water": [0.0],
@@ -368,56 +368,56 @@
       },
       "023": {
         "water": [0.0],
-        "emerald_block": [0.7, 1.9],
-        "quartz_block": [1.3, 2.5],
+        "coal_block": [6.8, 8.5],
         "gold_block": [5.8],
-        "coal_block": [6.8, 8.5]
+        "quartz_block": [1.3, 2.5],
+        "emerald_block": [0.7, 1.9]
       },
       "024": {
         "water": [0.0],
-        "quartz_block": [0.9],
-        "emerald_block": [1.4, 2.0],
         "coal_block": [2.9, 3.9, 5.5],
-        "gold_block": [7.1]
+        "gold_block": [7.1],
+        "quartz_block": [0.9],
+        "emerald_block": [1.4, 2.0]
       },
       "034": {
         "water": [0.0],
-        "emerald_block": [0.6, 4.8],
+        "gold_block": [5.8],
         "quartz_block": [1.2],
         "diamond_block": [1.8, 2.6, 3.8],
-        "gold_block": [5.8],
+        "emerald_block": [0.6, 4.8],
         "hardened_clay": [10.0]
       },
       "123": {
         "water": [0.0],
-        "emerald_block": [0.6],
+        "coal_block": [7.2, 9.2],
+        "gold_block": [4.8],
         "quartz_block": [1.2],
         "diamond_block": [1.8, 2.6],
-        "gold_block": [4.8],
-        "coal_block": [7.2, 9.2]
+        "emerald_block": [0.6]
       },
       "124": {
         "water": [0.0],
-        "emerald_block": [0.7],
+        "coal_block": [3.5],
+        "gold_block": [9.2],
         "quartz_block": [1.4],
         "diamond_block": [2.3, 10.2],
-        "coal_block": [3.5],
-        "gold_block": [9.2]
+        "emerald_block": [0.7]
       },
       "134": {
         "water": [0.0],
-        "emerald_block": [0.6],
+        "coal_block": [4.2, 5.1],
+        "gold_block": [6.8],
         "quartz_block": [1.2],
         "diamond_block": [1.8, 2.6],
-        "coal_block": [4.2, 5.1],
-        "gold_block": [6.8]
+        "emerald_block": [0.6]
       },
       "234": {
         "water": [0.0],
-        "emerald_block": [0.7],
-        "quartz_block": [1.4],
         "coal_block": [4.4, 8.3],
-        "gold_block": [7.1]
+        "gold_block": [7.1],
+        "quartz_block": [1.4],
+        "emerald_block": [0.7]
       }
     },
     "2": {
@@ -429,16 +429,16 @@
       },
       "013": {
         "water": [0.0],
+        "gold_block": [3.0],
         "quartz_block": [1.0],
-        "diamond_block": [2.2, 5.1, 8.1, 9.4],
-        "gold_block": [3.0]
+        "diamond_block": [2.2, 5.1, 8.1, 9.4]
       },
       "014": {
         "water": [0.0],
         "gold_block": [0.6],
         "quartz_block": [1.3],
-        "emerald_block": [3.8],
-        "diamond_block": [5.7, 8.4]
+        "diamond_block": [5.7, 8.4],
+        "emerald_block": [3.8]
       },
       "023": {
         "water": [0.0],
@@ -464,14 +464,14 @@
       },
       "124": {
         "water": [0.0],
-        "emerald_block": [5.1, 8.9, 9.7],
         "gold_block": [7.0],
-        "diamond_block": [8.0]
+        "diamond_block": [8.0],
+        "emerald_block": [5.1, 8.9, 9.7]
       },
       "134": {
         "water": [0.0],
-        "emerald_block": [1.3, 4.8, 8, 9.4, 10.5],
-        "gold_block": [6.5]
+        "gold_block": [6.5],
+        "emerald_block": [1.3, 4.8, 8, 9.4, 10.5]
       },
       "234": {
         "water": [0.0],
@@ -526,9 +526,9 @@
         "water": [0.0],
         "coal_block": [0.6, 1.8],
         "gold_block": [1.2],
+        "quartz_block": [4.1, 7.2],
         "emerald_block": [2.6, 6.0],
-        "hardened_clay": [3.2, 5.3, 8.5],
-        "quartz_block": [4.1, 7.2]
+        "hardened_clay": [3.2, 5.3, 8.5]
       },
       "124": {
         "water": [0.0],
@@ -541,9 +541,9 @@
         "water": [0.0],
         "coal_block": [0.6, 1.8],
         "gold_block": [1.2],
+        "diamond_block": [4.8],
         "emerald_block": [2.8, 6.3, 8.3],
-        "hardened_clay": [3.2],
-        "diamond_block": [4.8]
+        "hardened_clay": [3.2]
       },
       "234": {
         "water": [0.0],

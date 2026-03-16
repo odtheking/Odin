@@ -212,7 +212,11 @@ object HypixelData {
         val coins: Double = 0.0,
         @SerializedName("motes_purse")
         val motes: Double = 0.0,
-        val essence: Map<String, Int> = emptyMap(),
+        val essence: Map<String, EssenceData> = emptyMap(),
+    )
+
+    data class EssenceData(
+        val current: Long = 0,
     )
 
     data class MiscItemData(

@@ -87,7 +87,7 @@ class NumberSetting<E>(
         super.render(x, y, mouseX, mouseY)
         val height = getHeight()
 
-        handler.handle(x, y + height / 2, width, height / 2)
+        handler.handle(x, y + height / 2, width, height / 2, true)
 
         if (listening) {
             val newPercentage = ((mouseX - (x + 6f)) / (width - 12f)).coerceIn(0f, 1f)
@@ -149,7 +149,7 @@ class NumberSetting<E>(
 
     override val isHovered: Boolean
         get() =
-            isAreaHovered(lastX, lastY + getHeight() / 2, width, getHeight() / 2)
+            isAreaHovered(lastX, lastY + getHeight() / 2, width, getHeight() / 2, true)
 
     override fun getHeight(): Float = Panel.HEIGHT + 8f
 

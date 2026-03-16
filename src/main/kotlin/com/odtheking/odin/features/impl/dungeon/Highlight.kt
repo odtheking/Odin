@@ -40,22 +40,21 @@ object Highlight : Module(
 
             val entitiesToRemove = mutableListOf<Entity>()
             mc.level?.entitiesForRendering()?.forEach { e ->
-                val entity = e ?: return@forEach
-                if (!entity.isAlive || entity !is ArmorStand) return@forEach
+                if (!e.isAlive || e !is ArmorStand) return@forEach
 
-                val entityName = entity.name?.string ?: return@forEach
+                val entityName = e.name.string
                 if (!dungeonMobSpawns.any { it in entityName }) return@forEach
 
                 val isStarred = starredRegex.matches(entityName)
 
-                if (hideNonNames && entity.isInvisible && !isStarred) {
-                    entitiesToRemove.add(entity)
+                if (hideNonNames && e.isInvisible && !isStarred) {
+                    entitiesToRemove.add(e)
                     return@forEach
                 }
 
                 if (!isStarred) return@forEach
 
-                mc.level?.getEntities(entity, entity.boundingBox.move(0.0, -1.0, 0.0)) { isValidEntity(it) }
+                mc.level?.getEntities(e, e.boundingBox.move(0.0, -1.0, 0.0)) { isValidEntity(it) }
                     ?.firstOrNull()?.let { entities.add(it) }
             }
             entitiesToRemove.forEach { it.remove(Entity.RemovalReason.DISCARDED) }
@@ -66,10 +65,7 @@ object Highlight : Module(
             if (!highlightStar || !DungeonUtils.inClear) return@on
 
             entities.forEach { entity ->
-                if (!entity.isAlive) return@forEach
-
-                drawStyledBox(entity.renderBoundingBox, color, renderStyle, true)
-
+                if (entity.isAlive) drawStyledBox(entity.renderBoundingBox, color, renderStyle, true)
             }
         }
 
@@ -89,6 +85,6 @@ object Highlight : Module(
     @JvmStatic
     fun getTeammateColor(entity: Entity): Int? {
         if (!enabled || !teammateClassGlow || !DungeonUtils.inDungeons || entity !is Player) return null
-        return DungeonUtils.dungeonTeammates.find { it.name == entity.name?.string }?.clazz?.color?.rgba
+        return DungeonUtils.dungeonTeammates.find { it.name == entity.name.string }?.clazz?.color?.rgba
     }
 }

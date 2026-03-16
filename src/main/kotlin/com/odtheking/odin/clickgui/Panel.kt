@@ -48,7 +48,7 @@ class Panel(private val category: Category) {
             panelSetting.x,
             panelSetting.y,
             WIDTH,
-            (previousHeight + 10f).coerceAtLeast(HEIGHT),
+            (previousHeight + if (ClickGUIModule.roundedPanelBottom) 10f else 0f).coerceAtLeast(HEIGHT),
             10f,
             3f,
             5f
@@ -75,20 +75,22 @@ class Panel(private val category: Category) {
         if (panelSetting.extended) {
             for (button in moduleButtons) {
                 if (!button.module.name.contains(SearchBar.currentSearch, true)) continue
-                startY += button.draw(panelSetting.x, startY + panelSetting.y)
+                startY += button.draw(panelSetting.x, startY + panelSetting.y, button == lastModuleButton)
             }
         }
         previousHeight = startY
 
-        NVGRenderer.drawHalfRoundedRect(
-            panelSetting.x,
-            panelSetting.y + startY,
-            WIDTH,
-            10f,
-            if (lastModuleButton?.module?.enabled == true) ClickGUIModule.clickGUIColor.rgba else gray26.rgba,
-            5f,
-            false
-        )
+        if (ClickGUIModule.roundedPanelBottom) {
+            NVGRenderer.drawHalfRoundedRect(
+                panelSetting.x,
+                panelSetting.y + startY,
+                WIDTH,
+                10f,
+                if (lastModuleButton?.module?.enabled == true) ClickGUIModule.clickGUIColor.rgba else gray26.rgba,
+                5f,
+                false
+            )
+        }
         if (scrollOffset != 0f) NVGRenderer.popScissor()
     }
 
@@ -99,7 +101,7 @@ class Panel(private val category: Category) {
     }
 
     fun mouseClicked(mouseX: Float, mouseY: Float, click: MouseButtonEvent): Boolean {
-        if (isAreaHovered(panelSetting.x, panelSetting.y, WIDTH, HEIGHT)) {
+        if (isAreaHovered(panelSetting.x, panelSetting.y, WIDTH, HEIGHT, true)) {
             if (click.button() == 0) {
                 deltaX = (panelSetting.x - mouseX)
                 deltaY = (panelSetting.y - mouseY)
@@ -151,7 +153,8 @@ class Panel(private val category: Category) {
             panelSetting.x,
             panelSetting.y,
             WIDTH,
-            previousHeight.coerceAtLeast(HEIGHT)
+            previousHeight.coerceAtLeast(HEIGHT),
+            true
         )
 
     companion object {

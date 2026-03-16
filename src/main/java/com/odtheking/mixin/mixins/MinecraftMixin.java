@@ -4,6 +4,7 @@ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.odtheking.odin.events.BlockInteractEvent;
 import com.odtheking.odin.events.EntityInteractEvent;
 import com.odtheking.odin.features.impl.floor7.TerminalSolver;
+import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
@@ -34,15 +35,9 @@ public abstract class MinecraftMixin {
         if (new EntityInteractEvent(entityHitResult.getLocation(), entityHitResult.getEntity()).postAndCatch()) ci.cancel();
     }
 
-    @ModifyExpressionValue(
-            method = "resizeDisplay",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/client/OptionInstance;get()Ljava/lang/Object;"
-            )
-    )
+    @ModifyExpressionValue(method = "resizeDisplay", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/OptionInstance;get()Ljava/lang/Object;"))
     private Object modifyGuiScaleValue(Object original) {
-        if (TerminalSolver.INSTANCE.getCurrentTerm() != null && TerminalSolver.getTermSize() != (Integer) original) return TerminalSolver.getTermSize();
+        if (TerminalUtils.getCurrentTerm() != null && TerminalSolver.getTermSize() != (Integer) original) return TerminalSolver.getTermSize();
         return original;
     }
 }

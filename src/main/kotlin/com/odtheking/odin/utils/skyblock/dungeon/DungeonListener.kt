@@ -13,13 +13,14 @@ import com.odtheking.odin.features.impl.dungeon.LeapMenu
 import com.odtheking.odin.features.impl.dungeon.LeapMenu.odinSorting
 import com.odtheking.odin.features.impl.dungeon.Mimic
 import com.odtheking.odin.utils.network.WebUtils.hasBonusPaulScore
+import com.odtheking.odin.utils.noControlCodes
 import com.odtheking.odin.utils.romanToInt
-import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils.getDungeonTeammates
 import com.odtheking.odin.utils.skyblock.dungeon.tiles.Room
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import net.minecraft.network.protocol.game.*
 import net.minecraft.world.entity.EntityType
+import net.minecraft.world.entity.player.Player
 import kotlin.jvm.optionals.getOrNull
 
 object DungeonListener {
@@ -72,17 +73,17 @@ object DungeonListener {
         }
 
         onReceive<ClientboundPlayerInfoUpdatePacket> {
-            val tabListEntries = entries()?.mapNotNull { it.displayName?.string }?.ifEmpty { return@onReceive } ?: return@onReceive
+            val tabListEntries = entries().mapNotNull { it.displayName?.string }.ifEmpty { return@onReceive }
             updateDungeonTeammates(tabListEntries)
             updateDungeonStats(tabListEntries)
             getDungeonPuzzles(tabListEntries)
         }
 
         onReceive<ClientboundSetPlayerTeamPacket> {
-            val text = parameters?.getOrNull()?.let { it.playerPrefix?.string?.plus(it.playerSuffix?.string) } ?: return@onReceive
+            val text = parameters?.getOrNull()?.let { it.playerPrefix?.string?.plus(it.playerSuffix?.string).noControlCodes } ?: return@onReceive
 
             floorRegex.find(text)?.groupValues?.get(1)?.let {
-                scope.launch(Dispatchers.IO) { paul = hasBonusPaulScore() }
+                if (floor == null) scope.launch(Dispatchers.IO) { paul = hasBonusPaulScore() }
                 floor = Floor.valueOf(it)
             }
 
@@ -94,7 +95,7 @@ object DungeonListener {
 
         onReceive<ClientboundTabListPacket> {
             Blessing.entries.forEach { blessing ->
-                blessing.regex.find(footer?.string ?: return@forEach)?.let { blessing.current = romanToInt(it.groupValues[1]) }
+                blessing.regex.find(footer.string)?.let { blessing.current = romanToInt(it.groupValues[1]) }
             }
         }
 
@@ -109,7 +110,7 @@ object DungeonListener {
 
             when (partyMessageRegex.find(value)?.groupValues?.get(1)?.lowercase() ?: return@on) {
                 "mimic killed", "mimic slain", "mimic killed!", "mimic dead", "mimic dead!", $$"$skytils-dungeon-score-mimic$", Mimic.mimicMessage ->
-                    dungeonStats.mimicKilled = true
+                    if (DungeonUtils.isFloor(6, 7)) dungeonStats.mimicKilled = true
 
                 "prince killed", "prince slain", "prince killed!", "prince dead", "prince dead!", $$"$skytils-dungeon-score-prince$", Mimic.princeMessage ->
                     dungeonStats.princeKilled = true
@@ -129,7 +130,7 @@ object DungeonListener {
         onReceive<ClientboundAddEntityPacket> {
             if (type == EntityType.PLAYER)
                 DungeonUtils.dungeonTeammates.find { it.entity == null && it.name == mc.level?.getEntity(id)?.name?.string }?.entity =
-                    mc.level?.getEntity(id) as? net.minecraft.world.entity.player.Player
+                    mc.level?.getEntity(id) as? Player
         }
     }
 
@@ -164,7 +165,7 @@ object DungeonListener {
     }
 
     private fun updateDungeonTeammates(tabList: List<String>) = mc.execute {
-        dungeonTeammates = getDungeonTeammates(dungeonTeammates, tabList)
+        dungeonTeammates = DungeonUtils.getDungeonTeammates(dungeonTeammates, tabList)
         dungeonTeammatesNoSelf = dungeonTeammates.filter { it.name != mc.player?.name?.string }
 
         leapTeammates =
@@ -203,10 +204,19 @@ object DungeonListener {
         var deaths: Int = 0,
         var percentCleared: Int = 0,
         var elapsedTime: String = "0s",
-        var mimicKilled: Boolean = false,
+        private var _mimicKilled: Boolean = false,
         var princeKilled: Boolean = false,
         var doorOpener: String = "Unknown",
         var bloodDone: Boolean = false,
         var puzzleCount: Int = 0,
-    )
+    ) {
+        var mimicKilled: Boolean
+            get() = _mimicKilled
+            set(value) {
+                if (value && !DungeonUtils.isFloor(6, 7)) {
+                    error("Attempted to set mimicKilled = true on floor that has no mimic")
+                }
+                _mimicKilled = value
+            }
+    }
 }

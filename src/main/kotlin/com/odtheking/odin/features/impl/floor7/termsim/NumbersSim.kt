@@ -1,8 +1,7 @@
 package com.odtheking.odin.features.impl.floor7.termsim
 
-import com.odtheking.odin.events.TerminalEvent
-import com.odtheking.odin.features.impl.floor7.TerminalSolver
-import com.odtheking.odin.features.impl.floor7.terminalhandler.TerminalTypes
+import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalTypes
+import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalUtils
 import net.minecraft.core.component.DataComponents
 import net.minecraft.network.chat.Component
 import net.minecraft.world.inventory.Slot
@@ -11,7 +10,7 @@ import net.minecraft.world.item.Items
 import kotlin.math.floor
 
 object NumbersSim : TermSimGUI(
-    TerminalTypes.NUMBERS.windowName, TerminalTypes.NUMBERS.windowSize
+    TerminalTypes.NUMBERS.termName, TerminalTypes.NUMBERS.windowSize
 ) {
     override fun create() {
         val used = (1..14).shuffled().toMutableList()
@@ -22,13 +21,13 @@ object NumbersSim : TermSimGUI(
     }
 
     override fun slotClick(slot: Slot, button: Int) {
-        if (guiInventorySlots.minByOrNull { if (it?.item?.item == Items.RED_STAINED_GLASS_PANE) it.item?.count ?: 999 else 1000 } != slot) return
+        if (guiInventorySlots.minByOrNull { if (it.item.item == Items.RED_STAINED_GLASS_PANE) it.item?.count ?: 999 else 1000 } != slot) return
         createNewGui {
             if (it == slot) ItemStack(Items.LIME_STAINED_GLASS_PANE, slot.item.count).apply { set(DataComponents.CUSTOM_NAME, Component.literal("")) }
-            else it.item ?: blackPane
+            else it.item
         }
         playTermSimSound()
         if (guiInventorySlots.none { it?.item?.item == Items.RED_STAINED_GLASS_PANE })
-            TerminalSolver.lastTermOpened?.let { TerminalEvent.Solved(it).postAndCatch() }
+            TerminalUtils.lastTermOpened?.onComplete()
     }
 }

@@ -32,7 +32,7 @@ class DropdownSetting(
 
         NVGRenderer.text(name, x + 6f, y + height / 2f - 8f, 16f, Colors.WHITE.rgba, NVGRenderer.defaultFont)
 
-        hoverHandler.handle(lastX + width - 30f, lastY + getHeight() / 2f - 16f, 24f, 24f)
+        hoverHandler.handle(lastX + width - 30f, lastY + getHeight() / 2f - 16f, 24f, 24f, true)
 
         val imageSize = 24f + (6f * hoverHandler.percent() / 100f)
         val offset = (imageSize - 24f) / 2f
@@ -54,5 +54,5 @@ class DropdownSetting(
         return true
     }
 
-    override val isHovered: Boolean get() = isAreaHovered(lastX + width - 30f, lastY + getHeight() / 2f - 16f, 24f, 24f)
+    override val isHovered: Boolean get() = isAreaHovered(lastX + width - 30f, lastY + getHeight() / 2f - 16f, 24f, 24f, true)
 }

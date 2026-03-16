@@ -203,7 +203,7 @@ object DungeonUtils {
                         DungeonPlayer(
                             name, DungeonClass.entries.find { it.name == clazz } ?: continue,
                             romanToInt(clazzLevel), player.skin?.body?.id(),
-                            entity = mc.level?.getPlayerByUUID(player.profile?.id)
+                            entity = mc.level?.getPlayerByUUID(player.profile?.id ?: continue)
                         )
                     )
                 }

@@ -1,6 +1,7 @@
 package com.odtheking.odin.features.impl.floor7.termGUI
 
 import com.odtheking.odin.features.impl.floor7.TerminalSolver
+import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalUtils
 
 object MelodyGui : TermGui() {
 
@@ -8,7 +9,7 @@ object MelodyGui : TermGui() {
         setCurrentGui(this)
         itemIndexMap.clear()
 
-        renderTerminal(TerminalSolver.currentTerm?.type?.windowSize?.minus(9) ?: 0)
+        renderTerminal(TerminalUtils.currentTerm?.type?.windowSize?.minus(9) ?: 0)
     }
 
     override fun renderTerminal(slotCount: Int) {
