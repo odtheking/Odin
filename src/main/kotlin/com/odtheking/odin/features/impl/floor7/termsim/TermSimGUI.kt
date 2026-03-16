@@ -73,7 +73,7 @@ open class TermSimGUI(
         super.onClose()
     }
 
-    override fun slotClicked(slot: Slot?, i: Int, j: Int, clickType: ClickType) {
+    override fun slotClicked(slot: Slot, i: Int, j: Int, clickType: ClickType) {
         if (GuiEvent.SlotClick(this, i, i).postAndCatch()) return
         slot?.let { delaySlotClick(it, i) }
     }
