@@ -45,7 +45,7 @@ object SkyblockPlayer {
 
         onReceive<ClientboundSystemChatPacket> {
             if (!overlay) return@onReceive
-            val msg = content?.string?.noControlCodes ?: return@onReceive
+            val msg = content.string.noControlCodes
 
             HEALTH_REGEX.find(msg)?.destructured?.let { (_, maxHp) ->
                 maxHealth = maxHp.replace(",", "").toIntOrNull() ?: maxHealth

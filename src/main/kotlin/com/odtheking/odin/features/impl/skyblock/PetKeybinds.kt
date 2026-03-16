@@ -51,7 +51,7 @@ object PetKeybinds : Module(
     }
 
     private fun onClick(screen: AbstractContainerScreen<*>, keyCode: Int): Boolean {
-        val (current, total) = petsRegex.find(screen.title?.string ?: "")?.destructured?.let {
+        val (current, total) = petsRegex.find(screen.title.string)?.destructured?.let {
             (it.component1().toIntOrNull() ?: 1) to (it.component2().toIntOrNull() ?: 1)
         } ?: return false
 
@@ -60,7 +60,7 @@ object PetKeybinds : Module(
             previousPageKeybind.value -> if (current > 1) 45 else return false.also { modMessage("§cYou are already on the first page.") }
             unequipKeybind.value ->
                 screen.menu.slots.subList(10, 43)
-                    .indexOfFirst { it.item?.loreString?.contains("Click to despawn!") == true }
+                    .indexOfFirst { it.item.loreString.contains("Click to despawn!") }
                     .takeIf { it != -1 }?.plus(10) ?: return false.also { modMessage("§cCouldn't find equipped pet") }
 
             else -> {
@@ -74,7 +74,7 @@ object PetKeybinds : Module(
             }
         }
 
-        if (screen.menu.slots[index].item?.loreString?.contains("Click to despawn!") == true && unequipKeybind.value != keyCode) {
+        if (screen.menu.slots[index].item.loreString.contains("Click to despawn!") && unequipKeybind.value != keyCode) {
             modMessage("§cThat pet is already equipped!")
             if (closeIfAlreadyEquipped) index = 49
             else if (nounequip) return false

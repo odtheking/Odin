@@ -59,7 +59,7 @@ object ArrowAlign : Module(
 
         on<EntityInteractEvent> {
             if (DungeonUtils.getF7Phase() != M7Phases.P3) return@on
-            if (entity !is ItemFrame || entity.item?.item != Items.ARROW) return@on
+            if (entity !is ItemFrame || entity.item.item != Items.ARROW) return@on
             val (x, y, z) = entity.blockPosition()
 
             val frameIndex = ((y - frameGridCorner.y) + (z - frameGridCorner.z) * 5)
@@ -96,7 +96,7 @@ object ArrowAlign : Module(
 
     private fun getFrames(): List<Int> {
         val itemFrames = mc.level?.entitiesForRendering()?.mapNotNull {
-            if (it is ItemFrame && it.item?.item?.asItem() == Items.ARROW) it else null
+            if (it is ItemFrame && it.item.item == Items.ARROW) it else null
         }?.takeIf { it.isNotEmpty() } ?: return List(25) { -1 }
 
         return (0..24).map { index ->

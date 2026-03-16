@@ -58,7 +58,7 @@ object EventDispatcher {
         onReceive<ClientboundTakeItemEntityPacket> {
             if (mc.player == null || !DungeonUtils.inClear) return@onReceive
             val itemEntity = mc.level?.getEntity(itemId) as? ItemEntity ?: return@onReceive
-            if (itemEntity.item?.hoverName?.string?.containsOneOf(dungeonItemDrops, true) == true && itemEntity.distanceTo(mc.player ?: return@onReceive) <= 6)
+            if (itemEntity.item.hoverName.string.containsOneOf(dungeonItemDrops, true) && itemEntity.distanceTo(mc.player ?: return@onReceive) <= 6)
                 SecretPickupEvent.Item(itemEntity).postAndCatch()
         }
 
@@ -66,7 +66,7 @@ object EventDispatcher {
             if (mc.player == null || !DungeonUtils.inClear) return@onReceive
             entityIds.forEach { id ->
                 val entity = mc.level?.getEntity(id) as? ItemEntity ?: return@forEach
-                if (entity.item?.hoverName?.string?.containsOneOf(dungeonItemDrops, true) == true && entity.distanceTo(mc.player ?: return@onReceive) <= 6)
+                if (entity.item.hoverName.string.containsOneOf(dungeonItemDrops, true) && entity.distanceTo(mc.player ?: return@onReceive) <= 6)
                     SecretPickupEvent.Item(entity).postAndCatch()
             }
         }
@@ -86,7 +86,7 @@ object EventDispatcher {
         }
 
         onReceive<ClientboundSystemChatPacket> {
-            if (!overlay) content?.string?.noControlCodes?.let { ChatPacketEvent(it, content).postAndCatch() }
+            if (!overlay) ChatPacketEvent(content.string.noControlCodes, content).postAndCatch()
         }
     }
 

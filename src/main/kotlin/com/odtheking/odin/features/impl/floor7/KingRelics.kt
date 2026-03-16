@@ -100,7 +100,7 @@ object KingRelics : Module(
             if (DungeonUtils.getF7Phase() != M7Phases.P5) return@on
 
             if (relicTicksToSpawn > 0) relicTicksToSpawn--
-            currentRelic = Relic.entries.find { mc.player?.inventory?.find { item -> item?.itemId == it.id } != null }
+            currentRelic = Relic.entries.find { mc.player?.inventory?.find { item -> item.itemId == it.id } != null }
             serverTickCounter++
         }
     }

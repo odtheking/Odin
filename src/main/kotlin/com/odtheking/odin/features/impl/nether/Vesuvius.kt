@@ -52,7 +52,7 @@ object Vesuvius : Module(
 
     init {
         on<GuiEvent.DrawTooltip> {
-            val title = screen.title?.string ?: return@on
+            val title = screen.title.string
             if (vesuviusHud.enabled && title.matches(chestRegex) && currentChest != null && title != "Vesuvius") {
                 guiGraphics.pose().pushMatrix()
                 val sf = mc.window.guiScale
@@ -66,9 +66,9 @@ object Vesuvius : Module(
             }
         }
 
-        on<GuiEvent.RenderSlot> {
-            if (screen.title?.string.equalsOneOf("Vesuvius", "Croesus") && slot.item?.hoverName?.string == "Kuudra's Hollow") {
-                if (hideClaimed && slot.item?.loreString?.any { it == "No more chests to open!"} == true) cancel()
+        on<GuiEvent.DrawSlot> {
+            if (screen.title.string.equalsOneOf("Vesuvius", "Croesus") && slot.item.hoverName.string == "Kuudra's Hollow") {
+                if (hideClaimed && slot.item.loreString.any { it == "No more chests to open!"}) cancel()
             }
         }
 

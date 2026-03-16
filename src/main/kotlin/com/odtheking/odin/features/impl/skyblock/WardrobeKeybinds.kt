@@ -47,7 +47,7 @@ object WardrobeKeybinds : Module(
     }
 
     private fun onClick(screen: AbstractContainerScreen<*>, keyCode: Int): Boolean {
-        val (current, total) = wardrobeRegex.find(screen.title?.string ?: "")?.destructured?.let {
+        val (current, total) = wardrobeRegex.find(screen.title.string)?.destructured?.let {
             it.component1().toIntOrNull() to it.component2().toIntOrNull()
         } ?: return false
         if (current == null || total == null) return false
@@ -66,7 +66,7 @@ object WardrobeKeybinds : Module(
                 keyIndex + 36
             }
         }
-        if (disallowUnequippingEquipped && screen.menu.slots[index].item?.isEmpty == true) return false
+        if (disallowUnequippingEquipped && screen.menu.slots[index].item.isEmpty) return false
         mc.player?.clickSlot(screen.menu.containerId, index)
         return true
     }

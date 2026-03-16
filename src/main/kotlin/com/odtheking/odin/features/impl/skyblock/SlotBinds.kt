@@ -82,12 +82,12 @@ object SlotBinds : Module(
             val hoveredSlot = (screen as AbstractContainerScreenAccessor).hoveredSlot?.index?.takeIf { it in 5 until 45 } ?: return@on
             val boundSlot = slotBinds[hoveredSlot]
 
-            val (startX, startY) = screen.menu.getSlot(previousSlot ?: hoveredSlot)?.let { slot ->
+            val (startX, startY) = screen.menu.getSlot(previousSlot ?: hoveredSlot).let { slot ->
                 slot.x + screen.x + 8 to slot.y + screen.y + 8
-            } ?: return@on
+            }
 
             val (endX, endY) = previousSlot?.let { mouseX to mouseY } ?: boundSlot?.let { slot ->
-                screen.menu.getSlot(slot)?.let { it.x + screen.x + 8 to it.y + screen.y + 8 }
+                screen.menu.getSlot(slot).let { it.x + screen.x + 8 to it.y + screen.y + 8 }
             } ?: return@on
 
             if (previousSlot == null && !(mc.hasShiftDown())) return@on

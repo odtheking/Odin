@@ -41,7 +41,7 @@ object PlayerSize : Module(
         }
         OdinMod.scope.launch {
             val body = buildDevBody(
-                mc.user.name ?: return@launch,
+                mc.user.name,
                 devWingsColor, devSizeX, devSizeY,
                 devSizeZ, devWings, " ", passcode
             )

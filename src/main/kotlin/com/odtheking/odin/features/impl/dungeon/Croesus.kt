@@ -90,7 +90,7 @@ object Croesus : Module(
         }
 
         on<GuiEvent.DrawTooltip> {
-            val title = screen.title?.string ?: return@on
+            val title = screen.title.string
             if (croesusHud.enabled && (title.matches(chestNameRegex) || title.matches(chestPreviewScreenRegex))) {
                 guiGraphics.pose().pushMatrix()
                 val sf = mc.window.guiScale
@@ -104,17 +104,16 @@ object Croesus : Module(
             }
         }
 
-        on<GuiEvent.RenderSlot> {
-            if (screen.title?.string == "Croesus" && slot.item?.hoverName?.string.equalsOneOf("The Catacombs", "Master Mode The Catacombs")) {
-                val lore = slot.item?.lore ?: return@on
-                val loreString = slot.item?.loreString ?: return@on
+        on<GuiEvent.DrawSlot> {
+            if (screen.title.string == "Croesus" && slot.item.hoverName.string.equalsOneOf("The Catacombs", "Master Mode The Catacombs")) {
+                val loreString = slot.item.loreString
 
-                if (hideClaimed && loreString.any { it.matches(chestStatusRegex) } && (!includeKey || hasStrikeThrough("Dungeon Chest Key", lore))) cancel()
+                if (hideClaimed && loreString.any { it.matches(chestStatusRegex) } && (!includeKey || hasStrikeThrough("Dungeon Chest Key", slot.item.lore ))) cancel()
                 else if (highlightState)
                     guiGraphics.fill(slot.x, slot.y, slot.x + 16, slot.y + 16,
                         if (loreString.any { it.matches(chestOpenedRegex) }) Colors.MINECRAFT_GOLD.rgba else Colors.MINECRAFT_GREEN.rgba)
 
-            } else if (highlightProfitable && screen.title?.string?.matches(chestPreviewScreenRegex) == true && slot.index in mostProfitableSlots) {
+            } else if (highlightProfitable && screen.title.string.matches(chestPreviewScreenRegex) && slot.index in mostProfitableSlots) {
                 val color = when (mostProfitableSlots.indexOf(slot.index)) {
                     0 -> Colors.MINECRAFT_DARK_GREEN.rgba
                     1 -> Colors.MINECRAFT_YELLOW.rgba
@@ -142,8 +141,7 @@ object Croesus : Module(
 
         onReceive<ClientboundPlayerInfoUpdatePacket> {
             if (actions().none { it.equalsOneOf(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_DISPLAY_NAME, ClientboundPlayerInfoUpdatePacket.Action.ADD_PLAYER) }) return@onReceive
-            val tabListEntries = entries()?.mapNotNull { it.displayName?.string }?.ifEmpty { return@onReceive } ?: return@onReceive
-            tabListEntries.forEach { tabListEntry ->
+            entries().mapNotNull { it.displayName?.string }.ifEmpty { return@onReceive } .forEach { tabListEntry ->
                 unclaimedChestsRegex.find(tabListEntry)?.groupValues?.get(1)?.toIntOrNull()?.let { unclaimedChests ->
                     currentChestCount = unclaimedChests
                     if (currentChestCount > chestWarning) alert("§cChest limit reached!")

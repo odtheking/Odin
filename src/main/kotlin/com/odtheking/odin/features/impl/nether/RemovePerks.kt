@@ -15,13 +15,13 @@ object RemovePerks : Module(
     private val renderStun by BooleanSetting("Show Stun", false, desc = "Shows the stun role perks.")
 
     init {
-        on<GuiEvent.RenderSlot> {
-            if (screen.title?.string == "Perk Menu" && slotCheck(slot.item?.hoverName?.string ?: return@on))
+        on<GuiEvent.DrawSlot> {
+            if (screen.title.string == "Perk Menu" && slotCheck(slot.item.hoverName.string))
                 cancel()
         }
 
         on<GuiEvent.SlotClick> {
-            if (screen is AbstractContainerScreen<*> && screen.title?.string == "Perk Menu" && slotCheck(screen.menu?.getSlot(slotId)?.item?.hoverName?.string ?: return@on))
+            if (screen is AbstractContainerScreen<*> && screen.title.string == "Perk Menu" && slotCheck(screen.menu.getSlot(slotId)?.item?.hoverName?.string ?: return@on))
                 cancel()
         }
     }

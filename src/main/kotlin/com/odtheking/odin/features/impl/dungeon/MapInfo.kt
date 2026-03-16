@@ -250,8 +250,7 @@ object MapInfo : Module(
 
         onReceive<ClientboundSystemChatPacket> {
             if (!overlay) return@onReceive
-            val msg = content?.string?.noControlCodes ?: return@onReceive
-            secretRegex.find(msg)?.destructured?.let { (found, total) ->
+            secretRegex.find(content.string.noControlCodes )?.destructured?.let { (found, total) ->
                 currentRoomSecrets = Pair(found.toIntOrNull() ?: 0, total.toIntOrNull() ?: 0)
             }
         }

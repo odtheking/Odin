@@ -189,20 +189,20 @@ class TextInputHandler(
                 if (input.hasControlDown() && !input.hasShiftDown()) {
                     when (input.key) {
                         GLFW.GLFW_KEY_V -> {
-                            mc.keyboardHandler?.clipboard?.let { insert(it) }
+                            insert(mc.keyboardHandler.clipboard)
                             true
                         }
 
                         GLFW.GLFW_KEY_C -> {
                             if (caret != selection) {
-                                mc.keyboardHandler?.clipboard = text.substringSafe(caret, selection)
+                                mc.keyboardHandler.clipboard = text.substringSafe(caret, selection)
                                 true
                             } else false
                         }
 
                         GLFW.GLFW_KEY_X -> {
                             if (caret != selection) {
-                                mc.keyboardHandler?.clipboard = text.substringSafe(caret, selection)
+                                mc.keyboardHandler.clipboard = text.substringSafe(caret, selection)
                                 deleteSelection()
                                 true
                             } else false

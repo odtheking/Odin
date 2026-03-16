@@ -198,8 +198,8 @@ class WaypointPackSelectorScreen(private val parent: Screen?) : Screen(Component
     }
 
     private fun importFromClipboard() {
-        val clipboard = mc.keyboardHandler?.clipboard?.trim()?.trim { it == '\n' }
-        if (clipboard.isNullOrBlank()) return modMessage("§cClipboard is empty!")
+        val clipboard = mc.keyboardHandler.clipboard.trim().trim { it == '\n' }
+        if (clipboard.isBlank()) return modMessage("§cClipboard is empty!")
         mc.setScreen(TextPromptScreen("Import as New Pack").setCallback { name ->
             if (name.isNotBlank()) {
                 loading = true

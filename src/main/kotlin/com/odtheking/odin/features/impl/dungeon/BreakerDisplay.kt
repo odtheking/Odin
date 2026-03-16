@@ -26,8 +26,8 @@ object BreakerDisplay : Module(
 
     init {
         onReceive<ClientboundContainerSetSlotPacket> {
-            if (!DungeonUtils.inDungeons || item?.itemId != "DUNGEONBREAKER") return@onReceive
-            item?.loreString?.firstNotNullOfOrNull { chargesRegex.find(it) }?.let { match ->
+            if (!DungeonUtils.inDungeons || item.itemId != "DUNGEONBREAKER") return@onReceive
+            item.loreString.firstNotNullOfOrNull { chargesRegex.find(it) }?.let { match ->
                 charges = match.groupValues[1].toIntOrNull() ?: 0
                 maxCharges = match.groupValues[2].toIntOrNull() ?: 0
             }
