@@ -32,8 +32,7 @@ object GyroWand : Module(
     init {
         onReceive<ClientboundSystemChatPacket> {
             if (!overlay) return@onReceive
-            val msg = content?.string?.noControlCodes ?: return@onReceive
-            if (msg.matches(gravityStormRegex)) cooldownTimer = System.currentTimeMillis()
+            if (content.string.noControlCodes.matches(gravityStormRegex)) cooldownTimer = System.currentTimeMillis()
         }
 
         on<RenderEvent.Extract> {

@@ -70,7 +70,7 @@ val dungeonWaypointsCommand = Commodore("dwp", "dungeonwaypoints") {
 
     literal("import").runs {
         scope.launch {
-            val clipboard = mc.keyboardHandler?.clipboard?.trim()?.trim { it == '\n' } ?: return@launch modMessage("§cFailed to read a string from clipboard. §fDid you copy it correctly?")
+            val clipboard = mc.keyboardHandler.clipboard?.trim()?.trim { it == '\n' } ?: return@launch modMessage("§cFailed to read a string from clipboard. §fDid you copy it correctly?")
             val waypoints = DungeonWaypointConfig.decodeWaypoints(clipboard, clipboard.startsWith("{"))
                 ?: return@launch modMessage("§cFailed to decode waypoints from clipboard. §fIs the data valid?")
             DungeonWaypoints.importEditableWaypoints(waypoints)

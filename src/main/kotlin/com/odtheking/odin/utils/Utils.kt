@@ -98,7 +98,7 @@ fun logError(throwable: Throwable, context: Any) {
 
 fun setClipboardContent(string: String) {
     try {
-        mc.keyboardHandler?.clipboard = string.ifEmpty { " " }
+        mc.keyboardHandler.clipboard = string.ifEmpty { " " }
     } catch (e: Exception) {
         OdinMod.logger.error("Failed to set Clipboard Content", e)
     }
@@ -147,7 +147,7 @@ inline val Entity.renderBoundingBox: AABB
     get() = boundingBox.move(renderX - x, renderY - y, renderZ - z)
 
 fun fillItemFromSack(amount: Int, itemId: String, sackName: String, sendMessage: Boolean) {
-    val needed = mc.player?.inventory?.find { it?.itemId == itemId }?.count ?: 0
+    val needed = mc.player?.inventory?.find { it.itemId == itemId }?.count ?: 0
     if (needed != amount) sendCommand("gfs $sackName ${amount - needed}") else if (sendMessage) modMessage("§cAlready at max stack size.")
 }
 
@@ -168,8 +168,7 @@ fun romanToInt(s: String): Int {
 
 fun BlockPos.getBlockBounds() =
     mc.level?.let { level ->
-        level.getBlockState(this)?.getShape(level, this)?.singleEncompassing()
-            ?.takeIf { !it.isEmpty }?.bounds()
+        level.getBlockState(this).getShape(level, this).singleEncompassing().takeIf { !it.isEmpty }?.bounds()
     }
 
 fun Player.clickSlot(containerId: Int, slotIndex: Int, button: Int = 0, clickType: ClickType = ClickType.PICKUP) {

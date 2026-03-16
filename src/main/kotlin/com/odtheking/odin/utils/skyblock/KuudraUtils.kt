@@ -53,7 +53,7 @@ object KuudraUtils {
             entities.forEach { entity ->
                 when (entity) {
                     is Giant ->
-                        if (entity.mainHandItem?.hoverName?.string?.endsWith("Head") == true) giantZombies.add(entity)
+                        if (entity.mainHandItem.hoverName.string.endsWith("Head")) giantZombies.add(entity)
 
                     is MagmaCube ->
                         if (entity.size == 30 && entity.getAttributeBaseValue(Attributes.MAX_HEALTH) == 100000.0)
@@ -68,7 +68,7 @@ object KuudraUtils {
                                 buildDonePercentage = it.groupValues[1].toIntOrNull() ?: 0
                             }
                         }
-                        if (phase != 1 || entity.name?.string != "✓ SUPPLIES RECEIVED ✓") return@forEach
+                        if (phase != 1 || entity.name.string != "✓ SUPPLIES RECEIVED ✓") return@forEach
                         val x = entity.x.toInt()
                         val z = entity.z.toInt()
                         when (x) {
@@ -112,7 +112,7 @@ object KuudraUtils {
         onReceive<ClientboundSetPlayerTeamPacket> {
             if (!inKuudra) return@onReceive
             val teamLine = parameters.getOrNull() ?: return@onReceive
-            val text = teamLine.playerPrefix.string?.plus(teamLine.playerSuffix.string)?.noControlCodes ?: return@onReceive
+            val text = teamLine.playerPrefix.string.plus(teamLine.playerSuffix.string).noControlCodes
 
             tierRegex.find(text)?.groupValues?.get(1)?.let { kuudraTier = it.toInt() }
         }

@@ -1,7 +1,6 @@
 package com.odtheking.odin.features.impl.nether
 
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
-
 import com.odtheking.odin.events.GuiEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
@@ -14,11 +13,11 @@ import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.Style
 import net.minecraft.network.chat.TextColor
-import java.util.Optional
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket
 import net.minecraft.network.protocol.game.ClientboundOpenScreenPacket
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.Items
+import java.util.*
 
 object Vesuvius : Module(
     name = "Vesuvius",
@@ -53,7 +52,7 @@ object Vesuvius : Module(
 
     init {
         on<GuiEvent.DrawTooltip> {
-            val title = screen.title?.string ?: return@on
+            val title = screen.title.string ?: return@on
             if (vesuviusHud.enabled && title.matches(chestRegex) && currentChest != null && title != "Vesuvius") {
                 guiGraphics.pose().pushMatrix()
                 val sf = mc.window.guiScale
@@ -68,8 +67,8 @@ object Vesuvius : Module(
         }
 
         on<GuiEvent.DrawSlot> {
-            if (screen.title?.string.equalsOneOf("Vesuvius", "Croesus") && slot.item?.hoverName?.string == "Kuudra's Hollow") {
-                if (hideClaimed && slot.item?.loreString?.any { it == "No more chests to open!"} == true) cancel()
+            if (screen.title.string.equalsOneOf("Vesuvius", "Croesus") && slot.item.hoverName.string == "Kuudra's Hollow") {
+                if (hideClaimed && slot.item.loreString.any { it == "No more chests to open!"}) cancel()
             }
         }
 

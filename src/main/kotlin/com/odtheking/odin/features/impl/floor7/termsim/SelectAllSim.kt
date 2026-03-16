@@ -51,14 +51,12 @@ class SelectAllSim(
     }
 
     override fun slotClick(slot: Slot, button: Int) {
-        val stack = slot.item ?: return
         val possibleItems = getPossibleItems(color)
-        if (!possibleItems.contains(stack.item)) return modMessage("§cThat item is not: ${color.name.uppercase()}!")
+        if (!possibleItems.contains(slot.item.item)) return modMessage("§cThat item is not: ${color.name.uppercase()}!")
 
         createNewGui {
-            if (it == slot) {
-                stack.apply { set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true) }
-            } else it.item
+            if (it == slot) slot.item.apply { set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true) }
+            else it.item
         }
 
         playTermSimSound()

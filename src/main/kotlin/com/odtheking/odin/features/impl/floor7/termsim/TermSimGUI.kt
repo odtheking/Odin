@@ -43,7 +43,7 @@ open class TermSimGUI(
     Component.literal(name)
 ) {
     val blackPane = ItemStack(Items.BLACK_STAINED_GLASS_PANE).apply { set(DataComponents.CUSTOM_NAME, Component.literal("")) }
-    val guiInventorySlots get() = menu?.slots?.subList(0, size) ?: emptyList()
+    protected val guiInventorySlots get() = menu.slots.subList(0, size)
     private var doesAcceptClick = true
     protected var ping = 0L
     private var syncId = 0
@@ -73,7 +73,7 @@ open class TermSimGUI(
         super.onClose()
     }
 
-    override fun slotClicked(slot: Slot, i: Int, j: Int, clickType: ClickType) {
+    override fun slotClicked(slot: Slot?, i: Int, j: Int, clickType: ClickType) {
         if (GuiEvent.SlotClick(this, i, i).postAndCatch()) return
         slot?.let { delaySlotClick(it, i) }
     }

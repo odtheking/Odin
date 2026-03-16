@@ -22,7 +22,7 @@ object PanesSim : TermSimGUI(
     }
 
     override fun slotClick(slot: Slot, button: Int) {
-        createNewGui { if (it == slot) { if (slot.item?.item == Items.RED_STAINED_GLASS_PANE) greenPane else redPane } else it.item }
+        createNewGui { if (it == slot) { if (slot.item.item == Items.RED_STAINED_GLASS_PANE) greenPane else redPane } else it.item }
 
         playTermSimSound()
         if (guiInventorySlots.none { it?.item?.item == Items.RED_STAINED_GLASS_PANE })

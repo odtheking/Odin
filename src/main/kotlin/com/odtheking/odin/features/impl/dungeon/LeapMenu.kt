@@ -57,7 +57,7 @@ object LeapMenu : Module(
     init {
         on<GuiEvent.Draw> {
             val chest = (screen as? AbstractContainerScreen<*>) ?: return@on
-            if (chest.title?.string?.equalsOneOf("Spirit Leap", "Teleport to Player") == false || leapTeammates.isEmpty() || leapTeammates.all { it == EMPTY }) return@on
+            if (!chest.title.string.equalsOneOf("Spirit Leap", "Teleport to Player") || leapTeammates.isEmpty() || leapTeammates.all { it == EMPTY }) return@on
 
             val halfWidth = mc.window.screenWidth / 2f
             val halfHeight = mc.window.screenHeight / 2f
@@ -86,7 +86,7 @@ object LeapMenu : Module(
                     NVGRenderer.rect(x - expandValue ,y - expandValue, BOX_WIDTH + expandValue * 2, BOX_HEIGHT + expandValue * 2, (if (colorStyle) player.clazz.color else backgroundColor).rgba, 12f)
                     val locationSkin = player.locationSkin ?: mc.player?.skin?.body?.id() ?: return@forEachIndexed
                     imageCacheMap.getOrPut(locationSkin.path) {
-                        NVGRenderer.createNVGImage((mc.textureManager?.getTexture(locationSkin)?.texture as? GlTexture)?.glId() ?: 0, 64, 64)
+                        NVGRenderer.createNVGImage((mc.textureManager.getTexture(locationSkin)?.texture as? GlTexture)?.glId() ?: 0, 64, 64)
                     }.let { glTextureId ->
                         NVGRenderer.image(glTextureId, 64, 64, 8, 8, 8, 8, x + 30f, y + 30f, 240f, 240f, 9f)
                     }
@@ -100,7 +100,7 @@ object LeapMenu : Module(
 
         on<GuiEvent.DrawBackground> {
             val chest = (screen as? AbstractContainerScreen<*>) ?: return@on
-            if (chest.title?.string?.equalsOneOf("Spirit Leap", "Teleport to Player") == false || leapTeammates.isEmpty() || leapTeammates.all { it == EMPTY }) return@on
+            if (!chest.title.string.equalsOneOf("Spirit Leap", "Teleport to Player") || leapTeammates.isEmpty() || leapTeammates.all { it == EMPTY }) return@on
             cancel()
         }
 
@@ -153,7 +153,7 @@ object LeapMenu : Module(
 
     private fun leapTo(name: String, screenHandler: AbstractContainerScreen<*>) {
         val index = screenHandler.menu.slots.subList(11, 16).firstOrNull {
-            it.item?.hoverName?.string?.substringAfter(' ').equals(name.noControlCodes, ignoreCase = true)
+            it.item.hoverName.string.substringAfter(' ').equals(name.noControlCodes, ignoreCase = true)
         }?.index ?: return
         mc.player?.clickSlot(screenHandler.menu.containerId, index)
         modMessage("Teleporting to $name.")

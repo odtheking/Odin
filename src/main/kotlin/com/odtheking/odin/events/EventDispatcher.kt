@@ -22,29 +22,14 @@ import net.minecraft.world.entity.item.ItemEntity
 object EventDispatcher {
 
     init {
-        ClientPlayConnectionEvents.JOIN.register { _, _, _ ->
-            WorldEvent.Load.postAndCatch()
-        }
+        ClientPlayConnectionEvents.JOIN.register { _, _, _ -> WorldEvent.Load.postAndCatch() }
+        ClientPlayConnectionEvents.DISCONNECT.register { _, _ -> WorldEvent.Unload.postAndCatch() }
 
-        ClientPlayConnectionEvents.DISCONNECT.register { _, _ ->
-            WorldEvent.Unload.postAndCatch()
-        }
+        ClientTickEvents.START_WORLD_TICK.register { world -> TickEvent.Start(world).postAndCatch() }
+        ClientTickEvents.END_WORLD_TICK.register { world -> TickEvent.End(world).postAndCatch() }
 
-        ClientTickEvents.START_WORLD_TICK.register { world ->
-            mc.level?.let { TickEvent.Start(world).postAndCatch() }
-        }
-
-        ClientTickEvents.END_WORLD_TICK.register { world ->
-            mc.level?.let { TickEvent.End(world).postAndCatch() }
-        }
-
-        WorldRenderEvents.END_EXTRACTION.register { handler ->
-            mc.level?.let { RenderEvent.Extract(handler, RenderBatchManager.renderConsumer).postAndCatch() }
-        }
-
-        WorldRenderEvents.END_MAIN.register { context ->
-            mc.level?.let { RenderEvent.Last(context).postAndCatch() }
-        }
+        WorldRenderEvents.END_EXTRACTION.register { handler -> RenderEvent.Extract(handler, RenderBatchManager.renderConsumer).postAndCatch() }
+        WorldRenderEvents.END_MAIN.register { context -> RenderEvent.Last(context).postAndCatch() }
 
         ClientReceiveMessageEvents.ALLOW_GAME.register { text, overlay ->
             if (overlay) return@register true
@@ -54,7 +39,7 @@ object EventDispatcher {
         onReceive<ClientboundTakeItemEntityPacket> {
             if (mc.player == null || !DungeonUtils.inClear) return@onReceive
             val itemEntity = mc.level?.getEntity(itemId) as? ItemEntity ?: return@onReceive
-            if (itemEntity.item?.hoverName?.string?.containsOneOf(dungeonItemDrops, true) == true && itemEntity.distanceTo(mc.player ?: return@onReceive) <= 6)
+            if (itemEntity.item.hoverName?.string?.containsOneOf(dungeonItemDrops, true) == true && itemEntity.distanceTo(mc.player ?: return@onReceive) <= 6)
                 SecretPickupEvent.Item(itemEntity).postAndCatch()
         }
 
@@ -62,7 +47,7 @@ object EventDispatcher {
             if (mc.player == null || !DungeonUtils.inClear) return@onReceive
             entityIds.forEach { id ->
                 val entity = mc.level?.getEntity(id) as? ItemEntity ?: return@forEach
-                if (entity.item?.hoverName?.string?.containsOneOf(dungeonItemDrops, true) == true && entity.distanceTo(mc.player ?: return@onReceive) <= 6)
+                if (entity.item.hoverName?.string?.containsOneOf(dungeonItemDrops, true) == true && entity.distanceTo(mc.player ?: return@onReceive) <= 6)
                     SecretPickupEvent.Item(entity).postAndCatch()
             }
         }
@@ -82,7 +67,7 @@ object EventDispatcher {
         }
 
         onReceive<ClientboundSystemChatPacket> {
-            if (!overlay) content?.string?.noControlCodes?.let { ChatPacketEvent(it, content).postAndCatch() }
+            if (!overlay) ChatPacketEvent(content.string.noControlCodes, content).postAndCatch()
         }
     }
 

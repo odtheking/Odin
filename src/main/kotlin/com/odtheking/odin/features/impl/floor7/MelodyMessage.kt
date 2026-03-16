@@ -111,7 +111,7 @@ object MelodyMessage : Module(
         val term = TerminalUtils.currentTerm ?: return
         if (DungeonUtils.getF7Phase() != M7Phases.P3 || term.type != TerminalTypes.MELODY || mc.screen is TermSimGUI) return
 
-        val item = packet.item?.item ?: return
+        val item = packet.item.item ?: return
         if (item == Items.LIME_TERRACOTTA) {
             val position = packet.slot / 9
             if (lastSent.clay == position) return

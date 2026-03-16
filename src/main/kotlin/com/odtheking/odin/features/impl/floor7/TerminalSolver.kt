@@ -100,7 +100,7 @@ object TerminalSolver : Module(
                     guiGraphics.drawWordWrap(mc.font, Component.literal(line), 5, 20 + (index * 10), 300, Colors.WHITE.rgba)
                 }
 
-                menu.items?.forEachIndexed { index, stack ->
+                menu.items.forEachIndexed { index, stack ->
                     guiGraphics.renderItem(stack, 5 + (index % 9) * 18, 250 + (index / 9) * 18)
                     guiGraphics.renderItemDecorations(mc.font, stack, 5 + (index % 9) * 18, 250 + (index / 9) * 18)
                 }
@@ -142,7 +142,7 @@ object TerminalSolver : Module(
                         guiGraphics.fill(slot.x, slot.y, slot.x + 16, slot.y + 16, color)
                         cancel()
                     }
-                    val amount = slot.item?.count?.toString() ?: ""
+                    val amount = slot.item.count.toString()
                     if (showNumbers) guiGraphics.drawCenteredString(screen.font, amount, slot.x + 8, slot.y + 4, Colors.WHITE.rgba)
                 }
 

@@ -21,10 +21,10 @@ object NumbersSim : TermSimGUI(
     }
 
     override fun slotClick(slot: Slot, button: Int) {
-        if (guiInventorySlots.minByOrNull { if (it?.item?.item == Items.RED_STAINED_GLASS_PANE) it.item?.count ?: 999 else 1000 } != slot) return
+        if (guiInventorySlots.minByOrNull { if (it.item.item == Items.RED_STAINED_GLASS_PANE) it.item?.count ?: 999 else 1000 } != slot) return
         createNewGui {
             if (it == slot) ItemStack(Items.LIME_STAINED_GLASS_PANE, slot.item.count).apply { set(DataComponents.CUSTOM_NAME, Component.literal("")) }
-            else it.item ?: blackPane
+            else it.item
         }
         playTermSimSound()
         if (guiInventorySlots.none { it?.item?.item == Items.RED_STAINED_GLASS_PANE })

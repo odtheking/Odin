@@ -29,7 +29,7 @@ object TerminalUtils {
 
     init {
         onReceive<ClientboundOpenScreenPacket> (EventPriority.HIGHEST) {
-            val windowName = title.string ?: return@onReceive
+            val windowName = title.string
             currentTerm?.let { if (!it.isClicked && it.windowCount <= 2) leftTerm() }
             val newType = TerminalTypes.entries.find { it.regex.matches(windowName) } ?: return@onReceive
 
@@ -83,7 +83,7 @@ object TerminalUtils {
         onReceive<ClientboundContainerSetSlotPacket> (EventPriority.HIGH) {
             val termSimScreen = mc.screen as? TermSimGUI ?: return@onReceive
             if (slot !in 0 until termSimScreen.size) return@onReceive
-            item?.let { item -> mc.player?.inventoryMenu?.setItem(slot, stateId, item) }
+            item.let { item -> mc.player?.inventoryMenu?.setItem(slot, stateId, item) }
             it.cancel()
         }
     }

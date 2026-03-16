@@ -12,7 +12,7 @@ class SelectAllHandler(private val color: DyeColor): TerminalHandler(TerminalTyp
         return items.mapIndexedNotNull { index, item ->
             if (!item.hasGlint() &&
                 item.item != Items.BLACK_STAINED_GLASS_PANE &&
-                (item.item?.name?.string?.startsWith(color.name.replace("_", " "), true) == true ||
+                (item.item.name.string.startsWith(color.name.replace("_", " "), true) ||
                 when (color) {
                     DyeColor.BLACK -> item.item == Items.INK_SAC
                     DyeColor.BLUE -> item.item == Items.LAPIS_LAZULI

@@ -33,10 +33,10 @@ object KeyHighlight : Module(
             if (!DungeonUtils.inClear) return@onReceive
             val entity = mc.level?.getEntity(id) as? ArmorStand ?: return@onReceive
             if (currentKey?.entity == entity) return@onReceive
-            currentKey = KeyType.entries.find { it.displayName == entity.name?.string } ?: return@onReceive
+            currentKey = KeyType.entries.find { it.displayName == entity.name.string } ?: return@onReceive
             currentKey?.entity = entity
 
-            if (announceKeySpawn) alert("§${currentKey?.colorCode}${entity.name?.string}§7 spawned!")
+            if (announceKeySpawn) alert("§${currentKey?.colorCode}${entity.name.string}§7 spawned!")
         }
 
         on<RenderEvent.Extract> {
