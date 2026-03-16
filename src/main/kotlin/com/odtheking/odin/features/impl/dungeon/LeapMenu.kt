@@ -13,7 +13,6 @@ import com.odtheking.odin.utils.render.text
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonClass
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonPlayer
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
-import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils.leapTeammates
 import com.odtheking.odin.utils.ui.HoverHandler
 import com.odtheking.odin.utils.ui.widget.CustomGUIImpl
 import net.minecraft.client.gui.components.PlayerFaceRenderer
@@ -30,7 +29,7 @@ object LeapMenu : Module(
     private val onlyClass by BooleanSetting("Only Classes", false, desc = "Renders classes instead of names.")
     private val colorStyle by BooleanSetting("Color Style", false, desc = "Which color style to use.")
     private val backgroundColor by ColorSetting("Background Color", Colors.gray38.withAlpha(0.75f), true, desc = "Color of the background of the leap menu.").withDependency { !colorStyle }
-    private val scale by NumberSetting("Scale", 1f, 0.1f, 2f, 0.1f, desc = "Scale of the leap menu.", unit = "x")
+    private val scale by NumberSetting("Render Scale", 1f, 0.1f, 2f, 0.1f, desc = "Scale of the leap menu.", unit = "x")
     val keybindType by SelectorSetting("Mode", "Normal", arrayListOf("Corners", "Class"), desc = "How the keybinds should function.")
 
     private val topLeftKeybind by KeybindSetting("Top Left", GLFW.GLFW_KEY_UNKNOWN, "Used to click on the first person in the leap menu.").withDependency { keybindType == 0 }
@@ -104,62 +103,59 @@ object LeapMenu : Module(
             render = fun ScreenEvent.Render.(): Any {
                 val halfW = mc.window.guiScaledWidth / 2
                 val halfH = mc.window.guiScaledHeight / 2
-                val scaledPad = (24 * scale).toInt()
-                val cardWidth = (BOX_WIDTH * scale).toInt()
-                val cardHeight = (BOX_HEIGHT * scale).toInt()
 
                 repeat(4) { i ->
-                    val player = leapTeammates.getOrNull(i) ?: EMPTY
+                    val player = leapTeammates.getOrNull(i) ?: return@repeat
                     if (player == EMPTY) return@repeat
 
-                    val row = i / 2
                     val col = i % 2
-                    val quadrantX = col * halfW
-                    val quadrantY = row * halfH
-                    val cardX = if (col == 0) quadrantX + halfW - scaledPad - cardWidth else quadrantX + scaledPad
-                    val cardY = if (row == 0) quadrantY + halfH - scaledPad - cardHeight else quadrantY + scaledPad
+                    val row = i / 2
+                    val nearX = if (col == 0) halfW - 24 else halfW + 24
+                    val nearY = if (row == 0) halfH - 24 else halfH + 24
+                    val localX = if (col == 0) -BOX_WIDTH else 0
+                    val localY = if (row == 0) -BOX_HEIGHT else 0
 
-                    val cardHover = hoverHandler[i]
-                    val hovered = mouseX in quadrantX..(quadrantX + halfW) && mouseY in quadrantY..(quadrantY + halfH)
-                    if (hovered != cardHover.isHovered) {
-                        cardHover.anim.start()
-                        cardHover.isHovered = hovered
+                    val hover = hoverHandler[i]
+                    val hovered = (if (col == 0) mouseX < halfW else mouseX >= halfW) && (if (row == 0) mouseY < halfH else mouseY >= halfH)
+                    if (hovered != hover.isHovered) {
+                        hover.anim.start()
+                        hover.isHovered = hovered
                     }
 
-                    val expand = cardHover.anim.get(0f, 5f, !cardHover.isHovered)
-                    val xScale = (cardWidth + expand * 2f) / cardWidth.toFloat()
-                    val yScale = (cardHeight + expand * 2f) / cardHeight.toFloat()
-                    val centerX = cardX + cardWidth / 2f
-                    val centerY = cardY + cardHeight / 2f
+                    val grow = hover.anim.get(0f, 5f, !hover.isHovered)
 
                     guiGraphics.pose().pushMatrix()
-                    guiGraphics.pose().translate(centerX, centerY)
-                    guiGraphics.pose().scale(xScale, yScale)
-                    guiGraphics.pose().translate(-centerX, -centerY)
+                    guiGraphics.pose().translate(nearX.toFloat(), nearY.toFloat())
+                    guiGraphics.pose().scale(
+                        scale * (BOX_WIDTH + grow * 2f) / BOX_WIDTH,
+                        scale * (BOX_HEIGHT + grow * 2f) / BOX_HEIGHT
+                    )
+
                     guiGraphics.roundedFill(
-                        cardX, cardY, cardX + cardWidth, cardY + cardHeight,
+                        localX, localY, localX + BOX_WIDTH, localY + BOX_HEIGHT,
                         (if (colorStyle) player.clazz.color else backgroundColor).rgba, 9
                     )
-                    guiGraphics.pose().popMatrix()
 
-                    val face = (cardHeight * 0.76).toInt()
-                    (player.playerSkin ?: mc.player?.skin)?.let { PlayerFaceRenderer.draw(guiGraphics, it, cardX + 9, cardY + 9, face) }
+                    val face = (BOX_HEIGHT * 0.76).toInt()
+                    (player.playerSkin ?: mc.player?.skin)?.let { PlayerFaceRenderer.draw(guiGraphics, it, localX + 9, localY + 9, face) }
 
                     guiGraphics.text(
                         if (!onlyClass) player.name else player.clazz.name,
-                        cardX + 15 + face,
-                        (cardY + cardHeight / 2.5).toInt(),
+                        localX + 15 + face,
+                        localY + (BOX_HEIGHT / 2.5).toInt(),
                         if (!colorStyle) player.clazz.color else backgroundColor
                     )
 
                     if (!onlyClass || player.isDead) {
                         guiGraphics.text(
                             if (player.isDead) "DEAD" else player.clazz.name,
-                            cardX + 15 + face,
-                            (cardY + cardHeight / 1.7).toInt(),
+                            localX + 15 + face,
+                            localY + (BOX_HEIGHT / 1.7).toInt(),
                             if (player.isDead) Colors.MINECRAFT_RED else Colors.WHITE
                         )
                     }
+
+                    guiGraphics.pose().popMatrix()
                 }
                 return true
             })
@@ -188,12 +184,12 @@ object LeapMenu : Module(
         modMessage("Teleporting to $name.")
     }
 
-    /*private val leapTeammates: MutableList<DungeonPlayer> = mutableListOf(
+    private val leapTeammates: MutableList<DungeonPlayer> = mutableListOf(
         DungeonPlayer("Stiviaisd", DungeonClass.Healer, 50, null),
         DungeonPlayer("Odtheking", DungeonClass.Archer, 50, null),
         DungeonPlayer("Bonzi", DungeonClass.Mage, 47, null),
         DungeonPlayer("Cezar", DungeonClass.Tank, 38, null)
-    )*/
+    )
 
     /**
      * Sorts the list of players based on their default quadrant and class priority.
