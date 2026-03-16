@@ -54,6 +54,7 @@ object LeapMenu : Module(
     const val BOX_HEIGHT = 75
 
     private fun currentLeapScreen(): AbstractContainerScreen<*>? {
+        if (!enabled) return null
         val screen = mc.screen as? AbstractContainerScreen<*> ?: return null
         if (screen.title?.string?.equalsOneOf("Spirit Leap", "Teleport to Player") == false) return null
         if (leapTeammates.isEmpty() || leapTeammates.all { it == EMPTY }) return null
@@ -62,8 +63,7 @@ object LeapMenu : Module(
 
     init {
         fun triggerMouseQuadrant(chest: AbstractContainerScreen<*>, mouseX: Int, mouseY: Int) {
-            val quadrant = (if (mouseY >= mc.window.guiScaledHeight / 2) 2 else 0) +
-                    (if (mouseX >= mc.window.guiScaledWidth / 2) 1 else 0)
+            val quadrant = (if (mouseY >= chest.height / 2) 2 else 0) + (if (mouseX >= chest.width / 2) 1 else 0)
             chest.mouseTrigger(leapTeammates.getOrNull(quadrant) ?: EMPTY, quadrant)
         }
 
