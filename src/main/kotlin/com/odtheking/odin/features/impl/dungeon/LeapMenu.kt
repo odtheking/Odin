@@ -86,7 +86,7 @@ object LeapMenu : Module(
                     NVGRenderer.rect(x - expandValue ,y - expandValue, BOX_WIDTH + expandValue * 2, BOX_HEIGHT + expandValue * 2, (if (colorStyle) player.clazz.color else backgroundColor).rgba, 12f)
                     val locationSkin = player.locationSkin ?: mc.player?.skin?.body?.id() ?: return@forEachIndexed
                     imageCacheMap.getOrPut(locationSkin.path) {
-                        NVGRenderer.createNVGImage((mc.textureManager.getTexture(locationSkin)?.texture as? GlTexture)?.glId() ?: 0, 64, 64)
+                        NVGRenderer.createNVGImage((mc.textureManager.getTexture(locationSkin).texture as? GlTexture)?.glId() ?: 0, 64, 64)
                     }.let { glTextureId ->
                         NVGRenderer.image(glTextureId, 64, 64, 8, 8, 8, 8, x + 30f, y + 30f, 240f, 240f, 9f)
                     }
@@ -117,7 +117,7 @@ object LeapMenu : Module(
             val keybindList =
                 if(keybindType == 0) listOf(topLeftKeybind, topRightKeybind, bottomLeftKeybind, bottomRightKeybind)
                 else listOf(archerKeybind, berserkerKeybind, healerKeybind, mageKeybind, tankKeybind)
-            if (chest.title?.string?.equalsOneOf("Spirit Leap", "Teleport to Player") == false || keybindList.none { it.value == input.key() } || leapTeammates.isEmpty()) return@on
+            if (!chest.title.string.equalsOneOf("Spirit Leap", "Teleport to Player") || keybindList.none { it.value == input.key() } || leapTeammates.isEmpty()) return@on
 
             val index = if(keybindType == 0) keybindList.indexOfFirst { it.value == input.key() }
             else DungeonClass.entries.find { clazz -> clazz.ordinal == keybindList.indexOfFirst { it.value == input.key() } }?.let { clazz -> leapTeammates.indexOfFirst { it.clazz == clazz } } ?: return@on
@@ -138,7 +138,7 @@ object LeapMenu : Module(
 
     fun GuiEvent.mouseTrigger() {
         val chest = (screen as? AbstractContainerScreen<*>) ?: return
-        if (chest.title?.string?.equalsOneOf("Spirit Leap", "Teleport to Player") == false || leapTeammates.isEmpty() || leapTeammates.all { it == EMPTY }) return
+        if (!chest.title.string.equalsOneOf("Spirit Leap", "Teleport to Player") || leapTeammates.isEmpty() || leapTeammates.all { it == EMPTY }) return
 
         val quadrant = getQuadrant()
         if ((type.equalsOneOf(1,2,3)) && leapTeammates.size < quadrant) return

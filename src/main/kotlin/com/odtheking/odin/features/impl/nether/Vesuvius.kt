@@ -52,7 +52,7 @@ object Vesuvius : Module(
 
     init {
         on<GuiEvent.DrawTooltip> {
-            val title = screen.title.string ?: return@on
+            val title = screen.title.string
             if (vesuviusHud.enabled && title.matches(chestRegex) && currentChest != null && title != "Vesuvius") {
                 guiGraphics.pose().pushMatrix()
                 val sf = mc.window.guiScale

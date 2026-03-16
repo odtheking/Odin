@@ -13,7 +13,7 @@ class StartsWithHandler(private val letter: String): TerminalHandler(TerminalTyp
 
     override fun solve(items: List<ItemStack>): List<Int> {
         return items.mapIndexedNotNull { index, item ->
-            if (item.hoverName?.string?.startsWith(letter, true) == true && !item.hasGlint() && index !in clickedSlots) index else null
+            if (item.hoverName.string.startsWith(letter, true) && !item.hasGlint() && index !in clickedSlots) index else null
         }
     }
 

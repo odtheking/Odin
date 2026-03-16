@@ -61,7 +61,7 @@ class SelectAllSim(
 
         playTermSimSound()
 
-        if (guiInventorySlots.none { it?.item?.hasGlint() == false && possibleItems.contains(it.item?.item) })
+        if (guiInventorySlots.none { !it.item.hasGlint() && possibleItems.contains(it.item.item) })
             TerminalUtils.lastTermOpened?.onComplete()
     }
 }

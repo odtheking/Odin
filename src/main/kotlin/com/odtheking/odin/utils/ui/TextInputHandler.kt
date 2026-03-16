@@ -189,7 +189,7 @@ class TextInputHandler(
                 if (input.hasControlDown() && !input.hasShiftDown()) {
                     when (input.key) {
                         GLFW.GLFW_KEY_V -> {
-                            mc.keyboardHandler.clipboard?.let { insert(it) }
+                            insert(mc.keyboardHandler.clipboard)
                             true
                         }
 

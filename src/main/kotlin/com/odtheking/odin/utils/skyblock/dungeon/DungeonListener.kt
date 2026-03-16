@@ -80,7 +80,7 @@ object DungeonListener {
         }
 
         onReceive<ClientboundSetPlayerTeamPacket> {
-            val text = parameters?.getOrNull()?.let { it.playerPrefix?.string?.plus(it.playerSuffix?.string).noControlCodes } ?: return@onReceive
+            val text = parameters.getOrNull()?.let { it.playerPrefix.string.plus(it.playerSuffix.string).noControlCodes } ?: return@onReceive
 
             floorRegex.find(text)?.groupValues?.get(1)?.let {
                 if (floor == null) scope.launch(Dispatchers.IO) { paul = hasBonusPaulScore() }

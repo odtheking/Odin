@@ -105,7 +105,7 @@ object Croesus : Module(
         }
 
         on<GuiEvent.DrawSlot> {
-            if (screen.title.string == "Croesus" && slot.item.hoverName?.string.equalsOneOf("The Catacombs", "Master Mode The Catacombs")) {
+            if (screen.title.string == "Croesus" && slot.item.hoverName.string.equalsOneOf("The Catacombs", "Master Mode The Catacombs")) {
                 val loreString = slot.item.loreString
 
                 if (hideClaimed && loreString.any { it.matches(chestStatusRegex) } && (!includeKey || hasStrikeThrough("Dungeon Chest Key", slot.item.lore ))) cancel()

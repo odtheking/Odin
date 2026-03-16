@@ -130,7 +130,7 @@ object Etherwarp : Module(
         } else 1.62
 
         val startPos = position.addVec(y = eyeHeight)
-        val endPos = player.lookAngle.multiply(distance, distance, distance).add(startPos) ?: return EtherPos.NONE
+        val endPos = player.lookAngle.multiply(distance, distance, distance).add(startPos)
         return traverseVoxels(startPos, endPos, etherWarp).takeUnless { it == EtherPos.NONE && returnEnd } ?: EtherPos(true, BlockPos.containing(endPos), null)
     }
 
@@ -171,7 +171,7 @@ object Etherwarp : Module(
                 SectionPos.blockToSectionCoord(blockPos.x),
                 SectionPos.blockToSectionCoord(blockPos.z)
             ) ?: return EtherPos.NONE
-            val currentBlock = chunk.getBlockState(blockPos) ?: return EtherPos.NONE
+            val currentBlock = chunk.getBlockState(blockPos)
 
             val currentBlockId = Block.getId(currentBlock.block.defaultBlockState())
 
