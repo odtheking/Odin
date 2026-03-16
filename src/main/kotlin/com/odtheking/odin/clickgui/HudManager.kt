@@ -40,7 +40,7 @@ object HudManager : Screen(Component.literal("HUD Manager")) {
             it.y = (odinMouseY + deltaY).coerceIn(0f, (mc.window.screenHeight - (it.height * it.scale))).toInt()
         }
 
-        guiGraphics.pose()?.pushMatrix()
+        guiGraphics.pose().pushMatrix()
         val sf = mc.window.guiScale
         guiGraphics.pose().scale(1f / sf, 1f / sf)
 

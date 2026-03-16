@@ -104,7 +104,7 @@ object Croesus : Module(
             }
         }
 
-        on<GuiEvent.DrawSlot> {
+        on<GuiEvent.RenderSlot> {
             if (screen.title.string == "Croesus" && slot.item.hoverName.string.equalsOneOf("The Catacombs", "Master Mode The Catacombs")) {
                 val loreString = slot.item.loreString
 

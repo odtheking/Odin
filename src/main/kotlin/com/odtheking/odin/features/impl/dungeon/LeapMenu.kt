@@ -56,7 +56,7 @@ object LeapMenu : Module(
     private fun currentLeapScreen(): AbstractContainerScreen<*>? {
         if (!enabled) return null
         val screen = mc.screen as? AbstractContainerScreen<*> ?: return null
-        if (screen.title?.string?.equalsOneOf("Spirit Leap", "Teleport to Player") == false) return null
+        if (!screen.title.string.equalsOneOf("Spirit Leap", "Teleport to Player")) return null
         if (leapTeammates.isEmpty() || leapTeammates.all { it == EMPTY }) return null
         return screen
     }
@@ -182,7 +182,7 @@ object LeapMenu : Module(
 
     private fun leapTo(name: String, screenHandler: AbstractContainerScreen<*>) {
         val index = screenHandler.menu.slots.subList(11, 16).firstOrNull {
-            it.item?.hoverName?.string?.substringAfter(' ').equals(name.noControlCodes, ignoreCase = true)
+            it.item.hoverName.string.substringAfter(' ').equals(name.noControlCodes, true)
         }?.index ?: return
         mc.player?.clickSlot(screenHandler.menu.containerId, index)
         modMessage("Teleporting to $name.")

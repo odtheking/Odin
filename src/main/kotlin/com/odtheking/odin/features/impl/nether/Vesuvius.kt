@@ -66,7 +66,7 @@ object Vesuvius : Module(
             }
         }
 
-        on<GuiEvent.DrawSlot> {
+        on<GuiEvent.RenderSlot> {
             if (screen.title.string.equalsOneOf("Vesuvius", "Croesus") && slot.item.hoverName.string == "Kuudra's Hollow") {
                 if (hideClaimed && slot.item.loreString.any { it == "No more chests to open!"}) cancel()
             }

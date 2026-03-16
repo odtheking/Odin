@@ -199,12 +199,11 @@ object DungeonUtils {
             previousTeammates.find { it.name == name }?.let { player -> player.isDead = clazz == "DEAD" }
                 ?: run {
                     val player = mc.connection?.getPlayerInfo(name) ?: continue
-                    val playerId = player.profile?.id ?: continue
                     previousTeammates.add(
                         DungeonPlayer(
                             name, DungeonClass.entries.find { it.name == clazz } ?: continue,
                             romanToInt(clazzLevel), player.skin,
-                            entity = mc.level?.getPlayerByUUID(playerId)
+                            entity = mc.level?.getPlayerByUUID(player.profile.id )
                         )
                     )
                 }
