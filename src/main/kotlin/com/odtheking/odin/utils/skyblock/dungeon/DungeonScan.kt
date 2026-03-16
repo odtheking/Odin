@@ -111,7 +111,7 @@ object DungeonScan {
             if (DungeonUtils.inDungeons) {
                 val level = mc.level ?: return@on
                 for (position in chunksToScan) {
-                    level.getChunk(position.x, position.z)?.let { chunk -> scanChunk(chunk) }
+                    scanChunk(level.getChunk(position.x, position.z))
                 }
             }
             chunksToScan.clear()
