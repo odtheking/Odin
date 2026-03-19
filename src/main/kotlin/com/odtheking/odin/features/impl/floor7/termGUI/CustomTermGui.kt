@@ -16,7 +16,6 @@ import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 import net.minecraft.client.input.KeyEvent
 import org.lwjgl.glfw.GLFW
 import kotlin.math.abs
-import kotlin.math.roundToInt
 
 abstract class TermGui {
     protected data class SlotVisual(
@@ -110,9 +109,9 @@ abstract class TermGui {
         startCol: Int, slotFactory: (index: Int) -> SlotVisual?
     ) {
         val scale = TerminalSolver.customTermSize
-        val slotSize = (24f * scale).roundToInt()
-        val gap = (TerminalSolver.gap * scale).roundToInt()
-        val padding = (2f * scale).roundToInt()
+        val slotSize = (24f * scale).toInt()
+        val gap = (TerminalSolver.gap * scale).toInt()
+        val padding = (2f * scale).toInt()
 
         val totalSlotSpace = slotSize + gap
         val totalWidth = (cols * slotSize + (cols - 1) * gap) + padding * 2
@@ -185,12 +184,12 @@ abstract class TermGui {
 
         pose().pushMatrix()
         pose().scale(scale)
-        block((x / scale).roundToInt(), (y / scale).roundToInt(), (width / scale).roundToInt(), (height / scale).roundToInt())
+        block((x / scale).toInt(), (y / scale).toInt(), (width / scale).toInt(), (height / scale).toInt())
         pose().popMatrix()
     }
 
     protected fun GuiGraphics.renderSlotText(text: String, x: Int, y: Int, width: Int, height: Int, color: Color) {
-        val textX = x + (width -  mc.font.width(text)) / 2
+        val textX = x + (width  - mc.font.width(text)) / 2
         val textY = y + (height - mc.font.lineHeight) / 2 + 1
 
         text(text, textX, textY, color)
