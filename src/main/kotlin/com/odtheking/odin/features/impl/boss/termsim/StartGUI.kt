@@ -1,7 +1,7 @@
-package com.odtheking.odin.features.impl.floor7.termsim
+package com.odtheking.odin.features.impl.boss.termsim
 
-import com.odtheking.odin.features.impl.floor7.TerminalSimulator
-import com.odtheking.odin.features.impl.floor7.TerminalSimulator.openRandomTerminal
+import com.odtheking.odin.features.impl.boss.TerminalSimulator
+import com.odtheking.odin.features.impl.boss.TerminalSimulator.openRandomTerminal
 import com.odtheking.odin.utils.handlers.schedule
 import com.odtheking.odin.utils.modMessage
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalTypes

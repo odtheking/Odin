@@ -206,8 +206,7 @@ object Croesus : Module(
         }
 
         itemReplacements[item]?.let { itemId -> return cachedPrices[itemId] }
-
-        return cachedPrices[item.uppercase().replace(" -", "").replace(" ", "_")]
+        return cachedPrices[item.uppercase() .replace("'", "").replace(" -", "").replace(" ", "_")]
     }
 
     private fun handleChestContents(items: List<ItemStack>) {
@@ -316,6 +315,10 @@ object Croesus : Module(
         "Necron Dye" to "DYE_NECRON",
         "Livid Dye" to "DYE_LIVID",
         "Giant's Sword" to "GIANTS_SWORD",
+        "NECROMANCERS_BROOCH" to "NECROMANCER_BROOCH",
+        "SHADOW_WARP" to "SHADOW_WARP_SCROLL",
+        "SPIRIT_STONE" to "SPIRIT_DECOY",
+        "WARPED_STONE" to "AOTE_STONE"
     )
 
     private val sampleChestData = listOf(

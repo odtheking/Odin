@@ -1,4 +1,4 @@
-package com.odtheking.odin.features.impl.floor7
+package com.odtheking.odin.features.impl.boss
 
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.utils.modMessage

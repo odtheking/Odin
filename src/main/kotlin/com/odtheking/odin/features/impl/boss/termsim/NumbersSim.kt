@@ -1,4 +1,4 @@
-package com.odtheking.odin.features.impl.floor7.termsim
+package com.odtheking.odin.features.impl.boss.termsim
 
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalTypes
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalUtils

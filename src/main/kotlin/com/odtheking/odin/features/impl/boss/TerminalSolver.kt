@@ -1,4 +1,4 @@
-package com.odtheking.odin.features.impl.floor7
+package com.odtheking.odin.features.impl.boss
 
 import com.odtheking.mixin.accessors.AbstractContainerScreenAccessor
 import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency

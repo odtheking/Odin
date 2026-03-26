@@ -1,13 +1,13 @@
-package com.odtheking.odin.features.impl.floor7
+package com.odtheking.odin.features.impl.boss
 
-import com.odtheking.odin.features.impl.floor7.DragonCheck.lastDragonDeath
-import com.odtheking.odin.features.impl.floor7.DragonPriority.findPriority
-import com.odtheking.odin.features.impl.floor7.WitherDragons.currentTick
-import com.odtheking.odin.features.impl.floor7.WitherDragons.dragonPriorityToggle
-import com.odtheking.odin.features.impl.floor7.WitherDragons.priorityDragon
-import com.odtheking.odin.features.impl.floor7.WitherDragons.sendSpawned
-import com.odtheking.odin.features.impl.floor7.WitherDragons.sendSpawning
-import com.odtheking.odin.features.impl.floor7.WitherDragons.sendTime
+import com.odtheking.odin.features.impl.boss.DragonCheck.lastDragonDeath
+import com.odtheking.odin.features.impl.boss.DragonPriority.findPriority
+import com.odtheking.odin.features.impl.boss.WitherDragons.currentTick
+import com.odtheking.odin.features.impl.boss.WitherDragons.dragonPriorityToggle
+import com.odtheking.odin.features.impl.boss.WitherDragons.priorityDragon
+import com.odtheking.odin.features.impl.boss.WitherDragons.sendSpawned
+import com.odtheking.odin.features.impl.boss.WitherDragons.sendSpawning
+import com.odtheking.odin.features.impl.boss.WitherDragons.sendTime
 import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.alert

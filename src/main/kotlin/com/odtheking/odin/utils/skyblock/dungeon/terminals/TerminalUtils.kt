@@ -9,8 +9,8 @@ import com.odtheking.odin.events.core.EventPriority
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.events.core.onSend
-import com.odtheking.odin.features.impl.floor7.TerminalSolver
-import com.odtheking.odin.features.impl.floor7.termsim.TermSimGUI
+import com.odtheking.odin.features.impl.boss.TerminalSolver
+import com.odtheking.odin.features.impl.boss.termsim.TermSimGUI
 import com.odtheking.odin.utils.devMessage
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.terminalhandler.TerminalHandler
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen

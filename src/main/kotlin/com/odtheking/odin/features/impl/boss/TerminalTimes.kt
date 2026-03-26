@@ -1,4 +1,4 @@
-package com.odtheking.odin.features.impl.floor7
+package com.odtheking.odin.features.impl.boss
 
 import com.odtheking.odin.clickgui.settings.impl.ActionSetting
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
@@ -8,7 +8,7 @@ import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.WorldEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
-import com.odtheking.odin.features.impl.floor7.termsim.TermSimGUI
+import com.odtheking.odin.features.impl.boss.termsim.TermSimGUI
 import com.odtheking.odin.utils.ChatManager.hideMessage
 import com.odtheking.odin.utils.PersonalBest
 import com.odtheking.odin.utils.modMessage

@@ -1,8 +1,8 @@
-package com.odtheking.odin.features.impl.floor7
+package com.odtheking.odin.features.impl.boss
 
 import com.odtheking.odin.clickgui.settings.impl.NumberSetting
 import com.odtheking.odin.features.Module
-import com.odtheking.odin.features.impl.floor7.termsim.*
+import com.odtheking.odin.features.impl.boss.termsim.*
 import com.odtheking.odin.utils.PersonalBest
 import com.odtheking.odin.utils.sendCommand
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalTypes

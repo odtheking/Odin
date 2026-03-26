@@ -1,11 +1,11 @@
-package com.odtheking.odin.features.impl.floor7
+package com.odtheking.odin.features.impl.boss
 
-import com.odtheking.odin.features.impl.floor7.WitherDragons.dragonPriorityToggle
-import com.odtheking.odin.features.impl.floor7.WitherDragons.easyPower
-import com.odtheking.odin.features.impl.floor7.WitherDragons.normalPower
-import com.odtheking.odin.features.impl.floor7.WitherDragons.paulBuff
-import com.odtheking.odin.features.impl.floor7.WitherDragons.soloDebuff
-import com.odtheking.odin.features.impl.floor7.WitherDragons.soloDebuffOnAll
+import com.odtheking.odin.features.impl.boss.WitherDragons.dragonPriorityToggle
+import com.odtheking.odin.features.impl.boss.WitherDragons.easyPower
+import com.odtheking.odin.features.impl.boss.WitherDragons.normalPower
+import com.odtheking.odin.features.impl.boss.WitherDragons.paulBuff
+import com.odtheking.odin.features.impl.boss.WitherDragons.soloDebuff
+import com.odtheking.odin.features.impl.boss.WitherDragons.soloDebuffOnAll
 import com.odtheking.odin.utils.devMessage
 import com.odtheking.odin.utils.equalsOneOf
 import com.odtheking.odin.utils.modMessage

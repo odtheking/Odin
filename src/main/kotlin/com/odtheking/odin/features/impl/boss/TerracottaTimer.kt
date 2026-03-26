@@ -1,4 +1,4 @@
-package com.odtheking.odin.features.impl.dungeon
+package com.odtheking.odin.features.impl.boss
 
 import com.odtheking.odin.events.BlockUpdateEvent
 import com.odtheking.odin.events.RenderEvent

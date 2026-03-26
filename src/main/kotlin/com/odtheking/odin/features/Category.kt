@@ -14,7 +14,7 @@ data class Category private constructor(val name: String) {
         @JvmField
         val DUNGEON = custom(name = "Dungeon")
         @JvmField
-        val FLOOR7 = custom(name = "Floor 7")
+        val BOSS = custom(name = "Boss")
         @JvmField
         val RENDER = custom(name = "Render")
         @JvmField

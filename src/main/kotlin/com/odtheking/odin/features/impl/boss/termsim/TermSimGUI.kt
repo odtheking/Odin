@@ -1,10 +1,10 @@
-package com.odtheking.odin.features.impl.floor7.termsim
+package com.odtheking.odin.features.impl.boss.termsim
 
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.events.GuiEvent
 import com.odtheking.odin.events.PacketEvent
 import com.odtheking.odin.events.TerminalEvent
-import com.odtheking.odin.features.impl.floor7.TerminalSounds
+import com.odtheking.odin.features.impl.boss.TerminalSounds
 import com.odtheking.odin.utils.handlers.schedule
 import com.odtheking.odin.utils.playSoundAtPlayer
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.terminalhandler.TerminalHandler

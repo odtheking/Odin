@@ -1,4 +1,4 @@
-package com.odtheking.odin.features.impl.floor7.termsim
+package com.odtheking.odin.features.impl.boss.termsim
 
 import com.odtheking.odin.utils.hasGlint
 import com.odtheking.odin.utils.modMessage

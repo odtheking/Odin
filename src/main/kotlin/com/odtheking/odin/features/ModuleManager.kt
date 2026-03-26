@@ -11,10 +11,10 @@ import com.odtheking.odin.config.ModuleConfig
 import com.odtheking.odin.events.InputEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.ModuleManager.configs
+import com.odtheking.odin.features.impl.boss.*
 import com.odtheking.odin.features.impl.dungeon.*
 import com.odtheking.odin.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints
 import com.odtheking.odin.features.impl.dungeon.puzzlesolvers.PuzzleSolvers
-import com.odtheking.odin.features.impl.floor7.*
 import com.odtheking.odin.features.impl.nether.*
 import com.odtheking.odin.features.impl.render.*
 import com.odtheking.odin.features.impl.skyblock.*

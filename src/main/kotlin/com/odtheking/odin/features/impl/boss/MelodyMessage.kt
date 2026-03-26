@@ -1,4 +1,4 @@
-package com.odtheking.odin.features.impl.floor7
+package com.odtheking.odin.features.impl.boss
 
 import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
@@ -9,7 +9,7 @@ import com.odtheking.odin.events.WorldEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.features.Module
-import com.odtheking.odin.features.impl.floor7.termsim.TermSimGUI
+import com.odtheking.odin.features.impl.boss.termsim.TermSimGUI
 import com.odtheking.odin.features.impl.render.ClickGUIModule
 import com.odtheking.odin.utils.equalsOneOf
 import com.odtheking.odin.utils.network.WebUtils.gson
