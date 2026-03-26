@@ -3,7 +3,7 @@ package com.odtheking.mixin.mixins;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.odtheking.odin.events.BlockInteractEvent;
 import com.odtheking.odin.events.EntityInteractEvent;
-import com.odtheking.odin.features.impl.floor7.TerminalSolver;
+import com.odtheking.odin.features.impl.boss.TerminalSolver;
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.phys.BlockHitResult;

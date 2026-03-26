@@ -63,10 +63,8 @@ enum class Puzzle(
     BOMB_DEFUSE("Bomb Defuse");
 }
 
-sealed class PuzzleStatus {
-    data object Completed : PuzzleStatus()
-    data object Failed : PuzzleStatus()
-    data object Incomplete : PuzzleStatus()
+enum class PuzzleStatus {
+    Completed, Failed, Incomplete
 }
 
 /**

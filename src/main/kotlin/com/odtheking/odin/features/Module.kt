@@ -129,7 +129,7 @@ abstract class Module(
             val packageName = clazz.packageName
             return when {
                 packageName.contains("dungeon") -> Category.DUNGEON
-                packageName.contains("floor7") -> Category.FLOOR7
+                packageName.contains("boss") -> Category.BOSS
                 packageName.contains("nether") -> Category.NETHER
                 packageName.contains("render") -> Category.RENDER
                 packageName.contains("skyblock") -> Category.SKYBLOCK

@@ -1,8 +1,8 @@
 package com.odtheking.odin.utils.skyblock.dungeon.terminals
 
 import com.github.stivais.commodore.parsers.CommandParsable
-import com.odtheking.odin.features.impl.floor7.termGUI.*
-import com.odtheking.odin.features.impl.floor7.termsim.*
+import com.odtheking.odin.features.impl.boss.termGUI.*
+import com.odtheking.odin.features.impl.boss.termsim.*
 import com.odtheking.odin.utils.modMessage
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.terminalhandler.*
 import net.minecraft.world.item.DyeColor
