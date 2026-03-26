@@ -136,7 +136,7 @@ abstract class Module(
                 else -> throw IllegalStateException(
                     "Module ${clazz.name} failed to get category from the package it is in." +
                             "Either manually assign a category," +
-                            " or put it under any valid package (dungeon, floor7, nether, render, skyblock))"
+                            " or put it under any valid package (dungeon, boss, nether, render, skyblock))"
                 )
             }
         }

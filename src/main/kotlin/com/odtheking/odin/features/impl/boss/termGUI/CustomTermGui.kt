@@ -1,10 +1,10 @@
-package com.odtheking.odin.features.impl.floor7.termGUI
+package com.odtheking.odin.features.impl.boss.termGUI
 
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.events.GuiEvent
 import com.odtheking.odin.events.ScreenEvent
-import com.odtheking.odin.features.impl.floor7.TerminalSolver
-import com.odtheking.odin.features.impl.floor7.TerminalSolver.hideClicked
+import com.odtheking.odin.features.impl.boss.TerminalSolver
+import com.odtheking.odin.features.impl.boss.TerminalSolver.hideClicked
 import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.render.roundedFill

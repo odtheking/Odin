@@ -1,6 +1,6 @@
-package com.odtheking.odin.features.impl.floor7.termGUI
+package com.odtheking.odin.features.impl.boss.termGUI
 
-import com.odtheking.odin.features.impl.floor7.TerminalSolver
+import com.odtheking.odin.features.impl.boss.TerminalSolver
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 
 object MelodyGui : TermGui() {
