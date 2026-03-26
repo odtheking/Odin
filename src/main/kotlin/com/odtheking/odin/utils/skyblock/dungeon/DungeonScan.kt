@@ -4,6 +4,7 @@ import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.events.LocationChangeEvent
 import com.odtheking.odin.events.WorldEvent
 import com.odtheking.odin.events.core.on
+import com.odtheking.odin.features.impl.dungeon.map.DungeonMapModule
 import com.odtheking.odin.utils.IVec2
 import com.odtheking.odin.utils.equalsOneOf
 import com.odtheking.odin.utils.skyblock.dungeon.door.DoorRotation
@@ -12,11 +13,13 @@ import com.odtheking.odin.utils.skyblock.dungeon.door.DungeonDoor
 import com.odtheking.odin.utils.skyblock.dungeon.room.DungeonRoom
 import com.odtheking.odin.utils.skyblock.dungeon.room.DungeonTile
 import com.odtheking.odin.utils.skyblock.dungeon.room.RoomData
+import com.odtheking.odin.utils.skyblock.dungeon.room.RoomRotation
 import com.odtheking.odin.utils.toIVec2
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientChunkEvents
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.chunk.LevelChunk
+import java.util.concurrent.CopyOnWriteArrayList
 
 /*
 pseudocode
@@ -74,7 +77,7 @@ object DungeonScan {
         DungeonTile(position = IVec2(x = index % 6, z = index / 6))
     }
 
-    val rooms: ArrayList<DungeonRoom> = arrayListOf()
+    val rooms: CopyOnWriteArrayList<DungeonRoom> = CopyOnWriteArrayList()
     val doors: HashMap<IVec2, DungeonDoor> = hashMapOf()
     val dataToRoom: HashMap<RoomData, DungeonRoom> = hashMapOf()
 
@@ -94,6 +97,7 @@ object DungeonScan {
         }
 
         ClientChunkEvents.CHUNK_LOAD.register { _, chunk ->
+            if (DungeonMapModule.disableWorldScan) return@register
 
             // if dungeon isn't loaded, yet we add it to chunksToScan
             // otherwise just directly load it, no need to scan every tick
@@ -109,6 +113,7 @@ object DungeonScan {
 
         on<LocationChangeEvent> {
             if (DungeonUtils.inDungeons) {
+                if (DungeonMapModule.disableWorldScan) return@on
                 val level = mc.level ?: return@on
                 for (position in chunksToScan) {
                     scanChunk(level.getChunk(position.x, position.z))
@@ -120,7 +125,6 @@ object DungeonScan {
 
 
     private fun scanChunk(chunk: LevelChunk) {
-        // assume it is dungeon since it should be based on checks above
         val chunkPosition = chunk.pos.toIVec2()
 
         val rowEven = chunkPosition.x % 2 == 0
@@ -128,7 +132,7 @@ object DungeonScan {
 
         if (chunkPosition.x in -12..-2 && chunkPosition.z in -12..-2) {
             if (rowEven && columnEven) scanRoom(chunk, chunkPosition)
-            if (rowEven || columnEven)
+            else if (rowEven || columnEven)
                 scanDoor(chunk, chunkPosition, if (columnEven) DoorRotation.Horizontal else DoorRotation.Vertical)
         }
     }
@@ -157,15 +161,63 @@ object DungeonScan {
         val tilePosition = (chunkPosition / 2) + 6
         val tile = tiles.getOrNull(tilePosition.x + (tilePosition.z * 6)) ?: return
 
-        // if room exists in tile, add roomData to the room
-        if (tile.room != null) {
-            //
-        } else {
-            val room = dataToRoom.getOrPut(data) { DungeonRoom(data) }
-            tile.room = room
-            room.segments.add(tile)
+        (dataToRoom[data] as? DungeonRoom.WorldResolved)?.let { resolved ->
+            tile.room = resolved
+            if (!resolved.segments.contains(tile)) resolved.segments.add(tile)
+            return
+        }
 
-            if (room.hasAllSegments()) room.setShapeAndRotation(chunk, chunkPosition, highestBlock)
+        (tile.room as? DungeonRoom.MapResolved)?.let { mapRoom ->
+            promoteMapResolved(mapRoom, data, chunk, chunkPosition, highestBlock)
+            return
+        }
+
+        val collecting: DungeonRoom.Collecting = when (val tracked = dataToRoom[data]) {
+            is DungeonRoom.Collecting -> {
+                (tile.room as? DungeonRoom.MapResolved)?.let { mapRoom ->
+                    promoteMapResolved(mapRoom, data, chunk, chunkPosition, highestBlock)
+                    return
+                }
+                tracked
+            }
+            else -> DungeonRoom.Collecting().also { dataToRoom[data] = it }
+        }
+
+        tile.room = collecting
+        if (!collecting.segments.contains(tile)) collecting.segments.add(tile)
+
+        if (data.shape.segments != collecting.segments.size) return
+
+        val worldResolved = DungeonRoom.WorldResolved(
+            worldData = data,
+            rotation  = inferRotation(chunk, chunkPosition, highestBlock, collecting.segments),
+        ).also { it.checkmark = collecting.checkmark }
+        for (s in worldResolved.segments) s.room = worldResolved
+        rooms.add(worldResolved)
+        dataToRoom[data] = worldResolved
+    }
+
+    private fun promoteMapResolved(mapRoom: DungeonRoom.MapResolved, data: RoomData, chunk: LevelChunk, chunkPosition: IVec2, highestBlock: Int) {
+        val worldResolved = DungeonRoom.WorldResolved(
+            worldData = data,
+            rotation  = inferRotation(chunk, chunkPosition, highestBlock, mapRoom.segments),
+        ).also { it.checkmark = mapRoom.checkmark }
+        for (s in worldResolved.segments) s.room = worldResolved
+        rooms.remove(mapRoom)
+        rooms.add(worldResolved)
+        dataToRoom[data] = worldResolved
+    }
+
+    private fun inferRotation(chunk: LevelChunk, chunkPosition: IVec2, highestBlock: Int, segments: List<DungeonTile>): RoomRotation {
+        val (_, rotation) = DungeonRoom.inferLayout(segments.map { it.position })
+        if (rotation != null) return rotation
+
+        val base = chunkPosition * 16
+        return when {
+            chunk.getBlockState(base.x + 14, highestBlock, base.z).block       === Blocks.BLUE_TERRACOTTA -> RoomRotation.WEST
+            chunk.getBlockState(base.x + 14, highestBlock, base.z + 14).block  === Blocks.BLUE_TERRACOTTA -> RoomRotation.NORTH
+            chunk.getBlockState(base.x,      highestBlock, base.z + 14).block  === Blocks.BLUE_TERRACOTTA -> RoomRotation.EAST
+            else -> RoomRotation.SOUTH
         }
     }
 

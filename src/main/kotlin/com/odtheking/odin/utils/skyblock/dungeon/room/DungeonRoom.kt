@@ -1,18 +1,8 @@
 package com.odtheking.odin.utils.skyblock.dungeon.room
 
 import com.odtheking.odin.utils.IVec2
-import com.odtheking.odin.utils.skyblock.dungeon.DungeonScan
-import com.odtheking.odin.utils.skyblock.dungeon.DungeonScan.getBlockState
-import net.minecraft.world.level.block.Blocks
-import net.minecraft.world.level.chunk.LevelChunk
-import kotlin.math.abs
-import kotlin.math.max
-import kotlin.math.min
 
-class DungeonTile(
-    val position: IVec2,
-    var room: DungeonRoom? = null
-)
+class DungeonTile(val position: IVec2, var room: DungeonRoom? = null)
 
 enum class MapCheckmark(val mapColor: Byte, val symbol: String) {
     NONE(-1, "§0N"),
@@ -28,94 +18,58 @@ enum class MapCheckmark(val mapColor: Byte, val symbol: String) {
     }
 }
 
-class DungeonRoom(
-    var data: RoomData? = null,
-    val segments: ArrayList<DungeonTile> = ArrayList(4),
+private fun ArrayList<DungeonTile>.minCorner() = IVec2(minOf { it.position.x }, minOf { it.position.z })
 
-    var shape: RoomShape = RoomShape.UNKNOWN,
-    var rotation: RoomRotation = RoomRotation.SOUTH,
-    var position: IVec2 = IVec2(0, 0),
+sealed class DungeonRoom {
+    val segments: ArrayList<DungeonTile> = ArrayList(4)
+    var checkmark: MapCheckmark = MapCheckmark.UNDISCOVERED
 
-    var checkmark: MapCheckmark = MapCheckmark.UNDISCOVERED,
-    var type: RoomType = RoomType.UNDISCOVERED,
-) {
+    class Collecting : DungeonRoom()
 
-    init {
-        DungeonScan.rooms.add(this)
+    /** All tiles resolved from the map item. rotation is null for 1×1 — map geometry can't determine it. */
+    class MapResolved(
+        val shape: RoomShape,
+        val rotation: RoomRotation?,
+        val type: RoomType,
+    ) : DungeonRoom() {
+        val position: IVec2 = segments.minCorner()
     }
 
-    fun hasAllSegments(): Boolean {
-        return data?.shape?.segments == segments.size
+    /** All tiles confirmed by world scan. rotation always non-null (block markers for 1×1). */
+    class WorldResolved(
+        val worldData: RoomData,
+        val rotation: RoomRotation,
+    ) : DungeonRoom() {
+        val position: IVec2 = segments.minCorner()
+        val shape: RoomShape = worldData.shape
+        val type: RoomType   = worldData.type
     }
 
-    fun setShapeAndRotation(chunk: LevelChunk, chunkPosition: IVec2, highestBlock: Int) {
-        // for future reference to myself to prevent misusing it
-        assert(hasAllSegments()) { "Called getShapeFromSegments without having enough segments, Or on a room without data." }
-        assert(shape === RoomShape.UNKNOWN) { "Called getShapeFromSegments on a complete room." }
+    companion object {
+        fun inferLayout(positions: List<IVec2>): Pair<RoomShape, RoomRotation?> {
+            val minX = positions.minOf { it.x }
+            val minZ = positions.minOf { it.z }
+            val maxX = positions.maxOf { it.x }
+            val maxZ = positions.maxOf { it.z }
+            val horizontal = (maxX - minX) > (maxZ - minZ)
 
-        val segmentAmount = segments.size
-        assert(segmentAmount in 1..4) { "Invalid amount of segments for this room." }
-
-        var minX = Int.MAX_VALUE
-        var minZ = Int.MAX_VALUE
-        var maxX = Int.MIN_VALUE
-        var maxZ = Int.MIN_VALUE
-
-        for (segment in segments) {
-            minX = min(minX, segment.position.x)
-            minZ = min(minZ, segment.position.z)
-            maxX = max(maxX, segment.position.x)
-            maxZ = max(maxZ, segment.position.z)
-        }
-
-        this.position = IVec2(minX, minZ)
-        val length = (maxX - minX) + 1
-        val height = (maxZ - minZ) + 1
-
-        when (segmentAmount) {
-            1 -> {
-                val pos = chunkPosition * 16
-                shape = RoomShape.OneByOne
-                rotation = when {
-                    chunk.getBlockState(pos.x + 14, highestBlock, pos.z).block === Blocks.BLUE_TERRACOTTA -> RoomRotation.WEST
-                    chunk.getBlockState(pos.x + 14, highestBlock, pos.z + 14).block === Blocks.BLUE_TERRACOTTA -> RoomRotation.NORTH
-                    chunk.getBlockState(pos.x, highestBlock, pos.z + 14).block === Blocks.BLUE_TERRACOTTA -> RoomRotation.EAST
-                    else -> RoomRotation.SOUTH
-                }
-            }
-            2 -> {
-                shape = RoomShape.TwoByOne
-                rotation = if (length == 1) RoomRotation.WEST else RoomRotation.SOUTH
-            }
-            3 -> {
-                if (length == 2 && height == 2) {
-                    shape = RoomShape.L
-
-                    val corner = segments.first { a ->
-                        segments.all { b ->
-                            abs(a.position.x - b.position.x) + abs(a.position.z - b.position.z) <= 1
-                        }
-                    }.position
-
-                    rotation = when (corner) {
-                        IVec2(minX, minZ) -> RoomRotation.SOUTH
-                        IVec2(maxX, minZ) -> RoomRotation.NORTH
-                        IVec2(maxX, maxZ) -> RoomRotation.EAST
-                        else -> RoomRotation.WEST
+            return when (positions.size) {
+                1 -> RoomShape.OneByOne to null
+                2 -> RoomShape.TwoByOne to if (horizontal) RoomRotation.SOUTH else RoomRotation.NORTH
+                3 -> if ((maxX - minX) == 1 && (maxZ - minZ) == 1) {
+                    val set = positions.toHashSet()
+                    RoomShape.L to when {
+                        IVec2(maxX, minZ) !in set -> RoomRotation.WEST   // top-right missing
+                        IVec2(minX, maxZ) !in set -> RoomRotation.NORTH  // bottom-left missing
+                        IVec2(minX, minZ) !in set -> RoomRotation.EAST   // top-left missing
+                        else                       -> RoomRotation.SOUTH  // bottom-right missing
                     }
-                } else {
-                    shape = RoomShape.ThreeByOne
-                    rotation = if (length == 1) RoomRotation.WEST else RoomRotation.SOUTH
-                }
-            }
-            4 -> {
-                if (length == 2 && height == 2) {
-                    shape = RoomShape.TwoByTwo
-                    rotation = RoomRotation.SOUTH
-                } else {
-                    shape = RoomShape.FourByOne
-                    rotation = if (length == 1) RoomRotation.WEST else RoomRotation.SOUTH
-                }
+                } else RoomShape.ThreeByOne to if (horizontal) RoomRotation.SOUTH else RoomRotation.NORTH
+                4 ->
+                    if ((maxX - minX) == 1 && (maxZ - minZ) == 1) RoomShape.TwoByTwo to RoomRotation.SOUTH
+                    else RoomShape.FourByOne to if (horizontal) RoomRotation.SOUTH else RoomRotation.NORTH
+
+                else -> RoomShape.OneByOne to RoomRotation.SOUTH
             }
         }
     }

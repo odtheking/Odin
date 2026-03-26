@@ -1,5 +1,6 @@
 package com.odtheking.odin.features.impl.dungeon.map
 
+import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Color.Companion.withAlpha
 import com.odtheking.odin.utils.Colors
@@ -9,10 +10,7 @@ import com.odtheking.odin.utils.skyblock.dungeon.DungeonScan
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.skyblock.dungeon.door.DoorType
 import com.odtheking.odin.utils.skyblock.dungeon.door.DungeonDoor
-import com.odtheking.odin.utils.skyblock.dungeon.room.DungeonRoom
-import com.odtheking.odin.utils.skyblock.dungeon.room.RoomRotation
-import com.odtheking.odin.utils.skyblock.dungeon.room.RoomShape
-import com.odtheking.odin.utils.skyblock.dungeon.room.RoomType
+import com.odtheking.odin.utils.skyblock.dungeon.room.*
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.PlayerFaceRenderer
 
@@ -20,6 +18,11 @@ object DungeonMapModule : Module(
     "Map",
     description = "test"
 ) {
+    val disableWorldScan by BooleanSetting(
+        "Disable World Scan",
+        false,
+        desc = "Disables chunk/world scanning; builds rooms only from the map item."
+    )
 
     private val hud by HUD("Map test", "test") {
         val matrices = pose()
@@ -56,9 +59,21 @@ object DungeonMapModule : Module(
     }
 
     private fun GuiGraphics.renderRoom(room: DungeonRoom) {
-        if (room.shape === RoomShape.UNKNOWN) return
+        when (room) {
+            is DungeonRoom.Collecting    -> return
+            is DungeonRoom.MapResolved   -> render(room.position, room.shape, room.rotation, room.type, room.checkmark)
+            is DungeonRoom.WorldResolved -> render(room.position, room.shape, room.rotation, room.type, room.checkmark)
+        }
+    }
 
-        val color = when (room.data?.type ?: room.type) {
+    private fun GuiGraphics.render(
+        position: IVec2,
+        shape: RoomShape,
+        rotation: RoomRotation?,
+        type: RoomType,
+        checkmark: MapCheckmark,
+    ) {
+        val color = when (type) {
             RoomType.CHAMPION -> Colors.MINECRAFT_YELLOW
             RoomType.BLOOD -> Colors.MINECRAFT_RED
             RoomType.FAIRY -> Colors.MINECRAFT_LIGHT_PURPLE
@@ -69,25 +84,23 @@ object DungeonMapModule : Module(
             else -> Colors.MINECRAFT_GRAY
         }.withAlpha(0.5f).rgba
 
-        pose().translate(room.position.x * 12f, room.position.z * 12f)
-        when (room.shape) {
-            RoomShape.UNKNOWN -> {}
-
+        pose().translate(position.x * 12f, position.z * 12f)
+        when (shape) {
             RoomShape.OneByOne -> fill(0, 0, 10, 10, color)
 
             RoomShape.TwoByOne, RoomShape.ThreeByOne, RoomShape.FourByOne -> {
-                var size = IVec2(10, (12 * room.shape.segments) - 2)
-                if (room.rotation === RoomRotation.SOUTH) size = size.flip()
+                var size = IVec2(10, (12 * shape.segments) - 2)
+                if (rotation === RoomRotation.SOUTH) size = size.flip()
                 fill(0, 0, size.x, size.z, color)
             }
 
             RoomShape.TwoByTwo -> fill(0, 0, 22, 22, color)
 
             RoomShape.L -> {
-                if (room.rotation === RoomRotation.WEST ) {
+                if (rotation === RoomRotation.WEST) {
                     fill(0, 0, 10, 12, color)
                     fill(0, 12, 22, 22, color)
-                } else if (room.rotation === RoomRotation.NORTH) {
+                } else if (rotation === RoomRotation.NORTH) {
                     fill(0, 0, 22, 10, color)
                     fill(12, 10, 22, 22, color)
                 } else {
@@ -96,7 +109,7 @@ object DungeonMapModule : Module(
                 }
             }
         }
-        text(room.checkmark.symbol, 2, 1, Colors.WHITE, true)
+        text(checkmark.symbol, 2, 1, Colors.WHITE, true)
     }
 
     private fun GuiGraphics.renderDoor(door: DungeonDoor) {

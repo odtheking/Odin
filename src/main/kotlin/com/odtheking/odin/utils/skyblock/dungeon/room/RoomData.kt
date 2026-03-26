@@ -47,8 +47,6 @@ enum class RoomType(val mapColor: Byte) {
 }
 
 enum class RoomShape(val segments: Int) {
-    @SerializedName("Unknown")
-    UNKNOWN(0),
     @SerializedName("L")
     L(3),
     @SerializedName("1x1")
