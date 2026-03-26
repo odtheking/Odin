@@ -1,7 +1,6 @@
 package com.odtheking.odin.features.impl.skyblock
 
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
-import com.odtheking.odin.clickgui.settings.impl.NumberSetting
 import com.odtheking.odin.clickgui.settings.impl.SelectorSetting
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Colors
@@ -39,7 +38,7 @@ object Splits : Module(
         val maxWidth = currentSplits.splits.dropLast(1).maxOf { getStringWidth(it.name) }
 
         currentSplits.splits.dropLast(1).forEachIndexed { index, split ->
-            val time = formatTime(if (index >= times.size) 0 else times[index], numbersAfterDecimal)
+            val time = formatTime(if (index >= times.size) 0 else times[index])
             text(split.name, 0, index * 9, Colors.WHITE)
 
             val displayText = if (showTickTime && index < tickTimes.size) "$time §8(§7${(tickTimes[index] / 20f).toFixed()}§8)" else time
@@ -51,7 +50,7 @@ object Splits : Module(
         if (bossEntrySplit && currentSplits.splits.size > 3) {
             text("§9Boss Entry", 0, (currentSplits.splits.size - 1) * 9, Colors.WHITE)
 
-            val totalTime = formatTime(times.take(3).sum(), numbersAfterDecimal)
+            val totalTime = formatTime(times.take(3).sum())
             val displayText = if (showTickTime) "$totalTime §8(§7${(tickTimes.take(3).sum() / 20f).toFixed()}§8)" else totalTime
             val timeX = if (fixedWidth) totalWidth - getStringWidth(displayText) else maxWidth + 4
 
@@ -64,7 +63,6 @@ object Splits : Module(
     private val fixedWidth by BooleanSetting("Fixed Width", true, desc = "Always use a fixed HUD width, right-aligning the times.")
     private val bossEntrySplit by BooleanSetting("Boss Entry Split", true, desc = "Split for boss entry.")
     val sendSplits by BooleanSetting("Send Splits", true, desc = "Send splits to chat.")
-    private val numbersAfterDecimal by NumberSetting("Numbers After Decimal", 2, 0, 5, 1, desc = "Numbers after decimal in time.")
     val showTickTime by BooleanSetting("Show Tick Time", true, desc = "Show tick-based time alongside real time.")
     val splitLocation by SelectorSetting("Split Location", "Both", listOf("Both", "Dungeons Only", "Kuudra Only"), desc = "Which areas to show splits in.")
 
