@@ -69,7 +69,7 @@ object KingRelics : Module(
         onReceive<ClientboundSetEquipmentPacket> {
             if (DungeonUtils.getF7Phase() != M7Phases.P5 || currentRelic == null) return@onReceive
 
-            val equipmentSlot = slots.find { it.second == Items.PLAYER_HEAD } ?: return@onReceive
+            val equipmentSlot = slots.find { it.second.item== Items.PLAYER_HEAD } ?: return@onReceive
 
             Relic.entries.find { it.id == equipmentSlot.second.itemId }?.let { relic ->
                 if (relicPlaceTick > 0 && !hasAnnouncedSpawn) {

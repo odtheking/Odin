@@ -2,6 +2,7 @@ package com.odtheking.odin.features.impl.skyblock
 
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.NumberSetting
+import com.odtheking.odin.clickgui.settings.impl.SelectorSetting
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.PersonalBest
@@ -60,12 +61,12 @@ object Splits : Module(
         totalWidth to 9 * (currentSplits.splits.size + (if (bossEntrySplit) 1 else 0))
     }
 
-    private val fixedWidth by BooleanSetting("Fixed Width", false, desc = "Always use a fixed HUD width, right-aligning the times.")
+    private val fixedWidth by BooleanSetting("Fixed Width", true, desc = "Always use a fixed HUD width, right-aligning the times.")
     private val bossEntrySplit by BooleanSetting("Boss Entry Split", true, desc = "Split for boss entry.")
     val sendSplits by BooleanSetting("Send Splits", true, desc = "Send splits to chat.")
-    val sendOnlyPB by BooleanSetting("Send Only PB", false, desc = "Send only personal bests.")
     private val numbersAfterDecimal by NumberSetting("Numbers After Decimal", 2, 0, 5, 1, desc = "Numbers after decimal in time.")
-    val showTickTime by BooleanSetting("Show Tick Time", false, desc = "Show tick-based time alongside real time.")
+    val showTickTime by BooleanSetting("Show Tick Time", true, desc = "Show tick-based time alongside real time.")
+    val splitLocation by SelectorSetting("Split Location", "Both", listOf("Both", "Dungeons Only", "Kuudra Only"), desc = "Which areas to show splits in.")
 
     val kuudraT5PBs = PersonalBest(this, "KuudraT5")
     val kuudraT4PBs = PersonalBest(this, "KuudraT4")
