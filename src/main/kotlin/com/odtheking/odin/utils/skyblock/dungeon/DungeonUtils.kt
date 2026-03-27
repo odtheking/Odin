@@ -123,8 +123,12 @@ object DungeonUtils {
             val total = if (totalRooms != 0) totalRooms else 36
 
             val exploration = floor?.let {
-                floor((secretPercentage / it.secretPercentage) / 100f * 40f).coerceIn(0f, 40f).toInt() +
-                        floor(completed.toFloat() / total * 60f).coerceIn(0f, 60f).toInt()
+                val secretScore = if (totalSecrets > 0) {
+                    floor(secretCount.toDouble() / (totalSecrets.toDouble() * it.requiredPercentage) * 40.0)
+                        .toInt().coerceIn(0, 40)
+                } else 0
+
+                secretScore + floor(completed.toFloat() / total * 60f).coerceIn(0f, 60f).toInt()
             } ?: 0
 
             val skillRooms = floor(completed.toFloat() / total * 80f).coerceIn(0f, 80f).toInt()
@@ -140,9 +144,7 @@ object DungeonUtils {
         get() =
             DungeonListener.floor?.let {
                 ceil(
-                    (totalSecrets * it.secretPercentage) * (40 - getBonusScore + (deathCount * 2 - 1).coerceAtLeast(
-                        0
-                    )) / 40f
+                    (totalSecrets * it.requiredPercentage) * (40 - getBonusScore + (deathCount * 2 - 1).coerceAtLeast(0)) / 40.0
                 ).toInt()
             } ?: 0
 

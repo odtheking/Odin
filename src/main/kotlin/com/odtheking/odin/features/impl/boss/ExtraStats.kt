@@ -19,17 +19,8 @@ object ExtraStats : Module(
 ) {
     private val showBits by BooleanSetting("Show Bits", true, desc = "Show bits earned.")
     private val showClassEXP by BooleanSetting("Show Class EXP", true, desc = "Show class experience.")
-    private val showCombatStats by BooleanSetting(
-        "Show Combat Stats",
-        true,
-        desc = "Show damage, enemy kills and healing."
-    )
-    private val teamStats by SelectorSetting(
-        "Show Team Stats",
-        "Both",
-        arrayListOf("Off", "Personal", "Team", "Both"),
-        desc = "Toggle how show team stats."
-    )
+    private val showCombatStats by BooleanSetting("Show Combat Stats", true, desc = "Show damage, enemy kills and healing.")
+    private val teamStats by SelectorSetting("Show Team Stats", "Both", arrayListOf("Off", "Personal", "Team", "Both"), desc = "Toggle how show team stats.")
     private val showTeammates by BooleanSetting("Show Teammates", false, desc = "Show teammates.")
 
     private val extraStats = PostDungeonStats()

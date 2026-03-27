@@ -55,7 +55,7 @@ val mainCommand = Commodore("odin", "od") {
         fillItemFromSack(amount?: 64, "TOXIC_ARROW_POISON", "toxic_arrow_posion", true)
     }
 
-    literal("tap").runs { amount: Int? ->
+    literal("twap").runs { amount: Int? ->
         fillItemFromSack(amount?: 64, "TWILIGHT_ARROW_POISON", "twilight_arrow_posion", true)
     }
 

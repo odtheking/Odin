@@ -79,9 +79,10 @@ object InvincibilityTimer : Module(
         on<ChatPacketEvent> {
             if (!DungeonUtils.inDungeons) return@on
             InvincibilityType.entries.firstOrNull { type -> value.matches(type.regex) }?.let { type ->
-                if (invincibilityAnnounce) sendCommand("pc ${type.name.lowercase().capitalizeFirst()} Procced!")
-                if (invincibilityAlert) alert(type.name.lowercase().capitalizeFirst())
                 type.proc()
+                val usedMasks = InvincibilityType.entries.count { it.currentCooldown > 0 }
+                if (invincibilityAnnounce) sendCommand("pc ${type.name.lowercase().capitalizeFirst()} Procced! ($usedMasks/${InvincibilityType.entries.size})")
+                if (invincibilityAlert) alert(type.name.lowercase().capitalizeFirst())
             }
         }
 
