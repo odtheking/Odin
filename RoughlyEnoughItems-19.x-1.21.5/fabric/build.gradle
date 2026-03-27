@@ -1,0 +1,162 @@
+plugins {
+    id "com.github.johnrengelman.shadow" version "8.1.1"
+}
+
+architectury {
+    platformSetupLoomIde()
+    fabric()
+}
+
+configurations {
+    common
+    shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
+    compileClasspath.extendsFrom common
+    runtimeClasspath.extendsFrom common
+}
+
+processResources {
+    filesMatching("fabric.mod.json") {
+        expand "version": project.version
+    }
+    inputs.property "version", project.version
+}
+
+loom {
+    accessWidenerPath = file("src/main/resources/roughlyenoughitems.accessWidener")
+}
+
+def depProjects = [":api", ":runtime", ":default-plugin"]
+
+dependencies {
+    modApi("net.fabricmc:fabric-loader:${project.fabricloader_version}")
+    modApi("net.fabricmc.fabric-api:fabric-api:${project.fabric_api}")
+    modApi("me.shedaniel.cloth:cloth-config-fabric:${cloth_config_version}") {
+        exclude(module: "fabric-api")
+    }
+    //modRuntime("com.terraformersmc:modmenu:${modmenu_version}") { transitive false }
+    modApi("dev.architectury:architectury-fabric:${architectury_version}")
+    modApi("me.shedaniel:error-notifier-fabric:1.0.11")
+    include("me.shedaniel:error-notifier-fabric:1.0.11")
+
+    depProjects.forEach {
+        common(project(path: it, configuration: "namedElements")) { transitive false }
+        shadowCommon(project(path: it, configuration: "transformProductionFabric")) { transitive false }
+    }
+}
+
+shadowJar {
+    configurations = [project.configurations.shadowCommon]
+    archiveClassifier = "dev-shadow"
+}
+
+remapJar {
+    input.set shadowJar.archiveFile
+    dependsOn shadowJar
+    archiveClassifier = null
+}
+
+task renameJarForPublication(type: Zip, dependsOn: remapJar) {
+    from remapJar.archiveFile.map { zipTree(it) }
+    metadataCharset "UTF-8"
+    archiveExtension = "jar"
+    destinationDirectory = base.libsDirectory
+    archiveClassifier = project.name
+}
+
+assemble.dependsOn renameJarForPublication
+
+jar {
+    archiveClassifier = "dev"
+}
+
+java {
+    withSourcesJar()
+}
+
+sourcesJar {
+    afterEvaluate {
+        depProjects.forEach {
+            def depSources = project(it).sourcesJar
+            dependsOn depSources
+            from depSources.archiveFile.map { zipTree(it) }
+        }
+    }
+}
+
+components.java {
+    withVariantsFromConfiguration(project.configurations.shadowRuntimeElements) {
+        skip()
+    }
+}
+
+publishing {
+    publications {
+        mavenFabric(MavenPublication) {
+            artifactId = rootProject.name + "-" + project.name
+            from components.java
+        }
+        ["api", "default-plugin", "runtime"].forEach { projectName ->
+            create(projectName + "Fabric", MavenPublication.class) { publication ->
+                publication.artifactId = rootProject.name + "-" + projectName + "-fabric"
+                project.afterEvaluate {
+                    def project = project(":" + projectName)
+                    def normalArtifact, sourceArtifact
+                    publication.artifact(project.fakeJar) { classifier null; normalArtifact = it }
+                    def remapSourcesJarTask = project.remapSourcesJar
+                    publication.artifact(remapSourcesJarTask) {
+                        builtBy remapSourcesJarTask
+                        classifier "sources"
+                        sourceArtifact = it
+                    }
+
+                    from components.java
+                    publication.setArtifacts([normalArtifact, sourceArtifact])
+                }
+            }
+        }
+    }
+}
+
+unifiedPublishing {
+    project {
+        displayName = "[Fabric $rootProject.supported_version] v$project.version"
+        releaseType = rootProject.unstable == "false" ? "release" : "alpha"
+        gameVersions = ["1.21.5"]
+        gameLoaders = ["fabric"]
+        changelog = rootProject.releaseChangelog
+
+        mainPublication renameJarForPublication
+
+        relations {
+            depends {
+                curseforge = "architectury-api"
+                modrinth = "architectury-api"
+            }
+            depends {
+                curseforge = "cloth-config"
+                modrinth = "cloth-config"
+            }
+            depends {
+                curseforge = "fabric-api"
+                modrinth = "fabric-api"
+            }
+        }
+
+        if (project.hasProperty("danielshe_curse_api_key") || System.getenv("danielshe_curse_api_key") != null) {
+            curseforge {
+                token = project.hasProperty("danielshe_curse_api_key") ? project.property("danielshe_curse_api_key") : System.getenv("danielshe_curse_api_key")
+                id = "310111"
+                gameVersions.addAll "Java 17"
+            }
+        }
+
+        if (project.hasProperty("modrinth_key") || System.getenv("modrinth_key") != null) {
+            modrinth {
+                token = project.hasProperty("modrinth_key") ? project.property("modrinth_key") : System.getenv("modrinth_key")
+                id = "nfn13YXA"
+                version = "$project.version+$project.name"
+//                gameVersions.addAll project.minecraft_version
+            }
+        }
+    }
+}
