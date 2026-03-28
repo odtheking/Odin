@@ -32,7 +32,7 @@ sealed class DungeonRoom {
         val rotation: RoomRotation?,
         val type: RoomType,
     ) : DungeonRoom() {
-        val position: IVec2 = segments.minCorner()
+        val position: IVec2 by lazy { segments.minCorner() }
     }
 
     /** All tiles confirmed by world scan. rotation always non-null (block markers for 1×1). */
@@ -40,7 +40,7 @@ sealed class DungeonRoom {
         val worldData: RoomData,
         val rotation: RoomRotation,
     ) : DungeonRoom() {
-        val position: IVec2 = segments.minCorner()
+        val position: IVec2 by lazy { segments.minCorner() }
         val shape: RoomShape = worldData.shape
         val type: RoomType   = worldData.type
     }

@@ -178,7 +178,13 @@ object DungeonMapScan {
 
             val room: DungeonRoom = if (existingRooms.isEmpty()) {
                 DungeonRoom.MapResolved(shape = shape, rotation = rotation, type = startType)
-                    .also { DungeonScan.rooms.add(it) }
+                    .also { mr ->
+                        DungeonScan.rooms.add(mr)
+                        component.forEach { idx ->
+                            val tile = tiles[idx]
+                            if (!mr.segments.contains(tile)) mr.segments.add(tile)
+                        }
+                    }
             } else {
                 existingRooms.first()
             }

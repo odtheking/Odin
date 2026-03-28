@@ -191,7 +191,10 @@ object DungeonScan {
         val worldResolved = DungeonRoom.WorldResolved(
             worldData = data,
             rotation  = inferRotation(chunk, chunkPosition, highestBlock, collecting.segments),
-        ).also { it.checkmark = collecting.checkmark }
+        ).also {
+            it.checkmark = collecting.checkmark
+            it.segments.addAll(collecting.segments)
+        }
         for (s in worldResolved.segments) s.room = worldResolved
         rooms.add(worldResolved)
         dataToRoom[data] = worldResolved
@@ -201,7 +204,10 @@ object DungeonScan {
         val worldResolved = DungeonRoom.WorldResolved(
             worldData = data,
             rotation  = inferRotation(chunk, chunkPosition, highestBlock, mapRoom.segments),
-        ).also { it.checkmark = mapRoom.checkmark }
+        ).also {
+            it.checkmark = mapRoom.checkmark
+            it.segments.addAll(mapRoom.segments)
+        }
         for (s in worldResolved.segments) s.room = worldResolved
         rooms.remove(mapRoom)
         rooms.add(worldResolved)
