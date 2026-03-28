@@ -1,7 +1,7 @@
 package com.odtheking.odin.features.impl.skyblock
 
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
-import com.odtheking.odin.clickgui.settings.impl.NumberSetting
+import com.odtheking.odin.clickgui.settings.impl.SelectorSetting
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.PersonalBest
@@ -17,11 +17,19 @@ object Splits : Module(
     description = "Provides visual timers for Kuudra and Dungeons."
 ) {
     private val hud by HUD("Splits Display HUD", "Shows timers for each split.") { example ->
+        val totalWidth = getStringWidth("Split 0: 0h 00m 00s" + if (showTickTime) " (0h 00m 00s)" else "") + 2
+
         if (example) {
             repeat(5) { i ->
-                text("Split $i: 0h 00m 00s" + if (showTickTime) " §7(§80s§7)" else "", 0, i * 9, Colors.WHITE)
+                val exampleTime = "0h 00m 00s" + if (showTickTime) " §8(§70s§8)" else ""
+                if (fixedWidth) {
+                    text("Split $i:", 0, i * 9, Colors.WHITE)
+                    text(exampleTime, totalWidth - getStringWidth("0h 00m 00s" + if (showTickTime) " (0s)" else ""), i * 9, Colors.WHITE)
+                } else {
+                    text("Split $i: $exampleTime", 0, i * 9, Colors.WHITE)
+                }
             }
-            return@HUD getStringWidth("Split 0: 0h 00m 00s" + if (showTickTime) " (0s)" else "") + 2 to 9 * 5
+            return@HUD totalWidth to 9 * 5
         }
 
         val (times, tickTimes, current) = getAndUpdateSplitsTimes(currentSplits)
@@ -30,31 +38,33 @@ object Splits : Module(
         val maxWidth = currentSplits.splits.dropLast(1).maxOf { getStringWidth(it.name) }
 
         currentSplits.splits.dropLast(1).forEachIndexed { index, split ->
-            val time = formatTime(if (index >= times.size) 0 else times[index], numbersAfterDecimal)
-            text(split.name, 0, 0 + index * 9, Colors.WHITE)
+            val time = formatTime(if (index >= times.size) 0 else times[index])
+            text(split.name, 0, index * 9, Colors.WHITE)
 
-            val displayText = if (showTickTime && index < tickTimes.size) "$time §7(§8${(tickTimes[index] / 20f).toFixed()}§7)" else time
+            val displayText = if (showTickTime && index < tickTimes.size) "$time §8(§7${(tickTimes[index] / 20f).toFixed()}§8)" else time
+            val timeX = if (fixedWidth) totalWidth - getStringWidth(displayText) else maxWidth + 4
 
-            text(displayText, maxWidth + 4, index * 9, Colors.WHITE)
+            text(displayText, timeX, index * 9, Colors.WHITE)
         }
 
         if (bossEntrySplit && currentSplits.splits.size > 3) {
             text("§9Boss Entry", 0, (currentSplits.splits.size - 1) * 9, Colors.WHITE)
 
-            val totalTime = formatTime(times.take(3).sum(), numbersAfterDecimal)
-            val displayText = if (showTickTime) "$totalTime §7(§8${(tickTimes.take(3).sum() / 20f).toFixed()}§7)" else totalTime
+            val totalTime = formatTime(times.take(3).sum())
+            val displayText = if (showTickTime) "$totalTime §8(§7${(tickTimes.take(3).sum() / 20f).toFixed()}§8)" else totalTime
+            val timeX = if (fixedWidth) totalWidth - getStringWidth(displayText) else maxWidth + 4
 
-            text(displayText, maxWidth + 4, (currentSplits.splits.size - 1) * 9, Colors.WHITE)
+            text(displayText, timeX, (currentSplits.splits.size - 1) * 9, Colors.WHITE)
         }
 
-        getStringWidth("Split 0: 0h 00m 00s" + if (showTickTime) " (0h 00m 00s)" else "") + 2 to 9 * (currentSplits.splits.size + (if (bossEntrySplit) 1 else 0))
+        totalWidth to 9 * (currentSplits.splits.size + (if (bossEntrySplit) 1 else 0))
     }
 
+    private val fixedWidth by BooleanSetting("Fixed Width", true, desc = "Always use a fixed HUD width, right-aligning the times.")
     private val bossEntrySplit by BooleanSetting("Boss Entry Split", true, desc = "Split for boss entry.")
     val sendSplits by BooleanSetting("Send Splits", true, desc = "Send splits to chat.")
-    val sendOnlyPB by BooleanSetting("Send Only PB", false, desc = "Send only personal bests.")
-    private val numbersAfterDecimal by NumberSetting("Numbers After Decimal", 2, 0, 5, 1, desc = "Numbers after decimal in time.")
-    val showTickTime by BooleanSetting("Show Tick Time", false, desc = "Show tick-based time alongside real time.")
+    val showTickTime by BooleanSetting("Show Tick Time", true, desc = "Show tick-based time alongside real time.")
+    val splitLocation by SelectorSetting("Split Location", "Both", listOf("Both", "Dungeons Only", "Kuudra Only"), desc = "Which areas to show splits in.")
 
     val kuudraT5PBs = PersonalBest(this, "KuudraT5")
     val kuudraT4PBs = PersonalBest(this, "KuudraT4")

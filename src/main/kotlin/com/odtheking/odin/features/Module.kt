@@ -129,14 +129,14 @@ abstract class Module(
             val packageName = clazz.packageName
             return when {
                 packageName.contains("dungeon") -> Category.DUNGEON
-                packageName.contains("floor7") -> Category.FLOOR7
+                packageName.contains("boss") -> Category.BOSS
                 packageName.contains("nether") -> Category.NETHER
                 packageName.contains("render") -> Category.RENDER
                 packageName.contains("skyblock") -> Category.SKYBLOCK
                 else -> throw IllegalStateException(
                     "Module ${clazz.name} failed to get category from the package it is in." +
                             "Either manually assign a category," +
-                            " or put it under any valid package (dungeon, floor7, nether, render, skyblock))"
+                            " or put it under any valid package (dungeon, boss, nether, render, skyblock))"
                 )
             }
         }

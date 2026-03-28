@@ -31,24 +31,32 @@ val mainCommand = Commodore("odin", "od") {
         modMessage("§aPing: §f${ServerUtils.averagePing}ms")
     }
 
-    literal("ep").runs {
-        fillItemFromSack(16, "ENDER_PEARL", "ender_pearl", true)
+    literal("ep").runs { amount: Int? ->
+        fillItemFromSack(amount?: 16, "ENDER_PEARL", "ender_pearl", true)
     }
 
-    literal("ij").runs {
-        fillItemFromSack(64, "INFLATABLE_JERRY", "inflatable_jerry", true)
+    literal("ij").runs { amount: Int? ->
+        fillItemFromSack(amount?: 64, "INFLATABLE_JERRY", "inflatable_jerry", true)
     }
 
-    literal("sl").runs {
-        fillItemFromSack(16, "SPIRIT_LEAP", "spirit_leap", true)
+    literal("sl").runs { amount: Int? ->
+        fillItemFromSack(amount?: 16, "SPIRIT_LEAP", "spirit_leap", true)
     }
 
-    literal("sb").runs {
-        fillItemFromSack(64, "SUPERBOOM_TNT", "superboom_tnt", true)
+    literal("sb").runs { amount: Int? ->
+        fillItemFromSack(amount?: 64, "SUPERBOOM_TNT", "superboom_tnt", true)
     }
 
-    literal("dd").runs {
-        fillItemFromSack(64, "DUNGEON_DECOY", "dungeon_decoy", true)
+    literal("dd").runs { amount: Int? ->
+        fillItemFromSack(amount?: 64, "DUNGEON_DECOY", "dungeon_decoy", true)
+    }
+
+    literal("tap").runs { amount: Int? ->
+        fillItemFromSack(amount?: 64, "TOXIC_ARROW_POISON", "toxic_arrow_posion", true)
+    }
+
+    literal("twap").runs { amount: Int? ->
+        fillItemFromSack(amount?: 64, "TWILIGHT_ARROW_POISON", "twilight_arrow_posion", true)
     }
 
     literal("sendcoords").runs { message: GreedyString? ->
@@ -56,38 +64,15 @@ val mainCommand = Commodore("odin", "od") {
     }
 
     literal("leaporder").executable {
-        param("player1") {
-            parser { string: String ->
-                if (!PartyUtils.members.contains(string)) throw SyntaxException("Player not in your party.")
-                string
-            }
-            suggests { PartyUtils.members.map { it.lowercase() } }
-        }
-        param("player2") {
-            parser { string: String ->
-                if (!PartyUtils.members.contains(string)) throw SyntaxException("Player not in your party.")
-                string
-            }
-            suggests { PartyUtils.members.map { it.lowercase() } }
-        }
-        param("player3") {
-            parser { string: String ->
-                if (!PartyUtils.members.contains(string)) throw SyntaxException("Player not in your party.")
-                string
-            }
-            suggests { PartyUtils.members.map { it.lowercase() } }
-        }
-        param("player4") {
-            parser { string: String ->
-                if (!PartyUtils.members.contains(string)) throw SyntaxException("Player not in your party.")
-                string
-            }
-            suggests { PartyUtils.members.map { it.lowercase() } }
-        }
-        runs { player1: String?, player2: String?, player3: String?, player4: String? ->
-            val players = listOf(player1, player2, player3, player4).mapNotNull { it?.lowercase() }
+        param("member1").suggests { PartyUtils.members.map { it.lowercase() } }
+        param("member2").suggests { PartyUtils.members.map { it.lowercase() } }
+        param("member3").suggests { PartyUtils.members.map { it.lowercase() } }
+        param("member4").suggests { PartyUtils.members.map { it.lowercase() } }
+
+        runs { member1: String?, member2: String?, member3: String?, member4: String? ->
+            val players = listOf(member1, member2, member3, member4).mapNotNull { it?.lowercase() }
             DungeonUtils.customLeapOrder = players
-            modMessage("§aCustom leap order set to: §f${player1}, ${player2}, ${player3}, $player4")
+            modMessage("§aCustom leap order set to: §f${member1}, ${member2}, ${member3}, $member4")
         }
     }
 

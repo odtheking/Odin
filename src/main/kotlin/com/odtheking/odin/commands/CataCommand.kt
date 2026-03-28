@@ -14,7 +14,7 @@ import net.minecraft.network.chat.HoverEvent
 
 val cataCommand = Commodore("cata", "catacombs", "catacomb") {
     runs { playerName: GreedyString? ->
-        val name = playerName?.string ?: mc.user.name ?: return@runs modMessage("§cUnable to get player name!")
+        val name = playerName?.string ?: mc.user.name
         modMessage("§aFetching dungeon stats for §6$name§a...")
         scope.launch {
             fetchAndDisplayCataStats(RequestUtils.getProfile(name))

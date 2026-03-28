@@ -1,5 +1,7 @@
 package com.odtheking.odin.utils.skyblock.dungeon.terminals.terminalhandler
 
+import com.odtheking.odin.features.impl.boss.TerminalSolver
+import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.equalsOneOf
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalTypes
 import net.minecraft.world.item.BlockItem
@@ -72,4 +74,16 @@ class RubixHandler : TerminalHandler(TerminalTypes.RUBIX) {
 
     private fun dist(pane: Int, most: Int): Int =
         if (pane > most) (most + rubixColorOrder.size) - pane else most - pane
+
+    override fun renderSlot(slotIndex: Int): Pair<Color, String?>? {
+        val amount = solution.count { it == slotIndex }
+        val clicksRequired = if (amount < 3) amount else amount - 5
+        if (clicksRequired == 0) return null
+        return when (clicksRequired) {
+            1 -> TerminalSolver.rubixColor1
+            2 -> TerminalSolver.rubixColor2
+            -1 -> TerminalSolver.oppositeRubixColor1
+            else -> TerminalSolver.oppositeRubixColor2
+        } to clicksRequired.toString()
+    }
 }

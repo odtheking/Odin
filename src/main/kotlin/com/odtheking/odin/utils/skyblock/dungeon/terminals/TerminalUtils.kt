@@ -9,8 +9,9 @@ import com.odtheking.odin.events.core.EventPriority
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.events.core.onSend
-import com.odtheking.odin.features.impl.floor7.TerminalSolver
-import com.odtheking.odin.features.impl.floor7.termsim.TermSimGUI
+import com.odtheking.odin.features.impl.boss.TerminalSolver
+import com.odtheking.odin.features.impl.boss.termsim.TermSimGUI
+import com.odtheking.odin.utils.devMessage
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.terminalhandler.TerminalHandler
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 import net.minecraft.network.protocol.game.*
@@ -34,6 +35,7 @@ object TerminalUtils {
             val newType = TerminalTypes.entries.find { it.regex.matches(windowName) } ?: return@onReceive
 
             if (newType != currentTerm?.type) newType.openHandler(windowName)?.let {
+                devMessage("§aNew terminal: §6${it.type.name}")
                 currentTerm = it
                 TerminalEvent.Open(it).postAndCatch()
                 lastTermOpened = it
@@ -74,6 +76,11 @@ object TerminalUtils {
             }
         }
 
+        on<GuiEvent.SlotClick> {
+            lastClickTime = System.currentTimeMillis()
+            currentTerm?.isClicked = true
+        }
+
         onSend<ServerboundContainerClickPacket> (EventPriority.LOW) {
             val termSimScreen = mc.screen as? TermSimGUI ?: return@onSend
             if (clickType != ClickType.PICKUP_ALL) termSimScreen.clickIndex(slotNum.toInt(), buttonNum.toInt())
@@ -90,6 +97,7 @@ object TerminalUtils {
 
     private fun leftTerm() {
         currentTerm?.let {
+            devMessage("§cLeft terminal: §6${it.type.name}")
             currentTerm = null
             TerminalEvent.Close(it).postAndCatch()
         }

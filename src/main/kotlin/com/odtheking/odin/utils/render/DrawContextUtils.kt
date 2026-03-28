@@ -52,3 +52,26 @@ fun GuiGraphics.drawLine(
     fill(0, -half, ceil(hypot(dx, dy)).toInt(), half, color.rgba)
     pose().popMatrix()
 }
+
+fun GuiGraphics.roundedFill(x0: Int, y0: Int, x1: Int, y1: Int, color: Int, radius: Int) {
+    DrawContextRenderer.roundedFill(this, x0, y0, x1, y1, color, radius.toFloat())
+}
+
+fun GuiGraphics.roundedFill(
+    x0: Int, y0: Int, x1: Int, y1: Int,
+    color: Int, radius: Int, outlineColor: Int, outlineWidth: Float) {
+    DrawContextRenderer.roundedFill(
+        this, x0, y0, x1, y1, color,
+        radius.toFloat(), outlineColor, outlineWidth
+    )
+}
+
+fun GuiGraphics.roundedOutline(
+    x0: Int, y0: Int, x1: Int, y1: Int, outlineColor: Int,
+    outlineWidth: Float, radius: Int = 0
+) {
+    DrawContextRenderer.roundedOutline(
+        this, x0, y0, x1, y1, outlineColor,
+        outlineWidth, radius.toFloat()
+    )
+}

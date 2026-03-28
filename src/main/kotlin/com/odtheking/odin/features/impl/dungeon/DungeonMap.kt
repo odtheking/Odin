@@ -159,7 +159,7 @@ object DungeonMap : Module(
                     matrices.popMatrix()
                 }
 
-                player.locationSkin?.let { skin ->
+                player.playerSkin?.let { skin ->
                     matrices.rotate(Math.toRadians(180.0 + player.mapRenderYaw()).toFloat())
 
                     if (playerHeadBackgroundSize != 0) {
@@ -167,7 +167,7 @@ object DungeonMap : Module(
                         fill(-size, -size, size, size, player.clazz.color.rgba)
                     }
 
-                    PlayerFaceRenderer.draw(this, skin, -5, -5, 10, false, false, -1)
+                    PlayerFaceRenderer.draw(this, skin, -5, -5, 10)
                 }
 
                 matrices.popMatrix()

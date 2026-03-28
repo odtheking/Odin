@@ -6,10 +6,10 @@ import com.odtheking.odin.OdinMod
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.events.ChatPacketEvent
 import com.odtheking.odin.features.ModuleManager
-import com.odtheking.odin.features.impl.floor7.MelodyMessage.melodyWebSocket
-import com.odtheking.odin.features.impl.floor7.WitherDragonState
-import com.odtheking.odin.features.impl.floor7.WitherDragons
-import com.odtheking.odin.features.impl.floor7.WitherDragonsEnum
+import com.odtheking.odin.features.impl.boss.MelodyMessage.melodyWebSocket
+import com.odtheking.odin.features.impl.boss.WitherDragonState
+import com.odtheking.odin.features.impl.boss.WitherDragons
+import com.odtheking.odin.features.impl.boss.WitherDragonsEnum
 import com.odtheking.odin.features.impl.nether.NoPre
 import com.odtheking.odin.features.impl.render.ClickGUIModule.webSocketUrl
 import com.odtheking.odin.features.impl.render.PlayerSize

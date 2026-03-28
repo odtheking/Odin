@@ -17,7 +17,10 @@ object WebUtils {
     private const val USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
     val gson: Gson = GsonBuilder().create()
 
-    private val httpClient = createClient()
+    private val httpClient = HttpClient.newBuilder()
+        .connectTimeout(Duration.ofSeconds(5))
+        .followRedirects(HttpClient.Redirect.NORMAL)
+        .build()
 
     suspend inline fun <reified T> fetchJson(url: String, json: Gson = gson): Result<T> = runCatching {
         json.fromJson<T>(fetchString(url).getOrElse { return Result.failure(it) }, T::class.java)
@@ -75,19 +78,11 @@ object WebUtils {
             } else {
                 if (!cont.isActive) return@whenComplete
 
-                if (response.statusCode() in 200..299) {
-                    cont.resume(Result.success(response))
-                } else {
-                    cont.resume(Result.failure(InputStreamException(response.statusCode(), request.uri().toString())))
-                }
+                if (response.statusCode() in 200..299) cont.resume(Result.success(response))
+                else cont.resume(Result.failure(InputStreamException(response.statusCode(), request.uri().toString())))
             }
         }
     }
-
-    fun createClient(): HttpClient = HttpClient.newBuilder()
-        .connectTimeout(Duration.ofSeconds(5))
-        .followRedirects(HttpClient.Redirect.NORMAL)
-        .build()
 
     suspend fun hasBonusPaulScore(): Boolean {
         val response = fetchJson<JsonObject>("https://api.hypixel.net/resources/skyblock/election").getOrNull() ?: return false

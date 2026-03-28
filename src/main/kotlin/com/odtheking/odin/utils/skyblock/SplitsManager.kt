@@ -25,6 +25,7 @@ object SplitsManager {
                 tickCounter = 0L
                 currentSplits = when (LocationUtils.currentArea) {
                     Island.Dungeon -> {
+                        if (Splits.splitLocation == 2) return@on
                         val floor = DungeonListener.floor ?: return@on
 
                         with(dungeonSplits[floor.floorNumber].toMutableList()) {
@@ -39,13 +40,16 @@ object SplitsManager {
                         }
                     }
 
-                    Island.Kuudra -> when (KuudraUtils.kuudraTier) {
-                        5 -> SplitsGroup(kuudraT5SplitsGroup.map { it.copy(time = 0L, ticks = 0L) }, Splits.kuudraT5PBs)
-                        4 -> SplitsGroup(kuudraSplitsGroup.map { it.copy(time = 0L, ticks = 0L) }, Splits.kuudraT4PBs)
-                        3 -> SplitsGroup(kuudraSplitsGroup.map { it.copy(time = 0L, ticks = 0L) }, Splits.kuudraT3PBs)
-                        2 -> SplitsGroup(kuudraSplitsGroup.map { it.copy(time = 0L, ticks = 0L) }, Splits.kuudraT2PBs)
-                        1 -> SplitsGroup(kuudraSplitsGroup.map { it.copy(time = 0L, ticks = 0L) }, Splits.kuudraT1PBs)
-                        else -> SplitsGroup(emptyList(), null)
+                    Island.Kuudra -> {
+                        if (Splits.splitLocation == 1) return@on
+                        when (KuudraUtils.kuudraTier) {
+                            5 -> SplitsGroup(kuudraT5SplitsGroup.map { it.copy(time = 0L, ticks = 0L) }, Splits.kuudraT5PBs)
+                            4 -> SplitsGroup(kuudraSplitsGroup.map { it.copy(time = 0L, ticks = 0L) }, Splits.kuudraT4PBs)
+                            3 -> SplitsGroup(kuudraSplitsGroup.map { it.copy(time = 0L, ticks = 0L) }, Splits.kuudraT3PBs)
+                            2 -> SplitsGroup(kuudraSplitsGroup.map { it.copy(time = 0L, ticks = 0L) }, Splits.kuudraT2PBs)
+                            1 -> SplitsGroup(kuudraSplitsGroup.map { it.copy(time = 0L, ticks = 0L) }, Splits.kuudraT1PBs)
+                            else -> SplitsGroup(emptyList(), null)
+                        }
                     }
 
                     else -> SplitsGroup(emptyList(), null)
@@ -65,14 +69,14 @@ object SplitsManager {
                     val capturedPB = currentSplits.personalBest
                     schedule(10) {
                         if (capturedSplits.isEmpty()) return@schedule
-                        capturedPB?.time(capturedSplits[index - 1].name, currentSplitTime, "s§7!", "§6${capturedSplits[index - 1].name} §7took §6", true, Splits.sendOnlyPB, Splits.enabled)
-                        capturedPB?.time(capturedSplits[index].name, times.last() / 1000f, "s§7!", "§6Total time §7took §6", true, Splits.sendOnlyPB, Splits.enabled)
+                        capturedPB?.time(capturedSplits[index - 1].name, currentSplitTime, "s§7!", "§6${capturedSplits[index - 1].name} §7took §6", Splits.enabled)
+                        capturedPB?.time(capturedSplits[index].name, times.last() / 1000f, "s§7!", "§6Total time §7took §6", Splits.enabled)
                         times.forEachIndexed { i, it ->
                             val name = if (i == capturedSplits.size - 1) "Total" else capturedSplits[i].name
-                            if (Splits.sendSplits && Splits.enabled) modMessage("§6$name §7took §6${formatTime((it))} §7to complete.")
+                            if (Splits.sendSplits && Splits.enabled) modMessage("§6$name §7took §6${formatTime((it))}§7.")
                         }
                     }
-                } else currentSplits.personalBest?.time(currentSplits.splits[index - 1].name, currentSplitTime, "s§7!", "§6${currentSplits.splits[index - 1].name} §7took §6", true, Splits.sendOnlyPB, Splits.enabled)
+                } else currentSplits.personalBest?.time(currentSplits.splits[index - 1].name, currentSplitTime, "s§7!", "§6${currentSplits.splits[index - 1].name} §7took §6", Splits.enabled)
             }
         }
 

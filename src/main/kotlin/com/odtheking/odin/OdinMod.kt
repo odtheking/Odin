@@ -4,6 +4,7 @@ import com.odtheking.odin.commands.*
 import com.odtheking.odin.events.EventDispatcher
 import com.odtheking.odin.events.core.EventBus
 import com.odtheking.odin.features.ModuleManager
+import com.odtheking.odin.features.impl.render.Shenanigans
 import com.odtheking.odin.utils.IrisCompatability
 import com.odtheking.odin.utils.ServerUtils
 import com.odtheking.odin.utils.handlers.TickTasks
@@ -14,6 +15,7 @@ import com.odtheking.odin.utils.skyblock.*
 import com.odtheking.odin.utils.skyblock.dungeon.*
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalUtils
 import com.odtheking.odin.utils.ui.rendering.NVGPIPRenderer
+import com.odtheking.odin.utils.ui.widget.CustomGUIImpl
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
@@ -70,7 +72,8 @@ object OdinMod : ClientModInitializer {
             DungeonListener, PartyUtils, TerminalUtils,
             ScanUtils, DungeonUtils, SplitsManager,
             IrisCompatability, RenderBatchManager,
-            ModuleManager, DungeonScan, DungeonMapScan
+            ModuleManager, CustomGUIImpl, Shenanigans,
+            DungeonScan, DungeonMapScan
         ).forEach { EventBus.subscribe(it) }
 
         SpecialGuiElementRegistry.register { context ->
@@ -81,8 +84,9 @@ object OdinMod : ClientModInitializer {
             ItemStateRenderer(context.vertexConsumers())
         }
 
+        val name = mc.user.name.takeIf { !it.matches(Regex("Player\\d{2,3}")) } ?: return
         scope.launch {
-            postData("https://api.odtheking.com/tele/", """{"username": "${mc.user.name?.takeIf { !it.matches(Regex("Player\\d{2,3}")) } ?: return@launch}", "version": "Fabric $version"}""")
+            postData("https://api.odtheking.com/tele/", """{"username": "$name", "version": "Fabric $version"}""")
         }
     }
 }

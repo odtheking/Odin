@@ -1,8 +1,10 @@
 package com.odtheking.odin.utils.skyblock.dungeon.terminals
 
 import com.github.stivais.commodore.parsers.CommandParsable
-import com.odtheking.odin.features.impl.floor7.termGUI.*
-import com.odtheking.odin.features.impl.floor7.termsim.*
+import com.odtheking.odin.features.impl.boss.termGUI.MelodyGui
+import com.odtheking.odin.features.impl.boss.termGUI.TermGui
+import com.odtheking.odin.features.impl.boss.termGUI.simpleTermGui
+import com.odtheking.odin.features.impl.boss.termsim.*
 import com.odtheking.odin.utils.modMessage
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.terminalhandler.*
 import net.minecraft.world.item.DyeColor
@@ -15,27 +17,33 @@ enum class TerminalTypes(
 ) : Type {
     PANES("Correct all the panes!", Regex("^Correct all the panes!$"), 45) {
         override fun getSimulator() = PanesSim
-        override fun getGUI() = PanesGui
+        private val gui = simpleTermGui(rows = 3, cols = 5, startRow = 1, startCol = 2)
+        override fun getGUI() = gui
     },
     RUBIX("Change all to same color!", Regex("^Change all to same color!$"), 45) {
         override fun getSimulator() = RubixSim
-        override fun getGUI() = RubixGui
+        private val gui = simpleTermGui(rows = 3, cols = 3, startRow = 1, startCol = 3)
+        override fun getGUI() = gui
     },
     NUMBERS("Click in order!", Regex("^Click in order!$"), 36) {
         override fun getSimulator() = NumbersSim
-        override fun getGUI() = NumbersGui
+        private val gui = simpleTermGui(rows = 2, cols = 7, startRow = 1, startCol = 1)
+        override fun getGUI() = gui
     },
-    STARTS_WITH("What starts with:", Regex("^What starts with: '(\\w)'\\?$"), 45) {
+    STARTS_WITH("What starts with: \"*\"?", Regex("^What starts with: '(\\w)'\\?$"), 45) {
         override fun getSimulator() = StartsWithSim()
-        override fun getGUI() = StartsWithGui
+        private val gui = simpleTermGui(rows = 3, cols = 7, startRow = 1, startCol = 1)
+        override fun getGUI() = gui
     },
-    SELECT("Select all the", Regex("^Select all the ([\\w ]+) items!$"), 54) {
+    SELECT("Select all the \"*\" items!", Regex("^Select all the ([\\w ]+) items!$"), 54) {
         override fun getSimulator() = SelectAllSim()
-        override fun getGUI() = SelectAllGui
+        private val gui = simpleTermGui(rows = 4, cols = 7, startRow = 1, startCol = 1)
+        override fun getGUI() = gui
     },
     MELODY("Click the button on time!", Regex("^Click the button on time!$"), 54) {
         override fun getSimulator() = MelodySim
-        override fun getGUI() = MelodyGui
+        private val gui = MelodyGui
+        override fun getGUI() = gui
     };
 
     fun openHandler(guiName: String): TerminalHandler? {

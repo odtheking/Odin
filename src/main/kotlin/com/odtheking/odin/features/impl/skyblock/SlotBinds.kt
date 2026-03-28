@@ -6,6 +6,7 @@ import com.odtheking.odin.clickgui.settings.impl.KeybindSetting
 import com.odtheking.odin.clickgui.settings.impl.MapSetting
 import com.odtheking.odin.clickgui.settings.impl.SelectorSetting
 import com.odtheking.odin.events.GuiEvent
+import com.odtheking.odin.events.ScreenEvent
 import com.odtheking.odin.events.core.EventPriority
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
@@ -53,7 +54,7 @@ object SlotBinds : Module(
             cancel()
         }
 
-        on<GuiEvent.KeyPress> {
+        on<ScreenEvent.KeyPress> {
             if (screen !is InventoryScreen || input.key != setNewSlotbind.value) return@on
             val clickedSlot = (screen as AbstractContainerScreenAccessor).hoveredSlot?.index?.takeIf { it in 5 until 45 } ?: return@on
 
@@ -94,7 +95,7 @@ object SlotBinds : Module(
             guiGraphics.drawLine(startX.toFloat(), startY.toFloat(), endX.toFloat(), endY.toFloat(), lineColor, 1f)
         }
 
-        on<GuiEvent.Close> {
+        on<ScreenEvent.Close> {
             previousSlot = null
         }
     }

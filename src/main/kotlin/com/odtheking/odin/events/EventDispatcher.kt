@@ -14,6 +14,9 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents
 import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents
+import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents
+import net.fabricmc.fabric.api.client.screen.v1.ScreenKeyboardEvents
+import net.fabricmc.fabric.api.client.screen.v1.ScreenMouseEvents
 import net.minecraft.network.protocol.game.*
 import net.minecraft.sounds.SoundEvents
 import net.minecraft.world.InteractionHand
@@ -31,6 +34,22 @@ object EventDispatcher {
         WorldRenderEvents.END_EXTRACTION.register { handler -> RenderEvent.Extract(handler, RenderBatchManager.renderConsumer).postAndCatch() }
         WorldRenderEvents.END_MAIN.register { context -> RenderEvent.Last(context).postAndCatch() }
 
+        ScreenEvents.AFTER_INIT.register { _, screen, _, _ -> ScreenEvent.Open(screen).postAndCatch() }
+        ScreenEvents.BEFORE_INIT.register { _, screen, _, _ ->
+            ScreenEvents.remove(screen).register {
+                ScreenEvent.Close(screen).postAndCatch()
+            }
+            ScreenMouseEvents.allowMouseClick(screen).register { screen, event ->
+                !ScreenEvent.MouseClick(screen, event).postAndCatch()
+            }
+            ScreenMouseEvents.allowMouseRelease(screen).register { screen, event ->
+                !ScreenEvent.MouseRelease(screen, event).postAndCatch()
+            }
+            ScreenKeyboardEvents.allowKeyPress(screen).register { screen, event ->
+                !ScreenEvent.KeyPress(screen, event).postAndCatch()
+            }
+        }
+
         ClientReceiveMessageEvents.ALLOW_GAME.register { text, overlay ->
             if (overlay) return@register true
             !ChatManager.shouldCancelMessage(text)
@@ -39,7 +58,7 @@ object EventDispatcher {
         onReceive<ClientboundTakeItemEntityPacket> {
             if (mc.player == null || !DungeonUtils.inClear) return@onReceive
             val itemEntity = mc.level?.getEntity(itemId) as? ItemEntity ?: return@onReceive
-            if (itemEntity.item.hoverName?.string?.containsOneOf(dungeonItemDrops, true) == true && itemEntity.distanceTo(mc.player ?: return@onReceive) <= 6)
+            if (itemEntity.item.hoverName.string.containsOneOf(dungeonItemDrops, true) && itemEntity.distanceTo(mc.player ?: return@onReceive) <= 6)
                 SecretPickupEvent.Item(itemEntity).postAndCatch()
         }
 
@@ -47,7 +66,7 @@ object EventDispatcher {
             if (mc.player == null || !DungeonUtils.inClear) return@onReceive
             entityIds.forEach { id ->
                 val entity = mc.level?.getEntity(id) as? ItemEntity ?: return@forEach
-                if (entity.item.hoverName?.string?.containsOneOf(dungeonItemDrops, true) == true && entity.distanceTo(mc.player ?: return@onReceive) <= 6)
+                if (entity.item.hoverName.string.containsOneOf(dungeonItemDrops, true) && entity.distanceTo(mc.player ?: return@onReceive) <= 6)
                     SecretPickupEvent.Item(entity).postAndCatch()
             }
         }

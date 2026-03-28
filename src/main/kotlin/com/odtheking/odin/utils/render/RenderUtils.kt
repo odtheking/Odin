@@ -17,6 +17,7 @@ import net.minecraft.client.gui.Font
 import net.minecraft.client.renderer.LightTexture
 import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.client.renderer.rendertype.RenderTypes
+import net.minecraft.client.renderer.texture.OverlayTexture
 import net.minecraft.core.BlockPos
 import net.minecraft.resources.Identifier
 import net.minecraft.world.phys.AABB
@@ -33,6 +34,7 @@ internal data class LineData(val from: Vec3, val to: Vec3, val color1: Int, val 
 internal data class BoxData(val aabb: AABB, val r: Float, val g: Float, val b: Float, val a: Float, val thickness: Float, val depth: Boolean)
 internal data class BeaconData(val pos: BlockPos, val color: Color, val isScoping: Boolean, val gameTime: Long)
 internal data class TextData(val text: String, val pos: Vec3, val scale: Float, val depth: Boolean, val cameraRotation: org.joml.Quaternionf, val font: Font, val textWidth: Float)
+internal data class TexturedQuadData(val texture: Identifier, val bl: Vec3, val tl: Vec3, val tr: Vec3, val br: Vec3, val nx: Float, val ny: Float, val nz: Float, val color: Int, val depth: Boolean)
 
 class RenderConsumer {
     internal val lines = ObjectArrayList<LineData>()
@@ -41,6 +43,7 @@ class RenderConsumer {
 
     internal val beaconBeams = ObjectArrayList<BeaconData>()
     internal val texts = ObjectArrayList<TextData>()
+    internal val texturedQuads = ObjectArrayList<TexturedQuadData>()
 
     fun clear() {
         lines.clear()
@@ -48,6 +51,7 @@ class RenderConsumer {
         wireBoxes.clear()
         beaconBeams.clear()
         texts.clear()
+        texturedQuads.clear()
     }
 }
 
@@ -65,11 +69,14 @@ object RenderBatchManager {
 
             matrix.renderQueuedLinesAndWireBoxes(renderConsumer.lines, renderConsumer.wireBoxes, bufferSource)
             matrix.renderQueuedFilledBoxes(renderConsumer.filledBoxes, bufferSource)
+            matrix.renderQueuedTexturedQuads(renderConsumer.texturedQuads, bufferSource)
             matrix.popPose()
 
             matrix.renderQueuedBeaconBeams(renderConsumer.beaconBeams, camera)
             matrix.renderQueuedTexts(renderConsumer.texts, bufferSource, camera)
             renderConsumer.clear()
+
+            ShaderRenderer.clear()
         }
     }
 }
@@ -94,6 +101,56 @@ private fun BoxData.lineRenderType() = resolveLineRenderType(
 )
 
 private fun BoxData.filledRenderType() = if (depth) RenderTypes.debugFilledBox() else CustomRenderType.QUADS_ESP
+
+fun RenderEvent.Extract.drawTexturedQuad(
+    texture: Identifier,
+    pos: Vec3,
+    width: Float,
+    height: Float,
+    yaw: Float = 0f,
+    color: Color = Color(255, 255, 255),
+    depth: Boolean = true
+) {
+    val yawRad = Math.toRadians(yaw.toDouble())
+    val rx = cos(yawRad).toFloat()
+    val rz = sin(yawRad).toFloat()
+    val hw = width  * 0.5
+    val hh = height * 0.5
+
+    // right = (rx, 0, rz), up = (0, 1, 0), normal = cross(right, up) = (-rz, 0, rx)
+    val bl = Vec3(pos.x - rx * hw, pos.y - hh, pos.z - rz * hw)
+    val tl = Vec3(pos.x - rx * hw, pos.y + hh, pos.z - rz * hw)
+    val tr = Vec3(pos.x + rx * hw, pos.y + hh, pos.z + rz * hw)
+    val br = Vec3(pos.x + rx * hw, pos.y - hh, pos.z + rz * hw)
+
+    consumer.texturedQuads.add(TexturedQuadData(texture, bl, tl, tr, br, -rz, 0f, rx, color.rgba, depth))
+}
+
+private fun PoseStack.renderQueuedTexturedQuads(
+    quads: List<TexturedQuadData>,
+    bufferSource: MultiBufferSource.BufferSource
+) {
+    if (quads.isEmpty()) return
+    val last = this.last()
+
+    for (quad in quads) {
+        val buffer = bufferSource.getBuffer(RenderTypes.entityCutoutNoCullZOffset(quad.texture))
+
+        fun vertex(p: Vec3, u: Float, v: Float) {
+            buffer.addVertex(last, p.x.toFloat(), p.y.toFloat(), p.z.toFloat())
+                .setColor(quad.color)
+                .setUv(u, v)
+                .setOverlay(OverlayTexture.NO_OVERLAY)
+                .setUv2(LightTexture.FULL_BRIGHT, LightTexture.FULL_BRIGHT)
+                .setNormal(last, quad.nx, quad.ny, quad.nz)
+        }
+
+        vertex(quad.bl, 0f, 1f)
+        vertex(quad.tl, 0f, 0f)
+        vertex(quad.tr, 1f, 0f)
+        vertex(quad.br, 1f, 1f)
+    }
+}
 
 private fun PoseStack.renderQueuedLinesAndWireBoxes(
     lines: List<LineData>,

@@ -5,7 +5,8 @@ import com.google.common.primitives.SignedBytes
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.events.GuiEvent
 import com.odtheking.odin.events.PacketEvent
-import com.odtheking.odin.features.impl.floor7.termsim.TermSimGUI
+import com.odtheking.odin.features.impl.boss.termsim.TermSimGUI
+import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.clickSlot
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalTypes
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
@@ -37,6 +38,13 @@ abstract class TerminalHandler(val type: TerminalTypes) {
     fun openScreen() {
         isClicked = false
         windowCount++
+    }
+
+    protected abstract fun renderSlot(slotIndex: Int): Pair<Color, String?>?
+
+    fun getSlotRendering(slotIndex: Int): Pair<Color, String?>? {
+        return if (slotIndex !in solution) null
+        else renderSlot(slotIndex)
     }
 
     open fun canSolve(items: List<ItemStack>, currentIndex: Int): Boolean = currentIndex == type.windowSize - 1

@@ -1351,7 +1351,8 @@
     "name": "Tic Tac Toe",
     "type": "PUZZLE",
     "cores": [
-      -738945309
+      -738945309,
+      29612250
     ],
     "secrets": 1,
     "shape": "1x1"

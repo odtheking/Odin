@@ -184,7 +184,7 @@ object PuzzleSolvers : Module(
     fun onPuzzleComplete(puzzleName: String) {
         puzzleTimersMap[puzzleName]?.let {
             if (it.sentMessage) return
-            puzzlePBs.time(puzzleName, (System.currentTimeMillis() - it.timeEntered) / 1000f, "s§7!", "§a${puzzleName} §7solved in §6", sendOnlyPB = false)
+            puzzlePBs.time(puzzleName, (System.currentTimeMillis() - it.timeEntered) / 1000f, "s§7!", "§a${puzzleName} §7solved in §6")
             it.sentMessage = true
         }
     }

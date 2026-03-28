@@ -40,9 +40,9 @@ object Etherwarp : Module(
     description = "Provides configurable visual feedback for Etherwarp."
 ) {
     private val render by BooleanSetting("Show Guess", true, desc = "Shows where Etherwarp will take you.")
-    private val color by ColorSetting("Color", Colors.MINECRAFT_GOLD.withAlpha(.5f), true, desc = "Color of the box.").withDependency { render }
+    private val color by ColorSetting("Color", Colors.MINECRAFT_GOLD.withAlpha(.85f), true, desc = "Color of the box.").withDependency { render }
     private val renderFail by BooleanSetting("Show when failed", true, desc = "Shows the box even when the guess failed.").withDependency { render }
-    private val failColor by ColorSetting("Fail Color", Colors.MINECRAFT_RED.withAlpha(.5f), true, desc = "Color of the box if guess failed.").withDependency { renderFail }
+    private val failColor by ColorSetting("Fail Color", Colors.MINECRAFT_RED.withAlpha(.85f), true, desc = "Color of the box if guess failed.").withDependency { renderFail }
     private val renderStyle by SelectorSetting("Render Style", "Outline", listOf("Filled", "Outline", "Filled Outline"), desc = "Style of the box.").withDependency { render }
     private val useServerPosition by BooleanSetting("Use Server Position", false, desc = "Uses the server position for etherwarp instead of the client position.").withDependency { render }
     private val fullBlock by BooleanSetting("Full Block", false, desc = "Renders the the 1x1x1 block instead of it's actual size.").withDependency { render }
@@ -126,11 +126,11 @@ object Etherwarp : Module(
         val player = mc.player ?: return EtherPos.NONE
         if (position == null) return EtherPos.NONE
         val eyeHeight = if (player.isCrouching) {
-            if (LocationUtils.isCurrentArea(Island.Galatea, Island.ThePark)) 1.27 else 1.54 // Use modern sneak height in Galatea
+            if (LocationUtils.isCurrentArea(Island.Galatea, Island.ThePark, Island.Hub, Island.SpiderDen)) 1.27 else 1.54 // Use modern sneak height in Galatea
         } else 1.62
 
         val startPos = position.addVec(y = eyeHeight)
-        val endPos = player.lookAngle.multiply(distance, distance, distance).add(startPos) ?: return EtherPos.NONE
+        val endPos = player.lookAngle.multiply(distance, distance, distance).add(startPos)
         return traverseVoxels(startPos, endPos, etherWarp).takeUnless { it == EtherPos.NONE && returnEnd } ?: EtherPos(true, BlockPos.containing(endPos), null)
     }
 
@@ -171,7 +171,7 @@ object Etherwarp : Module(
                 SectionPos.blockToSectionCoord(blockPos.x),
                 SectionPos.blockToSectionCoord(blockPos.z)
             ) ?: return EtherPos.NONE
-            val currentBlock = chunk.getBlockState(blockPos) ?: return EtherPos.NONE
+            val currentBlock = chunk.getBlockState(blockPos)
 
             val currentBlockId = Block.getId(currentBlock.block.defaultBlockState())
 

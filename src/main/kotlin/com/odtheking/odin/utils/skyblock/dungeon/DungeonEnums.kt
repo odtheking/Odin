@@ -5,22 +5,22 @@ import com.odtheking.odin.features.impl.dungeon.map.DungMap.roomSize
 import com.odtheking.odin.features.impl.dungeon.map.Vec2i
 import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.Colors
-import net.minecraft.resources.Identifier
 import net.minecraft.world.entity.player.Player
+import net.minecraft.world.entity.player.PlayerSkin
 
 /**
  * Data class representing a player in a dungeon, including their name, class, skin location, and associated player entity.
  *
  * @property name The name of the player.
  * @property clazz The player's class, defined by the [DungeonClass] enum.
- * @property locationSkin The resource location of the player's skin.
+ * @property playerSkin The resource location of the player's skin.
  * @property isDead The player's death status. Defaults to `false`.
  */
 data class DungeonPlayer(
     val name: String,
     val clazz: DungeonClass,
     val clazzLvl: Int,
-    val locationSkin: Identifier?,
+    val playerSkin: PlayerSkin?,
     var entity: Player? = null,
     var isDead: Boolean = false,
     var deaths: Int = 0,
@@ -84,10 +84,8 @@ enum class Puzzle(
     BOMB_DEFUSE("Bomb Defuse");
 }
 
-sealed class PuzzleStatus {
-    data object Completed : PuzzleStatus()
-    data object Failed : PuzzleStatus()
-    data object Incomplete : PuzzleStatus()
+enum class PuzzleStatus {
+    Completed, Failed, Incomplete
 }
 
 /**
@@ -139,24 +137,12 @@ enum class Blessing(
  *
  * @property floorNumber The numerical representation of the floor, where E represents the entrance floor.
  * @property isMM Indicates whether the floor is a master mode floor (M1 to M7).
- * @property secretPercentage The percentage of secrets required.
+ * @property requiredPercentage The percentage of secrets required.
  */
-enum class Floor(val secretPercentage: Float = 1f) {
+enum class Floor(val requiredPercentage: Float = 1f) {
     E(0.3f),
-    F1(0.3f),
-    F2(0.4f),
-    F3(0.5f),
-    F4(0.6f),
-    F5(0.7f),
-    F6(0.85f),
-    F7,
-    M1,
-    M2,
-    M3,
-    M4,
-    M5,
-    M6,
-    M7;
+    F1(0.3f), F2(0.4f), F3(0.5f), F4(0.6f), F5(0.7f), F6(0.85f), F7,
+    M1, M2, M3, M4, M5, M6, M7;
 
     /**
      * Gets the numerical representation of the floor.
