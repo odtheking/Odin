@@ -47,9 +47,9 @@ object DungeonMapModule : Module(
             matrices.pushMatrix()
             matrices.translate(posX, posZ)
 
-            player.locationSkin?.let { skin ->
+            player.playerSkin?.let { skin ->
                 matrices.rotate(Math.toRadians(180.0 + player.mapRenderYaw()).toFloat())
-                PlayerFaceRenderer.draw(this, skin, -5, -5, 10, false, false, -1)
+                PlayerFaceRenderer.draw(this, skin, -5, -5, 10)
             }
 
             matrices.popMatrix()
