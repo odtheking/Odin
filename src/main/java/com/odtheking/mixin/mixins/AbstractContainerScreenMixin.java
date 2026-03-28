@@ -25,12 +25,12 @@ public class AbstractContainerScreenMixin {
     }
 
     @Inject(method = "slotClicked", at = @At("HEAD"), cancellable = true)
-    public void onMouseClickedSlot(Slot slot, int slotId, int button, ClickType actionType, CallbackInfo ci) {
-        if (new GuiEvent.SlotClick((Screen) (Object) this, slotId, button).postAndCatch()) ci.cancel();
+    private void onMouseClickedSlot(Slot slot, int i, int j, ClickType clickType, CallbackInfo ci) {
+        if (new GuiEvent.SlotClick((Screen) (Object) this, i, j).postAndCatch()) ci.cancel();
     }
 
     @Inject(method = "renderTooltip", at = @At("HEAD"), cancellable = true)
-    public void onDrawMouseoverTooltip(GuiGraphics context, int mouseX, int mouseY, CallbackInfo ci) {
+    private void onDrawMouseoverTooltip(GuiGraphics context, int mouseX, int mouseY, CallbackInfo ci) {
         if (new GuiEvent.DrawTooltip((Screen) (Object) this, context, mouseX, mouseY).postAndCatch()) ci.cancel();
     }
 }
