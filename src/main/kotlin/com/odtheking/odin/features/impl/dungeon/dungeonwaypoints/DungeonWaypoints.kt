@@ -122,7 +122,7 @@ object DungeonWaypoints : Module(
             room?.setWaypoints()
         }
 
-        on<WorldEvent.Load> {
+        on<LevelEvent.Load> {
             resetClickedWaypoints()
             lastEtherPos = null
             lastEtherTime = 0L

@@ -13,8 +13,9 @@ import com.odtheking.odin.utils.Color.Companion.alpha
 import com.odtheking.odin.utils.Color.Companion.blue
 import com.odtheking.odin.utils.Color.Companion.green
 import com.odtheking.odin.utils.Color.Companion.red
-import net.minecraft.client.renderer.CachedOrthoProjectionMatrixBuffer
 import net.minecraft.client.renderer.DynamicUniformStorage
+import net.minecraft.client.renderer.Projection
+import net.minecraft.client.renderer.ProjectionMatrixBuffer
 import org.joml.Matrix3x2f
 import org.joml.Matrix4f
 import org.joml.Vector3f
@@ -37,7 +38,8 @@ internal object ShaderRenderer {
     private val colorModulator = Vector4f(1.0f, 1.0f, 1.0f, 1.0f)
     private val lightDirection = Vector3f()
 
-    val projectionMatrix = CachedOrthoProjectionMatrixBuffer("Odin Rounded", -1000f, 1000f, true)
+    val projectionMatrix = ProjectionMatrixBuffer("Odin Rounded")
+    val projection = Projection()
 
     fun renderRoundedRect(
         pose: Matrix3x2f, x0: Int, y0: Int, x1: Int, y1: Int,
@@ -60,12 +62,15 @@ internal object ShaderRenderer {
         val mesh = builder.buildOrThrow()
 
         val window = mc.window
+        projection.setupOrtho(
+            -1000f, 1000f,
+            window.width.toFloat() / window.guiScale.toFloat(),
+            window.height.toFloat() / window.guiScale.toFloat(),
+            true
+        )
         RenderSystem.backupProjectionMatrix()
         RenderSystem.setProjectionMatrix(
-            projectionMatrix.getBuffer(
-                window.width.toFloat() / window.guiScale.toFloat(),
-                window.height.toFloat() / window.guiScale.toFloat()
-            ),
+            projectionMatrix.getBuffer(projection),
             ProjectionType.ORTHOGRAPHIC
         )
 

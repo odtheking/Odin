@@ -1,7 +1,7 @@
 package com.odtheking.odin.utils.skyblock
 
 import com.odtheking.odin.OdinMod.mc
-import com.odtheking.odin.events.WorldEvent
+import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.utils.equalsOneOf
@@ -43,7 +43,7 @@ object LocationUtils {
             lobbyRegex.find(text)?.groupValues?.get(1)?.let { lobbyId = it }
         }
 
-        on<WorldEvent.Load> {
+        on<LevelEvent.Load> {
             currentArea = if (mc.isSingleplayer) Island.SinglePlayer else Island.Unknown
             isInSkyblock = false
             lobbyId = null

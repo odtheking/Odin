@@ -5,7 +5,7 @@ import com.odtheking.odin.OdinMod.scope
 import com.odtheking.odin.events.ChatPacketEvent
 import com.odtheking.odin.events.RoomEnterEvent
 import com.odtheking.odin.events.TickEvent
-import com.odtheking.odin.events.WorldEvent
+import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.core.EventPriority
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
@@ -54,7 +54,7 @@ object DungeonListener {
             if (DungeonUtils.inDungeons) inBoss = getBoss()
         }
 
-        on<WorldEvent.Load> {
+        on<LevelEvent.Load> {
             Blessing.entries.forEach { it.reset() }
             dungeonTeammatesNoSelf = emptyList()
             dungeonStats = DungeonStats()

@@ -16,7 +16,7 @@ import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils.leapTeammates
 import com.odtheking.odin.utils.ui.HoverHandler
 import com.odtheking.odin.utils.ui.widget.CustomGUIImpl
-import net.minecraft.client.gui.components.PlayerFaceRenderer
+import net.minecraft.client.gui.components.PlayerFaceExtractor
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 import org.lwjgl.glfw.GLFW
 
@@ -138,7 +138,7 @@ object LeapMenu : Module(
                     )
 
                     val face = (BOX_HEIGHT * 0.76).toInt()
-                    (player.playerSkin ?: mc.player?.skin)?.let { PlayerFaceRenderer.draw(guiGraphics, it, localX + 9, localY + 9, face) }
+                    (player.playerSkin ?: mc.player?.skin)?.let { PlayerFaceExtractor.extractRenderState(guiGraphics, it, localX + 9, localY + 9, face) }
 
                     guiGraphics.text(
                         if (!onlyClass) player.name else player.clazz.name,

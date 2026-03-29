@@ -7,7 +7,6 @@
     "defaultRequire": 1
   },
   "client": [
-    "accessors.AbstractContainerScreenAccessor",
     "accessors.BeaconBeamAccessor",
     "mixins.AbstractContainerScreenMixin",
     "mixins.AvatarRendererMixin",
@@ -27,7 +26,6 @@
     "mixins.ScreenMixin"
   ],
   "mixins": [
-    "accessors.ServerboundInteractPacketAccessor",
     "mixins.ConnectionMixin",
     "mixins.EntityMixin",
     "mixins.LevelChunkMixin",

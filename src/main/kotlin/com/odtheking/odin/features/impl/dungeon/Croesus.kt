@@ -18,7 +18,7 @@ import com.odtheking.odin.utils.render.text
 import com.odtheking.odin.utils.render.textDim
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import kotlinx.coroutines.launch
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 import net.minecraft.network.chat.Component
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket
@@ -270,7 +270,7 @@ object Croesus : Module(
             }
         }
 
-    private fun GuiGraphics.drawOverlay(isEditing: Boolean): Pair<Int, Int> {
+    private fun GuiGraphicsExtractor.drawOverlay(isEditing: Boolean): Pair<Int, Int> {
         val dataToDisplay = if (isEditing) sampleChestData else chestData
         var yOffset = 0
         var maxWidth = 0
