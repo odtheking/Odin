@@ -14,6 +14,7 @@ import com.odtheking.odin.features.ModuleManager.configs
 import com.odtheking.odin.features.impl.boss.*
 import com.odtheking.odin.features.impl.dungeon.*
 import com.odtheking.odin.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints
+import com.odtheking.odin.features.impl.dungeon.map.DungeonMapModule
 import com.odtheking.odin.features.impl.dungeon.puzzlesolvers.PuzzleSolvers
 import com.odtheking.odin.features.impl.nether.*
 import com.odtheking.odin.features.impl.render.*
@@ -61,6 +62,7 @@ object ModuleManager {
             PuzzleSolvers, BlessingDisplay, LeapMenu, SecretClicked, MapInfo, Mimic, DungeonQueue,
             KeyHighlight, BloodCamp, PositionalMessages, TerracottaTimer, BreakerDisplay, LividSolver,
             InvincibilityTimer, SpiritBear, DungeonWaypoints, ExtraStats, BetterPartyFinder, Croesus, MageBeam, DungeonMap,
+            DungeonMapModule,
 
             // floor 7
             TerminalSimulator, TerminalSolver, TerminalTimes, TerminalSounds, TickTimers, ArrowAlign,
@@ -75,7 +77,7 @@ object ModuleManager {
             CommandKeybinds, SlotBinds, Splits,
 
             // nether
-            SupplyHelper, BuildHelper, RemovePerks, NoPre, PearlWaypoints, FreshTools, KuudraInfo, Misc, Vesuvius
+            SupplyHelper, BuildHelper, RemovePerks, NoPre, PearlWaypoints, FreshTools, KuudraInfo, Misc
         )
 
         // hashmap, but would need to keep track when setting values change
