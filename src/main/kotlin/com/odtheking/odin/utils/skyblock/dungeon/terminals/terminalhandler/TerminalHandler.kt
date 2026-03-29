@@ -13,7 +13,7 @@ import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
 import net.minecraft.client.gui.screens.inventory.ContainerScreen
 import net.minecraft.network.HashedStack
 import net.minecraft.network.protocol.game.ServerboundContainerClickPacket
-import net.minecraft.world.inventory.ClickType
+import net.minecraft.world.inventory.ContainerInput
 import net.minecraft.world.item.ItemStack
 import org.lwjgl.glfw.GLFW
 import java.util.concurrent.CopyOnWriteArrayList
@@ -65,13 +65,13 @@ abstract class TerminalHandler(val type: TerminalTypes) {
                 ServerboundContainerClickPacket(
                     -1, -1,
                     Shorts.checkedCast(slotIndex.toLong()), SignedBytes.checkedCast(button.toLong()),
-                    if (button == GLFW.GLFW_MOUSE_BUTTON_3) ClickType.CLONE else ClickType.PICKUP,
+                    if (button == GLFW.GLFW_MOUSE_BUTTON_3) ContainerInput.CLONE else ContainerInput.PICKUP,
                     Int2ObjectOpenHashMap(), HashedStack.EMPTY
                 )
             ).postAndCatch()
             return
         }
-        mc.player?.clickSlot(screenHandler.containerId, slotIndex, button, if (button == GLFW.GLFW_MOUSE_BUTTON_3) ClickType.CLONE else ClickType.PICKUP)
+        mc.player?.clickSlot(screenHandler.containerId, slotIndex, button, if (button == GLFW.GLFW_MOUSE_BUTTON_3) ContainerInput.CLONE else ContainerInput.PICKUP)
     }
 
     open fun canClick(slotIndex: Int, button: Int): Boolean = slotIndex in solution

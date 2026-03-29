@@ -138,7 +138,7 @@ object WitherDragons : Module(
             }
         }
 
-        on<WorldEvent.Load> {
+        on<LevelEvent.Load> {
             DragonCheck.dragonHealthMap.clear()
             WitherDragonsEnum.reset()
         }

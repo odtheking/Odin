@@ -3,7 +3,7 @@ package com.odtheking.odin.utils.skyblock.dungeon
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.events.RoomEnterEvent
 import com.odtheking.odin.events.TickEvent
-import com.odtheking.odin.events.WorldEvent
+import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.utils.JsonResourceLoader
 import com.odtheking.odin.utils.Vec2
@@ -68,7 +68,7 @@ object ScanUtils {
             devMessage("${room?.data?.name} - ${room?.rotation} || clay: ${room?.clayPos}")
         }
 
-        on<WorldEvent.Load> {
+        on<LevelEvent.Load> {
             passedRooms.clear()
             currentRoom = null
             lastRoomPos = Vec2(0, 0)
@@ -141,14 +141,14 @@ object ScanUtils {
     private fun getCoreAtHeight(vec2: Vec2, roomHeight: Int, chunk: LevelChunk): Int {
         val sb = StringBuilder(150)
         val clampedHeight = roomHeight.coerceIn(11..140)
-        sb.append(CharArray(140 - clampedHeight) { '0' })
+        sb.append(CharArray(140 - clampedHeight) { '0' }.contentToString())
         var bedrock = 0
 
         for (y in clampedHeight downTo 12) {
             mutableBlockPos.set(vec2.x, y, vec2.z)
             val block = chunk.getBlockState(mutableBlockPos).block
             if (block == Blocks.AIR && bedrock >= 2 && y < 69) {
-                sb.append(CharArray(y - 11) { '0' })
+                sb.append(CharArray(y - 11) { '0' }.contentToString())
                 break
             }
 

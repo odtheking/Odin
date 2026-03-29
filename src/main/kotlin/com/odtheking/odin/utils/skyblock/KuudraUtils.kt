@@ -2,7 +2,7 @@ package com.odtheking.odin.utils.skyblock
 
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.events.ChatPacketEvent
-import com.odtheking.odin.events.WorldEvent
+import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.utils.handlers.TickTask
@@ -117,7 +117,7 @@ object KuudraUtils {
             tierRegex.find(text)?.groupValues?.get(1)?.let { kuudraTier = it.toInt() }
         }
 
-        on<WorldEvent.Load> {
+        on<LevelEvent.Load> {
             Supply.entries.forEach { it.isActive = true }
             playersBuildingAmount = 0
             buildDonePercentage = 0

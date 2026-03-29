@@ -26,15 +26,15 @@ inline val ItemStack.customData: CompoundTag
 
 inline val ItemStack.itemId: String
     get() =
-        customData.getString(ID).orElse("")
+        customData.getString(ID).orElse("")!!
 
 inline val CompoundTag.itemId: String
     get() =
-        getString(ID).orElse("")
+        getString(ID).orElse("")!!
 
 inline val ItemStack.itemUUID: String
     get() =
-        customData.getString(UUID_STRING).orElse("")
+        customData.getString(UUID_STRING).orElse("")!!
 
 inline val ItemStack.lore: List<Component>
     get() =
@@ -106,7 +106,7 @@ fun ItemStack.isEtherwarpItem(): CompoundTag? =
     customData.takeIf { it.getInt("ethermerge").orElse(0) == 1 || it.itemId == "ETHERWARP_CONDUIT" }
 
 fun ItemStack.hasGlint(): Boolean =
-    componentsPatch.get(DataComponents.ENCHANTMENT_GLINT_OVERRIDE)?.isPresent == true
+    components.get(DataComponents.ENCHANTMENT_GLINT_OVERRIDE) != null
 
 fun EquipmentSlot.isItem(itemId: String): Boolean =
     mc.player?.getItemBySlot(this)?.itemId == itemId

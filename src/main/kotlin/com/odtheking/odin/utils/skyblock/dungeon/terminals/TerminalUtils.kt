@@ -15,7 +15,7 @@ import com.odtheking.odin.utils.devMessage
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.terminalhandler.TerminalHandler
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 import net.minecraft.network.protocol.game.*
-import net.minecraft.world.inventory.ClickType
+import net.minecraft.world.inventory.ContainerInput
 import net.minecraft.world.item.ItemStack
 
 object TerminalUtils {
@@ -83,7 +83,7 @@ object TerminalUtils {
 
         onSend<ServerboundContainerClickPacket> (EventPriority.LOW) {
             val termSimScreen = mc.screen as? TermSimGUI ?: return@onSend
-            if (clickType != ClickType.PICKUP_ALL) termSimScreen.clickIndex(slotNum.toInt(), buttonNum.toInt())
+            if (containerInput != ContainerInput.PICKUP_ALL) termSimScreen.clickIndex(slotNum.toInt(), buttonNum.toInt())
             it.cancel()
         }
 

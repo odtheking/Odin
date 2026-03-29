@@ -11,7 +11,7 @@ import com.odtheking.odin.utils.render.roundedFill
 import com.odtheking.odin.utils.render.text
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalUtils
 import com.odtheking.odin.utils.ui.widget.CustomGUIImpl
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 import net.minecraft.client.input.KeyEvent
 import org.lwjgl.glfw.GLFW
@@ -20,7 +20,7 @@ import kotlin.math.abs
 abstract class TermGui {
     protected data class SlotVisual(
         val resolve: () -> Pair<Color, String?>?,
-        val onRenderContent: (GuiGraphics.(Int, Int, Int, Int) -> Unit)? = null,
+        val onRenderContent: (GuiGraphicsExtractor.(Int, Int, Int, Int) -> Unit)? = null,
     )
 
     private data class SlotBox(
@@ -156,7 +156,7 @@ abstract class TermGui {
         }
     }
 
-    private fun renderLayout(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int) {
+    private fun renderLayout(guiGraphics: GuiGraphicsExtractor, mouseX: Int, mouseY: Int) {
         val termLayout = layout ?: return
         hoveredSlotIndex = null
 
@@ -178,7 +178,7 @@ abstract class TermGui {
         }
     }
 
-    protected inline fun GuiGraphics.renderWithTerminalScale(x: Int, y: Int, width: Int, height: Int, block: GuiGraphics.(Int, Int, Int, Int) -> Unit) {
+    protected inline fun GuiGraphicsExtractor.renderWithTerminalScale(x: Int, y: Int, width: Int, height: Int, block: GuiGraphicsExtractor.(Int, Int, Int, Int) -> Unit) {
         val scale = TerminalSolver.customTermSize
         if (abs(scale) == 1f) return block(x, y, width, height)
 
@@ -188,7 +188,7 @@ abstract class TermGui {
         pose().popMatrix()
     }
 
-    protected fun GuiGraphics.renderSlotText(text: String, x: Int, y: Int, width: Int, height: Int, color: Color) {
+    protected fun GuiGraphicsExtractor.renderSlotText(text: String, x: Int, y: Int, width: Int, height: Int, color: Color) {
         val textX = x + (width  - mc.font.width(text)) / 2
         val textY = y + (height - mc.font.lineHeight) / 2 + 1
 

@@ -5,7 +5,7 @@ import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.StringSetting
 import com.odtheking.odin.events.ChatPacketEvent
 import com.odtheking.odin.events.TerminalEvent
-import com.odtheking.odin.events.WorldEvent
+import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.features.Module
@@ -22,7 +22,7 @@ import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.skyblock.dungeon.M7Phases
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalTypes
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalUtils
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket
 import net.minecraft.world.item.Items
 import java.util.concurrent.ConcurrentHashMap
@@ -82,7 +82,7 @@ object MelodyMessage : Module(
             if (broadcast || melodyProgress) onSlotUpdate(this)
         }
 
-        on<WorldEvent.Load> {
+        on<LevelEvent.Load> {
             melodyWebSocket.shutdown()
             melodies.clear()
         }
@@ -153,7 +153,7 @@ object MelodyMessage : Module(
 
     private val width by lazy { getStringWidth("§d■") }
 
-    private fun GuiGraphics.drawMelody(data: MelodyData, index: Int) {
+    private fun GuiGraphicsExtractor.drawMelody(data: MelodyData, index: Int) {
         val y = width * 2 * index
 
         repeat(5) {

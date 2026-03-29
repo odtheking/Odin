@@ -72,7 +72,7 @@ object LividSolver : Module(
             if (invulnTime > 0) invulnTime--
         }
 
-        on<WorldEvent.Load> {
+        on<LevelEvent.Load> {
             currentLivid = Livid.HOCKEY
             currentLivid.entity = null
             invulnTime = 0

@@ -2,10 +2,10 @@ package com.odtheking.odin.utils.render
 
 import com.mojang.blaze3d.pipeline.RenderPipeline
 import com.mojang.blaze3d.vertex.VertexConsumer
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.navigation.ScreenRectangle
 import net.minecraft.client.gui.render.TextureSetup
-import net.minecraft.client.gui.render.state.GuiElementRenderState
+import net.minecraft.client.renderer.state.gui.GuiElementRenderState
 import org.joml.Matrix3x2f
 
 class SimpleGuiRenderState(
@@ -19,7 +19,7 @@ class SimpleGuiRenderState(
     constructor(
         pipeline: RenderPipeline,
         textureSetup: TextureSetup,
-        context: GuiGraphics,
+        context: GuiGraphicsExtractor,
         bounds: ScreenRectangle?,
         vertexConsumerFunc: (VertexConsumer) -> Unit
     ) : this(

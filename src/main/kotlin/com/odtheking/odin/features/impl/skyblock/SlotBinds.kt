@@ -1,6 +1,5 @@
 package com.odtheking.odin.features.impl.skyblock
 
-import com.odtheking.mixin.accessors.AbstractContainerScreenAccessor
 import com.odtheking.odin.clickgui.settings.impl.ColorSetting
 import com.odtheking.odin.clickgui.settings.impl.KeybindSetting
 import com.odtheking.odin.clickgui.settings.impl.MapSetting
@@ -16,7 +15,7 @@ import com.odtheking.odin.utils.clickSlot
 import com.odtheking.odin.utils.modMessage
 import com.odtheking.odin.utils.render.drawLine
 import net.minecraft.client.gui.screens.inventory.InventoryScreen
-import net.minecraft.world.inventory.ClickType
+import net.minecraft.world.inventory.ContainerInput
 import org.lwjgl.glfw.GLFW
 
 object SlotBinds : Module(
@@ -41,7 +40,7 @@ object SlotBinds : Module(
     init {
         on<GuiEvent.SlotClick> (EventPriority.HIGHEST) {
             if (!mc.hasShiftDown() || screen !is InventoryScreen) return@on
-            val clickedSlot = (screen as AbstractContainerScreenAccessor).hoveredSlot?.index?.takeIf { it in 5 until 45 } ?: return@on
+            val clickedSlot = screen.hoveredSlot?.index?.takeIf { it in 5 until 45 } ?: return@on
             val boundSlot = slotBinds[clickedSlot] ?: return@on
 
             val (from, to) = when {
@@ -50,13 +49,13 @@ object SlotBinds : Module(
                 else -> return@on
             }
 
-            mc.player?.clickSlot(screen.menu.containerId, from, to % 36, ClickType.SWAP)
+            mc.player?.clickSlot(screen.menu.containerId, from, to % 36, ContainerInput.SWAP)
             cancel()
         }
 
         on<ScreenEvent.KeyPress> {
             if (screen !is InventoryScreen || input.key != setNewSlotbind.value) return@on
-            val clickedSlot = (screen as AbstractContainerScreenAccessor).hoveredSlot?.index?.takeIf { it in 5 until 45 } ?: return@on
+            val clickedSlot = screen.hoveredSlot?.index?.takeIf { it in 5 until 45 } ?: return@on
 
             cancel()
             previousSlot?.let { slot ->
@@ -79,15 +78,15 @@ object SlotBinds : Module(
 
         on<GuiEvent.DrawTooltip> {
             val screen = screen as? InventoryScreen ?: return@on
-            val hoveredSlot = (screen as AbstractContainerScreenAccessor).hoveredSlot?.index?.takeIf { it in 5 until 45 } ?: return@on
+            val hoveredSlot = screen.hoveredSlot?.index?.takeIf { it in 5 until 45 } ?: return@on
             val boundSlot = slotBinds[hoveredSlot]
 
             val (startX, startY) = screen.menu.getSlot(previousSlot ?: hoveredSlot).let { slot ->
-                slot.x + screen.x + 8 to slot.y + screen.y + 8
+                slot.x + screen.leftPos + 8 to slot.y + screen.topPos + 8
             }
 
             val (endX, endY) = previousSlot?.let { mouseX to mouseY } ?: boundSlot?.let { slot ->
-                screen.menu.getSlot(slot).let { it.x + screen.x + 8 to it.y + screen.y + 8 }
+                screen.menu.getSlot(slot).let { it.x + screen.leftPos + 8 to it.y + screen.topPos + 8 }
             } ?: return@on
 
             if (previousSlot == null && !(mc.hasShiftDown())) return@on
