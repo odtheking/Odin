@@ -67,15 +67,16 @@ abstract class TermGui {
             click = fun ScreenEvent.MouseClick.(): Any {
                 val screen = currentTermScreen() ?: return false
                 ensureLayout(screen)
-                hoveredSlotIndex = layout?.slots?.firstOrNull { it.contains(click.x().toInt(), click.y().toInt()) }?.slotIndex
-                hoveredSlotIndex?.let { customTerminalClick(it, click.button()) }
+                val slotIndex = layout?.slots?.firstOrNull { it.contains(click.x().toInt(), click.y().toInt()) }?.slotIndex
+                if (slotIndex == null) return false
+                hoveredSlotIndex = slotIndex
+                customTerminalClick(slotIndex, click.button())
                 return true
             },
             key = fun ScreenEvent.KeyPress.(): Any {
                 if (!isTerminalOverrideKey(input)) return false
-                hoveredSlotIndex?.let {
-                    customTerminalClick(it, if (!input.hasControlDown()) GLFW.GLFW_MOUSE_BUTTON_1 else GLFW.GLFW_MOUSE_BUTTON_2)
-                }
+                val slotIndex = hoveredSlotIndex ?: return false
+                customTerminalClick(slotIndex, if (!input.hasControlDown()) GLFW.GLFW_MOUSE_BUTTON_1 else GLFW.GLFW_MOUSE_BUTTON_2)
                 return true
             })
         )
