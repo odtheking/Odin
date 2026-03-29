@@ -17,7 +17,7 @@ object Ragnarock : Module(
     private val castAlert by BooleanSetting("Cast alert", true, "Alerts when you cast Ragnarock.")
     private val cancelAlert by BooleanSetting("Cancel alert", true, "Alerts when Ragnarock is cancelled.")
     private val strengthGainedMessage by BooleanSetting("Strength gained", true, "Shows Ragnarock strength gained.")
-    private val announceStrengthGained by BooleanSetting("Announce gained strength", false, "Announce gained strength in party chat").withDependency { strengthGainedMessage }
+    private val announceStrengthGained by BooleanSetting("Announce strength", false, "Announce gained strength in party chat").withDependency { strengthGainedMessage }
 
     private val cancelRegex = Regex("Ragnarock was cancelled due to (?:being hit|taking damage)!")
 
