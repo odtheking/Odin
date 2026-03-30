@@ -65,8 +65,6 @@ abstract class TermGui {
                 return true
             },
             click = fun ScreenEvent.MouseClick.(): Any {
-                val screen = currentTermScreen() ?: return false
-                ensureLayout(screen)
                 hoveredSlotIndex = layout?.slots?.firstOrNull { it.contains(click.x().toInt(), click.y().toInt()) }?.slotIndex
                 hoveredSlotIndex?.let { customTerminalClick(it, click.button()) }
                 return true
