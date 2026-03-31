@@ -14,6 +14,10 @@ import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils.getRealCoords
 import com.odtheking.odin.utils.skyblock.dungeon.tiles.RoomType
 import net.minecraft.core.BlockPos
+import net.minecraft.network.chat.ClickEvent
+import net.minecraft.network.chat.Component
+import net.minecraft.network.chat.HoverEvent
+import net.minecraft.network.chat.Style
 import net.minecraft.network.protocol.game.ClientboundBlockEventPacket
 import net.minecraft.network.protocol.game.ClientboundPlayerPositionPacket
 import net.minecraft.network.protocol.game.ServerboundUseItemOnPacket
@@ -85,7 +89,7 @@ object PuzzleSolvers : Module(
     private val boulderColor by ColorSetting("Boulder Color", Colors.MINECRAFT_GREEN.withAlpha(.5f), true, desc = "The color of the box.").withDependency { boulderDropDown && boulderSolver }
 
     private val puzzleTimers by BooleanSetting("Puzzle Timers", true, desc = "Shows the time it took to solve each puzzle.")
-    private val autoDraft by BooleanSetting("Auto Draft", false, desc = "Automatically gets architect's draft when failing a puzzle room.")
+    private val draftPrompt by BooleanSetting("Draft prompt", true, desc = "Automatically gets architect's draft when failing a puzzle room.")
     private val failRegex = Regex("^PUZZLE FAIL! (\\w{1,16}) .+$|^\\[STATUE] Oruo the Omniscient: (\\w{1,16}) chose the wrong answer! I shall never forget this moment of misrememberance\\.$")
     private val puzzleTimersMap = hashMapOf<String, PuzzleTimer>()
     private data class PuzzleTimer(val timeEntered: Long = System.currentTimeMillis(), var sentMessage: Boolean = false)
@@ -138,9 +142,10 @@ object PuzzleSolvers : Module(
 
         on<ChatPacketEvent> {
             if (!DungeonUtils.inClear) return@on
-            if (autoDraft && isInPuzzle) failRegex.find(value)?.destructured?.let {
-                modMessage("§7Fetching Draft from sack...")
-                sendCommand("gfs architect's first draft 1")
+            if (draftPrompt && isInPuzzle) failRegex.find(value)?.destructured?.let {
+                modMessage("§7Click §ehere §7to fetch architect's draft", chatStyle = Style.EMPTY
+                    .withClickEvent(ClickEvent.RunCommand("gfs architect's first draft 1"))
+                    .withHoverEvent(HoverEvent.ShowText(Component.literal("Click to fetch the architect's draft"))))
             }
             if (weirdosSolver) weirdosRegex.find(value)?.destructured?.let { (npc, message) -> WeirdosSolver.onNPCMessage(npc, message) }
             if (quizSolver) QuizSolver.onMessage(value)

@@ -68,7 +68,7 @@ val dungeonWaypointsCommand = Commodore("dwp", "dungeonwaypoints") {
         }
     }
 
-    literal("import").runs {
+    literal("import").runs { _: String? ->
         scope.launch {
             val clipboard = mc.keyboardHandler.clipboard.trim().trim { it == '\n' }
             val waypoints = DungeonWaypointConfig.decodeWaypoints(clipboard, clipboard.startsWith("{"))
