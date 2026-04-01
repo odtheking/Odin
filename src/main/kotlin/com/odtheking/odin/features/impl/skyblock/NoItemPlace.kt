@@ -16,7 +16,9 @@ object NoItemPlace : Module(
 ) {
     init {
         on<BlockInteractEvent> {
-            if (!LocationUtils.isInSkyblock || !enabled) return@on
+            // Check if module is enabled and player is in skyblock
+            if (!enabled) return@on
+            if (!LocationUtils.isInSkyblock) return@on
 
             val heldItem = mc.player?.mainHandItem?.item as? BlockItem ?: return@on
             if (heldItem.block is PlayerHeadBlock) return@on
@@ -44,6 +46,7 @@ object NoItemPlace : Module(
         }
     }
 }
+
 
 
 
