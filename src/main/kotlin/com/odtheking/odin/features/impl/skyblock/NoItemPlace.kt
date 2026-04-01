@@ -2,10 +2,8 @@ package com.odtheking.odin.features.impl.skyblock
 
 import com.odtheking.odin.events.BlockInteractEvent
 import com.odtheking.odin.events.core.on
-import com.odtheking.odin.events.core.onSend
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.skyblock.LocationUtils
-import net.minecraft.network.protocol.game.ServerboundUseItemOnPacket
 import net.minecraft.world.item.BlockItem
 import net.minecraft.world.level.block.PlayerHeadBlock
 
