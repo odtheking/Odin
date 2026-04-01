@@ -39,10 +39,7 @@ class RoundRectPIPRenderer(bufferSource: MultiBufferSource.BufferSource)
         val mesh = builder.buildOrThrow()
 
         val dynamicTransforms = RenderSystem.getDynamicUniforms().writeTransform(
-            RenderSystem.getModelViewMatrix(),
-            Vector4f(1f, 1f, 1f, 1f),
-            Vector3f(),
-            Matrix4f()
+            RenderSystem.getModelViewMatrix(), Vector4f(1f, 1f, 1f, 1f), Vector3f(), Matrix4f()
         )
 
         val uniformBuffer = uniformStorage.writeUniform { buffer ->
@@ -59,11 +56,9 @@ class RoundRectPIPRenderer(bufferSource: MultiBufferSource.BufferSource)
         val renderTarget = Minecraft.getInstance().mainRenderTarget
 
         mesh.use {
-            Objects.requireNonNullElse(RenderSystem.outputColorTextureOverride, renderTarget.colorTextureView)?.let { gpuTextureView ->
+            (RenderSystem.outputColorTextureOverride ?: renderTarget.colorTextureView)?.let { gpuTextureView ->
                 RenderSystem.getDevice().createCommandEncoder().createRenderPass(
-                    { "Odin Rounded Rectangle" },
-                    gpuTextureView,
-                    OptionalInt.empty(),
+                    { "Odin Rounded Rectangle" }, gpuTextureView, OptionalInt.empty(),
                     if (renderTarget.useDepth) Objects.requireNonNullElse(RenderSystem.outputDepthTextureOverride, renderTarget.depthTextureView) else null,
                     OptionalDouble.empty()
                 )

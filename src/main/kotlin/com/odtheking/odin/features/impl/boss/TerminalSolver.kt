@@ -24,8 +24,8 @@ object TerminalSolver : Module(
     private val renderType by SelectorSetting("Render type", "Odin", arrayListOf("Odin", "Normal", "Custom GUI"), desc = "How the terminal solver should render.")
     private val normalTermSize by NumberSetting("Normal Term Size", 3, 1, 5, 1, desc = "The GUI scale increase for normal terminal GUI.").withDependency { renderType == 0 || renderType == 1 }
     val customTermSize by NumberSetting("Term Size", 2f, 1f, 3f, 0.1f, desc = "The size of the custom terminal GUI.").withDependency { renderType == 2 }
-    val roundness by NumberSetting("Roundness", 6, 0f, 15f, 1f, desc = "The roundness of the custom terminal gui.").withDependency { renderType == 2 }
-    val gap by NumberSetting("Gap", 2, 0f, 8, 1f, desc = "The gap between the slots in the custom terminal gui.").withDependency { renderType == 2 }
+    val roundness by NumberSetting("Roundness", 5, 0f, 15f, 1f, desc = "The roundness of the custom terminal gui.").withDependency { renderType == 2 }
+    val gap by NumberSetting("Slot gap", 2, 0, 8, 1, desc = "The gap between the slots in the custom terminal gui.").withDependency { renderType == 2 }
 
     private val solverSettings by DropdownSetting("Solver Functionality")
     private val cancelToolTip by BooleanSetting("Stop Tooltips", true, desc = "Stops rendering tooltips in terminals.").withDependency { (renderType == 0 || renderType == 1) && solverSettings }
