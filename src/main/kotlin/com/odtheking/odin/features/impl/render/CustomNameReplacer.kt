@@ -4,6 +4,9 @@ import com.google.gson.JsonParser
 import com.mojang.serialization.JsonOps
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.ComponentSerialization
+import net.minecraft.network.chat.MutableComponent
+import net.minecraft.network.chat.Style
+import net.minecraft.network.chat.contents.PlainTextContents
 import net.minecraft.util.FormattedCharSequence
 
 object CustomNameReplacer {
@@ -51,46 +54,50 @@ object CustomNameReplacer {
     @JvmStatic
     fun replaceComponentIfNeeded(component: Component): Component? {
         val regex = nameRegex ?: return null
-        val plain = component.string
-        if (!regex.containsMatchIn(plain)) return null
-        return buildComponent(plain).copy().setStyle(component.style)
+        if (!regex.containsMatchIn(component.string)) return null
+        return transformComponent(component)
     }
 
     @JvmStatic
     fun replaceSequenceIfNeeded(text: FormattedCharSequence): FormattedCharSequence {
         if (!hasStartChar(text)) return text
-        val plain = toPlainString(text)
         val regex = nameRegex ?: return text
-        if (!regex.containsMatchIn(plain)) return text
-        return buildComponent(plain).visualOrderText
+        val segments = mutableListOf<Pair<Style, String>>()
+        var curStyle: Style? = null
+        val curText = StringBuilder()
+        text.accept { _, style, cp ->
+            if (curStyle != null && style != curStyle) { segments.add(curStyle!! to curText.toString()); curText.clear() }
+            curStyle = style; curText.appendCodePoint(cp); true
+        }
+        if (curText.isNotEmpty()) segments.add((curStyle ?: Style.EMPTY) to curText.toString())
+        if (segments.none { regex.containsMatchIn(it.second) }) return text
+        val root = Component.empty()
+        segments.forEach { (style, seg) -> appendReplaced(root, seg, style, regex) }
+        return root.visualOrderText
     }
 
-    private fun buildComponent(text: String): Component {
-        val regex = nameRegex ?: return Component.literal(text)
-        val out = Component.empty()
+    private fun transformComponent(component: Component): MutableComponent {
+        val out = if (component.contents is PlainTextContents && nameRegex?.containsMatchIn(component.contents.let { (it as PlainTextContents).text() }) == true)
+            Component.empty().also { appendReplaced(it, (component.contents as PlainTextContents).text(), component.style, nameRegex!!) }
+        else component.plainCopy()
+        component.siblings.forEach { out.append(transformComponent(it)) }
+        return out
+    }
+
+    private fun appendReplaced(out: MutableComponent, text: String, style: Style, regex: Regex) {
         var start = 0
         for (match in regex.findAll(text)) {
-            if (match.range.first > start) out.append(Component.literal(text.substring(start, match.range.first)))
-            val rep = cache[match.groupValues[1]]
-            out.append(rep?.component?.copy() ?: Component.literal(match.value))
+            if (match.range.first > start) out.append(Component.literal(text.substring(start, match.range.first)).withStyle(style))
+            out.append(cache[match.groupValues[1]]?.component?.copy() ?: Component.literal(match.value).withStyle(style))
             start = match.range.last + 1
         }
-        if (start < text.length) out.append(Component.literal(text.substring(start)))
-        return out
+        if (start < text.length) out.append(Component.literal(text.substring(start)).withStyle(style))
     }
 
     private fun hasStartChar(text: FormattedCharSequence): Boolean {
         if (startChars.isEmpty()) return false
         var found = false
-        text.accept { _, _, cp ->
-            if (cp <= Char.MAX_VALUE.code && cp.toChar() in startChars) { found = true; false } else true
-        }
+        text.accept { _, _, cp -> if (cp <= Char.MAX_VALUE.code && cp.toChar() in startChars) { found = true; false } else true }
         return found
-    }
-
-    private fun toPlainString(text: FormattedCharSequence): String {
-        val sb = StringBuilder()
-        text.accept { _, _, cp -> sb.appendCodePoint(cp); true }
-        return sb.toString()
     }
 }
