@@ -39,7 +39,7 @@ object NoItemPlace : Module(
             else if (itemId.contains("flower") || itemId.contains("tulip") || itemId.contains("dandelion") || itemId.contains("allium")) {
                 return@on
             }
-            // For other block items: block
+            // For other block items: block test
             else {
                 cancel()
             }
