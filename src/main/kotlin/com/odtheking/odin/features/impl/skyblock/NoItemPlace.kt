@@ -7,8 +7,8 @@ import com.odtheking.odin.utils.skyblock.LocationUtils
 import net.minecraft.network.protocol.game.ServerboundUseItemOnPacket
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.item.BlockItem
-import net.minecraft.world.phys.BlockHitResult
 import net.minecraft.world.level.block.PlayerHeadBlock
+import net.minecraft.world.phys.BlockHitResult
 
 object NoItemPlace : Module(
     name = "No Item Place",
@@ -23,9 +23,8 @@ object NoItemPlace : Module(
             if (heldItem.block is PlayerHeadBlock) return@on
 
             val hitResult = mc.hitResult as? BlockHitResult ?: return@on
-            mc.player?.connection?.send(
-                ServerboundUseItemOnPacket(InteractionHand.MAIN_HAND, hitResult, 0)
-            )
+            mc.player?.connection?.send(ServerboundUseItemOnPacket(InteractionHand.MAIN_HAND, hitResult, 0))
+            mc.gameMode?.useItem(mc.player ?: return@on, InteractionHand.MAIN_HAND)
             cancel()
         }
     }
