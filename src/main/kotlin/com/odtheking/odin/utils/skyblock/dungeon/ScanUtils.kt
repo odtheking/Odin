@@ -21,6 +21,9 @@ import net.minecraft.core.Direction
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.chunk.LevelChunk
 
+
+// get rid of all the old scanning
+
 object ScanUtils {
     private const val ROOM_SIZE_SHIFT = 5  // Since ROOM_SIZE = 32 (2^5) so we can perform bitwise operations
     private const val START = -185

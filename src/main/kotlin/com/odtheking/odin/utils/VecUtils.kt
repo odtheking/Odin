@@ -9,6 +9,7 @@ import kotlin.math.cos
 import kotlin.math.floor
 import kotlin.math.sin
 
+// remove cuz better class is ivec2
 data class Vec2(val x: Int, val z: Int)
 
 operator fun Vec3.component1(): Double = x

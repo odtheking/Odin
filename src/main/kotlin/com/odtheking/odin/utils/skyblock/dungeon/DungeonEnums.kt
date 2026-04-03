@@ -37,6 +37,27 @@ data class DungeonPlayer(
         }
 
     fun mapRenderYaw(): Float = entity?.yRot ?: yaw
+
+    fun mapScanRenderPosition(): Pair<Float, Float> {
+        // Use live entity world position when available (self + nearby players)
+        entity?.let {
+            // Dungeon tile 0 starts at world X = chunk(-12) * 16 = -192.
+            // Each tile is 32 world units wide; HUD renders each tile as 12 px.
+            val hudX = (it.x.toFloat() + 192f) * 12f / 32f
+            val hudZ = (it.z.toFloat() + 192f) * 12f / 32f
+            return hudX to hudZ
+        }
+
+        // Fallback: map decoration coord stored in mapPos (for players without loaded entity)
+        val rs = DungeonMapScan.roomSize.takeIf { it != -1 } ?: return 0f to 0f
+        val rg = rs + 4
+        val ox = DungeonMapScan.startX
+        val oz = DungeonMapScan.startY
+        // decoration coords are in [-128, 127], mapping to map pixels [0, 127] via (v + 128) / 2
+        val pixelX = (mapPos.x + 128) / 2f
+        val pixelZ = (mapPos.z + 128) / 2f
+        return (pixelX - ox) * 12f / rg to (pixelZ - oz) * 12f / rg
+    }
 }
 
 /**
