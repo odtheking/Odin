@@ -4,6 +4,7 @@ import com.odtheking.odin.events.BlockInteractEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.skyblock.LocationUtils
+import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.network.protocol.game.ServerboundUseItemOnPacket
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.item.BlockItem
@@ -16,14 +17,12 @@ object NoItemPlace : Module(
 ) {
     init {
         on<BlockInteractEvent> {
-            // Check if module is enabled and player is in skyblock
-            if (!enabled) return@on
             if (!LocationUtils.isInSkyblock) return@on
 
             val heldItem = mc.player?.mainHandItem?.item as? BlockItem ?: return@on
             if (heldItem.block is PlayerHeadBlock) return@on
 
-            val itemId = heldItem.name.string.lowercase()
+            val itemId = BuiltInRegistries.ITEM.getKey(heldItem).path
             
             // For TNT: block animation but send packet to server for ability
             if (itemId.contains("tnt")) {
