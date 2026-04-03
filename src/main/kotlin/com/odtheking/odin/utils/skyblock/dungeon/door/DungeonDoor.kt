@@ -1,6 +1,7 @@
 package com.odtheking.odin.utils.skyblock.dungeon.door
 
 import com.odtheking.odin.utils.IVec2
+import com.odtheking.odin.utils.skyblock.dungeon.room.RoomType
 
 class DungeonDoor(
     val position: IVec2,
@@ -12,7 +13,18 @@ enum class DoorType {
     Normal,
     Wither,
     Blood,
-    Fairy,
+    Fairy;
+
+    companion object {
+        fun fromColor(color: Byte): DoorType {
+            return when (color) {
+                119.toByte() -> Wither
+                RoomType.BLOOD.mapColor -> Blood
+                RoomType.FAIRY.mapColor -> Fairy
+                else -> Normal
+            }
+        }
+    }
 }
 
 enum class DoorRotation(val offset: IVec2) {

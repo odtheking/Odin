@@ -2,6 +2,9 @@ package com.odtheking.odin.utils
 
 import net.minecraft.world.level.ChunkPos
 
+/**
+ * Immutable IVec2 (x and z) packed into a long.
+ */
 @JvmInline
 value class IVec2 private constructor(val data: Long) {
 

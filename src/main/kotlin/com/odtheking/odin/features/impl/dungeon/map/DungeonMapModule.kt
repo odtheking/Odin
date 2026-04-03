@@ -6,7 +6,7 @@ import com.odtheking.odin.utils.Color.Companion.withAlpha
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.IVec2
 import com.odtheking.odin.utils.render.text
-import com.odtheking.odin.utils.skyblock.dungeon.DungeonScan
+import com.odtheking.odin.utils.skyblock.dungeon.DungeonWorldScan
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.skyblock.dungeon.door.DoorType
 import com.odtheking.odin.utils.skyblock.dungeon.door.DungeonDoor
@@ -27,13 +27,13 @@ object DungeonMapModule : Module(
     private val hud by HUD("Map test", "test") {
         val matrices = pose()
 
-        for (room in DungeonScan.rooms) {
+        for (room in DungeonWorldScan.rooms) {
             matrices.pushMatrix()
             renderRoom(room)
             matrices.popMatrix()
         }
 
-        for ((_, door) in DungeonScan.doors) {
+        for ((_, door) in DungeonWorldScan.doors) {
             matrices.pushMatrix()
             renderDoor(door)
             matrices.popMatrix()

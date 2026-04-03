@@ -2,25 +2,38 @@ package com.odtheking.odin.utils.skyblock.dungeon.room
 
 import com.odtheking.odin.utils.IVec2
 
-class DungeonTile(val position: IVec2, var room: DungeonRoom? = null)
+data class DungeonTile(
+    val position: IVec2,
+    var room: DungeonRoom? = null
+)
 
-enum class MapCheckmark(val mapColor: Byte, val symbol: String) {
-    NONE(-1, "§0N"),
-    WHITE(34, "W"),
-    GREEN(30, "§aG"),
-    RED(18, "§cR"),
-    QUESTION_MARK(119, "§d?"),
-    UNDISCOVERED(-1, "§8X");
+enum class MapCheckmark(val symbol: String) {
+    NONE("§0N"),
+    WHITE("W"),
+    GREEN("§aG"),
+    RED("§cR"),
+    QUESTION_MARK("§d?"),
+    UNDISCOVERED("§8X");
 
     companion object {
-        private val BY_COLOR = entries.associateBy { it.mapColor }
-        fun fromMapColor(color: Byte) = BY_COLOR[color]
+        fun fromMapColor(color: Byte): MapCheckmark? {
+            return when (color.toInt()) {
+                34 -> WHITE
+                30 -> GREEN
+                18 -> RED
+                119 -> QUESTION_MARK
+                else -> null
+            }
+        }
     }
 }
+
+// everything is super schizo ngl, but I can't be asked to fix it
 
 private fun ArrayList<DungeonTile>.minCorner() = IVec2(minOf { it.position.x }, minOf { it.position.z })
 
 sealed class DungeonRoom {
+
     val segments: ArrayList<DungeonTile> = ArrayList(4)
     var checkmark: MapCheckmark = MapCheckmark.UNDISCOVERED
 

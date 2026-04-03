@@ -73,7 +73,7 @@ object OdinMod : ClientModInitializer {
             ScanUtils, DungeonUtils, SplitsManager,
             IrisCompatability, RenderBatchManager,
             ModuleManager, CustomGUIImpl, Shenanigans,
-            DungeonScan, DungeonMapScan
+            DungeonWorldScan, DungeonMapScan
         ).forEach { EventBus.subscribe(it) }
 
         SpecialGuiElementRegistry.register { context ->

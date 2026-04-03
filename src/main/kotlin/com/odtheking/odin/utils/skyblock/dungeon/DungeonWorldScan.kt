@@ -21,58 +21,9 @@ import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.chunk.LevelChunk
 import java.util.concurrent.CopyOnWriteArrayList
 
-/*
-pseudocode
-Dungeon Scan
+object DungeonWorldScan {
 
-WORLD SCAN:
-
-    When a chunk is loaded and in dungeon:
-        If the chunk corresponds to a room core (x % 2 == 0, z % 2 == 0)
-        Scan the room core.
-        Match room core with room data.
-        Get or put room (with data) into tile.
-        (Either check neighbouring tiles if same room, or hashmap for room data to room)
-        (If room exists in that tile but has no data. Add reference in hashmap for core to room)
-        If room has enough segments, attempt to find a shape for the room
-
-        Or if the chunk corresponds to a door.
-        Scan if there is a door (add its type if wither/blood). (Make sure it isn't a part of a room)
-        Get its position
-        Then put it in an array of other doors (or hashmap with position as key),
-
-MAP SCAN:
-
-    When receiving map data:
-        Check if it corresponds to:
-
-        - Room open:
-        Skip if it's an unknown/gray room
-        Get the shape of the loaded room,
-        If its chunks haven't been loaded for world scan
-        Put the reference to the room into all tiles it covers
-
-        - Room status change: (cleared, fully cleared)
-        Get the tile it changed on (Shouldn't be possible for room to be uninitialized)
-        Update the status based on what changed
-
-        - Door load:
-        If door doesn't exist, add it based on its position
-        then add type,
-        if door already exists only replace type IF previous type was wither door and new type is fairy
-
-MAP RENDER:
-
-    Render all the rooms.
-    Render all the doors:
-        If one of the tiles is discovered and other is not discovered,
-        Render the undiscovered tile, and use that color as the color,
-        If the tile can be guessed based on what's discovered (e.g. can't move further, meaning puzzle/trap/yellow/rare room)
-        Use a darkened gradient of the colors for those rooms. (Might need shader for good-looking gradient)
-*/
-
-object DungeonScan {
-
+    // move outside prob
     val tiles: Array<DungeonTile> = Array(36) { index ->
         DungeonTile(position = IVec2(x = index % 6, z = index / 6))
     }
@@ -96,17 +47,26 @@ object DungeonScan {
             chunksToScan.clear()
         }
 
+        // maybe not use chunk load, but instead tick like every other map,
+        // because if player decides to turn off and on world scanning
+        // it will "break" because the chunk would need to be resent by server etc
         ClientChunkEvents.CHUNK_LOAD.register { _, chunk ->
             if (DungeonMapModule.disableWorldScan) return@register
 
             // if dungeon isn't loaded, yet we add it to chunksToScan
             // otherwise just directly load it, no need to scan every tick
 
-            if (!DungeonUtils.inDungeons) chunksToScan.add(IVec2(chunk.pos.x, chunk.pos.z))
-            else scanChunk(chunk)
+
+            if (!DungeonUtils.inDungeons) {
+                chunksToScan.add(IVec2(chunk.pos.x, chunk.pos.z))
+            } else {
+                scanChunk(chunk)
+            }
         }
         ClientChunkEvents.CHUNK_UNLOAD.register { _, chunk ->
-            if (!DungeonUtils.inDungeons) chunksToScan.remove(IVec2(chunk.pos.x, chunk.pos.z))
+            if (!DungeonUtils.inDungeons) {
+                chunksToScan.remove(IVec2(chunk.pos.x, chunk.pos.z))
+            }
         }
         // in case chunks are somehow unloaded before area is loaded
         // remove from chunksToScan, if dungeon has started no need to do this.
@@ -200,7 +160,13 @@ object DungeonScan {
         dataToRoom[data] = worldResolved
     }
 
-    private fun promoteMapResolved(mapRoom: DungeonRoom.MapResolved, data: RoomData, chunk: LevelChunk, chunkPosition: IVec2, highestBlock: Int) {
+    private fun promoteMapResolved(
+        mapRoom: DungeonRoom.MapResolved,
+        data: RoomData,
+        chunk: LevelChunk,
+        chunkPosition: IVec2,
+        highestBlock: Int
+    ) {
         val worldResolved = DungeonRoom.WorldResolved(
             worldData = data,
             rotation  = inferRotation(chunk, chunkPosition, highestBlock, mapRoom.segments),
@@ -208,7 +174,10 @@ object DungeonScan {
             it.checkmark = mapRoom.checkmark
             it.segments.addAll(mapRoom.segments)
         }
-        for (s in worldResolved.segments) s.room = worldResolved
+
+        for (s in worldResolved.segments) {
+            s.room = worldResolved
+        }
         rooms.remove(mapRoom)
         rooms.add(worldResolved)
         dataToRoom[data] = worldResolved
@@ -270,7 +239,7 @@ object DungeonScan {
         return IVec2(stringBuilder.toString().hashCode(), highestBlock)
     }
 
-    fun LevelChunk.getBlockState(x: Int, y: Int, z: Int): BlockState {
+    private fun LevelChunk.getBlockState(x: Int, y: Int, z: Int): BlockState {
         val sectionIndex = getSectionIndex(y)
         if (sectionIndex >= 0 && sectionIndex < sections.size) {
             val section = sections[sectionIndex]
