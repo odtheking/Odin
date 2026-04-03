@@ -21,6 +21,7 @@
     "mixins.GuiMixin",
     "mixins.KeyBindingMixin",
     "mixins.LocalPlayerMixin",
+    "mixins.BlockItemMixin",
     "mixins.MinecraftMixin",
     "mixins.MouseHandlerMixin",
     "mixins.ScreenEffectRendererMixin",
