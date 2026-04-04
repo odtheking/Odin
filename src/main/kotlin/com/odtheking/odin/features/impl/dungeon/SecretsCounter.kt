@@ -24,11 +24,7 @@ object SecretsCounter : Module(
     private val secretsBaseline = mutableMapOf<String, Long>()
     private var snapshotDone = false
 
-    private val dungeonStartRegex = Regex(
-        "^\\[NPC] Mort: Here, I found this map when I first entered the dungeon\\.$" +
-        "|^\\[NPC] Mort: You should find it useful if you get lost\\.$" +
-        "|^\\[NPC] Mort: Good luck\\.$"
-    )
+    private val dungeonStartRegex = Regex("^\\[NPC] Mort: Good luck\\.$")
     private val dungeonEndRegex = Regex("^\\s*(?:Master Mode )?(?:The )?Catacombs - (?:Entrance|Floor .{1,3})$")
 
     init {
