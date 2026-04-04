@@ -85,7 +85,7 @@ object SecretsCounter : Module(
             .sortedWith(compareBy<DungeonPlayer> { it.clazz.ordinal }.thenByDescending { secretsDelta[it.name] ?: -1L })
             .forEach { player ->
             val count = if (player.name in secretsDelta) secretsDelta[player.name]?.toString() ?: "N/A" else "N/A"
-                modMessage("§${player.clazz.colorCode}${player.name} §7-> §f$count")
+                modMessage("§${player.clazz.colorCode}${player.name} §7-> §f${count} Secrets")
             }
     }
 }
