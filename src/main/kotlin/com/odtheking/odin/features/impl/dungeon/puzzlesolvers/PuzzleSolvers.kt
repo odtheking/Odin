@@ -42,6 +42,8 @@ object PuzzleSolvers : Module(
     private val mazeColorOne by ColorSetting("Color for one", Colors.MINECRAFT_GREEN.withAlpha(.5f), true, desc = "Color for when there is a single solution.").withDependency { tpMaze && mazeDropDown }
     private val mazeColorMultiple by ColorSetting("Color for multiple", Colors.MINECRAFT_GOLD.withAlpha(.5f), true, desc = "Color for when there are multiple solutions.").withDependency { tpMaze && mazeDropDown }
     private val mazeColorVisited by ColorSetting("Color for visited", Colors.MINECRAFT_RED.withAlpha(.5f), true, desc = "Color for the already used TP pads.").withDependency { tpMaze && mazeDropDown }
+    private val mazeShowTracer by BooleanSetting("Show Tracer", true, desc = "Shows a tracer to the best next TP pad.").withDependency { tpMaze && mazeDropDown }
+    private val mazeTracerColor by ColorSetting("Tracer Color", Colors.MINECRAFT_AQUA, true, desc = "Color for the TP maze tracer.").withDependency { mazeShowTracer && tpMaze && mazeDropDown }
     private val mazeReset by ActionSetting("Reset TP Maze", desc = "Resets the solver.") { TPMazeSolver.reset() }.withDependency { tpMaze && mazeDropDown }
 
     private val iceFillDropDown by DropdownSetting("Ice Fill")
@@ -180,7 +182,7 @@ object PuzzleSolvers : Module(
             if (beamsSolver)   BeamsSolver.onRenderWorld(this, beamStyle, beamsTracer, beamsAlpha)
             if (waterSolver)   WaterSolver.onRenderWorld(this, showTracer, tracerColorFirst, tracerColorSecond)
             if (quizSolver)    QuizSolver.onRenderWorld(this, quizColor, quizDepth)
-            if (tpMaze)        TPMazeSolver.onRenderWorld(this, mazeColorOne, mazeColorMultiple, mazeColorVisited)
+            if (tpMaze)        TPMazeSolver.onRenderWorld(this, mazeColorOne, mazeColorMultiple, mazeColorVisited, mazeShowTracer, mazeTracerColor)
         }
     }
 
