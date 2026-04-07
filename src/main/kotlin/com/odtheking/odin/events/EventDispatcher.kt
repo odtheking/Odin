@@ -21,6 +21,8 @@ import net.minecraft.network.protocol.game.*
 import net.minecraft.sounds.SoundEvents
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.entity.item.ItemEntity
+import net.minecraft.world.level.block.SkullBlock
+import net.minecraft.world.phys.Vec3
 
 object EventDispatcher {
 
@@ -79,10 +81,13 @@ object EventDispatcher {
 
         onSend<ServerboundUseItemOnPacket> {
             if (!DungeonUtils.inDungeons || hand == InteractionHand.OFF_HAND) return@onSend
-            SecretPickupEvent.Interact(
-                hitResult.blockPos,
-                mc.level?.getBlockState(hitResult.blockPos)?.takeIf { isSecret(it, hitResult.blockPos) } ?: return@onSend
-            ).postAndCatch()
+            val blockState = mc.level?.getBlockState(hitResult.blockPos) ?: return@onSend
+            if (blockState.block is SkullBlock) {
+                val distance = mc.player?.eyePosition?.distanceTo(Vec3(hitResult.blockPos)) ?: return@onSend
+                if (distance < 20.25) return@onSend
+            }
+
+            if (isSecret(blockState, hitResult.blockPos)) SecretPickupEvent.Interact(hitResult.blockPos, blockState).postAndCatch()
         }
 
         onReceive<ClientboundSystemChatPacket> {
