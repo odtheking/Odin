@@ -4,9 +4,7 @@ import com.odtheking.mixin.accessors.AbstractContainerScreenAccessor
 import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.*
 import com.odtheking.odin.events.GuiEvent
-import com.odtheking.odin.events.ScreenEvent
 import com.odtheking.odin.events.TerminalEvent
-import com.odtheking.odin.events.core.EventPriority
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Color.Companion.darker
@@ -65,7 +63,7 @@ object TerminalSolver : Module(
     private val renderMelody get() = !(cancelMelodySolver && TerminalUtils.currentTerm?.type == TerminalTypes.MELODY)
 
     init {
-        on<GuiEvent.SlotClick> (EventPriority.HIGH) {
+        on<GuiEvent.SlotClick> {
             val term = TerminalUtils.currentTerm ?: return@on
 
             if (
@@ -114,7 +112,7 @@ object TerminalSolver : Module(
             if (renderType == 0 || renderType == 1) mc.execute { mc.resizeDisplay() }
         }
 
-        on<ScreenEvent.Render> {
+        on<GuiEvent.DrawTooltip> {
             if (debug) TerminalUtils.currentTerm?.let { term ->
                 val menu = (mc.screen as? AbstractContainerScreen<*>)?.menu ?: return@let
                 val debugInfo = listOf(
@@ -130,6 +128,7 @@ object TerminalSolver : Module(
                 guiGraphics.pose().pushMatrix()
                 val sf = mc.window.guiScale
                 guiGraphics.pose().scale(1f / sf, 1f / sf)
+                guiGraphics.pose().scale(3f)
                 debugInfo.forEachIndexed { index, line ->
                     guiGraphics.drawWordWrap(mc.font, Component.literal(line), 5, 20 + (index * 10), 300, Colors.WHITE.rgba)
                 }
