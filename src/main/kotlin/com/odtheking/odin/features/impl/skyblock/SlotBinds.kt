@@ -7,7 +7,6 @@ import com.odtheking.odin.clickgui.settings.impl.MapSetting
 import com.odtheking.odin.clickgui.settings.impl.SelectorSetting
 import com.odtheking.odin.events.GuiEvent
 import com.odtheking.odin.events.ScreenEvent
-import com.odtheking.odin.events.core.EventPriority
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.features.ModuleManager
@@ -39,7 +38,7 @@ object SlotBinds : Module(
     private var previousSlot: Int? = null
 
     init {
-        on<GuiEvent.SlotClick> (EventPriority.HIGHEST) {
+        on<GuiEvent.SlotClick> {
             if (!mc.hasShiftDown() || screen !is InventoryScreen) return@on
             val clickedSlot = (screen as AbstractContainerScreenAccessor).hoveredSlot?.index?.takeIf { it in 5 until 45 } ?: return@on
             val boundSlot = slotBinds[clickedSlot] ?: return@on

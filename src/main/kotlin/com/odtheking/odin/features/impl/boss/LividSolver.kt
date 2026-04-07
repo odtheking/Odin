@@ -6,7 +6,6 @@ import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.Colors
-import com.odtheking.odin.utils.handlers.schedule
 import com.odtheking.odin.utils.modMessage
 import com.odtheking.odin.utils.render.drawWireFrameBox
 import com.odtheking.odin.utils.render.textDim
@@ -48,22 +47,18 @@ object LividSolver : Module(
         on<BlockUpdateEvent> {
             if (!DungeonUtils.inBoss || !DungeonUtils.isFloor(5) || pos != woolLocation) return@on
             currentLivid = Livid.entries.find { livid -> livid.wool.defaultBlockState() == updated.block.defaultBlockState() } ?: return@on
-            schedule((mc.player?.getEffect(MobEffects.BLINDNESS)?.duration ?: 0) - 20) {
-                modMessage("Found Livid: §${currentLivid.colorCode}${currentLivid.entityName}")
-            }
+            modMessage("Found Livid: §${currentLivid.colorCode}${currentLivid.entityName}")
         }
 
         onReceive<ClientboundSetEntityDataPacket> {
             if (!DungeonUtils.inBoss || !DungeonUtils.isFloor(5)) return@onReceive
-            schedule((mc.player?.getEffect(MobEffects.BLINDNESS)?.duration ?: 0) - 20) {
-                currentLivid.entity = (mc.level?.getEntity(id) as? Player)?.takeIf { it.name.string == "${currentLivid.entityName} Livid" } ?: return@schedule
-            }
+            currentLivid.entity = (mc.level?.getEntity(id) as? Player)?.takeIf { it.name.string == "${currentLivid.entityName} Livid" } ?: return@onReceive
         }
 
         on<RenderEvent.Extract> {
             if (!DungeonUtils.inBoss || !DungeonUtils.isFloor(5) || mc.player?.getEffect(MobEffects.BLINDNESS) != null) return@on
             currentLivid.entity?.let { entity ->
-                drawWireFrameBox(entity.boundingBox, currentLivid.color, 8f, true)
+                drawWireFrameBox(entity.boundingBox, currentLivid.color, 4f, true)
             }
         }
 

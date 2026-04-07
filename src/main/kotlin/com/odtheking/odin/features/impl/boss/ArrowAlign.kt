@@ -2,6 +2,8 @@ package com.odtheking.odin.features.impl.boss
 
 import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
+import com.odtheking.odin.clickgui.settings.impl.KeybindSetting
+import com.odtheking.odin.clickgui.settings.impl.KeybindSetting.Companion.isDown
 import com.odtheking.odin.events.EntityInteractEvent
 import com.odtheking.odin.events.RenderEvent
 import com.odtheking.odin.events.core.on
@@ -17,13 +19,15 @@ import com.odtheking.odin.utils.skyblock.dungeon.M7Phases
 import net.minecraft.core.BlockPos
 import net.minecraft.world.entity.decoration.ItemFrame
 import net.minecraft.world.item.Items
+import org.lwjgl.glfw.GLFW
 
 object ArrowAlign : Module(
     name = "Arrow Align",
     description = "Shows the solution for the Arrow Align device."
 ) {
     private val blockWrong by BooleanSetting("Block Wrong Clicks", false, desc = "Blocks wrong clicks, shift will override this.")
-    private val invertSneak by BooleanSetting("Invert Sneak", false, desc = "Only block wrong clicks whilst sneaking, instead of whilst standing").withDependency { blockWrong }
+    private val preventKey by KeybindSetting("Prevent Blocking", GLFW.GLFW_KEY_LEFT_SHIFT, desc = "While holding this key, wrong clicks won't be blocked, even if you aren't sneaking.").withDependency { blockWrong }
+    private val invertKey by BooleanSetting("Invert Key", false, desc = "Inverts the behavior of the prevent key. Wrong clicks will be blocked while holding the prevent key, and allowed otherwise.").withDependency { blockWrong }
 
     private val recentClickTimestamps = mutableMapOf<Int, Long>()
     private val clicksRemaining = mutableMapOf<Int, Int>()
@@ -65,7 +69,9 @@ object ArrowAlign : Module(
             val frameIndex = ((y - frameGridCorner.y) + (z - frameGridCorner.z) * 5)
             if (x != frameGridCorner.x || currentFrameRotations?.get(frameIndex) == -1 || frameIndex !in 0..24) return@on
 
-            if (!clicksRemaining.containsKey(frameIndex) && mc.player?.isCrouching == invertSneak && blockWrong) {
+            val shouldBlock = blockWrong && !(preventKey.isDown() xor invertKey)
+
+            if (!clicksRemaining.containsKey(frameIndex) && shouldBlock) {
                 cancel()
                 return@on
             }

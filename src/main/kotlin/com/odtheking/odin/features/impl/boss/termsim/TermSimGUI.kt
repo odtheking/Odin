@@ -58,7 +58,9 @@ open class TermSimGUI(
         ping = terminalPing
     }
 
-    open fun slotClick(slot: Slot, button: Int) {}
+    open fun slotClick(slot: Slot, button: Int) {
+        playTermSimSound()
+    }
 
     internal fun TerminalHandler.onComplete() {
         PacketEvent.Receive(ClientboundContainerClosePacket(-2)).postAndCatch()

@@ -10,19 +10,19 @@ class PersonalBest(module: Module, name: String) {
     /**
      * Updates the personal best for a specific puzzle
      * 
-     * @param index The name of the puzzle
+     * @param name The name of the puzzle
      * @param time The new time achieved
      * @param unit The unit of measurement for display
      * @param message The message prefix to display
      */
-    fun time(index: String, time: Float, unit: String = "s§7!", message: String, sendMessage: Boolean = true) {
-        val msg = "$message$time$unit"
-        val oldPB = mapSetting.value[index] ?: 9999f
+    fun time(name: String, time: Float, unit: String = "s§7!", message: String, sendMessage: Boolean = true) {
+        val oldPB = mapSetting.value[name] ?: 9999f
 
-        if (oldPB > time) {
-            set(index, time)
-            if (sendMessage) modMessage("$msg §7(§d§lNew PB§r§7) Old PB was §8$oldPB")
-        } else if (sendMessage) modMessage("$msg §8(§7$oldPB§8)")
+        val msg = if (oldPB > time) {
+            set(name, time)
+            "§7(§d§lNew PB§r§7) Old PB was §8$oldPB"
+        } else "§8(§7$oldPB§8)"
+        if (sendMessage) modMessage("$message$time$unit $msg")
     }
 
     fun get(index: String): Float? = mapSetting.value[index]

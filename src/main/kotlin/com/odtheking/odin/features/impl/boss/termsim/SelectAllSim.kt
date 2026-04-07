@@ -59,9 +59,9 @@ class SelectAllSim(
             else it.item
         }
 
-        playTermSimSound()
-
         if (guiInventorySlots.none { !it.item.hasGlint() && possibleItems.contains(it.item.item) })
             TerminalUtils.lastTermOpened?.onComplete()
+
+        super.slotClick(slot, button)
     }
 }

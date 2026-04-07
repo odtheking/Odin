@@ -76,7 +76,7 @@ object TerminalUtils {
             }
         }
 
-        on<GuiEvent.SlotClick> {
+        on<GuiEvent.SlotClick> (EventPriority.HIGH) {
             lastClickTime = System.currentTimeMillis()
             currentTerm?.isClicked = true
         }

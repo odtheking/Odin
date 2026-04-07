@@ -43,7 +43,7 @@ enum class WitherDragonsEnum(
     fun setAlive(entityId: UUID?) {
         if (entityId != null) this.entityUUID = entityId
 
-        if (state == WitherDragonState.ALIVE) return
+        if (state == WitherDragonState.ALIVE || state != WitherDragonState.SPAWNING) return
         state = WitherDragonState.ALIVE
 
         timesSpawned++
