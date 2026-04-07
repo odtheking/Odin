@@ -83,8 +83,8 @@ object EventDispatcher {
             if (!DungeonUtils.inDungeons || hand == InteractionHand.OFF_HAND) return@onSend
             val blockState = mc.level?.getBlockState(hitResult.blockPos) ?: return@onSend
             if (blockState.block is SkullBlock) {
-                val distance = mc.player?.eyePosition?.distanceTo(Vec3(hitResult.blockPos)) ?: return@onSend
-                if (distance < 20.25) return@onSend
+                val distance = mc.player?.eyePosition?.distanceToSqr(Vec3(hitResult.blockPos)) ?: return@onSend
+                if (distance > 20.25) return@onSend
             }
 
             if (isSecret(blockState, hitResult.blockPos)) SecretPickupEvent.Interact(hitResult.blockPos, blockState).postAndCatch()
