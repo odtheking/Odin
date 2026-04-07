@@ -1,12 +1,13 @@
-package com.odtheking.odin.utils.skyblock.dungeon.door
+package com.odtheking.odin.utils.skyblock.dungeon.map.tile
 
 import com.odtheking.odin.utils.IVec2
-import com.odtheking.odin.utils.skyblock.dungeon.room.RoomType
 
 class DungeonDoor(
     val position: IVec2,
     val rotation: DoorRotation,
     var type: DoorType,
+    val originTileIndex: Int,
+    val destinationTileIndex: Int,
 )
 
 enum class DoorType {

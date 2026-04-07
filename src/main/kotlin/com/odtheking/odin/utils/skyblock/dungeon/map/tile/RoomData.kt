@@ -1,6 +1,7 @@
-package com.odtheking.odin.utils.skyblock.dungeon.room
+package com.odtheking.odin.utils.skyblock.dungeon.map.tile
 
 import com.google.gson.annotations.SerializedName
+import com.odtheking.odin.utils.IVec2
 import com.odtheking.odin.utils.JsonResourceLoader
 
 @ConsistentCopyVisibility
@@ -61,9 +62,21 @@ enum class RoomShape(val segments: Int) {
     TwoByTwo(4);
 }
 
-enum class RoomRotation {
-    WEST,
-    SOUTH,
-    NORTH,
-    EAST;
+enum class RoomRotation(val dx: Int, val dz: Int) {
+    WEST(15, -15),
+    SOUTH(-15, -15),
+    NORTH(15, 15),
+    EAST(-15, 15);
+}
+
+interface RoomInfo {
+    val segments: ArrayList<ScanTile>
+    val position: IVec2
+    val shape: RoomShape
+    val rotation: RoomRotation?
+    val type: RoomType
+}
+
+interface ScanTile {
+    val position: IVec2
 }

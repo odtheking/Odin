@@ -1,129 +1,65 @@
 package com.odtheking.odin.features.impl.dungeon.map
 
+import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
+import com.odtheking.odin.clickgui.settings.impl.ColorSetting
+import com.odtheking.odin.clickgui.settings.impl.DropdownSetting
+import com.odtheking.odin.clickgui.settings.impl.NumberSetting
 import com.odtheking.odin.features.Module
-import com.odtheking.odin.utils.Color.Companion.withAlpha
+import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.Colors
-import com.odtheking.odin.utils.IVec2
-import com.odtheking.odin.utils.render.text
-import com.odtheking.odin.utils.skyblock.dungeon.DungeonWorldScan
-import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
-import com.odtheking.odin.utils.skyblock.dungeon.door.DoorType
-import com.odtheking.odin.utils.skyblock.dungeon.door.DungeonDoor
-import com.odtheking.odin.utils.skyblock.dungeon.room.*
+import com.odtheking.odin.utils.render.hollowFill
+import com.odtheking.odin.utils.skyblock.dungeon.map.scan.DungeonMapScan
 import net.minecraft.client.gui.GuiGraphics
-import net.minecraft.client.gui.components.PlayerFaceRenderer
 
-object DungeonMapModule : Module(
-    "Map",
-    description = "test"
-) {
-    val disableWorldScan by BooleanSetting(
-        "Disable World Scan",
-        false,
-        desc = "Disables chunk/world scanning; builds rooms only from the map item."
-    )
+object DungeonMapModule : Module("Map", description = "Displays the dungeon map.") {
 
-    private val hud by HUD("Map test", "test") {
-        val matrices = pose()
+    var backgroundColor by ColorSetting("Background Color", Color(0, 0, 0, 0.7f), true, desc = "Background color of the map.")
+    var textScaling      by NumberSetting("Text Scaling", 0.45f, 0.1f, 1f, 0.05f, desc = "Scale of room name text.")
 
-        for (room in DungeonWorldScan.rooms) {
-            matrices.pushMatrix()
-            renderRoom(room)
-            matrices.popMatrix()
-        }
+    private val playerDropdown by DropdownSetting("Player Settings")
+    var playerNamesScaling       by NumberSetting("Player Names Scaling", 0.75f, 0.1f, 2f, 0.05f, desc = "Scale of player name labels.").withDependency { playerDropdown }
+    var playerNameColor          by ColorSetting("Player Name Color", Color(70, 70, 70), false, desc = "Colour of player name labels.").withDependency { playerDropdown }
+    var selfVanillaMarker        by BooleanSetting("Self Vanilla Marker", false, desc = "Draw a direction arrow instead of your head for yourself.").withDependency { playerDropdown }
 
-        for ((_, door) in DungeonWorldScan.doors) {
-            matrices.pushMatrix()
-            renderDoor(door)
-            matrices.popMatrix()
-        }
-        
-        for (player in DungeonUtils.dungeonTeammates) {
-            if (player.isDead) continue
+    private val doorDropdown by DropdownSetting("Door Settings")
+    var normalDoorColor  by ColorSetting("Normal Door",  Color(107, 58, 17),   false, desc = "Colour of normal doors.").withDependency { doorDropdown }
+    var witherDoorColor  by ColorSetting("Wither Door",  Colors.BLACK,         false, desc = "Colour of wither doors.").withDependency { doorDropdown }
+    var bloodDoorColor   by ColorSetting("Blood Door",   Colors.MINECRAFT_RED, false, desc = "Colour of blood room doors.").withDependency { doorDropdown }
+    var fairyDoorColor   by ColorSetting("Fairy Door",   Color(244, 19, 139),  false, desc = "Colour of fairy room doors.").withDependency { doorDropdown }
 
-            val (posX, posZ) = player.mapScanRenderPosition()
+    private val roomDropdown by DropdownSetting("Room Settings")
+    var normalRoomColor   by ColorSetting("Normal Room",   Color(107, 58, 17),  false, desc = "Colour of normal rooms.").withDependency { roomDropdown }
+    var puzzleRoomColor   by ColorSetting("Puzzle Room",   Color(117, 0, 133),  false, desc = "Colour of puzzle rooms.").withDependency { roomDropdown }
+    var trapRoomColor     by ColorSetting("Trap Room",     Color(216, 127, 51), false, desc = "Colour of trap rooms.").withDependency { roomDropdown }
+    var bloodRoomColor    by ColorSetting("Blood Room",    Color(255, 0, 0),    false, desc = "Colour of blood rooms.").withDependency { roomDropdown }
+    var entranceRoomColor by ColorSetting("Entrance Room", Color(20, 133, 0),   false, desc = "Colour of entrance rooms.").withDependency { roomDropdown }
+    var fairyRoomColor    by ColorSetting("Fairy Room",    Color(244, 19, 139), false, desc = "Colour of fairy rooms.").withDependency { roomDropdown }
+    var championRoomColor by ColorSetting("Champion Room", Color(254, 223, 0),  false, desc = "Colour of champion rooms.").withDependency { roomDropdown }
+    var unknownRoomColor  by ColorSetting("Unknown Room",  Color(40, 40, 40),   false, desc = "Colour of unknown rooms hinted by a door with no discovered room on the other side.").withDependency { roomDropdown }
 
-            matrices.pushMatrix()
-            matrices.translate(posX, posZ)
-
-            player.playerSkin?.let { skin ->
-                matrices.rotate(Math.toRadians(180.0 + player.mapRenderYaw()).toFloat())
-                PlayerFaceRenderer.draw(this, skin, -5, -5, 10)
-            }
-
-            matrices.popMatrix()
-        }
-
-        (12 * 6) to (12 * 6)
-    }
-
-    private fun GuiGraphics.renderRoom(room: DungeonRoom) {
-        when (room) {
-            is DungeonRoom.Collecting    -> return
-            is DungeonRoom.MapResolved   -> render(room.position, room.shape, room.rotation, room.type, room.checkmark)
-            is DungeonRoom.WorldResolved -> render(room.position, room.shape, room.rotation, room.type, room.checkmark)
+    private val mapHud by HUD("Dungeon Map", "Displays the dungeon map.", false) { example ->
+        when {
+            DungeonMapScan.rooms.isEmpty() && !example -> 0 to 0
+            example -> renderExampleMap()
+            else    -> renderDungeonMap()
         }
     }
 
-    private fun GuiGraphics.render(
-        position: IVec2,
-        shape: RoomShape,
-        rotation: RoomRotation?,
-        type: RoomType,
-        checkmark: MapCheckmark,
-    ) {
-        val color = when (type) {
-            RoomType.CHAMPION -> Colors.MINECRAFT_YELLOW
-            RoomType.BLOOD -> Colors.MINECRAFT_RED
-            RoomType.FAIRY -> Colors.MINECRAFT_LIGHT_PURPLE
-            RoomType.ENTRANCE -> Colors.MINECRAFT_DARK_GREEN
-            RoomType.TRAP -> Colors.MINECRAFT_DARK_RED
-            RoomType.NORMAL -> Colors.MINECRAFT_GOLD
-            RoomType.PUZZLE -> Colors.MINECRAFT_DARK_PURPLE
-            else -> Colors.MINECRAFT_GRAY
-        }.withAlpha(0.5f).rgba
-
-        pose().translate(position.x * 12f, position.z * 12f)
-        when (shape) {
-            RoomShape.OneByOne -> fill(0, 0, 10, 10, color)
-
-            RoomShape.TwoByOne, RoomShape.ThreeByOne, RoomShape.FourByOne -> {
-                var size = IVec2(10, (12 * shape.segments) - 2)
-                if (rotation === RoomRotation.SOUTH) size = size.flip()
-                fill(0, 0, size.x, size.z, color)
-            }
-
-            RoomShape.TwoByTwo -> fill(0, 0, 22, 22, color)
-
-            RoomShape.L -> {
-                if (rotation === RoomRotation.WEST) {
-                    fill(0, 0, 10, 12, color)
-                    fill(0, 12, 22, 22, color)
-                } else if (rotation === RoomRotation.NORTH) {
-                    fill(0, 0, 22, 10, color)
-                    fill(12, 10, 22, 22, color)
-                } else {
-                    fill(0, 0, 22, 10, color)
-                    fill(0, 10, 10, 22, color)
-                }
-            }
-        }
-        text(checkmark.symbol, 2, 1, Colors.WHITE, true)
+    private fun GuiGraphics.renderExampleMap(): Pair<Int, Int> {
+        fill(0, 0, MAP_PX, MAP_PX, backgroundColor.rgba)
+        hollowFill(0, 0, MAP_PX, MAP_PX, 1, Colors.gray26)
+        drawCenteredString(mc.font, "MAP", MAP_PX / 2, MAP_PX / 2 - mc.font.lineHeight / 2, 0xFFFFFFFF.toInt())
+        return MAP_PX to MAP_PX
     }
 
-    private fun GuiGraphics.renderDoor(door: DungeonDoor) {
-        val color = when (door.type) {
-            DoorType.Normal -> Colors.WHITE
-            DoorType.Wither -> Colors.BLACK
-            DoorType.Blood -> Colors.MINECRAFT_RED
-            DoorType.Fairy -> Colors.MINECRAFT_LIGHT_PURPLE
-        }
+    private fun GuiGraphics.renderDungeonMap(): Pair<Int, Int> {
 
-        pose().translate(
-            (door.position.x * 12f) + (door.rotation.offset.x * 10) + (door.rotation.offset.z * 2),
-            (door.position.z * 12f) + (door.rotation.offset.z * 10) + (door.rotation.offset.x * 2),
-        )
-        fill(0, 0, 2 + (4 * door.rotation.offset.z), 2 + (4 * door.rotation.offset.x), color.rgba)
+        fill(0, 0, 128, 128, backgroundColor.rgba)
+        hollowFill(0, 0, 128, 128, 1, Colors.gray26)
+
+        renderMap()
+
+        return 128 to 128
     }
 }
