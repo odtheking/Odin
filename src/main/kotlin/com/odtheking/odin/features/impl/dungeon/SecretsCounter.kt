@@ -1,6 +1,5 @@
 package com.odtheking.odin.features.impl.dungeon
 
-import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.OdinMod.scope
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.events.ChatPacketEvent
@@ -34,25 +33,22 @@ object SecretsCounter : Module(
         }
 
         on<ChatPacketEvent> {
-            if (dungeonStartRegex.containsMatchIn(value)) {
-                if (!secretsEnabled || snapshotDone) return@on
-                val teammates = DungeonUtils.dungeonTeammates.toList()
+            if (dungeonEndRegex.containsMatchIn(value)) schedule(30) { fetchAndDisplay() }
+
+
+            if (!dungeonStartRegex.containsMatchIn(value) || !secretsEnabled || snapshotDone) return@on
+            val teammates = DungeonUtils.dungeonTeammates.toList()
             if (teammates.isEmpty()) return@on
             snapshotDone = true
-                schedule(10) {
-                    for (player in DungeonUtils.dungeonTeammates.toList()) {
-                val name = player.name
+            schedule(10) {
                 scope.launch(Dispatchers.IO) {
-                    RequestUtils.pullSecrets(name).onSuccess { secrets ->
-                        mc.execute { secretsBaseline[name] = secrets }
-                            }
+                    for (player in DungeonUtils.dungeonTeammates.toList()) {
+                        val name = player.name
+                        RequestUtils.pullSecrets(name).onSuccess { secrets ->
+                            mc.execute { secretsBaseline[name] = secrets }
+                        }
                     }
                 }
-            }
-        }
-
-            if (dungeonEndRegex.containsMatchIn(value)) {
-                schedule(30) { fetchAndDisplay() }
             }
         }
     }
@@ -66,10 +62,8 @@ object SecretsCounter : Module(
             for (player in teammates) {
                 val baseline = secretsBaseline[player.name]
                 RequestUtils.pullSecrets(player.name).onSuccess { newSecrets ->
-                    secretsDelta[player.name] = if (baseline != null)
-                        (newSecrets - baseline).coerceAtLeast(0L)
-                    else
-                        null
+                    secretsDelta[player.name] = if (baseline != null) (newSecrets - baseline).coerceAtLeast(0L)
+                    else null
                 }
             }
             mc.execute { display(teammates, secretsDelta) }
