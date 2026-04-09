@@ -34,7 +34,7 @@ jobs:
         with:
           path: |
             build/libs/Odin-*.jar
-            !build/libs/Odin*-sources.jar
+            !build/libs/Odin-*-sources.jar
           archive: false
 
       - name: upload sources jar
