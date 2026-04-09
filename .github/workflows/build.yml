@@ -29,8 +29,16 @@ jobs:
       - name: build
         run: ./gradlew build
 
-      - name: capture build artifacts
-        uses: actions/upload-artifact@v4
+      - name: upload release jar
+        uses: actions/upload-artifact@v7.0.0
         with:
-          name: Artifacts
-          path: build/libs/
+          path: |
+            build/libs/Odin-*.jar
+            !build/libs/Odin*-sources.jar
+          archive: false
+
+      - name: upload sources jar
+        uses: actions/upload-artifact@v7.0.0
+        with:
+          path: build/libs/Odin-*-sources.jar
+          archive: false
