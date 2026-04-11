@@ -1,6 +1,7 @@
 package com.odtheking.odin.utils.skyblock.dungeon
 
 import com.odtheking.odin.OdinMod.mc
+import com.odtheking.odin.events.DungeonRoomEnterEvent
 import com.odtheking.odin.events.RoomEnterEvent
 import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.WorldEvent
@@ -69,6 +70,10 @@ object ScanUtils {
             currentRoom = room
             if (passedRooms.none { it.data.name == currentRoom?.data?.name }) passedRooms.add(currentRoom ?: return@on)
             devMessage("${room?.data?.name} - ${room?.rotation} || clay: ${room?.clayPos}")
+        }
+
+        on<DungeonRoomEnterEvent> {
+            devMessage("-- ${room?.data?.name} - ${room?.rotation} || clay: ${room?.clayPos}")
         }
 
         on<WorldEvent.Load> {

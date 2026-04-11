@@ -57,12 +57,11 @@ object DungeonMapScan {
         onReceive<ClientboundMapItemDataPacket> {
             if (!DungeonUtils.inClear || mapId().id and 1000 != 0) return@onReceive
 
+            decorations.getOrNull()?.let { updatePlayers(it) }
             val colors = colorPatch.getOrNull()?.mapColors() ?: return@onReceive
             if (colors.size < MAP_SIZE * MAP_SIZE || colors[0] != EMPTY) return@onReceive
 
             if (roomSize == -1 && !initLayout(colors)) return@onReceive
-
-            decorations.getOrNull()?.let { updatePlayers(it) }
             updateAll(colors)
         }
     }
@@ -99,7 +98,6 @@ object DungeonMapScan {
 
             iterator.asSequence().firstOrNull { !it.isDead }?.apply {
                 mapPos = Vec2i(decoration.x.toInt(), decoration.y.toInt())
-                modMessage("Updated player ${name}'s map position to ${mapPos.x}, ${mapPos.z}")
                 yaw = decoration.rot() * 360 / 16f
             }
         }

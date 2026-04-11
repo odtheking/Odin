@@ -63,9 +63,9 @@ enum class RoomShape(val segments: Int) {
 }
 
 enum class RoomRotation(val dx: Int, val dz: Int) {
-    WEST(15, -15),
-    SOUTH(-15, -15),
     NORTH(15, 15),
+    SOUTH(-15, -15),
+    WEST(15, -15),
     EAST(-15, 15);
 }
 

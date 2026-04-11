@@ -1,7 +1,9 @@
 package com.odtheking.odin.utils.skyblock.dungeon.map.scan
 
-import com.odtheking.odin.OdinMod
+import com.odtheking.odin.OdinMod.mc
+import com.odtheking.odin.events.DungeonRoomEnterEvent
 import com.odtheking.odin.events.LocationChangeEvent
+import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.WorldEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.utils.IVec2
@@ -27,6 +29,9 @@ object DungeonWorldScan {
     val doors: ConcurrentHashMap<IVec2, DungeonDoor> = ConcurrentHashMap()
     val dataToRoom: HashMap<RoomData, DungeonRoom> = hashMapOf()
 
+    var currentRoom: DungeonRoom? = null
+        private set
+
     // keep track of chunks loaded before loading into a dungeon
     // if the area loaded into wasn't a dungeon. we simply discard it
     private val chunksToScan: HashSet<IVec2> = HashSet()
@@ -40,6 +45,30 @@ object DungeonWorldScan {
             doors.clear()
             dataToRoom.clear()
             chunksToScan.clear()
+            currentRoom = null
+        }
+
+        on<TickEvent.End> {
+            val player = mc.player ?: return@on
+
+            if (!DungeonUtils.inDungeons || DungeonUtils.inBoss) {
+                if (currentRoom != null) {
+                    currentRoom = null
+                    DungeonRoomEnterEvent(null).postAndCatch()
+                }
+                return@on
+            }
+
+            val tileX = (player.blockX + 201) shr 5
+            val tileZ = (player.blockZ + 201) shr 5
+            if (tileX !in 0..5 || tileZ !in 0..5) return@on
+
+            val room = tiles[tileX + tileZ * 6].room
+            if (room == currentRoom) return@on
+
+            currentRoom = room
+            room?.discovered = true
+            DungeonRoomEnterEvent(room).postAndCatch()
         }
 
         ClientChunkEvents.CHUNK_LOAD.register { _, chunk ->
@@ -62,7 +91,7 @@ object DungeonWorldScan {
 
         on<LocationChangeEvent> {
             if (DungeonUtils.inDungeons) {
-                val level = OdinMod.mc.level ?: return@on
+                val level = mc.level ?: return@on
                 for (position in chunksToScan) {
                     scanChunk(level.getChunk(position.x, position.z))
                 }
@@ -121,7 +150,11 @@ object DungeonWorldScan {
 
         if (room.segments.size != data.shape.segments) return
 
-        if (room.clayPos == null) room.inferLayout({ pos -> chunk.getBlockState(pos).block }, highestBlock)
+        val level = mc.level ?: return
+        if (room.clayPos == null && highestBlock > 0) {
+            // Layout probes can cross chunk borders; resolve blocks from the world, not this chunk.
+            room.inferLayout({ pos -> level.getBlockState(pos).block }, highestBlock)
+        }
     }
 
     private val stringBuilder = StringBuilder(1024)

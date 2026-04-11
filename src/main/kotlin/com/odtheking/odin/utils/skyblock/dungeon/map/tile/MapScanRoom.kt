@@ -7,7 +7,7 @@ data class MapScanTile(
     var room: MapScanRoom? = null
 ) : ScanTile
 
-enum class MapCheckmark() {
+enum class MapCheckmark {
     NONE,
     WHITE,
     GREEN,
@@ -64,7 +64,7 @@ class MapScanRoom(
         rotation = when (shape) {
             RoomShape.OneByOne -> null
             RoomShape.TwoByOne, RoomShape.ThreeByOne, RoomShape.FourByOne ->
-                if (horizontal) RoomRotation.SOUTH else RoomRotation.NORTH
+                if (horizontal) RoomRotation.SOUTH else RoomRotation.WEST
             RoomShape.L -> {
                 val set = positions.toHashSet()
                 when {

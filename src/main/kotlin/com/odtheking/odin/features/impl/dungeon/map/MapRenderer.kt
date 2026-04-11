@@ -15,7 +15,11 @@ import net.minecraft.client.renderer.RenderPipelines
 import net.minecraft.resources.Identifier
 
 internal const val MAP_PX = 128
-private val marker = Identifier.withDefaultNamespace("textures/map/decorations/player.png")
+private val marker = Identifier.withDefaultNamespace("textures/map/decorations/frame.png")
+private val cross = Identifier.fromNamespaceAndPath("odin", "textures/map/cross.png")
+private val green = Identifier.fromNamespaceAndPath("odin", "textures/map/green_check.png")
+private val question = Identifier.fromNamespaceAndPath("odin", "textures/map/question.png")
+private val white = Identifier.fromNamespaceAndPath("odin", "textures/map/white_check.png")
 
 internal fun GuiGraphics.renderMap() {
     pose().pushMatrix()
@@ -31,34 +35,35 @@ private fun GuiGraphics.renderRooms() {
     val rs = DungeonMapScan.roomSize.takeIf { it != -1 } ?: return
     val rg = DungeonMapScan.roomGap
 
-    for (room in DungeonMapScan.rooms) {
-        val color = roomTypeColor(room.type).rgba
-        val ox = room.position.x * rg
-        val oy = room.position.z * rg
-        when (val shape = room.shape) {
-            RoomShape.OneByOne -> fill(ox, oy, ox + rs, oy + rs, color)
+    for (room in DungeonMapScan.rooms) fillRoom(room, roomTypeColor(room.type).rgba, rs, rg)
+}
 
-            RoomShape.TwoByOne, RoomShape.ThreeByOne, RoomShape.FourByOne -> {
-                val n = shape.segments
-                if (room.rotation == RoomRotation.SOUTH) fill(ox, oy, ox + (n - 1) * rg + rs, oy + rs, color)
-                else fill(ox, oy, ox + rs, oy + (n - 1) * rg + rs, color)
+private fun GuiGraphics.fillRoom(room: RoomInfo, color: Int, rs: Int, rg: Int) {
+    val ox = room.position.x * rg
+    val oy = room.position.z * rg
+    when (val shape = room.shape) {
+        RoomShape.OneByOne -> fill(ox, oy, ox + rs, oy + rs, color)
+
+        RoomShape.TwoByOne, RoomShape.ThreeByOne, RoomShape.FourByOne -> {
+            val n = shape.segments
+            if (room.rotation == RoomRotation.SOUTH) fill(ox, oy, ox + (n - 1) * rg + rs, oy + rs, color)
+            else fill(ox, oy, ox + rs, oy + (n - 1) * rg + rs, color)
+        }
+
+        RoomShape.TwoByTwo -> fill(ox, oy, ox + rg + rs, oy + rg + rs, color)
+
+        RoomShape.L -> when (room.rotation) {
+            RoomRotation.WEST -> {
+                fill(ox,      oy,      ox + rs,      oy + rg + rs, color)
+                fill(ox + rs, oy + rg, ox + rg + rs, oy + rg + rs, color)
             }
-
-            RoomShape.TwoByTwo -> fill(ox, oy, ox + rg + rs, oy + rg + rs, color)
-
-            RoomShape.L -> when (room.rotation) {
-                RoomRotation.WEST -> {
-                    fill(ox,      oy,      ox + rs,      oy + rg + rs, color)
-                    fill(ox + rs, oy + rg, ox + rg + rs, oy + rg + rs, color)
-                }
-                RoomRotation.NORTH -> {
-                    fill(ox,      oy,      ox + rg + rs, oy + rs,      color)
-                    fill(ox + rg, oy + rs, ox + rg + rs, oy + rg + rs, color)
-                }
-                else -> {
-                    fill(ox, oy,      ox + rg + rs, oy + rs,      color)
-                    fill(ox, oy + rs, ox + rs,      oy + rg + rs, color)
-                }
+            RoomRotation.NORTH -> {
+                fill(ox,      oy,      ox + rg + rs, oy + rs,      color)
+                fill(ox + rg, oy + rs, ox + rg + rs, oy + rg + rs, color)
+            }
+            else -> {
+                fill(ox, oy,      ox + rg + rs, oy + rs,      color)
+                fill(ox, oy + rs, ox + rs,      oy + rg + rs, color)
             }
         }
     }
@@ -74,6 +79,10 @@ private fun GuiGraphics.renderDoors() {
         if (room != null && room.checkmark != MapCheckmark.UNDISCOVERED) return
         val pos = DungeonMapScan.tiles[index].position
         fill(pos.x * rg, pos.z * rg, pos.x * rg + rs, pos.z * rg + rs, unknownColor)
+
+        val iconX = pos.x * rg + (rs - 16) / 2
+        val iconY = pos.z * rg + (rs - 16) / 2
+        blit(RenderPipelines.GUI_TEXTURED, question, iconX, iconY, 16f, 16f, 16, 16, 16, 16)
     }
 
     for ((_, door) in DungeonMapScan.doors) {
@@ -96,10 +105,24 @@ private fun GuiGraphics.renderDoors() {
 
 private fun GuiGraphics.renderRoomText(room: MapScanRoom) {
     if (room.type.equalsOneOf(RoomType.UNDISCOVERED, RoomType.FAIRY, RoomType.ENTRANCE, RoomType.BLOOD)) return
-    if (room.checkmark == MapCheckmark.UNDISCOVERED) return
+    val scannedRoom = DungeonWorldScan.tiles.getOrNull(room.position.x + room.position.z * 6)?.room
 
-    val worldRoom = DungeonWorldScan.tiles.getOrNull(room.position.x + room.position.z * 6)?.room
-    val name = worldRoom?.name?.takeIf { it.isNotEmpty() } ?: return
+    if (scannedRoom?.discovered == false) {
+        when (room.checkmark) {
+            MapCheckmark.GREEN -> green
+            MapCheckmark.WHITE -> white
+            MapCheckmark.RED -> cross
+            MapCheckmark.QUESTION_MARK -> question
+            else -> null
+        }?.let { texture ->
+            val (iconX, iconY) = roomTopLeftSegmentIconPosition(room)
+            blit(RenderPipelines.GUI_TEXTURED, texture, iconX, iconY, 16f, 16f, 16, 16, 16, 16)
+        }
+        return
+    }
+
+    val (cx, cz) = textCenter(room)
+    val fontH  = mc.font.lineHeight
 
     val textColor = when (room.checkmark) {
         MapCheckmark.GREEN -> Colors.MINECRAFT_GREEN
@@ -108,9 +131,7 @@ private fun GuiGraphics.renderRoomText(room: MapScanRoom) {
         else               -> Color(100, 100, 100)
     }.rgba
 
-    val (cx, cz) = textCenter(room)
-    val lines  = name.split(" ")
-    val fontH  = mc.font.lineHeight
+    val lines  = scannedRoom?.name?.split(" ") ?: return
     val totalH = (lines.size - 1) * fontH * DungeonMapModule.textScaling
 
     for ((i, line) in lines.withIndex()) {
@@ -200,7 +221,20 @@ private fun doorTypeColor(type: DoorType): Color = when (type) {
 
 private fun doorColor(type: DoorType, originRoom: MapScanRoom?, destRoom: MapScanRoom?): Color {
     if (type != DoorType.Normal) return doorTypeColor(type)
+    if (sequenceOf(originRoom, destRoom).any(::isUndiscoveredRoom)) {
+        return DungeonMapModule.unknownRoomColor
+    }
     val nonNormal = sequenceOf(originRoom, destRoom).filterNotNull()
         .firstOrNull { it.type != RoomType.NORMAL && it.type != RoomType.UNDISCOVERED }
     return if (nonNormal != null) roomTypeColor(nonNormal.type) else doorTypeColor(DoorType.Normal)
+}
+
+private fun isUndiscoveredRoom(room: MapScanRoom?): Boolean {
+    return room == null || room.type == RoomType.UNDISCOVERED || room.checkmark == MapCheckmark.UNDISCOVERED
+}
+
+private fun roomTopLeftSegmentIconPosition(room: RoomInfo, iconSize: Int = 16): Pair<Int, Int> {
+    val rs = DungeonMapScan.roomSize.takeIf { it != -1 } ?: return 0 to 0
+    val rg = DungeonMapScan.roomGap
+    return room.position.x * rg + (rs - iconSize) / 2 to room.position.z * rg + (rs - iconSize) / 2
 }
