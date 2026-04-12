@@ -60,6 +60,26 @@ object Splits : Module(
         totalWidth to 9 * (currentSplits.splits.size + (if (bossEntrySplit) 1 else 0))
     }
 
+    private val currentSplitHud by HUD("Current Split HUD", "Shows only the current split and its tick time.") { example ->
+        if (example) {
+            val exampleText = "§70s"
+            val w = getStringWidth(exampleText)
+            text(exampleText, 0, 0, Colors.WHITE)
+            return@HUD w to 9
+        }
+
+        val splits = currentSplits.splits
+        if (splits.isEmpty()) return@HUD 0 to 0
+
+        val (_, tickTimes, current) = getAndUpdateSplitsTimes(currentSplits)
+        if (current !in splits.indices || current >= tickTimes.size) return@HUD 0 to 0
+
+        val displayText = "§7${(tickTimes[current] / 20f).toFixed()}s"
+        val w = getStringWidth(displayText) + 2
+        text(displayText, -w / 2, 0, Colors.WHITE)
+        w to 9
+    }
+
     private val fixedWidth by BooleanSetting("Fixed Width", true, desc = "Always use a fixed HUD width, right-aligning the times.")
     private val bossEntrySplit by BooleanSetting("Boss Entry Split", true, desc = "Split for boss entry.")
     val sendSplits by BooleanSetting("Send Splits", true, desc = "Send splits to chat.")

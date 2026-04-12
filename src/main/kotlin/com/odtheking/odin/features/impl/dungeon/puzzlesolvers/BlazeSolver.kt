@@ -35,7 +35,7 @@ object BlazeSolver {
         else blazes.sortBy { hpMap[it] }
     }
 
-    fun onRenderWorld(event: RenderEvent.Extract, blazeLineNext: Boolean, blazeLineAmount: Int, blazeStyle: Int, blazeFirstColor: Color, blazeSecondColor: Color, blazeAllColor: Color, blazeSendComplete: Boolean, blazeLineWidth: Float) {
+    fun onRenderWorld(event: RenderEvent.Extract, blazeLineNext: Boolean, blazeLineAmount: Int, blazeStyle: Int, blazeFirstColor: Color, blazeSecondColor: Color, blazeThirdColor: Color, blazeAllColor: Color, blazeSendComplete: Boolean, blazeLineWidth: Float) {
         if (!DungeonUtils.currentRoomName.equalsOneOf("Lower Blaze", "Higher Blaze")) return
         if (blazes.isEmpty()) return
         blazes.removeAll { mc.level?.getEntity(it.id) == null }
@@ -51,6 +51,7 @@ object BlazeSolver {
             val color = when (index) {
                 0 -> blazeFirstColor
                 1 -> blazeSecondColor
+                2 -> blazeThirdColor
                 else -> blazeAllColor
             }
             val aabb = entity.boundingBox.inflate(0.5, 1.0, 0.5).move(0.0, -1.0, 0.0)
