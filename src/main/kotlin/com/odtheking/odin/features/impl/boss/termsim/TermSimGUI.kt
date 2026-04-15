@@ -5,11 +5,13 @@ import com.odtheking.odin.events.GuiEvent
 import com.odtheking.odin.events.PacketEvent
 import com.odtheking.odin.events.TerminalEvent
 import com.odtheking.odin.features.impl.boss.TerminalSounds
+import com.odtheking.odin.utils.EnglishLanguage
 import com.odtheking.odin.utils.handlers.schedule
 import com.odtheking.odin.utils.playSoundAtPlayer
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.terminalhandler.TerminalHandler
 import net.minecraft.client.gui.screens.inventory.ContainerScreen
 import net.minecraft.core.component.DataComponents
+import net.minecraft.locale.Language
 import net.minecraft.network.chat.Component
 import net.minecraft.network.protocol.game.ClientboundContainerClosePacket
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket
@@ -100,8 +102,11 @@ open class TermSimGUI(
     }
 
     protected fun Slot.setSlot(stack: ItemStack) {
-        GuiEvent.SlotUpdate(mc.screen ?: return, ClientboundContainerSetSlotPacket(-2, 0, index, stack), menu).postAndCatch()
-        set(stack)
+        val finalStack = if (stack.has(DataComponents.CUSTOM_NAME)) { stack } else {
+            stack.copy().apply { set(DataComponents.CUSTOM_NAME, Component.literal(EnglishLanguage.get(item.descriptionId)))}
+        }
+        GuiEvent.SlotUpdate(mc.screen ?: return, ClientboundContainerSetSlotPacket(-2, 0, index, finalStack), menu).postAndCatch()
+        set(finalStack)
     }
 
     protected fun playTermSimSound() {
