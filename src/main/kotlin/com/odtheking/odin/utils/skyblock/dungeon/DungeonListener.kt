@@ -136,18 +136,17 @@ object DungeonListener {
 
     private fun getDungeonPuzzles(tabList: List<String>) {
         for (entry in tabList) {
-            val match = puzzleRegex.find(entry) ?: continue
-            val (name, status, player) = match.destructured
+            val (name, status, player) = puzzleRegex.find(entry)?.destructured ?: continue
             val puzzle = Puzzle.entries.find { it.displayName == name }?.takeIf { it != Puzzle.UNKNOWN } ?: continue
             if (puzzle !in puzzles) puzzles.add(puzzle)
 
+            if (player.isNotEmpty()) puzzle.player = player
             puzzle.status = when (status) {
                 "✖" -> PuzzleStatus.Failed
                 "✔" -> PuzzleStatus.Completed
                 "✦" -> PuzzleStatus.Incomplete
                 else -> continue
             }
-            if (player.isNotEmpty()) puzzle.player = player
         }
     }
 

@@ -3,8 +3,7 @@ package com.odtheking.odin.features.impl.dungeon
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Colors
-import com.odtheking.odin.utils.render.getStringWidth
-import com.odtheking.odin.utils.render.text
+import com.odtheking.odin.utils.render.textDim
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.skyblock.dungeon.Puzzle
 import com.odtheking.odin.utils.skyblock.dungeon.PuzzleStatus
@@ -15,22 +14,22 @@ object PuzzleHud : Module(
 ) {
     private val showPlayerNames by BooleanSetting("Show Player Names", true, desc = "Shows which player solved or failed the puzzle.")
 
+    private data class PuzzleEntry(val name: String, val statusIcon: String, val statusColor: String, val player: String?)
+    private val examplePuzzles = listOf(
+        PuzzleEntry(Puzzle.ICE_PATH.displayName, "✖", "§c", "odtheking"),
+        PuzzleEntry(Puzzle.BEAMS.displayName, "✔", "§a", null),
+        PuzzleEntry(Puzzle.UNKNOWN.displayName, "✦", "§6", null),
+        PuzzleEntry(Puzzle.UNKNOWN.displayName, "✦", "§6", null)
+    )
+
     private val hud by HUD("Puzzle HUD Position", "Displays dungeon puzzle statuses on the HUD.") { example ->
         if (!DungeonUtils.inDungeons && !example) return@HUD 0 to 0
 
         val puzzleCount = if (example) 4 else DungeonUtils.puzzleCount
-        if (puzzleCount == 0 && !example) return@HUD 0 to 0
+        if (puzzleCount == 0) return@HUD 0 to 0
 
-        data class PuzzleEntry(val name: String, val statusIcon: String, val statusColor: String, val player: String?)
-
-        val entries: List<PuzzleEntry> = if (example) {
-            listOf(
-                PuzzleEntry(Puzzle.BLAZE.displayName, "✖", "§c", "ItsAkar1881"),
-                PuzzleEntry(Puzzle.BEAMS.displayName, "✔", "§a", "Player123"),
-                PuzzleEntry(Puzzle.UNKNOWN.displayName, "✦", "§6", null),
-                PuzzleEntry(Puzzle.UNKNOWN.displayName, "✦", "§6", null)
-            )
-        } else {
+        val entries = if (example) examplePuzzles
+        else {
             val discovered = DungeonUtils.puzzles.map { puzzle ->
                 val (icon, color) = when (puzzle.status) {
                     PuzzleStatus.Completed -> "✔" to "§a"
@@ -41,25 +40,20 @@ object PuzzleHud : Module(
                 PuzzleEntry(puzzle.displayName, icon, color, puzzle.player)
             }
             val undiscoveredCount = (puzzleCount - discovered.size).coerceAtLeast(0)
-            val undiscovered = (1..undiscoveredCount).map {
-                PuzzleEntry("???", "✦", "§6", null)
-            }
+            val undiscovered = (1..undiscoveredCount).map { PuzzleEntry("???", "✦", "§6", null) }
             discovered + undiscovered
         }
 
         var width = 0
         val lineHeight = 12
 
-        val headerText = "§fPuzzles: (§3$puzzleCount§f)"
-        text(headerText, 0, 0, Colors.WHITE)
-        getStringWidth("Puzzles: ($puzzleCount)").let { if (it > width) width = it }
+        val headerText = "§5Puzzles §8(§3$puzzleCount§8)"
+        width = textDim(headerText, 0, 0, Colors.WHITE).first
 
         entries.forEachIndexed { index, entry ->
-            val y = (index + 1) * lineHeight
             val playerText = if (showPlayerNames && entry.player != null) " §7(${entry.player})" else ""
-            val line = "§f${entry.name}: [${entry.statusColor}${entry.statusIcon}§f]$playerText"
-            text(line, 0, y, Colors.WHITE)
-            getStringWidth("${entry.name}: [${entry.statusIcon}]${if (showPlayerNames && entry.player != null) " (${entry.player})" else ""}").let { if (it > width) width = it }
+            val newWidth = textDim("§e${entry.name}§8: [${entry.statusColor}${entry.statusIcon}§8]$playerText", 0, (index + 1) * lineHeight, Colors.WHITE).first
+            if (newWidth > width) width = newWidth
         }
 
         val totalLines = entries.size + 1
