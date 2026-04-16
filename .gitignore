@@ -1,7 +1,5 @@
 .idea/
 .gradle/
-.vscode/
 
 build/
 run/
-bin/

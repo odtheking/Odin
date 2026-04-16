@@ -1,6 +1,5 @@
 package com.odtheking.odin.features.impl.boss.termsim
 
-import com.odtheking.odin.utils.EnglishLanguage
 import com.odtheking.odin.utils.hasGlint
 import com.odtheking.odin.utils.modMessage
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalTypes
@@ -41,7 +40,7 @@ class StartsWithSim(private val letter: String = listOf("A", "B", "C", "G", "D",
     private fun getLetterItemStack(filterNot: Boolean = false): ItemStack {
         val matchingItem = BuiltInRegistries.ITEM
             .filter { item ->
-                val id = EnglishLanguage.get(BuiltInRegistries.ITEM.getKey(item).path)
+                val id = BuiltInRegistries.ITEM.getKey(item).path
                 id.startsWith(letter, true) != filterNot && !id.contains("pane", true) && item != Items.AIR
             }.randomOrNull() ?: return ItemStack.EMPTY
 
