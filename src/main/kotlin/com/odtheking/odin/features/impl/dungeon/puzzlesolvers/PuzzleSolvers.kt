@@ -32,7 +32,7 @@ object PuzzleSolvers : Module(
     private val waterDropDown by DropdownSetting("Water Board")
     private val waterSolver by BooleanSetting("Water Board Solver", true, desc = "Shows you the solution to the water puzzle.").withDependency { waterDropDown }
     private val optimizedSolutions by BooleanSetting("Optimized Solutions", false, desc = "Use optimized solutions for the water puzzle.").withDependency { waterSolver && waterDropDown }
-    private val showTracer by BooleanSetting("Show Tracer", true, desc = "Shows a tracer to the next lever.").withDependency { waterSolver && waterDropDown }
+    private val showTracer by BooleanSetting("Maze Tracer", true, desc = "Shows a tracer to the next lever.").withDependency { waterSolver && waterDropDown }
     private val tracerColorFirst by ColorSetting("Tracer Color First", Colors.MINECRAFT_GREEN, true, desc = "Color for the first tracer.").withDependency { showTracer && waterDropDown }
     private val tracerColorSecond by ColorSetting("Tracer Color Second", Colors.MINECRAFT_GOLD, true, desc = "Color for the second tracer.").withDependency { showTracer && waterDropDown }
     private val waterReset by ActionSetting("Reset Water", desc = "Resets the solver.") { WaterSolver.reset() }.withDependency { waterSolver && waterDropDown }
@@ -42,7 +42,7 @@ object PuzzleSolvers : Module(
     private val mazeColorOne by ColorSetting("Color for one", Colors.MINECRAFT_GREEN.withAlpha(.5f), true, desc = "Color for when there is a single solution.").withDependency { tpMaze && mazeDropDown }
     private val mazeColorMultiple by ColorSetting("Color for multiple", Colors.MINECRAFT_GOLD.withAlpha(.5f), true, desc = "Color for when there are multiple solutions.").withDependency { tpMaze && mazeDropDown }
     private val mazeColorVisited by ColorSetting("Color for visited", Colors.MINECRAFT_RED.withAlpha(.5f), true, desc = "Color for the already used TP pads.").withDependency { tpMaze && mazeDropDown }
-    private val mazeShowTracer by BooleanSetting("Show Tracer", true, desc = "Shows a tracer to the best next TP pad.").withDependency { tpMaze && mazeDropDown }
+    private val mazeShowTracer by BooleanSetting("Maze Tracer", true, desc = "Shows a tracer to the best next TP pad.").withDependency { tpMaze && mazeDropDown }
     private val mazeTracerColor by ColorSetting("Tracer Color", Colors.MINECRAFT_AQUA, true, desc = "Color for the TP maze tracer.").withDependency { mazeShowTracer && tpMaze && mazeDropDown }
     private val mazeReset by ActionSetting("Reset TP Maze", desc = "Resets the solver.") { TPMazeSolver.reset() }.withDependency { tpMaze && mazeDropDown }
 
