@@ -54,7 +54,8 @@ loom {
                 "-Dmixin.debug.export=true",
                 "-Ddevauth.enabled=true",
                 "-Ddevauth.account=main",
-                "-XX:+AllowEnhancedClassRedefinition"
+                "-XX:+AllowEnhancedClassRedefinition",
+                "-XX:+IgnoreUnrecognizedVMOptions", // AllowEnhancedClassRedefinition is only available on JBR
             )
         )
     }
