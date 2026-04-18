@@ -30,6 +30,7 @@ object TerminalSolver : Module(
     private val middleClickGUI by BooleanSetting("Middle Click GUI", true, desc = "Replaces right click with middle click in terminals.").withDependency { (renderType == 0 || renderType == 1) && solverSettings }
     private val blockIncorrectClicks by BooleanSetting("Block Incorrect Clicks", true, desc = "Blocks incorrect clicks in terminals.").withDependency { (renderType == 0 || renderType == 1) && solverSettings }
     private val cancelMelodySolver by BooleanSetting("Stop Melody Solver", false, desc = "Stops rendering the melody solver.").withDependency { solverSettings }
+    val melodyTermSize by NumberSetting("Melody Size", 1.5f, 1f, 3f, 0.1f, desc = "The size of the melody terminal GUI.").withDependency { !cancelMelodySolver && solverSettings }
     val showNumbers by BooleanSetting("Show Numbers", true, desc = "Shows numbers in the order terminal.").withDependency { solverSettings }
     val firstClickProt by NumberSetting("First Click Protection", 500, 350, 800, 10, unit = "ms", desc = "The amount of time after opening a terminal where clicks are blocked to prevent bans (recommended value is 500 minus your ping).").withDependency { solverSettings }
     val hideClicked by BooleanSetting("Hide Clicked", false, desc = "Visually hides your first click before a gui updates instantly to improve perceived response time. Does not affect actual click time.").withDependency { solverSettings }

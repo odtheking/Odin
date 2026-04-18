@@ -32,7 +32,7 @@ object PuzzleSolvers : Module(
     private val waterDropDown by DropdownSetting("Water Board")
     private val waterSolver by BooleanSetting("Water Board Solver", true, desc = "Shows you the solution to the water puzzle.").withDependency { waterDropDown }
     private val optimizedSolutions by BooleanSetting("Optimized Solutions", false, desc = "Use optimized solutions for the water puzzle.").withDependency { waterSolver && waterDropDown }
-    private val showTracer by BooleanSetting("Maze Tracer", true, desc = "Shows a tracer to the next lever.").withDependency { waterSolver && waterDropDown }
+    private val showTracer by BooleanSetting("Water Tracer", true, desc = "Shows a tracer to the next lever.").withDependency { waterSolver && waterDropDown }
     private val tracerColorFirst by ColorSetting("Tracer Color First", Colors.MINECRAFT_GREEN, true, desc = "Color for the first tracer.").withDependency { showTracer && waterDropDown }
     private val tracerColorSecond by ColorSetting("Tracer Color Second", Colors.MINECRAFT_GOLD, true, desc = "Color for the second tracer.").withDependency { showTracer && waterDropDown }
     private val waterReset by ActionSetting("Reset Water", desc = "Resets the solver.") { WaterSolver.reset() }.withDependency { waterSolver && waterDropDown }
