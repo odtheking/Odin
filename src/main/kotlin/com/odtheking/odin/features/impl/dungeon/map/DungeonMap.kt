@@ -12,7 +12,7 @@ import com.odtheking.odin.utils.render.hollowFill
 import com.odtheking.odin.utils.skyblock.dungeon.map.scan.DungeonMapScan
 import net.minecraft.client.gui.GuiGraphics
 
-object DungeonMapModule : Module("Map", description = "Displays the dungeon map.") {
+object DungeonMap : Module("Bad map", description = "Displays the dungeon map.") {
 
     var backgroundColor by ColorSetting("Background Color", Color(0, 0, 0, 0.7f), true, desc = "Background color of the map.")
     var textScaling      by NumberSetting("Text Scaling", 0.45f, 0.1f, 1f, 0.05f, desc = "Scale of room name text.")
@@ -20,7 +20,7 @@ object DungeonMapModule : Module("Map", description = "Displays the dungeon map.
     private val playerDropdown by DropdownSetting("Player Settings")
     var playerNamesScaling       by NumberSetting("Player Names Scaling", 0.75f, 0.1f, 2f, 0.05f, desc = "Scale of player name labels.").withDependency { playerDropdown }
     var playerNameColor          by ColorSetting("Player Name Color", Color(70, 70, 70), false, desc = "Colour of player name labels.").withDependency { playerDropdown }
-    var selfVanillaMarker        by BooleanSetting("Self Vanilla Marker", false, desc = "Draw a direction arrow instead of your head for yourself.").withDependency { playerDropdown }
+    var selfVanillaMarker        by BooleanSetting("Self Vanilla Marker", true, desc = "Draw a direction arrow instead of your head for yourself.").withDependency { playerDropdown }
 
     private val doorDropdown by DropdownSetting("Door Settings")
     var normalDoorColor  by ColorSetting("Normal Door",  Color(107, 58, 17),   false, desc = "Colour of normal doors.").withDependency { doorDropdown }

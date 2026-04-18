@@ -73,7 +73,7 @@ private fun GuiGraphics.renderDoors() {
     val rs = DungeonMapScan.roomSize.takeIf { it != -1 } ?: return
     val rg = DungeonMapScan.roomGap
     val half = (rs - 8) / 2f
-    val unknownColor = DungeonMapModule.unknownRoomColor.rgba
+    val unknownColor = DungeonMap.unknownRoomColor.rgba
 
     fun GuiGraphics.stubIfNeeded(index: Int, room: MapScanRoom?) {
         if (room != null && room.checkmark != MapCheckmark.UNDISCOVERED) return
@@ -132,12 +132,12 @@ private fun GuiGraphics.renderRoomText(room: MapScanRoom) {
     }.rgba
 
     val lines  = scannedRoom?.name?.split(" ") ?: return
-    val totalH = (lines.size - 1) * fontH * DungeonMapModule.textScaling
+    val totalH = (lines.size - 1) * fontH * DungeonMap.textScaling
 
     for ((i, line) in lines.withIndex()) {
         pose().pushMatrix()
-        pose().translate(cx, cz - totalH / 2f + i * fontH * DungeonMapModule.textScaling)
-        pose().scale(DungeonMapModule.textScaling)
+        pose().translate(cx, cz - totalH / 2f + i * fontH * DungeonMap.textScaling)
+        pose().scale(DungeonMap.textScaling)
         drawCenteredString(mc.font, line, 0, -fontH / 2, textColor)
         pose().popMatrix()
     }
@@ -158,15 +158,15 @@ private fun GuiGraphics.renderPlayers() {
 
         if (showNames) {
             pose().pushMatrix()
-            pose().scale(DungeonMapModule.playerNamesScaling)
-            drawCenteredString(mc.font, player.name, 0, 8, DungeonMapModule.playerNameColor.rgba)
+            pose().scale(DungeonMap.playerNamesScaling)
+            drawCenteredString(mc.font, player.name, 0, 8, DungeonMap.playerNameColor.rgba)
             pose().popMatrix()
         }
 
         pose().rotate(Math.toRadians(180.0 + player.renderYaw).toFloat())
 
         val isSelf = player.name == selfName
-        if (isSelf && DungeonMapModule.selfVanillaMarker) blit(RenderPipelines.GUI_TEXTURED, marker, -2, -3, 2f, 0f, 5, 7, 8, 8)
+        if (isSelf && DungeonMap.selfVanillaMarker) blit(RenderPipelines.GUI_TEXTURED, marker, -2, -3, 2f, 0f, 5, 7, 8, 8)
         else player.playerSkin?.let { skin ->
             fill(-5, -5, 5, 5, player.clazz.color.rgba)
             PlayerFaceRenderer.draw(this, skin, -4, -4, 8)
@@ -202,27 +202,27 @@ private fun textCenter(room: RoomInfo): Pair<Float, Float> {
 }
 
 private fun roomTypeColor(type: RoomType): Color = when (type) {
-    RoomType.NORMAL   -> DungeonMapModule.normalRoomColor
-    RoomType.PUZZLE   -> DungeonMapModule.puzzleRoomColor
-    RoomType.TRAP     -> DungeonMapModule.trapRoomColor
-    RoomType.BLOOD    -> DungeonMapModule.bloodRoomColor
-    RoomType.ENTRANCE -> DungeonMapModule.entranceRoomColor
-    RoomType.FAIRY    -> DungeonMapModule.fairyRoomColor
-    RoomType.CHAMPION -> DungeonMapModule.championRoomColor
+    RoomType.NORMAL   -> DungeonMap.normalRoomColor
+    RoomType.PUZZLE   -> DungeonMap.puzzleRoomColor
+    RoomType.TRAP     -> DungeonMap.trapRoomColor
+    RoomType.BLOOD    -> DungeonMap.bloodRoomColor
+    RoomType.ENTRANCE -> DungeonMap.entranceRoomColor
+    RoomType.FAIRY    -> DungeonMap.fairyRoomColor
+    RoomType.CHAMPION -> DungeonMap.championRoomColor
     else              -> Color(60, 60, 60)
 }
 
 private fun doorTypeColor(type: DoorType): Color = when (type) {
-    DoorType.Normal -> DungeonMapModule.normalDoorColor
-    DoorType.Wither -> DungeonMapModule.witherDoorColor
-    DoorType.Blood  -> DungeonMapModule.bloodDoorColor
-    DoorType.Fairy  -> DungeonMapModule.fairyDoorColor
+    DoorType.Normal -> DungeonMap.normalDoorColor
+    DoorType.Wither -> DungeonMap.witherDoorColor
+    DoorType.Blood  -> DungeonMap.bloodDoorColor
+    DoorType.Fairy  -> DungeonMap.fairyDoorColor
 }
 
 private fun doorColor(type: DoorType, originRoom: MapScanRoom?, destRoom: MapScanRoom?): Color {
     if (type != DoorType.Normal) return doorTypeColor(type)
     if (sequenceOf(originRoom, destRoom).any(::isUndiscoveredRoom)) {
-        return DungeonMapModule.unknownRoomColor
+        return DungeonMap.unknownRoomColor
     }
     val nonNormal = sequenceOf(originRoom, destRoom).filterNotNull()
         .firstOrNull { it.type != RoomType.NORMAL && it.type != RoomType.UNDISCOVERED }
