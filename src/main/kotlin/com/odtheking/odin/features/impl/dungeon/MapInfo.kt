@@ -208,7 +208,6 @@ object MapInfo : Module(
             else -> "§a"
         }
         val roomText = buildString {
-            append("§7\uD83D\uDDDD ")
             append(color)
             append(secrets.first)
             append("§7/")

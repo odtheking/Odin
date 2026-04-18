@@ -62,7 +62,7 @@ object TerminalSounds : Module(
 
     private fun playSoundForSlot(slot: Int, button: Int) {
         with(TerminalUtils.currentTerm ?: return) {
-            if ((isClicked && type != TerminalTypes.MELODY) || !canClick(slot, button)) return
+            if (!canClick(slot, button)) return
             if ((solution.size == 1 || (type == TerminalTypes.MELODY && slot == 43)) && completeSounds) {
                 if (!cancelLastClick) playTerminalSound()
                 playSoundSettings(completeSoundSettings())

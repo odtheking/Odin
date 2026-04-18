@@ -49,10 +49,10 @@ object TPMazeSolver {
         val candidates = tpPads.slice(groupStart until groupStart + 4).filter { it != currentPad && it !in visited }
 
         best = candidates.firstOrNull { it in correctPortals }
-            ?: candidates.filter { it.x == currentPad.x || it.z == currentPad.z }.minByOrNull {
+            ?: candidates.minByOrNull {
                 val yaw = (atan2(it.center.z - pos.z, it.center.x - pos.x) * 180.0 / Math.PI).toFloat() - 90f
                 abs(Mth.wrapDegrees(yaw) - Mth.wrapDegrees(event.change.yRot))
-            } ?: candidates.firstOrNull()
+            }
     }
 
     private fun getCorrectPortals(pos: Vec3, yaw: Float, pitch: Float) {

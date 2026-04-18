@@ -17,6 +17,7 @@ import com.odtheking.odin.utils.render.drawStyledBox
 import com.odtheking.odin.utils.skyblock.Island
 import com.odtheking.odin.utils.skyblock.LocationUtils
 import net.minecraft.core.BlockPos
+import net.minecraft.core.Direction
 import net.minecraft.core.SectionPos
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.protocol.game.ClientboundSoundPacket
@@ -31,6 +32,7 @@ import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.Vec3
 import java.util.*
 import kotlin.math.abs
+import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.sign
 
@@ -166,7 +168,8 @@ object Etherwarp : Module(
 
         repeat(1000) {
             val blockPos = BlockPos(x.toInt(), y.toInt(), z.toInt())
-            val chunk = mc.level?.getChunk(SectionPos.blockToSectionCoord(blockPos.x), SectionPos.blockToSectionCoord(blockPos.z)) ?: return EtherPos.NONE
+            val level = mc.level ?: return EtherPos.NONE
+            val chunk = level.getChunk(SectionPos.blockToSectionCoord(blockPos.x), SectionPos.blockToSectionCoord(blockPos.z))
 
             val state = chunk.getBlockState(blockPos)
             val id = Block.getId(state)
@@ -177,13 +180,17 @@ object Etherwarp : Module(
             if ((etherWarp && isSolid) || (!etherWarp && id != 0)) {
 
                 if (!etherWarp && isPassable) return EtherPos(false, blockPos, state)
-                val feetState = chunk.getBlockState(blockPos.above())
+
+                val collisionTop = state.getCollisionShape(level, blockPos).max(Direction.Axis.Y)
+                val clearanceBaseY = blockPos.y + max(1, ceil(collisionTop).toInt())
+
+                val feetState = chunk.getBlockState(BlockPos(blockPos.x, clearanceBaseY, blockPos.z))
                 val feetFlags = blockFlags[Block.getId(feetState)]
 
                 if ((feetFlags and PASSABLE) == 0 || (feetFlags and BLOCKS_FEET) != 0)
                     return EtherPos(false, blockPos, state)
 
-                val headState = chunk.getBlockState(blockPos.above(2))
+                val headState = chunk.getBlockState(BlockPos(blockPos.x, clearanceBaseY + 1, blockPos.z))
                 val headFlags = blockFlags[Block.getId(headState)]
 
                 if ((headFlags and PASSABLE) == 0 || (headFlags and BLOCKS_FEET) != 0)

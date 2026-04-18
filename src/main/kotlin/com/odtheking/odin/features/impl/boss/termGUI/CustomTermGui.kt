@@ -35,6 +35,7 @@ abstract class TermGui {
     inline val currentSolution get() = TerminalUtils.currentTerm?.solution.orEmpty()
     private var grid: Grid? = null
     private var hoveredSlotIndex: Int? = null
+    protected open val guiScale get() = TerminalSolver.customTermSize
     open fun buildTerminal(screen: AbstractContainerScreen<*>) {}
 
     init {
@@ -47,7 +48,7 @@ abstract class TermGui {
             },
             click = fun ScreenEvent.MouseClick.(): Any {
                 grid?.let { g ->
-                    val (bx, by) = g.toBase(click.x(), click.y(), TerminalSolver.customTermSize)
+                    val (bx, by) = g.toBase(click.x(), click.y(), guiScale)
                     hoveredSlotIndex = g.slots.firstOrNull { it.containsBase(bx, by) }?.slotIndex
                     hoveredSlotIndex?.let { customTerminalClick(it, click.button()) }
                 }; return true
@@ -78,7 +79,7 @@ abstract class TermGui {
     ) {
         val slotSize = 24
         val gap      = TerminalSolver.gap
-        val scale    = TerminalSolver.customTermSize
+        val scale    = guiScale
         val w        = cols * slotSize + (cols - 1) * gap
         val h        = rows * slotSize + (rows - 1) * gap
         grid = Grid(
@@ -114,7 +115,7 @@ abstract class TermGui {
 
     private fun render(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int) {
         val g       = grid ?: return
-        val scale   = TerminalSolver.customTermSize
+        val scale   = guiScale
         val padding = 2
         val radius  = TerminalSolver.roundness
         val (baseMX, baseMY) = g.toBase(mouseX.toDouble(), mouseY.toDouble(), scale)

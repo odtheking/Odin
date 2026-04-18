@@ -191,7 +191,7 @@ object LeapMenu : Module(
         indexCache.putAll(buildMap {
             for (slot in slots.subList(11, 16)) {
                 val stack = slot.item
-                if (stack.item is PlayerHeadItem) put(stack.hoverName.string.noControlCodes, slot.index)
+                if (stack.item is PlayerHeadItem) put(stack.hoverName.string.substringAfter(' ').noControlCodes, slot.index)
             }
         })
 

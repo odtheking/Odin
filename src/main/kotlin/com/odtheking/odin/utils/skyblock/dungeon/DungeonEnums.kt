@@ -36,7 +36,8 @@ data class DungeonPlayer(
  */
 enum class Puzzle(
     val displayName: String,
-    var status: PuzzleStatus? = null
+    var status: PuzzleStatus? = null,
+    var player: String? = null
 ) {
     UNKNOWN("???"),
     BLAZE("Higher Or Lower"),
