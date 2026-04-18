@@ -6,7 +6,6 @@ import com.odtheking.odin.events.core.Event
 import com.odtheking.odin.utils.render.RenderConsumer
 import com.odtheking.odin.utils.skyblock.dungeon.map.tile.DungeonRoom
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.terminalhandler.TerminalHandler
-import com.odtheking.odin.utils.skyblock.dungeon.tiles.Room
 import net.fabricmc.fabric.api.client.rendering.v1.world.AbstractWorldRenderContext
 import net.fabricmc.fabric.api.client.rendering.v1.world.WorldExtractionContext
 import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderContext
@@ -33,8 +32,7 @@ class MessageSentEvent(val message: String) : CancellableEvent()
 
 class RenderBossBarEvent(val bossBar: BossEvent) : CancellableEvent()
 
-class RoomEnterEvent(val room: Room?) : CancellableEvent()
-class DungeonRoomEnterEvent(val room: DungeonRoom?) : CancellableEvent()
+class RoomEnterEvent(val room: DungeonRoom?) : CancellableEvent()
 
 interface SecretPickupEvent : Event { // all are currently packet based but can probably use mixins
     class Interact(val blockPos: BlockPos, val blockState: BlockState) : SecretPickupEvent

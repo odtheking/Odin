@@ -15,7 +15,6 @@ import com.odtheking.odin.utils.render.RoundRectPIPRenderer
 import com.odtheking.odin.utils.skyblock.*
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonListener
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
-import com.odtheking.odin.utils.skyblock.dungeon.ScanUtils
 import com.odtheking.odin.utils.skyblock.dungeon.map.scan.DungeonMapScan
 import com.odtheking.odin.utils.skyblock.dungeon.map.scan.DungeonWorldScan
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalUtils
@@ -75,7 +74,7 @@ object OdinMod : ClientModInitializer {
             this, LocationUtils, TickTasks, KuudraUtils,
             SkyblockPlayer, ServerUtils, EventDispatcher,
             DungeonListener, PartyUtils, TerminalUtils,
-            ScanUtils, DungeonUtils, SplitsManager,
+            DungeonUtils, SplitsManager,
             IrisCompatability, RenderBatchManager,
             ModuleManager, CustomGUIImpl, Shenanigans,
             DungeonWorldScan, DungeonMapScan

@@ -3,7 +3,6 @@ package com.odtheking.odin.utils.skyblock.dungeon.map.scan
 import com.odtheking.odin.events.WorldEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
-import com.odtheking.odin.features.impl.dungeon.map.Vec2i
 import com.odtheking.odin.utils.IVec2
 import com.odtheking.odin.utils.equalsOneOf
 import com.odtheking.odin.utils.modMessage
@@ -97,7 +96,7 @@ object DungeonMapScan {
             if (decoration.type.value() == MapDecorationTypes.FRAME.value()) continue
 
             iterator.asSequence().firstOrNull { !it.isDead }?.apply {
-                mapPos = Vec2i(decoration.x.toInt(), decoration.y.toInt())
+                mapPos = IVec2(decoration.x.toInt(), decoration.y.toInt())
                 yaw = decoration.rot() * 360 / 16f
             }
         }
@@ -218,7 +217,7 @@ object DungeonMapScan {
         }
     }
 
-    fun playerRenderPosition(entity: Player?, mapPos: Vec2i): Pair<Float, Float> {
+    fun playerRenderPosition(entity: Player?, mapPos: IVec2): Pair<Float, Float> {
         entity?.let {
             val mapX = (it.x.toFloat() + 200f) * roomGap / 32f
             val mapZ = (it.z.toFloat() + 200f) * roomGap / 32f
@@ -233,6 +232,7 @@ object DungeonMapScan {
     private fun getPx(colors: ByteArray, x: Int, z: Int): Byte {
         return if (x in 0..<MAP_SIZE && z in 0..<MAP_SIZE) colors[z * MAP_SIZE + x] else EMPTY
     }
+
     private fun addOrFixDoor(position: IVec2, rotation: DoorRotation, type: DoorType) {
         val chunkPos = IVec2(-12 + 2 * position.x + rotation.offset.x, -12 + 2 * position.z + rotation.offset.z)
         val originIndex = position.x + position.z * 6

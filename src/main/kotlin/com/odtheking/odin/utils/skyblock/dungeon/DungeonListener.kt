@@ -6,7 +6,6 @@ import com.odtheking.odin.events.ChatPacketEvent
 import com.odtheking.odin.events.RoomEnterEvent
 import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.WorldEvent
-import com.odtheking.odin.events.core.EventPriority
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.features.impl.dungeon.LeapMenu
@@ -15,7 +14,7 @@ import com.odtheking.odin.features.impl.dungeon.Mimic
 import com.odtheking.odin.utils.network.WebUtils.hasBonusPaulScore
 import com.odtheking.odin.utils.noControlCodes
 import com.odtheking.odin.utils.romanToInt
-import com.odtheking.odin.utils.skyblock.dungeon.tiles.Room
+import com.odtheking.odin.utils.skyblock.dungeon.map.scan.DungeonWorldScan
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import net.minecraft.network.protocol.game.*
@@ -29,8 +28,6 @@ object DungeonListener {
     var dungeonTeammatesNoSelf: List<DungeonPlayer> = ArrayList(4)
     var leapTeammates: List<DungeonPlayer> = ArrayList(4)
 
-    inline val passedRooms: MutableSet<Room> get() = ScanUtils.passedRooms
-    inline val currentRoom: Room? get() = ScanUtils.currentRoom
     private var expectingBloodUpdate = false
     var dungeonStats = DungeonStats()
     var puzzles = ArrayList<Puzzle>()
@@ -67,9 +64,8 @@ object DungeonListener {
             paul = false
         }
 
-        on<RoomEnterEvent> (EventPriority.HIGH) {
-            val room = room?.takeUnless { room -> passedRooms.any { it.data.name == room.data.name } } ?: return@on
-            dungeonStats.knownSecrets += room.data.secrets
+        on<RoomEnterEvent> {
+            dungeonStats.knownSecrets = DungeonWorldScan.rooms.sumOf { if (it.discovered) it.data.secrets else 0 }
         }
 
         onReceive<ClientboundPlayerInfoUpdatePacket> {

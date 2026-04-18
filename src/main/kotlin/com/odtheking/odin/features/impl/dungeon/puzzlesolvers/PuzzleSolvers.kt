@@ -11,8 +11,7 @@ import com.odtheking.odin.utils.*
 import com.odtheking.odin.utils.Color.Companion.withAlpha
 import com.odtheking.odin.utils.handlers.TickTask
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
-import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils.getRealCoords
-import com.odtheking.odin.utils.skyblock.dungeon.tiles.RoomType
+import com.odtheking.odin.utils.skyblock.dungeon.map.tile.RoomType
 import net.minecraft.core.BlockPos
 import net.minecraft.network.chat.ClickEvent
 import net.minecraft.network.chat.Component

@@ -163,7 +163,7 @@ private fun GuiGraphics.renderPlayers() {
             pose().popMatrix()
         }
 
-        pose().rotate(Math.toRadians(180.0 + player.mapRenderYaw()).toFloat())
+        pose().rotate(Math.toRadians(180.0 + player.renderYaw).toFloat())
 
         val isSelf = player.name == selfName
         if (isSelf && DungeonMapModule.selfVanillaMarker) blit(RenderPipelines.GUI_TEXTURED, marker, -2, -3, 2f, 0f, 5, 7, 8, 8)

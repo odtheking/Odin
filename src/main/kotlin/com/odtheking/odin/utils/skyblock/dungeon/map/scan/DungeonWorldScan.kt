@@ -1,12 +1,13 @@
 package com.odtheking.odin.utils.skyblock.dungeon.map.scan
 
 import com.odtheking.odin.OdinMod.mc
-import com.odtheking.odin.events.DungeonRoomEnterEvent
 import com.odtheking.odin.events.LocationChangeEvent
+import com.odtheking.odin.events.RoomEnterEvent
 import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.WorldEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.utils.IVec2
+import com.odtheking.odin.utils.devMessage
 import com.odtheking.odin.utils.equalsOneOf
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.skyblock.dungeon.map.tile.*
@@ -54,7 +55,7 @@ object DungeonWorldScan {
             if (!DungeonUtils.inDungeons || DungeonUtils.inBoss) {
                 if (currentRoom != null) {
                     currentRoom = null
-                    DungeonRoomEnterEvent(null).postAndCatch()
+                    RoomEnterEvent(null).postAndCatch()
                 }
                 return@on
             }
@@ -64,27 +65,23 @@ object DungeonWorldScan {
             if (tileX !in 0..5 || tileZ !in 0..5) return@on
 
             val room = tiles[tileX + tileZ * 6].room
-            if (room == currentRoom) return@on
+            if (room == currentRoom || room?.rotation == null) return@on
 
             currentRoom = room
-            room?.discovered = true
-            DungeonRoomEnterEvent(room).postAndCatch()
+            room.discovered = true
+            RoomEnterEvent(room).postAndCatch()
+            devMessage("${room.data.name} - ${room.rotation} || clay: ${room.clayPos}")
         }
 
         ClientChunkEvents.CHUNK_LOAD.register { _, chunk ->
             // if dungeon isn't loaded, yet we add it to chunksToScan
             // otherwise just directly load it, no need to scan every tick
 
-            if (!DungeonUtils.inDungeons) {
-                chunksToScan.add(IVec2(chunk.pos.x, chunk.pos.z))
-            } else {
-                scanChunk(chunk)
-            }
+            if (!DungeonUtils.inDungeons) chunksToScan.add(IVec2(chunk.pos.x, chunk.pos.z))
+            else scanChunk(chunk)
         }
         ClientChunkEvents.CHUNK_UNLOAD.register { _, chunk ->
-            if (!DungeonUtils.inDungeons) {
-                chunksToScan.remove(IVec2(chunk.pos.x, chunk.pos.z))
-            }
+            if (!DungeonUtils.inDungeons) chunksToScan.remove(IVec2(chunk.pos.x, chunk.pos.z))
         }
         // in case chunks are somehow unloaded before area is loaded
         // remove from chunksToScan, if dungeon has started no need to do this.
@@ -92,9 +89,7 @@ object DungeonWorldScan {
         on<LocationChangeEvent> {
             if (DungeonUtils.inDungeons) {
                 val level = mc.level ?: return@on
-                for (position in chunksToScan) {
-                    scanChunk(level.getChunk(position.x, position.z))
-                }
+                for (position in chunksToScan) scanChunk(level.getChunk(position.x, position.z))
             }
             chunksToScan.clear()
         }
@@ -107,8 +102,7 @@ object DungeonWorldScan {
 
         if (chunkPosition.x in -12..-2 && chunkPosition.z in -12..-2) {
             if (rowEven && columnEven) scanRoom(chunk, chunkPosition)
-            else if (rowEven || columnEven)
-                scanDoor(chunk, chunkPosition, if (columnEven) DoorRotation.Horizontal else DoorRotation.Vertical)
+            else if (rowEven || columnEven) scanDoor(chunk, chunkPosition, if (columnEven) DoorRotation.Horizontal else DoorRotation.Vertical)
         }
     }
 
@@ -151,15 +145,12 @@ object DungeonWorldScan {
         if (room.segments.size != data.shape.segments) return
 
         val level = mc.level ?: return
-        if (room.clayPos == null && highestBlock > 0) {
-            // Layout probes can cross chunk borders; resolve blocks from the world, not this chunk.
-            room.inferLayout({ pos -> level.getBlockState(pos).block }, highestBlock)
-        }
+        room.inferLayout({ pos -> level.getBlockState(pos).block }, highestBlock)
     }
 
     private val stringBuilder = StringBuilder(1024)
 
-    private fun getRoomCore(chunk: LevelChunk, position: IVec2): Pair<Int, Int> {
+    fun getRoomCore(chunk: LevelChunk, position: IVec2): Pair<Int, Int> {
         stringBuilder.setLength(0)
 
         var foundHighest = false

@@ -4,11 +4,10 @@ import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.features.impl.dungeon.MapInfo.togglePaul
 import com.odtheking.odin.utils.equalsOneOf
 import com.odtheking.odin.utils.romanToInt
-import com.odtheking.odin.utils.rotateAroundNorth
-import com.odtheking.odin.utils.rotateToNorth
 import com.odtheking.odin.utils.skyblock.Island
 import com.odtheking.odin.utils.skyblock.LocationUtils
-import com.odtheking.odin.utils.skyblock.dungeon.tiles.Room
+import com.odtheking.odin.utils.skyblock.dungeon.map.scan.DungeonWorldScan
+import com.odtheking.odin.utils.skyblock.dungeon.map.tile.DungeonRoom
 import net.minecraft.core.BlockPos
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.SkullBlock
@@ -72,7 +71,7 @@ object DungeonUtils {
         get() = DungeonListener.dungeonStats.elapsedTime
 
     inline val currentRoomName: String
-        get() = DungeonListener.currentRoom?.data?.name ?: "Unknown"
+        get() = DungeonWorldScan.currentRoom?.data?.name ?: "Unknown"
 
     inline val dungeonTeammates: List<DungeonPlayer>
         get() = DungeonListener.dungeonTeammates
@@ -96,11 +95,8 @@ object DungeonUtils {
     inline val princeKilled: Boolean
         get() = DungeonListener.dungeonStats.princeKilled
 
-    inline val currentRoom: Room?
-        get() = DungeonListener.currentRoom
-
-    inline val passedRooms: Set<Room>
-        get() = DungeonListener.passedRooms
+    inline val currentRoom: DungeonRoom?
+        get() = DungeonWorldScan.currentRoom
 
     inline val isPaul: Boolean
         get() = DungeonListener.paul
@@ -236,7 +232,4 @@ object DungeonUtils {
             else -> false
         }
     }
-
-    fun Room.getRelativeCoords(pos: BlockPos) = pos.subtract(clayPos.atY(0)).rotateToNorth(rotation)
-    fun Room.getRealCoords(pos: BlockPos) = pos.rotateAroundNorth(rotation).offset(clayPos.x, 0, clayPos.z)
 }
