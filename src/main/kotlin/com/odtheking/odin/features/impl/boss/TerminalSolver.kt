@@ -7,6 +7,7 @@ import com.odtheking.odin.events.GuiEvent
 import com.odtheking.odin.events.TerminalEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
+import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.Color.Companion.darker
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalTypes
@@ -19,18 +20,21 @@ object TerminalSolver : Module(
     name = "Terminal Solver",
     description = "Renders solution for terminals in floor 7."
 ) {
-    private val renderType by SelectorSetting("Render type", "Odin", arrayListOf("Odin", "Normal", "Custom GUI"), desc = "How the terminal solver should render.")
+    private val renderType by SelectorSetting("Render type", "Odin", arrayListOf("Odin", "Normal", "Custom GUI", "Fancy GUI"), desc = "How the terminal solver should render.")
     private val normalTermSize by NumberSetting("Normal Term Size", 3, 1, 5, 1, desc = "The GUI scale increase for normal terminal GUI.").withDependency { renderType == 0 || renderType == 1 }
     val customTermSize by NumberSetting("Term Size", 2f, 1f, 3f, 0.1f, desc = "The size of the custom terminal GUI.").withDependency { renderType == 2 }
     val roundness by NumberSetting("Roundness", 5, 0f, 15f, 1f, desc = "The roundness of the custom terminal gui.").withDependency { renderType == 2 }
     val gap by NumberSetting("Slot gap", 2, 0, 8, 1, desc = "The gap between the slots in the custom terminal gui.").withDependency { renderType == 2 }
+
+    val fancyScale by NumberSetting("Scale", 2f, 1f, 5f, 0.1f, desc = "The scale of the Fancy GUI (1-5).").withDependency { renderType == 3 }
+    val fancyGuiBorderRadius by NumberSetting("GUI Border Radius", 5, 0f, 10f, 1f, desc = "Corner roundness of the Fancy GUI panel (0 = no roundness, max 10).").withDependency { renderType == 3 }
+    val fancyButtonBorderRadius by NumberSetting("Button Border Radius", 3, 0f, 10f, 1f, desc = "Corner roundness of the Fancy GUI buttons (0 = no roundness, max 10).").withDependency { renderType == 3 }
 
     private val solverSettings by DropdownSetting("Solver Functionality")
     private val cancelToolTip by BooleanSetting("Stop Tooltips", true, desc = "Stops rendering tooltips in terminals.").withDependency { (renderType == 0 || renderType == 1) && solverSettings }
     private val middleClickGUI by BooleanSetting("Middle Click GUI", true, desc = "Replaces right click with middle click in terminals.").withDependency { (renderType == 0 || renderType == 1) && solverSettings }
     private val blockIncorrectClicks by BooleanSetting("Block Incorrect Clicks", true, desc = "Blocks incorrect clicks in terminals.").withDependency { (renderType == 0 || renderType == 1) && solverSettings }
     private val cancelMelodySolver by BooleanSetting("Stop Melody Solver", false, desc = "Stops rendering the melody solver.").withDependency { solverSettings }
-    val melodyTermSize by NumberSetting("Melody Size", 1.5f, 1f, 3f, 0.1f, desc = "The size of the melody terminal GUI.").withDependency { !cancelMelodySolver && solverSettings }
     val showNumbers by BooleanSetting("Show Numbers", true, desc = "Shows numbers in the order terminal.").withDependency { solverSettings }
     val firstClickProt by NumberSetting("First Click Protection", 500, 350, 800, 10, unit = "ms", desc = "The amount of time after opening a terminal where clicks are blocked to prevent bans (recommended value is 500 minus your ping).").withDependency { solverSettings }
     val hideClicked by BooleanSetting("Hide Clicked", false, desc = "Visually hides your first click before a gui updates instantly to improve perceived response time. Does not affect actual click time.").withDependency { solverSettings }
@@ -61,6 +65,7 @@ object TerminalSolver : Module(
 
     @JvmStatic val termSize get() = if (enabled && (renderType == 0 || renderType == 1) && TerminalUtils.currentTerm != null) normalTermSize else 1
     val customGuiEnabled get() = enabled && renderType == 2 && renderMelody
+    val fancyGuiEnabled get() = enabled && renderType == 3 && renderMelody
     private val renderMelody get() = !(cancelMelodySolver && TerminalUtils.currentTerm?.type == TerminalTypes.MELODY)
 
     init {
