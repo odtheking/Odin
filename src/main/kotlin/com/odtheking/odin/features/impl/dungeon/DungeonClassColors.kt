@@ -8,7 +8,7 @@ import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonClass
 
 object DungeonClassColors : Module(
-    name = "Custom Dungeon Class Colors",
+    name = "Dungeon Class Colors",
     description = "When enabled, overrides the default dungeon class colors with your custom colors.",
     key = null
 ) {
