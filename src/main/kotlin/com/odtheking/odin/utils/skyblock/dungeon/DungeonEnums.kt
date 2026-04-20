@@ -3,6 +3,7 @@ package com.odtheking.odin.utils.skyblock.dungeon
 import com.odtheking.odin.features.impl.dungeon.map.DungMap.mapCenter
 import com.odtheking.odin.features.impl.dungeon.map.DungMap.roomSize
 import com.odtheking.odin.features.impl.dungeon.map.Vec2i
+import com.odtheking.odin.features.impl.dungeon.DungeonClassColors
 import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.Colors
 import net.minecraft.world.entity.player.Player
@@ -79,7 +80,7 @@ enum class PuzzleStatus {
  *
  */
 enum class DungeonClass(
-    val color: Color,
+    val defaultColor: Color,
     val colorCode: Char,
     val defaultQuadrant: Int,
     var priority: Int,
@@ -89,7 +90,9 @@ enum class DungeonClass(
     Healer(Colors.MINECRAFT_LIGHT_PURPLE, 'd', 2, 2),
     Mage(Colors.MINECRAFT_AQUA, 'b', 3, 2),
     Tank(Colors.MINECRAFT_DARK_GREEN, '2', 3, 1),
-    Unknown(Colors.WHITE, 'f', 0, 0)
+    Unknown(Colors.WHITE, 'f', 0, 0);
+
+    val color: Color get() = DungeonClassColors.colorFor(this)
 }
 
 enum class Blessing(
