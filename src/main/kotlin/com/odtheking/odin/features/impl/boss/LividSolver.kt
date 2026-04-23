@@ -3,11 +3,13 @@ package com.odtheking.odin.features.impl.boss
 import com.odtheking.odin.events.*
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
+import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.modMessage
 import com.odtheking.odin.utils.render.drawWireFrameBox
+import com.odtheking.odin.utils.render.drawTracer
 import com.odtheking.odin.utils.render.textDim
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.core.BlockPos
@@ -21,6 +23,7 @@ object LividSolver : Module(
     name = "Livid Solver",
     description = "Provides a visual cue for the correct Livid's location in the boss fight."
 ) {
+    private val drawLine by BooleanSetting("Line to Livid", false, desc = "Draws a line from your crosshair to the correct Livid.")
     private val woolLocation = BlockPos(5, 108, 43)
     private var currentLivid = Livid.HOCKEY
 
@@ -59,6 +62,7 @@ object LividSolver : Module(
             if (!DungeonUtils.inBoss || !DungeonUtils.isFloor(5) || mc.player?.getEffect(MobEffects.BLINDNESS) != null) return@on
             currentLivid.entity?.let { entity ->
                 drawWireFrameBox(entity.boundingBox, currentLivid.color, 4f, true)
+                if (drawLine) drawTracer(entity.boundingBox.center, currentLivid.color, true)
             }
         }
 
