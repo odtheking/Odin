@@ -1,6 +1,5 @@
 package com.odtheking.odin.features.impl.boss
 
-import com.odtheking.mixin.accessors.AbstractContainerScreenAccessor
 import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.*
 import com.odtheking.odin.events.GuiEvent
@@ -83,8 +82,8 @@ object TerminalSolver : Module(
         on<GuiEvent.Render> {
             if (TerminalUtils.currentTerm == null || !renderMelody || renderType != 0) return@on
 
-            val screen = (screen as? AbstractContainerScreen<*>) as? AbstractContainerScreenAccessor ?: return@on
-            guiGraphics.fill(screen.x + 7, screen.y + 16, screen.x + screen.width - 7, screen.y + screen.height - 96, backgroundColor.rgba)
+            val screen = screen as? AbstractContainerScreen<*> ?: return@on
+            guiGraphics.fill(screen.leftPos + 7, screen.topPos + 16, screen.leftPos + screen.width - 7, screen.topPos + screen.height - 96, backgroundColor.rgba)
         }
 
         on<GuiEvent.RenderSlot> {
@@ -94,7 +93,7 @@ object TerminalSolver : Module(
             if (slot.index <= currentTerm.type.windowSize - 1) {
                 currentTerm.getSlotRendering(slot.index)?.let { (color, text) ->
                     guiGraphics.fill(slot.x, slot.y, slot.x + 16, slot.y + 16, color.rgba)
-                    text?.let { guiGraphics.drawCenteredString(screen.font, it, slot.x + 8, slot.y + 4, Colors.WHITE.rgba) }
+                    text?.let { guiGraphics.centeredText(screen.font, it, slot.x + 8, slot.y + 4, Colors.WHITE.rgba) }
                     cancel()
                 }
                 if (renderType == 0) cancel()
@@ -106,11 +105,11 @@ object TerminalSolver : Module(
         }
 
         on<TerminalEvent.Open> {
-            if (renderType == 0 || renderType == 1) mc.execute { mc.resizeDisplay() }
+            if (renderType == 0 || renderType == 1) mc.execute { mc.resizeGui() }
         }
 
         on<TerminalEvent.Close> {
-            if (renderType == 0 || renderType == 1) mc.execute { mc.resizeDisplay() }
+            if (renderType == 0 || renderType == 1) mc.execute { mc.resizeGui() }
         }
 
         on<GuiEvent.DrawTooltip> {
@@ -131,12 +130,12 @@ object TerminalSolver : Module(
                 guiGraphics.pose().scale(1f / sf, 1f / sf)
                 guiGraphics.pose().scale(3f)
                 debugInfo.forEachIndexed { index, line ->
-                    guiGraphics.drawWordWrap(mc.font, Component.literal(line), 5, 20 + (index * 10), 300, Colors.WHITE.rgba)
+                    guiGraphics.textWithWordWrap(mc.font, Component.literal(line), 5, 20 + (index * 10), 300, Colors.WHITE.rgba)
                 }
 
                 menu.items.forEachIndexed { index, stack ->
-                    guiGraphics.renderItem(stack, 5 + (index % 9) * 18, 250 + (index / 9) * 18)
-                    guiGraphics.renderItemDecorations(mc.font, stack, 5 + (index % 9) * 18, 250 + (index / 9) * 18)
+                    guiGraphics.item(stack, 5 + (index % 9) * 18, 250 + (index / 9) * 18)
+                    guiGraphics.itemDecorations(mc.font, stack, 5 + (index % 9) * 18, 250 + (index / 9) * 18)
                 }
                 guiGraphics.pose().popMatrix()
             }

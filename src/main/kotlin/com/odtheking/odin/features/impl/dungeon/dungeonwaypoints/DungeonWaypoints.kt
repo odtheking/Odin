@@ -118,7 +118,7 @@ object DungeonWaypoints : Module(
             room?.setWaypoints()
         }
 
-        on<WorldEvent.Load> {
+        on<LevelEvent.Load> {
             scope.launch(Dispatchers.IO) { loadWaypoints() }
             resetClickedWaypoints()
             lastEtherPos = null

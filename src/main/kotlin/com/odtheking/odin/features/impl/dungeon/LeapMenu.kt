@@ -4,7 +4,7 @@ import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.*
 import com.odtheking.odin.events.ChatPacketEvent
 import com.odtheking.odin.events.ScreenEvent
-import com.odtheking.odin.events.WorldEvent
+import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.*
@@ -17,7 +17,7 @@ import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils.leapTeammates
 import com.odtheking.odin.utils.ui.HoverHandler
 import com.odtheking.odin.utils.ui.widget.CustomGUIImpl
-import net.minecraft.client.gui.components.PlayerFaceRenderer
+import net.minecraft.client.gui.components.PlayerFaceExtractor
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 import net.minecraft.world.item.PlayerHeadItem
 import org.lwjgl.glfw.GLFW
@@ -140,7 +140,7 @@ object LeapMenu : Module(
                     )
 
                     val face = (BOX_HEIGHT * 0.76).toInt()
-                    (player.playerSkin ?: mc.player?.skin)?.let { PlayerFaceRenderer.draw(guiGraphics, it, localX + 9, localY + 9, face) }
+                    (player.playerSkin ?: mc.player?.skin)?.let { PlayerFaceExtractor.extractRenderState(guiGraphics, it, localX + 9, localY + 9, face) }
 
                     guiGraphics.text(
                         if (!onlyClass) player.name else player.clazz.name,
@@ -169,7 +169,7 @@ object LeapMenu : Module(
                 leapedRegex.find(value)?.groupValues?.get(1)?.let { sendCommand("pc Leaped to ${it}!") }
         }
 
-        on<WorldEvent.Load> {
+        on<LevelEvent.Load> {
             indexCache.clear()
         }
     }

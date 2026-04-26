@@ -1,7 +1,7 @@
 package com.odtheking.odin.features.impl.render
 
 import com.odtheking.odin.events.RenderEvent
-import com.odtheking.odin.events.WorldEvent
+import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.utils.render.drawTexturedQuad
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
@@ -47,7 +47,7 @@ object Shenanigans {
             }
         }
 
-        on<WorldEvent.Load> {
+        on<LevelEvent.Load> {
             val now = Instant.now().atZone(ZoneOffset.UTC)
 
             enabled = (now.monthValue == 4 && now.dayOfMonth == 1) || run {

@@ -17,13 +17,13 @@ fun sendCommand(command: String) {
 fun modMessage(message: Any?, prefix: String = "§3Odin §8»§r ", chatStyle: Style? = null) {
     val text = Component.literal("$prefix$message")
     chatStyle?.let { text.setStyle(chatStyle) }
-    mc.execute { mc.gui.chat.addMessage(text) }
+    mc.execute { mc.gui.chat.addClientSystemMessage(text) }
 }
 
 fun modMessage(message: Component, prefix: String = "§3Odin §8»§r ", chatStyle: Style? = null) {
     val text = Component.literal(prefix).append(message)
     chatStyle?.let { text.setStyle(chatStyle) }
-    mc.execute { mc.gui.chat.addMessage(text) }
+    mc.execute { mc.gui.chat.addClientSystemMessage(text) }
 }
 
 fun devMessage(message: Any?) {

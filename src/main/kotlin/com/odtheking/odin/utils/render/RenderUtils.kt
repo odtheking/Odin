@@ -14,12 +14,12 @@ import com.odtheking.odin.utils.renderPos
 import com.odtheking.odin.utils.unaryMinus
 import it.unimi.dsi.fastutil.objects.ObjectArrayList
 import net.minecraft.client.gui.Font
-import net.minecraft.client.renderer.LightTexture
 import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.client.renderer.rendertype.RenderTypes
 import net.minecraft.client.renderer.texture.OverlayTexture
 import net.minecraft.core.BlockPos
 import net.minecraft.resources.Identifier
+import net.minecraft.util.LightCoordsUtil
 import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.Vec3
 import org.joml.Vector3f
@@ -60,20 +60,20 @@ object RenderBatchManager {
 
     init {
         on<RenderEvent.Last> {
-            val matrix = context.matrices()
-            val bufferSource = context.consumers() as? MultiBufferSource.BufferSource ?: return@on
+            val poseStack = context.poseStack()
+            val bufferSource = context.bufferSource()
             val camera = mc.gameRenderer.mainCamera.position()
 
-            matrix.pushPose()
-            matrix.translate(-camera.x, -camera.y, -camera.z)
+            poseStack.pushPose()
+            poseStack.translate(-camera.x, -camera.y, -camera.z)
 
-            matrix.renderQueuedLinesAndWireBoxes(renderConsumer.lines, renderConsumer.wireBoxes, bufferSource)
-            matrix.renderQueuedFilledBoxes(renderConsumer.filledBoxes, bufferSource)
-            matrix.renderQueuedTexturedQuads(renderConsumer.texturedQuads, bufferSource)
-            matrix.popPose()
+            poseStack.renderQueuedLinesAndWireBoxes(renderConsumer.lines, renderConsumer.wireBoxes, bufferSource)
+            poseStack.renderQueuedFilledBoxes(renderConsumer.filledBoxes, bufferSource)
+            poseStack.renderQueuedTexturedQuads(renderConsumer.texturedQuads, bufferSource)
+            poseStack.popPose()
 
-            matrix.renderQueuedBeaconBeams(renderConsumer.beaconBeams, camera)
-            matrix.renderQueuedTexts(renderConsumer.texts, bufferSource, camera)
+            poseStack.renderQueuedBeaconBeams(renderConsumer.beaconBeams, camera)
+            poseStack.renderQueuedTexts(renderConsumer.texts, bufferSource, camera)
             renderConsumer.clear()
 
             RoundRectPIPRenderer.clear()
@@ -134,14 +134,14 @@ private fun PoseStack.renderQueuedTexturedQuads(
     val last = this.last()
 
     for (quad in quads) {
-        val buffer = bufferSource.getBuffer(RenderTypes.entityCutoutNoCullZOffset(quad.texture))
+        val buffer = bufferSource.getBuffer(RenderTypes.entityCutout(quad.texture))
 
         fun vertex(p: Vec3, u: Float, v: Float) {
             buffer.addVertex(last, p.x.toFloat(), p.y.toFloat(), p.z.toFloat())
                 .setColor(quad.color)
                 .setUv(u, v)
                 .setOverlay(OverlayTexture.NO_OVERLAY)
-                .setUv2(LightTexture.FULL_BRIGHT, LightTexture.FULL_BRIGHT)
+                .setUv2(LightCoordsUtil.FULL_BRIGHT, LightCoordsUtil.FULL_BRIGHT)
                 .setNormal(last, quad.nx, quad.ny, quad.nz)
         }
 
@@ -243,7 +243,7 @@ private fun PoseStack.renderQueuedTexts(consumer: List<TextData>, bufferSource: 
         textData.font.drawInBatch(
             textData.text, -textData.textWidth / 2f, 0f, -1, true, pose, bufferSource,
             if (textData.depth) Font.DisplayMode.POLYGON_OFFSET else Font.DisplayMode.SEE_THROUGH,
-            0, LightTexture.FULL_BRIGHT
+            0, LightCoordsUtil.FULL_BRIGHT
         )
 
         popPose()

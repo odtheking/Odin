@@ -148,7 +148,7 @@ object BloodCamp : Module(
             moveTimeSeconds?.let { moveTimeSeconds = it - 0.05f }
         }
 
-        on<WorldEvent.Load> {
+        on<LevelEvent.Load> {
             currentWatcherEntity = null
             entityDataMap.clear()
             renderDataMap.clear()
@@ -167,7 +167,7 @@ object BloodCamp : Module(
         on<RenderEvent.Extract> {
             if (!DungeonUtils.inClear || !bloodAssist) return@on
             val boxOffset = Vec3(boxSize / -2.0, 1.5, boxSize / -2.0)
-            val partialTick = context.gameRenderer().mainCamera.partialTickTime
+            val partialTick = context.gameRenderer().mainCamera.getCameraEntityPartialTicks(context.deltaTracker())
 
             renderDataMap.forEach { (entity, renderData) ->
                 if (!entity.isAlive) return@forEach

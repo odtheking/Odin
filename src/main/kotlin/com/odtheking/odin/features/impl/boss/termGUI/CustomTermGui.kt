@@ -11,7 +11,7 @@ import com.odtheking.odin.utils.render.roundedFill
 import com.odtheking.odin.utils.render.text
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalUtils
 import com.odtheking.odin.utils.ui.widget.CustomGUIImpl
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 import net.minecraft.client.input.KeyEvent
 import org.lwjgl.glfw.GLFW
@@ -20,7 +20,7 @@ import org.lwjgl.glfw.GLFW
 abstract class TermGui {
     protected data class SlotVisual(
         val resolve: () -> Pair<Color, String?>?,
-        val onRenderContent: (GuiGraphics.(Int, Int, Int, Int) -> Unit)? = null,
+        val onRenderContent: (GuiGraphicsExtractor.(Int, Int, Int, Int) -> Unit)? = null,
     )
 
     private data class SlotBox(val slotIndex: Int, val bx: Int, val by: Int, val size: Int, val visual: SlotVisual) {
@@ -113,7 +113,7 @@ abstract class TermGui {
         }
     }
 
-    private fun render(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int) {
+    private fun render(guiGraphics: GuiGraphicsExtractor, mouseX: Int, mouseY: Int) {
         val g       = grid ?: return
         val scale   = guiScale
         val padding = 2
@@ -137,7 +137,7 @@ abstract class TermGui {
         guiGraphics.pose().popMatrix()
     }
 
-    protected fun GuiGraphics.renderSlotText(text: String, x: Int, y: Int, width: Int, height: Int, color: Color) =
+    protected fun GuiGraphicsExtractor.renderSlotText(text: String, x: Int, y: Int, width: Int, height: Int, color: Color) =
         text(text, x + (width - mc.font.width(text)) / 2, y + (height - mc.font.lineHeight) / 2 + 1, color)
 }
 
