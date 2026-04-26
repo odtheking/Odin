@@ -113,7 +113,7 @@ abstract class TermGui {
         }
     }
 
-    private fun render(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int) {
+    private fun render(guiGraphics: GuiGraphicsExtractor, mouseX: Int, mouseY: Int) {
         val g       = grid ?: return
         val scale   = guiScale
         val padding = 2
@@ -137,7 +137,7 @@ abstract class TermGui {
         guiGraphics.pose().popMatrix()
     }
 
-    protected fun GuiGraphics.renderSlotText(text: String, x: Int, y: Int, width: Int, height: Int, color: Color) =
+    protected fun GuiGraphicsExtractor.renderSlotText(text: String, x: Int, y: Int, width: Int, height: Int, color: Color) =
         text(text, x + (width - mc.font.width(text)) / 2, y + (height - mc.font.lineHeight) / 2 + 1, color)
 }
 
