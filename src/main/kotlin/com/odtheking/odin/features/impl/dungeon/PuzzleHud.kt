@@ -23,7 +23,7 @@ object PuzzleHud : Module(
     )
 
     private val hud by HUD("Puzzle HUD Position", "Displays dungeon puzzle statuses on the HUD.") { example ->
-        if (!DungeonUtils.inDungeons && !example) return@HUD 0 to 0
+        if (!DungeonUtils.inDungeons || DungeonUtils.inBoss && !example) return@HUD 0 to 0
 
         val puzzleCount = if (example) 4 else DungeonUtils.puzzleCount
         if (puzzleCount == 0) return@HUD 0 to 0
