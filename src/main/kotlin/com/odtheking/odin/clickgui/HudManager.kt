@@ -11,6 +11,7 @@ import net.minecraft.client.input.KeyEvent
 import net.minecraft.client.input.MouseButtonEvent
 import net.minecraft.network.chat.Component
 import org.lwjgl.glfw.GLFW
+import kotlin.math.roundToInt
 import kotlin.math.sign
 import com.odtheking.odin.utils.ui.mouseX as odinMouseX
 import com.odtheking.odin.utils.ui.mouseY as odinMouseY
@@ -18,9 +19,12 @@ import com.odtheking.odin.utils.ui.mouseY as odinMouseY
 object HudManager : Screen(Component.literal("HUD Manager")) {
 
     private var dragging: HudElement? = null
-
     private var deltaX = 0f
     private var deltaY = 0f
+
+    var gridEnabled = false
+    var gridSize = 15
+        private set
 
     override fun init() {
         for (hud in hudSettingsCache) {
@@ -32,17 +36,37 @@ object HudManager : Screen(Component.literal("HUD Manager")) {
         super.init()
     }
 
+    private fun snapToGrid(value: Float): Int = (value / gridSize).roundToInt() * gridSize
+
     override fun render(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, deltaTicks: Float) {
         super.render(guiGraphics, mouseX, mouseY, deltaTicks)
 
         dragging?.let {
-            it.x = (odinMouseX + deltaX).coerceIn(0f, (mc.window.screenWidth - (it.width * it.scale))).toInt()
-            it.y = (odinMouseY + deltaY).coerceIn(0f, (mc.window.screenHeight - (it.height * it.scale))).toInt()
+            val rawX = (odinMouseX + deltaX).coerceIn(0f, (mc.window.screenWidth - (it.width * it.scale)))
+            val rawY = (odinMouseY + deltaY).coerceIn(0f, (mc.window.screenHeight - (it.height * it.scale)))
+            it.x = if (gridEnabled) snapToGrid(rawX) else rawX.toInt()
+            it.y = if (gridEnabled) snapToGrid(rawY) else rawY.toInt()
         }
 
         guiGraphics.pose().pushMatrix()
         val sf = mc.window.guiScale
         guiGraphics.pose().scale(1f / sf, 1f / sf)
+
+        if (gridEnabled) {
+            val sw = mc.window.screenWidth
+            val sh = mc.window.screenHeight
+            val gridColor = 0x22FFFFFF.toInt()
+            var gx = 0
+            while (gx <= sw) {
+                guiGraphics.fill(gx, 0, gx + 1, sh, gridColor)
+                gx += gridSize
+            }
+            var gy = 0
+            while (gy <= sh) {
+                guiGraphics.fill(0, gy, sw, gy + 1, gridColor)
+                gy += gridSize
+            }
+        }
 
         for (hud in hudSettingsCache) {
             if (hud.isEnabled) hud.value.draw(guiGraphics, true)
@@ -75,12 +99,10 @@ object HudManager : Screen(Component.literal("HUD Manager")) {
     override fun mouseClicked(mouseButtonEvent: MouseButtonEvent, bl: Boolean): Boolean {
         hudSettingsCache.firstOrNull { it.isEnabled && it.value.isHovered() }?.let { hovered ->
             dragging = hovered.value
-
             deltaX = (hovered.value.x - odinMouseX)
             deltaY = (hovered.value.y - odinMouseY)
             return true
         }
-
         return super.mouseClicked(mouseButtonEvent, bl)
     }
 
@@ -90,14 +112,23 @@ object HudManager : Screen(Component.literal("HUD Manager")) {
     }
 
     override fun keyPressed(keyEvent: KeyEvent): Boolean {
+        when (keyEvent.key) {
+            GLFW.GLFW_KEY_G     -> gridEnabled = !gridEnabled
+            GLFW.GLFW_KEY_EQUAL -> gridSize = (gridSize + 1).coerceIn(1, 50)
+            GLFW.GLFW_KEY_MINUS -> gridSize = (gridSize - 1).coerceIn(1, 50)
+        }
+
         hudSettingsCache.firstOrNull { it.isEnabled && it.value.isHovered() }?.let { hovered ->
+            val el = hovered.value
+            val sw = mc.window.screenWidth
+            val sh = mc.window.screenHeight
             when (keyEvent.key) {
-                GLFW.GLFW_KEY_EQUAL -> hovered.value.scale = (hovered.value.scale + 0.1f).coerceIn(1f, 10f)
-                GLFW.GLFW_KEY_MINUS -> hovered.value.scale = (hovered.value.scale - 0.1f).coerceIn(1f, 10f)
-                GLFW.GLFW_KEY_RIGHT -> hovered.value.x += 10
-                GLFW.GLFW_KEY_LEFT -> hovered.value.x -= 10
-                GLFW.GLFW_KEY_UP -> hovered.value.y -= 10
-                GLFW.GLFW_KEY_DOWN -> hovered.value.y += 10
+                GLFW.GLFW_KEY_RIGHT -> el.x += 1
+                GLFW.GLFW_KEY_LEFT  -> el.x -= 1
+                GLFW.GLFW_KEY_UP    -> el.y -= 1
+                GLFW.GLFW_KEY_DOWN  -> el.y += 1
+                GLFW.GLFW_KEY_H     -> el.x = ((sw - el.width * el.scale) / 2).toInt()
+                GLFW.GLFW_KEY_V     -> el.y = ((sh - el.height * el.scale) / 2).toInt()
             }
         }
 

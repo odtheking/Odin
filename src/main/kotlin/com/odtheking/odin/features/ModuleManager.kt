@@ -68,7 +68,7 @@ object ModuleManager {
             InactiveWaypoints, MelodyMessage, WitherDragons, SimonSays, KingRelics, ArrowsDevice,
 
             // render
-            ClickGUIModule, Camera, Etherwarp, PlayerSize, PerformanceHUD, RenderOptimizer,
+            ClickGUIModule, HudHelper, Camera, Etherwarp, PlayerSize, PerformanceHUD, RenderOptimizer,
             PlayerDisplay, Waypoints, HidePlayers, Highlight, GyroWand,
 
             //skyblock
