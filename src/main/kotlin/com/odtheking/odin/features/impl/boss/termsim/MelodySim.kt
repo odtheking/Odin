@@ -48,8 +48,8 @@ object MelodySim : TermSimGUI(
         currentRow++
         updateGui()
 
-        playTermSimSound()
         if (currentRow >= 5) TerminalUtils.lastTermOpened?.onComplete()
+        super.slotClick(slot, button)
     }
 
     private fun updateGui() {

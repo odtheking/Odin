@@ -3,9 +3,7 @@ package com.odtheking.odin.features.impl.boss
 import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.*
 import com.odtheking.odin.events.GuiEvent
-import com.odtheking.odin.events.ScreenEvent
 import com.odtheking.odin.events.TerminalEvent
-import com.odtheking.odin.events.core.EventPriority
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Color.Companion.darker
@@ -23,18 +21,19 @@ object TerminalSolver : Module(
     private val renderType by SelectorSetting("Render type", "Odin", arrayListOf("Odin", "Normal", "Custom GUI"), desc = "How the terminal solver should render.")
     private val normalTermSize by NumberSetting("Normal Term Size", 3, 1, 5, 1, desc = "The GUI scale increase for normal terminal GUI.").withDependency { renderType == 0 || renderType == 1 }
     val customTermSize by NumberSetting("Term Size", 2f, 1f, 3f, 0.1f, desc = "The size of the custom terminal GUI.").withDependency { renderType == 2 }
-    val roundness by NumberSetting("Roundness", 6, 0f, 15f, 1f, desc = "The roundness of the custom terminal gui.").withDependency { renderType == 2 }
-    val gap by NumberSetting("Gap", 2, 0f, 8, 1f, desc = "The gap between the slots in the custom terminal gui.").withDependency { renderType == 2 }
+    val roundness by NumberSetting("Roundness", 5, 0f, 15f, 1f, desc = "The roundness of the custom terminal gui.").withDependency { renderType == 2 }
+    val gap by NumberSetting("Slot gap", 2, 0, 8, 1, desc = "The gap between the slots in the custom terminal gui.").withDependency { renderType == 2 }
 
     private val solverSettings by DropdownSetting("Solver Functionality")
     private val cancelToolTip by BooleanSetting("Stop Tooltips", true, desc = "Stops rendering tooltips in terminals.").withDependency { (renderType == 0 || renderType == 1) && solverSettings }
     private val middleClickGUI by BooleanSetting("Middle Click GUI", true, desc = "Replaces right click with middle click in terminals.").withDependency { (renderType == 0 || renderType == 1) && solverSettings }
     private val blockIncorrectClicks by BooleanSetting("Block Incorrect Clicks", true, desc = "Blocks incorrect clicks in terminals.").withDependency { (renderType == 0 || renderType == 1) && solverSettings }
     private val cancelMelodySolver by BooleanSetting("Stop Melody Solver", false, desc = "Stops rendering the melody solver.").withDependency { solverSettings }
+    val melodyTermSize by NumberSetting("Melody Size", 1.5f, 1f, 3f, 0.1f, desc = "The size of the melody terminal GUI.").withDependency { !cancelMelodySolver && solverSettings }
     val showNumbers by BooleanSetting("Show Numbers", true, desc = "Shows numbers in the order terminal.").withDependency { solverSettings }
-    val firstClickProt by NumberSetting("First Click Protection", 350, 350, 700, 10, unit = "ms", desc = "The amount of time after opening a terminal where clicks are blocked to prevent bans (recommended value is 500 minus your ping).").withDependency { solverSettings }
+    val firstClickProt by NumberSetting("First Click Protection", 500, 350, 800, 10, unit = "ms", desc = "The amount of time after opening a terminal where clicks are blocked to prevent bans (recommended value is 500 minus your ping).").withDependency { solverSettings }
     val hideClicked by BooleanSetting("Hide Clicked", false, desc = "Visually hides your first click before a gui updates instantly to improve perceived response time. Does not affect actual click time.").withDependency { solverSettings }
-    val terminalReloadThreshold by NumberSetting("Solution resolve timeout", 600, 300, 1000, 10, unit = "ms", desc = "The amount of time before the terminal reloads after a click wasn't registered while using hide clicked.").withDependency { hideClicked && solverSettings }
+    val terminalReloadThreshold by NumberSetting("Resolve timeout", 600, 300, 1000, 10, unit = "ms", desc = "The amount of time before the terminal reloads after a click wasn't registered while using hide clicked.").withDependency { hideClicked && solverSettings }
     private val debug by BooleanSetting("Debug", false, desc = "Shows debug terminals.").withDependency { solverSettings }
 
     private val showColors by DropdownSetting("Color Settings")
@@ -64,7 +63,7 @@ object TerminalSolver : Module(
     private val renderMelody get() = !(cancelMelodySolver && TerminalUtils.currentTerm?.type == TerminalTypes.MELODY)
 
     init {
-        on<GuiEvent.SlotClick> (EventPriority.HIGH) {
+        on<GuiEvent.SlotClick> {
             val term = TerminalUtils.currentTerm ?: return@on
 
             if (
@@ -113,7 +112,7 @@ object TerminalSolver : Module(
             if (renderType == 0 || renderType == 1) mc.execute { mc.resizeGui() }
         }
 
-        on<ScreenEvent.Render> {
+        on<GuiEvent.DrawTooltip> {
             if (debug) TerminalUtils.currentTerm?.let { term ->
                 val menu = (mc.screen as? AbstractContainerScreen<*>)?.menu ?: return@let
                 val debugInfo = listOf(
@@ -129,6 +128,7 @@ object TerminalSolver : Module(
                 guiGraphics.pose().pushMatrix()
                 val sf = mc.window.guiScale
                 guiGraphics.pose().scale(1f / sf, 1f / sf)
+                guiGraphics.pose().scale(3f)
                 debugInfo.forEachIndexed { index, line ->
                     guiGraphics.textWithWordWrap(mc.font, Component.literal(line), 5, 20 + (index * 10), 300, Colors.WHITE.rgba)
                 }

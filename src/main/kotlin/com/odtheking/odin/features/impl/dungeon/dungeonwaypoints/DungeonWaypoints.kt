@@ -1,6 +1,6 @@
 package com.odtheking.odin.features.impl.dungeon.dungeonwaypoints
 
-import com.odtheking.odin.OdinMod
+import com.odtheking.odin.OdinMod.scope
 import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.*
 import com.odtheking.odin.events.*
@@ -90,7 +90,7 @@ object DungeonWaypoints : Module(
         if (waypoints.isEmpty()) return@ActionSetting modMessage("§cCurrent room does not have any editable waypoints!")
         waypoints.clear()
         syncRoomToActive(room)
-        OdinMod.scope.launch { saveWaypoints() }
+        scope.launch { saveWaypoints() }
         modMessage("§aSuccessfully reset current room!")
     }
 
@@ -98,10 +98,6 @@ object DungeonWaypoints : Module(
     var lastEtherTime = 0L
 
     init {
-        OdinMod.scope.launch(Dispatchers.IO) {
-            loadWaypoints()
-        }
-
         onReceive<ClientboundPlayerPositionPacket> {
             SecretWaypoints.onEtherwarp(this)
         }
@@ -123,6 +119,7 @@ object DungeonWaypoints : Module(
         }
 
         on<LevelEvent.Load> {
+            scope.launch(Dispatchers.IO) { loadWaypoints() }
             resetClickedWaypoints()
             lastEtherPos = null
             lastEtherTime = 0L

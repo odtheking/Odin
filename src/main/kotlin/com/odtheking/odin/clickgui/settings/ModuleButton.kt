@@ -27,9 +27,7 @@ import kotlin.math.floor
  */
 class ModuleButton(val module: Module, val panel: Panel) {
 
-    // don't like this.
-    val representableSettings = module.settings.values.mapNotNull { setting -> setting as? RenderableSetting }
-
+    val representableSettings = module.settings.values.filterIsInstance<RenderableSetting<*>>()
     private val colorAnim = ColorAnimation(150)
 
     private val color: Color

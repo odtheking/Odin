@@ -4,6 +4,7 @@ import com.odtheking.odin.features.impl.boss.TerminalSolver
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 
 object MelodyGui : TermGui() {
+    override val guiScale get() = TerminalSolver.melodyTermSize
 
     override fun buildTerminal(screen: AbstractContainerScreen<*>) {
         buildTerminalGrid(screen, rows = 5, cols = 7, startRow = 0, startCol = 1) { index ->

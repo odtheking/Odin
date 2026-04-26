@@ -14,6 +14,10 @@ import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils.getRealCoords
 import com.odtheking.odin.utils.skyblock.dungeon.tiles.RoomType
 import net.minecraft.core.BlockPos
+import net.minecraft.network.chat.ClickEvent
+import net.minecraft.network.chat.Component
+import net.minecraft.network.chat.HoverEvent
+import net.minecraft.network.chat.Style
 import net.minecraft.network.protocol.game.ClientboundBlockEventPacket
 import net.minecraft.network.protocol.game.ClientboundPlayerPositionPacket
 import net.minecraft.network.protocol.game.ServerboundUseItemOnPacket
@@ -28,7 +32,7 @@ object PuzzleSolvers : Module(
     private val waterDropDown by DropdownSetting("Water Board")
     private val waterSolver by BooleanSetting("Water Board Solver", true, desc = "Shows you the solution to the water puzzle.").withDependency { waterDropDown }
     private val optimizedSolutions by BooleanSetting("Optimized Solutions", false, desc = "Use optimized solutions for the water puzzle.").withDependency { waterSolver && waterDropDown }
-    private val showTracer by BooleanSetting("Show Tracer", true, desc = "Shows a tracer to the next lever.").withDependency { waterSolver && waterDropDown }
+    private val showTracer by BooleanSetting("Water Tracer", true, desc = "Shows a tracer to the next lever.").withDependency { waterSolver && waterDropDown }
     private val tracerColorFirst by ColorSetting("Tracer Color First", Colors.MINECRAFT_GREEN, true, desc = "Color for the first tracer.").withDependency { showTracer && waterDropDown }
     private val tracerColorSecond by ColorSetting("Tracer Color Second", Colors.MINECRAFT_GOLD, true, desc = "Color for the second tracer.").withDependency { showTracer && waterDropDown }
     private val waterReset by ActionSetting("Reset Water", desc = "Resets the solver.") { WaterSolver.reset() }.withDependency { waterSolver && waterDropDown }
@@ -38,6 +42,8 @@ object PuzzleSolvers : Module(
     private val mazeColorOne by ColorSetting("Color for one", Colors.MINECRAFT_GREEN.withAlpha(.5f), true, desc = "Color for when there is a single solution.").withDependency { tpMaze && mazeDropDown }
     private val mazeColorMultiple by ColorSetting("Color for multiple", Colors.MINECRAFT_GOLD.withAlpha(.5f), true, desc = "Color for when there are multiple solutions.").withDependency { tpMaze && mazeDropDown }
     private val mazeColorVisited by ColorSetting("Color for visited", Colors.MINECRAFT_RED.withAlpha(.5f), true, desc = "Color for the already used TP pads.").withDependency { tpMaze && mazeDropDown }
+    private val mazeShowTracer by BooleanSetting("Maze Tracer", true, desc = "Shows a tracer to the best next TP pad.").withDependency { tpMaze && mazeDropDown }
+    private val mazeTracerColor by ColorSetting("Tracer Color", Colors.MINECRAFT_AQUA, true, desc = "Color for the TP maze tracer.").withDependency { mazeShowTracer && tpMaze && mazeDropDown }
     private val mazeReset by ActionSetting("Reset TP Maze", desc = "Resets the solver.") { TPMazeSolver.reset() }.withDependency { tpMaze && mazeDropDown }
 
     private val iceFillDropDown by DropdownSetting("Ice Fill")
@@ -54,6 +60,7 @@ object PuzzleSolvers : Module(
     private val blazeStyle by SelectorSetting("Blaze Style", "Outline", arrayListOf("Filled", "Outline", "Filled Outline"), desc = "Whether or not the box should be filled.").withDependency { blazeSolver && blazeDropDown }
     private val blazeFirstColor by ColorSetting("First Color", Colors.MINECRAFT_GREEN.withAlpha(.75f), true, desc = "Color for the first blaze.").withDependency { blazeSolver && blazeDropDown }
     private val blazeSecondColor by ColorSetting("Second Color", Colors.MINECRAFT_GOLD.withAlpha(.75f), true, desc = "Color for the second blaze.").withDependency { blazeSolver && blazeDropDown }
+    private val blazeThirdColor by ColorSetting("Third Color", Colors.MINECRAFT_RED.withAlpha(.75f), true, desc = "Color for the third blaze.").withDependency { blazeSolver && blazeDropDown }
     private val blazeAllColor by ColorSetting("Other Color", Colors.WHITE.withAlpha(.3f), true, desc = "Color for the other blazes.").withDependency { blazeSolver && blazeDropDown }
     private val blazeSendComplete by BooleanSetting("Send Complete", false, desc = "Send complete message.").withDependency { blazeSolver && blazeDropDown }
     private val blazeReset by ActionSetting("Reset Blaze", desc = "Resets the solver.") { BlazeSolver.reset() }.withDependency { blazeSolver && blazeDropDown }
@@ -85,7 +92,7 @@ object PuzzleSolvers : Module(
     private val boulderColor by ColorSetting("Boulder Color", Colors.MINECRAFT_GREEN.withAlpha(.5f), true, desc = "The color of the box.").withDependency { boulderDropDown && boulderSolver }
 
     private val puzzleTimers by BooleanSetting("Puzzle Timers", true, desc = "Shows the time it took to solve each puzzle.")
-    private val autoDraft by BooleanSetting("Auto Draft", false, desc = "Automatically gets architect's draft when failing a puzzle room.")
+    private val draftPrompt by BooleanSetting("Draft prompt", true, desc = "Automatically gets architect's draft when failing a puzzle room.")
     private val failRegex = Regex("^PUZZLE FAIL! (\\w{1,16}) .+$|^\\[STATUE] Oruo the Omniscient: (\\w{1,16}) chose the wrong answer! I shall never forget this moment of misrememberance\\.$")
     private val puzzleTimersMap = hashMapOf<String, PuzzleTimer>()
     private data class PuzzleTimer(val timeEntered: Long = System.currentTimeMillis(), var sentMessage: Boolean = false)
@@ -138,9 +145,10 @@ object PuzzleSolvers : Module(
 
         on<ChatPacketEvent> {
             if (!DungeonUtils.inClear) return@on
-            if (autoDraft && isInPuzzle) failRegex.find(value)?.destructured?.let {
-                modMessage("§7Fetching Draft from sack...")
-                sendCommand("gfs architect's first draft 1")
+            if (draftPrompt && isInPuzzle) failRegex.find(value)?.destructured?.let {
+                modMessage("§7Click §ehere §7to fetch architect's draft", chatStyle = Style.EMPTY
+                    .withClickEvent(ClickEvent.RunCommand("gfs architect's first draft 1"))
+                    .withHoverEvent(HoverEvent.ShowText(Component.literal("Click to fetch the architect's draft"))))
             }
             if (weirdosSolver) weirdosRegex.find(value)?.destructured?.let { (npc, message) -> WeirdosSolver.onNPCMessage(npc, message) }
             if (quizSolver) QuizSolver.onMessage(value)
@@ -171,11 +179,11 @@ object PuzzleSolvers : Module(
             if (iceFillSolver) IceFillSolver.onRenderWorld(this, iceFillColor)
             if (weirdosSolver) WeirdosSolver.onRenderWorld(this, weirdosColor, weirdosWrongColor, weirdosStyle)
             if (boulderSolver) BoulderSolver.onRenderWorld(this, showAllBoulderClicks, boulderStyle, boulderColor)
-            if (blazeSolver)   BlazeSolver.onRenderWorld(this, blazeLineNext, blazeLineAmount, blazeStyle, blazeFirstColor, blazeSecondColor, blazeAllColor, blazeSendComplete, blazeLineWidth)
+            if (blazeSolver)   BlazeSolver.onRenderWorld(this, blazeLineNext, blazeLineAmount, blazeStyle, blazeFirstColor, blazeSecondColor, blazeThirdColor, blazeAllColor, blazeSendComplete, blazeLineWidth)
             if (beamsSolver)   BeamsSolver.onRenderWorld(this, beamStyle, beamsTracer, beamsAlpha)
             if (waterSolver)   WaterSolver.onRenderWorld(this, showTracer, tracerColorFirst, tracerColorSecond)
             if (quizSolver)    QuizSolver.onRenderWorld(this, quizColor, quizDepth)
-            if (tpMaze)        TPMazeSolver.onRenderWorld(this, mazeColorOne, mazeColorMultiple, mazeColorVisited)
+            if (tpMaze)        TPMazeSolver.onRenderWorld(this, mazeColorOne, mazeColorMultiple, mazeColorVisited, mazeShowTracer, mazeTracerColor)
         }
     }
 

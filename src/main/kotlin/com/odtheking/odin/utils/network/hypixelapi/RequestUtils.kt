@@ -64,6 +64,10 @@ object RequestUtils {
         ).onSuccess { uuidCache[key] = CacheEntry(it, System.currentTimeMillis()) }
     }
 
+    suspend fun pullSecrets(name: String): Result<Long> {
+        val uuidData = getUuid(name).getOrElse { return Result.failure(Exception(it.cause)) }
+        return fetchJson<Long>(getServer(EndPoint.SECRETS, uuidData.id))
+    }
     enum class EndPoint { SECRETS, GET }
     data class UuidData(val name: String, val id: String)
 }

@@ -85,8 +85,7 @@ class KeybindSetting(
         return this
     }
 
-    fun isDown(): Boolean =
-        value != InputConstants.UNKNOWN && InputConstants.isKeyDown(mc.window, value.value)
+
 
     override val isHovered: Boolean
         get() =
@@ -100,5 +99,13 @@ class KeybindSetting(
 
     override fun reset() {
         value = default
+    }
+
+    companion object {
+        fun InputConstants.Key.isDown(): Boolean {
+            val window = mc.window
+            return if (value > 7) InputConstants.isKeyDown(window, value)
+            else GLFW.glfwGetMouseButton(window.handle(), value) == GLFW.GLFW_PRESS
+        }
     }
 }

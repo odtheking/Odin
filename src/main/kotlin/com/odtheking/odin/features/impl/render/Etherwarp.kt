@@ -17,8 +17,8 @@ import com.odtheking.odin.utils.render.drawStyledBox
 import com.odtheking.odin.utils.skyblock.Island
 import com.odtheking.odin.utils.skyblock.LocationUtils
 import net.minecraft.core.BlockPos
+import net.minecraft.core.Direction
 import net.minecraft.core.SectionPos
-import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.protocol.game.ClientboundSoundPacket
 import net.minecraft.network.protocol.game.ServerboundMovePlayerPacket
@@ -32,6 +32,7 @@ import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.Vec3
 import java.util.*
 import kotlin.math.abs
+import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.sign
 
@@ -167,44 +168,35 @@ object Etherwarp : Module(
 
         repeat(1000) {
             val blockPos = BlockPos(x.toInt(), y.toInt(), z.toInt())
-            val chunk = mc.level?.getChunk(
-                SectionPos.blockToSectionCoord(blockPos.x),
-                SectionPos.blockToSectionCoord(blockPos.z)
-            ) ?: return EtherPos.NONE
-            val currentBlock = chunk.getBlockState(blockPos)
+            val level = mc.level ?: return EtherPos.NONE
+            val chunk = level.getChunk(SectionPos.blockToSectionCoord(blockPos.x), SectionPos.blockToSectionCoord(blockPos.z))
 
-            val currentBlockId = Block.getId(currentBlock.block.defaultBlockState())
+            val state = chunk.getBlockState(blockPos)
+            val id = Block.getId(state)
 
-            if ((!validEtherwarpFeetIds.get(currentBlockId) && etherWarp) || (currentBlockId != 0 && !etherWarp)) {
-                if (!etherWarp && validEtherwarpFeetIds.get(currentBlockId)) return EtherPos(
-                    false,
-                    blockPos,
-                    currentBlock.block.defaultBlockState()
-                )
+            val isPassable = (blockFlags[id] and PASSABLE) != 0
+            val isSolid = !isPassable
 
-                val footBlockId = Block.getId(
-                    chunk.getBlockState(
-                        BlockPos(
-                            blockPos.x,
-                            blockPos.y + 1,
-                            blockPos.z
-                        )
-                    ).block.defaultBlockState()
-                )
-                if (!validEtherwarpFeetIds.get(footBlockId)) return EtherPos(false, blockPos, currentBlock)
+            if ((etherWarp && isSolid) || (!etherWarp && id != 0)) {
 
-                val headBlockId = Block.getId(
-                    chunk.getBlockState(
-                        BlockPos(
-                            blockPos.x,
-                            blockPos.y + 2,
-                            blockPos.z
-                        )
-                    ).block.defaultBlockState()
-                )
-                if (!validEtherwarpFeetIds.get(headBlockId)) return EtherPos(false, blockPos, currentBlock)
+                if (!etherWarp && isPassable) return EtherPos(false, blockPos, state)
 
-                return EtherPos(true, blockPos, currentBlock)
+                val collisionTop = state.getCollisionShape(level, blockPos).max(Direction.Axis.Y)
+                val clearanceBaseY = blockPos.y + max(1, ceil(collisionTop).toInt())
+
+                val feetState = chunk.getBlockState(BlockPos(blockPos.x, clearanceBaseY, blockPos.z))
+                val feetFlags = blockFlags[Block.getId(feetState)]
+
+                if ((feetFlags and PASSABLE) == 0 || (feetFlags and BLOCKS_FEET) != 0)
+                    return EtherPos(false, blockPos, state)
+
+                val headState = chunk.getBlockState(BlockPos(blockPos.x, clearanceBaseY + 1, blockPos.z))
+                val headFlags = blockFlags[Block.getId(headState)]
+
+                if ((headFlags and PASSABLE) == 0 || (headFlags and BLOCKS_FEET) != 0)
+                    return EtherPos(false, blockPos, state)
+
+                return EtherPos(true, blockPos, state)
             }
 
             if (x == endX && y == endY && z == endZ) return EtherPos.NONE
@@ -214,12 +206,10 @@ object Etherwarp : Module(
                     tMaxX += tDeltaX
                     x += stepX
                 }
-
                 tMaxY <= tMaxZ -> {
                     tMaxY += tDeltaY
                     y += stepY
                 }
-
                 else -> {
                     tMaxZ += tDeltaZ
                     z += stepZ
@@ -230,25 +220,63 @@ object Etherwarp : Module(
         return EtherPos.NONE
     }
 
-    private val validTypes = setOf(
-        ButtonBlock::class, CarpetBlock::class, SkullBlock::class,
-        WallSkullBlock::class, LadderBlock::class, SaplingBlock::class,
-        FlowerBlock::class, StemBlock::class, CropBlock::class,
-        RailBlock::class, SnowLayerBlock::class, BubbleColumnBlock::class,
-        TripWireBlock::class, TripWireHookBlock::class, FireBlock::class,
-        AirBlock::class, TorchBlock::class, FlowerPotBlock::class,
-        TallFlowerBlock::class, TallGrassBlock::class, BushBlock::class,
-        SeagrassBlock::class, TallSeagrassBlock::class, SugarCaneBlock::class,
-        LiquidBlock::class, VineBlock::class, MushroomBlock::class, GrowingPlantBlock::class,
-        PistonHeadBlock::class, WoolCarpetBlock::class, WebBlock::class,
-        DryVegetationBlock::class, SmallDripleafBlock::class, LeverBlock::class,
-        NetherWartBlock::class, NetherPortalBlock::class, RedStoneWireBlock::class,
-        ComparatorBlock::class, RedstoneTorchBlock::class, RepeaterBlock::class, BigDripleafStemBlock::class
-    )
+    private const val PASSABLE = 1        // ray passes through
+    private const val BLOCKS_FEET = 2     // cannot stand inside
 
-    private val validEtherwarpFeetIds = BitSet().apply {
-        BuiltInRegistries.BLOCK.forEach { block ->
-            if (validTypes.any { it.isInstance(block) }) set(Block.getId(block.defaultBlockState()))
+    private val blockFlags: IntArray = IntArray(Block.BLOCK_STATE_REGISTRY.size()).apply {
+        Block.BLOCK_STATE_REGISTRY.forEach { state ->
+            val block = state.block
+            val id = Block.getId(state)
+
+            val passable = when (block) {
+                is AirBlock -> true
+
+                is FlowerBlock, is TallGrassBlock, is BushBlock, is TallFlowerBlock, is ShortDryGrassBlock -> true
+                is TorchBlock, is RedstoneTorchBlock -> true
+                is TripWireBlock, is TripWireHookBlock -> true
+                is RailBlock -> true
+                is FireBlock -> true
+                is VineBlock -> true
+                is LiquidBlock -> true
+                is SaplingBlock -> true
+                is CropBlock, is StemBlock -> true
+                is SeagrassBlock, is TallSeagrassBlock -> true
+                is SugarCaneBlock -> true
+                is MushroomBlock -> true
+                is NetherWartBlock -> true
+                is RedStoneWireBlock, is ComparatorBlock, is RepeaterBlock -> true
+                is SmallDripleafBlock, is BigDripleafStemBlock -> true
+                is DoublePlantBlock -> true
+                is LeverBlock -> true
+                is SnowLayerBlock -> true
+                is BubbleColumnBlock -> true
+                is GrowingPlantBlock -> true
+                is PistonHeadBlock -> true
+                is DryVegetationBlock -> true
+                is ButtonBlock -> true
+                is LanternBlock -> true
+                is SkullBlock, is WallSkullBlock -> true
+                is LadderBlock -> true
+                is FlowerPotBlock -> true
+                is WebBlock -> true
+                is NetherPortalBlock -> true
+
+                else -> false
+            }
+
+            val blocksFeet = when (block) {
+                is SkullBlock, is WallSkullBlock -> true
+                is FlowerPotBlock -> true
+                is LadderBlock -> true
+                is VineBlock -> true
+                else -> false
+            }
+
+            var flags = 0
+            if (passable) flags = flags or PASSABLE
+            if (blocksFeet) flags = flags or BLOCKS_FEET
+
+            this[id] = flags
         }
     }
 }

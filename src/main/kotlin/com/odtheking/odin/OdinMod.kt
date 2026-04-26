@@ -11,6 +11,7 @@ import com.odtheking.odin.utils.handlers.TickTasks
 import com.odtheking.odin.utils.network.WebUtils.postData
 import com.odtheking.odin.utils.render.ItemStateRenderer
 import com.odtheking.odin.utils.render.RenderBatchManager
+import com.odtheking.odin.utils.render.RoundRectPIPRenderer
 import com.odtheking.odin.utils.skyblock.*
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonListener
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
@@ -79,6 +80,10 @@ object OdinMod : ClientModInitializer {
 
         PictureInPictureRendererRegistry.register { context ->
             NVGPIPRenderer(context.bufferSource())
+        }
+
+        PictureInPictureRendererRegistry.register { context ->
+            RoundRectPIPRenderer(context.bufferSource())
         }
 
         PictureInPictureRendererRegistry.register { context ->

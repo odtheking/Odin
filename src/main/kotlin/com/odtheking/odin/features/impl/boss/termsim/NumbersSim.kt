@@ -26,8 +26,10 @@ object NumbersSim : TermSimGUI(
             if (it == slot) ItemStack(Items.LIME_STAINED_GLASS_PANE, slot.item.count).apply { set(DataComponents.CUSTOM_NAME, Component.literal("")) }
             else it.item
         }
-        playTermSimSound()
+
         if (guiInventorySlots.none { it?.item?.item == Items.RED_STAINED_GLASS_PANE })
             TerminalUtils.lastTermOpened?.onComplete()
+
+        super.slotClick(slot, button)
     }
 }

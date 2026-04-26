@@ -52,11 +52,11 @@ val mainCommand = Commodore("odin", "od") {
     }
 
     literal("tap").runs { amount: Int? ->
-        fillItemFromSack(amount?: 64, "TOXIC_ARROW_POISON", "toxic_arrow_posion", true)
+        fillItemFromSack(amount?: 64, "TOXIC_ARROW_POISON", "toxic_arrow_poison", true)
     }
 
     literal("twap").runs { amount: Int? ->
-        fillItemFromSack(amount?: 64, "TWILIGHT_ARROW_POISON", "twilight_arrow_posion", true)
+        fillItemFromSack(amount?: 64, "TWILIGHT_ARROW_POISON", "twilight_arrow_poison", true)
     }
 
     literal("sendcoords").runs { message: GreedyString? ->

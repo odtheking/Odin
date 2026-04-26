@@ -35,9 +35,10 @@ object RubixSim : TermSimGUI(
             } else it.item
         }
 
-        playTermSimSound()
         if (indices.all { guiInventorySlots[it]?.item?.item == guiInventorySlots[12]?.item?.item })
             TerminalUtils.lastTermOpened?.onComplete()
+
+        super.slotClick(slot, button)
     }
 
     private fun getPane(): ItemStack {

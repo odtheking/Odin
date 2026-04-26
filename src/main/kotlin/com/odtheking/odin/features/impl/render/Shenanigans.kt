@@ -1,8 +1,8 @@
 package com.odtheking.odin.features.impl.render
 
 import com.odtheking.odin.events.RenderEvent
+import com.odtheking.odin.events.WorldEvent
 import com.odtheking.odin.events.core.on
-import com.odtheking.odin.utils.handlers.TickTask
 import com.odtheking.odin.utils.render.drawTexturedQuad
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.resources.Identifier
@@ -32,7 +32,7 @@ object Shenanigans {
         Logos(Identifier.fromNamespaceAndPath("odin", "textures/logo.png"), Vec3(8.5, 127.5, 30.0), 8f, 5f, 0f),
         Logos(Identifier.fromNamespaceAndPath("odin", "textures/logo.png"), Vec3(54.5, 116.5, 118.0), 9f, 6f, 180f),
         Logos(Identifier.fromNamespaceAndPath("odin", "textures/logo.png"), Vec3(54.5, 64.0, 84.0), 3f, 2f, 0f),
-        Logos(Identifier.fromNamespaceAndPath("odin", "textures/logo.png"), Vec3(54.5, 19.5, 40.0), 30f, 27f, 0f)
+        Logos(Identifier.fromNamespaceAndPath("odin", "textures/job.png"), Vec3(54.5, 23.5, 40.0), 25f, 35f, 0f)
     )
 
     private var enabled = false
@@ -47,11 +47,11 @@ object Shenanigans {
             }
         }
 
-        TickTask(1000) {
+        on<WorldEvent.Load> {
             val now = Instant.now().atZone(ZoneOffset.UTC)
 
             enabled = (now.monthValue == 4 && now.dayOfMonth == 1) || run {
-                val window = now.toEpochSecond() / 600L // 10-minute buckets
+                val window = now.toEpochSecond() / 600L
                 ((window xor (window shr 3) xor (window shl 1)) and Long.MAX_VALUE) % 288L == 0L
             }
         }

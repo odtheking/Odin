@@ -47,7 +47,8 @@ data class DungeonPlayer(
  */
 enum class Puzzle(
     val displayName: String,
-    var status: PuzzleStatus? = null
+    var status: PuzzleStatus? = null,
+    var player: String? = null
 ) {
     UNKNOWN("???"),
     BLAZE("Higher Or Lower"),
@@ -59,8 +60,7 @@ enum class Puzzle(
     BOULDER("Boulder"),
     ICE_FILL("Ice Fill"),
     ICE_PATH("Ice Path"),
-    QUIZ("Quiz"),
-    BOMB_DEFUSE("Bomb Defuse");
+    QUIZ("Quiz");
 }
 
 enum class PuzzleStatus {

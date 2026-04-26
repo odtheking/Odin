@@ -1,14 +1,10 @@
 package com.odtheking.odin.utils.render
 
-import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.utils.Color.Companion.alpha
 import com.odtheking.odin.utils.Color.Companion.blue
 import com.odtheking.odin.utils.Color.Companion.green
 import com.odtheking.odin.utils.Color.Companion.red
-import com.odtheking.odin.utils.render.SimpleGuiRenderState.Companion.createBounds
 import net.minecraft.client.gui.GuiGraphicsExtractor
-import net.minecraft.client.gui.render.TextureSetup
-import org.joml.Matrix3x2f
 
 object DrawContextRenderer {
 
@@ -102,20 +98,12 @@ object DrawContextRenderer {
         topLeftColor: Int, topRightColor: Int, bottomRightColor: Int,
         bottomLeftColor: Int, options: RoundedOptions
     ) {
-        val poseSnapshot = Matrix3x2f(guiGraphics.pose())
-        val state = SimpleGuiRenderState(
-            CustomRenderPipelines.PIPELINE_ROUND_RECT, TextureSetup.noTexture(), guiGraphics,
-            createBounds(x0, y0, x1, y1, poseSnapshot, guiGraphics.scissorStack.peek())
-        ) {
-            ShaderRenderer.renderRoundedRect(
-                poseSnapshot, x0, y0, x1, y1,
-                topLeftColor, topRightColor, bottomRightColor, bottomLeftColor,
-                options.radii.topLeft, options.radii.topRight, options.radii.bottomRight, options.radii.bottomLeft,
-                options.outline?.color ?: 0, options.outline?.width ?: 0.0f,
-                mc.mainRenderTarget
-            )
-        }
-        guiGraphics.guiRenderState.addGuiElement(state)
+        RoundRectPIPRenderer.submit(
+            guiGraphics, x0, y0, x1, y1,
+            topLeftColor, topRightColor, bottomRightColor, bottomLeftColor,
+            options.radii.topLeft, options.radii.topRight, options.radii.bottomRight, options.radii.bottomLeft,
+            options.outline?.color ?: 0, options.outline?.width ?: 0.0f
+        )
     }
 
     private fun gradientCorners(startColor: Int, endColor: Int, direction: GradientDirection): IntArray {
