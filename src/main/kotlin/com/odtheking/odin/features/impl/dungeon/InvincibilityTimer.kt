@@ -1,5 +1,6 @@
 package com.odtheking.odin.features.impl.dungeon
 
+import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.ColorSetting
 import com.odtheking.odin.clickgui.settings.impl.SelectorSetting
@@ -13,6 +14,7 @@ import com.odtheking.odin.utils.*
 import com.odtheking.odin.utils.render.ItemStateRenderer.Companion.drawItemStack
 import com.odtheking.odin.utils.render.textDim
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
+import net.minecraft.util.Mth
 import net.minecraft.world.entity.EquipmentSlot
 import net.minecraft.world.item.ItemStack
 
@@ -29,9 +31,10 @@ object InvincibilityTimer : Module(
     private val showBonzo by BooleanSetting("Show Bonzo Mask", true, desc = "Shows the Bonzo Mask in the HUD.")
     private val showPhoenix by BooleanSetting("Show Phoenix Pet", true, desc = "Shows the Phoenix Pet in the HUD.")
 
+    private val onlyInDungeons by BooleanSetting("Only In Dungeons",true,"Only proc in dungeons")
     private val showOnItem by BooleanSetting("Show On Item",true,"Renders the cooldown on the spirit mask and bonzo mask items")
-    private var spiritItem: ItemStack? = null
-    private var bonzoItem: ItemStack? = null
+    private val durability by BooleanSetting("Display As Durability",false,"True: durability, False: colored vertical slide")
+    private val cdColor by ColorSetting("Cooldown Color",Colors.gray38,false,"Color of the bar").withDependency { showOnItem && !durability }
 
     private val hud by HUD(name, "Shows the invincibility time in the HUD.") { example ->
         if ((!DungeonUtils.inDungeons && !example) || (showOnlyInBoss && !DungeonUtils.inBoss && !example)) return@HUD 0 to 0
@@ -82,18 +85,12 @@ object InvincibilityTimer : Module(
         }
 
         on<ChatPacketEvent> {
-            if (!DungeonUtils.inDungeons) return@on
+            if (onlyInDungeons&&!DungeonUtils.inDungeons) return@on
             InvincibilityType.entries.firstOrNull { type -> value.matches(type.regex) }?.let { type ->
                 type.proc()
                 val usedMasks = InvincibilityType.entries.count { it.currentCooldown > 0 }
                 if (invincibilityAnnounce) sendCommand("pc ${type.name.lowercase().capitalizeFirst()} Procced! ($usedMasks/${InvincibilityType.entries.size})")
                 if (invincibilityAlert) alert(type.name.lowercase().capitalizeFirst())
-                if(showOnItem) {
-                    val item=mc.player?.inventory?.getItem(39)
-                    //modMessage(item?.hoverName?.string)
-                    if(type==InvincibilityType.SPIRIT){ spiritItem=item }
-                    if(type==InvincibilityType.BONZO){ bonzoItem=item }
-                }
             }
         }
 
@@ -103,19 +100,20 @@ object InvincibilityTimer : Module(
 
         on<GuiEvent.RenderSlot>{
             if(!showOnItem)return@on
-
-            //modMessage(""+slot.containerSlot+" - "+slot.item.hoverName.string)
-
-            if(slot.item==spiritItem&&InvincibilityType.SPIRIT.currentCooldown>0){
-                val cdPercent=16*InvincibilityType.SPIRIT.currentCooldown/InvincibilityType.SPIRIT.maxCooldownTime
-                guiGraphics.fill(slot.x, slot.y+16-cdPercent, slot.x + 16, slot.y+16, Colors.gray26.rgba)
+            val sbid=slot.item.customData["id"]?.asString()?.get()
+            val percent = when(sbid){
+                "BONZO_MASK", "STARRED_BONZO_MASK" -> InvincibilityType.BONZO.currentCooldown.toDouble() / InvincibilityType.BONZO.maxCooldownTime
+                "SPIRIT_MASK", "STARRED_SPIRIT_MASK" -> InvincibilityType.SPIRIT.currentCooldown.toDouble() / InvincibilityType.SPIRIT.maxCooldownTime
+                else -> return@on
             }
-
-            if(slot.item==bonzoItem&&InvincibilityType.BONZO.currentCooldown>0){
-                val cdPercent=16*InvincibilityType.BONZO.currentCooldown/InvincibilityType.BONZO.maxCooldownTime
-                guiGraphics.fill(slot.x, slot.y+16-cdPercent, slot.x + 16, slot.y + 16, Colors.gray26.rgba)
+            if(percent !in 0.0..1.0)return@on
+            if(durability){
+                guiGraphics.fill(slot.x+2,slot.y+13,slot.x+14,slot.y+15,Color(0,0,0).rgba)
+                guiGraphics.fill(slot.x+2,slot.y+13,slot.x+14- Mth.ceil(percent*12),slot.y+14,Color(Mth.ceil((1-percent)*64), Mth.ceil(percent*64),0).rgba)
             }
-
+            else{
+                guiGraphics.fill(slot.x, slot.y+ Mth.ceil((1-percent)*16), slot.x + 16, slot.y+16, cdColor.rgba)
+            }
         }
     }
 
