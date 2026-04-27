@@ -59,6 +59,7 @@ object ModuleManager {
         registerModules(config = ModuleConfig(file = File(OdinMod.configFile, "odin-config.json")),
             // dungeon
             PuzzleSolvers, BlessingDisplay, LeapMenu, SecretClicked, MapInfo, Mimic, DungeonQueue,
+            DungeonClassColors,
             KeyHighlight, BloodCamp, PositionalMessages, TerracottaTimer, BreakerDisplay, LividSolver,
             InvincibilityTimer, SpiritBear, DungeonWaypoints, ExtraStats, BetterPartyFinder, Croesus, MageBeam, DungeonMap,
             SecretsCounter, PuzzleHud,
