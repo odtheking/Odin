@@ -107,15 +107,13 @@ object InvincibilityTimer : Module(
             //modMessage(""+slot.containerSlot+" - "+slot.item.hoverName.string)
 
             if(slot.item==spiritItem&&InvincibilityType.SPIRIT.currentCooldown>0){
-                val cdPercent=InvincibilityType.SPIRIT.currentCooldown/InvincibilityType.SPIRIT.maxCooldownTime
-                val cdPer16=cdPercent*16
-                guiGraphics.fill(slot.x, slot.y+cdPer16, slot.x + 16, slot.y + 16-cdPer16, Colors.gray26.rgba)
+                val cdPercent=16*InvincibilityType.SPIRIT.currentCooldown/InvincibilityType.SPIRIT.maxCooldownTime
+                guiGraphics.fill(slot.x, slot.y+16-cdPercent, slot.x + 16, slot.y+16, Colors.gray26.rgba)
             }
 
             if(slot.item==bonzoItem&&InvincibilityType.BONZO.currentCooldown>0){
-                val cdPercent=InvincibilityType.BONZO.currentCooldown/InvincibilityType.BONZO.maxCooldownTime
-                val cdPer16=cdPercent*16
-                guiGraphics.fill(slot.x, slot.y+cdPer16, slot.x + 16, slot.y + 16-cdPer16, Colors.gray26.rgba)
+                val cdPercent=16*InvincibilityType.BONZO.currentCooldown/InvincibilityType.BONZO.maxCooldownTime
+                guiGraphics.fill(slot.x, slot.y+16-cdPercent, slot.x + 16, slot.y + 16, Colors.gray26.rgba)
             }
 
         }
