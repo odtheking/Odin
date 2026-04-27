@@ -14,7 +14,6 @@ import com.odtheking.odin.utils.*
 import com.odtheking.odin.utils.render.ItemStateRenderer.Companion.drawItemStack
 import com.odtheking.odin.utils.render.textDim
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
-import net.minecraft.util.Mth
 import net.minecraft.world.entity.EquipmentSlot
 import net.minecraft.world.item.ItemStack
 
@@ -109,10 +108,10 @@ object InvincibilityTimer : Module(
             if(percent !in 0.0..1.0)return@on
             if(durability){
                 guiGraphics.fill(slot.x+2,slot.y+13,slot.x+14,slot.y+15,Color(0,0,0).rgba)
-                guiGraphics.fill(slot.x+2,slot.y+13,slot.x+14- Mth.ceil(percent*12),slot.y+14,Color(Mth.ceil((1-percent)*64), Mth.ceil(percent*64),0).rgba)
+                guiGraphics.fill(slot.x+2,slot.y+13,slot.x+14-(percent*12).toInt(),slot.y+14,Color(((1-percent)*64).toInt(),(percent*64).toInt(),0).rgba)
             }
             else{
-                guiGraphics.fill(slot.x, slot.y+ Mth.ceil((1-percent)*16), slot.x + 16, slot.y+16, cdColor.rgba)
+                guiGraphics.fill(slot.x, slot.y+((1-percent)*16).toInt(), slot.x + 16, slot.y+16, cdColor.rgba)
             }
         }
     }
