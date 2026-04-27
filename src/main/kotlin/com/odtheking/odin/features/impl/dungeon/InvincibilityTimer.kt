@@ -4,6 +4,7 @@ import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.ColorSetting
 import com.odtheking.odin.clickgui.settings.impl.SelectorSetting
 import com.odtheking.odin.events.ChatPacketEvent
+import com.odtheking.odin.events.GuiEvent
 import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.WorldEvent
 import com.odtheking.odin.events.core.on
@@ -27,6 +28,10 @@ object InvincibilityTimer : Module(
     private val showSpirit by BooleanSetting("Show Spirit Mask", true, desc = "Shows the Spirit Mask in the HUD.")
     private val showBonzo by BooleanSetting("Show Bonzo Mask", true, desc = "Shows the Bonzo Mask in the HUD.")
     private val showPhoenix by BooleanSetting("Show Phoenix Pet", true, desc = "Shows the Phoenix Pet in the HUD.")
+
+    private val showOnItem by BooleanSetting("Show On Item",true,"Renders the cooldown on the spirit mask and bonzo mask items")
+    private var spiritItem: ItemStack? = null
+    private var bonzoItem: ItemStack? = null
 
     private val hud by HUD(name, "Shows the invincibility time in the HUD.") { example ->
         if ((!DungeonUtils.inDungeons && !example) || (showOnlyInBoss && !DungeonUtils.inBoss && !example)) return@HUD 0 to 0
@@ -83,11 +88,36 @@ object InvincibilityTimer : Module(
                 val usedMasks = InvincibilityType.entries.count { it.currentCooldown > 0 }
                 if (invincibilityAnnounce) sendCommand("pc ${type.name.lowercase().capitalizeFirst()} Procced! ($usedMasks/${InvincibilityType.entries.size})")
                 if (invincibilityAlert) alert(type.name.lowercase().capitalizeFirst())
+                if(showOnItem) {
+                    val item=mc.player?.inventory?.getItem(39)
+                    //modMessage(item?.hoverName?.string)
+                    if(type==InvincibilityType.SPIRIT){ spiritItem=item }
+                    if(type==InvincibilityType.BONZO){ bonzoItem=item }
+                }
             }
         }
 
         on<WorldEvent.Load> {
             InvincibilityType.entries.forEach { it.reset() }
+        }
+
+        on<GuiEvent.RenderSlot>{
+            if(!showOnItem)return@on
+
+            //modMessage(""+slot.containerSlot+" - "+slot.item.hoverName.string)
+
+            if(slot.item==spiritItem&&InvincibilityType.SPIRIT.currentCooldown>0){
+                val cdPercent=InvincibilityType.SPIRIT.currentCooldown/InvincibilityType.SPIRIT.maxCooldownTime
+                val cdPer16=cdPercent*16
+                guiGraphics.fill(slot.x, slot.y+cdPer16, slot.x + 16, slot.y + 16-cdPer16, Colors.gray26.rgba)
+            }
+
+            if(slot.item==bonzoItem&&InvincibilityType.BONZO.currentCooldown>0){
+                val cdPercent=InvincibilityType.BONZO.currentCooldown/InvincibilityType.BONZO.maxCooldownTime
+                val cdPer16=cdPercent*16
+                guiGraphics.fill(slot.x, slot.y+cdPer16, slot.x + 16, slot.y + 16-cdPer16, Colors.gray26.rgba)
+            }
+
         }
     }
 
