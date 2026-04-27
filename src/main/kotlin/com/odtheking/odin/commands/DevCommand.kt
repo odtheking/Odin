@@ -23,9 +23,8 @@ import com.odtheking.odin.utils.skyblock.PartyUtils
 import com.odtheking.odin.utils.skyblock.Supply
 import com.odtheking.odin.utils.skyblock.dungeon.Blessing
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
-import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils.getRelativeCoords
-import com.odtheking.odin.utils.skyblock.dungeon.ScanUtils
-import com.odtheking.odin.utils.skyblock.dungeon.ScanUtils.getRoomCenter
+import com.odtheking.odin.utils.skyblock.dungeon.map.scan.DungeonWorldScan
+import com.odtheking.odin.utils.skyblock.dungeon.map.scan.DungeonWorldScan.tiles
 import com.odtheking.odin.utils.ui.rendering.NVGRenderer
 import kotlinx.coroutines.launch
 import net.minecraft.core.registries.BuiltInRegistries
@@ -127,7 +126,7 @@ val devCommand = Commodore("oddev") {
                             |DungeonTime: ${DungeonUtils.dungeonTime}
                             |currentDungeonPlayer: ${DungeonUtils.currentDungeonPlayer.name}, ${DungeonUtils.currentDungeonPlayer.clazz}, ${DungeonUtils.currentDungeonPlayer.isDead}
                             |doorOpener: ${DungeonUtils.doorOpener}
-                            |currentRoom: ${DungeonUtils.currentRoom?.data?.name}, roomsPassed: ${DungeonUtils.passedRooms.map { it.data.name }}
+                            |currentRoom: ${DungeonWorldScan.currentRoom?.data?.name}, roomsPassed: ${DungeonWorldScan.rooms.filter { it.discovered }.map { it.data.name }}
                             |Teammates: ${DungeonUtils.dungeonTeammates.joinToString { "§${it.clazz.colorCode}${it.name} (${it.clazz} [${it.clazzLvl}])§r" }}
                             |TeammatesNoSelf: ${DungeonUtils.dungeonTeammatesNoSelf.map { it.name }}
                             |LeapTeammates: ${DungeonUtils.leapTeammates.map { it.name }}
@@ -157,13 +156,8 @@ val devCommand = Commodore("oddev") {
                 append(" §8│ §eIn §f${(dragon.timeToSpawn / 20f).toFixed()}§es")
             }
 
-            val spawnInfo = buildString {
-                append(" §8│ §7Spawned: §fx${dragon.timesSpawned}")
-            }
-
-            val uuid = buildString {
-                append(" §8│ §7UUID: §f${dragon.entityUUID}")
-            }
+            val spawnInfo = buildString { append(" §8│ §7Spawned: §fx${dragon.timesSpawned}") }
+            val uuid = buildString { append(" §8│ §7UUID: §f${dragon.entityUUID}") }
 
             val flags = buildString {
                 val flagList = mutableListOf<String>()
@@ -181,28 +175,32 @@ val devCommand = Commodore("oddev") {
 
     literal("roomdata").runs {
         val player = mc.player ?: return@runs
-        val vec2 = Vec2(player.x.toInt(), player.z.toInt())
-        val chunk = mc.level?.getChunk(vec2.x shr 4, vec2.z shr 4) ?: return@runs
-        val roomCenter = getRoomCenter(vec2.x, vec2.z)
-        val room = ScanUtils.scanRoom(roomCenter)
-        val core = ScanUtils.getCore(roomCenter)
+        val tileX = (player.blockX + 201) shr 5
+        val tileZ = (player.blockZ + 201) shr 5
+        val room = tiles[tileX + tileZ * 6].room ?: return@runs
+
+        val (roomX, roomZ) = room.getRealPosition()
+
+        val chunk = mc.level?.getChunk(roomX shr 4, roomZ shr 4) ?: return@runs
+        val core = DungeonWorldScan.getRoomCore(chunk, room.position)
+
         modMessage(
             """
-            Middle: ${roomCenter.x}, ${roomCenter.z}
-            Room: ${ScanUtils.coreToRoomData[core]?.name}
-            Core: $core
-            Rotation: ${room?.rotation ?: "NONE"}
-            Positions: ${room?.roomComponents?.joinToString { "(${it.x}, ${it.z})" } ?: "None"}
-            Height: ${ScanUtils.getTopLayerOfRoom(vec2, chunk)}
-            """.trimIndent(), "")
-        setClipboardContent(core.toString())
-        modMessage("§aCopied $core to clipboard!")
+            Middle: $roomX $roomZ
+            Room: ${room.name}
+            Core: ${core.first} height: ${core.second}
+            Rotation: ${room.rotation ?: "NONE"}
+            Positions: ${room.segments.joinToString { "${room.getRealPosition()}" }}
+            """.trimIndent(), ""
+        )
+        setClipboardContent(core.first.toString())
+        modMessage("§aCopied §f${core.first} §ato clipboard!")
     }
 
     literal("relative").runs {
         mc.hitResult?.let {
             if (it !is BlockHitResult) return@runs
-            DungeonUtils.currentRoom?.getRelativeCoords(it.blockPos)?.let { vec2 ->
+            DungeonWorldScan.currentRoom?.getRelativeCoords(it.blockPos)?.let { vec2 ->
                 modMessage("Relative coords: ${vec2.x}, ${vec2.z}")
             }
         }

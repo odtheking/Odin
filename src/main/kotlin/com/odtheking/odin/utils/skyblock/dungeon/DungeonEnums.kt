@@ -1,10 +1,8 @@
 package com.odtheking.odin.utils.skyblock.dungeon
 
-import com.odtheking.odin.features.impl.dungeon.map.DungMap.mapCenter
-import com.odtheking.odin.features.impl.dungeon.map.DungMap.roomSize
-import com.odtheking.odin.features.impl.dungeon.map.Vec2i
 import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.Colors
+import com.odtheking.odin.utils.IVec2
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.entity.player.PlayerSkin
 
@@ -24,19 +22,10 @@ data class DungeonPlayer(
     var entity: Player? = null,
     var isDead: Boolean = false,
     var deaths: Int = 0,
-    var mapPos: Vec2i = Vec2i(0, 0),
+    var mapPos: IVec2 = IVec2(0, 0),
     var yaw: Float = 0f,
 ) {
-    fun mapRenderPosition(): Pair<Float, Float> =
-        entity?.let {
-            ((it.x + 201f) / (32f / 20f)).toFloat() to ((it.z + 201f) / (32f / 20f)).toFloat()
-        } ?: run {
-            roomSize?.let { size ->
-               mapCenter.add(mapPos.multiply(32.0 / (((size + 4.0) * 2)))).add(Vec2i(201, 201)).divide(32.0 / 20.0).let { it.x.toFloat() to it.z.toFloat() }
-            } ?: Pair(0f, 0f)
-        }
-
-    fun mapRenderYaw(): Float = entity?.yRot ?: yaw
+    val renderYaw get() = entity?.yRot ?: yaw
 }
 
 /**

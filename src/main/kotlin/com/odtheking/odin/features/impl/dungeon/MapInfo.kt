@@ -19,8 +19,7 @@ import com.odtheking.odin.utils.render.getStringWidth
 import com.odtheking.odin.utils.render.text
 import com.odtheking.odin.utils.render.textDim
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
-import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils.getRealCoords
-import com.odtheking.odin.utils.skyblock.dungeon.tiles.RoomType
+import com.odtheking.odin.utils.skyblock.dungeon.map.tile.RoomType
 import net.minecraft.core.BlockPos
 import net.minecraft.network.protocol.game.ClientboundSystemChatPacket
 import net.minecraft.world.phys.AABB

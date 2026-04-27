@@ -6,8 +6,7 @@ import com.odtheking.odin.config.normalized
 import com.odtheking.odin.features.ModuleManager
 import com.odtheking.odin.utils.modMessage
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
-import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils.getRealCoords
-import com.odtheking.odin.utils.skyblock.dungeon.tiles.Room
+import com.odtheking.odin.utils.skyblock.dungeon.map.tile.DungeonRoom
 import net.minecraft.world.phys.AABB
 
 suspend fun DungeonWaypoints.loadWaypoints() {
@@ -79,20 +78,20 @@ internal fun DungeonWaypoints.resetClickedWaypoints() {
     DungeonUtils.currentRoom?.setWaypoints()
 }
 
-fun Room.setWaypoints() {
+fun DungeonRoom.setWaypoints() {
     waypoints = DungeonWaypoints.allActiveWaypoints[data.name]
         ?.mapTo(mutableSetOf()) { waypoint ->
             waypoint.copy(blockPos = getRealCoords(waypoint.blockPos))
         } ?: mutableSetOf()
 }
 
-fun DungeonWaypoints.getWaypoints(room: Room): MutableList<DungeonWaypoints.DungeonWaypoint> =
+fun DungeonWaypoints.getWaypoints(room: DungeonRoom): MutableList<DungeonWaypoints.DungeonWaypoint> =
     allActiveWaypoints.getOrPut(room.data.name) { mutableListOf() }
 
-fun DungeonWaypoints.getEditableWaypoints(room: Room): MutableList<DungeonWaypoints.DungeonWaypoint> =
+fun DungeonWaypoints.getEditableWaypoints(room: DungeonRoom): MutableList<DungeonWaypoints.DungeonWaypoint> =
     loadedPacks.getOrPut(editPackId) { mutableMapOf() }.getOrPut(room.data.name) { mutableListOf() }
 
-fun DungeonWaypoints.syncRoomToActive(room: Room) {
+fun DungeonWaypoints.syncRoomToActive(room: DungeonRoom) {
     val mergedRoom = mergeRoomWaypoints(room.data.name)
     if (mergedRoom.isEmpty()) allActiveWaypoints.remove(room.data.name)
     else allActiveWaypoints[room.data.name] = mergedRoom

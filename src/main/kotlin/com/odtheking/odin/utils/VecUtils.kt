@@ -1,15 +1,13 @@
 package com.odtheking.odin.utils
 
 import com.odtheking.odin.OdinMod.mc
-import com.odtheking.odin.utils.skyblock.dungeon.tiles.Rotations
+import com.odtheking.odin.utils.skyblock.dungeon.map.tile.RoomRotation
 import net.minecraft.core.BlockPos
 import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.Vec3
 import kotlin.math.cos
 import kotlin.math.floor
 import kotlin.math.sin
-
-data class Vec2(val x: Int, val z: Int)
 
 operator fun Vec3.component1(): Double = x
 operator fun Vec3.component2(): Double = y
@@ -32,13 +30,12 @@ fun Vec3.addVec(x: Number = 0.0, y: Number = 0.0, z: Number = 0.0): Vec3 =
  * @param rotation The rotation to rotate around
  * @return The rotated Vec3
  */
-fun BlockPos.rotateAroundNorth(rotation: Rotations): BlockPos =
+fun BlockPos.rotateAroundNorth(rotation: RoomRotation): BlockPos =
     when (rotation) {
-        Rotations.NORTH -> BlockPos(-this.x, this.y, -this.z)
-        Rotations.WEST ->  BlockPos(-this.z, this.y, this.x)
-        Rotations.SOUTH -> BlockPos(this.x, this.y, this.z)
-        Rotations.EAST ->  BlockPos(this.z, this.y, -this.x)
-        else -> this
+        RoomRotation.NORTH -> BlockPos(-this.x, this.y, -this.z)
+        RoomRotation.WEST ->  BlockPos(-this.z, this.y, this.x)
+        RoomRotation.SOUTH -> BlockPos(this.x, this.y, this.z)
+        RoomRotation.EAST ->  BlockPos(this.z, this.y, -this.x)
     }
 
 /**
@@ -46,13 +43,12 @@ fun BlockPos.rotateAroundNorth(rotation: Rotations): BlockPos =
  * @param rotation The rotation to rotate to
  * @return The rotated Vec3
  */
-fun BlockPos.rotateToNorth(rotation: Rotations): BlockPos =
+fun BlockPos.rotateToNorth(rotation: RoomRotation): BlockPos =
     when (rotation) {
-        Rotations.NORTH -> BlockPos(-this.x, this.y, -this.z)
-        Rotations.WEST ->  BlockPos(this.z, this.y, -this.x)
-        Rotations.SOUTH -> BlockPos(this.x, this.y, this.z)
-        Rotations.EAST ->  BlockPos(-this.z, this.y, this.x)
-        else -> this
+        RoomRotation.NORTH -> BlockPos(-this.x, this.y, -this.z)
+        RoomRotation.WEST ->  BlockPos(this.z, this.y, -this.x)
+        RoomRotation.SOUTH -> BlockPos(this.x, this.y, this.z)
+        RoomRotation.EAST ->  BlockPos(-this.z, this.y, this.x)
     }
 
 fun isXZInterceptable(box: AABB, range: Double, pos: Vec3, yaw: Float, pitch: Float): Boolean {
