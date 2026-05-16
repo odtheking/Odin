@@ -84,7 +84,7 @@ object InvincibilityTimer : Module(
         }
 
         on<ChatPacketEvent> {
-            if (onlyInDungeons&&!DungeonUtils.inDungeons) return@on
+            if (onlyInDungeons && !DungeonUtils.inDungeons) return@on
             InvincibilityType.entries.firstOrNull { type -> value.matches(type.regex) }?.let { type ->
                 type.proc()
                 val usedMasks = InvincibilityType.entries.count { it.currentCooldown > 0 }
