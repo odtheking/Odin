@@ -109,7 +109,7 @@ object InvincibilityTimer : Module(
                 guiGraphics.fill(slot.x + 2, slot.y + 13, slot.x + 14, slot.y +15 ,Colors.BLACK)
                 guiGraphics.fill(slot.x + 2, slot.y + 13, slot.x + 14 - (percent * 12).toInt(), slot.y + 14, Color(((1-percent)*64).toInt(),(percent*64).toInt(),0).rgba)
             }
-            else{
+            else {
                 guiGraphics.fill(slot.x, slot.y+((1-percent)*16).toInt(), slot.x + 16, slot.y+16, cdColor.rgba)
             }
         }
