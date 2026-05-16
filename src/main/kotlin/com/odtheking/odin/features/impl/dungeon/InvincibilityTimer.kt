@@ -32,8 +32,9 @@ object InvincibilityTimer : Module(
 
     private val onlyInDungeons by BooleanSetting("Only In Dungeons",true,"Only proc in dungeons")
     private val showOnItem by BooleanSetting("Show On Item",true,"Renders the cooldown on the spirit mask and bonzo mask items")
-    private val durability by BooleanSetting("Display As Durability",false,"True: durability, False: colored vertical slide")
-    private val cdColor by ColorSetting("Cooldown Color",Colors.gray38,false,"Color of the bar").withDependency { showOnItem && !durability }
+    private val showPhoenixOnTopLeft by BooleanSetting("Phoenix As Top Left",false,"Displays the cooldown for phoenix pet on the top-left most slot in your inventory")
+    private val durability by BooleanSetting("Display As Durability",false,"True: durability, False: colored vertical slide").withDependency { showOnItem }
+    private val cdColor by ColorSetting("Cooldown Color",Colors.gray38,true,"Color of the cooldown").withDependency { showOnItem }
 
     private val hud by HUD(name, "Shows the invincibility time in the HUD.") { example ->
         if ((!DungeonUtils.inDungeons && !example) || (showOnlyInBoss && !DungeonUtils.inBoss && !example)) return@HUD 0 to 0
@@ -102,15 +103,23 @@ object InvincibilityTimer : Module(
             val percent = when(slot.item.itemId) {
                 "BONZO_MASK", "STARRED_BONZO_MASK" -> InvincibilityType.BONZO.currentCooldown.toDouble() / InvincibilityType.BONZO.maxCooldownTime
                 "SPIRIT_MASK", "STARRED_SPIRIT_MASK" -> InvincibilityType.SPIRIT.currentCooldown.toDouble() / InvincibilityType.SPIRIT.maxCooldownTime
-                else -> return@on
+                else -> {
+                    if(slot.containerSlot!=9||!showPhoenixOnTopLeft) return@on
+                    InvincibilityType.PHOENIX.currentCooldown.toDouble() / InvincibilityType.PHOENIX.maxCooldownTime
+                }
             }
             if (percent !in 0.0..1.0) return@on
             if (durability && percent > 0) {
-                guiGraphics.fill(slot.x + 2, slot.y + 13, slot.x + 14, slot.y +15 ,Colors.BLACK)
-                guiGraphics.fill(slot.x + 2, slot.y + 13, slot.x + 14 - (percent * 12).toInt(), slot.y + 14, Color(((1-percent)*64).toInt(),(percent*64).toInt(),0).rgba)
+                guiGraphics.renderFakeItem(slot.item,slot.x,slot.y)
+                guiGraphics.fill(slot.x + 2, slot.y + 13, slot.x + 14, slot.y +15 ,Colors.BLACK.rgba)
+                guiGraphics.fill(slot.x + 2, slot.y + 13, slot.x + 14 - ((1 - percent) * 12).toInt(), slot.y + 14, cdColor.rgba)
+                //Color(((1-percent)*64).toInt(),(percent*64).toInt(),0).rgba
+                cancel()
             }
             else {
-                guiGraphics.fill(slot.x, slot.y+((1-percent)*16).toInt(), slot.x + 16, slot.y+16, cdColor.rgba)
+                guiGraphics.renderFakeItem(slot.item,slot.x,slot.y)
+                guiGraphics.fill(slot.x, slot.y+((1 - percent) * 16).toInt(), slot.x + 16, slot.y+16, cdColor.rgba)
+                cancel()
             }
         }
     }
