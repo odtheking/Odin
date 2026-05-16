@@ -105,7 +105,7 @@ object InvincibilityTimer : Module(
                 else -> return@on
             }
             if (percent !in 0.0..1.0) return@on
-            if(durability&&percent>0){
+            if (durability && percent > 0) {
                 guiGraphics.fill(slot.x+2,slot.y+13,slot.x+14,slot.y+15,Color(0,0,0).rgba)
                 guiGraphics.fill(slot.x + 2, slot.y + 13, slot.x + 14 - (percent * 12).toInt(), slot.y + 14, Color(((1-percent)*64).toInt(),(percent*64).toInt(),0).rgba)
             }
