@@ -38,7 +38,7 @@ private fun displayCataStats(name: String, member: HypixelData.MemberData) {
         val mm = dungeonTypes.mastermode
         val cataLevel = calculateDungeonLevel(cata.experience)
         val classLevels = DungeonClass.entries
-            .mapNotNull { if (it != DungeonClass.Unknown) calculateDungeonLevel(classes[it.name.lowercase()]?.experience ?: 0.0) else null }
+            .mapNotNull { if (it != DungeonClass.EMPTY) calculateDungeonLevel(classes[it.name.lowercase()]?.experience ?: 0.0) else null }
 
         Component.literal("§d§m${" ".repeat(11)}§r §b$name §d§m${" ".repeat(11)}§r\n")
             .append(buildCataSecretsWatcherLine(cataLevel, cata.experience, secrets, avrSecrets, totalRuns,
@@ -74,7 +74,7 @@ private fun buildClassLevelsLine(classes: Map<String, HypixelData.ClassData>, cl
         var totalClassXp = 0.0
 
         DungeonClass.entries.forEach { dungeonClass ->
-            if (dungeonClass == DungeonClass.Unknown) return@forEach
+            if (dungeonClass == DungeonClass.EMPTY) return@forEach
             val className = dungeonClass.name.lowercase()
             val level = calculateDungeonLevel(classes[className]?.experience ?: 0.0).toFixed()
             val xp = classes[className]?.experience ?: 0.0

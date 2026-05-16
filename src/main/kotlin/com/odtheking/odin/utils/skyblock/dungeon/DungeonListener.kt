@@ -2,10 +2,7 @@ package com.odtheking.odin.utils.skyblock.dungeon
 
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.OdinMod.scope
-import com.odtheking.odin.events.ChatPacketEvent
-import com.odtheking.odin.events.RoomEnterEvent
-import com.odtheking.odin.events.TickEvent
-import com.odtheking.odin.events.WorldEvent
+import com.odtheking.odin.events.*
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.features.impl.dungeon.LeapMenu
@@ -79,8 +76,12 @@ object DungeonListener {
             val text = parameters.getOrNull()?.let { it.playerPrefix.string.plus(it.playerSuffix.string).noControlCodes } ?: return@onReceive
 
             floorRegex.find(text)?.groupValues?.get(1)?.let {
-                if (floor == null) scope.launch(Dispatchers.IO) { paul = hasBonusPaulScore() }
-                floor = Floor.valueOf(it)
+                if (floor == null) {
+                    scope.launch(Dispatchers.IO) { paul = hasBonusPaulScore() }
+                    val detectedFloor = Floor.valueOf(it)
+                    floor = detectedFloor
+                    FloorEnterEvent(detectedFloor).postAndCatch()
+                }
             }
 
             clearedRegex.find(text)?.groupValues?.get(1)?.toIntOrNull()?.let {

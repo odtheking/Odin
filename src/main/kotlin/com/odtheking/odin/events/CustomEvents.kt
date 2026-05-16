@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.InputConstants
 import com.odtheking.odin.events.core.CancellableEvent
 import com.odtheking.odin.events.core.Event
 import com.odtheking.odin.utils.render.RenderConsumer
+import com.odtheking.odin.utils.skyblock.dungeon.Floor
 import com.odtheking.odin.utils.skyblock.dungeon.map.tile.DungeonRoom
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.terminalhandler.TerminalHandler
 import net.fabricmc.fabric.api.client.rendering.v1.world.AbstractWorldRenderContext
@@ -31,8 +32,6 @@ class ChatPacketEvent(val value: String, val component: Component) : Event // mi
 class MessageSentEvent(val message: String) : CancellableEvent()
 
 class RenderBossBarEvent(val bossBar: BossEvent) : CancellableEvent()
-
-class RoomEnterEvent(val room: DungeonRoom?) : CancellableEvent()
 
 interface SecretPickupEvent : Event { // all are currently packet based but can probably use mixins
     class Interact(val blockPos: BlockPos, val blockState: BlockState) : SecretPickupEvent
@@ -70,3 +69,6 @@ abstract class PacketEvent(val packet: Packet<*>) : CancellableEvent() { // idea
     class Receive(packet: Packet<*>) : PacketEvent(packet)
     class Send(packet: Packet<*>) : PacketEvent(packet)
 }
+
+class RoomEnterEvent(val room: DungeonRoom?) : CancellableEvent()
+class FloorEnterEvent(val floor: Floor) : CancellableEvent()

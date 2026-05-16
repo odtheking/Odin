@@ -21,20 +21,16 @@ import java.util.concurrent.CopyOnWriteArrayList
 
 object DungeonWorldScan {
 
-    // move outside prob
-    val tiles: Array<DungeonTile> = Array(36) { index ->
-        DungeonTile(position = IVec2(x = index % 6, z = index / 6))
-    }
+    val tiles: Array<DungeonTile> = Array(36) { index -> DungeonTile(position = IVec2(x = index % 6, z = index / 6)) }
 
     val rooms: CopyOnWriteArrayList<DungeonRoom> = CopyOnWriteArrayList()
     val doors: ConcurrentHashMap<IVec2, DungeonDoor> = ConcurrentHashMap()
     val dataToRoom: HashMap<RoomData, DungeonRoom> = hashMapOf()
+    val discoveredRooms: CopyOnWriteArrayList<DungeonRoom> = CopyOnWriteArrayList()
 
     var currentRoom: DungeonRoom? = null
         private set
 
-    // keep track of chunks loaded before loading into a dungeon
-    // if the area loaded into wasn't a dungeon. we simply discard it
     private val chunksToScan: HashSet<IVec2> = HashSet()
 
     init {
@@ -46,6 +42,7 @@ object DungeonWorldScan {
             doors.clear()
             dataToRoom.clear()
             chunksToScan.clear()
+            discoveredRooms.clear()
             currentRoom = null
         }
 
@@ -60,31 +57,35 @@ object DungeonWorldScan {
                 return@on
             }
 
+            for (room in rooms) {
+                if (room.shape != RoomShape.OneByOne) continue
+                if (room.rotation != null && room.clayPos != null) continue
+                room.getRotation()
+            }
+
             val tileX = (player.blockX + 201) shr 5
             val tileZ = (player.blockZ + 201) shr 5
             if (tileX !in 0..5 || tileZ !in 0..5) return@on
 
-            val room = tiles[tileX + tileZ * 6].room
-            if (room == currentRoom || room?.rotation == null) return@on
+            tiles[tileX + tileZ * 6].room?.let { room ->
+                if (room == currentRoom || room.rotation == null || room.highestBlock == null) return@on
+                devMessage("${room.data.name} - ${room.rotation} || clay: ${room.clayPos}")
+                if (player.blockY > room.highestBlock!! - 10) return@on
 
-            currentRoom = room
-            room.discovered = true
-            RoomEnterEvent(room).postAndCatch()
-            devMessage("${room.data.name} - ${room.rotation} || clay: ${room.clayPos}")
+                discoveredRooms.add(room)
+                currentRoom = room
+                room.discovered = true
+                RoomEnterEvent(room).postAndCatch()
+            }
         }
 
         ClientChunkEvents.CHUNK_LOAD.register { _, chunk ->
-            // if dungeon isn't loaded, yet we add it to chunksToScan
-            // otherwise just directly load it, no need to scan every tick
-
             if (!DungeonUtils.inDungeons) chunksToScan.add(IVec2(chunk.pos.x, chunk.pos.z))
             else scanChunk(chunk)
         }
         ClientChunkEvents.CHUNK_UNLOAD.register { _, chunk ->
             if (!DungeonUtils.inDungeons) chunksToScan.remove(IVec2(chunk.pos.x, chunk.pos.z))
         }
-        // in case chunks are somehow unloaded before area is loaded
-        // remove from chunksToScan, if dungeon has started no need to do this.
 
         on<LocationChangeEvent> {
             if (DungeonUtils.inDungeons) {
@@ -123,7 +124,7 @@ object DungeonWorldScan {
         val doorPos = ((chunkPosition - 1) / 2) + 6
         val destPos = IVec2(doorPos.x + rotation.offset.x, doorPos.z + rotation.offset.z)
         val originIndex = doorPos.x + doorPos.z * 6
-        val destIndex = (destPos.x + destPos.z * 6)
+        val destIndex = destPos.x + destPos.z * 6
         doors[chunkPosition] = DungeonDoor(doorPos, rotation, type, originIndex, destIndex)
     }
 
@@ -142,10 +143,7 @@ object DungeonWorldScan {
         tile.room = room
         room.addSegment(tile)
 
-        if (room.segments.size != data.shape.segments) return
-
-        val level = mc.level ?: return
-        room.inferLayout({ pos -> level.getBlockState(pos).block }, highestBlock)
+        if (room.segments.size == data.shape.segments) room.inferLayout(highestBlock)
     }
 
     private val stringBuilder = StringBuilder(1024)
@@ -158,26 +156,26 @@ object DungeonWorldScan {
         var bedrock = 0
 
         for (y in 140 downTo 12) {
-            val block = chunk.getBlockState(position.x, y, position.z).block
+            val blockState = chunk.getBlockState(position.x, y, position.z)
 
             if (!foundHighest) {
-                if (block !== Blocks.AIR && block !== Blocks.GOLD_BLOCK) {
+                if (!blockState.isAir && blockState.block !== Blocks.GOLD_BLOCK) {
                     foundHighest = true
                     highestBlock = y
                 } else stringBuilder.append('0')
             }
 
             if (foundHighest) {
-                if (block === Blocks.AIR && bedrock >= 2 && y < 69) {
+                if (blockState.isAir && bedrock >= 2 && y < 69) {
                     repeat(y - 11) { stringBuilder.append('0') }
                     break
                 }
-                if (block === Blocks.BEDROCK) bedrock++
+                if (blockState.block === Blocks.BEDROCK) bedrock++
                 else {
                     bedrock = 0
-                    if (block.equalsOneOf(Blocks.OAK_PLANKS, Blocks.TRAPPED_CHEST, Blocks.CHEST)) continue
+                    if (blockState.block.equalsOneOf(Blocks.OAK_PLANKS, Blocks.TRAPPED_CHEST, Blocks.CHEST)) continue
                 }
-                stringBuilder.append(block)
+                stringBuilder.append(blockState.block)
             }
         }
 

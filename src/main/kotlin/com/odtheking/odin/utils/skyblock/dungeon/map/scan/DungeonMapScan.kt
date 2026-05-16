@@ -1,5 +1,6 @@
 package com.odtheking.odin.utils.skyblock.dungeon.map.scan
 
+import com.odtheking.odin.events.FloorEnterEvent
 import com.odtheking.odin.events.WorldEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
@@ -39,6 +40,7 @@ object DungeonMapScan {
 
     val rooms: CopyOnWriteArrayList<MapScanRoom> = CopyOnWriteArrayList()
     val doors: ConcurrentHashMap<IVec2, DungeonDoor> = ConcurrentHashMap()
+    val nonDiscoveredRooms = CopyOnWriteArrayList<RoomInfo>()
 
     init {
         on<WorldEvent.Load> {
@@ -60,33 +62,33 @@ object DungeonMapScan {
             val colors = colorPatch.getOrNull()?.mapColors() ?: return@onReceive
             if (colors.size < MAP_SIZE * MAP_SIZE || colors[0] != EMPTY) return@onReceive
 
-            if (roomSize == -1 && !initLayout(colors)) return@onReceive
+            if (roomSize == -1) return@onReceive
             updateAll(colors)
+            nonDiscoveredRooms.clear()
+            // all world dicoevered rooms
+            // plus all map rooms that arent discoered in the world
+
+            nonDiscoveredRooms.addAll(rooms.filter { mapRoom -> DungeonWorldScan.discoveredRooms.none { worldRoom -> mapRoom.position == worldRoom.position } })
         }
-    }
 
-    private fun initLayout(colors: ByteArray): Boolean {
-        for ((index, color) in colors.withIndex()) {
-            if (color != RoomType.ENTRANCE.mapColor) continue
+        on<FloorEnterEvent> {
+            roomSize = if (floor.floorNumber <= 3) 18 else 16
+            roomGap  = roomSize + ROOM_SPACING
 
-            var end = index
-            while (end < colors.size && colors[end] == color) end++
-
-            val length = end - index
-            if (length == 16 || length == 18) {
-                roomSize = length
-                roomGap = roomSize + ROOM_SPACING
-                startX = (index % MAP_SIZE) % roomGap
-                startY = (index / MAP_SIZE) % roomGap
-
-                if (startX == 0) startX = 22 // f1
-                if (startY == 0) startY = 22 // entrance
-
-                modMessage("Dungeon map layout initialized: roomSize=$roomSize, startX=$startX, startY=$startY")
-                return true
+            startX = when {
+                floor.floorNumber <= 1  -> 22
+                floor.floorNumber <= 3  -> 11
+                else        -> 5
             }
+
+            startY = when (floor.floorNumber) {
+                0       -> 22
+                4       -> 16
+                in 1..3 -> 11
+                else    -> 5
+            }
+            modMessage("Dungeon map layout initialized: roomSize=$roomSize, startX=$startX, startY=$startY")
         }
-        return false
     }
 
     private fun updatePlayers(decorations: List<MapDecoration>) {

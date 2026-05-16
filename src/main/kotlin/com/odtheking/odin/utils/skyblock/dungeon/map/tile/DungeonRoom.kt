@@ -1,11 +1,11 @@
 package com.odtheking.odin.utils.skyblock.dungeon.map.tile
 
+import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints
 import com.odtheking.odin.utils.IVec2
 import com.odtheking.odin.utils.rotateAroundNorth
 import com.odtheking.odin.utils.rotateToNorth
 import net.minecraft.core.BlockPos
-import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.Blocks
 
 data class DungeonTile(
@@ -18,6 +18,7 @@ class DungeonRoom(val data: RoomData, initialPosition: IVec2) : RoomInfo {
 
     var discovered: Boolean = false
     var clayPos: BlockPos? = null
+    var highestBlock: Int? = null
     var waypoints: MutableSet<DungeonWaypoints.DungeonWaypoint> = mutableSetOf()
 
     override var position: IVec2 = initialPosition
@@ -34,16 +35,14 @@ class DungeonRoom(val data: RoomData, initialPosition: IVec2) : RoomInfo {
         }
     }
 
-    fun inferLayout(getBlock: (BlockPos) -> Block, highestBlock: Int) {
+    fun inferLayout(highestBlock: Int) {
+        this.highestBlock = highestBlock
         if (applyFairyFallback(highestBlock)) return
 
         val positions = segments.map { it.position }
 
         if (shape == RoomShape.OneByOne) {
-            findOneByOneClay(getBlock, highestBlock)?.let { (rot, pos) ->
-                rotation = rot
-                clayPos = pos
-            }
+            getRotation()
             return
         }
 
@@ -77,12 +76,20 @@ class DungeonRoom(val data: RoomData, initialPosition: IVec2) : RoomInfo {
         }
     }
 
-    private fun findOneByOneClay(getBlock: (BlockPos) -> Block, highestBlock: Int, ): Pair<RoomRotation, BlockPos>? {
+    fun getRotation(): Boolean {
+        val y = highestBlock ?: return false
+        if (applyFairyFallback(y)) return true
+        if (shape != RoomShape.OneByOne) return false
+
         for (rot in RoomRotation.entries) {
-            val pos = clayProbePos(rot, highestBlock)
-            if (getBlock(pos) === Blocks.BLUE_TERRACOTTA) return rot to pos
+            val pos = clayProbePos(rot, y)
+            if (mc.level?.getBlockState(pos)?.block == Blocks.BLUE_TERRACOTTA) {
+                rotation = rot
+                clayPos = pos
+                return true
+            }
         }
-        return null
+        return false
     }
 
     private fun applyFairyFallback(highestBlock: Int): Boolean {
