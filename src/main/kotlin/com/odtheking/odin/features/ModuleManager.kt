@@ -63,9 +63,9 @@ object ModuleManager {
             InvincibilityTimer, SpiritBear, DungeonWaypoints, ExtraStats, BetterPartyFinder, Croesus, MageBeam, DungeonMap,
             SecretsCounter, PuzzleHud,
 
-            // floor 7
+            // boss
             TerminalSimulator, TerminalSolver, TerminalTimes, TerminalSounds, TickTimers, ArrowAlign,
-            InactiveWaypoints, MelodyMessage, WitherDragons, SimonSays, KingRelics, ArrowsDevice,
+            InactiveWaypoints, MelodyMessage, WitherDragons, SimonSays, KingRelics, ArrowsDevice, TerminalTitles,
 
             // render
             ClickGUIModule, Camera, Etherwarp, PlayerSize, PerformanceHUD, RenderOptimizer,
