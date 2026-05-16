@@ -97,7 +97,7 @@ object InvincibilityTimer : Module(
             InvincibilityType.entries.forEach { it.reset() }
         }
 
-        on<GuiEvent.RenderSlot>{
+        on<GuiEvent.RenderSlot> {
             if (!showOnItem) return@on
             val percent = when(slot.item.itemId){
                 "BONZO_MASK", "STARRED_BONZO_MASK" -> InvincibilityType.BONZO.currentCooldown.toDouble() / InvincibilityType.BONZO.maxCooldownTime
