@@ -36,7 +36,7 @@ object Shenanigans {
     )
 
     private var enabled = false
-    private var forceDisabled = runCatching { java.lang.Boolean.getBoolean("oding-no-shenanigans") }.orNull() == true
+    private var forceDisabled = runCatching { java.lang.Boolean.getBoolean("odin-no-shenanigans") }.orNull() == true
 
     init {
         on<RenderEvent.Extract> {
