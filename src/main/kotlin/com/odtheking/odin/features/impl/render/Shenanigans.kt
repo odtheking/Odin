@@ -36,6 +36,7 @@ object Shenanigans {
     )
 
     private var enabled = false
+    private var forceDisabled = runCatching { java.lang.Boolean.getBoolean("oding-no-shenanigans") }.orNull() == true
 
     init {
         on<RenderEvent.Extract> {
@@ -48,6 +49,7 @@ object Shenanigans {
         }
 
         on<WorldEvent.Load> {
+            if (forceDisabled) return
             val now = Instant.now().atZone(ZoneOffset.UTC)
 
             enabled = (now.monthValue == 4 && now.dayOfMonth == 1) || run {
