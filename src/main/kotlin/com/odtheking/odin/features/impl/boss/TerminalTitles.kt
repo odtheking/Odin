@@ -5,6 +5,7 @@ import com.odtheking.odin.clickgui.settings.impl.StringSetting
 import com.odtheking.odin.events.PacketEvent
 import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.features.Module
+import com.odtheking.odin.utils.noControlCodes
 import com.odtheking.odin.utils.setSubtitle
 import com.odtheking.odin.utils.setTitle
 import net.minecraft.network.protocol.game.ClientboundSetSubtitleTextPacket
@@ -33,7 +34,7 @@ object TerminalTitles : Module(
     }
 
     fun PacketEvent.Receive.handleTitle(text: String) {
-        val (name, action, type, current, total) = titleRegex.find(text)?.destructured ?: return
+        val (name, action, type, current, total) = titleRegex.find(text.noControlCodes)?.destructured ?: return
         if (selfOnly && name != mc.player?.name?.string) return
 
         val shouldReplace = when (type) {
