@@ -1,6 +1,5 @@
 package com.odtheking.odin.features.impl.dungeon
 
-import com.odtheking.odin.clickgui.settings.DevModule
 import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.ColorSetting
 import com.odtheking.odin.clickgui.settings.impl.DropdownSetting
@@ -25,7 +24,6 @@ import net.minecraft.client.gui.components.PlayerFaceRenderer
 import net.minecraft.network.protocol.game.ClientboundMapItemDataPacket
 import java.awt.Color as AwtColor
 
-@DevModule
 object DungeonMap : Module(
     name = "Dungeon Map",
     description = "Customizable dungeon map with room colors, door colors, and player names."

@@ -104,7 +104,7 @@ object InvincibilityTimer : Module(
                 "BONZO_MASK", "STARRED_BONZO_MASK" -> InvincibilityType.BONZO.currentCooldown.toDouble() / InvincibilityType.BONZO.maxCooldownTime
                 "SPIRIT_MASK", "STARRED_SPIRIT_MASK" -> InvincibilityType.SPIRIT.currentCooldown.toDouble() / InvincibilityType.SPIRIT.maxCooldownTime
                 else -> {
-                    if(slot.containerSlot!=9||!showPhoenixOnTopLeft) return@on
+                    if(slot.containerSlot != 9 || !showPhoenixOnTopLeft) return@on
                     InvincibilityType.PHOENIX.currentCooldown.toDouble() / InvincibilityType.PHOENIX.maxCooldownTime
                 }
             }
