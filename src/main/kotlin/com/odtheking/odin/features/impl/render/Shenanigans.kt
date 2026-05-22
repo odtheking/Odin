@@ -36,8 +36,10 @@ object Shenanigans {
     )
 
     private var enabled = false
-    private var forceDisabled = runCatching { java.lang.Boolean.getBoolean("odin-no-shenanigans") }.orNull() == true
+    private var forceDisabled = runCatching { java.lang.Boolean.getBoolean("odin-no-more-shenanigans") }.orNull() == true
+    private var forceEnabled = runCatching { java.lang.Boolean.getBoolean("odin-more-shenanigans") }.orNull() == true
 
+    
     init {
         on<RenderEvent.Extract> {
             if (!enabled) return@on
@@ -52,7 +54,7 @@ object Shenanigans {
             if (forceDisabled) return
             val now = Instant.now().atZone(ZoneOffset.UTC)
 
-            enabled = (now.monthValue == 4 && now.dayOfMonth == 1) || run {
+            enabled = forceEnabled || (now.monthValue == 4 && now.dayOfMonth == 1) || run {
                 val window = now.toEpochSecond() / 600L
                 ((window xor (window shr 3) xor (window shl 1)) and Long.MAX_VALUE) % 288L == 0L
             }
