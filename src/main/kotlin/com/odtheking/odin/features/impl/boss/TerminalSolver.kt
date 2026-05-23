@@ -103,17 +103,6 @@ object TerminalSolver : Module(
 
         on<GuiEvent.DrawTooltip> {
             if (cancelToolTip && TerminalUtils.currentTerm != null) cancel()
-        }
-
-        on<TerminalEvent.Open> {
-            if (renderType == 0 || renderType == 1) mc.execute { mc.resizeDisplay() }
-        }
-
-        on<TerminalEvent.Close> {
-            if (renderType == 0 || renderType == 1) mc.execute { mc.resizeDisplay() }
-        }
-
-        on<GuiEvent.DrawTooltip> {
             if (debug) TerminalUtils.currentTerm?.let { term ->
                 val menu = (mc.screen as? AbstractContainerScreen<*>)?.menu ?: return@let
                 val debugInfo = listOf(
@@ -140,6 +129,14 @@ object TerminalSolver : Module(
                 }
                 guiGraphics.pose().popMatrix()
             }
+        }
+
+        on<TerminalEvent.Open> {
+            if (renderType == 0 || renderType == 1) mc.execute { mc.resizeDisplay() }
+        }
+
+        on<TerminalEvent.Close> {
+            if (renderType == 0 || renderType == 1) mc.execute { mc.resizeDisplay() }
         }
     }
 }
