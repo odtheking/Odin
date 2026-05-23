@@ -11,6 +11,7 @@ import com.odtheking.odin.utils.Color.Companion.darker
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalTypes
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalUtils
+import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 import net.minecraft.network.chat.Component
 import org.lwjgl.glfw.GLFW
@@ -103,32 +104,7 @@ object TerminalSolver : Module(
 
         on<GuiEvent.DrawTooltip> {
             if (cancelToolTip && TerminalUtils.currentTerm != null) cancel()
-            if (debug) TerminalUtils.currentTerm?.let { term ->
-                val menu = (mc.screen as? AbstractContainerScreen<*>)?.menu ?: return@let
-                val debugInfo = listOf(
-                    "§7Type: §f${term.type.name}",
-                    "§7Window Name: §f${mc.screen?.title?.string}",
-                    "§7Container ID: §f${menu.containerId}",
-                    "§7Time Open: §f${System.currentTimeMillis() - term.timeOpened}ms",
-                    "§7Is Clicked: §f${term.isClicked}",
-                    "§7Window Count: §f${term.windowCount}",
-                    "§7Solution: §f${term.solution.joinToString(", ")}",
-                )
-
-                guiGraphics.pose().pushMatrix()
-                val sf = mc.window.guiScale
-                guiGraphics.pose().scale(1f / sf, 1f / sf)
-                guiGraphics.pose().scale(3f)
-                debugInfo.forEachIndexed { index, line ->
-                    guiGraphics.drawWordWrap(mc.font, Component.literal(line), 5, 20 + (index * 10), 300, Colors.WHITE.rgba)
-                }
-
-                menu.items.forEachIndexed { index, stack ->
-                    guiGraphics.renderItem(stack, 5 + (index % 9) * 18, 250 + (index / 9) * 18)
-                    guiGraphics.renderItemDecorations(mc.font, stack, 5 + (index % 9) * 18, 250 + (index / 9) * 18)
-                }
-                guiGraphics.pose().popMatrix()
-            }
+            if (debug) this.guiGraphics.renderDebug()
         }
 
         on<TerminalEvent.Open> {
@@ -137,6 +113,35 @@ object TerminalSolver : Module(
 
         on<TerminalEvent.Close> {
             if (renderType == 0 || renderType == 1) mc.execute { mc.resizeDisplay() }
+        }
+    }
+
+    fun GuiGraphics.renderDebug() {
+        TerminalUtils.currentTerm?.let { term ->
+            val menu = (mc.screen as? AbstractContainerScreen<*>)?.menu ?: return@let
+            val debugInfo = listOf(
+                "§7Type: §f${term.type.name}",
+                "§7Window Name: §f${mc.screen?.title?.string}",
+                "§7Container ID: §f${menu.containerId}",
+                "§7Time Open: §f${System.currentTimeMillis() - term.timeOpened}ms",
+                "§7Is Clicked: §f${term.isClicked}",
+                "§7Window Count: §f${term.windowCount}",
+                "§7Solution: §f${term.solution.joinToString(", ")}",
+            )
+
+            pose().pushMatrix()
+            val sf = mc.window.guiScale
+            pose().scale(1f / sf, 1f / sf)
+            pose().scale(3f)
+            debugInfo.forEachIndexed { index, line ->
+                drawWordWrap(mc.font, Component.literal(line), 5, 20 + (index * 10), 300, Colors.WHITE.rgba)
+            }
+
+            menu.items.forEachIndexed { index, stack ->
+                renderItem(stack, 5 + (index % 9) * 18, 250 + (index / 9) * 18)
+                renderItemDecorations(mc.font, stack, 5 + (index % 9) * 18, 250 + (index / 9) * 18)
+            }
+            pose().popMatrix()
         }
     }
 }
