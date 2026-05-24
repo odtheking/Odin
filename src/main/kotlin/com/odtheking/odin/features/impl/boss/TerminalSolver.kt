@@ -133,6 +133,9 @@ object TerminalSolver : Module(
             val sf = mc.window.guiScale
             pose().scale(1f / sf, 1f / sf)
             pose().scale(3f)
+
+            drawWordWrap(mc.font, Component.literal(menu.items.filter { !it.isEmpty }.map { stack -> stack.hoverName.string  }.toString()), 400, 0, 300, Colors.WHITE.rgba)
+
             debugInfo.forEachIndexed { index, line ->
                 drawWordWrap(mc.font, Component.literal(line), 5, 20 + (index * 10), 300, Colors.WHITE.rgba)
             }
