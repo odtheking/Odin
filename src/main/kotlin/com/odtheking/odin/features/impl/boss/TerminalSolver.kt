@@ -104,7 +104,7 @@ object TerminalSolver : Module(
 
         on<GuiEvent.DrawTooltip> {
             if (cancelToolTip && TerminalUtils.currentTerm != null) cancel()
-            if (debug) this.guiGraphics.renderDebug()
+            this.guiGraphics.renderDebug()
         }
 
         on<TerminalEvent.Open> {
@@ -117,7 +117,7 @@ object TerminalSolver : Module(
     }
 
     fun GuiGraphics.renderDebug() {
-        TerminalUtils.currentTerm?.let { term ->
+        if (debug) TerminalUtils.currentTerm?.let { term ->
             val menu = (mc.screen as? AbstractContainerScreen<*>)?.menu ?: return@let
             val debugInfo = listOf(
                 "§7Type: §f${term.type.name}",
