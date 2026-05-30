@@ -35,11 +35,10 @@ object Shenanigans {
         Logos(Identifier.fromNamespaceAndPath("odin", "textures/job.png"), Vec3(54.5, 23.5, 40.0), 25f, 35f, 0f)
     )
 
+    private var forceDisabled = runCatching { java.lang.Boolean.getBoolean("odin-no-more-shenanigans") }.getOrNull() ?: false
+    private var forceEnabled = runCatching { java.lang.Boolean.getBoolean("odin-more-shenanigans") }.getOrNull() ?: false
     private var enabled = false
-    private var forceDisabled = runCatching { java.lang.Boolean.getBoolean("odin-no-more-shenanigans") }.orNull() == true
-    private var forceEnabled = runCatching { java.lang.Boolean.getBoolean("odin-more-shenanigans") }.orNull() == true
 
-    
     init {
         on<RenderEvent.Extract> {
             if (!enabled) return@on
@@ -51,7 +50,7 @@ object Shenanigans {
         }
 
         on<WorldEvent.Load> {
-            if (forceDisabled) return
+            if (forceDisabled) return@on
             val now = Instant.now().atZone(ZoneOffset.UTC)
 
             enabled = forceEnabled || (now.monthValue == 4 && now.dayOfMonth == 1) || run {
