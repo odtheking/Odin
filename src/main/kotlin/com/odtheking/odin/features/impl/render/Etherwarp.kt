@@ -126,9 +126,9 @@ object Etherwarp : Module(
     ): EtherPos {
         val player = mc.player ?: return EtherPos.NONE
         if (position == null) return EtherPos.NONE
-        val eyeHeight = if (player.isCrouching) {
-            if (LocationUtils.isCurrentArea(Island.Galatea, Island.ThePark, Island.Hub, Island.SpiderDen)) 1.27 else 1.54 // Use modern sneak height in Galatea
-        } else 1.62
+        val eyeHeight = if (player.isCrouching) 1.27 else 1.62
+
+        // TODO: implement crawling pose eyePos
 
         val startPos = position.addVec(y = eyeHeight)
         val endPos = player.lookAngle.multiply(distance, distance, distance).add(startPos)
