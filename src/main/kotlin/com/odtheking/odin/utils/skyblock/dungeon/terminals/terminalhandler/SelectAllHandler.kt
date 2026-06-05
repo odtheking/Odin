@@ -8,28 +8,25 @@ import net.minecraft.world.item.DyeColor
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.Items
 
-class SelectAllHandler(private val color: DyeColor): TerminalHandler(TerminalTypes.SELECT) {
+class SelectAllHandler(color: DyeColor) : TerminalHandler(TerminalTypes.SELECT) {
 
-    override fun solve(items: List<ItemStack>): List<Int> {
-        val colorName = color.name.replace("_", " ")
-
-        return items.mapIndexedNotNull { index, item ->
-            val nameMatches = item.hoverName.string.startsWith(colorName, true)
-            val itemMatches = when (color) {
-                DyeColor.BLACK  -> item.item == Items.INK_SAC
-                DyeColor.BLUE   -> item.item == Items.LAPIS_LAZULI
-                DyeColor.BROWN  -> item.item == Items.COCOA_BEANS
-                DyeColor.WHITE  -> item.item == Items.BONE_MEAL || item.item == Items.WHITE_WOOL
-                DyeColor.GREEN  -> item.item == Items.CACTUS
-                DyeColor.RED    -> item.item == Items.POPPY || item.item == Items.ROSE_BUSH
-                DyeColor.YELLOW -> item.item == Items.DANDELION
-                DyeColor.LIGHT_GRAY -> item.hoverName.string.startsWith("silver", true)
-                else -> false
-            }
-
-            if (!item.hasGlint() && item.item != Items.BLACK_STAINED_GLASS_PANE && (nameMatches || itemMatches)) index else null
-        }
+    private val validPrefixes = when (color) {
+        DyeColor.BLACK      -> setOf("black", "ink")
+        DyeColor.BLUE       -> setOf("blue", "lapis")
+        DyeColor.BROWN      -> setOf("brown", "cocoa")
+        DyeColor.WHITE      -> setOf("white", "bone", "wool")
+        DyeColor.GREEN      -> setOf("green", "cactus")
+        DyeColor.RED        -> setOf("red", "rose")
+        DyeColor.YELLOW     -> setOf("yellow", "dandelion")
+        DyeColor.LIGHT_GRAY -> setOf("silver", "light gray")
+        else                -> setOf(color.name.lowercase().replace('_', ' '))
     }
+
+    override fun solve(items: List<ItemStack>): List<Int> =
+        items.mapIndexedNotNull { index, item ->
+            if (item.hasGlint() || item.item == Items.BLACK_STAINED_GLASS_PANE) return@mapIndexedNotNull null
+            if (validPrefixes.any(item.hoverName.string.lowercase()::startsWith)) index else null
+        }
 
     override fun renderSlot(slotIndex: Int): Pair<Color, String?> = TerminalSolver.selectColor to null
 }
