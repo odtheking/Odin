@@ -6,6 +6,7 @@ import com.odtheking.odin.events.ChatPacketEvent
 import com.odtheking.odin.events.WorldEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
+import com.odtheking.odin.features.impl.boss.ExtraStats
 import com.odtheking.odin.utils.handlers.schedule
 import com.odtheking.odin.utils.modMessage
 import com.odtheking.odin.utils.network.hypixelapi.RequestUtils
@@ -19,7 +20,7 @@ object SecretsCounter : Module(
     description = "Counts secrets for each player and shows results at the end of a dungeon run."
 ) {
     private val secretsEnabled by BooleanSetting("Secrets Counter", true, desc = "Track and display secrets found per player.")
-
+    private val self by BooleanSetting("Show Self", true, desc = "Shows your secrets along with other players")
     private val secretsBaseline = mutableMapOf<String, Long>()
     private var snapshotDone = false
 
@@ -76,12 +77,14 @@ object SecretsCounter : Module(
             .thenByDescending { secretsDelta[it.name] ?: -1L })
             .forEach { player ->
                 val countRaw = if (player.name in secretsDelta) secretsDelta[player.name] else null
-                val count = countRaw?.toString() ?: "N/A"
-                modMessage("§${player.clazz.colorCode}${player.name} §7-> §f${count} Secrets")
+                modMessage("§${player.clazz.colorCode}${player.name} §7-> §f${countRaw?.toString() ?: "N/A"} Secrets")
                 sum+=countRaw?:0
             }
+        if(!self)return
         val self=DungeonUtils.currentDungeonPlayer
-        val selfCount=DungeonUtils.secretCount-sum
-        modMessage("§${self.clazz.colorCode}${self.name} §7-> §f${selfCount} Secrets")
+        modMessage("§${self.clazz.colorCode}${self.name} §7-> §f${
+            if(ExtraStats.enabled) ExtraStats.extraStats.secretsFound
+            else DungeonUtils.secretCount-sum
+        } Secrets")
     }
 }
