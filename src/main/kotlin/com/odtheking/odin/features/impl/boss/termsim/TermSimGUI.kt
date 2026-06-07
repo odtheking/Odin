@@ -75,7 +75,7 @@ open class TermSimGUI(
 
     override fun slotClicked(slot: Slot, i: Int, j: Int, clickType: ClickType) {
         if (GuiEvent.SlotClick(this, i, j).postAndCatch()) return
-        slot?.let { delaySlotClick(it, i) }
+        delaySlotClick(slot, i) //compiler was yelling about not needing a safe dot call
     }
 
     fun clickIndex(index: Int, button: Int) {

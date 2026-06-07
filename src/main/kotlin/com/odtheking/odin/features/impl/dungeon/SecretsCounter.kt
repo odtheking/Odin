@@ -70,11 +70,18 @@ object SecretsCounter : Module(
     }
 
     private fun display(teammates: List<DungeonPlayer>, secretsDelta: Map<String, Long?>) {
+        var sum=0L
         teammates
-            .sortedWith(compareBy<DungeonPlayer> { it.clazz.ordinal }.thenByDescending { secretsDelta[it.name] ?: -1L })
+            .sortedWith(compareBy<DungeonPlayer> { it.clazz.ordinal }
+            .thenByDescending { secretsDelta[it.name] ?: -1L })
             .forEach { player ->
-            val count = if (player.name in secretsDelta) secretsDelta[player.name]?.toString() ?: "N/A" else "N/A"
+                val countRaw = if (player.name in secretsDelta) secretsDelta[player.name] else null
+                val count = countRaw?.toString() ?: "N/A"
                 modMessage("§${player.clazz.colorCode}${player.name} §7-> §f${count} Secrets")
+                sum+=countRaw?:0
             }
+        val self=DungeonUtils.currentDungeonPlayer
+        val selfCount=DungeonUtils.secretCount-sum
+        modMessage("§${self.clazz.colorCode}${self.name} §7-> §f${selfCount} Secrets")
     }
 }
