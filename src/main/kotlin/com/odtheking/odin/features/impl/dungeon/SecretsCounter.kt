@@ -21,6 +21,7 @@ object SecretsCounter : Module(
 ) {
     private val secretsEnabled by BooleanSetting("Secrets Counter", true, desc = "Track and display secrets found per player.")
     private val self by BooleanSetting("Show Self", true, desc = "Shows your secrets along with other players")
+    private val fromExtraStats by BooleanSetting("Use value from extra stats module", ExtraStats.enabled,"See ExtraStats module")
     private val secretsBaseline = mutableMapOf<String, Long>()
     private var snapshotDone = false
 
@@ -83,8 +84,9 @@ object SecretsCounter : Module(
         if(!self)return
         val self=DungeonUtils.currentDungeonPlayer
         modMessage("§${self.clazz.colorCode}${self.name} §7-> §f${
-            if(ExtraStats.enabled) ExtraStats.extraStats.secretsFound
+            if(fromExtraStats) ExtraStats.extraStats.secretsFound
             else DungeonUtils.secretCount-sum
         } Secrets")
+        if(fromExtraStats&&!ExtraStats.enabled)modMessage("Enable ExtraStats for accurate personal secrets")
     }
 }
