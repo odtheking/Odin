@@ -39,7 +39,7 @@ object CustomRenderPipelines {
             .withVertexShader(Identifier.fromNamespaceAndPath("odin", "core/round_rect"))
             .withVertexFormat(DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.QUADS)
             .withUniform("u", UniformType.UNIFORM_BUFFER)
-            .withBlend(BlendFunction.TRANSLUCENT)
+            .withBlend(BlendFunction.TRANSLUCENT_PREMULTIPLIED_ALPHA)
             .build()
     )
 }

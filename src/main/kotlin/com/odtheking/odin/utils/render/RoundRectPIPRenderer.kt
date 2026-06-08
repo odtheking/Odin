@@ -14,9 +14,11 @@ import net.minecraft.client.gui.render.pip.PictureInPictureRenderer
 import net.minecraft.client.gui.render.state.pip.PictureInPictureRenderState
 import net.minecraft.client.renderer.DynamicUniformStorage
 import net.minecraft.client.renderer.MultiBufferSource
-import org.joml.*
+import org.joml.Matrix3x2f
+import org.joml.Matrix4f
+import org.joml.Vector3f
+import org.joml.Vector4f
 import java.util.*
-import kotlin.math.roundToInt
 
 class RoundRectPIPRenderer(bufferSource: MultiBufferSource.BufferSource)
     : PictureInPictureRenderer<RoundRectPIPRenderer.State>(bufferSource) {
@@ -28,8 +30,8 @@ class RoundRectPIPRenderer(bufferSource: MultiBufferSource.BufferSource)
     override fun textureIsReadyToBlit(state: State): Boolean = state.visuallyEquals(lastState)
 
     override fun renderToTexture(state: State, poseStack: PoseStack) {
-        val w = state.width * state.scale
-        val h = state.height * state.scale
+        val w = state.x1 * state.scale
+        val h = state.y1 * state.scale
 
         val builder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR)
         builder.addVertex(0f, 0f, 0f).setColor(state.topLeftColor)
@@ -79,10 +81,10 @@ class RoundRectPIPRenderer(bufferSource: MultiBufferSource.BufferSource)
     override fun getTextureLabel(): String = "Odin Rounded Rectangle PIP"
 
     class State(
-        val x: Int,
-        val y: Int,
-        val width: Int,
-        val height: Int,
+        val x0: Int,
+        val y0: Int,
+        val x1: Int,
+        val y1: Int,
         val topLeftColor: Int,
         val topRightColor: Int,
         val bottomRightColor: Int,
@@ -104,18 +106,18 @@ class RoundRectPIPRenderer(bufferSource: MultiBufferSource.BufferSource)
         val outlineBlue  = (outlineColor        and 0xFF) / 255f
         val outlineAlpha = (outlineColor shr 24 and 0xFF) / 255f
 
-        override fun x0() = x
-        override fun y0() = y
-        override fun x1() = x + width
-        override fun y1() = y + height
+        override fun x0() = x0
+        override fun y0() = y0
+        override fun x1() = x0 + x1
+        override fun y1() = y0 + y1
         override fun scale() = 1f
         override fun scissorArea() = scissorArea
         override fun bounds() = bounds
 
         fun visuallyEquals(other: State?): Boolean {
             if (other == null) return false
-            return width == other.width &&
-                height == other.height &&
+            return x1 == other.x1 &&
+                y1 == other.y1 &&
                 topLeftColor == other.topLeftColor &&
                 topRightColor == other.topRightColor &&
                 bottomRightColor == other.bottomRightColor &&
@@ -154,26 +156,16 @@ class RoundRectPIPRenderer(bufferSource: MultiBufferSource.BufferSource)
             val scissor = context.scissorStack.peek()
             val pose = Matrix3x2f(context.pose())
 
-            val p0 = pose.transformPosition(Vector2f(x0.toFloat(), y0.toFloat()))
-            val p1 = pose.transformPosition(Vector2f(x1.toFloat(), y1.toFloat()))
-
-            val screenLeft  = minOf(p0.x, p1.x).roundToInt()
-            val screenTop   = minOf(p0.y, p1.y).roundToInt()
-            val screenW     = maxOf(p0.x, p1.x).roundToInt() - screenLeft
-            val screenH     = maxOf(p0.y, p1.y).roundToInt() - screenTop
-
-            val poseScale   = pose.transformDirection(Vector2f(1f, 0f)).length()
-
-            val screenRect = ScreenRectangle(screenLeft, screenTop, screenW, screenH)
+            val screenRect = ScreenRectangle(x0, y0, x1 - x0, y1 - y0).transformMaxBounds(pose)
             val bounds = if (scissor != null) scissor.intersection(screenRect) else screenRect
 
             context.guiRenderState.submitPicturesInPictureState(
                 State(
-                    screenLeft, screenTop, screenW, screenH,
+                    x0, y0, x1 - x0, y1 - y0,
                     topLeftColor, topRightColor, bottomRightColor, bottomLeftColor,
-                    topLeftRadius * poseScale, topRightRadius * poseScale,
-                    bottomRightRadius * poseScale, bottomLeftRadius * poseScale,
-                    outlineColor, outlineWidth * poseScale,
+                    topLeftRadius, topRightRadius,
+                    bottomRightRadius, bottomLeftRadius,
+                    outlineColor, outlineWidth,
                     scissor, bounds
                 )
             )
