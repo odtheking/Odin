@@ -1,6 +1,6 @@
-package com.odtheking.odin.clickgui
+package com.odtheking.odin.clickgui.settings
 
-import com.odtheking.odin.OdinMod.mc
+import com.odtheking.odin.OdinMod
 import com.odtheking.odin.clickgui.settings.impl.ColorSetting
 import com.odtheking.odin.features.Category
 import com.odtheking.odin.features.ModuleManager
@@ -9,6 +9,8 @@ import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.ui.HoverHandler
 import com.odtheking.odin.utils.ui.animations.EaseOutAnimation
+import com.odtheking.odin.utils.ui.mouseX
+import com.odtheking.odin.utils.ui.mouseY
 import com.odtheking.odin.utils.ui.rendering.NVGPIPRenderer
 import com.odtheking.odin.utils.ui.rendering.NVGRenderer
 import net.minecraft.client.gui.GuiGraphics
@@ -18,8 +20,6 @@ import net.minecraft.client.input.KeyEvent
 import net.minecraft.client.input.MouseButtonEvent
 import net.minecraft.network.chat.Component
 import kotlin.math.sign
-import com.odtheking.odin.utils.ui.mouseX as odinMouseX
-import com.odtheking.odin.utils.ui.mouseY as odinMouseY
 
 /**
  * Renders all the modules.
@@ -37,14 +37,14 @@ object ClickGUI : Screen(Component.literal("Click GUI")) {
 
     override fun render(context: GuiGraphics, mouseX: Int, mouseY: Int, deltaTicks: Float) {
         NVGPIPRenderer.draw(context, 0, 0, context.guiWidth(), context.guiHeight()) {
-            val scaledMouseX = odinMouseX / ClickGUIModule.getStandardGuiScale()
-            val scaledMouseY = odinMouseY / ClickGUIModule.getStandardGuiScale()
+            val scaledMouseX = com.odtheking.odin.utils.ui.mouseX / ClickGUIModule.getStandardGuiScale()
+            val scaledMouseY = com.odtheking.odin.utils.ui.mouseY / ClickGUIModule.getStandardGuiScale()
 
             NVGRenderer.scale(ClickGUIModule.getStandardGuiScale(), ClickGUIModule.getStandardGuiScale())
 
             SearchBar.draw(
-                mc.window.screenWidth / (2f * ClickGUIModule.getStandardGuiScale()) - 175f,
-                (mc.window.screenHeight - 110f) / ClickGUIModule.getStandardGuiScale() - 20f,
+                OdinMod.mc.window.screenWidth / (2f * ClickGUIModule.getStandardGuiScale()) - 175f,
+                (OdinMod.mc.window.screenHeight - 110f) / ClickGUIModule.getStandardGuiScale() - 20f,
                 scaledMouseX,
                 scaledMouseY
             )
@@ -88,8 +88,8 @@ object ClickGUI : Screen(Component.literal("Click GUI")) {
         mouseButtonEvent: MouseButtonEvent,
         bl: Boolean
     ): Boolean {
-        val scaledMouseX = odinMouseX / ClickGUIModule.getStandardGuiScale()
-        val scaledMouseY = odinMouseY / ClickGUIModule.getStandardGuiScale()
+        val scaledMouseX = mouseX / ClickGUIModule.getStandardGuiScale()
+        val scaledMouseY = mouseY / ClickGUIModule.getStandardGuiScale()
         SearchBar.mouseClicked(scaledMouseX, scaledMouseY, mouseButtonEvent)
         for (i in panels.size - 1 downTo 0) {
             if (panels[i].mouseClicked(scaledMouseX, scaledMouseY, mouseButtonEvent)) return true

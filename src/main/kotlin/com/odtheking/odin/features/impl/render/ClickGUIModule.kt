@@ -2,9 +2,9 @@ package com.odtheking.odin.features.impl.render
 
 import com.google.gson.annotations.SerializedName
 import com.odtheking.odin.OdinMod
-import com.odtheking.odin.clickgui.ClickGUI
 import com.odtheking.odin.clickgui.HudManager
 import com.odtheking.odin.clickgui.settings.AlwaysActive
+import com.odtheking.odin.clickgui.settings.ClickGUI
 import com.odtheking.odin.clickgui.settings.impl.*
 import com.odtheking.odin.events.WorldEvent
 import com.odtheking.odin.events.core.on
@@ -31,6 +31,7 @@ object ClickGUIModule : Module(
     description = "Allows you to customize the UI.",
     key = GLFW.GLFW_KEY_RIGHT_SHIFT
 ) {
+    val clickGuiScale by NumberSetting("GUI Scale", 2, 1, 6f, 1, desc = "The scale of the Click GUI.")
     val enableNotification by BooleanSetting("Chat notifications", true, desc = "Sends a message when you toggle a module with a keybind")
     val clickGUIColor by ColorSetting("Color", Color(50, 150, 220), desc = "The color of the Click GUI.")
 
@@ -53,13 +54,13 @@ object ClickGUIModule : Module(
     }
 
     val panelSetting by MapSetting("Panel Settings", mutableMapOf<String, PanelData>())
-    data class PanelData(var x: Float = 10f, var y: Float = 10f, var extended: Boolean = true)
+    data class PanelData(var x: Int = 10, var y: Int = 10, var extended: Boolean = true)
 
     fun resetPositions() {
         Category.categories.entries.forEachIndexed { index, (categoryName, _) ->
             val setting = panelSetting.getOrPut(categoryName) { PanelData() }
-            setting.x = 10f + 260f * index
-            setting.y = 10f
+            setting.x = 10 + 170 * index
+            setting.y = 10
             setting.extended = true
         }
     }

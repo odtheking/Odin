@@ -1,6 +1,6 @@
 package com.odtheking.odin.clickgui.settings.impl
 
-import com.odtheking.odin.clickgui.ClickGUI
+import com.odtheking.odin.clickgui.settings.ClickGUI
 import com.odtheking.odin.clickgui.settings.RenderableSetting
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.ui.HoverHandler

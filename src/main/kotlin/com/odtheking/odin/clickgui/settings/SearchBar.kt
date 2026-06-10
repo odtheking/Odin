@@ -1,6 +1,6 @@
-package com.odtheking.odin.clickgui
+package com.odtheking.odin.clickgui.settings
 
-import com.odtheking.odin.clickgui.ClickGUI.gray38
+import com.odtheking.odin.clickgui.settings.ClickGUI.gray38
 import com.odtheking.odin.features.impl.render.ClickGUIModule
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.ui.TextInputHandler

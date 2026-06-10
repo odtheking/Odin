@@ -2,9 +2,9 @@ package com.odtheking.odin.clickgui.settings.impl
 
 import com.google.gson.Gson
 import com.google.gson.JsonElement
-import com.odtheking.odin.clickgui.ClickGUI
-import com.odtheking.odin.clickgui.ClickGUI.gray38
-import com.odtheking.odin.clickgui.Panel
+import com.odtheking.odin.clickgui.settings.ClickGUI
+import com.odtheking.odin.clickgui.settings.ClickGUI.gray38
+import com.odtheking.odin.clickgui.settings.Panel
 import com.odtheking.odin.clickgui.settings.RenderableSetting
 import com.odtheking.odin.clickgui.settings.Saving
 import com.odtheking.odin.features.impl.render.ClickGUIModule

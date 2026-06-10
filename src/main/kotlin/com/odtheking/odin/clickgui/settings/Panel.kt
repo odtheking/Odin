@@ -1,7 +1,5 @@
-package com.odtheking.odin.clickgui
+package com.odtheking.odin.clickgui.settings
 
-import com.odtheking.odin.clickgui.ClickGUI.gray26
-import com.odtheking.odin.clickgui.settings.ModuleButton
 import com.odtheking.odin.features.Category
 import com.odtheking.odin.features.ModuleManager
 import com.odtheking.odin.features.impl.render.ClickGUIModule
@@ -11,7 +9,6 @@ import com.odtheking.odin.utils.ui.rendering.NVGRenderer
 import net.minecraft.client.input.CharacterEvent
 import net.minecraft.client.input.KeyEvent
 import net.minecraft.client.input.MouseButtonEvent
-import kotlin.math.floor
 
 /**
  * Renders all the panels.
@@ -40,13 +37,13 @@ class Panel(private val category: Category) {
 
     fun draw(mouseX: Float, mouseY: Float) {
         if (dragging) {
-            panelSetting.x = floor(deltaX + mouseX)
-            panelSetting.y = floor(deltaY + mouseY)
+            panelSetting.x = (deltaX + mouseX).toInt()
+            panelSetting.y = (deltaY + mouseY).toInt()
         }
 
         NVGRenderer.dropShadow(
-            panelSetting.x,
-            panelSetting.y,
+            panelSetting.x.toFloat(),
+            panelSetting.y.toFloat(),
             WIDTH,
             (previousHeight + if (ClickGUIModule.roundedPanelBottom) 10f else 0f).coerceAtLeast(HEIGHT),
             10f,
@@ -54,7 +51,7 @@ class Panel(private val category: Category) {
             5f
         )
 
-        NVGRenderer.drawHalfRoundedRect(panelSetting.x, panelSetting.y, WIDTH, HEIGHT, gray26.rgba, 5f, true)
+        NVGRenderer.drawHalfRoundedRect(panelSetting.x.toFloat(), panelSetting.y.toFloat(), WIDTH, HEIGHT, ClickGUI.gray26.rgba, 5f, true)
         NVGRenderer.text(
             category.name,
             panelSetting.x + WIDTH / 2f - textWidth / 2,
@@ -65,7 +62,7 @@ class Panel(private val category: Category) {
         )
 
         if (scrollOffset != 0f) NVGRenderer.pushScissor(
-            panelSetting.x,
+            panelSetting.x.toFloat(),
             panelSetting.y + HEIGHT,
             WIDTH,
             previousHeight - HEIGHT + 10f
@@ -75,18 +72,18 @@ class Panel(private val category: Category) {
         if (panelSetting.extended) {
             for (button in moduleButtons) {
                 if (!button.module.name.contains(SearchBar.currentSearch, true)) continue
-                startY += button.draw(panelSetting.x, startY + panelSetting.y, button == lastModuleButton)
+                startY += button.draw(panelSetting.x.toFloat(), startY + panelSetting.y, button == lastModuleButton)
             }
         }
         previousHeight = startY
 
         if (ClickGUIModule.roundedPanelBottom) {
             NVGRenderer.drawHalfRoundedRect(
-                panelSetting.x,
+                panelSetting.x.toFloat(),
                 panelSetting.y + startY,
                 WIDTH,
                 10f,
-                if (lastModuleButton?.module?.enabled == true) ClickGUIModule.clickGUIColor.rgba else gray26.rgba,
+                if (lastModuleButton?.module?.enabled == true) ClickGUIModule.clickGUIColor.rgba else ClickGUI.gray26.rgba,
                 5f,
                 false
             )
@@ -101,7 +98,7 @@ class Panel(private val category: Category) {
     }
 
     fun mouseClicked(mouseX: Float, mouseY: Float, click: MouseButtonEvent): Boolean {
-        if (isAreaHovered(panelSetting.x, panelSetting.y, WIDTH, HEIGHT, true)) {
+        if (isAreaHovered(panelSetting.x.toFloat(), panelSetting.y.toFloat(), WIDTH, HEIGHT, true)) {
             if (click.button() == 0) {
                 deltaX = (panelSetting.x - mouseX)
                 deltaY = (panelSetting.y - mouseY)
@@ -150,8 +147,8 @@ class Panel(private val category: Category) {
 
     private inline val isMouseOverExtended
         get() = panelSetting.extended && isAreaHovered(
-            panelSetting.x,
-            panelSetting.y,
+            panelSetting.x.toFloat(),
+            panelSetting.y.toFloat(),
             WIDTH,
             previousHeight.coerceAtLeast(HEIGHT),
             true

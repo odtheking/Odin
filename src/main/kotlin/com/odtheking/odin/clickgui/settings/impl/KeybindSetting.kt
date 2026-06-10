@@ -5,7 +5,7 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
 import com.mojang.blaze3d.platform.InputConstants
 import com.odtheking.odin.OdinMod.mc
-import com.odtheking.odin.clickgui.ClickGUI.gray38
+import com.odtheking.odin.clickgui.settings.ClickGUI.gray38
 import com.odtheking.odin.clickgui.settings.RenderableSetting
 import com.odtheking.odin.clickgui.settings.Saving
 import com.odtheking.odin.features.impl.render.ClickGUIModule

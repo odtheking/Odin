@@ -18,3 +18,8 @@ fun isAreaHovered(x: Float, y: Float, w: Float, h: Float, scaled: Boolean = fals
 fun isAreaHovered(x: Float, y: Float, w: Float, scaled: Boolean = false): Boolean =
     if (scaled) mouseX / ClickGUIModule.getStandardGuiScale() in x..(x + w) && mouseY / ClickGUIModule.getStandardGuiScale() >= y
     else mouseX in x..(x + w) && mouseY >= y
+
+fun isAreaHovered(x: Int, y: Int, w: Int, h: Int): Boolean {
+    val guiScale = mc.window.guiScale.toDouble()
+    return (mc.mouseHandler.xpos() / guiScale).toInt() in x..(x + w) && (mc.mouseHandler.ypos() / guiScale).toInt() in y..(y + h)
+}

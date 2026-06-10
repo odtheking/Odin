@@ -127,4 +127,8 @@ object DrawContextRenderer {
     }
 
     private fun midpoint(a: Int, b: Int): Int = ((a + b) / 2).coerceIn(0, 255)
+
+    fun GuiGraphics.drawCircle(cx: Int, cy: Int, r: Int, color: Int) {
+        roundedFill(cx - r, cy - r, cx + r, cy + r, color, r)
+    }
 }

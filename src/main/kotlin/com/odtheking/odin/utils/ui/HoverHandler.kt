@@ -20,4 +20,13 @@ class HoverHandler(delay: Long) {
             isHovered = currentlyHovered
         }
     }
+
+    fun handle(x: Int, y: Int, w: Int, h: Int) {
+        val currentlyHovered = isAreaHovered(x, y, w, h)
+
+        if (currentlyHovered != isHovered) {
+            anim.start()
+            isHovered = currentlyHovered
+        }
+    }
 }

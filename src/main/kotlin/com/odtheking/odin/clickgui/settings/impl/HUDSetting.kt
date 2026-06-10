@@ -4,9 +4,9 @@ import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.odtheking.odin.OdinMod.mc
-import com.odtheking.odin.clickgui.ClickGUI
-import com.odtheking.odin.clickgui.ClickGUI.gray38
 import com.odtheking.odin.clickgui.HudManager
+import com.odtheking.odin.clickgui.settings.ClickGUI
+import com.odtheking.odin.clickgui.settings.ClickGUI.gray38
 import com.odtheking.odin.clickgui.settings.RenderableSetting
 import com.odtheking.odin.clickgui.settings.Saving
 import com.odtheking.odin.features.Module

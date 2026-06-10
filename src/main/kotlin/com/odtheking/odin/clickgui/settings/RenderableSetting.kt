@@ -1,7 +1,5 @@
 package com.odtheking.odin.clickgui.settings
 
-import com.odtheking.odin.clickgui.ClickGUI
-import com.odtheking.odin.clickgui.Panel
 import com.odtheking.odin.utils.ui.HoverHandler
 import com.odtheking.odin.utils.ui.isAreaHovered
 import net.minecraft.client.input.CharacterEvent

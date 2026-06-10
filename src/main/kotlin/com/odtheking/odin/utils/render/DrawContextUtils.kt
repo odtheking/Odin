@@ -3,6 +3,7 @@ package com.odtheking.odin.utils.render
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.Colors
+import com.odtheking.odin.utils.render.DrawContextRenderer.CornerRadii
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.util.FormattedCharSequence
 import org.joml.Matrix3x2f
@@ -55,6 +56,10 @@ fun GuiGraphics.drawLine(
 
 fun GuiGraphics.roundedFill(x0: Int, y0: Int, x1: Int, y1: Int, color: Int, radius: Int) {
     DrawContextRenderer.roundedFill(this, x0, y0, x1, y1, color, radius.toFloat())
+}
+
+fun GuiGraphics.roundedFill(x0: Int, y0: Int, x1: Int, y1: Int, color: Int, rl: Int, rr: Int, br: Int, bl: Int) {
+    DrawContextRenderer.roundedFill(this, x0, y0, x1, y1, color, CornerRadii(rl.toFloat(), rr.toFloat(), br.toFloat(), bl.toFloat()))
 }
 
 fun GuiGraphics.roundedFill(
