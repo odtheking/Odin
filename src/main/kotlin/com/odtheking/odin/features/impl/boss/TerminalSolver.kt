@@ -10,7 +10,7 @@ import com.odtheking.odin.utils.Color.Companion.darker
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalTypes
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalUtils
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 import net.minecraft.network.chat.Component
 import org.lwjgl.glfw.GLFW
@@ -115,7 +115,7 @@ object TerminalSolver : Module(
         }
     }
 
-    fun GuiGraphics.renderDebug() {
+    fun GuiGraphicsExtractor.renderDebug() {
         if (debug) TerminalUtils.currentTerm?.let { term ->
             val menu = (mc.screen as? AbstractContainerScreen<*>)?.menu ?: return@let
             val debugInfo = listOf(
@@ -133,15 +133,15 @@ object TerminalSolver : Module(
             pose().scale(1f / sf, 1f / sf)
             pose().scale(3f)
 
-            drawWordWrap(mc.font, Component.literal(menu.items.filter { !it.isEmpty }.map { stack -> stack.hoverName.string  }.toString()), 400, 0, 300, Colors.WHITE.rgba)
+            textWithWordWrap(mc.font, Component.literal(menu.items.filter { !it.isEmpty }.map { stack -> stack.hoverName.string  }.toString()), 400, 0, 300, Colors.WHITE.rgba)
 
             debugInfo.forEachIndexed { index, line ->
-                drawWordWrap(mc.font, Component.literal(line), 5, 20 + (index * 10), 300, Colors.WHITE.rgba)
+                textWithWordWrap(mc.font, Component.literal(line), 5, 20 + (index * 10), 300, Colors.WHITE.rgba)
             }
 
             menu.items.forEachIndexed { index, stack ->
-                renderItem(stack, 5 + (index % 9) * 18, 250 + (index / 9) * 18)
-                renderItemDecorations(mc.font, stack, 5 + (index % 9) * 18, 250 + (index / 9) * 18)
+                item(stack, 5 + (index % 9) * 18, 250 + (index / 9) * 18)
+                itemDecorations(mc.font, stack, 5 + (index % 9) * 18, 250 + (index / 9) * 18)
             }
             pose().popMatrix()
         }

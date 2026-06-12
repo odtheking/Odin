@@ -1,20 +1,27 @@
-package com.odtheking.odin.features.impl.skyblock
+package com.odtheking.odin.features.impl.render
 
 import com.odtheking.odin.clickgui.settings.DevModule
 import com.odtheking.odin.clickgui.settings.impl.NumberSetting
 import com.odtheking.odin.clickgui.settings.impl.SelectorSetting
 import com.odtheking.odin.events.RenderEvent
 import com.odtheking.odin.events.core.on
+import com.odtheking.odin.features.Category
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Color
-import com.odtheking.odin.utils.render.*
+import com.odtheking.odin.utils.render.drawCylinder
+import com.odtheking.odin.utils.render.drawFilledBox
+import com.odtheking.odin.utils.render.drawLine
+import com.odtheking.odin.utils.render.drawStyledBox
+import com.odtheking.odin.utils.render.drawWireFrameBox
 import net.minecraft.world.phys.AABB
 import kotlin.math.ceil
+import kotlin.math.sqrt
 
 @DevModule
 object RenderTest : Module(
     name = "Render Test",
-    description = "Test rendering stuff"
+    description = "Test rendering stuff",
+    category = Category.RENDER,
 ) {
 
     val boxStyle by SelectorSetting(
@@ -29,50 +36,52 @@ object RenderTest : Module(
 
     init {
         on<RenderEvent.Extract> {
-            if (mc.player == null) return@on
+            val player = mc.player ?: return@on
+
+            val frameDelta = context.deltaTracker().gameTimeDeltaTicks
+            val playerPos = player.getPosition(frameDelta)
+            val playerBB = player.type.dimensions.makeBoundingBox(playerPos)
 
             drawWireFrameBox(
-                aabb = mc.player!!.boundingBox.inflate(2.0, 2.0, 2.0),
+                aabb = playerBB.inflate(2.0, 2.0, 2.0),
                 color = Color(0x7eb4c7ff),
             )
 
             drawLine(
                 points = listOf(
-                    mc.player!!.eyePosition,
-                    mc.player!!.eyePosition.add(0.0, 5.0, 0.0)
+                    player.getEyePosition(frameDelta),
+                    player.getEyePosition(frameDelta).add(0.0, 5.0, 0.0)
                 ),
                 color = Color(0x7eb4c7ff),
                 depth = false,
             )
 
             drawCylinder(
-                center = mc.player!!.position(),
+                center = playerPos,
                 radius = 1f,
                 height = 1f,
                 color = Color(0x7eb4c7ff),
             )
 
             drawStyledBox(
-                aabb = mc.player!!.boundingBox.inflate(1.0, 1.0, 1.0),
+                aabb = playerBB.inflate(1.0, 1.0, 1.0),
                 color = Color(0x7eb4c7ff),
                 style = boxStyle,
             )
 
             drawFilledBox(
-                aabb = mc.player!!.boundingBox.inflate(0.5, 0.5, 0.5),
+                aabb = playerBB.inflate(0.5, 0.5, 0.5),
                 color = Color(0x7eb4c7ff),
             )
 
             try {
-                val center = mc.player!!.position()
-
                 run {
                     val desiredCount = boxCount.coerceAtLeast(0)
                     val layers = boxLevels.coerceAtLeast(1)
 
                     if (desiredCount > 0) {
                         val perLayer = ceil(desiredCount.toDouble() / layers.toDouble()).toInt()
-                        val side = ceil(kotlin.math.sqrt(perLayer.toDouble())).toInt()
+                        val side = ceil(sqrt(perLayer.toDouble())).toInt()
                         val range = side / 2
 
                         var drawn = 0
@@ -85,15 +94,15 @@ object RenderTest : Module(
                                     val bxOff = bx.toDouble()
                                     val bzOff = bz.toDouble()
 
-                                    val minX = center.x + bxOff - 0.45
-                                    val minY = center.y + byOff - 0.45
-                                    val minZ = center.z + bzOff - 0.45
+                                    val minX = playerPos.x + bxOff - 0.45
+                                    val minY = playerPos.y + byOff - 0.45
+                                    val minZ = playerPos.z + bzOff - 0.45
                                     val aabb = AABB(minX, minY, minZ, minX + 0.9, minY + 0.9, minZ + 0.9)
 
                                     val cInt = (0xff000000.toInt() or (((bx + range) and 0xff) shl 16) or (((by + 32) and 0xff) shl 8) or ((bz + range) and 0xff))
                                     val c = Color(cInt)
 
-                                    drawStyledBox(aabb = aabb, color = c, style = 2,)
+                                    drawStyledBox(aabb = aabb, color = c, style = 2)
 
                                     drawn++
                                 }
