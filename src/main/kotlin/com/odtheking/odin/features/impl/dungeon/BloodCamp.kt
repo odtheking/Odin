@@ -167,7 +167,7 @@ object BloodCamp : Module(
         on<RenderEvent.Extract> {
             if (!DungeonUtils.inClear || !bloodAssist) return@on
             val boxOffset = Vec3(boxSize / -2.0, 1.5, boxSize / -2.0)
-            val partialTick = context.gameRenderer().mainCamera.getCameraEntityPartialTicks(context.deltaTracker())
+            val partialTick = context.gameRenderer().mainCamera.getCameraEntityPartialTicks(mc.deltaTracker)
 
             renderDataMap.forEach { (entity, renderData) ->
                 if (!entity.isAlive) return@forEach

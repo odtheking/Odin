@@ -7,7 +7,6 @@ import com.odtheking.odin.utils.render.RenderConsumer
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.terminalhandler.TerminalHandler
 import com.odtheking.odin.utils.skyblock.dungeon.tiles.Room
 import net.fabricmc.fabric.api.client.rendering.v1.level.AbstractLevelRenderContext
-import net.fabricmc.fabric.api.client.rendering.v1.level.LevelExtractionContext
 import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext
 import net.minecraft.client.multiplayer.ClientLevel
 import net.minecraft.core.BlockPos
@@ -58,7 +57,7 @@ interface LevelEvent : Event {
 }
 
 abstract class RenderEvent(open val context: AbstractLevelRenderContext) : Event {
-    class Extract(override val context: LevelExtractionContext, val consumer: RenderConsumer) : RenderEvent(context)
+    class Extract(override val context: LevelRenderContext, val consumer: RenderConsumer) : RenderEvent(context)
     class Last(override val context: LevelRenderContext) : RenderEvent(context)
 }
 

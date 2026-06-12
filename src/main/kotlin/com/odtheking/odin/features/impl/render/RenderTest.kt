@@ -38,7 +38,7 @@ object RenderTest : Module(
         on<RenderEvent.Extract> {
             val player = mc.player ?: return@on
 
-            val frameDelta = context.deltaTracker().gameTimeDeltaTicks
+            val frameDelta = mc.deltaTracker.realtimeDeltaTicks
             val playerPos = player.getPosition(frameDelta)
             val playerBB = player.type.dimensions.makeBoundingBox(playerPos)
 

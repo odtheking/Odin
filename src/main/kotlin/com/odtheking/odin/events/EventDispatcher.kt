@@ -33,8 +33,10 @@ object EventDispatcher {
         ClientTickEvents.START_LEVEL_TICK.register { world -> TickEvent.Start(world).postAndCatch() }
         ClientTickEvents.END_LEVEL_TICK.register { world -> TickEvent.End(world).postAndCatch() }
 
-        LevelRenderEvents.END_EXTRACTION.register { handler -> RenderEvent.Extract(handler, RenderBatchManager.renderConsumer).postAndCatch() }
-        LevelRenderEvents.END_MAIN.register { context -> RenderEvent.Last(context).postAndCatch() }
+        LevelRenderEvents.AFTER_TRANSLUCENT_TERRAIN.register {
+            context -> RenderEvent.Extract(context, RenderBatchManager.renderConsumer).postAndCatch()
+            RenderEvent.Last(context).postAndCatch()
+        }
 
         ScreenEvents.AFTER_INIT.register { _, screen, _, _ -> ScreenEvent.Open(screen).postAndCatch() }
         ScreenEvents.BEFORE_INIT.register { _, screen, _, _ ->
