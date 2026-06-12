@@ -10,6 +10,7 @@ import com.odtheking.odin.utils.Color.Companion.darker
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalTypes
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalUtils
+import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 import net.minecraft.network.chat.Component
 import org.lwjgl.glfw.GLFW
@@ -29,7 +30,7 @@ object TerminalSolver : Module(
     private val middleClickGUI by BooleanSetting("Middle Click GUI", true, desc = "Replaces right click with middle click in terminals.").withDependency { (renderType == 0 || renderType == 1) && solverSettings }
     private val blockIncorrectClicks by BooleanSetting("Block Incorrect Clicks", true, desc = "Blocks incorrect clicks in terminals.").withDependency { (renderType == 0 || renderType == 1) && solverSettings }
     private val cancelMelodySolver by BooleanSetting("Stop Melody Solver", false, desc = "Stops rendering the melody solver.").withDependency { solverSettings }
-    val melodyTermSize by NumberSetting("Melody Size", 1.5f, 1f, 3f, 0.1f, desc = "The size of the melody terminal GUI.").withDependency { !cancelMelodySolver && solverSettings }
+    val melodyTermSize by NumberSetting("Melody Size", 1.5f, 1f, 3f, 0.1f, desc = "The size of the melody terminal GUI.").withDependency { !cancelMelodySolver && solverSettings && renderType == 2 }
     val showNumbers by BooleanSetting("Show Numbers", true, desc = "Shows numbers in the order terminal.").withDependency { solverSettings }
     val firstClickProt by NumberSetting("First Click Protection", 500, 350, 800, 10, unit = "ms", desc = "The amount of time after opening a terminal where clicks are blocked to prevent bans (recommended value is 500 minus your ping).").withDependency { solverSettings }
     val hideClicked by BooleanSetting("Hide Clicked", false, desc = "Visually hides your first click before a gui updates instantly to improve perceived response time. Does not affect actual click time.").withDependency { solverSettings }
@@ -102,6 +103,7 @@ object TerminalSolver : Module(
 
         on<GuiEvent.DrawTooltip> {
             if (cancelToolTip && TerminalUtils.currentTerm != null) cancel()
+            this.guiGraphics.renderDebug()
         }
 
         on<TerminalEvent.Open> {
@@ -111,34 +113,37 @@ object TerminalSolver : Module(
         on<TerminalEvent.Close> {
             if (renderType == 0 || renderType == 1) mc.execute { mc.resizeGui() }
         }
+    }
 
-        on<GuiEvent.DrawTooltip> {
-            if (debug) TerminalUtils.currentTerm?.let { term ->
-                val menu = (mc.screen as? AbstractContainerScreen<*>)?.menu ?: return@let
-                val debugInfo = listOf(
-                    "§7Type: §f${term.type.name}",
-                    "§7Window Name: §f${mc.screen?.title?.string}",
-                    "§7Container ID: §f${menu.containerId}",
-                    "§7Time Open: §f${System.currentTimeMillis() - term.timeOpened}ms",
-                    "§7Is Clicked: §f${term.isClicked}",
-                    "§7Window Count: §f${term.windowCount}",
-                    "§7Solution: §f${term.solution.joinToString(", ")}",
-                )
+    fun GuiGraphics.renderDebug() {
+        if (debug) TerminalUtils.currentTerm?.let { term ->
+            val menu = (mc.screen as? AbstractContainerScreen<*>)?.menu ?: return@let
+            val debugInfo = listOf(
+                "§7Type: §f${term.type.name}",
+                "§7Window Name: §f${mc.screen?.title?.string}",
+                "§7Container ID: §f${menu.containerId}",
+                "§7Time Open: §f${System.currentTimeMillis() - term.timeOpened}ms",
+                "§7Is Clicked: §f${term.isClicked}",
+                "§7Window Count: §f${term.windowCount}",
+                "§7Solution: §f${term.solution.joinToString(", ")}",
+            )
 
-                guiGraphics.pose().pushMatrix()
-                val sf = mc.window.guiScale
-                guiGraphics.pose().scale(1f / sf, 1f / sf)
-                guiGraphics.pose().scale(3f)
-                debugInfo.forEachIndexed { index, line ->
-                    guiGraphics.textWithWordWrap(mc.font, Component.literal(line), 5, 20 + (index * 10), 300, Colors.WHITE.rgba)
-                }
+            pose().pushMatrix()
+            val sf = mc.window.guiScale
+            pose().scale(1f / sf, 1f / sf)
+            pose().scale(3f)
 
-                menu.items.forEachIndexed { index, stack ->
-                    guiGraphics.item(stack, 5 + (index % 9) * 18, 250 + (index / 9) * 18)
-                    guiGraphics.itemDecorations(mc.font, stack, 5 + (index % 9) * 18, 250 + (index / 9) * 18)
-                }
-                guiGraphics.pose().popMatrix()
+            drawWordWrap(mc.font, Component.literal(menu.items.filter { !it.isEmpty }.map { stack -> stack.hoverName.string  }.toString()), 400, 0, 300, Colors.WHITE.rgba)
+
+            debugInfo.forEachIndexed { index, line ->
+                drawWordWrap(mc.font, Component.literal(line), 5, 20 + (index * 10), 300, Colors.WHITE.rgba)
             }
+
+            menu.items.forEachIndexed { index, stack ->
+                renderItem(stack, 5 + (index % 9) * 18, 250 + (index / 9) * 18)
+                renderItemDecorations(mc.font, stack, 5 + (index % 9) * 18, 250 + (index / 9) * 18)
+            }
+            pose().popMatrix()
         }
     }
 }

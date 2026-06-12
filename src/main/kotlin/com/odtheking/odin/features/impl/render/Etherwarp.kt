@@ -24,6 +24,7 @@ import net.minecraft.network.protocol.game.ClientboundSoundPacket
 import net.minecraft.network.protocol.game.ServerboundMovePlayerPacket
 import net.minecraft.network.protocol.game.ServerboundUseItemPacket
 import net.minecraft.sounds.SoundEvents
+import net.minecraft.world.entity.Pose
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.block.*
 import net.minecraft.world.level.block.piston.PistonHeadBlock
@@ -126,9 +127,9 @@ object Etherwarp : Module(
     ): EtherPos {
         val player = mc.player ?: return EtherPos.NONE
         if (position == null) return EtherPos.NONE
-        val eyeHeight = if (player.isCrouching) {
-            if (LocationUtils.isCurrentArea(Island.Galatea, Island.ThePark, Island.Hub, Island.SpiderDen)) 1.27 else 1.54 // Use modern sneak height in Galatea
-        } else 1.62
+        val eyeHeight = if (player.pose == Pose.SWIMMING) 0.4
+        else if (player.isCrouching) 1.27
+        else 1.62
 
         val startPos = position.addVec(y = eyeHeight)
         val endPos = player.lookAngle.multiply(distance, distance, distance).add(startPos)

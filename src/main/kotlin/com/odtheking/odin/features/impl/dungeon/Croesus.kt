@@ -86,7 +86,7 @@ object Croesus : Module(
 
     init {
         scope.launch {
-            cachedPrices = fetchJson<Map<String, Double>>("https://api.odtheking.com/lb/lowestbins").getOrElse { OdinMod.logger.error("Failed to fetch lowest bin prices for Croesus module.", it); emptyMap() }
+            cachedPrices = fetchJson<Map<String, Double>>("https://api.odtheking.com/lb/averages/7day").getOrElse { OdinMod.logger.error("Failed to fetch lowest bin prices for Croesus module.", it); emptyMap() }
         }
 
         on<GuiEvent.DrawTooltip> {

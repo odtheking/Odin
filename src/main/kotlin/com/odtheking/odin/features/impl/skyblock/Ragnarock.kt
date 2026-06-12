@@ -34,9 +34,7 @@ object Ragnarock : Module(
                 val strengthGained = ((mc.player?.mainHandItem?.strength ?: return@onReceive) * 1.5).toInt()
                 if (strengthGainedMessage) {
                     modMessage("§7Gained strength: §4$strengthGained")
-                    if (announceStrengthGained) {
-                        sendCommand("pc Gained strength from Ragnarock: $strengthGained")
-                    }
+                    if (announceStrengthGained) sendCommand("pc Gained strength from Ragnarock: $strengthGained")
                 }
             }
         }

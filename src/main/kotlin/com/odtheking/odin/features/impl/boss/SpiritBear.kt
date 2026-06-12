@@ -24,7 +24,7 @@ object SpiritBear : Module(
             timer > 0 -> "§e${(timer / 20f).toFixed()}s"
             else -> "§aAlive!"
         }?.let { text ->
-            textDim("§6Spirit Bear: $text", 0, 0, Colors.WHITE)
+            textDim("§6Bear: $text", 0, 0, Colors.WHITE)
         } ?: (0 to 0)
     }
 

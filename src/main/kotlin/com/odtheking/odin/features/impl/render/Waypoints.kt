@@ -26,6 +26,8 @@ object Waypoints : Module(
     private val fromParty by BooleanSetting("From Party Chat", true, desc = "Adds waypoints from party chat.")
     private val fromAll by BooleanSetting("From All Chat", false, desc = "Adds waypoints from all chat.")
 
+    private val personalWaypoint by BooleanSetting("Personal Waypoint", false, desc = "Makes waypoints you send also create for you.")
+
     private val pingLocationDropDown by DropdownSetting("Ping Location Dropdown", false)
     private val pingLocationToggle by BooleanSetting("Ping Waypoint", false, desc = "Adds a waypoint at the location you are looking at.").withDependency { pingLocationDropDown }
     private val pingLocation by KeybindSetting("Ping Keybind", GLFW.GLFW_KEY_UNKNOWN, desc = "Sends the location you are looking at as coords in chat for waypoints.").onPress {
@@ -53,6 +55,8 @@ object Waypoints : Module(
                 fromAll && allRegex.matches(value) -> allRegex.find(value)?.destructured
                 else -> null
             } ?: return@on
+
+            if (name == mc.player?.name?.string && !personalWaypoint) return@on
 
             addTempWaypoint("§6$name", x.toIntOrNull() ?: return@on, y.toIntOrNull() ?: return@on, z.toIntOrNull() ?: return@on)
         }

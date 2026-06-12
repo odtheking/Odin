@@ -35,14 +35,13 @@ object SecretsCounter : Module(
         on<ChatPacketEvent> {
             if (dungeonEndRegex.containsMatchIn(value)) schedule(30) { fetchAndDisplay() }
 
-
             if (!dungeonStartRegex.containsMatchIn(value) || !secretsEnabled || snapshotDone) return@on
-            val teammates = DungeonUtils.dungeonTeammates.toList()
+            val teammates = DungeonUtils.dungeonTeammatesNoSelf.toList()
             if (teammates.isEmpty()) return@on
             snapshotDone = true
             schedule(10) {
                 scope.launch(Dispatchers.IO) {
-                    for (player in DungeonUtils.dungeonTeammates.toList()) {
+                    for (player in teammates) {
                         val name = player.name
                         RequestUtils.pullSecrets(name).onSuccess { secrets ->
                             mc.execute { secretsBaseline[name] = secrets }
@@ -54,7 +53,7 @@ object SecretsCounter : Module(
     }
 
     private fun fetchAndDisplay() {
-        val teammates = DungeonUtils.dungeonTeammates.toList().ifEmpty { return }
+        val teammates = DungeonUtils.dungeonTeammatesNoSelf.toList().ifEmpty { return }
         if (!secretsEnabled) return
 
         scope.launch(Dispatchers.IO) {

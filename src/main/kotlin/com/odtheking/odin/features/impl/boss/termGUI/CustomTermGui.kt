@@ -5,6 +5,7 @@ import com.odtheking.odin.events.GuiEvent
 import com.odtheking.odin.events.ScreenEvent
 import com.odtheking.odin.features.impl.boss.TerminalSolver
 import com.odtheking.odin.features.impl.boss.TerminalSolver.hideClicked
+import com.odtheking.odin.features.impl.boss.TerminalSolver.renderDebug
 import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.render.roundedFill
@@ -42,6 +43,7 @@ abstract class TermGui {
         CustomGUIImpl.register(CustomGUIImpl.HandlerSet(::isActiveTermScreen,
             render = fun ScreenEvent.Render.(): Any {
                 val screen = currentTermScreen() ?: return false
+                this.guiGraphics.renderDebug()
                 buildTerminal(screen)
                 render(guiGraphics, mouseX, mouseY)
                 return true
