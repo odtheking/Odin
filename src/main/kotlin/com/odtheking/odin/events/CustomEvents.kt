@@ -8,6 +8,7 @@ import com.odtheking.odin.utils.skyblock.dungeon.terminals.terminalhandler.Termi
 import com.odtheking.odin.utils.skyblock.dungeon.tiles.Room
 import net.fabricmc.fabric.api.client.rendering.v1.level.AbstractLevelRenderContext
 import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext
+import net.minecraft.client.multiplayer.ClientLevel
 import net.minecraft.core.BlockPos
 import net.minecraft.network.chat.Component
 import net.minecraft.network.protocol.Packet
@@ -45,8 +46,8 @@ abstract class TerminalEvent(val terminal: TerminalHandler) : Event { // first 2
 }
 
 interface TickEvent : Event {
-    class Start : TickEvent
-    class End : TickEvent
+    class Start(val world: ClientLevel) : TickEvent
+    class End(val world: ClientLevel) : TickEvent
     object Server : TickEvent
 }
 

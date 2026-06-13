@@ -1,9 +1,9 @@
 package com.odtheking.odin.utils.skyblock.dungeon
 
 import com.odtheking.odin.OdinMod.mc
-import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.RoomEnterEvent
 import com.odtheking.odin.events.TickEvent
+import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.utils.JsonResourceLoader
 import com.odtheking.odin.utils.Vec2
@@ -138,12 +138,6 @@ object ScanUtils {
         return getCoreAtHeight(vec2, getTopLayerOfRoom(vec2, chunk), chunk)
     }
 
-    fun getCoreStr(vec2: Vec2): String {
-        val level = mc.level ?: return ""
-        val chunk = level.getChunk(vec2.x shr 4, vec2.z shr 4)
-        return getCoreAtHeightString(vec2, getTopLayerOfRoom(vec2, chunk), chunk)
-    }
-
     private fun getCoreAtHeight(vec2: Vec2, roomHeight: Int, chunk: LevelChunk): Int {
         val sb = StringBuilder(150)
         val clampedHeight = roomHeight.coerceIn(11..140)
@@ -166,30 +160,6 @@ object ScanUtils {
             sb.append(block)
         }
         return sb.toString().hashCode()
-    }
-
-    private fun getCoreAtHeightString(vec2: Vec2, roomHeight: Int, chunk: LevelChunk): String {
-        val sb = StringBuilder(150)
-        val clampedHeight = roomHeight.coerceIn(11..140)
-        sb.append(CharArray(140 - clampedHeight) { '0' }.contentToString())
-        var bedrock = 0
-
-        for (y in clampedHeight downTo 12) {
-            mutableBlockPos.set(vec2.x, y, vec2.z)
-            val block = chunk.getBlockState(mutableBlockPos).block
-            if (block == Blocks.AIR && bedrock >= 2 && y < 69) {
-                sb.append(CharArray(y - 11) { '0' }.contentToString())
-                break
-            }
-
-            if (block == Blocks.BEDROCK) bedrock++
-            else {
-                bedrock = 0
-                if (block.equalsOneOf(Blocks.OAK_PLANKS, Blocks.TRAPPED_CHEST, Blocks.CHEST)) continue
-            }
-            sb.append(block)
-        }
-        return sb.toString()
     }
 
     fun getTopLayerOfRoom(vec2: Vec2, chunk: LevelChunk): Int {
