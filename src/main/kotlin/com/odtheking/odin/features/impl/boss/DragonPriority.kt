@@ -24,19 +24,19 @@ object DragonPriority {
 
     private fun sortPriority(spawningDragons: MutableList<WitherDragonsEnum>): WitherDragonsEnum {
         val totalPower = Blessing.POWER.current * (if (paulBuff) 1.25 else 1.0) + (if (Blessing.TIME.current > 0) 2.5 else 0.0)
-        val playerClass = DungeonUtils.currentDungeonPlayer.clazz.apply { if (this == DungeonClass.Unknown) modMessage("§cFailed to get dungeon class.") }
+        val playerClass = DungeonUtils.currentDungeonPlayer.clazz.apply { if (this == DungeonClass.EMPTY) modMessage("§cFailed to get dungeon class.") }
 
         val priorityList =
             if (totalPower >= normalPower || (spawningDragons.any { it == WitherDragonsEnum.Purple } && totalPower >= easyPower))
-                if (playerClass.equalsOneOf(DungeonClass.Berserk, DungeonClass.Mage)) dragonList else dragonList.reversed()
+                if (playerClass.equalsOneOf(DungeonClass.BERSERK, DungeonClass.MAGE)) dragonList else dragonList.reversed()
             else defaultOrder
 
         spawningDragons.sortBy { priorityList.indexOf(it) }
 
         if (totalPower >= easyPower) {
-            if (soloDebuff == 1 && playerClass == DungeonClass.Tank && (spawningDragons.any { it == WitherDragonsEnum.Purple } || soloDebuffOnAll))
+            if (soloDebuff == 1 && playerClass == DungeonClass.TANK && (spawningDragons.any { it == WitherDragonsEnum.Purple } || soloDebuffOnAll))
                 spawningDragons.sortByDescending { priorityList.indexOf(it) }
-            else if (playerClass == DungeonClass.Healer && (spawningDragons.any { it == WitherDragonsEnum.Purple } || soloDebuffOnAll))
+            else if (playerClass == DungeonClass.HEALER && (spawningDragons.any { it == WitherDragonsEnum.Purple } || soloDebuffOnAll))
                 spawningDragons.sortByDescending { priorityList.indexOf(it) }
         }
 

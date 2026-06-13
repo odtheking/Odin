@@ -49,7 +49,7 @@ object LeapMenu : Module(
     private val leapAnnounce by BooleanSetting("Leap Announce", false, desc = "Announces when you leap to a player.")
     private val hoverHandler = List(4) { HoverHandler(200L) }
 
-    private val EMPTY = DungeonPlayer("Empty", DungeonClass.Unknown, 0, null)
+    private val EMPTY = DungeonPlayer("Empty", DungeonClass.EMPTY, 0, null)
     private val leapedRegex = Regex("You have teleported to (\\w{1,16})!")
 
     const val BOX_WIDTH = 200
