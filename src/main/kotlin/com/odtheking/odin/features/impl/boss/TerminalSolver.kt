@@ -84,7 +84,7 @@ object TerminalSolver : Module(
             if (TerminalUtils.currentTerm == null || !renderMelody || renderType != 0) return@on
 
             val screen = screen as? AbstractContainerScreen<*> ?: return@on
-            guiGraphics.fill(screen.leftPos + 7, screen.topPos + 16, screen.leftPos + screen.width - 7, screen.topPos + screen.height - 96, backgroundColor.rgba)
+            guiGraphics.fill(screen.leftPos + 7, screen.topPos + 16, screen.leftPos + screen.imageWidth - 7, screen.topPos + screen.imageHeight - 96, backgroundColor.rgba)
         }
 
         on<GuiEvent.RenderSlot> {
