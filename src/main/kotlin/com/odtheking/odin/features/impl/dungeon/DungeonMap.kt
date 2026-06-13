@@ -213,7 +213,8 @@ object DungeonMap : Module(
         }
 
         on<TickEvent.End> {
-            MapScanner.scan(world)
+            val level = mc.level ?: return@on
+            MapScanner.scan(level)
         }
 
         ClientChunkEvents.CHUNK_LOAD.register { _, _ ->

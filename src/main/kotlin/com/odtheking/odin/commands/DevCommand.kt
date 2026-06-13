@@ -199,6 +199,26 @@ val devCommand = Commodore("oddev") {
         modMessage("§aCopied $core to clipboard!")
     }
 
+    literal("roomstring").runs {
+        val player = mc.player ?: return@runs
+        val level = mc.level ?: return@runs
+        val vec2 = Vec2(player.x.toInt(), player.z.toInt())
+        val roomCenter = getRoomCenter(vec2.x, vec2.z)
+        val core = ScanUtils.getCore(roomCenter)
+        val coreStr = ScanUtils.getCoreStr(roomCenter)
+        val chunk = level.getChunk(vec2.x shr 4, vec2.z shr 4)
+        val top = ScanUtils.getTopLayerOfRoom(vec2, chunk)
+        val string = buildString {
+            appendLine(core.toString())
+            appendLine(coreStr)
+            appendLine(coreStr.hashCode())
+            appendLine(coreStr.map { it.code }.joinToString(","))
+            appendLine(top)
+            appendLine(ScanUtils.getCore(roomCenter) == ScanUtils.getCoreStr(roomCenter).hashCode())
+        }
+        setClipboardContent(string)
+    }
+
     literal("relative").runs {
         mc.hitResult?.let {
             if (it !is BlockHitResult) return@runs

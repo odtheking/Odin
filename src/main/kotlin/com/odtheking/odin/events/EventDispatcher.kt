@@ -30,8 +30,8 @@ object EventDispatcher {
         ClientPlayConnectionEvents.JOIN.register { _, _, _ -> LevelEvent.Load.postAndCatch() }
         ClientPlayConnectionEvents.DISCONNECT.register { _, _ -> LevelEvent.Unload.postAndCatch() }
 
-        ClientTickEvents.START_LEVEL_TICK.register { world -> TickEvent.Start(world).postAndCatch() }
-        ClientTickEvents.END_LEVEL_TICK.register { world -> TickEvent.End(world).postAndCatch() }
+        ClientTickEvents.START_LEVEL_TICK.register { world -> TickEvent.Start().postAndCatch() }
+        ClientTickEvents.END_LEVEL_TICK.register { world -> TickEvent.End().postAndCatch() }
 
         LevelRenderEvents.AFTER_TRANSLUCENT_TERRAIN.register {
             context -> RenderEvent.Extract(context, RenderBatchManager.renderConsumer).postAndCatch()
