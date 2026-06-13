@@ -141,14 +141,14 @@ object ScanUtils {
     private fun getCoreAtHeight(vec2: Vec2, roomHeight: Int, chunk: LevelChunk): Int {
         val sb = StringBuilder(150)
         val clampedHeight = roomHeight.coerceIn(11..140)
-        sb.append(CharArray(140 - clampedHeight) { '0' }.contentToString())
+        sb.append(CharArray(140 - clampedHeight) { '0' })
         var bedrock = 0
 
         for (y in clampedHeight downTo 12) {
             mutableBlockPos.set(vec2.x, y, vec2.z)
             val block = chunk.getBlockState(mutableBlockPos).block
             if (block == Blocks.AIR && bedrock >= 2 && y < 69) {
-                sb.append(CharArray(y - 11) { '0' }.contentToString())
+                sb.append(CharArray(y - 11) { '0' })
                 break
             }
 
