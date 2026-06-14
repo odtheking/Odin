@@ -7,7 +7,7 @@ import com.odtheking.odin.utils.Color.Companion.darker
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.skyblock.dungeon.tiles.*
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.renderer.RenderPipelines
 
 class MapRoom(var type: RoomType, var shape: RoomShape, var data: RoomData?, var height: Int) {
@@ -96,7 +96,7 @@ class MapRoom(var type: RoomType, var shape: RoomShape, var data: RoomData?, var
         return arrayOf(color)
     }
 
-    fun render(graphics: GuiGraphics) {
+    fun render(graphics: GuiGraphicsExtractor) {
         if (state == RoomState.UNDISCOVERED && DungeonUtils.passedRooms.none { it.data.name == data?.name }) return
 
         val matrices = graphics.pose()
@@ -150,7 +150,7 @@ class MapRoom(var type: RoomType, var shape: RoomShape, var data: RoomData?, var
         } else graphics.fill(topLeft.x, topLeft.z, bottomRight.x + 16, bottomRight.z + 16, color[0].rgba)
     }
 
-    fun renderName(context: GuiGraphics, textFactor: Float) {
+    fun renderName(context: GuiGraphicsExtractor, textFactor: Float) {
         val matrices = context.pose()
         val fontHeight = mc.font.lineHeight
 
@@ -177,7 +177,7 @@ class MapRoom(var type: RoomType, var shape: RoomShape, var data: RoomData?, var
                         else -> Color(255, 255, 255).rgba
                     }
 
-                    context.drawCenteredString(mc.font, value, 0, 0, color)
+                    context.centeredText(mc.font, value, 0, 0, color)
 
                     matrices.popMatrix()
                 }

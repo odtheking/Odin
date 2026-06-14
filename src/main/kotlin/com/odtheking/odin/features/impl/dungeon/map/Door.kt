@@ -6,7 +6,7 @@ import com.odtheking.odin.utils.Color.Companion.darker
 import com.odtheking.odin.utils.equalsOneOf
 import com.odtheking.odin.utils.skyblock.dungeon.tiles.RoomState
 import com.odtheking.odin.utils.skyblock.dungeon.tiles.RoomType
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 
 class Door (val pos: Vec2i, var type: Type, val rooms: MutableList<MapRoom.Tile>) {
 
@@ -41,7 +41,7 @@ class Door (val pos: Vec2i, var type: Type, val rooms: MutableList<MapRoom.Tile>
             return Vec2i(xOffset, yOffset)
         }
 
-    fun render(graphics: GuiGraphics) {
+    fun render(graphics: GuiGraphicsExtractor) {
         val size = size()
         if (size != Vec2i(0, 0)) {
             val matrices = graphics.pose()
