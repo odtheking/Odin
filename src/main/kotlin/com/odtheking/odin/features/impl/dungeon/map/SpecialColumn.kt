@@ -27,11 +27,11 @@ object SpecialColumn {
 
         for (x in 0 until size.x) {
             for (z in 0 until size.z) {
-                val mapRoom = (MapScanner.list[Vec2i(x, z).roomListIndex()] as? MapRoom.RoomTile)?.owner ?: continue
-                if (mapRoom.tiles.size != 1 || mapRoom.data.type in setOf(RoomType.BLOOD, RoomType.ENTRANCE)) continue
+                val mapRoom = (MapScanner.list[Vec2i(x, z).roomListIndex()] as? MapRoom.Tile)?.owner ?: continue
+                if (mapRoom.tiles.size != 1 || mapRoom.data?.type in setOf(RoomType.BLOOD, RoomType.ENTRANCE)) continue
 
                 when (mapRoom.state) {
-                    RoomState.UNOPENED if mapRoom.data.type != RoomType.BLOOD -> {
+                    RoomState.UNOPENED if mapRoom.data?.type != RoomType.BLOOD -> {
                         if (x == column) {
                             if (!mapRoom.isKnown1x1) {
                                 mapRoom.isKnown1x1 = true
@@ -45,7 +45,7 @@ object SpecialColumn {
                             }
                         }
                     }
-                    !in setOf(RoomState.UNDISCOVERED, RoomState.UNOPENED) if mapRoom.data.type in setOf(RoomType.CHAMPION, RoomType.TRAP, RoomType.PUZZLE) -> {
+                    !in setOf(RoomState.UNDISCOVERED, RoomState.UNOPENED) if mapRoom.data?.type in setOf(RoomType.CHAMPION, RoomType.TRAP, RoomType.PUZZLE) -> {
                         opened1x1s.add(mapRoom)
                     }
 
@@ -60,9 +60,10 @@ object SpecialColumn {
 
     private fun isRoomVisibleFromAllSides(x: Int, z: Int, size: Vec2i): Boolean {
         fun checkRoom(offsetX: Int, offsetZ: Int): Boolean {
-            val tile = MapScanner.list[Vec2i(offsetX, offsetZ).roomListIndex()] as? MapRoom.RoomTile ?: return false
-            return tile.owner.state != RoomState.UNDISCOVERED &&
-                   (tile.owner.state != RoomState.UNOPENED || Vec2i(offsetX, offsetZ) == tile.owner.entryTile)
+            val tile = MapScanner.list[Vec2i(offsetX, offsetZ).roomListIndex()] as? MapRoom.Tile ?: return false
+            val owner = tile.owner ?: return false
+            return owner.state != RoomState.UNDISCOVERED &&
+                   (owner.state != RoomState.UNOPENED || Vec2i(offsetX, offsetZ) == owner.entryTile)
         }
 
         if (x != size.x - 1 && x + 1 != column && !checkRoom(x + 1, z)) return false
@@ -76,10 +77,10 @@ object SpecialColumn {
     private fun countDiscoveredInColumn(zSize: Int): Int {
         var discovered = zSize
         for (z in 0 until zSize) {
-            val tile = MapScanner.list[Vec2i(column - 1, z).roomListIndex()] as? MapRoom.RoomTile
+            val tile = MapScanner.list[Vec2i(column - 1, z).roomListIndex()] as? MapRoom.Tile
             if (tile == null ||
-                (tile.owner.state == RoomState.UNOPENED && tile.owner.data.type != RoomType.BLOOD) ||
-                tile.owner.state == RoomState.UNDISCOVERED) {
+                (tile.owner?.state == RoomState.UNOPENED && tile.owner.data?.type != RoomType.BLOOD) ||
+                tile.owner?.state == RoomState.UNDISCOVERED) {
                 discovered--
             }
         }
@@ -102,7 +103,7 @@ object SpecialColumn {
             specialSize <= DungeonUtils.puzzleCount || discovered1x1s - specialColumnRoomCount >= 2 ->
                 arrayOf(DungeonMap.puzzleRoomColor.darker(DungeonMap.darkenMultiplier))
 
-            opened1x1s.any { it.data.type == RoomType.TRAP && !it.specialTile } ->
+            opened1x1s.any { it.data?.type == RoomType.TRAP && !it.specialTile } ->
                 arrayOf(DungeonMap.puzzleRoomColor.darker(DungeonMap.darkenMultiplier))
 
             specialSize == DungeonUtils.puzzleCount + 1 ->
@@ -126,15 +127,15 @@ object SpecialColumn {
     }
 
     private fun guessNonSpecialTileColor(specialColumnRoomCount: Int): Array<Color> {
-        val nonspecialPuzzles = opened1x1s.count { it.data.type == RoomType.PUZZLE && !it.specialTile }
+        val nonspecialPuzzles = opened1x1s.count { it.data?.type == RoomType.PUZZLE && !it.specialTile }
         val totalPuzzles = specialColumnRoomCount + nonspecialPuzzles
 
         if (totalPuzzles == DungeonUtils.puzzleCount) {
             return when {
-                opened1x1s.any { it.data.type == RoomType.TRAP } ->
+                opened1x1s.any { it.data?.type == RoomType.TRAP } ->
                     arrayOf(DungeonMap.championRoomColor.darker(DungeonMap.darkenMultiplier))
 
-                opened1x1s.any { it.data.type == RoomType.CHAMPION } ->
+                opened1x1s.any { it.data?.type == RoomType.CHAMPION } ->
                     arrayOf(DungeonMap.trapRoomColor.darker(DungeonMap.darkenMultiplier))
 
                 else -> arrayOf(
@@ -147,15 +148,15 @@ object SpecialColumn {
         if (specialColumnRoomCount == DungeonUtils.puzzleCount + 1)
             return arrayOf(DungeonMap.championRoomColor.darker(DungeonMap.darkenMultiplier))
 
-        if (opened1x1s.count { it.data.type in setOf(RoomType.CHAMPION, RoomType.TRAP) } == 2)
+        if (opened1x1s.count { it.data?.type in setOf(RoomType.CHAMPION, RoomType.TRAP) } == 2)
             return arrayOf(DungeonMap.puzzleRoomColor.darker(DungeonMap.darkenMultiplier))
 
         if (opened1x1s.size == DungeonUtils.puzzleCount + 1) {
             return when {
-                opened1x1s.none { it.data.type == RoomType.TRAP } ->
+                opened1x1s.none { it.data?.type == RoomType.TRAP } ->
                     arrayOf(DungeonMap.trapRoomColor.darker(DungeonMap.darkenMultiplier))
 
-                opened1x1s.none { it.data.type == RoomType.CHAMPION } ->
+                opened1x1s.none { it.data?.type == RoomType.CHAMPION } ->
                     arrayOf(DungeonMap.championRoomColor.darker(DungeonMap.darkenMultiplier))
 
                 else -> arrayOf(DungeonMap.puzzleRoomColor.darker(DungeonMap.darkenMultiplier))
@@ -163,10 +164,10 @@ object SpecialColumn {
         }
 
         val result = mutableListOf(DungeonMap.puzzleRoomColor.darker(DungeonMap.darkenMultiplier))
-        if (opened1x1s.none { it.data.type == RoomType.TRAP })
+        if (opened1x1s.none { it.data?.type == RoomType.TRAP })
             result.add(DungeonMap.trapRoomColor.darker(DungeonMap.darkenMultiplier))
 
-        if (opened1x1s.none { it.data.type == RoomType.CHAMPION })
+        if (opened1x1s.none { it.data?.type == RoomType.CHAMPION })
             result.add(DungeonMap.championRoomColor.darker(DungeonMap.darkenMultiplier))
 
         return result.toTypedArray()
