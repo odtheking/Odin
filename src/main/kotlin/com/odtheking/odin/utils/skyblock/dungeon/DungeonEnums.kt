@@ -84,8 +84,8 @@ enum class DungeonClass(
     val defaultQuadrant: Int,
     var priority: Int,
 ) {
-    ARCHER(Colors.MINECRAFT_GOLD, '6', 0, 2),
-    BERSERK(Colors.MINECRAFT_DARK_RED, '4', 1, 0),
+    ARCHER(Colors.MINECRAFT_DARK_RED, '4', 0, 2),
+    BERSERK(Colors.MINECRAFT_GOLD, '6', 1, 0),
     HEALER(Colors.MINECRAFT_LIGHT_PURPLE, 'd', 2, 2),
     MAGE(Colors.MINECRAFT_AQUA, 'b', 3, 2),
     TANK(Colors.MINECRAFT_DARK_GREEN, '2', 3, 1),
