@@ -6,6 +6,7 @@ import com.odtheking.odin.events.ChatPacketEvent
 import com.odtheking.odin.events.WorldEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
+import com.odtheking.odin.features.impl.boss.ExtraStats
 import com.odtheking.odin.utils.handlers.schedule
 import com.odtheking.odin.utils.modMessage
 import com.odtheking.odin.utils.network.hypixelapi.RequestUtils
@@ -19,7 +20,8 @@ object SecretsCounter : Module(
     description = "Counts secrets for each player and shows results at the end of a dungeon run."
 ) {
     private val secretsEnabled by BooleanSetting("Secrets Counter", true, desc = "Track and display secrets found per player.")
-
+    private val self by BooleanSetting("Show Self", true, desc = "Shows your secrets along with other players")
+    private val fromExtraStats by BooleanSetting("Use value from extra stats module", ExtraStats.enabled,"See ExtraStats module")
     private val secretsBaseline = mutableMapOf<String, Long>()
     private var snapshotDone = false
 
@@ -70,11 +72,21 @@ object SecretsCounter : Module(
     }
 
     private fun display(teammates: List<DungeonPlayer>, secretsDelta: Map<String, Long?>) {
+        var sum=0L
         teammates
-            .sortedWith(compareBy<DungeonPlayer> { it.clazz.ordinal }.thenByDescending { secretsDelta[it.name] ?: -1L })
+            .sortedWith(compareBy<DungeonPlayer> { it.clazz.ordinal }
+            .thenByDescending { secretsDelta[it.name] ?: -1L })
             .forEach { player ->
-            val count = if (player.name in secretsDelta) secretsDelta[player.name]?.toString() ?: "N/A" else "N/A"
-                modMessage("§${player.clazz.colorCode}${player.name} §7-> §f${count} Secrets")
+                val countRaw = if (player.name in secretsDelta) secretsDelta[player.name] else null
+                modMessage("§${player.clazz.colorCode}${player.name} §7-> §f${countRaw?.toString() ?: "N/A"} Secrets")
+                sum+=countRaw?:0
             }
+        if(!self)return
+        val self=DungeonUtils.currentDungeonPlayer
+        modMessage("§${self.clazz.colorCode}${self.name} §7-> §f${
+            if(fromExtraStats) ExtraStats.extraStats.secretsFound
+            else DungeonUtils.secretCount-sum
+        } Secrets")
+        if(fromExtraStats&&!ExtraStats.enabled)modMessage("Enable ExtraStats for accurate personal secrets")
     }
 }

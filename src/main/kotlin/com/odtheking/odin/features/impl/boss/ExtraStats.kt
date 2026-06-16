@@ -23,7 +23,7 @@ object ExtraStats : Module(
     private val teamStats by SelectorSetting("Show Team Stats", "Both", arrayListOf("Off", "Personal", "Team", "Both"), desc = "Toggle how show team stats.")
     private val showTeammates by BooleanSetting("Show Teammates", false, desc = "Show teammates.")
 
-    private val extraStats = PostDungeonStats()
+    @JvmStatic val extraStats = PostDungeonStats()
 
     private val terminalCompleteRegex = Regex("^\\s*☠ Defeated (.+) in 0?([\\dhms ]+?)\\s*(\\(NEW RECORD!\\))?$")
     private val teamScoreRegex = Regex("^\\s*Team Score: (\\d+) \\((.{1,2})\\)\\s?(\\(NEW RECORD!\\))?$")
@@ -201,7 +201,7 @@ object ExtraStats : Module(
         modMessage(message, "")
     }
 
-    private data class PostDungeonStats(
+    data class PostDungeonStats(
         var score: Int = 0,
         var scoreLetter: String? = null,
         var bossKilled: String? = null,
