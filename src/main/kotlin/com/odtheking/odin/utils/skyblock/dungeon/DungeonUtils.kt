@@ -85,7 +85,7 @@ object DungeonUtils {
 
     inline val currentDungeonPlayer: DungeonPlayer
         get() = dungeonTeammates.find { it.name == mc.player?.name?.string } ?:
-            DungeonPlayer(mc.player?.name?.string ?: "Unknown", DungeonClass.Unknown, 0, null)
+            DungeonPlayer(mc.player?.name?.string ?: "Unknown", DungeonClass.EMPTY, 0, null)
 
     inline val doorOpener: String
         get() = DungeonListener.dungeonStats.doorOpener
@@ -178,8 +178,8 @@ object DungeonUtils {
     }
 
     private fun getMageCooldownMultiplier(): Double {
-        return if (currentDungeonPlayer.clazz != DungeonClass.Mage) 1.0
-        else 1 - 0.25 - (floor(currentDungeonPlayer.clazzLvl / 2.0) / 100) * if (dungeonTeammates.count { it.clazz == DungeonClass.Mage } == 1) 2 else 1
+        return if (currentDungeonPlayer.clazz != DungeonClass.MAGE) 1.0
+        else 1 - 0.25 - (floor(currentDungeonPlayer.clazzLvl / 2.0) / 100) * if (dungeonTeammates.count { it.clazz == DungeonClass.MAGE } == 1) 2 else 1
     }
 
     /**
@@ -198,17 +198,23 @@ object DungeonUtils {
         for (line in tabList) {
             val (_, name, clazz, clazzLevel) = tablistRegex.find(line)?.destructured ?: continue
 
-            previousTeammates.find { it.name == name }?.let { player -> player.isDead = clazz == "DEAD" }
-                ?: run {
-                    val player = mc.connection?.getPlayerInfo(name) ?: continue
-                    previousTeammates.add(
-                        DungeonPlayer(
-                            name, DungeonClass.entries.find { it.name == clazz } ?: continue,
-                            romanToInt(clazzLevel), player.skin,
-                            entity = mc.level?.getPlayerByUUID(player.profile.id )
-                        )
-                    )
+            previousTeammates.find { it.name == name }?.let { player ->
+                if (player.clazz == DungeonClass.EMPTY) {
+                    player.clazz = DungeonClass.entries.find { it.name.equals(clazz, ignoreCase = true) } ?: DungeonClass.EMPTY
+                    player.clazzLvl = romanToInt(clazzLevel)
                 }
+
+                player.isDead = clazz == "DEAD"
+            } ?: run {
+                val player = mc.connection?.getPlayerInfo(name) ?: continue
+                previousTeammates.add(
+                    DungeonPlayer(
+                        name, DungeonClass.entries.find { it.name.equals(clazz, ignoreCase = true) } ?: continue,
+                        if (clazzLevel.isEmpty()) -1 else romanToInt(clazzLevel), player.skin,
+                        entity = mc.level?.getPlayerByUUID(player.profile.id)
+                    )
+                )
+            }
         }
         return previousTeammates
     }

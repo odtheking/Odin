@@ -6,14 +6,20 @@ import com.odtheking.odin.utils.Color.Companion.darker
 import com.odtheking.odin.utils.equalsOneOf
 import com.odtheking.odin.utils.skyblock.dungeon.tiles.RoomState
 import com.odtheking.odin.utils.skyblock.dungeon.tiles.RoomType
+import net.minecraft.client.gui.GuiGraphics
 
-class Door(pos: Vec2i, var type: Type, val rooms: List<MapRoom.RoomTile>): Tile(pos) {
+class Door (val pos: Vec2i, var type: Type, val rooms: MutableList<MapRoom.Tile>) {
+
+    init {
+        rooms.forEach { it.owner?.doors?.add(this) }
+    }
+
     enum class Type { BLOOD, NORMAL, WITHER }
 
     var locked = type.equalsOneOf(Type.WITHER, Type.BLOOD)
-    val seen get() = rooms.any { it.owner.state !in setOf(RoomState.UNDISCOVERED, RoomState.UNOPENED) }
+    val seen get() = rooms.any { it.owner?.state !in setOf(RoomState.UNDISCOVERED, RoomState.UNOPENED) }
 
-    override fun size(): Vec2i {
+    private fun size(): Vec2i {
         val xOffset = ((pos.x + 185) shr 4) % 2
         val zOffset = ((pos.z + 185) shr 4) % 2
         return Vec2i(
@@ -22,43 +28,58 @@ class Door(pos: Vec2i, var type: Type, val rooms: List<MapRoom.RoomTile>): Tile(
         )
     }
 
-    override fun placement(): Vec2i {
-        val x = (pos.x + 185) shr 4
-        val z = (pos.z + 185) shr 4
-        val xEven = x % 2
-        val zEven = z % 2
-        val thicknessBasedOffset = (16 - DungeonMap.doorThickness) / 2
-        val xOffset = (x shr 1) * 20 + xEven * 16 + (xEven xor 1) * thicknessBasedOffset
-        val yOffset = (z shr 1) * 20 + zEven * 16 + (zEven xor 1) * thicknessBasedOffset
-        return Vec2i(xOffset, yOffset)
-    }
+    inline val placement: Vec2i
+        get() {
+            val x = (pos.x + 185) shr 4
+            val z = (pos.z + 185) shr 4
+            val xEven = x % 2
+            val zEven = z % 2
+            val thicknessBasedOffset = (16 - DungeonMap.doorThickness) / 2
+            val xOffset = (x shr 1) * 20 + xEven * 16 + (xEven xor 1) * thicknessBasedOffset
+            val yOffset = (z shr 1) * 20 + zEven * 16 + (zEven xor 1) * thicknessBasedOffset
 
-    override fun color(): Array<Color> {
-        val hasUnopenedRoom = rooms.any { it.owner.state in setOf(RoomState.UNDISCOVERED, RoomState.UNOPENED) }
+            return Vec2i(xOffset, yOffset)
+        }
 
-        return when {
-            hasUnopenedRoom && type != Type.NORMAL -> getLockedDoorColor()
-            hasUnopenedRoom -> arrayOf(DungeonMap.unopenedDoorColor)
-            else -> arrayOf(getOpenDoorColor())
+    fun render(graphics: GuiGraphics) {
+        val size = size()
+        if (size != Vec2i(0, 0)) {
+            val matrices = graphics.pose()
+            matrices.pushMatrix()
+            matrices.translate(placement.x.toFloat(), placement.z.toFloat())
+
+            graphics.fill(0, 0, size.x, size.z, color().rgba)
+
+            matrices.popMatrix()
         }
     }
 
-    private fun getLockedDoorColor(): Array<Color> = when (type) {
-        Type.BLOOD -> arrayOf(if (locked) DungeonMap.bloodDoorColor.darker(DungeonMap.darkenMultiplier) else DungeonMap.bloodDoorColor)
-        Type.WITHER -> arrayOf(if (locked) DungeonMap.witherDoorColor.darker(DungeonMap.darkenMultiplier) else DungeonMap.witherDoorColor)
-        Type.NORMAL -> arrayOf(DungeonMap.unopenedDoorColor)
+    private fun color(): Color {
+        val hasUnopenedRoom = rooms.any { it.owner?.state in setOf(RoomState.UNDISCOVERED, RoomState.UNOPENED) }
+
+        return when {
+            hasUnopenedRoom && type != Type.NORMAL -> getLockedDoorColor()
+            hasUnopenedRoom -> DungeonMap.unopenedDoorColor
+            else -> getOpenDoorColor()
+        }
+    }
+
+    private fun getLockedDoorColor(): Color = when (type) {
+        Type.BLOOD -> if (locked) DungeonMap.bloodDoorColor.darker(DungeonMap.darkenMultiplier) else DungeonMap.bloodDoorColor
+        Type.WITHER -> if (locked) DungeonMap.witherDoorColor.darker(DungeonMap.darkenMultiplier) else DungeonMap.witherDoorColor
+        Type.NORMAL -> DungeonMap.unopenedDoorColor
     }
 
     private fun getOpenDoorColor(): Color = when (type) {
         Type.BLOOD -> DungeonMap.bloodDoorColor
         Type.WITHER -> if (locked) DungeonMap.witherDoorColor
-                      else rooms.firstOrNull { it.owner.data.type == RoomType.FAIRY }?.let { DungeonMap.fairyDoorColor }
+                      else rooms.firstOrNull { it.owner?.data?.type == RoomType.FAIRY }?.let { DungeonMap.fairyDoorColor }
                            ?: DungeonMap.normalDoorColor
         Type.NORMAL -> getDoorColorByRoomType()
     }
 
     private fun getDoorColorByRoomType(): Color {
-        val specialRoom = rooms.firstOrNull { it.owner.data.type !in setOf(RoomType.NORMAL, RoomType.FAIRY) }
+        val specialRoom = rooms.firstOrNull { it.owner?.data?.type !in setOf(RoomType.NORMAL, RoomType.FAIRY) }
         return when (specialRoom?.owner?.data?.type) {
             RoomType.ENTRANCE -> DungeonMap.entranceDoorColor
             RoomType.BLOOD -> DungeonMap.bloodDoorColor
@@ -70,4 +91,3 @@ class Door(pos: Vec2i, var type: Type, val rooms: List<MapRoom.RoomTile>): Tile(
         }
     }
 }
-

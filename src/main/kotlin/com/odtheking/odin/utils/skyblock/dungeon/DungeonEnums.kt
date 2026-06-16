@@ -18,8 +18,8 @@ import net.minecraft.world.entity.player.PlayerSkin
  */
 data class DungeonPlayer(
     val name: String,
-    val clazz: DungeonClass,
-    val clazzLvl: Int,
+    var clazz: DungeonClass,
+    var clazzLvl: Int,
     val playerSkin: PlayerSkin?,
     var entity: Player? = null,
     var isDead: Boolean = false,
@@ -84,12 +84,12 @@ enum class DungeonClass(
     val defaultQuadrant: Int,
     var priority: Int,
 ) {
-    Archer(Colors.MINECRAFT_GOLD, '6', 0, 2),
-    Berserk(Colors.MINECRAFT_DARK_RED, '4', 1, 0),
-    Healer(Colors.MINECRAFT_LIGHT_PURPLE, 'd', 2, 2),
-    Mage(Colors.MINECRAFT_AQUA, 'b', 3, 2),
-    Tank(Colors.MINECRAFT_DARK_GREEN, '2', 3, 1),
-    Unknown(Colors.WHITE, 'f', 0, 0)
+    ARCHER(Colors.MINECRAFT_GOLD, '6', 0, 2),
+    BERSERK(Colors.MINECRAFT_DARK_RED, '4', 1, 0),
+    HEALER(Colors.MINECRAFT_LIGHT_PURPLE, 'd', 2, 2),
+    MAGE(Colors.MINECRAFT_AQUA, 'b', 3, 2),
+    TANK(Colors.MINECRAFT_DARK_GREEN, '2', 3, 1),
+    EMPTY(Colors.WHITE, 'f', 0, 0)
 }
 
 enum class Blessing(

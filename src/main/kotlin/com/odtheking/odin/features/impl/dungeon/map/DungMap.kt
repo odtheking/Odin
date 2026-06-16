@@ -1,8 +1,9 @@
 package com.odtheking.odin.features.impl.dungeon.map
 
-import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.utils.equalsOneOf
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
+import com.odtheking.odin.utils.skyblock.dungeon.tiles.RoomShape
+import com.odtheking.odin.utils.skyblock.dungeon.tiles.RoomType
 import net.minecraft.network.protocol.game.ClientboundMapItemDataPacket
 import net.minecraft.world.level.saveddata.maps.MapDecorationTypes
 import kotlin.jvm.optionals.getOrNull
@@ -13,6 +14,9 @@ object DungMap {
     var mapSize: Vec2i? = null
     var roomSize: Int? = null
     var shouldScan = false
+
+    private const val MAP_SIZE = 128
+    private const val EMPTY: Byte = 0
 
     fun unload() {
         mapCenter = Vec2i(0, 0)
@@ -36,15 +40,16 @@ object DungMap {
 
     fun rescanMapItem(packet: ClientboundMapItemDataPacket) {
         if (!DungeonUtils.inClear || packet.mapId().id and 1000 != 0) return
-        val state = mc.level?.getMapData(packet.mapId) ?: return
-
-        if (startCoords == null) {
-            if (!initializeMapCoordinates(state.colors)) return
-        }
-
         updatePlayerPositions(packet)
-        updateRoomStates(state.colors)
-        updateDoorStates(state.colors)
+
+        val colors = packet.colorPatch.getOrNull()?.mapColors() ?: return
+        if (colors.size < MAP_SIZE * MAP_SIZE || colors[0] != EMPTY) return
+
+        if (startCoords == null && !initializeMapCoordinates(colors)) return
+
+        updateRoomTiles(colors)
+        updateRoomStates(colors)
+        updateDoorStates(colors)
 
         if (mapSize != null) SpecialColumn.updateSpecialColumn()
     }
@@ -95,13 +100,135 @@ object DungMap {
         }
     }
 
+    private fun updateRoomTiles(colors: ByteArray) {
+        val rs = roomSize ?: return
+        val sc = startCoords ?: return
+        val ms = mapSize ?: return
+
+        val tileGrid = Array(ms.x) { Array(ms.z) { -1 } }
+        var nextId = 0
+        for (i in 0 until ms.x) {
+            for (j in 0 until ms.z) {
+                val idx = Vec2i(i, j).multiply(rs + 4).add(sc).mapIndex()
+                if (idx < colors.size && colors[idx].toInt() != 0) {
+                    tileGrid[i][j] = nextId++
+                }
+            }
+        }
+
+        val queue = ArrayDeque<Vec2i>()
+        for (i in 0 until ms.x) for (j in 0 until ms.z)
+            if (tileGrid[i][j] != -1) queue += Vec2i(i, j)
+
+        val visited = Array(ms.x) { BooleanArray(ms.z) }
+        while (queue.isNotEmpty()) {
+            val cur = queue.removeFirst()
+            if (visited[cur.x][cur.z]) continue
+            visited[cur.x][cur.z] = true
+            val id = tileGrid[cur.x][cur.z]
+
+            val nr = cur.x + 1
+            if (nr < ms.x && tileGrid[nr][cur.z] != -1 && !visited[nr][cur.z]) {
+                val di = sc.add(Vec2i(rs + 1 + cur.x * (rs + 4), cur.z * (rs + 4) + 1)).mapIndex()
+                if (di < colors.size && colors[di].toInt() != 0) {
+                    tileGrid[nr][cur.z] = id
+                    queue += Vec2i(nr, cur.z)
+                }
+            }
+
+            val nb = cur.z + 1
+            if (nb < ms.z && tileGrid[cur.x][nb] != -1 && !visited[cur.x][nb]) {
+                val di = sc.add(Vec2i(cur.x * (rs + 4) + 1, rs + 1 + cur.z * (rs + 4))).mapIndex()
+                if (di < colors.size && colors[di].toInt() != 0) {
+                    tileGrid[cur.x][nb] = id
+                    queue += Vec2i(cur.x, nb)
+                }
+            }
+        }
+
+        data class UniqueRoom(val id: Int, val coords: Vec2i, val tiles: MutableList<Vec2i>)
+        val uniques = mutableListOf<UniqueRoom>()
+        tileGrid.forEachIndexed { i, col ->
+            col.forEachIndexed { j, id ->
+                if (id == -1) return@forEachIndexed
+                (uniques.find { it.id == id } ?: run {
+                    val u = UniqueRoom(id, Vec2i(i, j), mutableListOf())
+                    uniques.add(u)
+                    u
+                }).tiles.add(Vec2i(i, j))
+            }
+        }
+
+        uniques.forEach { unique ->
+            val idx = unique.coords.multiply(rs + 4).add(sc).mapIndex()
+            val type = when (colors[idx].toInt()) {
+                18 -> RoomType.BLOOD
+                30 -> RoomType.ENTRANCE
+                85 -> RoomType.UNKNOWN
+                63 -> RoomType.NORMAL
+                62 -> RoomType.TRAP
+                66 -> RoomType.PUZZLE
+                74 -> RoomType.CHAMPION
+                82 -> RoomType.FAIRY
+                else -> return@forEach
+            }
+
+            val shape = if (type == RoomType.UNKNOWN) RoomShape.UNKNOWN
+            else when (unique.tiles.size) {
+                1 -> RoomShape.S1x1
+                2 -> RoomShape.S2x1
+                3 -> {
+                    val (a, b, c) = unique.tiles
+                    if ((a.x == b.x && a.x == c.x) || (a.z == b.z && a.z == c.z)) RoomShape.S3x1 else RoomShape.L
+                }
+                4 -> {
+                    val (a, b, c) = unique.tiles
+                    if ((a.x == b.x && a.x == c.x) || (a.z == b.z && a.z == c.z)) RoomShape.S4x1 else RoomShape.S2x2
+                }
+                else -> return@forEach
+            }
+
+            val found = unique.tiles.firstNotNullOfOrNull { tile ->
+                MapScanner.roomsList[tile.x * 6 + tile.z].owner
+            }
+
+            if (found != null) {
+                if (type != RoomType.UNKNOWN && found.type == RoomType.UNKNOWN) {
+                    found.type = type
+                    found.shape = shape
+                }
+                unique.tiles.forEach { tile ->
+                    val other = MapScanner.roomsList[tile.x * 6 + tile.z].owner
+                    if (other != null && other != found) {
+                        other.doors.forEach { found.doors.add(it) }
+                        MapScanner.rooms.remove(other)
+                    }
+                    if (!found.places.contains(tile)) {
+                        found.roomTile(tile.multiply(32).add(-185, -185))?.let { roomTile ->
+                            MapScanner.list[tile.roomListIndex()] = roomTile
+                        }
+                    }
+                }
+                return@forEach
+            }
+
+            val room = MapRoom(type, shape)
+            MapScanner.rooms.add(room)
+            unique.tiles.forEach { tile ->
+                room.roomTile(tile.multiply(32).add(-185, -185))?.let { roomTile ->
+                    MapScanner.list[tile.roomListIndex()] = roomTile
+                }
+            }
+        }
+    }
+
     private fun updateRoomStates(colors: ByteArray) {
         val rs = roomSize ?: return
         val halfRoomSize = rs / 2
         val startCenter = startCoords?.add(Vec2i(halfRoomSize, halfRoomSize)) ?: return
         val tileSize = rs + 4
 
-        MapScanner.allRooms.forEach { (_, room) ->
+        MapScanner.rooms.forEach { room ->
             val topLeftPlacement = room.places.minWith { a, b ->
                 a.x * 1000 + a.z - b.x * 1000 - b.z
             }
@@ -174,16 +301,16 @@ object DungMap {
     private fun updateDoorFromColor(door: Door, color: Byte) {
         door.locked = when (color.toInt()) {
             119 -> {
-                door.rooms.forEach { it.owner.rushRoom = true }
+                door.rooms.forEach { it.owner?.rushRoom = true }
                 door.type = Door.Type.WITHER
                 true
             }
             82 -> {
-                door.rooms.forEach { it.owner.rushRoom = true }
+                door.rooms.forEach { it.owner?.rushRoom = true }
                 false
             }
             18 -> {
-                door.rooms.forEach { it.owner.rushRoom = true }
+                door.rooms.forEach { it.owner?.rushRoom = true }
                 true
             }
             0 -> true
