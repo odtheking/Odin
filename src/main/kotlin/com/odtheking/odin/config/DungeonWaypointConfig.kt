@@ -2,6 +2,7 @@ package com.odtheking.odin.config
 
 import com.google.gson.*
 import com.google.gson.reflect.TypeToken
+import com.odtheking.odin.OdinMod
 import com.odtheking.odin.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints
 import com.odtheking.odin.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.DungeonWaypoint
 import com.odtheking.odin.utils.Color
@@ -17,6 +18,7 @@ object DungeonWaypointConfig {
     private val gson = GsonBuilder()
         .registerTypeAdapter(AABB::class.java, AABBSerializer())
         .registerTypeAdapter(DungeonWaypoint::class.java, DungeonWaypointDeserializer())
+        .registerTypeAdapter(BlockPos::class.java, BlockPosSerializer())
         .setPrettyPrinting().create()
 
     fun encodeWaypoints(waypointsMap: MutableMap<String, MutableList<DungeonWaypoint>>): String? {
@@ -133,6 +135,47 @@ object DungeonWaypointConfig {
 
             return jsonObject
         }
+    }
+
+    internal class BlockPosSerializer : JsonSerializer<BlockPos>, JsonDeserializer<BlockPos> {
+        override fun serialize(
+            src: BlockPos,
+            typeOfSrc: Type,
+            context: JsonSerializationContext
+        ): JsonElement {
+            val obj = JsonObject()
+            obj.addProperty("x", src.x)
+            obj.addProperty("y", src.y)
+            obj.addProperty("z", src.z)
+
+            return obj
+        }
+
+        override fun deserialize(
+            json: JsonElement,
+            typeOfT: Type,
+            context: JsonDeserializationContext
+        ): BlockPos {
+            val obj = json.asJsonObject
+
+            if (obj.has("field_11173")) {
+                val x = obj["field_11175"].asInt
+                val y = obj["field_11174"].asInt
+                val z = obj["field_11173"].asInt
+                return BlockPos(x, y, z)
+            }
+
+            if (obj.has("x")) {
+                val x = obj["x"].asInt
+                val y = obj["y"].asInt
+                val z = obj["z"].asInt
+                return BlockPos(x, y, z)
+            }
+
+            OdinMod.logger.debug("Failed to deserialize BlockPos\n$json")
+            return BlockPos(0, 0, 0)
+        }
+
     }
 }
 
