@@ -5,7 +5,7 @@ import com.odtheking.odin.clickgui.settings.impl.HudElement
 import com.odtheking.odin.features.ModuleManager
 import com.odtheking.odin.features.ModuleManager.hudSettingsCache
 import com.odtheking.odin.utils.Colors
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.screens.Screen
 import net.minecraft.client.input.KeyEvent
 import net.minecraft.client.input.MouseButtonEvent
@@ -32,8 +32,8 @@ object HudManager : Screen(Component.literal("HUD Manager")) {
         super.init()
     }
 
-    override fun render(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, deltaTicks: Float) {
-        super.render(guiGraphics, mouseX, mouseY, deltaTicks)
+    override fun extractRenderState(guiGraphics: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, deltaTicks: Float) {
+        super.extractRenderState(guiGraphics, mouseX, mouseY, deltaTicks)
 
         dragging?.let {
             it.x = (odinMouseX + deltaX).coerceIn(0f, (mc.window.screenWidth - (it.width * it.scale))).toInt()
@@ -55,8 +55,8 @@ object HudManager : Screen(Component.literal("HUD Manager")) {
                 hoveredHud.value.y.toFloat(),
             )
             guiGraphics.pose().scale(2f, 2f)
-            guiGraphics.drawString(mc.font, hoveredHud.name, 0, 0, Colors.WHITE.rgba)
-            guiGraphics.drawWordWrap(mc.font, Component.literal(hoveredHud.description), 0, 10, 150, Colors.WHITE.rgba)
+            guiGraphics.text(mc.font, hoveredHud.name, 0, 0, Colors.WHITE.rgba)
+            guiGraphics.textWithWordWrap(mc.font, Component.literal(hoveredHud.description), 0, 10, 150, Colors.WHITE.rgba)
             guiGraphics.pose().popMatrix()
         }
 

@@ -112,7 +112,7 @@ object PuzzleSolvers : Module(
             if (waterSolver) WaterSolver.onServerTick()
         }
 
-        on<WorldEvent.Load> {
+        on<LevelEvent.Load> {
             puzzleTimersMap.clear()
             IceFillSolver.reset()
             WeirdosSolver.reset()

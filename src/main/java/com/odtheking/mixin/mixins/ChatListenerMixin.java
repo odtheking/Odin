@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 @Mixin(ChatListener.class)
 public class ChatListenerMixin {
 
-    @ModifyArg(method = "handleSystemMessage", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;setOverlayMessage(Lnet/minecraft/network/chat/Component;Z)V"), index = 0)
+    @ModifyArg(method = "handleOverlay", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;setOverlayMessage(Lnet/minecraft/network/chat/Component;Z)V"), index = 0)
     private Component modifyOverlayMessage(Component component) {
         return PlayerDisplay.modifyText(component);
     }

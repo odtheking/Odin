@@ -1,6 +1,5 @@
 package com.odtheking.odin.features.impl.boss
 
-import com.odtheking.mixin.accessors.AbstractContainerScreenAccessor
 import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.*
 import com.odtheking.odin.events.GuiEvent
@@ -11,7 +10,7 @@ import com.odtheking.odin.utils.Color.Companion.darker
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalTypes
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalUtils
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 import net.minecraft.network.chat.Component
 import org.lwjgl.glfw.GLFW
@@ -84,8 +83,8 @@ object TerminalSolver : Module(
         on<GuiEvent.Render> {
             if (TerminalUtils.currentTerm == null || !renderMelody || renderType != 0) return@on
 
-            val screen = (screen as? AbstractContainerScreen<*>) as? AbstractContainerScreenAccessor ?: return@on
-            guiGraphics.fill(screen.x + 7, screen.y + 16, screen.x + screen.width - 7, screen.y + screen.height - 96, backgroundColor.rgba)
+            val screen = screen as? AbstractContainerScreen<*> ?: return@on
+            guiGraphics.fill(screen.leftPos + 7, screen.topPos + 16, screen.leftPos + screen.imageWidth - 7, screen.topPos + screen.imageHeight - 96, backgroundColor.rgba)
         }
 
         on<GuiEvent.RenderSlot> {
@@ -95,7 +94,7 @@ object TerminalSolver : Module(
             if (slot.index <= currentTerm.type.windowSize - 1) {
                 currentTerm.getSlotRendering(slot.index)?.let { (color, text) ->
                     guiGraphics.fill(slot.x, slot.y, slot.x + 16, slot.y + 16, color.rgba)
-                    text?.let { guiGraphics.drawCenteredString(screen.font, it, slot.x + 8, slot.y + 4, Colors.WHITE.rgba) }
+                    text?.let { guiGraphics.centeredText(screen.font, it, slot.x + 8, slot.y + 4, Colors.WHITE.rgba) }
                     cancel()
                 }
                 if (renderType == 0) cancel()
@@ -108,15 +107,15 @@ object TerminalSolver : Module(
         }
 
         on<TerminalEvent.Open> {
-            if (renderType == 0 || renderType == 1) mc.execute { mc.resizeDisplay() }
+            if (renderType == 0 || renderType == 1) mc.execute { mc.resizeGui() }
         }
 
         on<TerminalEvent.Close> {
-            if (renderType == 0 || renderType == 1) mc.execute { mc.resizeDisplay() }
+            if (renderType == 0 || renderType == 1) mc.execute { mc.resizeGui() }
         }
     }
 
-    fun GuiGraphics.renderDebug() {
+    fun GuiGraphicsExtractor.renderDebug() {
         if (debug) TerminalUtils.currentTerm?.let { term ->
             val menu = (mc.screen as? AbstractContainerScreen<*>)?.menu ?: return@let
             val debugInfo = listOf(
@@ -134,15 +133,15 @@ object TerminalSolver : Module(
             pose().scale(1f / sf, 1f / sf)
             pose().scale(3f)
 
-            drawWordWrap(mc.font, Component.literal(menu.items.filter { !it.isEmpty }.map { stack -> stack.hoverName.string  }.toString()), 400, 0, 300, Colors.WHITE.rgba)
+            textWithWordWrap(mc.font, Component.literal(menu.items.filter { !it.isEmpty }.map { stack -> stack.hoverName.string  }.toString()), 400, 0, 300, Colors.WHITE.rgba)
 
             debugInfo.forEachIndexed { index, line ->
-                drawWordWrap(mc.font, Component.literal(line), 5, 20 + (index * 10), 300, Colors.WHITE.rgba)
+                textWithWordWrap(mc.font, Component.literal(line), 5, 20 + (index * 10), 300, Colors.WHITE.rgba)
             }
 
             menu.items.forEachIndexed { index, stack ->
-                renderItem(stack, 5 + (index % 9) * 18, 250 + (index / 9) * 18)
-                renderItemDecorations(mc.font, stack, 5 + (index % 9) * 18, 250 + (index / 9) * 18)
+                item(stack, 5 + (index % 9) * 18, 250 + (index / 9) * 18)
+                itemDecorations(mc.font, stack, 5 + (index % 9) * 18, 250 + (index / 9) * 18)
             }
             pose().popMatrix()
         }

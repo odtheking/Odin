@@ -8,7 +8,7 @@ import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.modMessage
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.components.Button
 import net.minecraft.client.gui.components.ScrollableLayout
 import net.minecraft.client.gui.components.StringWidget
@@ -131,12 +131,12 @@ class WaypointPackSelectorScreen(private val parent: Screen?) : Screen(Component
         OdinMod.scope.launch { DungeonWaypoints.savePackSelection(selected, edit) }
     }
 
-    override fun render(context: GuiGraphics, mouseX: Int, mouseY: Int, delta: Float) {
+    override fun extractRenderState(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, delta: Float) {
         if (loading) {
-            context.drawCenteredString(font, "§7Loading...", width / 2, height / 2, Colors.WHITE.rgba)
+            context.centeredText(font, "§7Loading...", width / 2, height / 2, Colors.WHITE.rgba)
             return
         }
-        super.render(context, mouseX, mouseY, delta)
+        super.extractRenderState(context, mouseX, mouseY, delta)
     }
 
     override fun tick() {

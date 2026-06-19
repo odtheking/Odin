@@ -22,7 +22,7 @@ import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry
 import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements
 import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.client.DeltaTracker
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.resources.Identifier
 import net.minecraft.resources.Identifier.fromNamespaceAndPath
 import java.io.File
@@ -76,7 +76,9 @@ object ModuleManager {
             CommandKeybinds, SlotBinds, Splits,
 
             // nether
-            SupplyHelper, BuildHelper, RemovePerks, NoPre, PearlWaypoints, FreshTools, KuudraInfo, Misc, Vesuvius
+            SupplyHelper, BuildHelper, RemovePerks, NoPre, PearlWaypoints, FreshTools, KuudraInfo, Misc, Vesuvius,
+
+            RenderTest,
         )
 
         // hashmap, but would need to keep track when setting values change
@@ -139,7 +141,7 @@ object ModuleManager {
         }
     }
 
-    fun render(guiGraphics: GuiGraphics, tickCounter: DeltaTracker) {
+    fun render(guiGraphics: GuiGraphicsExtractor, tickCounter: DeltaTracker) {
         if (mc.level == null || mc.player == null || mc.screen == HudManager || mc.options.hideGui) return
 
         guiGraphics.pose().pushMatrix()

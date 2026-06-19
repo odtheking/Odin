@@ -6,7 +6,7 @@ import com.odtheking.odin.clickgui.settings.impl.ColorSetting
 import com.odtheking.odin.clickgui.settings.impl.DropdownSetting
 import com.odtheking.odin.clickgui.settings.impl.NumberSetting
 import com.odtheking.odin.events.TickEvent
-import com.odtheking.odin.events.WorldEvent
+import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.features.Module
@@ -21,8 +21,8 @@ import com.odtheking.odin.utils.render.hollowFill
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.skyblock.dungeon.tiles.RoomType
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientChunkEvents
-import net.minecraft.client.gui.GuiGraphics
-import net.minecraft.client.gui.components.PlayerFaceRenderer
+import net.minecraft.client.gui.GuiGraphicsExtractor
+import net.minecraft.client.gui.components.PlayerFaceExtractor
 import net.minecraft.client.renderer.RenderPipelines
 import net.minecraft.network.protocol.game.ClientboundMapItemDataPacket
 import net.minecraft.resources.Identifier
@@ -86,18 +86,18 @@ object DungeonMap : Module(
     val white = Identifier.fromNamespaceAndPath("odin", "map/white.png")
     val question = Identifier.fromNamespaceAndPath("odin", "map/question.png")
 
-    private fun GuiGraphics.renderExampleMap(): Pair<Int, Int> {
+    private fun GuiGraphicsExtractor.renderExampleMap(): Pair<Int, Int> {
         val roomsX = 116
         val roomsZ = 116
         val offset = backgroundSize.toInt()
 
         fill(0, 0, roomsX + offset * 2, roomsZ + offset * 2, backgroundColor.rgba)
-        drawCenteredString(mc.font, "MAP", roomsX / 2 + offset, roomsZ / 2 + offset - mc.font.lineHeight, AwtColor.WHITE.rgb)
+        centeredText(mc.font, "MAP", roomsX / 2 + offset, roomsZ / 2 + offset - mc.font.lineHeight, AwtColor.WHITE.rgb)
 
         return (roomsX + offset * 2) to (roomsZ + offset * 2)
     }
 
-    private fun GuiGraphics.renderDungeonMap(): Pair<Int, Int> {
+    private fun GuiGraphicsExtractor.renderDungeonMap(): Pair<Int, Int> {
         val matrices = pose()
         val mapSize = DungMap.calculateMapSize()
         val roomsX = mapSize.x * 16 + (mapSize.x - 1) * 4
@@ -138,7 +138,7 @@ object DungeonMap : Module(
                 if (renderNames) {
                     matrices.pushMatrix()
                     matrices.scale(playerNamesScaling)
-                    drawCenteredString(mc.font, player.name, 0, 8, playerNameColor.rgba)
+                    centeredText(mc.font, player.name, 0, 8, playerNameColor.rgba)
                     matrices.popMatrix()
                 }
 
@@ -155,7 +155,7 @@ object DungeonMap : Module(
                         fill(-size, -size, size, size, player.clazz.color.rgba)
                     }
 
-                    PlayerFaceRenderer.draw(this, skin, -5, -5, 10)
+                    PlayerFaceExtractor.extractRenderState(this, skin, -5, -5, 10)
                 }
 
                 matrices.popMatrix()
@@ -168,7 +168,7 @@ object DungeonMap : Module(
     }
 
     init {
-        on<WorldEvent.Load> {
+        on<LevelEvent.Load> {
             SpecialColumn.unload()
             MapScanner.unload()
             DungMap.unload()

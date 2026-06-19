@@ -8,12 +8,12 @@ import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.blaze3d.vertex.Tesselator
 import com.mojang.blaze3d.vertex.VertexFormat
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.navigation.ScreenRectangle
 import net.minecraft.client.gui.render.pip.PictureInPictureRenderer
-import net.minecraft.client.gui.render.state.pip.PictureInPictureRenderState
 import net.minecraft.client.renderer.DynamicUniformStorage
 import net.minecraft.client.renderer.MultiBufferSource
+import net.minecraft.client.renderer.state.gui.pip.PictureInPictureRenderState
 import org.joml.*
 import java.util.*
 import kotlin.math.roundToInt
@@ -145,7 +145,7 @@ class RoundRectPIPRenderer(bufferSource: MultiBufferSource.BufferSource)
         fun clear() = uniformStorage.endFrame()
 
         fun submit(
-            context: GuiGraphics,
+            context: GuiGraphicsExtractor,
             x0: Int, y0: Int, x1: Int, y1: Int,
             topLeftColor: Int, topRightColor: Int, bottomRightColor: Int, bottomLeftColor: Int,
             topLeftRadius: Float, topRightRadius: Float, bottomRightRadius: Float, bottomLeftRadius: Float,
@@ -167,7 +167,7 @@ class RoundRectPIPRenderer(bufferSource: MultiBufferSource.BufferSource)
             val screenRect = ScreenRectangle(screenLeft, screenTop, screenW, screenH)
             val bounds = if (scissor != null) scissor.intersection(screenRect) else screenRect
 
-            context.guiRenderState.submitPicturesInPictureState(
+            context.guiRenderState.addPicturesInPictureState(
                 State(
                     screenLeft, screenTop, screenW, screenH,
                     topLeftColor, topRightColor, bottomRightColor, bottomLeftColor,

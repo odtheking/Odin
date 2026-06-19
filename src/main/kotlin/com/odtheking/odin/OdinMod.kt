@@ -24,7 +24,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import net.fabricmc.api.ClientModInitializer
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback
-import net.fabricmc.fabric.api.client.rendering.v1.SpecialGuiElementRegistry
+import net.fabricmc.fabric.api.client.rendering.v1.PictureInPictureRendererRegistry
 import net.fabricmc.loader.api.FabricLoader
 import net.fabricmc.loader.api.Version
 import net.minecraft.client.Minecraft
@@ -78,16 +78,16 @@ object OdinMod : ClientModInitializer {
             ModuleManager, CustomGUIImpl, Shenanigans
         ).forEach { EventBus.subscribe(it) }
 
-        SpecialGuiElementRegistry.register { context ->
-            NVGPIPRenderer(context.vertexConsumers())
+        PictureInPictureRendererRegistry.register { context ->
+            NVGPIPRenderer(context.bufferSource())
         }
 
-        SpecialGuiElementRegistry.register { context ->
-            RoundRectPIPRenderer(context.vertexConsumers())
+        PictureInPictureRendererRegistry.register { context ->
+            RoundRectPIPRenderer(context.bufferSource())
         }
 
-        SpecialGuiElementRegistry.register { context ->
-            ItemStateRenderer(context.vertexConsumers())
+        PictureInPictureRendererRegistry.register { context ->
+            ItemStateRenderer(context.bufferSource())
         }
 
         val name = mc.user.name.takeIf { !it.matches(Regex("Player\\d{2,3}")) } ?: return
