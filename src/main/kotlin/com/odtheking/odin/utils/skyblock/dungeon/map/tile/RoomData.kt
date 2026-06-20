@@ -34,6 +34,7 @@ enum class RoomType(val mapColor: Byte) {
     ENTRANCE(30),
     FAIRY(82),
     NORMAL(63),
+    RARE(63),
     BLOOD(18),
     CHAMPION(74),
     UNKNOWN(85),

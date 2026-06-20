@@ -13,20 +13,39 @@ data class DungeonTile(
     var room: DungeonRoom? = null
 ) : ScanTile
 
-class DungeonRoom(val data: RoomData, initialPosition: IVec2) : RoomInfo {
+enum class MapCheckmark {
+    NONE, WHITE, GREEN, RED, QUESTION_MARK, UNDISCOVERED;
+
+    companion object {
+        fun fromMapColor(color: Byte): MapCheckmark? = when (color.toInt()) {
+            34   -> WHITE
+            30   -> GREEN
+            18   -> RED
+            119  -> QUESTION_MARK
+            else -> null
+        }
+    }
+}
+
+class DungeonRoom(
+    override var type: RoomType,
+    initialPosition: IVec2,
+    var data: RoomData? = null,
+) : RoomInfo {
     override val segments: ArrayList<ScanTile> = ArrayList(4)
+    override var position: IVec2 = initialPosition
+    override var rotation: RoomRotation? = null
+
+    override var shape: RoomShape = RoomShape.OneByOne
 
     var discovered: Boolean = false
     var clayPos: BlockPos? = null
     var highestBlock: Int? = null
     var waypoints: MutableSet<DungeonWaypoints.DungeonWaypoint> = mutableSetOf()
 
-    override var position: IVec2 = initialPosition
-    override var rotation: RoomRotation? = null
-    override val shape: RoomShape get() = data.shape
-    override val type: RoomType get() = data.type
+    var checkmark: MapCheckmark = MapCheckmark.UNDISCOVERED
 
-    val name: String get() = data.name
+    val name: String? get() = data?.name
 
     fun addSegment(segment: DungeonTile) {
         if (!segments.contains(segment)) {
@@ -35,11 +54,34 @@ class DungeonRoom(val data: RoomData, initialPosition: IVec2) : RoomInfo {
         }
     }
 
+    fun inferLayoutFromMap() {
+        val positions = segments.map { it.position }
+        val minX = positions.minOf { it.x }
+        val minZ = positions.minOf { it.z }
+        val maxX = positions.maxOf { it.x }
+        val maxZ = positions.maxOf { it.z }
+
+        shape = when (positions.size) {
+            1    -> RoomShape.OneByOne
+            2    -> RoomShape.TwoByOne
+            3    -> if ((maxX - minX) == 1 && (maxZ - minZ) == 1) RoomShape.L else RoomShape.ThreeByOne
+            4    -> if ((maxX - minX) == 1 && (maxZ - minZ) == 1) RoomShape.TwoByTwo else RoomShape.FourByOne
+            else -> RoomShape.OneByOne
+        }
+
+        rotation = resolveGeometryRotation(positions)
+    }
+
     fun inferLayout(highestBlock: Int) {
         this.highestBlock = highestBlock
+
+        val roomData = data ?: return
+
         if (applyFairyFallback(highestBlock)) return
 
         val positions = segments.map { it.position }
+
+        shape = roomData.shape
 
         if (shape == RoomShape.OneByOne) {
             getRotation()
@@ -93,7 +135,7 @@ class DungeonRoom(val data: RoomData, initialPosition: IVec2) : RoomInfo {
     }
 
     private fun applyFairyFallback(highestBlock: Int): Boolean {
-        if (data.name != "Fairy") return false
+        if (data?.name != "Fairy") return false
         clayPos = clayProbePos(RoomRotation.SOUTH, highestBlock)
         rotation = RoomRotation.SOUTH
         return true
@@ -110,14 +152,12 @@ class DungeonRoom(val data: RoomData, initialPosition: IVec2) : RoomInfo {
     fun getRelativeCoords(pos: BlockPos): BlockPos {
         val clay = clayPos ?: return BlockPos.ZERO
         val rot = rotation ?: return BlockPos.ZERO
-
         return pos.subtract(clay.atY(0)).rotateToNorth(rot)
     }
 
     fun getRealCoords(pos: BlockPos): BlockPos {
         val clay = clayPos ?: return BlockPos.ZERO
         val rot = rotation ?: return BlockPos.ZERO
-
         return pos.rotateAroundNorth(rot).offset(clay.x, 0, clay.z)
     }
 }

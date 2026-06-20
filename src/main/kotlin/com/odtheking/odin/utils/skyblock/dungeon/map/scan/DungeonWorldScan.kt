@@ -16,33 +16,21 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientChunkEvents
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.chunk.LevelChunk
-import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.CopyOnWriteArrayList
 
 object DungeonWorldScan {
 
-    val tiles: Array<DungeonTile> = Array(36) { index -> DungeonTile(position = IVec2(x = index % 6, z = index / 6)) }
-
-    val rooms: CopyOnWriteArrayList<DungeonRoom> = CopyOnWriteArrayList()
-    val doors: ConcurrentHashMap<IVec2, DungeonDoor> = ConcurrentHashMap()
-    val dataToRoom: HashMap<RoomData, DungeonRoom> = hashMapOf()
-    val discoveredRooms: CopyOnWriteArrayList<DungeonRoom> = CopyOnWriteArrayList()
-
+    val tiles: Array<DungeonTile> get() = DungeonMapScan.tiles
     var currentRoom: DungeonRoom? = null
         private set
+
+    private val dataToRoom: HashMap<RoomData, DungeonRoom> = hashMapOf()
 
     private val chunksToScan: HashSet<IVec2> = HashSet()
 
     init {
         on<WorldEvent.Load> {
-            repeat(36) { index ->
-                tiles[index] = DungeonTile(position = IVec2(x = index % 6, z = index / 6))
-            }
-            rooms.clear()
-            doors.clear()
             dataToRoom.clear()
             chunksToScan.clear()
-            discoveredRooms.clear()
             currentRoom = null
         }
 
@@ -57,10 +45,10 @@ object DungeonWorldScan {
                 return@on
             }
 
-            for (room in rooms) {
+            for (room in DungeonMapScan.rooms) {
                 if (room.shape != RoomShape.OneByOne) continue
                 if (room.rotation != null && room.clayPos != null) continue
-                room.getRotation()
+                if (room.highestBlock != null) room.getRotation()
             }
 
             val tileX = (player.blockX + 201) shr 5
@@ -69,10 +57,9 @@ object DungeonWorldScan {
 
             tiles[tileX + tileZ * 6].room?.let { room ->
                 if (room == currentRoom || room.rotation == null || room.highestBlock == null) return@on
-                devMessage("${room.data.name} - ${room.rotation} || clay: ${room.clayPos}")
+                devMessage("${room.data?.name ?: room.type} - ${room.rotation} || clay: ${room.clayPos}")
                 if (player.blockY > room.highestBlock!! - 10) return@on
 
-                discoveredRooms.add(room)
                 currentRoom = room
                 room.discovered = true
                 RoomEnterEvent(room).postAndCatch()
@@ -108,7 +95,7 @@ object DungeonWorldScan {
     }
 
     private fun scanDoor(chunk: LevelChunk, chunkPosition: IVec2, rotation: DoorRotation) {
-        if (doors.contains(chunkPosition)) return
+        if (DungeonMapScan.doors.contains(chunkPosition)) return
         val position = (chunkPosition * 16) + 7
 
         for (y in 86..160) {
@@ -123,9 +110,7 @@ object DungeonWorldScan {
         }
         val doorPos = ((chunkPosition - 1) / 2) + 6
         val destPos = IVec2(doorPos.x + rotation.offset.x, doorPos.z + rotation.offset.z)
-        val originIndex = doorPos.x + doorPos.z * 6
-        val destIndex = destPos.x + destPos.z * 6
-        doors[chunkPosition] = DungeonDoor(doorPos, rotation, type, originIndex, destIndex)
+        DungeonMapScan.doors[chunkPosition] = DungeonDoor(doorPos, rotation, type, doorPos.x + doorPos.z * 6, destPos.x + destPos.z * 6)
     }
 
     private fun scanRoom(chunk: LevelChunk, chunkPosition: IVec2) {
@@ -135,13 +120,24 @@ object DungeonWorldScan {
         val tilePosition = (chunkPosition / 2) + 6
         val tile = tiles.getOrNull(tilePosition.x + (tilePosition.z * 6)) ?: return
 
-        val room = when {
-            tile.room?.data == data -> tile.room
-            else -> dataToRoom.getOrPut(data) { DungeonRoom(data, tile.position).also { rooms.add(it) } }
-        } ?: return
+        val room = dataToRoom.getOrPut(data) {
+            val existingMapRoom = tile.room
+            if (existingMapRoom != null) {
+                existingMapRoom.data = data
+                existingMapRoom.type = data.type
+                existingMapRoom
+            } else DungeonRoom(data.type, tile.position, data).also { DungeonMapScan.rooms.add(it) }
+        }
 
-        tile.room = room
-        room.addSegment(tile)
+        if (tile.room !== room) {
+            tile.room = room
+            room.addSegment(tile)
+        }
+
+        if (room.data == null) {
+            room.data = data
+            room.type = data.type
+        }
 
         if (room.segments.size == data.shape.segments) room.inferLayout(highestBlock)
     }

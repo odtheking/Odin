@@ -14,6 +14,9 @@ import net.minecraft.client.gui.GuiGraphics
 
 object DungeonMap : Module("Bad map", description = "Displays the dungeon map.") {
 
+    private val disableBoss by BooleanSetting("Disable in Boss", true, desc = "Disables the map during boss fights.")
+
+    val backgroundOutline by ColorSetting("Background Outline", Colors.gray26, false, desc = "The color of the background border.")
     var backgroundColor by ColorSetting("Background Color", Color(0, 0, 0, 0.7f), true, desc = "Background color of the map.")
     var textScaling by NumberSetting("Text Scaling", 0.45f, 0.1f, 1f, 0.05f, desc = "Scale of room name text.")
 
@@ -40,7 +43,7 @@ object DungeonMap : Module("Bad map", description = "Displays the dungeon map.")
 
     private val mapHud by HUD("Dungeon Map", "Displays the dungeon map.", false) { example ->
         when {
-            !DungeonUtils.inDungeons && !example -> 0 to 0
+            (!DungeonUtils.inDungeons || (disableBoss && DungeonUtils.inBoss)) && !example -> 0 to 0
             example -> renderExampleMap()
             else    -> renderDungeonMap()
         }
@@ -48,7 +51,7 @@ object DungeonMap : Module("Bad map", description = "Displays the dungeon map.")
 
     private fun GuiGraphics.renderExampleMap(): Pair<Int, Int> {
         fill(0, 0, MAP_PX, MAP_PX, backgroundColor.rgba)
-        hollowFill(0, 0, MAP_PX, MAP_PX, 1, Colors.gray26)
+        hollowFill(0, 0, MAP_PX, MAP_PX, 1, backgroundOutline)
         drawCenteredString(mc.font, "MAP", MAP_PX / 2, MAP_PX / 2 - mc.font.lineHeight / 2, 0xFFFFFFFF.toInt())
         return MAP_PX to MAP_PX
     }

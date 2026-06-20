@@ -79,22 +79,24 @@ internal fun DungeonWaypoints.resetClickedWaypoints() {
 }
 
 fun DungeonRoom.setWaypoints() {
-    waypoints = DungeonWaypoints.allActiveWaypoints[data.name]
+    val name = data?.name ?: return
+    waypoints = DungeonWaypoints.allActiveWaypoints[name]
         ?.mapTo(mutableSetOf()) { waypoint ->
             waypoint.copy(blockPos = getRealCoords(waypoint.blockPos))
         } ?: mutableSetOf()
 }
 
 fun DungeonWaypoints.getWaypoints(room: DungeonRoom): MutableList<DungeonWaypoints.DungeonWaypoint> =
-    allActiveWaypoints.getOrPut(room.data.name) { mutableListOf() }
+    allActiveWaypoints.getOrPut(room.data?.name ?: return mutableListOf()) { mutableListOf() }
 
 fun DungeonWaypoints.getEditableWaypoints(room: DungeonRoom): MutableList<DungeonWaypoints.DungeonWaypoint> =
-    loadedPacks.getOrPut(editPackId) { mutableMapOf() }.getOrPut(room.data.name) { mutableListOf() }
+    loadedPacks.getOrPut(editPackId) { mutableMapOf() }.getOrPut(room.data?.name ?: return mutableListOf()) { mutableListOf() }
 
 fun DungeonWaypoints.syncRoomToActive(room: DungeonRoom) {
-    val mergedRoom = mergeRoomWaypoints(room.data.name)
-    if (mergedRoom.isEmpty()) allActiveWaypoints.remove(room.data.name)
-    else allActiveWaypoints[room.data.name] = mergedRoom
+    val name = room.data?.name ?: return@syncRoomToActive
+    val mergedRoom = mergeRoomWaypoints(name)
+    if (mergedRoom.isEmpty()) allActiveWaypoints.remove(name)
+    else allActiveWaypoints[name] = mergedRoom
     room.setWaypoints()
 }
 

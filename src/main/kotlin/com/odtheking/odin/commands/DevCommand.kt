@@ -23,6 +23,7 @@ import com.odtheking.odin.utils.skyblock.PartyUtils
 import com.odtheking.odin.utils.skyblock.Supply
 import com.odtheking.odin.utils.skyblock.dungeon.Blessing
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
+import com.odtheking.odin.utils.skyblock.dungeon.map.scan.DungeonMapScan
 import com.odtheking.odin.utils.skyblock.dungeon.map.scan.DungeonWorldScan
 import com.odtheking.odin.utils.skyblock.dungeon.map.scan.DungeonWorldScan.tiles
 import com.odtheking.odin.utils.ui.rendering.NVGRenderer
@@ -126,7 +127,7 @@ val devCommand = Commodore("oddev") {
                             |DungeonTime: ${DungeonUtils.dungeonTime}
                             |currentDungeonPlayer: ${DungeonUtils.currentDungeonPlayer.name}, ${DungeonUtils.currentDungeonPlayer.clazz}, ${DungeonUtils.currentDungeonPlayer.isDead}
                             |doorOpener: ${DungeonUtils.doorOpener}
-                            |currentRoom: ${DungeonWorldScan.currentRoom?.data?.name}, roomsPassed: ${DungeonWorldScan.rooms.filter { it.discovered }.map { it.data.name }}
+                            |currentRoom: ${DungeonWorldScan.currentRoom?.data?.name}, roomsPassed: ${DungeonMapScan.rooms.filter { it.discovered }.map { it.data?.name }}
                             |Teammates: ${DungeonUtils.dungeonTeammates.joinToString { "§${it.clazz.colorCode}${it.name} (${it.clazz} [${it.clazzLvl}])§r" }}
                             |TeammatesNoSelf: ${DungeonUtils.dungeonTeammatesNoSelf.map { it.name }}
                             |LeapTeammates: ${DungeonUtils.leapTeammates.map { it.name }}

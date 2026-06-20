@@ -34,25 +34,25 @@ object DungeonMapScan {
     var startY = -1
         private set
 
-    val tiles: Array<MapScanTile> = Array(36) { index ->
-        MapScanTile(position = IVec2(x = index % 6, z = index / 6))
+    val tiles: Array<DungeonTile> = Array(36) { index ->
+        DungeonTile(position = IVec2(x = index % 6, z = index / 6))
     }
 
-    val rooms: CopyOnWriteArrayList<MapScanRoom> = CopyOnWriteArrayList()
+    val rooms: CopyOnWriteArrayList<DungeonRoom> = CopyOnWriteArrayList()
+
     val doors: ConcurrentHashMap<IVec2, DungeonDoor> = ConcurrentHashMap()
-    val nonDiscoveredRooms = CopyOnWriteArrayList<RoomInfo>()
 
     init {
         on<WorldEvent.Load> {
             repeat(36) { index ->
-                tiles[index] = MapScanTile(position = IVec2(x = index % 6, z = index / 6))
+                tiles[index] = DungeonTile(position = IVec2(x = index % 6, z = index / 6))
             }
             rooms.clear()
             doors.clear()
             roomSize = -1
-            roomGap = -1
-            startX = -1
-            startY = -1
+            roomGap  = -1
+            startX   = -1
+            startY   = -1
         }
 
         onReceive<ClientboundMapItemDataPacket> {
@@ -64,11 +64,6 @@ object DungeonMapScan {
 
             if (roomSize == -1) return@onReceive
             updateAll(colors)
-            nonDiscoveredRooms.clear()
-            // all world dicoevered rooms
-            // plus all map rooms that arent discoered in the world
-
-            nonDiscoveredRooms.addAll(rooms.filter { mapRoom -> DungeonWorldScan.discoveredRooms.none { worldRoom -> mapRoom.position == worldRoom.position } })
         }
 
         on<FloorEnterEvent> {
@@ -197,16 +192,29 @@ object DungeonMapScan {
     }
 
     private fun buildRoom(segments: List<Int>, roomType: RoomType, roomColors: ByteArray, centerColors: ByteArray) {
-        val existingRoom = tiles[segments[0]].room
-        val room = if (existingRoom != null && existingRoom.type == roomType) existingRoom
-        else {
-            MapScanRoom(roomType, IVec2(segments.minOf { it % 6 }, segments.minOf { it / 6 })).also { newRoom ->
+        val existingRoom = segments.firstNotNullOfOrNull { tiles[it].room }
+
+        val room = if (existingRoom != null) {
+            if (existingRoom.type == RoomType.UNKNOWN || existingRoom.type == RoomType.UNDISCOVERED) existingRoom.type = roomType
+            for (index in segments) {
+                if (tiles[index].room != existingRoom) {
+                    tiles[index].room = existingRoom
+                    existingRoom.addSegment(tiles[index])
+                }
+            }
+            if (existingRoom.highestBlock == null) existingRoom.inferLayoutFromMap()
+            existingRoom
+        } else {
+            DungeonRoom(
+                type            = roomType,
+                initialPosition = IVec2(segments.minOf { it % 6 }, segments.minOf { it / 6 })
+            ).also { newRoom ->
                 rooms.add(newRoom)
                 for (index in segments) {
                     tiles[index].room = newRoom
                     newRoom.addSegment(tiles[index])
                 }
-                newRoom.inferLayout()
+                newRoom.inferLayoutFromMap()
             }
         }
 
@@ -231,15 +239,14 @@ object DungeonMapScan {
         return pixelX to pixelY
     }
 
-    private fun getPx(colors: ByteArray, x: Int, z: Int): Byte {
-        return if (x in 0..<MAP_SIZE && z in 0..<MAP_SIZE) colors[z * MAP_SIZE + x] else EMPTY
-    }
+    private fun getPx(colors: ByteArray, x: Int, z: Int): Byte =
+        if (x in 0..<MAP_SIZE && z in 0..<MAP_SIZE) colors[z * MAP_SIZE + x] else EMPTY
 
     private fun addOrFixDoor(position: IVec2, rotation: DoorRotation, type: DoorType) {
         val chunkPos = IVec2(-12 + 2 * position.x + rotation.offset.x, -12 + 2 * position.z + rotation.offset.z)
         val originIndex = position.x + position.z * 6
         val destPos = IVec2(position.x + rotation.offset.x, position.z + rotation.offset.z)
-        val destIndex = (destPos.x + destPos.z * 6)
+        val destIndex = destPos.x + destPos.z * 6
         doors.getOrPut(chunkPos) { DungeonDoor(position, rotation, type, originIndex, destIndex) }.type = type
     }
 }
