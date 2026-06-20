@@ -34,6 +34,8 @@ object DungeonMapScan {
     var startY = -1
         private set
 
+    private var isInit = false
+
     val tiles: Array<DungeonTile> = Array(36) { index ->
         DungeonTile(position = IVec2(x = index % 6, z = index / 6))
     }
@@ -53,6 +55,7 @@ object DungeonMapScan {
             roomGap  = -1
             startX   = -1
             startY   = -1
+            isInit   = false
         }
 
         onReceive<ClientboundMapItemDataPacket> {
@@ -62,6 +65,7 @@ object DungeonMapScan {
             val colors = colorPatch.getOrNull()?.mapColors() ?: return@onReceive
             if (colors.size < MAP_SIZE * MAP_SIZE || colors[0] != EMPTY) return@onReceive
 
+            if (!isInit && !initLayout(colors)) return@onReceive
             if (roomSize == -1) return@onReceive
             updateAll(colors)
         }
@@ -84,6 +88,31 @@ object DungeonMapScan {
             }
             modMessage("Dungeon map layout initialized: roomSize=$roomSize, startX=$startX, startY=$startY")
         }
+    }
+
+    private fun initLayout(colors: ByteArray): Boolean {
+        for ((index, color) in colors.withIndex()) {
+            if (color != RoomType.ENTRANCE.mapColor) continue
+
+            var end = index
+            while (end < colors.size && colors[end] == color) end++
+
+            val length = end - index
+            if (length == 16 || length == 18) {
+                roomSize = length
+                roomGap = roomSize + ROOM_SPACING
+                startX = (index % MAP_SIZE) % roomGap
+                startY = (index / MAP_SIZE) % roomGap
+
+                if (startX == 0) startX = 22 // f1
+                if (startY == 0) startY = 22 // entrance
+
+                isInit = true
+                modMessage("Dungeon map layout initialized: roomSize=$roomSize, startX=$startX, startY=$startY")
+                return true
+            }
+        }
+        return false
     }
 
     private fun updatePlayers(decorations: List<MapDecoration>) {
