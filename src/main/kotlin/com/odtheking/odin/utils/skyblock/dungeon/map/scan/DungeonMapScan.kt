@@ -1,7 +1,7 @@
 package com.odtheking.odin.utils.skyblock.dungeon.map.scan
 
 import com.odtheking.odin.events.FloorEnterEvent
-import com.odtheking.odin.events.WorldEvent
+import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.utils.IVec2
@@ -43,7 +43,7 @@ object DungeonMapScan {
     val doors: ConcurrentHashMap<IVec2, DungeonDoor> = ConcurrentHashMap()
 
     init {
-        on<WorldEvent.Load> {
+        on<LevelEvent.Load> {
             repeat(36) { index ->
                 tiles[index] = DungeonTile(position = IVec2(x = index % 6, z = index / 6))
             }

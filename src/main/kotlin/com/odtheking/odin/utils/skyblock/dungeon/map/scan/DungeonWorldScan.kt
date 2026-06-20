@@ -1,10 +1,10 @@
 package com.odtheking.odin.utils.skyblock.dungeon.map.scan
 
 import com.odtheking.odin.OdinMod.mc
+import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.LocationChangeEvent
 import com.odtheking.odin.events.RoomEnterEvent
 import com.odtheking.odin.events.TickEvent
-import com.odtheking.odin.events.WorldEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.utils.IVec2
 import com.odtheking.odin.utils.devMessage
@@ -28,7 +28,7 @@ object DungeonWorldScan {
     private val chunksToScan: HashSet<IVec2> = HashSet()
 
     init {
-        on<WorldEvent.Load> {
+        on<LevelEvent.Load> {
             dataToRoom.clear()
             chunksToScan.clear()
             currentRoom = null

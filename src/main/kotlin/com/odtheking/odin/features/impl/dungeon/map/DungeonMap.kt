@@ -10,7 +10,7 @@ import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.render.hollowFill
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 
 object DungeonMap : Module("Bad map", description = "Displays the dungeon map.") {
 
@@ -49,14 +49,14 @@ object DungeonMap : Module("Bad map", description = "Displays the dungeon map.")
         }
     }
 
-    private fun GuiGraphics.renderExampleMap(): Pair<Int, Int> {
+    private fun GuiGraphicsExtractor.renderExampleMap(): Pair<Int, Int> {
         fill(0, 0, MAP_PX, MAP_PX, backgroundColor.rgba)
         hollowFill(0, 0, MAP_PX, MAP_PX, 1, backgroundOutline)
-        drawCenteredString(mc.font, "MAP", MAP_PX / 2, MAP_PX / 2 - mc.font.lineHeight / 2, 0xFFFFFFFF.toInt())
+        centeredText(mc.font, "MAP", MAP_PX / 2, MAP_PX / 2 - mc.font.lineHeight / 2, 0xFFFFFFFF.toInt())
         return MAP_PX to MAP_PX
     }
 
-    private fun GuiGraphics.renderDungeonMap(): Pair<Int, Int> {
+    private fun GuiGraphicsExtractor.renderDungeonMap(): Pair<Int, Int> {
         fill(0, 0, 128, 128, backgroundColor.rgba)
         hollowFill(0, 0, 128, 128, 1, Colors.gray26)
 

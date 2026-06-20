@@ -9,8 +9,8 @@ import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.skyblock.dungeon.map.scan.DungeonMapScan
 import com.odtheking.odin.utils.skyblock.dungeon.map.scan.DungeonWorldScan
 import com.odtheking.odin.utils.skyblock.dungeon.map.tile.*
-import net.minecraft.client.gui.GuiGraphics
-import net.minecraft.client.gui.components.PlayerFaceRenderer
+import net.minecraft.client.gui.GuiGraphicsExtractor
+import net.minecraft.client.gui.components.PlayerFaceExtractor
 import net.minecraft.client.renderer.RenderPipelines
 import net.minecraft.resources.Identifier
 
@@ -21,7 +21,7 @@ private val green = Identifier.fromNamespaceAndPath("odin", "textures/map/green_
 private val white = Identifier.fromNamespaceAndPath("odin", "textures/map/white_check.png")
 private val question = Identifier.fromNamespaceAndPath("odin", "textures/map/question.png")
 
-internal fun GuiGraphics.renderMap() {
+internal fun GuiGraphicsExtractor.renderMap() {
     val roomSize = DungeonMapScan.roomSize.takeIf { it != -1 } ?: return
     val roomGap = DungeonMapScan.roomGap
 
@@ -34,13 +34,13 @@ internal fun GuiGraphics.renderMap() {
     pose().popMatrix()
 }
 
-private fun GuiGraphics.renderRooms(roomSize: Int, roomGap: Int) {
+private fun GuiGraphicsExtractor.renderRooms(roomSize: Int, roomGap: Int) {
     for (room in DungeonMapScan.rooms) {
         if (room.discovered || room.checkmark != MapCheckmark.UNDISCOVERED) fillRoom(room, roomTypeColor(room.type).rgba, roomSize, roomGap)
     }
 }
 
-private fun GuiGraphics.fillRoom(room: RoomInfo, color: Int, rs: Int, rg: Int) {
+private fun GuiGraphicsExtractor.fillRoom(room: RoomInfo, color: Int, rs: Int, rg: Int) {
     val ox = room.position.x * rg
     val oy = room.position.z * rg
     when (val shape = room.shape) {
@@ -74,7 +74,7 @@ private fun GuiGraphics.fillRoom(room: RoomInfo, color: Int, rs: Int, rg: Int) {
 private fun DungeonRoom?.isDiscovered(): Boolean =
     this?.discovered == true || this?.checkmark?.let { it != MapCheckmark.UNDISCOVERED } == true
 
-private fun GuiGraphics.renderDoors() {
+private fun GuiGraphicsExtractor.renderDoors() {
     val rs = DungeonMapScan.roomSize.takeIf { it != -1 } ?: return
     val rg = DungeonMapScan.roomGap
     val half = (rs - 8) / 2f
@@ -119,14 +119,14 @@ private fun GuiGraphics.renderDoors() {
     }
 }
 
-fun GuiGraphics.renderUnknown() {
+fun GuiGraphicsExtractor.renderUnknown() {
     val rs = DungeonMapScan.roomSize.takeIf { it != -1 } ?: return
     // can easily add here room guessing
     fill(0, 0, rs, rs, DungeonMap.unknownRoomColor.rgba)
     blit(RenderPipelines.GUI_TEXTURED, question, 0, 0, rs.toFloat(), rs.toFloat(), rs, rs, rs, rs)
 }
 
-private fun GuiGraphics.renderRoomText(room: DungeonRoom) {
+private fun GuiGraphicsExtractor.renderRoomText(room: DungeonRoom) {
     if (room.type.equalsOneOf(RoomType.UNDISCOVERED, RoomType.FAIRY, RoomType.ENTRANCE, RoomType.BLOOD)) return
     val scannedRoom = DungeonWorldScan.tiles.getOrNull(room.position.x + room.position.z * 6)?.room
     val rs = DungeonMapScan.roomSize.takeIf { it != -1 } ?: return
@@ -161,12 +161,12 @@ private fun GuiGraphics.renderRoomText(room: DungeonRoom) {
         pose().pushMatrix()
         pose().translate(cx, cz - totalH / 2f + i * fontH * DungeonMap.textScaling)
         pose().scale(DungeonMap.textScaling)
-        drawCenteredString(mc.font, line, 0, -fontH / 2, textColor)
+        centeredText(mc.font, line, 0, -fontH / 2, textColor)
         pose().popMatrix()
     }
 }
 
-private fun GuiGraphics.renderPlayers() {
+private fun GuiGraphicsExtractor.renderPlayers() {
     val showNames = mc.player?.mainHandItem?.itemId?.equalsOneOf("INFINITE_SPIRIT_LEAP", "SPIRIT_LEAP") == true
     val selfName = mc.player?.name?.string
 
@@ -180,7 +180,7 @@ private fun GuiGraphics.renderPlayers() {
         if (showNames) {
             pose().pushMatrix()
             pose().scale(DungeonMap.playerNamesScaling)
-            drawCenteredString(mc.font, player.name, 0, 8, DungeonMap.playerNameColor.rgba)
+            centeredText(mc.font, player.name, 0, 8, DungeonMap.playerNameColor.rgba)
             pose().popMatrix()
         }
 
@@ -190,7 +190,7 @@ private fun GuiGraphics.renderPlayers() {
         if (isSelf && DungeonMap.selfVanillaMarker) blit(RenderPipelines.GUI_TEXTURED, marker, -2, -3, 2f, 0f, 5, 7, 8, 8)
         else player.playerSkin?.let { skin ->
             fill(-5, -5, 5, 5, player.clazz.color.rgba)
-            PlayerFaceRenderer.draw(this, skin, -4, -4, 8)
+            PlayerFaceExtractor.extractRenderState(this, skin, -4, -4, 8)
         }
 
         pose().popMatrix()

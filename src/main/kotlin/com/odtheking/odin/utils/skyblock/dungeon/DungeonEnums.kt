@@ -1,10 +1,8 @@
 package com.odtheking.odin.utils.skyblock.dungeon
 
-import com.odtheking.odin.features.impl.dungeon.map.DungMap.mapCenter
-import com.odtheking.odin.features.impl.dungeon.map.DungMap.roomSize
-import com.odtheking.odin.features.impl.dungeon.map.Vec2i
 import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.Colors
+import com.odtheking.odin.utils.IVec2
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.entity.player.PlayerSkin
 
