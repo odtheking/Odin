@@ -1,7 +1,7 @@
 package com.odtheking.odin.features.impl.render
 
 import com.odtheking.odin.events.RenderEvent
-import com.odtheking.odin.events.WorldEvent
+import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.utils.render.drawTexturedQuad
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
@@ -35,6 +35,8 @@ object Shenanigans {
         Logos(Identifier.fromNamespaceAndPath("odin", "textures/job.png"), Vec3(54.5, 23.5, 40.0), 25f, 35f, 0f)
     )
 
+    private var forceDisabled = runCatching { java.lang.Boolean.getBoolean("odin-no-more-shenanigans") }.getOrNull() ?: false
+    private var forceEnabled = runCatching { java.lang.Boolean.getBoolean("odin-more-shenanigans") }.getOrNull() ?: false
     private var enabled = false
 
     init {
@@ -47,10 +49,11 @@ object Shenanigans {
             }
         }
 
-        on<WorldEvent.Load> {
+        on<LevelEvent.Load> {
+            if (forceDisabled) return@on
             val now = Instant.now().atZone(ZoneOffset.UTC)
 
-            enabled = (now.monthValue == 4 && now.dayOfMonth == 1) || run {
+            enabled = forceEnabled || (now.monthValue == 4 && now.dayOfMonth == 1) || run {
                 val window = now.toEpochSecond() / 600L
                 ((window xor (window shr 3) xor (window shl 1)) and Long.MAX_VALUE) % 288L == 0L
             }

@@ -2,7 +2,6 @@ package com.odtheking.odin.features.impl.boss
 
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.utils.modMessage
-import com.odtheking.odin.utils.renderPos
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket
 import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket
 import net.minecraft.network.protocol.game.ClientboundSetEquipmentPacket
@@ -15,13 +14,13 @@ import java.util.*
 
 object DragonCheck {
 
-    val dragonHealthMap = mutableMapOf<UUID, Pair<Vec3, Float>>()
+    val dragonHealthMap = mutableMapOf<UUID, Pair<EnderDragon, Float>>()
     var lastDragonDeath: WitherDragonsEnum? = null
 
     fun dragonUpdate(packet: ClientboundSetEntityDataPacket) {
         val entity = mc.level?.getEntity(packet.id) as? EnderDragon ?: return
         val dragonHealth = (packet.packedItems.find { it.id == 9 }?.value as? Float) ?: return
-        dragonHealthMap[entity.uuid] = Pair(entity.renderPos, dragonHealth)
+        dragonHealthMap[entity.uuid] = Pair(entity, dragonHealth)
 
         WitherDragonsEnum.entries.firstOrNull { it.entityUUID == entity.uuid }?.let {
             if (dragonHealth <= 0 && it.state != WitherDragonState.DEAD) it.setDead(true)

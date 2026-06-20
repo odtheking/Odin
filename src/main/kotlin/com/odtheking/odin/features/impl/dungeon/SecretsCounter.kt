@@ -3,7 +3,7 @@ package com.odtheking.odin.features.impl.dungeon
 import com.odtheking.odin.OdinMod.scope
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.events.ChatPacketEvent
-import com.odtheking.odin.events.WorldEvent
+import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.handlers.schedule
@@ -27,7 +27,7 @@ object SecretsCounter : Module(
     private val dungeonEndRegex = Regex("^\\s*(?:Master Mode )?(?:The )?Catacombs - (?:Entrance|Floor .{1,3})$")
 
     init {
-        on<WorldEvent.Load> {
+        on<LevelEvent.Load> {
             secretsBaseline.clear()
             snapshotDone = false
         }
@@ -35,14 +35,13 @@ object SecretsCounter : Module(
         on<ChatPacketEvent> {
             if (dungeonEndRegex.containsMatchIn(value)) schedule(30) { fetchAndDisplay() }
 
-
             if (!dungeonStartRegex.containsMatchIn(value) || !secretsEnabled || snapshotDone) return@on
-            val teammates = DungeonUtils.dungeonTeammates.toList()
+            val teammates = DungeonUtils.dungeonTeammatesNoSelf.toList()
             if (teammates.isEmpty()) return@on
             snapshotDone = true
             schedule(10) {
                 scope.launch(Dispatchers.IO) {
-                    for (player in DungeonUtils.dungeonTeammates.toList()) {
+                    for (player in teammates) {
                         val name = player.name
                         RequestUtils.pullSecrets(name).onSuccess { secrets ->
                             mc.execute { secretsBaseline[name] = secrets }
@@ -54,7 +53,7 @@ object SecretsCounter : Module(
     }
 
     private fun fetchAndDisplay() {
-        val teammates = DungeonUtils.dungeonTeammates.toList().ifEmpty { return }
+        val teammates = DungeonUtils.dungeonTeammatesNoSelf.toList().ifEmpty { return }
         if (!secretsEnabled) return
 
         scope.launch(Dispatchers.IO) {

@@ -1,11 +1,13 @@
 package com.odtheking.odin.features.impl.dungeon
 
+import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.ColorSetting
 import com.odtheking.odin.clickgui.settings.impl.SelectorSetting
 import com.odtheking.odin.events.ChatPacketEvent
+import com.odtheking.odin.events.GuiEvent
 import com.odtheking.odin.events.TickEvent
-import com.odtheking.odin.events.WorldEvent
+import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.*
@@ -27,6 +29,12 @@ object InvincibilityTimer : Module(
     private val showSpirit by BooleanSetting("Show Spirit Mask", true, desc = "Shows the Spirit Mask in the HUD.")
     private val showBonzo by BooleanSetting("Show Bonzo Mask", true, desc = "Shows the Bonzo Mask in the HUD.")
     private val showPhoenix by BooleanSetting("Show Phoenix Pet", true, desc = "Shows the Phoenix Pet in the HUD.")
+
+    private val onlyInDungeons by BooleanSetting("Only In Dungeons", true, "Only proc in dungeons")
+    private val showOnItem by BooleanSetting("Show On Item", true, "Renders the cooldown on the spirit mask and bonzo mask items")
+    private val showPhoenixOnTopLeft by BooleanSetting("Phoenix As Top Left", false, "Displays the cooldown for phoenix pet on the top-left most slot in your inventory")
+    private val durability by BooleanSetting("Display As Durability", false, "True: durability, False: colored vertical slide").withDependency { showOnItem }
+    private val cdColor by ColorSetting("Cooldown Color", Colors.gray38, true, "Color of the cooldown").withDependency { showOnItem }
 
     private val hud by HUD(name, "Shows the invincibility time in the HUD.") { example ->
         if ((!DungeonUtils.inDungeons && !example) || (showOnlyInBoss && !DungeonUtils.inBoss && !example)) return@HUD 0 to 0
@@ -77,7 +85,7 @@ object InvincibilityTimer : Module(
         }
 
         on<ChatPacketEvent> {
-            if (!DungeonUtils.inDungeons) return@on
+            if (onlyInDungeons && !DungeonUtils.inDungeons) return@on
             InvincibilityType.entries.firstOrNull { type -> value.matches(type.regex) }?.let { type ->
                 type.proc()
                 val usedMasks = InvincibilityType.entries.count { it.currentCooldown > 0 }
@@ -86,8 +94,31 @@ object InvincibilityTimer : Module(
             }
         }
 
-        on<WorldEvent.Load> {
+        on<LevelEvent.Load> {
             InvincibilityType.entries.forEach { it.reset() }
+        }
+
+        on<GuiEvent.RenderSlot> {
+            if (!showOnItem) return@on
+            val percent = when(slot.item.itemId) {
+                "BONZO_MASK", "STARRED_BONZO_MASK" -> InvincibilityType.BONZO.currentCooldown.toDouble() / InvincibilityType.BONZO.maxCooldownTime
+                "SPIRIT_MASK", "STARRED_SPIRIT_MASK" -> InvincibilityType.SPIRIT.currentCooldown.toDouble() / InvincibilityType.SPIRIT.maxCooldownTime
+                else -> {
+                    if(slot.containerSlot != 9 || !showPhoenixOnTopLeft) return@on
+                    InvincibilityType.PHOENIX.currentCooldown.toDouble() / InvincibilityType.PHOENIX.maxCooldownTime
+                }
+            }
+            if (percent !in 0.0..1.0) return@on
+            if (durability && percent > 0) {
+                guiGraphics.fakeItem(slot.item, slot.x, slot.y)
+                guiGraphics.fill(slot.x + 2, slot.y + 13, slot.x + 14, slot.y + 15, Colors.BLACK.rgba)
+                guiGraphics.fill(slot.x + 2, slot.y + 13, slot.x + 14 - ((1 - percent) * 12).toInt(), slot.y + 14, cdColor.rgba)
+                cancel()
+            } else {
+                guiGraphics.fakeItem(slot.item, slot.x, slot.y)
+                guiGraphics.fill(slot.x, slot.y + ((1 - percent) * 16).toInt(), slot.x + 16, slot.y + 16, cdColor.rgba)
+                cancel()
+            }
         }
     }
 

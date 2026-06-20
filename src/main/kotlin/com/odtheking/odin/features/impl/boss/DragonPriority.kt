@@ -28,15 +28,15 @@ object DragonPriority {
 
         val priorityList =
             if (totalPower >= normalPower || (spawningDragons.any { it == WitherDragonsEnum.Purple } && totalPower >= easyPower))
-                if (playerClass.equalsOneOf(DungeonClass.Berserk, DungeonClass.Mage)) dragonList else dragonList.reversed()
+                if (playerClass.equalsOneOf(DungeonClass.BERSERK, DungeonClass.MAGE)) dragonList else dragonList.reversed()
             else defaultOrder
 
         spawningDragons.sortBy { priorityList.indexOf(it) }
 
         if (totalPower >= easyPower) {
-            if (soloDebuff == 1 && playerClass == DungeonClass.Tank && (spawningDragons.any { it == WitherDragonsEnum.Purple } || soloDebuffOnAll))
+            if (soloDebuff == 1 && playerClass == DungeonClass.TANK && (spawningDragons.any { it == WitherDragonsEnum.Purple } || soloDebuffOnAll))
                 spawningDragons.sortByDescending { priorityList.indexOf(it) }
-            else if (playerClass == DungeonClass.Healer && (spawningDragons.any { it == WitherDragonsEnum.Purple } || soloDebuffOnAll))
+            else if (playerClass == DungeonClass.HEALER && (spawningDragons.any { it == WitherDragonsEnum.Purple } || soloDebuffOnAll))
                 spawningDragons.sortByDescending { priorityList.indexOf(it) }
         }
 

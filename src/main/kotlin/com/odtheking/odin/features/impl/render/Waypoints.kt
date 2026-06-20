@@ -7,7 +7,7 @@ import com.odtheking.odin.clickgui.settings.impl.KeybindSetting
 import com.odtheking.odin.clickgui.settings.impl.NumberSetting
 import com.odtheking.odin.events.ChatPacketEvent
 import com.odtheking.odin.events.RenderEvent
-import com.odtheking.odin.events.WorldEvent
+import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Color
@@ -25,6 +25,8 @@ object Waypoints : Module(
 ) {
     private val fromParty by BooleanSetting("From Party Chat", true, desc = "Adds waypoints from party chat.")
     private val fromAll by BooleanSetting("From All Chat", false, desc = "Adds waypoints from all chat.")
+
+    private val personalWaypoint by BooleanSetting("Personal Waypoint", false, desc = "Makes waypoints you send also create for you.")
 
     private val pingLocationDropDown by DropdownSetting("Ping Location Dropdown", false)
     private val pingLocationToggle by BooleanSetting("Ping Waypoint", false, desc = "Adds a waypoint at the location you are looking at.").withDependency { pingLocationDropDown }
@@ -54,6 +56,8 @@ object Waypoints : Module(
                 else -> null
             } ?: return@on
 
+            if (name == mc.player?.name?.string && !personalWaypoint) return@on
+
             addTempWaypoint("§6$name", x.toIntOrNull() ?: return@on, y.toIntOrNull() ?: return@on, z.toIntOrNull() ?: return@on)
         }
 
@@ -64,7 +68,7 @@ object Waypoints : Module(
             }
         }
 
-        on<WorldEvent.Load> {
+        on<LevelEvent.Load> {
             temporaryWaypoints.clear()
         }
     }

@@ -7,9 +7,9 @@ import com.odtheking.odin.utils.render.RenderConsumer
 import com.odtheking.odin.utils.skyblock.dungeon.Floor
 import com.odtheking.odin.utils.skyblock.dungeon.map.tile.DungeonRoom
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.terminalhandler.TerminalHandler
-import net.fabricmc.fabric.api.client.rendering.v1.world.AbstractWorldRenderContext
-import net.fabricmc.fabric.api.client.rendering.v1.world.WorldExtractionContext
-import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderContext
+import com.odtheking.odin.utils.skyblock.dungeon.tiles.Room
+import net.fabricmc.fabric.api.client.rendering.v1.level.AbstractLevelRenderContext
+import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext
 import net.minecraft.client.multiplayer.ClientLevel
 import net.minecraft.core.BlockPos
 import net.minecraft.network.chat.Component
@@ -51,14 +51,14 @@ interface TickEvent : Event {
     object Server : TickEvent
 }
 
-interface WorldEvent : Event {
-    object Load : WorldEvent
-    object Unload : WorldEvent
+interface LevelEvent : Event {
+    object Load : LevelEvent
+    object Unload : LevelEvent
 }
 
-abstract class RenderEvent(open val context: AbstractWorldRenderContext) : Event {
-    class Extract(override val context: WorldExtractionContext, val consumer: RenderConsumer) : RenderEvent(context)
-    class Last(override val context: WorldRenderContext) : RenderEvent(context)
+abstract class RenderEvent(open val context: AbstractLevelRenderContext) : Event {
+    class Extract(override val context: LevelRenderContext, val consumer: RenderConsumer) : RenderEvent(context)
+    class Last(override val context: LevelRenderContext) : RenderEvent(context)
 }
 
 abstract class PartyEvent(val members: List<String>) : Event {

@@ -2,7 +2,7 @@ package com.odtheking.odin.features.impl.boss
 
 import com.odtheking.odin.events.BlockUpdateEvent
 import com.odtheking.odin.events.TickEvent
-import com.odtheking.odin.events.WorldEvent
+import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Colors
@@ -24,7 +24,7 @@ object SpiritBear : Module(
             timer > 0 -> "§e${(timer / 20f).toFixed()}s"
             else -> "§aAlive!"
         }?.let { text ->
-            textDim("§6Spirit Bear: $text", 0, 0, Colors.WHITE)
+            textDim("§6Bear: $text", 0, 0, Colors.WHITE)
         } ?: (0 to 0)
     }
 
@@ -54,7 +54,7 @@ object SpiritBear : Module(
             if (timer > 0) timer--
         }
 
-        on<WorldEvent.Load> {
+        on<LevelEvent.Load> {
             kills = 0
             timer = -1
         }

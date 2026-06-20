@@ -7,7 +7,6 @@ import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.features.impl.dungeon.LeapMenu
 import com.odtheking.odin.features.impl.dungeon.LeapMenu.odinSorting
-import com.odtheking.odin.features.impl.dungeon.Mimic
 import com.odtheking.odin.utils.network.WebUtils.hasBonusPaulScore
 import com.odtheking.odin.utils.noControlCodes
 import com.odtheking.odin.utils.romanToInt
@@ -48,7 +47,7 @@ object DungeonListener {
             if (DungeonUtils.inDungeons) inBoss = getBoss()
         }
 
-        on<WorldEvent.Load> {
+        on<LevelEvent.Load> {
             Blessing.entries.forEach { it.reset() }
             dungeonTeammatesNoSelf = emptyList()
             dungeonStats = DungeonStats()
@@ -106,10 +105,10 @@ object DungeonListener {
             }
 
             when (partyMessageRegex.find(value)?.groupValues?.get(1)?.lowercase() ?: return@on) {
-                "mimic killed", "mimic slain", "mimic killed!", "mimic dead", "mimic dead!", $$"$skytils-dungeon-score-mimic$", Mimic.mimicMessage ->
+                "mimic killed", "mimic slain", "mimic killed!", "mimic dead", "mimic dead!", ->
                     if (DungeonUtils.isFloor(6, 7)) dungeonStats.mimicKilled = true
 
-                "prince killed", "prince slain", "prince killed!", "prince dead", "prince dead!", $$"$skytils-dungeon-score-prince$", Mimic.princeMessage ->
+                "prince killed", "prince slain", "prince killed!", "prince dead", "prince dead!", ->
                     dungeonStats.princeKilled = true
 
                 "blaze done!", "blaze done", "blaze puzzle solved!" ->

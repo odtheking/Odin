@@ -28,15 +28,13 @@ object Ragnarock : Module(
 
         onReceive<ClientboundSoundPacket> {
             if (pitch == 1.4920635f && mc.player?.mainHandItem?.itemId == "RAGNAROCK_AXE" &&
-                SoundEvents.WOLF_SOUNDS.entries.any { it.value.deathSound.value().location == sound.value().location }
+                SoundEvents.WOLF_SOUNDS.entries.any { it.value.adultSounds.deathSound.value().location == sound.value().location }
             ) {
                 if (castAlert) alert("§aCasted Rag")
                 val strengthGained = ((mc.player?.mainHandItem?.strength ?: return@onReceive) * 1.5).toInt()
                 if (strengthGainedMessage) {
                     modMessage("§7Gained strength: §4$strengthGained")
-                    if (announceStrengthGained) {
-                        sendCommand("pc Gained strength from Ragnarock: $strengthGained")
-                    }
+                    if (announceStrengthGained) sendCommand("pc Gained strength from Ragnarock: $strengthGained")
                 }
             }
         }

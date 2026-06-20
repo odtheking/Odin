@@ -1,7 +1,7 @@
 package com.odtheking.odin.events
 
 import com.odtheking.odin.events.core.CancellableEvent
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.screens.Screen
 import net.minecraft.client.input.KeyEvent
 import net.minecraft.client.input.MouseButtonEvent
@@ -18,5 +18,5 @@ abstract class ScreenEvent(val screen: Screen) : CancellableEvent() {
 
     class KeyPress(screen: Screen, val input: KeyEvent) : ScreenEvent(screen)
 
-    class Render(screen: Screen, val guiGraphics: GuiGraphics, val mouseX: Int, val mouseY: Int) : ScreenEvent(screen)
+    class Render(screen: Screen, val guiGraphics: GuiGraphicsExtractor, val mouseX: Int, val mouseY: Int) : ScreenEvent(screen)
 }

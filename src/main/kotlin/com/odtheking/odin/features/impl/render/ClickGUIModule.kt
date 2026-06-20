@@ -6,7 +6,7 @@ import com.odtheking.odin.clickgui.ClickGUI
 import com.odtheking.odin.clickgui.HudManager
 import com.odtheking.odin.clickgui.settings.AlwaysActive
 import com.odtheking.odin.clickgui.settings.impl.*
-import com.odtheking.odin.events.WorldEvent
+import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Category
 import com.odtheking.odin.features.Module
@@ -74,7 +74,7 @@ object ClickGUIModule : Module(
             latestVersionNumber = checkNewerVersion(OdinMod.version.toString())
         }
 
-        on<WorldEvent.Load> {
+        on<LevelEvent.Load> {
            if (hasSentUpdateMessage || latestVersionNumber == null) return@on
             hasSentUpdateMessage = true
 

@@ -24,6 +24,11 @@ fun setTitle(title: String) {
     mc.gui.setTitle(Component.literal(title))
 }
 
+fun setSubtitle(subtitle: String) {
+    mc.gui.setTimes(0, 20, 5)
+    mc.gui.setSubtitle(Component.literal(subtitle))
+}
+
 fun alert(title: String, playSound: Boolean = true) {
     setTitle(title)
     if (playSound) playSoundAtPlayer(SoundEvents.NOTE_BLOCK_PLING.value())

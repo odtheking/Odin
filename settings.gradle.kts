@@ -12,7 +12,7 @@ pluginManagement {
     val kotlin_version: String by settings
 
     plugins {
-        id("fabric-loom") version loom_version
+        id("net.fabricmc.fabric-loom") version loom_version
         kotlin("jvm") version kotlin_version
     }
 }

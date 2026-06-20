@@ -85,7 +85,7 @@ private fun buildClassLevelsLine(classes: Map<String, HypixelData.ClassData>, cl
                 .withStyle { it.withHoverEvent(HoverEvent.ShowText(
                     Component.literal("$colorCode${dungeonClass.name} ${colorCode}Level\n§7XP: §b${formatNumber(xp.toString())}")
                 ))})
-            if (dungeonClass != DungeonClass.Tank) append(Component.literal("§8/"))
+            if (dungeonClass != DungeonClass.TANK) append(Component.literal("§8/"))
         }
         append(Component.literal(" §8(§7Avg: §a${classAvg.toFixed(1)}§8)")
             .withStyle { it.withHoverEvent(HoverEvent.ShowText(
