@@ -1,9 +1,5 @@
 package com.odtheking.odin.features.impl.dungeon.puzzlesolvers
 
-import com.google.gson.GsonBuilder
-import com.google.gson.JsonDeserializationContext
-import com.google.gson.JsonDeserializer
-import com.google.gson.JsonElement
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.events.RenderEvent
 import com.odtheking.odin.events.RoomEnterEvent
@@ -16,16 +12,12 @@ import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils.getRealCoords
 import com.odtheking.odin.utils.skyblock.dungeon.tiles.Room
 import net.minecraft.core.BlockPos
 import net.minecraft.world.phys.Vec3
-import java.lang.reflect.Type
 
 object IceFillSolver {
 
     private var iceFillFloors = JsonResourceLoader.loadJson(
         "/assets/odin/puzzles/iceFillFloors.json",
-        IceFillData(emptyList(), emptyList(), emptyList()),
-        GsonBuilder()
-            .setPrettyPrinting()
-            .registerTypeAdapter(BlockPos::class.java, BlockPosDeserializer())
+        IceFillData(emptyList(), emptyList(), emptyList())
     )
     private var currentPatterns: ArrayList<Vec3> = ArrayList()
 
@@ -64,14 +56,4 @@ object IceFillSolver {
         val easy: List<List<List<BlockPos>>>,
         val hard: List<List<List<BlockPos>>>
     )
-
-    private class BlockPosDeserializer : JsonDeserializer<BlockPos> {
-        override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): BlockPos {
-            val obj = json.asJsonObject
-            val x = obj.get("x").asInt
-            val y = obj.get("y").asInt
-            val z = obj.get("z").asInt
-            return BlockPos(x, y, z)
-        }
-    }
 }
