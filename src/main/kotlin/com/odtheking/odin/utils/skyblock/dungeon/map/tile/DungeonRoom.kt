@@ -8,35 +8,12 @@ import com.odtheking.odin.utils.rotateToNorth
 import net.minecraft.core.BlockPos
 import net.minecraft.world.level.block.Blocks
 
-data class DungeonTile(
-    override val position: IVec2,
-    var room: DungeonRoom? = null
-) : ScanTile
+class DungeonRoom(var type: RoomType, initialPosition: IVec2, var data: RoomData? = null) {
+    val segments: ArrayList<IVec2> = ArrayList(4)
+    var position: IVec2 = initialPosition
+    var rotation: RoomRotation? = null
 
-enum class MapCheckmark {
-    NONE, WHITE, GREEN, RED, QUESTION_MARK, UNDISCOVERED;
-
-    companion object {
-        fun fromMapColor(color: Byte): MapCheckmark? = when (color.toInt()) {
-            34   -> WHITE
-            30   -> GREEN
-            18   -> RED
-            119  -> QUESTION_MARK
-            else -> null
-        }
-    }
-}
-
-class DungeonRoom(
-    override var type: RoomType,
-    initialPosition: IVec2,
-    var data: RoomData? = null,
-) : RoomInfo {
-    override val segments: ArrayList<ScanTile> = ArrayList(4)
-    override var position: IVec2 = initialPosition
-    override var rotation: RoomRotation? = null
-
-    override var shape: RoomShape = RoomShape.OneByOne
+    var shape: RoomShape = RoomShape.OneByOne
 
     var discovered: Boolean = false
     var clayPos: BlockPos? = null
@@ -45,23 +22,23 @@ class DungeonRoom(
 
     var checkmark: MapCheckmark = MapCheckmark.UNDISCOVERED
 
+    val isViewable: Boolean get() = discovered || checkmark != MapCheckmark.UNDISCOVERED
     val name: String? get() = data?.name
 
     fun addSegment(segment: DungeonTile) {
-        if (!segments.contains(segment)) {
-            segments.add(segment)
-            position = IVec2(segments.minOf { it.position.x }, segments.minOf { it.position.z })
+        if (!segments.contains(segment.position)) {
+            segments.add(segment.position)
+            position = IVec2(segments.minOf { it.x }, segments.minOf { it.z })
         }
     }
 
     fun inferLayoutFromMap() {
-        val positions = segments.map { it.position }
-        val minX = positions.minOf { it.x }
-        val minZ = positions.minOf { it.z }
-        val maxX = positions.maxOf { it.x }
-        val maxZ = positions.maxOf { it.z }
+        val minX = segments.minOf { it.x }
+        val minZ = segments.minOf { it.z }
+        val maxX = segments.maxOf { it.x }
+        val maxZ = segments.maxOf { it.z }
 
-        shape = when (positions.size) {
+        shape = when (segments.size) {
             1    -> RoomShape.OneByOne
             2    -> RoomShape.TwoByOne
             3    -> if ((maxX - minX) == 1 && (maxZ - minZ) == 1) RoomShape.L else RoomShape.ThreeByOne
@@ -69,7 +46,10 @@ class DungeonRoom(
             else -> RoomShape.OneByOne
         }
 
-        rotation = resolveGeometryRotation(positions)
+        resolveGeometryRotation()?.let { (rot, pos) ->
+            rotation = rot
+            clayPos = pos
+        }
     }
 
     fun inferLayout(highestBlock: Int) {
@@ -79,49 +59,48 @@ class DungeonRoom(
 
         if (applyFairyFallback(highestBlock)) return
 
-        val positions = segments.map { it.position }
-
         shape = roomData.shape
 
         if (shape == RoomShape.OneByOne) {
-            getRotation()
+            get1x1Rotation()
             return
         }
 
-        rotation = resolveGeometryRotation(positions)
-
-        val (x, z) = getRealPosition(positions.minOf { it.x }, positions.minOf { it.z })
-        clayPos = BlockPos(x - 15, highestBlock, z - 15)
-    }
-
-    private fun resolveGeometryRotation(positions: List<IVec2>): RoomRotation {
-        val minX = positions.minOf { it.x }
-        val minZ = positions.minOf { it.z }
-        val maxX = positions.maxOf { it.x }
-        val maxZ = positions.maxOf { it.z }
-        val horizontal = (maxX - minX) > (maxZ - minZ)
-
-        return when (shape) {
-            RoomShape.TwoByOne, RoomShape.ThreeByOne, RoomShape.FourByOne ->
-                if (horizontal) RoomRotation.SOUTH else RoomRotation.WEST
-            RoomShape.L -> {
-                val set = positions.toHashSet()
-                when {
-                    IVec2(maxX, minZ) !in set -> RoomRotation.WEST
-                    IVec2(minX, maxZ) !in set -> RoomRotation.NORTH
-                    IVec2(minX, minZ) !in set -> RoomRotation.EAST
-                    else                       -> RoomRotation.SOUTH
-                }
-            }
-            RoomShape.TwoByTwo -> RoomRotation.SOUTH
-            else               -> RoomRotation.SOUTH
+        resolveGeometryRotation()?.let { (rot, pos) ->
+            rotation = rot
+            clayPos = pos
         }
     }
 
-    fun getRotation(): Boolean {
+    private fun resolveGeometryRotation(): Pair<RoomRotation, BlockPos>? {
+        val topLeft     = segments.minByOrNull { it.x * 1000 + it.z } ?: return null
+        val bottomRight = segments.maxByOrNull { it.x * 1000 + it.z } ?: return null
+
+        val (tlX, tlZ) = getRealPosition(topLeft.x, topLeft.z)
+        val (brX, brZ) = getRealPosition(bottomRight.x, bottomRight.z)
+
+        val height = highestBlock ?: return null
+
+        return if (shape == RoomShape.L) {
+            val other = segments.find { it != topLeft && it != bottomRight } ?: return null
+            val (otX, otZ) = getRealPosition(other.x, other.z)
+
+            when {
+                topLeft.x == bottomRight.x -> RoomRotation.EAST to BlockPos(otX - 15, height, tlZ + 15)
+                topLeft.z == bottomRight.z -> RoomRotation.WEST to BlockPos(brX + 15, height, brZ - 15)
+                other.x == topLeft.x -> RoomRotation.SOUTH to BlockPos(tlX - 15, height, tlZ - 15)
+                else -> RoomRotation.NORTH to BlockPos(brX + 15, height, brZ + 15)
+            }
+        } else {
+            if (topLeft.x == bottomRight.x) RoomRotation.WEST to BlockPos(tlX + 15, height, tlZ - 15)
+            else RoomRotation.SOUTH to BlockPos(tlX - 15, height, tlZ - 15)
+        }
+    }
+
+    fun get1x1Rotation(): Boolean {
+        if (shape != RoomShape.OneByOne) return false
         val y = highestBlock ?: return false
         if (applyFairyFallback(y)) return true
-        if (shape != RoomShape.OneByOne) return false
 
         for (rot in RoomRotation.entries) {
             val pos = clayProbePos(rot, y)

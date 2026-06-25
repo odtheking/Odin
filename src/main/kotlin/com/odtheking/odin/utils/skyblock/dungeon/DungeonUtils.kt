@@ -197,7 +197,7 @@ object DungeonUtils {
             previousTeammates.find { it.name == name }?.let { player ->
                 if (player.clazz == DungeonClass.EMPTY) {
                     player.clazz = DungeonClass.entries.find { it.name.equals(clazz, ignoreCase = true) } ?: DungeonClass.EMPTY
-                    player.clazzLvl = romanToInt(clazzLevel)
+                    player.clazzLvl = if (clazzLevel.isNotEmpty()) romanToInt(clazzLevel) else -1
                 }
 
                 player.isDead = clazz == "DEAD"

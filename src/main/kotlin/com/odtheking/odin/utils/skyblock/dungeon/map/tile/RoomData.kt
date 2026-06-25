@@ -67,17 +67,24 @@ enum class RoomRotation(val dx: Int, val dz: Int) {
     NORTH(15, 15),
     SOUTH(-15, -15),
     WEST(15, -15),
-    EAST(-15, 15);
+    EAST(-15, 15),
 }
 
-interface RoomInfo {
-    val segments: ArrayList<ScanTile>
-    val position: IVec2
-    val shape: RoomShape
-    val rotation: RoomRotation?
-    val type: RoomType
-}
+data class DungeonTile(
+    val position: IVec2,
+    var room: DungeonRoom? = null
+)
 
-interface ScanTile {
-    val position: IVec2
+enum class MapCheckmark {
+    NONE, WHITE, GREEN, RED, QUESTION_MARK, UNDISCOVERED;
+
+    companion object {
+        fun fromMapColor(color: Byte): MapCheckmark? = when (color.toInt()) {
+            34   -> WHITE
+            30   -> GREEN
+            18   -> RED
+            119  -> QUESTION_MARK
+            else -> null
+        }
+    }
 }

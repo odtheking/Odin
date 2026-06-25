@@ -23,6 +23,7 @@ import com.odtheking.odin.utils.skyblock.PartyUtils
 import com.odtheking.odin.utils.skyblock.Supply
 import com.odtheking.odin.utils.skyblock.dungeon.Blessing
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
+import com.odtheking.odin.utils.skyblock.dungeon.Floor
 import com.odtheking.odin.utils.skyblock.dungeon.map.scan.DungeonMapScan
 import com.odtheking.odin.utils.skyblock.dungeon.map.scan.DungeonWorldScan
 import com.odtheking.odin.utils.skyblock.dungeon.map.scan.DungeonWorldScan.tiles
@@ -178,16 +179,16 @@ val devCommand = Commodore("oddev") {
         val player = mc.player ?: return@runs
         val tileX = (player.blockX + 201) shr 5
         val tileZ = (player.blockZ + 201) shr 5
-        val room = tiles[tileX + tileZ * 6].room ?: return@runs
 
-        val (roomX, roomZ) = room.getRealPosition()
+        val roomPos = IVec2(tileX * 32 - 185, tileZ * 32 - 185)
+        val chunk = mc.level?.getChunk(roomPos.x shr 4, roomPos.z shr 4) ?: return@runs
+        val core = DungeonWorldScan.getRoomCore(chunk, roomPos)
 
-        val chunk = mc.level?.getChunk(roomX shr 4, roomZ shr 4) ?: return@runs
-        val core = DungeonWorldScan.getRoomCore(chunk, room.position)
+        val room = tiles[tileX + tileZ * 6].room ?: return@runs modMessage("§cNo room data found for the current tile.")
 
         modMessage(
             """
-            Middle: $roomX $roomZ
+            Middle: ${roomPos.x} ${roomPos.z}
             Room: ${room.name}
             Core: ${core.first} height: ${core.second}
             Rotation: ${room.rotation ?: "NONE"}
@@ -196,6 +197,12 @@ val devCommand = Commodore("oddev") {
         )
         setClipboardContent(core.first.toString())
         modMessage("§aCopied §f${core.first} §ato clipboard!")
+    }
+
+    literal("setfloor").runs { floorNumber: Int ->
+        Floor.entries.find { it.floorNumber == floorNumber }?.let { floor ->
+            DungeonMapScan.initClient(floor)
+        } ?: modMessage("§cInvalid floor number: $floorNumber. Valid floors are 1-7.")
     }
 
     literal("relative").runs {

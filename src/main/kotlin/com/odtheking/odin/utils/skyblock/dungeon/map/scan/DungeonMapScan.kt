@@ -8,6 +8,7 @@ import com.odtheking.odin.utils.IVec2
 import com.odtheking.odin.utils.equalsOneOf
 import com.odtheking.odin.utils.modMessage
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
+import com.odtheking.odin.utils.skyblock.dungeon.Floor
 import com.odtheking.odin.utils.skyblock.dungeon.map.tile.*
 import net.minecraft.network.protocol.game.ClientboundMapItemDataPacket
 import net.minecraft.world.entity.player.Player
@@ -23,15 +24,15 @@ object DungeonMapScan {
     private const val ROOM_SPACING = 4
     private const val EMPTY: Byte = 0
 
-    var roomGap = -1
+    var roomGap = 20
 
-    var roomSize = -1
+    var roomSize = 16
         private set
 
-    var startX = -1
+    var startX = 5
         private set
 
-    var startY = -1
+    var startY = 5
         private set
 
     private var isInit = false
@@ -51,10 +52,10 @@ object DungeonMapScan {
             }
             rooms.clear()
             doors.clear()
-            roomSize = -1
-            roomGap  = -1
-            startX   = -1
-            startY   = -1
+            roomSize = 16
+            roomGap  = 20
+            startX   = 5
+            startY   = 5
             isInit   = false
         }
 
@@ -71,23 +72,27 @@ object DungeonMapScan {
         }
 
         on<FloorEnterEvent> {
-            roomSize = if (floor.floorNumber <= 3) 18 else 16
-            roomGap  = roomSize + ROOM_SPACING
-
-            startX = when {
-                floor.floorNumber <= 1  -> 22
-                floor.floorNumber <= 3  -> 11
-                else        -> 5
-            }
-
-            startY = when (floor.floorNumber) {
-                0       -> 22
-                4       -> 16
-                in 1..3 -> 11
-                else    -> 5
-            }
-            modMessage("Dungeon map layout initialized: roomSize=$roomSize, startX=$startX, startY=$startY")
+            initClient(floor)
         }
+    }
+
+    fun initClient(floor: Floor) {
+        roomSize = if (floor.floorNumber <= 3) 18 else 16
+        roomGap  = roomSize + ROOM_SPACING
+
+        startX = when {
+            floor.floorNumber <= 1  -> 22
+            floor.floorNumber <= 3  -> 11
+            else        -> 5
+        }
+
+        startY = when (floor.floorNumber) {
+            0       -> 22
+            4       -> 16
+            in 1..3 -> 11
+            else    -> 5
+        }
+        modMessage("Dungeon map layout initialized: roomSize=$roomSize, startX=$startX, startY=$startY")
     }
 
     private fun initLayout(colors: ByteArray): Boolean {
@@ -170,9 +175,10 @@ object DungeonMapScan {
         }
     }
 
+    val directions = arrayOf(1 to 0, -1 to 0, 0 to 1, 0 to -1)
+
     private fun processRooms(colors: ByteArray, roomTypes: Array<RoomType?>, roomColors: ByteArray, centerColors: ByteArray) {
         val visited = BooleanArray(36)
-        val directions = arrayOf(1 to 0, -1 to 0, 0 to 1, 0 to -1)
 
         val connectionGap = roomSize + ROOM_SPACING / 2
 
@@ -224,7 +230,6 @@ object DungeonMapScan {
         val existingRoom = segments.firstNotNullOfOrNull { tiles[it].room }
 
         val room = if (existingRoom != null) {
-            if (existingRoom.type == RoomType.UNKNOWN || existingRoom.type == RoomType.UNDISCOVERED) existingRoom.type = roomType
             for (index in segments) {
                 if (tiles[index].room != existingRoom) {
                     tiles[index].room = existingRoom
@@ -234,10 +239,7 @@ object DungeonMapScan {
             if (existingRoom.highestBlock == null) existingRoom.inferLayoutFromMap()
             existingRoom
         } else {
-            DungeonRoom(
-                type            = roomType,
-                initialPosition = IVec2(segments.minOf { it % 6 }, segments.minOf { it / 6 })
-            ).also { newRoom ->
+            DungeonRoom(roomType, IVec2(segments.minOf { it % 6 }, segments.minOf { it / 6 })).also { newRoom ->
                 rooms.add(newRoom)
                 for (index in segments) {
                     tiles[index].room = newRoom

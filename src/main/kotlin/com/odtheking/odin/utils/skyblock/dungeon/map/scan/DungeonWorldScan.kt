@@ -48,7 +48,7 @@ object DungeonWorldScan {
             for (room in DungeonMapScan.rooms) {
                 if (room.shape != RoomShape.OneByOne) continue
                 if (room.rotation != null && room.clayPos != null) continue
-                if (room.highestBlock != null) room.getRotation()
+                if (room.highestBlock != null) room.get1x1Rotation()
             }
 
             val tileX = (player.blockX + 201) shr 5
@@ -57,12 +57,12 @@ object DungeonWorldScan {
 
             tiles[tileX + tileZ * 6].room?.let { room ->
                 if (room == currentRoom || room.rotation == null || room.highestBlock == null) return@on
-                devMessage("${room.data?.name ?: room.type} - ${room.rotation} || clay: ${room.clayPos}")
                 if (player.blockY > room.highestBlock!! - 10) return@on
 
                 currentRoom = room
                 room.discovered = true
                 RoomEnterEvent(room).postAndCatch()
+                devMessage("${room.data?.name ?: room.type} - ${room.rotation} || clay: ${room.clayPos}")
             }
         }
 

@@ -7,6 +7,7 @@ import com.odtheking.odin.clickgui.settings.impl.DropdownSetting
 import com.odtheking.odin.clickgui.settings.impl.NumberSetting
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Color
+import com.odtheking.odin.utils.Color.Companion.withAlpha
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.render.hollowFill
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
@@ -16,8 +17,8 @@ object DungeonMap : Module("Bad map", description = "Displays the dungeon map.")
 
     private val disableBoss by BooleanSetting("Disable in Boss", true, desc = "Disables the map during boss fights.")
 
-    val backgroundOutline by ColorSetting("Background Outline", Colors.gray26, false, desc = "The color of the background border.")
-    var backgroundColor by ColorSetting("Background Color", Color(0, 0, 0, 0.7f), true, desc = "Background color of the map.")
+    val backgroundOutline by ColorSetting("Background Outline", Colors.BLACK, false, desc = "The color of the background border.")
+    var backgroundColor by ColorSetting("Background Color", Colors.BLACK.withAlpha(0.5f), true, desc = "Background color of the map.")
     var textScaling by NumberSetting("Text Scaling", 0.45f, 0.1f, 1f, 0.05f, desc = "Scale of room name text.")
 
     private val playerDropdown by DropdownSetting("Player Settings")
@@ -49,6 +50,8 @@ object DungeonMap : Module("Bad map", description = "Displays the dungeon map.")
         }
     }
 
+    private const val MAP_PX = 128
+
     private fun GuiGraphicsExtractor.renderExampleMap(): Pair<Int, Int> {
         fill(0, 0, MAP_PX, MAP_PX, backgroundColor.rgba)
         hollowFill(0, 0, MAP_PX, MAP_PX, 1, backgroundOutline)
@@ -57,11 +60,11 @@ object DungeonMap : Module("Bad map", description = "Displays the dungeon map.")
     }
 
     private fun GuiGraphicsExtractor.renderDungeonMap(): Pair<Int, Int> {
-        fill(0, 0, 128, 128, backgroundColor.rgba)
-        hollowFill(0, 0, 128, 128, 1, Colors.gray26)
+        fill(0, 0, MAP_PX, MAP_PX, backgroundColor.rgba)
+        hollowFill(0, 0, MAP_PX, MAP_PX, 1, Colors.gray26)
 
         renderMap()
 
-        return 128 to 128
+        return MAP_PX to MAP_PX
     }
 }
