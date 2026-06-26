@@ -4,10 +4,10 @@ import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.StringSetting
 import com.odtheking.odin.events.ChatPacketEvent
-import com.odtheking.odin.events.TerminalEvent
+import com.odtheking.odin.events.GuiEvent
 import com.odtheking.odin.events.LevelEvent
+import com.odtheking.odin.events.TerminalEvent
 import com.odtheking.odin.events.core.on
-import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.features.impl.boss.termsim.TermSimGUI
 import com.odtheking.odin.features.impl.render.ClickGUIModule
@@ -23,7 +23,6 @@ import com.odtheking.odin.utils.skyblock.dungeon.M7Phases
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalTypes
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalUtils
 import net.minecraft.client.gui.GuiGraphicsExtractor
-import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket
 import net.minecraft.world.item.Items
 import java.util.concurrent.ConcurrentHashMap
 
@@ -78,7 +77,7 @@ object MelodyMessage : Module(
             if (broadcast || melodyProgress) onChatMessage(value)
         }
 
-        onReceive<ClientboundContainerSetSlotPacket> {
+        on<GuiEvent.SlotUpdate> {
             if (broadcast || melodyProgress) onSlotUpdate(this)
         }
 
@@ -107,13 +106,13 @@ object MelodyMessage : Module(
         }
     }
 
-    private fun onSlotUpdate(packet: ClientboundContainerSetSlotPacket) {
+    private fun onSlotUpdate(event: GuiEvent.SlotUpdate) {
         val term = TerminalUtils.currentTerm ?: return
         if (DungeonUtils.getF7Phase() != M7Phases.P3 || term.type != TerminalTypes.MELODY || mc.screen is TermSimGUI) return
 
-        val item = packet.item.item
+        val item = event.packet.item.item
         if (item == Items.LIME_TERRACOTTA) {
-            val position = packet.slot / 9
+            val position = event.packet.slot / 9
             if (lastSent.clay == position) return
             if (broadcast) melodyWebSocket.send(update(1, position))
             if (melodyProgress) clayProgress[position]?.let { sendCommand("pc $it") }
@@ -121,7 +120,7 @@ object MelodyMessage : Module(
             return
         }
         if (!broadcast || !item.equalsOneOf(Items.MAGENTA_STAINED_GLASS_PANE, Items.LIME_STAINED_GLASS_PANE)) return
-        val index = mapToRange(packet.slot) ?: return
+        val index = mapToRange(event.packet.slot) ?: return
         val meta = when (item) {
             Items.MAGENTA_STAINED_GLASS_PANE -> {
                 if (lastSent.purple == index) return
