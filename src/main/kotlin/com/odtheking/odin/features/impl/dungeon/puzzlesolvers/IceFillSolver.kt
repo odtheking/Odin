@@ -8,8 +8,7 @@ import com.odtheking.odin.utils.JsonResourceLoader
 import com.odtheking.odin.utils.modMessage
 import com.odtheking.odin.utils.render.drawLine
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
-import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils.getRealCoords
-import com.odtheking.odin.utils.skyblock.dungeon.tiles.Room
+import com.odtheking.odin.utils.skyblock.dungeon.map.tile.DungeonRoom
 import net.minecraft.core.BlockPos
 import net.minecraft.world.phys.Vec3
 
@@ -44,7 +43,7 @@ object IceFillSolver {
         }
     }
 
-    private fun Room.isRealAir(pos: BlockPos): Boolean =
+    private fun DungeonRoom.isRealAir(pos: BlockPos): Boolean =
         mc.level?.getBlockState(getRealCoords(pos))?.isAir == true
 
     fun reset() {

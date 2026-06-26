@@ -13,8 +13,7 @@ import com.odtheking.odin.utils.equalsOneOf
 import com.odtheking.odin.utils.render.drawLine
 import com.odtheking.odin.utils.render.drawStyledBox
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
-import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils.getRealCoords
-import com.odtheking.odin.utils.skyblock.dungeon.tiles.Room
+import com.odtheking.odin.utils.skyblock.dungeon.map.tile.DungeonRoom
 import net.minecraft.core.BlockPos
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.phys.AABB
@@ -33,7 +32,7 @@ object BeamsSolver {
         recalculateLanternPairs(this)
     }
 
-    private fun recalculateLanternPairs(room: Room) {
+    private fun recalculateLanternPairs(room: DungeonRoom) {
         currentLanternPairs.clear()
         lanternPairs.forEachIndexed { index, list ->
             val pos = room.getRealCoords(BlockPos(list[0], list[1], list[2])).takeIf { mc.level?.getBlockState(it)?.block == Blocks.SEA_LANTERN } ?: return@forEachIndexed

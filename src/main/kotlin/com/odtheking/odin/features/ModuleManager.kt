@@ -14,6 +14,7 @@ import com.odtheking.odin.features.ModuleManager.configs
 import com.odtheking.odin.features.impl.boss.*
 import com.odtheking.odin.features.impl.dungeon.*
 import com.odtheking.odin.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints
+import com.odtheking.odin.features.impl.dungeon.map.DungeonMap
 import com.odtheking.odin.features.impl.dungeon.puzzlesolvers.PuzzleSolvers
 import com.odtheking.odin.features.impl.nether.*
 import com.odtheking.odin.features.impl.render.*
@@ -59,9 +60,9 @@ object ModuleManager {
         registerModules(config = ModuleConfig(file = File(OdinMod.configFile, "odin-config.json")),
             // dungeon
             PuzzleSolvers, BlessingDisplay, LeapMenu, SecretClicked, MapInfo, Mimic, DungeonQueue,
-            KeyHighlight, BloodCamp, PositionalMessages, TerracottaTimer, BreakerDisplay, LividSolver,
-            InvincibilityTimer, SpiritBear, DungeonWaypoints, ExtraStats, BetterPartyFinder, Croesus, MageBeam, DungeonMap,
-            SecretsCounter, PuzzleHud,
+            DoorHighlight, BloodCamp, PositionalMessages, TerracottaTimer, BreakerDisplay, LividSolver,
+            InvincibilityTimer, SpiritBear, DungeonWaypoints, ExtraStats, BetterPartyFinder, Croesus, MageBeam,
+            SecretsCounter, DungeonMap, PuzzleHud,
 
             // boss
             TerminalSimulator, TerminalSolver, TerminalTimes, TerminalSounds, TickTimers, ArrowAlign,
