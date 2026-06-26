@@ -1,9 +1,6 @@
 package com.odtheking.odin.features.impl.skyblock
 
-import com.odtheking.odin.clickgui.settings.impl.ColorSetting
-import com.odtheking.odin.clickgui.settings.impl.KeybindSetting
-import com.odtheking.odin.clickgui.settings.impl.MapSetting
-import com.odtheking.odin.clickgui.settings.impl.SelectorSetting
+import com.odtheking.odin.clickgui.settings.impl.*
 import com.odtheking.odin.events.GuiEvent
 import com.odtheking.odin.events.ScreenEvent
 import com.odtheking.odin.events.core.on
@@ -23,7 +20,10 @@ object SlotBinds : Module(
     key = null
 ) {
     private val setNewSlotbind by KeybindSetting("Bind set key", GLFW.GLFW_KEY_UNKNOWN, desc = "Key to set new bindings.")
-    private val lineColor by ColorSetting("Line Color", Colors.MINECRAFT_GOLD, desc = "Color of the line drawn between slots.")
+    private val lineColor by ColorSetting("Bind Color", Colors.MINECRAFT_GREEN, desc = "Color of the line drawn between slots (used in hover modes).")
+    private val lineWidth by NumberSetting("Line Width", 0.5f, 0.1, 2f, 0.1, desc = "Width of the line drawn between slots.")
+    private val displayModeOptions = listOf("Hover", "On Hover + Shift", "None")
+    private val lineDisplayMode by SelectorSetting("Line Display", "Hover", displayModeOptions, desc = "When to show lines between bound slots.")
     private val profileOptions = listOf("Profile 1", "Profile 2", "Profile 3", "Profile 4", "Profile 5", "Profile 6")
     private val currentProfile by SelectorSetting("Profile", "Profile 1", profileOptions, desc = "Select which profile to use.")
     private val profileData by MapSetting("ProfileData", mutableMapOf<String, MutableMap<Int, Int>>())
@@ -88,9 +88,15 @@ object SlotBinds : Module(
                 screen.menu.getSlot(slot).let { it.x + screen.leftPos + 8 to it.y + screen.topPos + 8 }
             } ?: return@on
 
-            if (previousSlot == null && !(mc.hasShiftDown())) return@on
+            val shouldDraw = when (lineDisplayMode) {
+                0 -> previousSlot != null || boundSlot != null
+                1 -> previousSlot != null || (boundSlot != null && mc.hasShiftDown())
+                2 -> previousSlot != null
+                else -> false
+            }
+            if (!shouldDraw) return@on
 
-            guiGraphics.drawLine(startX.toFloat(), startY.toFloat(), endX.toFloat(), endY.toFloat(), lineColor, 1f)
+            guiGraphics.drawLine(startX.toFloat(), startY.toFloat(), endX.toFloat(), endY.toFloat(), lineColor, lineWidth)
         }
 
         on<ScreenEvent.Close> {
