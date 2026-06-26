@@ -273,11 +273,13 @@ object DungeonMapScan {
     private fun getPx(colors: ByteArray, x: Int, z: Int): Byte =
         if (x in 0..<MAP_SIZE && z in 0..<MAP_SIZE) colors[z * MAP_SIZE + x] else EMPTY
 
-    private fun addOrFixDoor(position: IVec2, rotation: DoorRotation, type: DoorType) {
+    private fun addOrFixDoor(position: IVec2, rotation: DoorRotation, doorType: DoorType) {
         val chunkPos = IVec2(-12 + 2 * position.x + rotation.offset.x, -12 + 2 * position.z + rotation.offset.z)
         val originIndex = position.x + position.z * 6
         val destPos = IVec2(position.x + rotation.offset.x, position.z + rotation.offset.z)
         val destIndex = destPos.x + destPos.z * 6
-        doors.getOrPut(chunkPos) { DungeonDoor(position, rotation, type, originIndex, destIndex) }.type = type
+        doors.getOrPut(chunkPos) { DungeonDoor(position, rotation, doorType, originIndex, destIndex) }.apply {
+            if (type == DoorType.Normal) type = doorType
+        }
     }
 }

@@ -107,9 +107,7 @@ private fun GuiGraphicsExtractor.renderDoors() {
 
 fun GuiGraphicsExtractor.renderIcon(pos: IVec2, identifier: Identifier) {
     val rs = DungeonMapScan.roomSize
-    val rg = DungeonMapScan.roomGap
     blit(RenderPipelines.GUI_TEXTURED, identifier, pos.x, pos.z, rs.toFloat(), rs.toFloat(), rs, rs, rs, rs)
-
 }
 
 private fun GuiGraphicsExtractor.renderRoomText(room: DungeonRoom) {
@@ -136,7 +134,7 @@ private fun GuiGraphicsExtractor.renderRoomText(room: DungeonRoom) {
         else               -> Color(100, 100, 100)
     }.rgba
 
-    val lines  = scannedRoom?.name?.split(" ") ?: return
+    val lines  = scannedRoom.name?.split(" ") ?: return
     val totalH = (lines.size - 1) * fontH * DungeonMap.textScaling
 
     for ((i, line) in lines.withIndex()) {
@@ -150,9 +148,15 @@ private fun GuiGraphicsExtractor.renderRoomText(room: DungeonRoom) {
 
 private fun GuiGraphicsExtractor.renderPlayers() {
     val showNames = mc.player?.mainHandItem?.itemId?.equalsOneOf("INFINITE_SPIRIT_LEAP", "SPIRIT_LEAP") == true
-    val selfName = mc.player?.name?.string
 
-    for (player in DungeonUtils.dungeonTeammates) {
+    pose().pushMatrix()
+    val (selfX, selfZ) = DungeonMapScan.playerRenderPosition(mc.player, IVec2(0, 0))
+    pose().translate(selfX, selfZ)
+    pose().rotate(Math.toRadians(180.0 + (mc.player?.yRot ?: 0f)).toFloat())
+    blit(RenderPipelines.GUI_TEXTURED, marker, -2, -3, 2f, 0f, 5, 7, 8, 8)
+    pose().popMatrix()
+
+    for (player in DungeonUtils.dungeonTeammatesNoSelf) {
         if (player.isDead) continue
         val (px, pz) = DungeonMapScan.playerRenderPosition(player.entity, player.mapPos)
 
@@ -168,9 +172,7 @@ private fun GuiGraphicsExtractor.renderPlayers() {
 
         pose().rotate(Math.toRadians(180.0 + player.renderYaw).toFloat())
 
-        val isSelf = player.name == selfName
-        if (isSelf && DungeonMap.selfVanillaMarker) blit(RenderPipelines.GUI_TEXTURED, marker, -2, -3, 2f, 0f, 5, 7, 8, 8)
-        else player.playerSkin?.let { skin ->
+        player.playerSkin?.let { skin ->
             fill(-5, -5, 5, 5, player.clazz.color.rgba)
             PlayerFaceExtractor.extractRenderState(this, skin, -4, -4, 8)
         }
