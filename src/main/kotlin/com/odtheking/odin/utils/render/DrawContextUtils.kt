@@ -9,7 +9,6 @@ import org.joml.Matrix3x2f
 import kotlin.math.atan2
 import kotlin.math.ceil
 import kotlin.math.hypot
-import kotlin.math.max
 
 fun GuiGraphicsExtractor.text(text: String, x: Int, y: Int, color: Color = Colors.WHITE, shadow: Boolean = true) {
     text(mc.font, text, x, y, color.rgba, shadow)
@@ -43,13 +42,15 @@ fun GuiGraphicsExtractor.drawLine(
 ) {
     val dx = x2 - x1
     val dy = y2 - y1
-
-    val half = max(1, (lineWidth / 2f).toInt())
+    val length = hypot(dx, dy)
 
     pose().pushMatrix()
     pose().translate(x1, y1)
     pose().mul(Matrix3x2f().identity().rotate(atan2(dy, dx)))
-    fill(0, -half, ceil(hypot(dx, dy)).toInt(), half, color.rgba)
+    pose().scale(1f, lineWidth)
+
+    fill(0, -1, ceil(length).toInt(), 1, color.rgba)
+
     pose().popMatrix()
 }
 
