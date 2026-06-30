@@ -4,6 +4,7 @@ import com.odtheking.odin.OdinMod.scope
 import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.ActionSetting
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
+import com.odtheking.odin.clickgui.settings.impl.ItemEnchantSetting
 import com.odtheking.odin.clickgui.settings.impl.NumberSetting
 import com.odtheking.odin.clickgui.settings.impl.SelectorSetting
 import com.odtheking.odin.commands.fetchAndDisplayCataStats
@@ -39,7 +40,11 @@ object BetterPartyFinder : Module(
     private val magicalPowerReq by NumberSetting("Magical Power", 1300, 0, 2000, 20, desc = "Magical power minimum for kicking.").withDependency { autoKickToggle  }
     private val apiOffKick by BooleanSetting("Api Off Kick", false, desc = "Kicks if the player's api is off. If this setting is disabled, it will ignore the item check when players have api disabled.").withDependency { autoKickToggle }
 
-    private val enchantCheck by BooleanSetting("Terminator Enchants", false, desc = "Kicks players whose Terminator is missing the required enchant levels below. 0 = ignore that enchant.").withDependency { autoKickToggle }
+    private val itemCatalog = linkedMapOf(
+        "DARK_CLAYMORE" to ("Dark Claymore" to "SWORD"),
+        "LAST_BREATH" to ("Last Breath" to "BOW"),
+        "TERMINATOR" to ("Terminator" to "BOW"),
+    )
 
     private val bowEnchants = linkedMapOf(
         "power" to ("Power" to 7),
@@ -47,15 +52,11 @@ object BetterPartyFinder : Module(
         "snipe" to ("Snipe" to 3),
         "overload" to ("Overload" to 5),
         "vicious" to ("Vicious" to 5),
-        "ultimate_soul_eater" to ("Ultimate Soul Eater" to 5),
-        "ultimate_chimera" to ("Ultimate Chimera" to 5),
-        "ultimate_fatal_tempo" to ("Ultimate Fatal Tempo" to 5),
-        "ultimate_swarm" to ("Ultimate Swarm" to 5),
-        "ultimate_inferno" to ("Ultimate Inferno" to 5),
-        "ultimate_duplex" to ("Ultimate Duplex" to 5),
-        "ultimate_rend" to ("Ultimate Rend" to 5),
-        "ultimate_reiterate" to ("Ultimate Reiterate" to 5),
-        "ultimate_wise" to ("Ultimate Wise" to 5),
+        "ultimate_soul_eater" to ("Soul Eater" to 5),
+        "ultimate_fatal_tempo" to ("Fatal Tempo" to 5),
+        "ultimate_inferno" to ("Inferno" to 5),
+        "ultimate_rend" to ("Rend" to 5),
+        "ultimate_reiterate" to ("Duplex" to 5),
         "cubism" to ("Cubism" to 6),
         "impaling" to ("Impaling" to 3),
         "aiming" to ("Aiming" to 5),
@@ -70,12 +71,55 @@ object BetterPartyFinder : Module(
         "toxophilite" to ("Toxophilite" to 1),
     )
 
-    private val enchantReqs: Map<String, NumberSetting<Int>> = bowEnchants.entries.associate { (key, info) ->
-        key to registerSetting(
-            NumberSetting(info.first, 0, 0, info.second, desc = "Minimum ${info.first} level required on the Terminator (0 = off).")
-                .withDependency { autoKickToggle && enchantCheck }
-        )
-    }
+    private val swordEnchants = linkedMapOf(
+        "sharpness" to ("Sharpness" to 7),
+        "critical" to ("Critical" to 7),
+        "ender_slayer" to ("Ender Slayer" to 7),
+        "giant_killer" to ("Giant Killer" to 7),
+        "smite" to ("Smite" to 7),
+        "bane_of_arthropods" to ("Bane Of Arthropods" to 7),
+        "execute" to ("Execute" to 6),
+        "first_strike" to ("First Strike" to 5),
+        "lethality" to ("Lethality" to 6),
+        "thunderlord" to ("Thunderlord" to 7),
+        "titan_killer" to ("Titan Killer" to 7),
+        "vicious" to ("Vicious" to 5),
+        "cleave" to ("Cleave" to 6),
+        "syphon" to ("Syphon" to 5),
+        "life_steal" to ("Life Steal" to 5),
+        "mana_steal" to ("Mana Steal" to 3),
+        "triple_strike" to ("Triple Strike" to 5),
+        "venomous" to ("Venomous" to 6),
+        "vampirism" to ("Vampirism" to 6),
+        "thunderbolt" to ("Thunderbolt" to 6),
+        "prosecute" to ("Prosecute" to 6),
+        "ultimate_soul_eater" to ("Soul Eater" to 5),
+        "ultimate_chimera" to ("Chimera" to 5),
+        "ultimate_combo" to ("Combo" to 5),
+        "ultimate_fatal_tempo" to ("Fatal Tempo" to 5),
+        "ultimate_swarm" to ("Swarm" to 5),
+        "ultimate_inferno" to ("Inferno" to 5),
+        "ultimate_one_for_all" to ("One For All" to 5),
+        "ultimate_wise" to ("Wise" to 5),
+        "cubism" to ("Cubism" to 6),
+        "impaling" to ("Impaling" to 3),
+        "dragon_hunter" to ("Dragon Hunter" to 5),
+        "luck" to ("Luck" to 7),
+        "looting" to ("Looting" to 5),
+        "scavenger" to ("Scavenger" to 5),
+        "experience" to ("Experience" to 4),
+        "fire_aspect" to ("Fire Aspect" to 2),
+        "knockback" to ("Knockback" to 2),
+        "champion" to ("Champion" to 1),
+        "smoldering" to ("Smoldering" to 5),
+        "divine_gift" to ("Divine Gift" to 3),
+        "tabasco" to ("Tabasco" to 3),
+        "magmarizer" to ("Magmarizer" to 5),
+    )
+
+    private val enchantPools = mapOf("BOW" to bowEnchants, "SWORD" to swordEnchants)
+
+    private val itemEnchantRules by ItemEnchantSetting("Item Enchants", itemCatalog, enchantPools, desc = "Require enchants on Dark Claymore, Last Breath or Terminator. Add a requirement (pick the item, then an enchant), set the level; a joiner missing the item or under the level gets kicked.").withDependency { autoKickToggle }
 
     private val kickCache by BooleanSetting("Kick Cache", true, desc = "Caches kicked players to automatically kick when they attempt to rejoin.").withDependency { autoKickToggle }
     private val action by ActionSetting("Clear Cache", desc = "Clears the kick list cache.") { kickedList.clear() }.withDependency { autoKickToggle && kickCache }
@@ -128,17 +172,19 @@ object BetterPartyFinder : Module(
                         if (mp < magicalPowerReq) kickedReasons.add("Did not meet mp req: ${mp}/$magicalPowerReq")
                     } else if (apiOffKick) kickedReasons.add("Inventory API is off")
 
-                    if (enchantCheck && currentProfile.inventoryApi) {
-                        val reqs = enchantReqs.filterValues { it.value > 0 }
-                        if (reqs.isNotEmpty()) {
-                            val terminator = currentProfile.allItems.filterNotNull().firstOrNull { it.id == "TERMINATOR" }
-                            if (terminator == null) kickedReasons.add("No Terminator found")
-                            else {
-                                val missing = reqs.filter { (key, setting) -> (terminator.enchantments[key] ?: 0) < setting.value }
-                                if (missing.isNotEmpty())
-                                    kickedReasons.add("Terminator missing: ${missing.values.joinToString(", ") { "${it.name} ${it.value}" }}")
+                    if (currentProfile.inventoryApi && itemEnchantRules.isNotEmpty()) {
+                        val owned = currentProfile.allItems.filterNotNull()
+                        val unmet = itemEnchantRules.mapNotNull { (itemId, enchant, level) ->
+                            val item = owned.firstOrNull { it.id == itemId }
+                            val itemName = itemCatalog[itemId]?.first ?: itemId
+                            val enchName = enchantPools[itemCatalog[itemId]?.second]?.get(enchant)?.first ?: enchant
+                            when {
+                                item == null -> "$enchName $level (no $itemName)"
+                                (item.enchantments[enchant] ?: 0) < level -> "$enchName $level on $itemName"
+                                else -> null
                             }
                         }
+                        if (unmet.isNotEmpty()) kickedReasons.add("Missing enchants: ${unmet.joinToString(", ")}")
                     }
 
                     if (kickedReasons.isNotEmpty()) {
