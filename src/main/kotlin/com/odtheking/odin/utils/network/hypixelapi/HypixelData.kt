@@ -284,11 +284,15 @@ object HypixelData {
             itemNBTList.indices.map { i ->
                 val compound = itemNBTList.getCompound(i).getOrNull()?.takeIf { it.size() > 0 } ?: return@map null
                 val tag = compound.get("tag")?.asCompound()?.get() ?: return@map null
-                val id = tag.get("ExtraAttributes")?.asCompound()?.get()?.get("id")?.asString()?.get() ?: ""
+                val extraAttributes = tag.get("ExtraAttributes")?.asCompound()?.get()
+                val id = extraAttributes?.get("id")?.asString()?.get() ?: ""
+                val enchantments = extraAttributes?.get("enchantments")?.asCompound()?.get()?.let { ench ->
+                    ench.keySet().associateWith { key -> ench.get(key)?.asInt()?.get() ?: 0 }
+                } ?: emptyMap()
                 val display = tag.get("display")?.asCompound()?.get() ?: return@map null
                 val name = display.get("Name")?.asString()?.get() ?: ""
                 val lore = display.get("Lore")?.asList()?.get()?.mapNotNull { it.asString().getOrNull() } ?: emptyList()
-                ItemData(name, id, lore)
+                ItemData(name, id, lore, enchantments)
             }
         }
     }
@@ -297,5 +301,6 @@ object HypixelData {
         val name: String,
         val id: String,
         val lore: List<String>,
+        val enchantments: Map<String, Int> = emptyMap(),
     )
 }

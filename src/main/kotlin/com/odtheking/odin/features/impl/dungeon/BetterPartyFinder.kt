@@ -39,6 +39,44 @@ object BetterPartyFinder : Module(
     private val magicalPowerReq by NumberSetting("Magical Power", 1300, 0, 2000, 20, desc = "Magical power minimum for kicking.").withDependency { autoKickToggle  }
     private val apiOffKick by BooleanSetting("Api Off Kick", false, desc = "Kicks if the player's api is off. If this setting is disabled, it will ignore the item check when players have api disabled.").withDependency { autoKickToggle }
 
+    private val enchantCheck by BooleanSetting("Terminator Enchants", false, desc = "Kicks players whose Terminator is missing the required enchant levels below. 0 = ignore that enchant.").withDependency { autoKickToggle }
+
+    private val bowEnchants = linkedMapOf(
+        "power" to ("Power" to 7),
+        "dragon_hunter" to ("Dragon Hunter" to 5),
+        "snipe" to ("Snipe" to 3),
+        "overload" to ("Overload" to 5),
+        "vicious" to ("Vicious" to 5),
+        "ultimate_soul_eater" to ("Ultimate Soul Eater" to 5),
+        "ultimate_chimera" to ("Ultimate Chimera" to 5),
+        "ultimate_fatal_tempo" to ("Ultimate Fatal Tempo" to 5),
+        "ultimate_swarm" to ("Ultimate Swarm" to 5),
+        "ultimate_inferno" to ("Ultimate Inferno" to 5),
+        "ultimate_duplex" to ("Ultimate Duplex" to 5),
+        "ultimate_rend" to ("Ultimate Rend" to 5),
+        "ultimate_reiterate" to ("Ultimate Reiterate" to 5),
+        "ultimate_wise" to ("Ultimate Wise" to 5),
+        "cubism" to ("Cubism" to 6),
+        "impaling" to ("Impaling" to 3),
+        "aiming" to ("Aiming" to 5),
+        "chance" to ("Chance" to 5),
+        "flame" to ("Flame" to 2),
+        "punch" to ("Punch" to 2),
+        "piercing" to ("Piercing" to 1),
+        "infinite_quiver" to ("Infinite Quiver" to 10),
+        "smoldering" to ("Smoldering" to 5),
+        "divine_gift" to ("Divine Gift" to 3),
+        "tabasco" to ("Tabasco" to 3),
+        "toxophilite" to ("Toxophilite" to 1),
+    )
+
+    private val enchantReqs: Map<String, NumberSetting<Int>> = bowEnchants.entries.associate { (key, info) ->
+        key to registerSetting(
+            NumberSetting(info.first, 0, 0, info.second, desc = "Minimum ${info.first} level required on the Terminator (0 = off).")
+                .withDependency { autoKickToggle && enchantCheck }
+        )
+    }
+
     private val kickCache by BooleanSetting("Kick Cache", true, desc = "Caches kicked players to automatically kick when they attempt to rejoin.").withDependency { autoKickToggle }
     private val action by ActionSetting("Clear Cache", desc = "Clears the kick list cache.") { kickedList.clear() }.withDependency { autoKickToggle && kickCache }
 
@@ -89,6 +127,19 @@ object BetterPartyFinder : Module(
                         val mp = currentProfile.magicalPower
                         if (mp < magicalPowerReq) kickedReasons.add("Did not meet mp req: ${mp}/$magicalPowerReq")
                     } else if (apiOffKick) kickedReasons.add("Inventory API is off")
+
+                    if (enchantCheck && currentProfile.inventoryApi) {
+                        val reqs = enchantReqs.filterValues { it.value > 0 }
+                        if (reqs.isNotEmpty()) {
+                            val terminator = currentProfile.allItems.filterNotNull().firstOrNull { it.id == "TERMINATOR" }
+                            if (terminator == null) kickedReasons.add("No Terminator found")
+                            else {
+                                val missing = reqs.filter { (key, setting) -> (terminator.enchantments[key] ?: 0) < setting.value }
+                                if (missing.isNotEmpty())
+                                    kickedReasons.add("Terminator missing: ${missing.values.joinToString(", ") { "${it.name} ${it.value}" }}")
+                            }
+                        }
+                    }
 
                     if (kickedReasons.isNotEmpty()) {
                         if (informKicked) {
