@@ -15,21 +15,25 @@ import com.odtheking.odin.utils.ui.isAreaHovered
 import com.odtheking.odin.utils.ui.rendering.NVGRenderer
 import net.minecraft.client.input.MouseButtonEvent
 
+data class EnchantRule(val clazz: String, val item: String, val enchant: String, var level: Int)
+
 class ItemEnchantSetting(
     name: String,
+    private val classes: List<String>,
     private val items: Map<String, Pair<String, String>>,
     private val pools: Map<String, Map<String, Pair<String, Int>>>,
     desc: String
-) : RenderableSetting<MutableList<Triple<String, String, Int>>>(name, desc), Saving {
+) : RenderableSetting<MutableList<EnchantRule>>(name, desc), Saving {
 
-    override val default: MutableList<Triple<String, String, Int>> = mutableListOf()
-    override var value: MutableList<Triple<String, String, Int>> = mutableListOf()
+    override val default: MutableList<EnchantRule> = mutableListOf()
+    override var value: MutableList<EnchantRule> = mutableListOf()
 
     private val rowHeight = 32f
     private val headerHeight = Panel.HEIGHT
     private val settingAnim = EaseInOutAnimation(200)
     private var extended = false
     private var addPhase = 0
+    private var pendingClass: String? = null
     private var pendingItem: String? = null
     private var animFrom = headerHeight
     private var animTo = headerHeight
@@ -38,8 +42,9 @@ class ItemEnchantSetting(
         pools[items[itemId]?.second] ?: emptyMap()
 
     private fun phaseList(): List<String> = when (addPhase) {
-        1 -> items.keys.toList()
-        2 -> enchantsFor(pendingItem).keys.filter { ench -> value.none { it.first == pendingItem && it.second == ench } }
+        1 -> classes
+        2 -> items.keys.toList()
+        3 -> enchantsFor(pendingItem).keys.filter { ench -> value.none { it.clazz == pendingClass && it.item == pendingItem && it.enchant == ench } }
         else -> emptyList()
     }
 
@@ -65,6 +70,15 @@ class ItemEnchantSetting(
         return if (full <= maxWidth) 16f else (16f * maxWidth / full).coerceAtLeast(7f)
     }
 
+    private fun abbrev(clazz: String): String = when (clazz) {
+        "Mage" -> "M"
+        "Archer" -> "A"
+        "Berserk" -> "B"
+        "Tank" -> "T"
+        "Healer" -> "H"
+        else -> clazz
+    }
+
     override fun render(x: Float, y: Float, mouseX: Float, mouseY: Float): Float {
         super.render(x, y, mouseX, mouseY)
 
@@ -81,33 +95,39 @@ class ItemEnchantSetting(
         NVGRenderer.rect(x + 6f, y + 37f, width - 12f, bodyRows() * rowHeight, gray38.rgba, 5f)
 
         var row = 0
-        for ((item, ench, level) in value) {
+        for (rule in value) {
             val rowY = y + 38f + rowHeight * row
-            val label = "${items[item]?.first ?: item} · ${enchantsFor(item)[ench]?.first ?: ench}"
-            val labelSize = fitSize(label, width - 112f)
-            NVGRenderer.text(label, x + 14f, rowY + (rowHeight - labelSize) / 2f, labelSize, Colors.WHITE.rgba, NVGRenderer.defaultFont)
-            NVGRenderer.text("-", x + width - 92f, rowY + 8f, 16f, Colors.WHITE.rgba, NVGRenderer.defaultFont)
-            NVGRenderer.text(level.toString(), x + width - 66f, rowY + 8f, 16f, Colors.WHITE.rgba, NVGRenderer.defaultFont)
-            NVGRenderer.text("+", x + width - 50f, rowY + 8f, 16f, Colors.WHITE.rgba, NVGRenderer.defaultFont)
-            NVGRenderer.text("x", x + width - 20f, rowY + 8f, 16f, Colors.MINECRAFT_RED.rgba, NVGRenderer.defaultFont)
+            val maxLabel = width - 112f
+            val line1 = "${abbrev(rule.clazz)} · ${items[rule.item]?.first ?: rule.item}"
+            val line2 = enchantsFor(rule.item)[rule.enchant]?.first ?: rule.enchant
+            NVGRenderer.text(line1, x + 14f, rowY + 4f, minOf(13f, fitSize(line1, maxLabel)), Colors.WHITE.rgba, NVGRenderer.defaultFont)
+            NVGRenderer.text(line2, x + 14f, rowY + 17f, minOf(13f, fitSize(line2, maxLabel)), Colors.WHITE.rgba, NVGRenderer.defaultFont)
+            NVGRenderer.text("-", x + width - 68f, rowY + 8f, 16f, Colors.WHITE.rgba, NVGRenderer.defaultFont)
+            NVGRenderer.text(rule.level.toString(), x + width - 56f, rowY + 8f, 16f, Colors.WHITE.rgba, NVGRenderer.defaultFont)
+            NVGRenderer.text("+", x + width - 42f, rowY + 8f, 16f, Colors.WHITE.rgba, NVGRenderer.defaultFont)
+            NVGRenderer.text("x", x + width - 18f, rowY + 8f, 16f, Colors.MINECRAFT_RED.rgba, NVGRenderer.defaultFont)
             if (rowHovered(row)) NVGRenderer.hollowRect(x + 6f, rowY, width - 12f, rowHeight, 1.5f, ClickGUIModule.clickGUIColor.rgba, 4f)
             row++
         }
 
         val addRowY = y + 38f + rowHeight * row
         val addLabel = when (addPhase) {
-            1 -> "Pick item..."
-            2 -> "Pick enchant for ${items[pendingItem]?.first ?: pendingItem}..."
+            1 -> "Pick class..."
+            2 -> "Pick item for $pendingClass..."
+            3 -> "Pick enchant for ${items[pendingItem]?.first ?: pendingItem}..."
             else -> "+ Add requirement"
         }
         NVGRenderer.text(addLabel, x + 14f, addRowY + 8f, 16f, ClickGUIModule.clickGUIColor.rgba, NVGRenderer.defaultFont)
         if (rowHovered(row)) NVGRenderer.hollowRect(x + 6f, addRowY, width - 12f, rowHeight, 1.5f, ClickGUIModule.clickGUIColor.rgba, 4f)
         row++
 
-        val list = phaseList()
-        for (key in list) {
+        for (key in phaseList()) {
             val rowY = y + 38f + rowHeight * row
-            val text = if (addPhase == 1) items[key]?.first ?: key else enchantsFor(pendingItem)[key]?.first ?: key
+            val text = when (addPhase) {
+                1 -> key
+                2 -> items[key]?.first ?: key
+                else -> enchantsFor(pendingItem)[key]?.first ?: key
+            }
             NVGRenderer.text(text, x + 24f, rowY + 8f, 16f, Colors.WHITE.rgba, NVGRenderer.defaultFont)
             if (rowHovered(row)) NVGRenderer.hollowRect(x + 6f, rowY, width - 12f, rowHeight, 1.5f, ClickGUIModule.clickGUIColor.rgba, 4f)
             row++
@@ -123,7 +143,7 @@ class ItemEnchantSetting(
         if (isHovered) {
             val from = getHeight()
             extended = !extended
-            if (!extended) { addPhase = 0; pendingItem = null }
+            if (!extended) { addPhase = 0; pendingClass = null; pendingItem = null }
             animateFrom(from)
             return true
         }
@@ -131,13 +151,13 @@ class ItemEnchantSetting(
 
         for (i in value.indices) {
             if (rowHovered(i)) {
-                val (item, ench, level) = value[i]
-                val max = enchantsFor(item)[ench]?.second ?: 10
+                val rule = value[i]
+                val max = enchantsFor(rule.item)[rule.enchant]?.second ?: 10
                 val relX = mouseX - lastX
                 when {
-                    relX in (width - 26f)..(width - 4f) -> { val from = getHeight(); value.removeAt(i); animateFrom(from) }
-                    relX in (width - 54f)..(width - 30f) -> value[i] = Triple(item, ench, (level + 1).coerceAtMost(max))
-                    relX in (width - 96f)..(width - 72f) -> value[i] = Triple(item, ench, (level - 1).coerceAtLeast(1))
+                    relX in (width - 24f)..(width - 4f) -> { val from = getHeight(); value.removeAt(i); animateFrom(from) }
+                    relX in (width - 48f)..(width - 30f) -> rule.level = (rule.level + 1).coerceAtMost(max)
+                    relX in (width - 74f)..(width - 60f) -> rule.level = (rule.level - 1).coerceAtLeast(1)
                 }
                 return true
             }
@@ -145,7 +165,7 @@ class ItemEnchantSetting(
 
         if (rowHovered(value.size)) {
             val from = getHeight()
-            if (addPhase == 0) addPhase = 1 else { addPhase = 0; pendingItem = null }
+            if (addPhase == 0) addPhase = 1 else { addPhase = 0; pendingClass = null; pendingItem = null }
             animateFrom(from)
             return true
         }
@@ -154,13 +174,17 @@ class ItemEnchantSetting(
         for (j in list.indices) {
             if (rowHovered(value.size + 1 + j)) {
                 val from = getHeight()
-                if (addPhase == 1) {
-                    pendingItem = list[j]
-                    addPhase = 2
-                } else {
-                    pendingItem?.let { value.add(Triple(it, list[j], enchantsFor(it)[list[j]]?.second ?: 1)) }
-                    addPhase = 0
-                    pendingItem = null
+                when (addPhase) {
+                    1 -> { pendingClass = list[j]; addPhase = 2 }
+                    2 -> { pendingItem = list[j]; addPhase = 3 }
+                    else -> {
+                        val cls = pendingClass
+                        val itm = pendingItem
+                        if (cls != null && itm != null) value.add(EnchantRule(cls, itm, list[j], enchantsFor(itm)[list[j]]?.second ?: 1))
+                        addPhase = 0
+                        pendingClass = null
+                        pendingItem = null
+                    }
                 }
                 animateFrom(from)
                 return true
@@ -175,11 +199,12 @@ class ItemEnchantSetting(
 
     override fun write(gson: Gson): JsonElement {
         val array = JsonArray()
-        for ((item, ench, level) in value) {
+        for (rule in value) {
             val obj = JsonObject()
-            obj.addProperty("item", item)
-            obj.addProperty("enchant", ench)
-            obj.addProperty("level", level)
+            obj.addProperty("class", rule.clazz)
+            obj.addProperty("item", rule.item)
+            obj.addProperty("enchant", rule.enchant)
+            obj.addProperty("level", rule.level)
             array.add(obj)
         }
         return array
@@ -187,12 +212,13 @@ class ItemEnchantSetting(
 
     override fun read(element: JsonElement, gson: Gson) {
         if (!element.isJsonArray) return
-        val loaded = mutableListOf<Triple<String, String, Int>>()
+        val loaded = mutableListOf<EnchantRule>()
         for (entry in element.asJsonArray) {
             val obj = entry.asJsonObject
+            val clazz = obj.get("class")?.asString ?: continue
             val item = obj.get("item")?.asString ?: continue
             val ench = obj.get("enchant")?.asString ?: continue
-            if (item in items && ench in enchantsFor(item)) loaded.add(Triple(item, ench, obj.get("level")?.asInt ?: 1))
+            if (item in items && ench in enchantsFor(item)) loaded.add(EnchantRule(clazz, item, ench, obj.get("level")?.asInt ?: 1))
         }
         value = loaded
     }

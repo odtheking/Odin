@@ -124,21 +124,27 @@ object BetterPartyFinder : Module(
 
     private val enchantPools = mapOf("BOW" to bowEnchants, "SWORD" to swordEnchants)
 
-    private val itemEnchantRules by ItemEnchantSetting("Item Enchants", itemCatalog, enchantPools, desc = "Require enchants on Dark Claymore, Last Breath or Terminator. Add a requirement (pick the item, then an enchant), set the level; a joiner missing the item or under the level gets kicked.").withDependency { autoKickToggle }
+    private val kickClasses = listOf("Any", "Berserk", "Archer", "Mage", "Healer", "Tank")
+
+    private val itemEnchantRules by ItemEnchantSetting("Item Enchants", kickClasses, itemCatalog, enchantPools, desc = "Require enchants per class. Add a requirement (pick a class, then an item, then an enchant), set the level; a joining player of that class missing the item or under the level gets kicked. Class \"Any\" applies to everyone.").withDependency { autoKickToggle }
 
     private val kickCache by BooleanSetting("Kick Cache", true, desc = "Caches kicked players to automatically kick when they attempt to rejoin.").withDependency { autoKickToggle }
     private val action by ActionSetting("Clear Cache", desc = "Clears the kick list cache.") { kickedList.clear() }.withDependency { autoKickToggle && kickCache }
 
     //https://regex101.com/r/XYnAVm/2
-    private val pfRegex = Regex("^Party Finder > (?:\\[.{1,7}])? ?(.{1,16}) joined the dungeon group! \\(.*\\)$")
+    private val pfRegex = Regex("^Party Finder > (?:\\[.{1,7}])? ?(.{1,16}) joined the dungeon group! \\((\\w+) Level \\d+\\)$")
+    private val leaveRegex = Regex("^(?:\\[.{1,7}] )?(\\w{1,16}) (?:has left the party|has been removed from the party)\\.$")
 
     private val kickedList = mutableSetOf<String>()
+    private val leftPlayers = mutableSetOf<String>()
 
     init {
         on<ChatPacketEvent> {
+            if (autoKickToggle) leaveRegex.find(value)?.let { leftPlayers.add(it.groupValues[1]); return@on }
             if (!statsDisplay && !autoKickToggle) return@on
-            val (name) = pfRegex.find(value)?.destructured ?: return@on
+            val (name, clazz) = pfRegex.find(value)?.destructured ?: return@on
             if (name == mc.player?.name?.string) return@on
+            leftPlayers.remove(name)
 
             scope.launch {
                 val profile = RequestUtils.getProfile(name)
@@ -179,23 +185,25 @@ object BetterPartyFinder : Module(
 
                     if (currentProfile.inventoryApi && itemEnchantRules.isNotEmpty()) {
                         val owned = currentProfile.allItems.filterNotNull()
-                        val unmet = itemEnchantRules.mapNotNull { (itemId, enchant, level) ->
-                            val matchIds = itemMatches[itemId] ?: listOf(itemId)
-                            val item = owned.firstOrNull { it.id in matchIds }
-                            val itemName = itemCatalog[itemId]?.first ?: itemId
-                            val enchName = enchantPools[itemCatalog[itemId]?.second]?.get(enchant)?.first ?: enchant
-                            when {
-                                item == null -> "$enchName $level (no $itemName)"
-                                (item.enchantments[enchant] ?: 0) < level -> "$enchName $level on $itemName"
-                                else -> null
+                        val unmet = itemEnchantRules
+                            .filter { it.clazz == "Any" || it.clazz.equals(clazz, ignoreCase = true) }
+                            .mapNotNull { rule ->
+                                val matchIds = itemMatches[rule.item] ?: listOf(rule.item)
+                                val item = owned.firstOrNull { it.id in matchIds }
+                                val itemName = itemCatalog[rule.item]?.first ?: rule.item
+                                val enchName = enchantPools[itemCatalog[rule.item]?.second]?.get(rule.enchant)?.first ?: rule.enchant
+                                when {
+                                    item == null -> "$enchName ${rule.level} (no $itemName)"
+                                    (item.enchantments[rule.enchant] ?: 0) < rule.level -> "$enchName ${rule.level} on $itemName"
+                                    else -> null
+                                }
                             }
-                        }
                         if (unmet.isNotEmpty()) kickedReasons.add("Missing enchants: ${unmet.joinToString(", ")}")
                     }
 
                     if (kickedReasons.isNotEmpty()) {
                         if (informKicked) {
-                            schedule(6) { sendCommand("party kick $name") }
+                            schedule(6) { if (name !in leftPlayers) sendCommand("party kick $name") }
                             sendCommand("pc Kicked $name for: ${kickedReasons.joinToString(", ")}")
                         } else sendCommand("party kick $name")
 
