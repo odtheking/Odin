@@ -41,9 +41,14 @@ object BetterPartyFinder : Module(
     private val apiOffKick by BooleanSetting("Api Off Kick", false, desc = "Kicks if the player's api is off. If this setting is disabled, it will ignore the item check when players have api disabled.").withDependency { autoKickToggle }
 
     private val itemCatalog = linkedMapOf(
+        "HYPERION" to ("Hyperion" to "SWORD"),
         "DARK_CLAYMORE" to ("Dark Claymore" to "SWORD"),
         "LAST_BREATH" to ("Last Breath" to "BOW"),
         "TERMINATOR" to ("Terminator" to "BOW"),
+    )
+
+    private val itemMatches = mapOf(
+        "HYPERION" to listOf("HYPERION", "VALKYRIE", "ASTRAEA", "SCYLLA"),
     )
 
     private val bowEnchants = linkedMapOf(
@@ -175,7 +180,8 @@ object BetterPartyFinder : Module(
                     if (currentProfile.inventoryApi && itemEnchantRules.isNotEmpty()) {
                         val owned = currentProfile.allItems.filterNotNull()
                         val unmet = itemEnchantRules.mapNotNull { (itemId, enchant, level) ->
-                            val item = owned.firstOrNull { it.id == itemId }
+                            val matchIds = itemMatches[itemId] ?: listOf(itemId)
+                            val item = owned.firstOrNull { it.id in matchIds }
                             val itemName = itemCatalog[itemId]?.first ?: itemId
                             val enchName = enchantPools[itemCatalog[itemId]?.second]?.get(enchant)?.first ?: enchant
                             when {
