@@ -37,6 +37,7 @@ object BetterPartyFinder : Module(
     private val secretsMin by NumberSetting("Minimum Secrets", 0, 0, 200, desc = "Secret minimum in thousands for kicking.", unit = "k").withDependency { autoKickToggle }
     private val magicalPowerReq by NumberSetting("Magical Power", 1300, 0, 2000, 20, desc = "Magical power minimum for kicking.").withDependency { autoKickToggle  }
     private val apiOffKick by BooleanSetting("Api Off Kick", false, desc = "Kicks if the player's api is off. If this setting is disabled, it will ignore the item check when players have api disabled.").withDependency { autoKickToggle }
+    private val apiFailKick by BooleanSetting("Kick On API Fail", false, desc = "Kicks joining players when their profile can't be fetched (e.g. Odin API rate limit / HTTP 429) instead of just printing the error.").withDependency { autoKickToggle }
 
     private val kickCache by BooleanSetting("Kick Cache", true, desc = "Caches kicked players to automatically kick when they attempt to rejoin.").withDependency { autoKickToggle }
     private val action by ActionSetting("Clear Cache", desc = "Clears the kick list cache.") { kickedList.clear() }.withDependency { autoKickToggle && kickCache }
@@ -68,7 +69,17 @@ object BetterPartyFinder : Module(
 
                     val kickedReasons = mutableListOf<String>()
 
-                    val currentProfile = profile.getOrElse { return@launch modMessage(it.message) }.memberData ?: return@launch modMessage("Could not find member data for $name")
+                    val currentProfile = profile.getOrElse { err ->
+                        if (apiFailKick) {
+                            if (informKicked) {
+                                schedule(6) { sendCommand("party kick $name") }
+                                sendCommand("pc Kicked $name: couldn't verify (API error)")
+                            } else sendCommand("party kick $name")
+                            if (kickCache) kickedList.add(name)
+                            return@launch modMessage("Kicking $name (API error: ${err.message})")
+                        }
+                        return@launch modMessage(err.message)
+                    }.memberData ?: return@launch modMessage("Could not find member data for $name")
 
                     val dungeon = if (!mmToggle) currentProfile.dungeons.dungeonTypes.catacombs else currentProfile.dungeons.dungeonTypes.mastermode
                     dungeon.fastestTimeSPlus["$floor"]?.let {
