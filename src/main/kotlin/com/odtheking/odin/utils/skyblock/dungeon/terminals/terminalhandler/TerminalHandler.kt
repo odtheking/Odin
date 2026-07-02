@@ -21,7 +21,8 @@ import kotlin.math.min
 
 abstract class TerminalHandler(val type: TerminalTypes) {
     val solution: CopyOnWriteArrayList<Int> = CopyOnWriteArrayList()
-    val timeOpened = System.currentTimeMillis()
+    var timeOpened = System.currentTimeMillis()
+        private set
     var isClicked = false
     var windowCount = 0
 
@@ -36,6 +37,7 @@ abstract class TerminalHandler(val type: TerminalTypes) {
     }
 
     fun openScreen() {
+        timeOpened = System.currentTimeMillis()
         isClicked = false
         windowCount++
     }
