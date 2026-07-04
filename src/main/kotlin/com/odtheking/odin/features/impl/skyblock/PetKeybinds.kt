@@ -4,12 +4,10 @@ import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.DropdownSetting
 import com.odtheking.odin.clickgui.settings.impl.KeybindSetting
-import com.odtheking.odin.clickgui.settings.impl.ListSetting
 import com.odtheking.odin.events.ScreenEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.clickSlot
-import com.odtheking.odin.utils.itemUUID
 import com.odtheking.odin.utils.loreString
 import com.odtheking.odin.utils.modMessage
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
@@ -17,7 +15,7 @@ import org.lwjgl.glfw.GLFW
 
 object PetKeybinds : Module(
     name = "Pet Keybinds",
-    description = "Keybinds for the pets menu. (/petkeys)"
+    description = "Keybinds for the pets menu."
 ) {
     private val unequipKeybind by KeybindSetting("Unequip", GLFW.GLFW_KEY_UNKNOWN, "Unequips the current Pet.")
     private val nextPageKeybind by KeybindSetting("Next Page", GLFW.GLFW_KEY_UNKNOWN, "Goes to the next page.")
@@ -37,8 +35,6 @@ object PetKeybinds : Module(
     private val pet9 by KeybindSetting("Pet 9", GLFW.GLFW_KEY_9, "Pet 9 on the list.").withDependency { advanced }
 
     private val petsRegex = Regex("Pets(?: \\((\\d)/(\\d)\\))?")
-
-    val petList by ListSetting("PetKeys List", mutableListOf<String>())
 
     init {
         on<ScreenEvent.MouseClick> {
@@ -64,13 +60,8 @@ object PetKeybinds : Module(
                     .takeIf { it != -1 }?.plus(10) ?: return false.also { modMessage("§cCouldn't find equipped pet") }
 
             else -> {
-                val petIndex =
-                    arrayOf(pet1, pet2, pet3, pet4, pet5, pet6, pet7, pet8, pet9).indexOfFirst { it.value == keyCode }
-                        .takeIf { it != -1 } ?: return false
-                petList.getOrNull(petIndex)?.let { uuid ->
-                    screen.menu.slots.subList(10, 43).indexOfFirst { it?.item?.itemUUID == uuid }
-                }?.takeIf { it != -1 }?.plus(10)
-                    ?: return false.also { modMessage("§cCouldn't find matching pet or there is no pet in that position.") }
+                arrayOf(pet1, pet2, pet3, pet4, pet5, pet6, pet7, pet8, pet9).indexOfFirst { it.value == keyCode }
+                    .takeIf { it != -1 }?.plus(10) ?: return false
             }
         }
 

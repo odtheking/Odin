@@ -28,7 +28,9 @@ fun fetchAndDisplayCataStats(result: Result<HypixelData.PlayerInfo>) {
             playerInfo.memberData?.let { displayCataStats(playerInfo.name, it) }
                 ?: modMessage("§cNo profile found for §6${playerInfo.name}§c!")
         },
-        onFailure = { modMessage("§cFailed to fetch stats: ${it.message}") }
+        onFailure = { error ->
+            modMessage("§cFailed to fetch dungeon stats: ${error.message}")
+        }
     )
 }
 
