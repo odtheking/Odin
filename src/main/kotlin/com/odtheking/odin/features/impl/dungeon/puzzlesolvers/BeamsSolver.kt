@@ -4,6 +4,7 @@ import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.events.BlockUpdateEvent
 import com.odtheking.odin.events.RenderEvent
 import com.odtheking.odin.events.RoomEnterEvent
+import com.odtheking.odin.features.impl.dungeon.map.tile.DungeonRoom
 import com.odtheking.odin.features.impl.dungeon.puzzlesolvers.PuzzleSolvers.onPuzzleComplete
 import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.Color.Companion.withAlpha
@@ -13,7 +14,6 @@ import com.odtheking.odin.utils.equalsOneOf
 import com.odtheking.odin.utils.render.drawLine
 import com.odtheking.odin.utils.render.drawStyledBox
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
-import com.odtheking.odin.utils.skyblock.dungeon.map.tile.DungeonRoom
 import net.minecraft.core.BlockPos
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.phys.AABB

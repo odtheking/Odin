@@ -2,12 +2,12 @@ package com.odtheking.odin.utils.skyblock.dungeon
 
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.features.impl.dungeon.MapInfo.togglePaul
+import com.odtheking.odin.features.impl.dungeon.map.WorldScan
+import com.odtheking.odin.features.impl.dungeon.map.tile.DungeonRoom
 import com.odtheking.odin.utils.equalsOneOf
 import com.odtheking.odin.utils.romanToInt
 import com.odtheking.odin.utils.skyblock.Island
 import com.odtheking.odin.utils.skyblock.LocationUtils
-import com.odtheking.odin.utils.skyblock.dungeon.map.scan.DungeonWorldScan
-import com.odtheking.odin.utils.skyblock.dungeon.map.tile.DungeonRoom
 import net.minecraft.core.BlockPos
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.SkullBlock
@@ -71,7 +71,7 @@ object DungeonUtils {
         get() = DungeonListener.dungeonStats.elapsedTime
 
     inline val currentRoomName: String
-        get() = DungeonWorldScan.currentRoom?.data?.name ?: "Unknown"
+        get() = WorldScan.currentRoom?.data?.name ?: "Unknown"
 
     inline val dungeonTeammates: List<DungeonPlayer>
         get() = DungeonListener.dungeonTeammates
@@ -96,7 +96,7 @@ object DungeonUtils {
         get() = DungeonListener.dungeonStats.princeKilled
 
     inline val currentRoom: DungeonRoom?
-        get() = DungeonWorldScan.currentRoom
+        get() = WorldScan.currentRoom
 
     inline val isPaul: Boolean
         get() = DungeonListener.paul

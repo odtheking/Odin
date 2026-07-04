@@ -8,6 +8,8 @@ import com.odtheking.odin.events.RenderEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.features.Module
+import com.odtheking.odin.features.impl.dungeon.map.DungeonScan
+import com.odtheking.odin.features.impl.dungeon.map.tile.DoorType
 import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.Color.Companion.withAlpha
 import com.odtheking.odin.utils.Colors
@@ -15,9 +17,6 @@ import com.odtheking.odin.utils.alert
 import com.odtheking.odin.utils.equalsOneOf
 import com.odtheking.odin.utils.render.drawStyledBox
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
-import com.odtheking.odin.utils.skyblock.dungeon.map.scan.DungeonMapScan
-import com.odtheking.odin.utils.skyblock.dungeon.map.scan.DungeonWorldScan
-import com.odtheking.odin.utils.skyblock.dungeon.map.tile.DoorType
 import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.decoration.ArmorStand
@@ -34,9 +33,9 @@ object DoorHighlight : Module(
     private val bloodColor by ColorSetting("Blood Color", Colors.MINECRAFT_RED.withAlpha(0.8f), true, desc = "The color of the box.")
 
     private var currentKey: KeyType? = null
-    var witherKeys = 0
-    var bloodKey = false
-    var bloodOpened = false
+    private var witherKeys = 0
+    private var bloodKey = false
+    private var bloodOpened = false
 
     private val witherKeyObtainRegex = Regex("^(\\[[^]]*?])? ?(\\w{1,16}) has obtained Wither Key!?$")
     private val witherKeyPickedUpRegex = Regex("^A Wither Key was picked up!$")
@@ -69,15 +68,12 @@ object DoorHighlight : Module(
         on<RenderEvent.Extract> {
             if (!DungeonUtils.inClear) return@on
 
-            DungeonMapScan.doors.forEach { (chunkPos, door) ->
-                val originTile = DungeonWorldScan.tiles[door.originTileIndex]
-                val destTile   = DungeonWorldScan.tiles[door.destinationTileIndex]
-                if (originTile.room?.isViewable != true && destTile.room?.isViewable != true) return@forEach
+            DungeonScan.viewableDoors.forEach { (door, _) ->
                 if (!door.type.equalsOneOf(DoorType.Wither, DoorType.Blood)) return@forEach
                 if (door.type == DoorType.Blood && bloodOpened) return@forEach
 
-                val worldX = (chunkPos.x * 16 + 7).toDouble()
-                val worldZ = (chunkPos.z * 16 + 7).toDouble()
+                val worldX = (door.position.x - 6) * 32 + 7 + door.rotation.offset.x * 16
+                val worldZ = (door.position.z - 6) * 32 + 7 + door.rotation.offset.z * 16
                 val box = AABB(worldX - 1.0, 69.0, worldZ - 1.0, worldX + 2.0, 73.0, worldZ + 2.0)
 
                 val isOpenable = when (door.type) {

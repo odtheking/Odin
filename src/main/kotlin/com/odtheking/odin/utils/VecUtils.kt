@@ -1,7 +1,7 @@
 package com.odtheking.odin.utils
 
 import com.odtheking.odin.OdinMod.mc
-import com.odtheking.odin.utils.skyblock.dungeon.map.tile.RoomRotation
+import com.odtheking.odin.features.impl.dungeon.map.tile.RoomRotation
 import net.minecraft.core.BlockPos
 import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.Vec3

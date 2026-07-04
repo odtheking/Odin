@@ -1,44 +1,47 @@
-package com.odtheking.odin.utils.skyblock.dungeon.map.tile
+package com.odtheking.odin.features.impl.dungeon.map.tile
 
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints
 import com.odtheking.odin.utils.IVec2
+import com.odtheking.odin.utils.modMessage
 import com.odtheking.odin.utils.rotateAroundNorth
 import com.odtheking.odin.utils.rotateToNorth
 import net.minecraft.core.BlockPos
 import net.minecraft.world.level.block.Blocks
 
 class DungeonRoom(var type: RoomType, initialPosition: IVec2, var data: RoomData? = null) {
-    val segments: ArrayList<IVec2> = ArrayList(4)
-    var position: IVec2 = initialPosition
+    val tiles: ArrayList<IVec2> = ArrayList(4)
+    var topLeft: IVec2 = initialPosition
     var rotation: RoomRotation? = null
 
     var shape: RoomShape = RoomShape.OneByOne
 
-    var discovered: Boolean = false
+    var walkedInto: Boolean = false
     var clayPos: BlockPos? = null
     var highestBlock: Int? = null
     var waypoints: MutableSet<DungeonWaypoints.DungeonWaypoint> = mutableSetOf()
 
     var checkmark: MapCheckmark = MapCheckmark.UNDISCOVERED
 
-    val isViewable: Boolean get() = discovered || checkmark != MapCheckmark.UNDISCOVERED
+    var isKnown1x1: Boolean = false
+
+    val isViewable: Boolean get() = walkedInto || checkmark != MapCheckmark.UNDISCOVERED
     val name: String? get() = data?.name
 
     fun addSegment(segment: DungeonTile) {
-        if (!segments.contains(segment.position)) {
-            segments.add(segment.position)
-            position = IVec2(segments.minOf { it.x }, segments.minOf { it.z })
+        if (!tiles.contains(segment.position)) {
+            tiles.add(segment.position)
+            topLeft = IVec2(tiles.minOf { it.x }, tiles.minOf { it.z })
         }
     }
 
     fun inferLayoutFromMap() {
-        val minX = segments.minOf { it.x }
-        val minZ = segments.minOf { it.z }
-        val maxX = segments.maxOf { it.x }
-        val maxZ = segments.maxOf { it.z }
+        val minX = tiles.minOf { it.x }
+        val minZ = tiles.minOf { it.z }
+        val maxX = tiles.maxOf { it.x }
+        val maxZ = tiles.maxOf { it.z }
 
-        shape = when (segments.size) {
+        shape = when (tiles.size) {
             1    -> RoomShape.OneByOne
             2    -> RoomShape.TwoByOne
             3    -> if ((maxX - minX) == 1 && (maxZ - minZ) == 1) RoomShape.L else RoomShape.ThreeByOne
@@ -46,10 +49,7 @@ class DungeonRoom(var type: RoomType, initialPosition: IVec2, var data: RoomData
             else -> RoomShape.OneByOne
         }
 
-        resolveGeometryRotation()?.let { (rot, pos) ->
-            rotation = rot
-            clayPos = pos
-        }
+        resolveGeometryRotation()?.let { rotation = it }
     }
 
     fun inferLayout(highestBlock: Int) {
@@ -66,34 +66,55 @@ class DungeonRoom(var type: RoomType, initialPosition: IVec2, var data: RoomData
             return
         }
 
-        resolveGeometryRotation()?.let { (rot, pos) ->
-            rotation = rot
-            clayPos = pos
+        val rot = resolveGeometryRotation()
+        val pos = rot?.let { resolveClayPos(it, highestBlock) }
+
+        if (rot == null || pos == null) {
+            modMessage("Failed to resolve geometry for ${data?.name ?: type} at $topLeft with tiles $tiles")
+            return
+        }
+
+        rotation = rot
+        clayPos = pos
+    }
+
+    private fun resolveGeometryRotation(): RoomRotation? {
+        val bottomRight = tiles.maxByOrNull { it.x * 1000 + it.z } ?: return null
+        val topLeft = tiles.minByOrNull { it.x * 1000 + it.z } ?: return null
+
+        return if (shape == RoomShape.L) {
+            val other = tiles.find { it != topLeft && it != bottomRight } ?: return null
+            when {
+                topLeft.x == bottomRight.x -> RoomRotation.EAST
+                topLeft.z == bottomRight.z -> RoomRotation.WEST
+                other.x == topLeft.x -> RoomRotation.SOUTH
+                else -> RoomRotation.NORTH
+            }
+        } else {
+            if (topLeft.x == bottomRight.x) RoomRotation.WEST else RoomRotation.SOUTH
         }
     }
 
-    private fun resolveGeometryRotation(): Pair<RoomRotation, BlockPos>? {
-        val topLeft     = segments.minByOrNull { it.x * 1000 + it.z } ?: return null
-        val bottomRight = segments.maxByOrNull { it.x * 1000 + it.z } ?: return null
+    private fun resolveClayPos(rotation: RoomRotation, height: Int): BlockPos? {
+        val bottomRight = tiles.maxByOrNull { it.x * 1000 + it.z } ?: return null
+        val topLeft = tiles.minByOrNull { it.x * 1000 + it.z } ?: return null
 
         val (tlX, tlZ) = getRealPosition(topLeft.x, topLeft.z)
         val (brX, brZ) = getRealPosition(bottomRight.x, bottomRight.z)
 
-        val height = highestBlock ?: return null
-
         return if (shape == RoomShape.L) {
-            val other = segments.find { it != topLeft && it != bottomRight } ?: return null
-            val (otX, otZ) = getRealPosition(other.x, other.z)
+            val other = tiles.find { it != topLeft && it != bottomRight } ?: return null
+            val (otX, _) = getRealPosition(other.x, other.z)
 
-            when {
-                topLeft.x == bottomRight.x -> RoomRotation.EAST to BlockPos(otX - 15, height, tlZ + 15)
-                topLeft.z == bottomRight.z -> RoomRotation.WEST to BlockPos(brX + 15, height, brZ - 15)
-                other.x == topLeft.x -> RoomRotation.SOUTH to BlockPos(tlX - 15, height, tlZ - 15)
-                else -> RoomRotation.NORTH to BlockPos(brX + 15, height, brZ + 15)
+            when (rotation) {
+                RoomRotation.EAST  -> BlockPos(otX - 15, height, tlZ + 15)
+                RoomRotation.WEST  -> BlockPos(brX + 15, height, brZ - 15)
+                RoomRotation.SOUTH -> BlockPos(tlX - 15, height, tlZ - 15)
+                RoomRotation.NORTH -> BlockPos(brX + 15, height, brZ + 15)
             }
         } else {
-            if (topLeft.x == bottomRight.x) RoomRotation.WEST to BlockPos(tlX + 15, height, tlZ - 15)
-            else RoomRotation.SOUTH to BlockPos(tlX - 15, height, tlZ - 15)
+            if (rotation == RoomRotation.WEST) BlockPos(tlX + 15, height, tlZ - 15)
+            else BlockPos(tlX - 15, height, tlZ - 15)
         }
     }
 
@@ -125,7 +146,7 @@ class DungeonRoom(var type: RoomType, initialPosition: IVec2, var data: RoomData
         return BlockPos(x + rotation.dx, y, z + rotation.dz)
     }
 
-    fun getRealPosition() = position.x * 32 - 185 to position.z * 32 - 185
+    fun getRealPosition() = topLeft.x * 32 - 185 to topLeft.z * 32 - 185
     fun getRealPosition(x: Int, z: Int) = x * 32 - 185 to z * 32 - 185
 
     fun getRelativeCoords(pos: BlockPos): BlockPos {

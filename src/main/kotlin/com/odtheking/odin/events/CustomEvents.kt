@@ -3,9 +3,10 @@ package com.odtheking.odin.events
 import com.mojang.blaze3d.platform.InputConstants
 import com.odtheking.odin.events.core.CancellableEvent
 import com.odtheking.odin.events.core.Event
+import com.odtheking.odin.features.impl.dungeon.map.tile.DungeonRoom
+import com.odtheking.odin.features.impl.dungeon.map.tile.MapCheckmark
 import com.odtheking.odin.utils.render.RenderConsumer
 import com.odtheking.odin.utils.skyblock.dungeon.Floor
-import com.odtheking.odin.utils.skyblock.dungeon.map.tile.DungeonRoom
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.terminalhandler.TerminalHandler
 import net.fabricmc.fabric.api.client.rendering.v1.level.AbstractLevelRenderContext
 import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext
@@ -69,5 +70,7 @@ abstract class PacketEvent(val packet: Packet<*>) : CancellableEvent() { // idea
     class Send(packet: Packet<*>) : PacketEvent(packet)
 }
 
-class RoomEnterEvent(val room: DungeonRoom?) : CancellableEvent()
-class FloorEnterEvent(val floor: Floor) : CancellableEvent()
+class RoomEnterEvent(val room: DungeonRoom?) : Event
+class FloorEnterEvent(val floor: Floor) : Event
+class MapUpdateEvent : Event
+class CheckmarkUpdateEvent(val room: DungeonRoom, val checkmark: MapCheckmark) : Event

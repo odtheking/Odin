@@ -4,9 +4,9 @@ import com.odtheking.odin.config.WaypointPackFileUtils
 import com.odtheking.odin.config.WaypointPackState
 import com.odtheking.odin.config.normalized
 import com.odtheking.odin.features.ModuleManager
+import com.odtheking.odin.features.impl.dungeon.map.tile.DungeonRoom
 import com.odtheking.odin.utils.modMessage
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
-import com.odtheking.odin.utils.skyblock.dungeon.map.tile.DungeonRoom
 import net.minecraft.world.phys.AABB
 
 suspend fun DungeonWaypoints.loadWaypoints() {

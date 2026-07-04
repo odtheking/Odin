@@ -15,7 +15,6 @@ value class IVec2 private constructor(val data: Long) {
     inline val x: Int
         get() = data.toInt()
 
-
     inline val z: Int
         get() = (data shr 32).toInt()
 

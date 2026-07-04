@@ -1,4 +1,4 @@
-package com.odtheking.odin.utils.skyblock.dungeon.map.tile
+package com.odtheking.odin.features.impl.dungeon.map.tile
 
 import com.google.gson.annotations.SerializedName
 import com.odtheking.odin.utils.IVec2
@@ -48,7 +48,7 @@ enum class RoomType(val mapColor: Byte) {
     }
 }
 
-enum class RoomShape(val segments: Int) {
+enum class RoomShape(val tileAmount: Int) {
     @SerializedName("L")
     L(3),
     @SerializedName("1x1")

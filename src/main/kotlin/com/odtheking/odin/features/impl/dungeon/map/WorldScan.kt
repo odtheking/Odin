@@ -1,4 +1,4 @@
-package com.odtheking.odin.utils.skyblock.dungeon.map.scan
+package com.odtheking.odin.features.impl.dungeon.map
 
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.events.LevelEvent
@@ -6,26 +6,23 @@ import com.odtheking.odin.events.LocationChangeEvent
 import com.odtheking.odin.events.RoomEnterEvent
 import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.core.on
-import com.odtheking.odin.utils.IVec2
-import com.odtheking.odin.utils.devMessage
-import com.odtheking.odin.utils.equalsOneOf
+import com.odtheking.odin.features.impl.dungeon.map.tile.*
+import com.odtheking.odin.utils.*
+import com.odtheking.odin.utils.skyblock.Island
+import com.odtheking.odin.utils.skyblock.LocationUtils
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
-import com.odtheking.odin.utils.skyblock.dungeon.map.tile.*
-import com.odtheking.odin.utils.toIVec2
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientChunkEvents
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.level.chunk.LevelChunk
 
-object DungeonWorldScan {
+object WorldScan {
 
-    val tiles: Array<DungeonTile> get() = DungeonMapScan.tiles
     var currentRoom: DungeonRoom? = null
         private set
 
-    private val dataToRoom: HashMap<RoomData, DungeonRoom> = hashMapOf()
-
-    private val chunksToScan: HashSet<IVec2> = HashSet()
+    private val dataToRoom = HashMap<RoomData, DungeonRoom>()
+    private val chunksToScan = HashSet<IVec2>()
 
     init {
         on<LevelEvent.Load> {
@@ -45,7 +42,7 @@ object DungeonWorldScan {
                 return@on
             }
 
-            for (room in DungeonMapScan.rooms) {
+            for (room in DungeonScan.rooms) {
                 if (room.shape != RoomShape.OneByOne) continue
                 if (room.rotation != null && room.clayPos != null) continue
                 if (room.highestBlock != null) room.get1x1Rotation()
@@ -55,12 +52,12 @@ object DungeonWorldScan {
             val tileZ = (player.blockZ + 201) shr 5
             if (tileX !in 0..5 || tileZ !in 0..5) return@on
 
-            tiles[tileX + tileZ * 6].room?.let { room ->
+            DungeonScan.tiles[tileX + tileZ * 6].room?.let { room ->
                 if (room == currentRoom || room.rotation == null || room.highestBlock == null) return@on
-                if (player.blockY > room.highestBlock!! - 10) return@on
+                if (player.blockY > room.highestBlock!! - 10 && !LocationUtils.isCurrentArea(Island.SinglePlayer)) return@on
 
                 currentRoom = room
-                room.discovered = true
+                room.walkedInto = true
                 RoomEnterEvent(room).postAndCatch()
                 devMessage("${room.data?.name ?: room.type} - ${room.rotation} || clay: ${room.clayPos}")
             }
@@ -85,8 +82,8 @@ object DungeonWorldScan {
 
     private fun scanChunk(chunk: LevelChunk) {
         val chunkPosition = chunk.pos.toIVec2()
-        val rowEven    = chunkPosition.x % 2 == 0
         val columnEven = chunkPosition.z % 2 == 0
+        val rowEven = chunkPosition.x % 2 == 0
 
         if (chunkPosition.x in -12..-2 && chunkPosition.z in -12..-2) {
             if (rowEven && columnEven) scanRoom(chunk, chunkPosition)
@@ -95,7 +92,7 @@ object DungeonWorldScan {
     }
 
     private fun scanDoor(chunk: LevelChunk, chunkPosition: IVec2, rotation: DoorRotation) {
-        if (DungeonMapScan.doors.contains(chunkPosition)) return
+        if (DungeonScan.doors.contains(chunkPosition)) return
         val position = (chunkPosition * 16) + 7
 
         for (y in 86..160) {
@@ -109,16 +106,15 @@ object DungeonWorldScan {
             else -> DoorType.Normal
         }
         val doorPos = ((chunkPosition - 1) / 2) + 6
-        val destPos = IVec2(doorPos.x + rotation.offset.x, doorPos.z + rotation.offset.z)
-        DungeonMapScan.doors[chunkPosition] = DungeonDoor(doorPos, rotation, type, doorPos.x + doorPos.z * 6, destPos.x + destPos.z * 6)
+        DungeonScan.doors[chunkPosition] = DungeonDoor(doorPos, rotation, type, doorPos.x + doorPos.z * 6, doorPos.x + rotation.offset.x + (doorPos.z + rotation.offset.z) * 6)
     }
 
     private fun scanRoom(chunk: LevelChunk, chunkPosition: IVec2) {
         val (core, highestBlock) = getRoomCore(chunk, (chunkPosition * 16) + 7)
-        val data = RoomData.getRoomData(core) ?: return
+        val data = RoomData.getRoomData(core) ?: return modMessage("Unknown room data for core: $core $chunkPosition")
 
         val tilePosition = (chunkPosition / 2) + 6
-        val tile = tiles.getOrNull(tilePosition.x + (tilePosition.z * 6)) ?: return
+        val tile = DungeonScan.tiles.getOrNull(tilePosition.x + (tilePosition.z * 6)) ?: return
 
         val room = dataToRoom.getOrPut(data) {
             val existingMapRoom = tile.room
@@ -126,7 +122,7 @@ object DungeonWorldScan {
                 existingMapRoom.data = data
                 existingMapRoom.type = data.type
                 existingMapRoom
-            } else DungeonRoom(data.type, tile.position, data).also { DungeonMapScan.rooms.add(it) }
+            } else DungeonRoom(data.type, tile.position, data).also { DungeonScan.rooms.add(it) }
         }
 
         if (tile.room !== room) {
@@ -139,7 +135,7 @@ object DungeonWorldScan {
             room.type = data.type
         }
 
-        if (room.segments.size == data.shape.segments) room.inferLayout(highestBlock)
+        if (room.tiles.size == data.shape.tileAmount) room.inferLayout(highestBlock)
     }
 
     private val stringBuilder = StringBuilder(1024)

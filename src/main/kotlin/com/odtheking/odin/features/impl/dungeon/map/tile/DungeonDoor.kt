@@ -1,4 +1,4 @@
-package com.odtheking.odin.utils.skyblock.dungeon.map.tile
+package com.odtheking.odin.features.impl.dungeon.map.tile
 
 import com.odtheking.odin.utils.IVec2
 

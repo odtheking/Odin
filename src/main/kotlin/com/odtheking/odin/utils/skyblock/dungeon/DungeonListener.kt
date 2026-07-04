@@ -7,10 +7,10 @@ import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.features.impl.dungeon.LeapMenu
 import com.odtheking.odin.features.impl.dungeon.LeapMenu.odinSorting
+import com.odtheking.odin.features.impl.dungeon.map.DungeonScan
 import com.odtheking.odin.utils.network.WebUtils.hasBonusPaulScore
 import com.odtheking.odin.utils.noControlCodes
 import com.odtheking.odin.utils.romanToInt
-import com.odtheking.odin.utils.skyblock.dungeon.map.scan.DungeonMapScan
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import net.minecraft.network.protocol.game.*
@@ -61,7 +61,7 @@ object DungeonListener {
         }
 
         on<RoomEnterEvent> {
-            dungeonStats.knownSecrets = DungeonMapScan.rooms.sumOf { if (it.discovered) it.data?.secrets ?: 0 else 0 }
+            dungeonStats.knownSecrets = DungeonScan.rooms.sumOf { if (it.walkedInto) it.data?.secrets ?: 0 else 0 }
         }
 
         onReceive<ClientboundPlayerInfoUpdatePacket> {

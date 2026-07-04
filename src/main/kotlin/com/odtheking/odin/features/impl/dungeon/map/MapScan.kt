@@ -1,63 +1,28 @@
-package com.odtheking.odin.utils.skyblock.dungeon.map.scan
+package com.odtheking.odin.features.impl.dungeon.map
 
-import com.odtheking.odin.events.FloorEnterEvent
+import com.odtheking.odin.events.CheckmarkUpdateEvent
 import com.odtheking.odin.events.LevelEvent
+import com.odtheking.odin.events.MapUpdateEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
+import com.odtheking.odin.features.impl.dungeon.map.tile.*
 import com.odtheking.odin.utils.IVec2
 import com.odtheking.odin.utils.equalsOneOf
-import com.odtheking.odin.utils.modMessage
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
-import com.odtheking.odin.utils.skyblock.dungeon.Floor
-import com.odtheking.odin.utils.skyblock.dungeon.map.tile.*
 import net.minecraft.network.protocol.game.ClientboundMapItemDataPacket
-import net.minecraft.world.entity.player.Player
 import net.minecraft.world.level.saveddata.maps.MapDecoration
 import net.minecraft.world.level.saveddata.maps.MapDecorationTypes
-import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.jvm.optionals.getOrNull
 
-object DungeonMapScan {
+object MapScan {
 
     private const val MAP_SIZE = 128
-    private const val ROOM_SPACING = 4
     private const val EMPTY: Byte = 0
-
-    var roomGap = 20
-
-    var roomSize = 16
-        private set
-
-    var startX = 5
-        private set
-
-    var startY = 5
-        private set
 
     private var isInit = false
 
-    val tiles: Array<DungeonTile> = Array(36) { index ->
-        DungeonTile(position = IVec2(x = index % 6, z = index / 6))
-    }
-
-    val rooms: CopyOnWriteArrayList<DungeonRoom> = CopyOnWriteArrayList()
-
-    val doors: ConcurrentHashMap<IVec2, DungeonDoor> = ConcurrentHashMap()
-
     init {
-        on<LevelEvent.Load> {
-            repeat(36) { index ->
-                tiles[index] = DungeonTile(position = IVec2(x = index % 6, z = index / 6))
-            }
-            rooms.clear()
-            doors.clear()
-            roomSize = 16
-            roomGap  = 20
-            startX   = 5
-            startY   = 5
-            isInit   = false
-        }
+        on<LevelEvent.Load> { isInit = false }
 
         onReceive<ClientboundMapItemDataPacket> {
             if (!DungeonUtils.inClear || mapId().id and 1000 != 0) return@onReceive
@@ -67,32 +32,9 @@ object DungeonMapScan {
             if (colors.size < MAP_SIZE * MAP_SIZE || colors[0] != EMPTY) return@onReceive
 
             if (!isInit && !initLayout(colors)) return@onReceive
-            if (roomSize == -1) return@onReceive
+            if (DungeonScan.roomSize == -1) return@onReceive
             updateAll(colors)
         }
-
-        on<FloorEnterEvent> {
-            initClient(floor)
-        }
-    }
-
-    fun initClient(floor: Floor) {
-        roomSize = if (floor.floorNumber <= 3) 18 else 16
-        roomGap  = roomSize + ROOM_SPACING
-
-        startX = when {
-            floor.floorNumber <= 1  -> 22
-            floor.floorNumber <= 3  -> 11
-            else        -> 5
-        }
-
-        startY = when (floor.floorNumber) {
-            0       -> 22
-            4       -> 16
-            in 1..3 -> 11
-            else    -> 5
-        }
-        modMessage("Dungeon map layout initialized: roomSize=$roomSize, startX=$startX, startY=$startY")
     }
 
     private fun initLayout(colors: ByteArray): Boolean {
@@ -104,16 +46,19 @@ object DungeonMapScan {
 
             val length = end - index
             if (length == 16 || length == 18) {
-                roomSize = length
-                roomGap = roomSize + ROOM_SPACING
-                startX = (index % MAP_SIZE) % roomGap
-                startY = (index / MAP_SIZE) % roomGap
+                DungeonScan.roomSize = length
+                DungeonScan.roomGap = length + DungeonScan.ROOM_SPACING
+                DungeonScan.startX = (index % MAP_SIZE) % DungeonScan.roomGap
+                DungeonScan.startY = (index / MAP_SIZE) % DungeonScan.roomGap
 
-                if (startX == 0) startX = 22 // f1
-                if (startY == 0) startY = 22 // entrance
+                if (DungeonScan.startX == 0) DungeonScan.startX = 22 // f1
+                if (DungeonScan.startY == 0) DungeonScan.startY = 22 // entrance
 
                 isInit = true
-                modMessage("Dungeon map layout initialized: roomSize=$roomSize, startX=$startX, startY=$startY")
+
+                if ((DungeonUtils.isFloor(6, 5) && DungeonScan.startX == 5) || (DungeonUtils.isFloor(4) && DungeonScan.startX == 5))
+                    SpecialColumn.column = 5
+
                 return true
             }
         }
@@ -139,18 +84,19 @@ object DungeonMapScan {
         val centerColors = ByteArray(36)
         mapTiles(colors, roomTypes, roomColors, centerColors)
         processRooms(colors, roomTypes, roomColors, centerColors)
+        MapUpdateEvent().postAndCatch()
     }
 
     private fun mapTiles(colors: ByteArray, roomTypes: Array<RoomType?>, roomColors: ByteArray, centerColors: ByteArray) {
-        val halfRoom = roomSize / 2
-        val connectionGap = roomSize + ROOM_SPACING / 2
+        val halfRoom = DungeonScan.roomSize / 2
+        val connectionGap = DungeonScan.roomSize + DungeonScan.ROOM_SPACING / 2
 
         for (index in 0 until 36) {
             val tileX = index % 6
             val tileZ = index / 6
 
-            val originX = startX + tileX * roomGap
-            val originZ = startY + tileZ * roomGap
+            val originX = DungeonScan.startX + tileX * DungeonScan.roomGap
+            val originZ = DungeonScan.startY + tileZ * DungeonScan.roomGap
 
             val cornerColor = getPx(colors, originX, originZ)
 
@@ -175,12 +121,9 @@ object DungeonMapScan {
         }
     }
 
-    val directions = arrayOf(1 to 0, -1 to 0, 0 to 1, 0 to -1)
-
     private fun processRooms(colors: ByteArray, roomTypes: Array<RoomType?>, roomColors: ByteArray, centerColors: ByteArray) {
         val visited = BooleanArray(36)
-
-        val connectionGap = roomSize + ROOM_SPACING / 2
+        val connectionGap = DungeonScan.roomSize + DungeonScan.ROOM_SPACING / 2
 
         for (startIndex in 0 until 36) {
             val roomType = roomTypes[startIndex] ?: continue
@@ -199,7 +142,7 @@ object DungeonMapScan {
                 val currentX = currentIndex % 6
                 val currentZ = currentIndex / 6
 
-                for ((dx, dz) in directions) {
+                for ((dx, dz) in DungeonScan.directions) {
                     val nextX = currentX + dx
                     val nextZ = currentZ + dz
 
@@ -209,10 +152,10 @@ object DungeonMapScan {
                     if (visited[nextIndex] || roomTypes[nextIndex] != roomType) continue
 
                     val connected = when {
-                        dx == 1 -> getPx(colors, startX + currentX * roomGap + connectionGap, startY + currentZ * roomGap) != EMPTY
-                        dx == -1 -> getPx(colors, startX + nextX * roomGap + connectionGap, startY + nextZ * roomGap) != EMPTY
-                        dz == 1 -> getPx(colors, startX + currentX * roomGap, startY + currentZ * roomGap + connectionGap) != EMPTY
-                        else -> getPx(colors, startX + nextX * roomGap, startY + nextZ * roomGap + connectionGap) != EMPTY
+                        dx == 1 -> getPx(colors, DungeonScan.startX + currentX * DungeonScan.roomGap + connectionGap, DungeonScan.startY + currentZ * DungeonScan.roomGap) != EMPTY
+                        dx == -1 -> getPx(colors, DungeonScan.startX + nextX * DungeonScan.roomGap + connectionGap, DungeonScan.startY + nextZ * DungeonScan.roomGap) != EMPTY
+                        dz == 1 -> getPx(colors, DungeonScan.startX + currentX * DungeonScan.roomGap, DungeonScan.startY + currentZ * DungeonScan.roomGap + connectionGap) != EMPTY
+                        else -> getPx(colors, DungeonScan.startX + nextX * DungeonScan.roomGap, DungeonScan.startY + nextZ * DungeonScan.roomGap + connectionGap) != EMPTY
                     }
 
                     if (!connected) continue
@@ -227,23 +170,23 @@ object DungeonMapScan {
     }
 
     private fun buildRoom(segments: List<Int>, roomType: RoomType, roomColors: ByteArray, centerColors: ByteArray) {
-        val existingRoom = segments.firstNotNullOfOrNull { tiles[it].room }
+        val existingRoom = segments.firstNotNullOfOrNull { DungeonScan.tiles[it].room }
 
         val room = if (existingRoom != null) {
             for (index in segments) {
-                if (tiles[index].room != existingRoom) {
-                    tiles[index].room = existingRoom
-                    existingRoom.addSegment(tiles[index])
+                if (DungeonScan.tiles[index].room != existingRoom) {
+                    DungeonScan.tiles[index].room = existingRoom
+                    existingRoom.addSegment(DungeonScan.tiles[index])
                 }
             }
             if (existingRoom.highestBlock == null) existingRoom.inferLayoutFromMap()
             existingRoom
         } else {
             DungeonRoom(roomType, IVec2(segments.minOf { it % 6 }, segments.minOf { it / 6 })).also { newRoom ->
-                rooms.add(newRoom)
+                DungeonScan.rooms.add(newRoom)
                 for (index in segments) {
-                    tiles[index].room = newRoom
-                    newRoom.addSegment(tiles[index])
+                    DungeonScan.tiles[index].room = newRoom
+                    newRoom.addSegment(DungeonScan.tiles[index])
                 }
                 newRoom.inferLayoutFromMap()
             }
@@ -253,33 +196,26 @@ object DungeonMapScan {
             val roomColor = roomColors[index]
             val centerColor = centerColors[index]
 
-            if (centerColor == roomColor && room.checkmark.equalsOneOf(MapCheckmark.UNDISCOVERED, MapCheckmark.QUESTION_MARK)) room.checkmark = MapCheckmark.NONE
-            else MapCheckmark.fromMapColor(centerColor)?.let { room.checkmark = it }
+            val newCheckmark = when {
+                centerColor == roomColor && room.checkmark.equalsOneOf(MapCheckmark.UNDISCOVERED, MapCheckmark.QUESTION_MARK) -> MapCheckmark.NONE
+                else -> MapCheckmark.fromMapColor(centerColor)
+            }
+
+            if (newCheckmark != null && newCheckmark != room.checkmark) {
+                room.checkmark = newCheckmark
+                CheckmarkUpdateEvent(room, newCheckmark).postAndCatch()
+            }
         }
     }
-
-    fun playerRenderPosition(entity: Player?, mapPos: IVec2): Pair<Float, Float> {
-        entity?.let {
-            val mapX = (it.x.toFloat() + 200f) * roomGap / 32f
-            val mapZ = (it.z.toFloat() + 200f) * roomGap / 32f
-            return mapX to mapZ
-        }
-
-        val pixelX = (mapPos.x + 128) / 2f - startX
-        val pixelY = (mapPos.z + 128) / 2f - startY
-        return pixelX to pixelY
-    }
-
-    private fun getPx(colors: ByteArray, x: Int, z: Int): Byte =
-        if (x in 0..<MAP_SIZE && z in 0..<MAP_SIZE) colors[z * MAP_SIZE + x] else EMPTY
 
     private fun addOrFixDoor(position: IVec2, rotation: DoorRotation, doorType: DoorType) {
         val chunkPos = IVec2(-12 + 2 * position.x + rotation.offset.x, -12 + 2 * position.z + rotation.offset.z)
         val originIndex = position.x + position.z * 6
         val destPos = IVec2(position.x + rotation.offset.x, position.z + rotation.offset.z)
         val destIndex = destPos.x + destPos.z * 6
-        doors.getOrPut(chunkPos) { DungeonDoor(position, rotation, doorType, originIndex, destIndex) }.apply {
-            if (type == DoorType.Normal) type = doorType
-        }
+        DungeonScan.doors.getOrPut(chunkPos) { DungeonDoor(position, rotation, doorType, originIndex, destIndex) }.type = doorType
     }
+
+    private fun getPx(colors: ByteArray, x: Int, z: Int): Byte =
+        if (x in 0..<MAP_SIZE && z in 0..<MAP_SIZE) colors[z * MAP_SIZE + x] else EMPTY
 }

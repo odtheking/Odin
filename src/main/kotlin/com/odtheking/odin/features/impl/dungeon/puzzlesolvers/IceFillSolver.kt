@@ -3,12 +3,12 @@ package com.odtheking.odin.features.impl.dungeon.puzzlesolvers
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.events.RenderEvent
 import com.odtheking.odin.events.RoomEnterEvent
+import com.odtheking.odin.features.impl.dungeon.map.tile.DungeonRoom
 import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.JsonResourceLoader
 import com.odtheking.odin.utils.modMessage
 import com.odtheking.odin.utils.render.drawLine
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
-import com.odtheking.odin.utils.skyblock.dungeon.map.tile.DungeonRoom
 import net.minecraft.core.BlockPos
 import net.minecraft.world.phys.Vec3
 
