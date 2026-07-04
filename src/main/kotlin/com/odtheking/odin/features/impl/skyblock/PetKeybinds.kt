@@ -34,6 +34,7 @@ object PetKeybinds : Module(
     private val pet8 by KeybindSetting("Pet 8", GLFW.GLFW_KEY_8, "Pet 8 on the list.").withDependency { advanced }
     private val pet9 by KeybindSetting("Pet 9", GLFW.GLFW_KEY_9, "Pet 9 on the list.").withDependency { advanced }
 
+    private val petSlots = intArrayOf(10, 11, 12, 13, 14, 15, 16, 19, 20)
     private val petsRegex = Regex("Pets(?: \\((\\d)/(\\d)\\))?")
 
     init {
@@ -46,7 +47,6 @@ object PetKeybinds : Module(
         }
     }
 
-    private val petSlots = intArrayOf(10, 11, 12, 13, 14, 15, 16, 19, 20)
 
     private fun onClick(screen: AbstractContainerScreen<*>, keyCode: Int): Boolean {
         val (current, total) = petsRegex.find(screen.title.string)?.destructured?.let {
