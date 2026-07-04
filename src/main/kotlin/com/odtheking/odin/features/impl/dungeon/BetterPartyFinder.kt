@@ -68,7 +68,7 @@ object BetterPartyFinder : Module(
 
                     val kickedReasons = mutableListOf<String>()
 
-                    val currentProfile = profile.getOrElse { return@launch modMessage(it.message) }.memberData ?: return@launch modMessage("Could not find member data for $name")
+                    val currentProfile = profile.getOrNull()?.memberData ?: return@launch modMessage("Could not find member data for $name")
 
                     val dungeon = if (!mmToggle) currentProfile.dungeons.dungeonTypes.catacombs else currentProfile.dungeons.dungeonTypes.mastermode
                     dungeon.fastestTimeSPlus["$floor"]?.let {
