@@ -10,6 +10,8 @@ import com.odtheking.odin.features.impl.boss.MelodyMessage.melodyWebSocket
 import com.odtheking.odin.features.impl.boss.WitherDragonState
 import com.odtheking.odin.features.impl.boss.WitherDragons
 import com.odtheking.odin.features.impl.boss.WitherDragonsEnum
+import com.odtheking.odin.features.impl.dungeon.map.DungeonScan
+import com.odtheking.odin.features.impl.dungeon.map.WorldScan
 import com.odtheking.odin.features.impl.nether.NoPre
 import com.odtheking.odin.features.impl.render.ClickGUIModule.webSocketUrl
 import com.odtheking.odin.features.impl.render.PlayerSize
@@ -23,9 +25,7 @@ import com.odtheking.odin.utils.skyblock.PartyUtils
 import com.odtheking.odin.utils.skyblock.Supply
 import com.odtheking.odin.utils.skyblock.dungeon.Blessing
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
-import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils.getRelativeCoords
-import com.odtheking.odin.utils.skyblock.dungeon.ScanUtils
-import com.odtheking.odin.utils.skyblock.dungeon.ScanUtils.getRoomCenter
+import com.odtheking.odin.utils.skyblock.dungeon.Floor
 import com.odtheking.odin.utils.ui.rendering.NVGRenderer
 import kotlinx.coroutines.launch
 import net.minecraft.core.registries.BuiltInRegistries
@@ -127,7 +127,7 @@ val devCommand = Commodore("oddev") {
                             |DungeonTime: ${DungeonUtils.dungeonTime}
                             |currentDungeonPlayer: ${DungeonUtils.currentDungeonPlayer.name}, ${DungeonUtils.currentDungeonPlayer.clazz}, ${DungeonUtils.currentDungeonPlayer.isDead}
                             |doorOpener: ${DungeonUtils.doorOpener}
-                            |currentRoom: ${DungeonUtils.currentRoom?.data?.name}, roomsPassed: ${DungeonUtils.passedRooms.map { it.data.name }}
+                            |currentRoom: ${WorldScan.currentRoom?.data?.name}, roomsPassed: ${DungeonScan.rooms.filter { it.walkedInto }.map { it.data?.name }}
                             |Teammates: ${DungeonUtils.dungeonTeammates.joinToString { "§${it.clazz.colorCode}${it.name} (${it.clazz} [${it.clazzLvl}])§r" }}
                             |TeammatesNoSelf: ${DungeonUtils.dungeonTeammatesNoSelf.map { it.name }}
                             |LeapTeammates: ${DungeonUtils.leapTeammates.map { it.name }}
@@ -157,13 +157,8 @@ val devCommand = Commodore("oddev") {
                 append(" §8│ §eIn §f${(dragon.timeToSpawn / 20f).toFixed()}§es")
             }
 
-            val spawnInfo = buildString {
-                append(" §8│ §7Spawned: §fx${dragon.timesSpawned}")
-            }
-
-            val uuid = buildString {
-                append(" §8│ §7UUID: §f${dragon.entityUUID}")
-            }
+            val spawnInfo = buildString { append(" §8│ §7Spawned: §fx${dragon.timesSpawned}") }
+            val uuid = buildString { append(" §8│ §7UUID: §f${dragon.entityUUID}") }
 
             val flags = buildString {
                 val flagList = mutableListOf<String>()
@@ -179,30 +174,39 @@ val devCommand = Commodore("oddev") {
         }
     }
 
-    literal("roomdata").runs {
+    literal("roomdata").runs { x: Int?, z: Int? ->
         val player = mc.player ?: return@runs
-        val vec2 = Vec2(player.x.toInt(), player.z.toInt())
-        val chunk = mc.level?.getChunk(vec2.x shr 4, vec2.z shr 4) ?: return@runs
-        val roomCenter = getRoomCenter(vec2.x, vec2.z)
-        val room = ScanUtils.scanRoom(roomCenter)
-        val core = ScanUtils.getCore(roomCenter)
+        val tileX = ((x ?: player.blockX) + 201) shr 5
+        val tileZ = ((z ?: player.blockZ) + 201) shr 5
+
+        val roomPos = IVec2(tileX * 32 - 185, tileZ * 32 - 185)
+        val chunk = mc.level?.getChunk(roomPos.x shr 4, roomPos.z shr 4) ?: return@runs
+        val core = WorldScan.getRoomCore(chunk, roomPos)
+        val room = DungeonScan.tiles[tileX + tileZ * 6].room ?: return@runs modMessage("§cNo room data found for the current tile.")
+
         modMessage(
             """
-            Middle: ${roomCenter.x}, ${roomCenter.z}
-            Room: ${ScanUtils.coreToRoomData[core]?.name}
-            Core: $core
-            Rotation: ${room?.rotation ?: "NONE"}
-            Positions: ${room?.roomComponents?.joinToString { "(${it.x}, ${it.z})" } ?: "None"}
-            Height: ${ScanUtils.getTopLayerOfRoom(vec2, chunk)}
-            """.trimIndent(), "")
-        setClipboardContent(core.toString())
-        modMessage("§aCopied $core to clipboard!")
+            Middle: ${roomPos.x} ${roomPos.z}
+            Room: ${room.name} ${room.shape}
+            Core: ${core.first} height: ${core.second}
+            Rotation: ${room.rotation ?: "NONE"} ${room.clayPos}
+            Positions: ${room.tiles.joinToString { tile -> "${room.getRealPosition(tile.x, tile.z)}" }}
+            """.trimIndent(), ""
+        )
+        setClipboardContent(core.first.toString())
+        modMessage("§aCopied §f${core.first} §ato clipboard!")
+    }
+
+    literal("setfloor").runs { floorNumber: Int ->
+        Floor.entries.find { it.floorNumber == floorNumber }?.let { floor ->
+            DungeonScan.initClient(floor)
+        } ?: modMessage("§cInvalid floor number: $floorNumber. Valid floors are 1-7.")
     }
 
     literal("relative").runs {
         mc.hitResult?.let {
             if (it !is BlockHitResult) return@runs
-            DungeonUtils.currentRoom?.getRelativeCoords(it.blockPos)?.let { vec2 ->
+            WorldScan.currentRoom?.getRelativeCoords(it.blockPos)?.let { vec2 ->
                 modMessage("Relative coords: ${vec2.x}, ${vec2.z}")
             }
         }

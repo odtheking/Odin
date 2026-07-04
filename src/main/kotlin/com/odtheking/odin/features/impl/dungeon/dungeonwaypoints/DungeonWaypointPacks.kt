@@ -4,10 +4,9 @@ import com.odtheking.odin.config.WaypointPackFileUtils
 import com.odtheking.odin.config.WaypointPackState
 import com.odtheking.odin.config.normalized
 import com.odtheking.odin.features.ModuleManager
+import com.odtheking.odin.features.impl.dungeon.map.tile.DungeonRoom
 import com.odtheking.odin.utils.modMessage
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
-import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils.getRealCoords
-import com.odtheking.odin.utils.skyblock.dungeon.tiles.Room
 import net.minecraft.world.phys.AABB
 
 suspend fun DungeonWaypoints.loadWaypoints() {
@@ -79,23 +78,25 @@ internal fun DungeonWaypoints.resetClickedWaypoints() {
     DungeonUtils.currentRoom?.setWaypoints()
 }
 
-fun Room.setWaypoints() {
-    waypoints = DungeonWaypoints.allActiveWaypoints[data.name]
+fun DungeonRoom.setWaypoints() {
+    val name = data?.name ?: return
+    waypoints = DungeonWaypoints.allActiveWaypoints[name]
         ?.mapTo(mutableSetOf()) { waypoint ->
             waypoint.copy(blockPos = getRealCoords(waypoint.blockPos))
         } ?: mutableSetOf()
 }
 
-fun DungeonWaypoints.getWaypoints(room: Room): MutableList<DungeonWaypoints.DungeonWaypoint> =
-    allActiveWaypoints.getOrPut(room.data.name) { mutableListOf() }
+fun DungeonWaypoints.getWaypoints(room: DungeonRoom): MutableList<DungeonWaypoints.DungeonWaypoint> =
+    allActiveWaypoints.getOrPut(room.data?.name ?: return mutableListOf()) { mutableListOf() }
 
-fun DungeonWaypoints.getEditableWaypoints(room: Room): MutableList<DungeonWaypoints.DungeonWaypoint> =
-    loadedPacks.getOrPut(editPackId) { mutableMapOf() }.getOrPut(room.data.name) { mutableListOf() }
+fun DungeonWaypoints.getEditableWaypoints(room: DungeonRoom): MutableList<DungeonWaypoints.DungeonWaypoint> =
+    loadedPacks.getOrPut(editPackId) { mutableMapOf() }.getOrPut(room.data?.name ?: return mutableListOf()) { mutableListOf() }
 
-fun DungeonWaypoints.syncRoomToActive(room: Room) {
-    val mergedRoom = mergeRoomWaypoints(room.data.name)
-    if (mergedRoom.isEmpty()) allActiveWaypoints.remove(room.data.name)
-    else allActiveWaypoints[room.data.name] = mergedRoom
+fun DungeonWaypoints.syncRoomToActive(room: DungeonRoom) {
+    val name = room.data?.name ?: return@syncRoomToActive
+    val mergedRoom = mergeRoomWaypoints(name)
+    if (mergedRoom.isEmpty()) allActiveWaypoints.remove(name)
+    else allActiveWaypoints[name] = mergedRoom
     room.setWaypoints()
 }
 

@@ -2,13 +2,12 @@ package com.odtheking.odin.utils.skyblock.dungeon
 
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.features.impl.dungeon.MapInfo.togglePaul
+import com.odtheking.odin.features.impl.dungeon.map.WorldScan
+import com.odtheking.odin.features.impl.dungeon.map.tile.DungeonRoom
 import com.odtheking.odin.utils.equalsOneOf
 import com.odtheking.odin.utils.romanToInt
-import com.odtheking.odin.utils.rotateAroundNorth
-import com.odtheking.odin.utils.rotateToNorth
 import com.odtheking.odin.utils.skyblock.Island
 import com.odtheking.odin.utils.skyblock.LocationUtils
-import com.odtheking.odin.utils.skyblock.dungeon.tiles.Room
 import net.minecraft.core.BlockPos
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.SkullBlock
@@ -72,7 +71,7 @@ object DungeonUtils {
         get() = DungeonListener.dungeonStats.elapsedTime
 
     inline val currentRoomName: String
-        get() = DungeonListener.currentRoom?.data?.name ?: "Unknown"
+        get() = WorldScan.currentRoom?.data?.name ?: "Unknown"
 
     inline val dungeonTeammates: List<DungeonPlayer>
         get() = DungeonListener.dungeonTeammates
@@ -96,11 +95,8 @@ object DungeonUtils {
     inline val princeKilled: Boolean
         get() = DungeonListener.dungeonStats.princeKilled
 
-    inline val currentRoom: Room?
-        get() = DungeonListener.currentRoom
-
-    inline val passedRooms: Set<Room>
-        get() = DungeonListener.passedRooms
+    inline val currentRoom: DungeonRoom?
+        get() = WorldScan.currentRoom
 
     inline val isPaul: Boolean
         get() = DungeonListener.paul
@@ -201,7 +197,7 @@ object DungeonUtils {
             previousTeammates.find { it.name == name }?.let { player ->
                 if (player.clazz == DungeonClass.EMPTY) {
                     player.clazz = DungeonClass.entries.find { it.name.equals(clazz, ignoreCase = true) } ?: DungeonClass.EMPTY
-                    player.clazzLvl = romanToInt(clazzLevel)
+                    player.clazzLvl = if (clazzLevel.isNotEmpty()) romanToInt(clazzLevel) else -1
                 }
 
                 player.isDead = clazz == "DEAD"
@@ -242,7 +238,4 @@ object DungeonUtils {
             else -> false
         }
     }
-
-    fun Room.getRelativeCoords(pos: BlockPos) = pos.subtract(clayPos.atY(0)).rotateToNorth(rotation)
-    fun Room.getRealCoords(pos: BlockPos) = pos.rotateAroundNorth(rotation).offset(clayPos.x, 0, clayPos.z)
 }
