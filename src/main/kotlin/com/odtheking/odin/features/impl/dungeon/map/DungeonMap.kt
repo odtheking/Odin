@@ -13,7 +13,10 @@ import com.odtheking.odin.utils.render.hollowFill
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.client.gui.GuiGraphicsExtractor
 
-object DungeonMap : Module("Bad map", description = "Displays the dungeon map.") {
+object DungeonMap : Module(
+    "Dungeon Map",
+    description = "Displays the dungeon map."
+) {
 
     private val disableBoss by BooleanSetting("Disable in Boss", true, desc = "Disables the map during boss fights.")
 
