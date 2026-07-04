@@ -84,7 +84,7 @@ object MapScan {
         val centerColors = ByteArray(36)
         mapTiles(colors, roomTypes, roomColors, centerColors)
         processRooms(colors, roomTypes, roomColors, centerColors)
-        MapUpdateEvent().postAndCatch()
+        MapUpdateEvent.postAndCatch()
     }
 
     private fun mapTiles(colors: ByteArray, roomTypes: Array<RoomType?>, roomColors: ByteArray, centerColors: ByteArray) {
