@@ -46,6 +46,8 @@ object PetKeybinds : Module(
         }
     }
 
+    private val petSlots = intArrayOf(10, 11, 12, 13, 14, 15, 16, 19, 20)
+
     private fun onClick(screen: AbstractContainerScreen<*>, keyCode: Int): Boolean {
         val (current, total) = petsRegex.find(screen.title.string)?.destructured?.let {
             (it.component1().toIntOrNull() ?: 1) to (it.component2().toIntOrNull() ?: 1)
@@ -60,8 +62,10 @@ object PetKeybinds : Module(
                     .takeIf { it != -1 }?.plus(10) ?: return false.also { modMessage("§cCouldn't find equipped pet") }
 
             else -> {
-                arrayOf(pet1, pet2, pet3, pet4, pet5, pet6, pet7, pet8, pet9).indexOfFirst { it.value == keyCode }
-                    .takeIf { it != -1 }?.plus(10) ?: return false
+                val petIndex = arrayOf(pet1, pet2, pet3, pet4, pet5, pet6, pet7, pet8, pet9).indexOfFirst { it.value == keyCode }
+                if (petIndex == -1) return false
+
+                petSlots.getOrNull(petIndex) ?: return false
             }
         }
 
