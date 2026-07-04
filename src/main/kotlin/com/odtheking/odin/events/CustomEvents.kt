@@ -72,5 +72,7 @@ abstract class PacketEvent(val packet: Packet<*>) : CancellableEvent() { // idea
 
 class RoomEnterEvent(val room: DungeonRoom?) : Event
 class FloorEnterEvent(val floor: Floor) : Event
-class MapUpdateEvent : Event
+data object MapUpdateEvent : Event
 class CheckmarkUpdateEvent(val room: DungeonRoom, val checkmark: MapCheckmark) : Event
+
+object LocationChangeEvent : Event
