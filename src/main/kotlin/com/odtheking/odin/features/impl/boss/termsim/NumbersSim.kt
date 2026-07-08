@@ -1,4 +1,5 @@
 package com.odtheking.odin.features.impl.boss.termsim
+import net.minecraft.world.item.DyeColor
 
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalTypes
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalUtils
@@ -15,19 +16,19 @@ object NumbersSim : TermSimGUI(
     override fun create() {
         val used = (1..14).shuffled().toMutableList()
         createNewGui {
-            if (floor(it.index / 9f) in 1f..2f && it.index % 9 in 1..7) ItemStack(Items.RED_STAINED_GLASS_PANE, used.first()).apply { set(DataComponents.CUSTOM_NAME, Component.literal("§a${used.removeFirst()}")) }
+            if (floor(it.index / 9f) in 1f..2f && it.index % 9 in 1..7) ItemStack(Items.STAINED_GLASS_PANE.pick(DyeColor.RED), used.first()).apply { set(DataComponents.CUSTOM_NAME, Component.literal("§a${used.removeFirst()}")) }
             else blackPane
         }
     }
 
     override fun slotClick(slot: Slot, button: Int) {
-        if (guiInventorySlots.minByOrNull { if (it.item.item == Items.RED_STAINED_GLASS_PANE) it.item.count else 1000 } != slot) return
+        if (guiInventorySlots.minByOrNull { if (it.item.item == Items.STAINED_GLASS_PANE.pick(DyeColor.RED)) it.item.count else 1000 } != slot) return
         createNewGui {
-            if (it == slot) ItemStack(Items.LIME_STAINED_GLASS_PANE, slot.item.count).apply { set(DataComponents.CUSTOM_NAME, Component.literal("")) }
+            if (it == slot) ItemStack(Items.STAINED_GLASS_PANE.pick(DyeColor.LIME), slot.item.count).apply { set(DataComponents.CUSTOM_NAME, Component.literal("")) }
             else it.item
         }
 
-        if (guiInventorySlots.none { it?.item?.item == Items.RED_STAINED_GLASS_PANE })
+        if (guiInventorySlots.none { it?.item?.item == Items.STAINED_GLASS_PANE.pick(DyeColor.RED) })
             TerminalUtils.lastTermOpened?.onComplete()
 
         super.slotClick(slot, button)

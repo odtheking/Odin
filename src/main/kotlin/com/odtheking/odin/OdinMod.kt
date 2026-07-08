@@ -78,17 +78,11 @@ object OdinMod : ClientModInitializer {
             ModuleManager, CustomGUIImpl, Shenanigans,
         ).forEach { EventBus.subscribe(it) }
 
-        PictureInPictureRendererRegistry.register { context ->
-            NVGPIPRenderer(context.bufferSource())
-        }
+        PictureInPictureRendererRegistry.register { NVGPIPRenderer() }
 
-        PictureInPictureRendererRegistry.register { context ->
-            RoundRectPIPRenderer(context.bufferSource())
-        }
+        PictureInPictureRendererRegistry.register { RoundRectPIPRenderer() }
 
-        PictureInPictureRendererRegistry.register { context ->
-            ItemStateRenderer(context.bufferSource())
-        }
+        PictureInPictureRendererRegistry.register { ItemStateRenderer() }
 
         val name = mc.user.name.takeIf { !it.matches(Regex("Player\\d{2,3}")) } ?: return
         scope.launch {

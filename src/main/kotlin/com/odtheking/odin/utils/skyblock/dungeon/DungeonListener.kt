@@ -1,4 +1,5 @@
 package com.odtheking.odin.utils.skyblock.dungeon
+import net.minecraft.world.entity.EntityTypes
 
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.OdinMod.scope
@@ -124,7 +125,7 @@ object DungeonListener {
         }
 
         onReceive<ClientboundAddEntityPacket> {
-            if (type == EntityType.PLAYER)
+            if (type == EntityTypes.PLAYER)
                 DungeonUtils.dungeonTeammates.find { it.entity == null && it.name == mc.level?.getEntity(id)?.name?.string }?.entity =
                     mc.level?.getEntity(id) as? Player
         }

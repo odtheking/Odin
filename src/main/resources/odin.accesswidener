@@ -7,3 +7,8 @@ accessible field net/minecraft/client/gui/screens/inventory/AbstractContainerScr
 accessible field net/minecraft/client/gui/screens/inventory/AbstractContainerScreen imageHeight I
 accessible class com/mojang/blaze3d/opengl/GlDevice
 accessible field com/mojang/blaze3d/systems/GpuDevice backend Lcom/mojang/blaze3d/systems/GpuDeviceBackend;
+
+accessible field net/minecraft/client/renderer/GameRenderer mainCamera Lnet/minecraft/client/Camera;
+accessible field net/minecraft/client/renderer/GameRenderer lighting Lcom/mojang/blaze3d/platform/Lighting;
+accessible field net/minecraft/client/renderer/GameRenderer featureRenderDispatcher Lnet/minecraft/client/renderer/feature/FeatureRenderDispatcher;
+accessible field net/minecraft/client/renderer/GameRenderer gameRenderState Lnet/minecraft/client/renderer/state/GameRenderState;

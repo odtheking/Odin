@@ -86,7 +86,7 @@ class HUDSetting(
     override fun mouseClicked(mouseX: Float, mouseY: Float, click: MouseButtonEvent): Boolean {
         if (click.button() != 0) return false
         return if (isHovered) {
-            mc.setScreen(HudManager)
+            mc.setScreenAndShow(HudManager)
             true
         } else if (toggleable && isAreaHovered(lastX + width - 70f, lastY + getHeight() / 2f - 10f, 34f, 20f, true)) {
             toggleAnimation.start()

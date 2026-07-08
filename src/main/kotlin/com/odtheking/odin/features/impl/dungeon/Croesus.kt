@@ -124,8 +124,8 @@ object Croesus : Module(
         }
 
         onReceive<ClientboundContainerSetSlotPacket> {
-            val screenTitle = mc.screen?.title?.string ?: return@onReceive
-            val menu = (mc.screen as? AbstractContainerScreen<*>)?.menu ?: return@onReceive
+            val screenTitle = mc.gui.screen()?.title?.string ?: return@onReceive
+            val menu = (mc.gui.screen() as? AbstractContainerScreen<*>)?.menu ?: return@onReceive
 
             when {
                 screenTitle.matches(chestNameRegex) -> handleChestContents(menu.items)

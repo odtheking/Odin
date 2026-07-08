@@ -1,4 +1,5 @@
 package com.odtheking.odin.features.impl.boss
+import net.minecraft.world.entity.EntityTypes
 
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.utils.modMessage
@@ -28,7 +29,7 @@ object DragonCheck {
     }
 
     fun dragonSpawn(packet: ClientboundAddEntityPacket) {
-        if (packet.type == EntityType.ENDER_DRAGON)
+        if (packet.type == EntityTypes.ENDER_DRAGON)
             WitherDragonsEnum.entries.find {
                 it.aabbDimensions.contains(Vec3(packet.x, packet.y, packet.z))
             }?.setAlive(packet.uuid)

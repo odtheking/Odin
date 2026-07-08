@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 
 val dungeonWaypointsCommand = Commodore("dwp", "dungeonwaypoints") {
     runs {
-        schedule(0) { mc.setScreen(WaypointPackSelectorScreen(mc.screen)) }
+        schedule(0) { mc.setScreenAndShow(WaypointPackSelectorScreen(mc.gui.screen())) }
     }
 
     literal("fill").runs {

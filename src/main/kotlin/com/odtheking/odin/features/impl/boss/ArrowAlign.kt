@@ -1,4 +1,5 @@
 package com.odtheking.odin.features.impl.boss
+import com.odtheking.odin.utils.center
 
 import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting

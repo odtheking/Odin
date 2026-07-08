@@ -1,4 +1,5 @@
 package com.odtheking.odin.utils.skyblock.dungeon.terminals.terminalhandler
+import net.minecraft.world.item.DyeColor
 
 import com.odtheking.odin.features.impl.boss.TerminalSolver
 import com.odtheking.odin.utils.Color
@@ -12,7 +13,7 @@ class NumbersHandler: TerminalHandler(TerminalTypes.NUMBERS) {
 
     override fun solve(items: List<ItemStack>): List<Int> {
         return items.mapIndexedNotNull { index, item ->
-            if (item.item == Items.RED_STAINED_GLASS_PANE) index else null
+            if (item.item == Items.STAINED_GLASS_PANE.pick(DyeColor.RED)) index else null
         }.sortedBy { items[it].count }
     }
 

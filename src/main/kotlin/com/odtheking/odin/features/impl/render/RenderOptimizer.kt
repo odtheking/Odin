@@ -1,4 +1,5 @@
 package com.odtheking.odin.features.impl.render
+import net.minecraft.world.entity.EntityTypes
 
 import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
@@ -43,9 +44,9 @@ object RenderOptimizer : Module(
     init {
         onReceive<ClientboundAddEntityPacket> {
             when (type) {
-                EntityType.FALLING_BLOCK if hideFallingBlocks -> it.cancel()
-                EntityType.LIGHTNING_BOLT if hideLightning -> it.cancel()
-                EntityType.EXPERIENCE_ORB if hideExperienceOrbs -> it.cancel()
+                EntityTypes.FALLING_BLOCK if hideFallingBlocks -> it.cancel()
+                EntityTypes.LIGHTNING_BOLT if hideLightning -> it.cancel()
+                EntityTypes.EXPERIENCE_ORB if hideExperienceOrbs -> it.cancel()
             }
         }
 

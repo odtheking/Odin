@@ -58,7 +58,7 @@ object TerminalUtils {
         on<TickEvent.End> {
             val term = currentTerm ?: return@on
             if (System.currentTimeMillis() - lastClickTime >= TerminalSolver.terminalReloadThreshold && term.isClicked) {
-                val screen = (mc.screen as? AbstractContainerScreen<*>) ?: return@on
+                val screen = (mc.gui.screen() as? AbstractContainerScreen<*>) ?: return@on
                 GuiEvent.SlotUpdate(
                     screen,
                     ClientboundContainerSetSlotPacket(screen.menu.containerId, 0, term.type.windowSize - 1, ItemStack.EMPTY),
@@ -82,13 +82,13 @@ object TerminalUtils {
         }
 
         onSend<ServerboundContainerClickPacket> (EventPriority.LOW) {
-            val termSimScreen = mc.screen as? TermSimGUI ?: return@onSend
+            val termSimScreen = mc.gui.screen() as? TermSimGUI ?: return@onSend
             if (containerInput != ContainerInput.PICKUP_ALL) termSimScreen.clickIndex(slotNum.toInt(), buttonNum.toInt())
             it.cancel()
         }
 
         onReceive<ClientboundContainerSetSlotPacket> (EventPriority.HIGH) {
-            val termSimScreen = mc.screen as? TermSimGUI ?: return@onReceive
+            val termSimScreen = mc.gui.screen() as? TermSimGUI ?: return@onReceive
             if (slot !in 0 until termSimScreen.size) return@onReceive
             item.let { item -> mc.player?.inventoryMenu?.setItem(slot, stateId, item) }
             it.cancel()

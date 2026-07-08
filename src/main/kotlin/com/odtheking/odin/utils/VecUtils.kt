@@ -19,6 +19,9 @@ operator fun BlockPos.component3(): Int = z
 
 operator fun Vec3.unaryMinus(): Vec3 = Vec3(-x, -y, -z)
 
+// 26.2 removed BlockPos/Vec3i.getCenter(); restore it via Vec3.atCenterOf.
+val BlockPos.center: Vec3 get() = Vec3.atCenterOf(this)
+
 fun Vec3.floorVec(): Vec3 =
     Vec3(floor(x), floor(y), floor(z))
 

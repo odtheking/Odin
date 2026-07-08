@@ -4,13 +4,13 @@ import com.odtheking.odin.features.impl.skyblock.OverlayType;
 import com.odtheking.odin.features.impl.skyblock.PlayerDisplay;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.gui.contextualbar.ExperienceBarRenderer;
+import net.minecraft.client.gui.contextualbar.ExperienceBar;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(ExperienceBarRenderer.class)
+@Mixin(ExperienceBar.class)
 public class ExperienceBarRendererMixin {
 
     @Inject(method = "extractBackground", at = @At("HEAD"), cancellable = true)

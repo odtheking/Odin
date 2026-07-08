@@ -1,4 +1,5 @@
 package com.odtheking.odin.features.impl.dungeon.map
+import net.minecraft.world.item.DyeColor
 
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.events.LevelEvent
@@ -102,7 +103,7 @@ object WorldScan {
 
         val type = when (chunk.getBlockState(position.x, 69, position.z).block) {
             Blocks.COAL_BLOCK -> DoorType.Wither
-            Blocks.RED_TERRACOTTA -> DoorType.Blood
+            Blocks.DYED_TERRACOTTA.pick(DyeColor.RED) -> DoorType.Blood
             else -> DoorType.Normal
         }
         val doorPos = ((chunkPosition - 1) / 2) + 6

@@ -39,7 +39,7 @@ object ClickGUIModule : Module(
     val hypixelApiUrl by StringSetting("API URL", "https://api.odtheking.com/hypixel/", 128, "The Hypixel API server to connect to.").hide()
     val webSocketUrl by StringSetting("Socket URL", "wss://ws.odtheking.com/", 128, "The Websocket server to connect to.").hide()
 
-    private val action by ActionSetting("Open HUD Editor", desc = "Opens the HUD editor when clicked.") { mc.setScreen(HudManager) }
+    private val action by ActionSetting("Open HUD Editor", desc = "Opens the HUD editor when clicked.") { mc.setScreenAndShow(HudManager) }
     val devMessage by BooleanSetting("Developer Message", false, desc = "Sends development related messages to the chat.")
 
     override fun onKeybind() {
@@ -47,7 +47,7 @@ object ClickGUIModule : Module(
     }
 
     override fun onEnable() {
-        mc.setScreen(ClickGUI)
+        mc.setScreenAndShow(ClickGUI)
         super.onEnable()
         toggle()
     }

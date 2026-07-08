@@ -1,4 +1,5 @@
 package com.odtheking.odin.features.impl.boss
+import net.minecraft.world.item.DyeColor
 
 import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
@@ -68,7 +69,7 @@ object MelodyMessage : Module(
 
     init {
         on<TerminalEvent.Open> {
-            if (DungeonUtils.getF7Phase() != M7Phases.P3 || terminal.type != TerminalTypes.MELODY || mc.screen is TermSimGUI) return@on
+            if (DungeonUtils.getF7Phase() != M7Phases.P3 || terminal.type != TerminalTypes.MELODY || mc.gui.screen() is TermSimGUI) return@on
             if (sendMelodyMessage) sendCommand("pc $melodyMessage")
             if (melodySendCoords) sendCommand("od sendcoords")
         }
@@ -108,10 +109,10 @@ object MelodyMessage : Module(
 
     private fun onSlotUpdate(event: GuiEvent.SlotUpdate) {
         val term = TerminalUtils.currentTerm ?: return
-        if (DungeonUtils.getF7Phase() != M7Phases.P3 || term.type != TerminalTypes.MELODY || mc.screen is TermSimGUI) return
+        if (DungeonUtils.getF7Phase() != M7Phases.P3 || term.type != TerminalTypes.MELODY || mc.gui.screen() is TermSimGUI) return
 
         val item = event.packet.item.item
-        if (item == Items.LIME_TERRACOTTA) {
+        if (item == Items.DYED_TERRACOTTA.pick(DyeColor.LIME)) {
             val position = event.packet.slot / 9
             if (lastSent.clay == position) return
             if (broadcast) melodyWebSocket.send(update(1, position))
@@ -119,15 +120,15 @@ object MelodyMessage : Module(
             lastSent.clay = position
             return
         }
-        if (!broadcast || !item.equalsOneOf(Items.MAGENTA_STAINED_GLASS_PANE, Items.LIME_STAINED_GLASS_PANE)) return
+        if (!broadcast || !item.equalsOneOf(Items.STAINED_GLASS_PANE.pick(DyeColor.MAGENTA), Items.STAINED_GLASS_PANE.pick(DyeColor.LIME))) return
         val index = mapToRange(event.packet.slot) ?: return
         val meta = when (item) {
-            Items.MAGENTA_STAINED_GLASS_PANE -> {
+            Items.STAINED_GLASS_PANE.pick(DyeColor.MAGENTA) -> {
                 if (lastSent.purple == index) return
                 lastSent.purple = index
                 2
             }
-            Items.LIME_STAINED_GLASS_PANE -> {
+            Items.STAINED_GLASS_PANE.pick(DyeColor.LIME) -> {
                 if (lastSent.pane == index) return
                 lastSent.pane = index
                 5

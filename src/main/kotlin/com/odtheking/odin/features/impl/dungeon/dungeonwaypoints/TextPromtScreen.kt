@@ -41,7 +41,7 @@ class TextPromptScreen(val promptTitle: String) : Screen(Component.literal(promp
         }.width(100).build())
 
         buttonLayout.addChild(Button.builder(CommonComponents.GUI_CANCEL) { _ ->
-            mc.setScreen(null)
+            mc.gui.setScreen(null)
         }.width(100).build())
 
         layout.visitWidgets(this::addRenderableWidget)
@@ -73,7 +73,7 @@ class TextPromptScreen(val promptTitle: String) : Screen(Component.literal(promp
 
     override fun keyPressed(input: KeyEvent): Boolean {
         if (input.key == GLFW.GLFW_KEY_ESCAPE) {
-            mc.setScreen(null)
+            mc.gui.setScreen(null)
             return true
         }
 

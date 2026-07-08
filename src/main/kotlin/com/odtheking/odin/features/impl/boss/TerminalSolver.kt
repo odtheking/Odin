@@ -117,10 +117,10 @@ object TerminalSolver : Module(
 
     fun GuiGraphicsExtractor.renderDebug() {
         if (debug) TerminalUtils.currentTerm?.let { term ->
-            val menu = (mc.screen as? AbstractContainerScreen<*>)?.menu ?: return@let
+            val menu = (mc.gui.screen() as? AbstractContainerScreen<*>)?.menu ?: return@let
             val debugInfo = listOf(
                 "§7Type: §f${term.type.name}",
-                "§7Window Name: §f${mc.screen?.title?.string}",
+                "§7Window Name: §f${mc.gui.screen()?.title?.string}",
                 "§7Container ID: §f${menu.containerId}",
                 "§7Time Open: §f${System.currentTimeMillis() - term.timeOpened}ms",
                 "§7Is Clicked: §f${term.isClicked}",

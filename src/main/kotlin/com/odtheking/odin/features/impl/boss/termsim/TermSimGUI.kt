@@ -1,4 +1,5 @@
 package com.odtheking.odin.features.impl.boss.termsim
+import net.minecraft.world.item.DyeColor
 
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.events.GuiEvent
@@ -42,7 +43,7 @@ open class TermSimGUI(
     Inventory(mc.player!!, PlayerEquipment(mc.player!!)),
     Component.literal(name)
 ) {
-    val blackPane = ItemStack(Items.BLACK_STAINED_GLASS_PANE).apply { set(DataComponents.CUSTOM_NAME, Component.literal("")) }
+    val blackPane = ItemStack(Items.STAINED_GLASS_PANE.pick(DyeColor.BLACK)).apply { set(DataComponents.CUSTOM_NAME, Component.literal("")) }
     protected val guiInventorySlots get() = menu.slots.subList(0, size)
     private var doesAcceptClick = true
     protected var ping = 0L
@@ -53,7 +54,7 @@ open class TermSimGUI(
     }
 
     fun open(terminalPing: Long = 0L) {
-        mc.setScreen(this)
+        mc.setScreenAndShow(this)
         create()
         ping = terminalPing
     }
@@ -84,13 +85,13 @@ open class TermSimGUI(
     }
 
     private fun delaySlotClick(slot: Slot, button: Int) {
-        if (mc.screen == StartGUI) return slotClick(slot, button)
-        if (!doesAcceptClick || slot.container != inv || slot.item.item == Items.BLACK_STAINED_GLASS_PANE) return
+        if (mc.gui.screen() == StartGUI) return slotClick(slot, button)
+        if (!doesAcceptClick || slot.container != inv || slot.item.item == Items.STAINED_GLASS_PANE.pick(DyeColor.BLACK)) return
         if (ping <= 0L) return slotClick(slot, button)
         doesAcceptClick = false
         schedule((ping / 50).toInt().coerceAtLeast(0)) {
             doesAcceptClick = true
-            if (mc.screen == this) slotClick(slot, button)
+            if (mc.gui.screen() == this) slotClick(slot, button)
         }
     }
 
@@ -100,7 +101,7 @@ open class TermSimGUI(
     }
 
     protected fun Slot.setSlot(stack: ItemStack) {
-        GuiEvent.SlotUpdate(mc.screen ?: return, ClientboundContainerSetSlotPacket(-2, 0, index, stack), menu).postAndCatch()
+        GuiEvent.SlotUpdate(mc.gui.screen() ?: return, ClientboundContainerSetSlotPacket(-2, 0, index, stack), menu).postAndCatch()
         set(stack)
     }
 

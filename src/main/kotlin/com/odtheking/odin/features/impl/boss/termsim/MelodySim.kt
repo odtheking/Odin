@@ -1,4 +1,5 @@
 package com.odtheking.odin.features.impl.boss.termsim
+import net.minecraft.world.item.DyeColor
 
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalTypes
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalUtils
@@ -11,12 +12,12 @@ import net.minecraft.world.item.Items
 object MelodySim : TermSimGUI(
     TerminalTypes.MELODY.termName, TerminalTypes.MELODY.windowSize
 ) {
-    private val magentaPane get() = ItemStack(Items.MAGENTA_STAINED_GLASS_PANE).apply { set(DataComponents.CUSTOM_NAME, Component.literal("")) }
-    private val greenPane   get() = ItemStack(Items.LIME_STAINED_GLASS_PANE).apply { set(DataComponents.CUSTOM_NAME, Component.literal("")) }
-    private val redPane     get() = ItemStack(Items.RED_STAINED_GLASS_PANE).apply { set(DataComponents.CUSTOM_NAME, Component.literal("")) }
-    private val whitePane   get() = ItemStack(Items.WHITE_STAINED_GLASS_PANE).apply { set(DataComponents.CUSTOM_NAME, Component.literal("")) }
-    private val redClay     get() = ItemStack(Items.RED_TERRACOTTA).apply { set(DataComponents.CUSTOM_NAME, Component.literal("")) }
-    private val greenClay   get() = ItemStack(Items.LIME_TERRACOTTA).apply { set(DataComponents.CUSTOM_NAME, Component.literal("")) }
+    private val magentaPane get() = ItemStack(Items.STAINED_GLASS_PANE.pick(DyeColor.MAGENTA)).apply { set(DataComponents.CUSTOM_NAME, Component.literal("")) }
+    private val greenPane   get() = ItemStack(Items.STAINED_GLASS_PANE.pick(DyeColor.LIME)).apply { set(DataComponents.CUSTOM_NAME, Component.literal("")) }
+    private val redPane     get() = ItemStack(Items.STAINED_GLASS_PANE.pick(DyeColor.RED)).apply { set(DataComponents.CUSTOM_NAME, Component.literal("")) }
+    private val whitePane   get() = ItemStack(Items.STAINED_GLASS_PANE.pick(DyeColor.WHITE)).apply { set(DataComponents.CUSTOM_NAME, Component.literal("")) }
+    private val redClay     get() = ItemStack(Items.DYED_TERRACOTTA.pick(DyeColor.RED)).apply { set(DataComponents.CUSTOM_NAME, Component.literal("")) }
+    private val greenClay   get() = ItemStack(Items.DYED_TERRACOTTA.pick(DyeColor.LIME)).apply { set(DataComponents.CUSTOM_NAME, Component.literal("")) }
 
     private var magentaColumn = 1
     private var limeColumn = 2

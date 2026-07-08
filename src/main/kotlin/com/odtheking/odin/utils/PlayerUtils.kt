@@ -20,13 +20,13 @@ fun playSoundAtPlayer(event: SoundEvent, volume: Float = 1f, pitch: Float = 1f) 
 }
 
 fun setTitle(title: String) {
-    mc.gui.setTimes(0, 20, 5)
-    mc.gui.setTitle(Component.literal(title))
+    mc.gui.hud.setTimes(0, 20, 5)
+    mc.gui.hud.setTitle(Component.literal(title))
 }
 
 fun setSubtitle(subtitle: String) {
-    mc.gui.setTimes(0, 20, 5)
-    mc.gui.setSubtitle(Component.literal(subtitle))
+    mc.gui.hud.setTimes(0, 20, 5)
+    mc.gui.hud.setSubtitle(Component.literal(subtitle))
 }
 
 fun alert(title: String, playSound: Boolean = true) {

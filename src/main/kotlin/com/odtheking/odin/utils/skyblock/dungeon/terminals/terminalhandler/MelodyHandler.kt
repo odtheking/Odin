@@ -1,4 +1,5 @@
 package com.odtheking.odin.utils.skyblock.dungeon.terminals.terminalhandler
+import net.minecraft.world.item.DyeColor
 
 import com.odtheking.odin.features.impl.boss.TerminalSolver
 import com.odtheking.odin.utils.Color
@@ -12,13 +13,13 @@ class MelodyHandler: TerminalHandler(TerminalTypes.MELODY) {
     override fun canSolve(items: List<ItemStack>, currentIndex: Int): Boolean = true
 
     override fun solve(items: List<ItemStack>): List<Int> {
-        val magentaPane = items.indexOfFirst { it.item == Items.MAGENTA_STAINED_GLASS_PANE }
-        val greenPane = items.indexOfLast { it.item == Items.LIME_STAINED_GLASS_PANE }
-        val greenClay = items.indexOfLast { it.item == Items.LIME_TERRACOTTA }
+        val magentaPane = items.indexOfFirst { it.item == Items.STAINED_GLASS_PANE.pick(DyeColor.MAGENTA) }
+        val greenPane = items.indexOfLast { it.item == Items.STAINED_GLASS_PANE.pick(DyeColor.LIME) }
+        val greenClay = items.indexOfLast { it.item == Items.DYED_TERRACOTTA.pick(DyeColor.LIME) }
 
         return items.mapIndexedNotNull { index, item ->
             when {
-                index == greenPane || item.item == Items.MAGENTA_STAINED_GLASS_PANE -> index
+                index == greenPane || item.item == Items.STAINED_GLASS_PANE.pick(DyeColor.MAGENTA) -> index
                 index == greenClay && greenPane % 9 == magentaPane % 9 -> index
                 else -> null
             }

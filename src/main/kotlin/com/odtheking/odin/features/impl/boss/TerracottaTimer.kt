@@ -1,4 +1,5 @@
 package com.odtheking.odin.features.impl.boss
+import com.odtheking.odin.utils.center
 
 import com.odtheking.odin.events.BlockUpdateEvent
 import com.odtheking.odin.events.RenderEvent
