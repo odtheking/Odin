@@ -24,6 +24,7 @@ abstract class TerminalHandler(val type: TerminalTypes) {
     val timeOpened = System.currentTimeMillis()
     var isClicked = false
     var windowCount = 0
+    var ticksOpened = -1
 
     open fun updateSlot(event: GuiEvent.SlotUpdate) {
         if (event.packet.slot !in 0 until type.windowSize) return

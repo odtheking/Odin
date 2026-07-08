@@ -10,6 +10,7 @@ import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.render.roundedFill
 import com.odtheking.odin.utils.render.text
+import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalTypes
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalUtils
 import com.odtheking.odin.utils.ui.widget.CustomGUIImpl
 import net.minecraft.client.gui.GuiGraphicsExtractor
@@ -108,7 +109,8 @@ abstract class TermGui {
         TerminalUtils.currentTerm?.let { term ->
             val screen = mc.screen ?: return@let
             val btn = if (button == 0) GLFW.GLFW_MOUSE_BUTTON_3 else button
-            if (System.currentTimeMillis() - term.timeOpened >= TerminalSolver.firstClickProt &&
+            if (
+                (TerminalSolver.ignoreFirstClickProtMelody && (term.type == TerminalTypes.MELODY) || (System.currentTimeMillis() - term.timeOpened >= TerminalSolver.firstClickProt  && (TerminalSolver.shouldFirstClickProtWithTicks || term.ticksOpened >= TerminalSolver.firstClickProtTicks))) &&
                 !GuiEvent.CustomTermGuiClick(screen, slotIndex, btn).postAndCatch() &&
                 term.canClick(slotIndex, btn)
             ) term.click(slotIndex, btn, hideClicked && !term.isClicked)
