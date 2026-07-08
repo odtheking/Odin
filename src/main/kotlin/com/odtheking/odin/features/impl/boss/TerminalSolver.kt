@@ -32,7 +32,7 @@ object TerminalSolver : Module(
     private val cancelMelodySolver by BooleanSetting("Stop Melody Solver", false, desc = "Stops rendering the melody solver.").withDependency { solverSettings }
     val melodyTermSize by NumberSetting("Melody Size", 1.5f, 1f, 3f, 0.1f, desc = "The size of the melody terminal GUI.").withDependency { !cancelMelodySolver && solverSettings && renderType == 2 }
     val showNumbers by BooleanSetting("Show Numbers", true, desc = "Shows numbers in the order terminal.").withDependency { solverSettings }
-    private val firstClickProtSettings by DropdownSetting(name = "First Click Protection Dropdown")
+    private val firstClickProtSettings by DropdownSetting(name = "First Click Prot Dropdown").withDependency { solverSettings }
     val firstClickProt by NumberSetting("First Click Protection", 500, 350, 800, 10, unit = "ms", desc = "The amount of time after opening a terminal where clicks are blocked to prevent bans (recommended value is 500 minus your ping).").withDependency { solverSettings && firstClickProtSettings }
     val ignoreFirstClickProtMelody by BooleanSetting("Ignore Melody", default = true, desc = "Ignores First Click Protection on the melody terminal (has been shown to not ban)").withDependency { solverSettings && firstClickProtSettings }
     val shouldFirstClickProtWithTicks by BooleanSetting(name = "Account For Server Lag", default = true, desc = "Prevents bans from clicking when the server lags after opening the terminal").withDependency { solverSettings && firstClickProtSettings }
