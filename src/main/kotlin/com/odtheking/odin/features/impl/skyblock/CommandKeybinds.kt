@@ -25,7 +25,7 @@ object CommandKeybinds : Module(
     }
     private val equipment by KeybindSetting("Equipment", GLFW.GLFW_KEY_UNKNOWN, desc = "Opens the equipment menu.").onPress {
         if (!enabled || !LocationUtils.isInSkyblock) return@onPress
-        sendCommand("equipment")
+        sendCommand("stats")
     }
     private val dhub by KeybindSetting("Dungeon Hub", GLFW.GLFW_KEY_UNKNOWN, desc = "Warps to the dungeon hub.").onPress {
         if (!enabled || !LocationUtils.isInSkyblock) return@onPress
