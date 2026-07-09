@@ -19,11 +19,19 @@ object CommandKeybinds : Module(
         if (!enabled || !LocationUtils.isInSkyblock) return@onPress
         sendCommand("storage")
     }
-    private val wardrobe by KeybindSetting("Wardrobe", GLFW.GLFW_KEY_UNKNOWN, desc = "Opens the wardrobe menu.").onPress {
+    private val armorSets by KeybindSetting("Armor Sets", GLFW.GLFW_KEY_UNKNOWN, desc = "Opens the wardrobe menu.").onPress {
         if (!enabled || !LocationUtils.isInSkyblock) return@onPress
-        sendCommand("wardrobe")
+        sendCommand("armor")
     }
-    private val equipment by KeybindSetting("Equipment", GLFW.GLFW_KEY_UNKNOWN, desc = "Opens the equipment menu.").onPress {
+    private val equipmentSets by KeybindSetting("Equipment Sets", GLFW.GLFW_KEY_UNKNOWN, desc = "Opens the equipment sets menu.").onPress {
+        if (!enabled || !LocationUtils.isInSkyblock) return@onPress
+        sendCommand("equipment")
+    }
+    private val loadouts by KeybindSetting("Loadouts", GLFW.GLFW_KEY_UNKNOWN, desc = "Opens the loadouts menu.").onPress {
+        if (!enabled || !LocationUtils.isInSkyblock) return@onPress
+        sendCommand("loadout")
+    }
+    private val stats by KeybindSetting("Stats", GLFW.GLFW_KEY_UNKNOWN, desc = "Opens the stats menu.").onPress {
         if (!enabled || !LocationUtils.isInSkyblock) return@onPress
         sendCommand("stats")
     }
