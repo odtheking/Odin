@@ -33,7 +33,7 @@ object WardrobeKeybinds : Module(
     private val wardrobe8 by KeybindSetting("Wardrobe 8", GLFW.GLFW_KEY_8, desc = "Keybind to equip the eighth wardrobe slot.").withDependency { advanced }
     private val wardrobe9 by KeybindSetting("Wardrobe 9", GLFW.GLFW_KEY_9, desc = "Keybind to equip the ninth wardrobe slot.").withDependency { advanced }
 
-    private val wardrobeRegex = Regex("Wardrobe \\((\\d)/(\\d)\\)")
+    private val wardrobeRegex = Regex("\\((\\d)/(\\d)\\) Armor Sets")
     private val equippedRegex = Regex("Slot (\\d): Equipped")
 
     init {
