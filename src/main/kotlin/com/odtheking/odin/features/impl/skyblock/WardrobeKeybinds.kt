@@ -20,7 +20,7 @@ object WardrobeKeybinds : Module(
     private val nextPageKeybind by KeybindSetting("Next Page", GLFW.GLFW_KEY_RIGHT, desc = "Keybind to go to the next page in the wardrobe.")
     private val previousPageKeybind by KeybindSetting("Previous Page", GLFW.GLFW_KEY_LEFT, desc = "Keybind to go to the previous page in the wardrobe.")
     private val unequipKeybind by KeybindSetting("Unequip", GLFW.GLFW_KEY_UNKNOWN, desc = "Keybind to unequip the currently equipped item in the wardrobe.")
-    private val disallowUnequippingEquipped by BooleanSetting("Disable Unequip", desc = "Prevents unequipping equipped armor.")
+    private val disallowUnequippingEquipped by BooleanSetting("Disable Unequip", desc = "Prevents unequipping equipped set.")
 
     private val advanced by DropdownSetting("Show Settings")
     private val wardrobe1 by KeybindSetting("Wardrobe 1", GLFW.GLFW_KEY_1, desc = "Keybind to equip the first wardrobe slot.").withDependency { advanced }
@@ -33,7 +33,7 @@ object WardrobeKeybinds : Module(
     private val wardrobe8 by KeybindSetting("Wardrobe 8", GLFW.GLFW_KEY_8, desc = "Keybind to equip the eighth wardrobe slot.").withDependency { advanced }
     private val wardrobe9 by KeybindSetting("Wardrobe 9", GLFW.GLFW_KEY_9, desc = "Keybind to equip the ninth wardrobe slot.").withDependency { advanced }
 
-    private val wardrobeRegex = Regex("\\((\\d)/(\\d)\\) Armor Sets")
+    private val wardrobeRegex = Regex("\\((\\d)/(\\d)\\) (Armor|Equipment) Sets")
     private val equippedRegex = Regex("Slot (\\d): Equipped")
 
     init {
@@ -62,7 +62,7 @@ object WardrobeKeybinds : Module(
                 val keyIndex = arrayOf(wardrobe1, wardrobe2, wardrobe3, wardrobe4, wardrobe5, wardrobe6, wardrobe7, wardrobe8, wardrobe9)
                     .indexOfFirst { it.value == keyCode }.takeIf { it != -1 } ?: return false
 
-                if (equippedIndex == keyIndex + 36 && disallowUnequippingEquipped) return modMessage("§cArmor already equipped.").let { false }
+                if (equippedIndex == keyIndex + 36 && disallowUnequippingEquipped) return modMessage("§cSet already equipped.").let { false }
                 keyIndex + 36
             }
         }
