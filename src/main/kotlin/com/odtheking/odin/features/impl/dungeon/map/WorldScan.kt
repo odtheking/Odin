@@ -111,7 +111,7 @@ object WorldScan {
 
     private fun scanRoom(chunk: LevelChunk, chunkPosition: IVec2) {
         val (core, highestBlock) = getRoomCore(chunk, (chunkPosition * 16) + 7)
-        val data = RoomData.getRoomData(core) ?: return modMessage("Unknown room data for core: $core $chunkPosition")
+        val data = RoomData.getRoomData(core) ?: return devMessage("Unknown room data for core: $core $chunkPosition")
 
         val tilePosition = (chunkPosition / 2) + 6
         val tile = DungeonScan.tiles.getOrNull(tilePosition.x + (tilePosition.z * 6)) ?: return
