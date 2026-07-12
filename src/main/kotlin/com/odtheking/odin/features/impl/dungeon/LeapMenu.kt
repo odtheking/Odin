@@ -45,6 +45,8 @@ object LeapMenu : Module(
     private val tankKeybind by KeybindSetting("Tank", GLFW.GLFW_KEY_UNKNOWN, "Used to leap to the Tank in the leap menu.").withDependency { keybindType == 1 }
 
     private val leapAnnounce by BooleanSetting("Leap Announce", false, desc = "Announces when you leap to a player.")
+    private val leapAnnounceMessageBegin by StringSetting("Leap Message Start", "You have teleported to", 128, desc = "The start of the leap announce").withDependency { leapAnnounce }
+    private val leapAnnounceMessageEnd by StringSetting("Leap Message End", "!", 128, desc = "The end of the leap announce").withDependency { leapAnnounce }
     private val hoverHandler = List(4) { HoverHandler(200L) }
 
     private val EMPTY = DungeonPlayer("Empty", DungeonClass.EMPTY, 0, null)
@@ -164,7 +166,7 @@ object LeapMenu : Module(
 
         on<ChatPacketEvent> {
             if (leapAnnounce && DungeonUtils.inDungeons)
-                leapedRegex.find(value)?.groupValues?.get(1)?.let { sendCommand("pc Leaped to ${it}!") }
+                leapedRegex.find(value)?.groupValues?.get(1)?.let { sendCommand("pc ${leapAnnounceMessageBegin} ${it}${leapAnnounceMessageEnd}") }
         }
     }
 
