@@ -110,7 +110,9 @@ abstract class TermGui {
             val screen = mc.screen ?: return@let
             val btn = if (button == 0) GLFW.GLFW_MOUSE_BUTTON_3 else button
             if (
-                (TerminalSolver.ignoreFirstClickProtMelody && (term.type == TerminalTypes.MELODY) || (System.currentTimeMillis() - term.timeOpened >= TerminalSolver.firstClickProt  && (TerminalSolver.shouldFirstClickProtWithTicks || term.ticksOpened >= TerminalSolver.firstClickProtTicks))) &&
+                (TerminalSolver.ignoreFirstClickProtMelody && (term.type == TerminalTypes.MELODY) ||
+                        (System.currentTimeMillis() - term.timeOpened >= TerminalSolver.firstClickProt &&
+                                (TerminalSolver.shouldFirstClickProtWithTicks || term.ticksOpened >= TerminalSolver.firstClickProtTicks))) &&
                 !GuiEvent.CustomTermGuiClick(screen, slotIndex, btn).postAndCatch() &&
                 term.canClick(slotIndex, btn)
             ) term.click(slotIndex, btn, hideClicked && !term.isClicked)
