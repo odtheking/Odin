@@ -135,7 +135,7 @@ object TickTimers : Module(
             if (DungeonUtils.openRoomCount == 0) {
                 if (outboundsHud.enabled) outboundsTime = 40 - (gameTime % 40).toInt()
             } else {
-                if (secretsHud.enabled) secretsTime = 20 - (gameTime % 20).toInt()
+                if (secretsHud.enabled) secretsTime = 30 - (gameTime % 20).toInt()
                 outboundsTime = -1
             }
         }
