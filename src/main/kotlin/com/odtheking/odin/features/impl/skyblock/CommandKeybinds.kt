@@ -23,7 +23,7 @@ object CommandKeybinds : Module(
         if (!enabled || !LocationUtils.isInSkyblock) return@onPress
         sendCommand("armor")
     }
-    private val equipmentSets by KeybindSetting("Equipment Wardrobe", GLFW.GLFW_KEY_UNKNOWN, desc = "Opens the equipment wardrobe menu.").onPress {
+    private val equipmentSets by KeybindSetting("Equip Wardrobe", GLFW.GLFW_KEY_UNKNOWN, desc = "Opens the equipment wardrobe menu.").onPress {
         if (!enabled || !LocationUtils.isInSkyblock) return@onPress
         sendCommand("equipment")
     }
