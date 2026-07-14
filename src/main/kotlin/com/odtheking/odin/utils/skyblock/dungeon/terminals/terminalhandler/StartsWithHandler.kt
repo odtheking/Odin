@@ -15,28 +15,37 @@ class StartsWithHandler(private val letter: String): TerminalHandler(TerminalTyp
 
     private var clickedSlot: Pair<Int, Int>? = null
 
-    override fun solve(items: List<ItemStack>): List<Int> {
-        clickedSlot?.let {
-            val screenHandler = (mc.screen as? ContainerScreen)?.menu
-            if (it.first != screenHandler?.containerId) {
-                val item = items[it.second].item
-                if (item == Items.NETHER_STAR || item == Items.EXPERIENCE_BOTTLE) clickedSlots.add(it.second)
-                clickedSlot = null
+        override fun solve(items: List<ItemStack>): List<Int> {
+            clickedSlot?.let {
+                val screenHandler = (mc.screen as? ContainerScreen)?.menu
+                if (it.first != screenHandler?.containerId) {
+                    val item = items[it.second].item
+                    if (item == Items.NETHER_STAR || item == Items.EXPERIENCE_BOTTLE) clickedSlots.add(it.second)
+                        clickedSlot = null
+                }
+            }
+
+            return items.mapIndexedNotNull { index, item ->
+                if (item.hoverName.string.startsWith(letter, true) &&
+                    index !in clickedSlots &&
+                    (!item.hasGlint() || item.item == Items.NETHER_STAR || item.item == Items.EXPERIENCE_BOTTLE)
+                ) index else null
             }
         }
 
-        return items.mapIndexedNotNull { index, item ->
-            if (item.hoverName.string.startsWith(letter, true) && !item.hasGlint() && index !in clickedSlots) index else null
+        override fun click(slotIndex: Int, button: Int, simulateClick: Boolean) {
+            val screenHandler = (mc.screen as? ContainerScreen)?.menu ?: return
+            if (canClick(slotIndex, button) && clickedSlot == null) {
+                clickedSlot = screenHandler.containerId to slotIndex
+
+                val clickedItem = screenHandler.slots.getOrNull(slotIndex)?.item
+                if (clickedItem == Items.NETHER_STAR || clickedItem == Items.EXPERIENCE_BOTTLE) {
+                    clickedSlots.add(slotIndex)
+                }
+            }
+
+            super.click(slotIndex, button, simulateClick)
         }
-    }
 
-    override fun click(slotIndex: Int, button: Int, simulateClick: Boolean) {
-        val screenHandler = (mc.screen as? ContainerScreen)?.menu ?: return
-        if (canClick(slotIndex, button) && clickedSlot == null)
-            clickedSlot = screenHandler.containerId to slotIndex
-
-        super.click(slotIndex, button, simulateClick)
-    }
-
-    override fun renderSlot(slotIndex: Int): Pair<Color, String?> = TerminalSolver.startsWithColor to null
+        override fun renderSlot(slotIndex: Int): Pair<Color, String?> = TerminalSolver.startsWithColor to null
 }
