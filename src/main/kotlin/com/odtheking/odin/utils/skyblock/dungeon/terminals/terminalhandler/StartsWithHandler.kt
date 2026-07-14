@@ -35,14 +35,8 @@ class StartsWithHandler(private val letter: String): TerminalHandler(TerminalTyp
 
         override fun click(slotIndex: Int, button: Int, simulateClick: Boolean) {
             val screenHandler = (mc.screen as? ContainerScreen)?.menu ?: return
-            if (canClick(slotIndex, button) && clickedSlot == null) {
+            if (canClick(slotIndex, button) && clickedSlot == null)
                 clickedSlot = screenHandler.containerId to slotIndex
-
-                val clickedItem = screenHandler.slots.getOrNull(slotIndex)?.item
-                if (clickedItem == Items.NETHER_STAR || clickedItem == Items.EXPERIENCE_BOTTLE) {
-                    clickedSlots.add(slotIndex)
-                }
-            }
 
             super.click(slotIndex, button, simulateClick)
         }
