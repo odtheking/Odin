@@ -32,6 +32,7 @@ class DungeonRoom(var type: RoomType, initialPosition: IVec2, var data: RoomData
         if (!tiles.contains(segment.position)) {
             tiles.add(segment.position)
             topLeft = IVec2(tiles.minOf { it.x }, tiles.minOf { it.z })
+            highestBlock?.let { if (tiles.size == data?.shape?.tileAmount) inferLayout(it) }
         }
     }
 
@@ -53,8 +54,6 @@ class DungeonRoom(var type: RoomType, initialPosition: IVec2, var data: RoomData
     }
 
     fun inferLayout(highestBlock: Int) {
-        this.highestBlock = highestBlock
-
         val roomData = data ?: return
 
         if (applyFairyFallback(highestBlock)) return

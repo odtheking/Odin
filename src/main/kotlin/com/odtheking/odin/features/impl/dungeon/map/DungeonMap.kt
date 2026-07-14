@@ -7,6 +7,7 @@ import com.odtheking.odin.clickgui.settings.impl.DropdownSetting
 import com.odtheking.odin.clickgui.settings.impl.NumberSetting
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Color
+import com.odtheking.odin.utils.Color.Companion.darker
 import com.odtheking.odin.utils.Color.Companion.withAlpha
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.render.hollowFill
@@ -14,10 +15,9 @@ import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.client.gui.GuiGraphicsExtractor
 
 object DungeonMap : Module(
-    "Dungeon Map",
+    name = "Dungeon Map",
     description = "Displays the dungeon map."
 ) {
-
     private val disableBoss by BooleanSetting("Disable in Boss", true, desc = "Disables the map during boss fights.")
 
     val backgroundOutline by ColorSetting("Background Outline", Colors.BLACK, true, desc = "The color of the background border.")
@@ -28,12 +28,6 @@ object DungeonMap : Module(
     val playerNamesScaling by NumberSetting("Player Names Scaling", 0.75f, 0.1f, 2f, 0.05f, desc = "Scale of player name labels.").withDependency { playerDropdown }
     val playerNameColor by ColorSetting("Player Name Color", Color(70, 70, 70), true, desc = "Color of player name labels.").withDependency { playerDropdown }
 
-    private val doorDropdown by DropdownSetting("Door Settings")
-    val normalDoorColor by ColorSetting("Normal Door", Color(107, 58, 17), desc = "Color of normal doors.").withDependency { doorDropdown }
-    val witherDoorColor by ColorSetting("Wither Door", Colors.BLACK, true, desc = "Color of wither doors.").withDependency { doorDropdown }
-    val bloodDoorColor by ColorSetting("Blood Door", Color(231, 0, 0), true, desc = "Color of blood room doors.").withDependency { doorDropdown }
-    val fairyDoorColor by ColorSetting("Fairy Door", Color(224, 0, 255), true, desc = "Color of fairy room doors.").withDependency { doorDropdown }
-
     private val roomDropdown by DropdownSetting("Room Settings")
     val normalRoomColor by ColorSetting("Normal Room", Color(107, 58, 17), true, desc = "Color of normal rooms.").withDependency { roomDropdown }
     val puzzleRoomColor by ColorSetting("Puzzle Room", Color(117, 0, 133), true, desc = "Color of puzzle rooms.").withDependency { roomDropdown }
@@ -43,6 +37,13 @@ object DungeonMap : Module(
     val fairyRoomColor by ColorSetting("Fairy Room", Color(224, 0, 255), true, desc = "Color of fairy rooms.").withDependency { roomDropdown }
     val championRoomColor by ColorSetting("Champion Room", Color(254, 223, 0), true, desc = "Color of champion rooms.").withDependency { roomDropdown }
     val unknownRoomColor by ColorSetting("Unknown Room", Color(40, 40, 40), true, desc = "Color of unknown rooms hinted by a door with no discovered room on the other side.").withDependency { roomDropdown }
+
+    private val doorDropdown by DropdownSetting("Door Settings")
+    val normalDoorColor by ColorSetting("Normal Door", Color(107, 58, 17).darker(), desc = "Color of normal doors.").withDependency { doorDropdown }
+    val witherDoorColor by ColorSetting("Wither Door", Colors.BLACK, true, desc = "Color of wither doors.").withDependency { doorDropdown }
+    val bloodDoorColor by ColorSetting("Blood Door", Color(231, 0, 0).darker(), true, desc = "Color of blood room doors.").withDependency { doorDropdown }
+    val fairyDoorColor by ColorSetting("Fairy Door", Color(224, 0, 255).darker(), true, desc = "Color of fairy room doors.").withDependency { doorDropdown }
+    val unknownDoorColor by ColorSetting("Unknown Door", Color(40, 40, 40).darker(), true, desc = "Color of doors with no discovered room on the other side.").withDependency { doorDropdown }
 
     val disablePred by BooleanSetting("Disable Prediction", false, desc = "Disables special-column room type prediction.")
 

@@ -5,10 +5,11 @@ import com.odtheking.odin.utils.IVec2
 class DungeonDoor(
     val position: IVec2,
     val rotation: DoorRotation,
-    var type: DoorType,
-    val originTileIndex: Int,
-    val destinationTileIndex: Int,
-)
+    var type: DoorType
+) {
+    val originTileIndex by lazy { position.x + position.z * 6 }
+    val destinationTileIndex by lazy { position.x + rotation.offset.x + (position.z + rotation.offset.z) * 6 }
+}
 
 enum class DoorType {
     Normal,

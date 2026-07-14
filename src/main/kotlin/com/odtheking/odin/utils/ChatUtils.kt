@@ -27,7 +27,7 @@ fun modMessage(message: Component, prefix: String = "§3Odin §8»§r ", chatSty
 }
 
 fun devMessage(message: Any?) {
-    if (!ClickGUIModule.devMessage) return
+    if (!ClickGUIModule.devMessage) return println(message)
     modMessage(message, "§3Odin§bDev §8»§r ")
 }
 

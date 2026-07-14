@@ -103,7 +103,7 @@ object DungeonScan {
                 DoorType.Blood -> DungeonMap.bloodDoorColor
                 DoorType.Fairy -> DungeonMap.fairyDoorColor
                 else -> {
-                    if (!originView || !destView) DungeonMap.unknownRoomColor
+                    if (!originView || !destView) DungeonMap.unknownDoorColor
                     else listOfNotNull(originTile.room, destTile.room)
                         .firstOrNull { it.type != RoomType.NORMAL && it.type != RoomType.FAIRY }
                         ?.type?.let { room -> roomTypeColor(room) } ?: DungeonMap.normalDoorColor

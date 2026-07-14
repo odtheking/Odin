@@ -209,11 +209,8 @@ object MapScan {
     }
 
     private fun addOrFixDoor(position: IVec2, rotation: DoorRotation, doorType: DoorType) {
-        val chunkPos = IVec2(-12 + 2 * position.x + rotation.offset.x, -12 + 2 * position.z + rotation.offset.z)
-        val originIndex = position.x + position.z * 6
-        val destPos = IVec2(position.x + rotation.offset.x, position.z + rotation.offset.z)
-        val destIndex = destPos.x + destPos.z * 6
-        DungeonScan.doors.getOrPut(chunkPos) { DungeonDoor(position, rotation, doorType, originIndex, destIndex) }.type = doorType
+        DungeonScan.doors.getOrPut(IVec2(-12 + 2 * position.x + rotation.offset.x, -12 + 2 * position.z + rotation.offset.z))
+        { DungeonDoor(position, rotation, doorType) }.type = doorType
     }
 
     private fun getPx(colors: ByteArray, x: Int, z: Int): Byte =
