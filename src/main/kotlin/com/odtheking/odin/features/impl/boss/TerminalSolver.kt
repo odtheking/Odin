@@ -32,11 +32,11 @@ object TerminalSolver : Module(
     private val cancelMelodySolver by BooleanSetting("Stop Melody Solver", false, desc = "Stops rendering the melody solver.").withDependency { solverSettings }
     val melodyTermSize by NumberSetting("Melody Size", 1.5f, 1f, 3f, 0.1f, desc = "The size of the melody terminal GUI.").withDependency { !cancelMelodySolver && solverSettings && renderType == 2 }
     val showNumbers by BooleanSetting("Show Numbers", true, desc = "Shows numbers in the order terminal.").withDependency { solverSettings }
-    private val firstClickProtSettings by DropdownSetting(name = "First Click Prot Dropdown").withDependency { solverSettings }
+    private val firstClickProtSettings by DropdownSetting("First Click Protection Dropdown").withDependency { solverSettings }
     val firstClickProt by NumberSetting("First Click Protection", 500, 350, 800, 10, unit = "ms", desc = "The amount of time after opening a terminal where clicks are blocked to prevent bans (recommended value is 500 minus your ping).").withDependency { solverSettings && firstClickProtSettings }
-    val ignoreFirstClickProtMelody by BooleanSetting("Ignore Melody", default = true, desc = "Ignores First Click Protection on the melody terminal (has been shown to not ban)").withDependency { solverSettings && firstClickProtSettings }
-    val shouldFirstClickProtWithTicks by BooleanSetting(name = "Account For Server Lag", default = true, desc = "Prevents bans from clicking when the server lags after opening the terminal").withDependency { solverSettings && firstClickProtSettings }
-    val firstClickProtTicks by NumberSetting(name = "Lag Protection Ticks", default = 8, min= 7, max = 16, unit = "ticks", desc = "Each tick = 50ms (recommended value is 8)").withDependency { shouldFirstClickProtWithTicks && solverSettings && firstClickProtSettings }
+    val ignoreFirstClickProtMelody by BooleanSetting("Ignore Melody", true, desc = "Ignores First Click Protection on the melody terminal (has been shown to not ban)").withDependency { solverSettings && firstClickProtSettings }
+    val shouldFirstClickProtWithTicks by BooleanSetting("Account For Server Lag", true, desc = "Prevents bans from clicking when the server lags after opening the terminal").withDependency { solverSettings && firstClickProtSettings }
+    val firstClickProtTicks by NumberSetting("Lag Protection Ticks", 8,7, 16, unit = "ticks", desc = "Each tick = 50ms (recommended value is 8)").withDependency { shouldFirstClickProtWithTicks && solverSettings && firstClickProtSettings }
     val hideClicked by BooleanSetting("Hide Clicked", false, desc = "Visually hides your first click before a gui updates instantly to improve perceived response time. Does not affect actual click time.").withDependency { solverSettings }
     val terminalReloadThreshold by NumberSetting("Resolve timeout", 600, 300, 1000, 10, unit = "ms", desc = "The amount of time before the terminal reloads after a click wasn't registered while using hide clicked.").withDependency { hideClicked && solverSettings }
     private val debug by BooleanSetting("Debug", false, desc = "Shows debug terminals.").withDependency { solverSettings }
@@ -68,13 +68,13 @@ object TerminalSolver : Module(
 
     init {
         on<TickEvent.Server> {
-            val term = TerminalUtils.currentTerm ?: return@on
-            term.ticksOpened++
+            TerminalUtils.currentTerm?.ticksOpened++
         }
         on<GuiEvent.SlotClick> {
             val term = TerminalUtils.currentTerm ?: return@on
             if (
-                ((ignoreFirstClickProtMelody || (term.type != TerminalTypes.MELODY)) && (System.currentTimeMillis() - term.timeOpened < firstClickProt || (shouldFirstClickProtWithTicks && term.ticksOpened < firstClickProtTicks))) ||
+                ((ignoreFirstClickProtMelody || (term.type != TerminalTypes.MELODY)) &&
+                        (System.currentTimeMillis() - term.timeOpened < firstClickProt || (shouldFirstClickProtWithTicks && term.ticksOpened < firstClickProtTicks))) ||
                 (blockIncorrectClicks && !term.canClick(slotId, button))
             ) return@on cancel()
 
