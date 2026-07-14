@@ -41,6 +41,7 @@ object MapInfo : Module(
     private var cachedKnownSecrets = 0
     private var cachedMimicKilled = false
     private var cachedPrinceKilled = false
+    private var cachedBatKilled = false
     private var cachedCryptCount = 0
     private var cachedDeathCount = 0
 
@@ -53,6 +54,7 @@ object MapInfo : Module(
         val totalSecrets = cachedTotalSecrets
         val mimicKilled = cachedMimicKilled
         val princeKilled = cachedPrinceKilled
+        val batKilled = cachedBatKilled
         val cryptCount = cachedCryptCount
 
         val showRemaining = fullAddRemaining && alternate
@@ -78,7 +80,7 @@ object MapInfo : Module(
 
         val unknownSecretsText = if (unknown == 0) {
             buildString {
-                append("§7Deaths: §c")
+                append("§7D: §c")
                 append(colorizeDeaths(cachedDeathCount))
             }
         } else {
@@ -93,6 +95,8 @@ object MapInfo : Module(
             append(if (mimicKilled) "§a✔" else "§c✘")
             append(" §8| §7P: ")
             append(if (princeKilled) "§a✔" else "§c✘")
+            append(" §8| §7B: ")
+            append(if (batKilled) "§a✔" else "§c✘")
         }
 
         val cryptText = buildString {
@@ -169,12 +173,13 @@ object MapInfo : Module(
 
     private val compactScore: HudElement by HUD("Compact Score", "Displays a compact score hud with score info.") {
         if ((!DungeonUtils.inDungeons || (disableInBoss && DungeonUtils.inBoss)) && !it) return@HUD 0 to 0
-
         val score = cachedScore
         val mimicKilled = cachedMimicKilled
         val princeKilled = cachedPrinceKilled
+        val batKilled = cachedBatKilled
 
-        val missing = (if (mimicKilled) 0 else 2) + (if (princeKilled) 0 else 1)
+        val missing = (if (mimicKilled) 0 else 2) + (if (princeKilled) 0 else 1) + (if (batKilled) 0 else 1)
+
         val scoreText = buildString {
             append("§7Score: ")
             append(colorizeScore(score))
@@ -235,6 +240,7 @@ object MapInfo : Module(
             cachedKnownSecrets = DungeonUtils.knownSecrets
             cachedMimicKilled = DungeonUtils.mimicKilled
             cachedPrinceKilled = DungeonUtils.princeKilled
+            cachedBatKilled = DungeonUtils.batKilled
             cachedCryptCount = DungeonUtils.cryptCount.coerceAtMost(5)
             cachedDeathCount = DungeonUtils.deathCount
         }
