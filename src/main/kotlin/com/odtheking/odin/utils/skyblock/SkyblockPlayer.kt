@@ -22,10 +22,10 @@ object SkyblockPlayer {
     current overflow mana
      */
 
-    private val HEALTH_REGEX = Regex("([\\d|,]+)/([\\d|,]+)❤")
-    private val MANA_REGEX = Regex("([\\d|,]+)/([\\d|,]+)✎")
-    private val OVERFLOW_MANA_REGEX = Regex("([\\d|,]+)ʬ")
-    private val DEFENSE_REGEX = Regex("([\\d|,]+)❈ Defense")
+    private val HEALTH_REGEX = Regex("([\\d|,]+)/([\\d|,]+)\\uE010")
+    private val MANA_REGEX = Regex("([\\d|,]+)/([\\d|,]+)\\uE003")
+    private val OVERFLOW_MANA_REGEX = Regex("([\\d|,]+)\\uE017")
+    private val DEFENSE_REGEX = Regex("([\\d|,]+)\\uE008 Defense")
 
     var currentHealth: Int = 0
         private set
