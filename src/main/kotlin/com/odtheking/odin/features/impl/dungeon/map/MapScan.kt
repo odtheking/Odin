@@ -89,7 +89,8 @@ object MapScan {
 
     private fun mapTiles(colors: ByteArray, roomTypes: Array<RoomType?>, roomColors: ByteArray, centerColors: ByteArray) {
         val halfRoom = DungeonScan.roomSize / 2
-        val connectionGap = DungeonScan.roomSize + DungeonScan.ROOM_SPACING / 2
+        val connectionGap = DungeonScan.connectionGap
+        val sideCheckOffset = 4
 
         for (index in 0 until 36) {
             val tileX = index % 6
@@ -109,21 +110,25 @@ object MapScan {
                 }
             }
 
-            if (tileX < 5 && getPx(colors, originX + connectionGap, originZ) == EMPTY) {
+            if (tileX < 5) {
                 val doorColor = getPx(colors, originX + connectionGap, originZ + halfRoom)
-                if (doorColor != EMPTY) addOrFixDoor(IVec2(tileX, tileZ), DoorRotation.Horizontal, DoorType.fromColor(doorColor))
+                val sideColor = getPx(colors, originX + connectionGap, originZ + halfRoom - sideCheckOffset)
+                if (sideColor == EMPTY && doorColor != EMPTY)
+                    addOrFixDoor(IVec2(tileX, tileZ), DoorRotation.Horizontal, DoorType.fromColor(doorColor))
             }
 
-            if (tileZ < 5 && getPx(colors, originX, originZ + connectionGap) == EMPTY) {
+            if (tileZ < 5) {
                 val doorColor = getPx(colors, originX + halfRoom, originZ + connectionGap)
-                if (doorColor != EMPTY) addOrFixDoor(IVec2(tileX, tileZ), DoorRotation.Vertical, DoorType.fromColor(doorColor))
+                val sideColor = getPx(colors, originX + halfRoom - sideCheckOffset, originZ + connectionGap)
+                if (sideColor == EMPTY && doorColor != EMPTY)
+                    addOrFixDoor(IVec2(tileX, tileZ), DoorRotation.Vertical, DoorType.fromColor(doorColor))
             }
         }
     }
 
     private fun processRooms(colors: ByteArray, roomTypes: Array<RoomType?>, roomColors: ByteArray, centerColors: ByteArray) {
         val visited = BooleanArray(36)
-        val connectionGap = DungeonScan.roomSize + DungeonScan.ROOM_SPACING / 2
+        val connectionGap = DungeonScan.connectionGap
 
         for (startIndex in 0 until 36) {
             val roomType = roomTypes[startIndex] ?: continue

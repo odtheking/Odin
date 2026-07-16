@@ -91,31 +91,15 @@ object WorldScan {
                 val tile = DungeonScan.tiles.getOrNull(tilePos.x + tilePos.z * 6)
                 if (tile?.room?.data == null) scanRoom(chunk, chunkPosition)
             }
-            else if (rowEven || columnEven) scanDoor(chunk, chunkPosition, if (columnEven) DoorRotation.Horizontal else DoorRotation.Vertical)
         }
-    }
-
-    private fun scanDoor(chunk: LevelChunk, chunkPosition: IVec2, rotation: DoorRotation) {
-        if (DungeonScan.doors.contains(chunkPosition)) return
-        val position = (chunkPosition * 16) + 7
-
-        for (y in 86..160) {
-            if (!chunk.getBlockState(position.x, y, position.z).isAir) return
-        }
-        if (chunk.getBlockState(position.x, 68, position.z).isAir) return
-
-        val type = when (chunk.getBlockState(position.x, 69, position.z).block) {
-            Blocks.COAL_BLOCK -> DoorType.Wither
-            Blocks.RED_TERRACOTTA -> DoorType.Blood
-            else -> DoorType.Normal
-        }
-        val doorPos = ((chunkPosition - 1) / 2) + 6
-        DungeonScan.doors[chunkPosition] = DungeonDoor(doorPos, rotation, type)
     }
 
     private fun scanRoom(chunk: LevelChunk, chunkPosition: IVec2) {
         val (core, highestBlock) = getRoomCore(chunk, (chunkPosition * 16) + 7)
-        val data = RoomData.getRoomData(core) ?: return devMessage("Unknown room data for core: $core $chunkPosition")
+        val data = RoomData.getRoomData(core) ?: run {
+            if (core == -318865360) return
+            else return devMessage("Unknown room data for core: $core $chunkPosition")
+        }
 
         val tilePosition = (chunkPosition / 2) + 6
         val tile = DungeonScan.tiles.getOrNull(tilePosition.x + (tilePosition.z * 6)) ?: return

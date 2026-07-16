@@ -28,7 +28,7 @@ internal fun GuiGraphicsExtractor.renderMap() {
 
     for (room in DungeonScan.rooms) renderRoomText(room)
 
-    renderPlayers()
+    if (!DungeonUtils.inBoss) renderPlayers()
 
     pose().popMatrix()
 }
@@ -67,7 +67,7 @@ private fun GuiGraphicsExtractor.renderDoors() {
     val rg = DungeonScan.roomGap
     val half = (rs - 8) / 2f
 
-    for ((door, color) in DungeonScan.viewableDoors) {
+    for ((_, door) in DungeonScan.doors) {
         val offset = door.rotation.offset
 
         pose().pushMatrix()
@@ -75,7 +75,7 @@ private fun GuiGraphicsExtractor.renderDoors() {
             door.position.x * rg + offset.x * rs + offset.z * half,
             door.position.z * rg + offset.z * rs + offset.x * half
         )
-        fill(0, 0, 4 + 4 * offset.z, 4 + 4 * offset.x, color.rgba)
+        fill(0, 0, 4 + 4 * offset.z, 4 + 4 * offset.x, door.color.rgba)
         pose().popMatrix()
     }
 
@@ -126,7 +126,7 @@ private fun GuiGraphicsExtractor.renderRoomText(room: DungeonRoom) {
         return
     }
 
-    val (cx, cz) = textCenter(room)
+    val (cx, cz) = room.center?.let { it.x to it.z } ?: return
     val fontH  = mc.font.lineHeight
 
     val textColor = when (room.checkmark) {
@@ -141,7 +141,7 @@ private fun GuiGraphicsExtractor.renderRoomText(room: DungeonRoom) {
 
     for ((i, line) in lines.withIndex()) {
         pose().pushMatrix()
-        pose().translate(cx, cz - totalH / 2f + i * fontH * DungeonMap.textScaling)
+        pose().translate(cx.toFloat(), cz.toFloat() - totalH / 2f + i * fontH * DungeonMap.textScaling)
         pose().scale(DungeonMap.textScaling)
         centeredText(mc.font, line, 0, -fontH / 2, textColor)
         pose().popMatrix()
@@ -179,33 +179,14 @@ private fun GuiGraphicsExtractor.renderPlayers() {
     val (selfX, selfZ) = DungeonScan.playerRenderPosition(mc.player, IVec2(0, 0))
     pose().translate(selfX, selfZ)
     pose().rotate(Math.toRadians(180.0 + (mc.player?.yRot ?: 0f)).toFloat())
-    blit(RenderPipelines.GUI_TEXTURED, marker, -2, -3, 2f, 0f, 5, 7, 8, 8)
+    DungeonUtils.currentDungeonPlayer
+    if (DungeonMap.playerHead) {
+        mc.player?.skin?.let { skin ->
+            fill(-5, -5, 5, 5, DungeonUtils.currentDungeonPlayer.clazz.color.rgba)
+            PlayerFaceExtractor.extractRenderState(this, skin, -4, -4, 8)
+        }
+    } else blit(RenderPipelines.GUI_TEXTURED, marker, -2, -3, 2f, 0f, 5, 7, 8, 8)
     pose().popMatrix()
-}
-
-private fun textCenter(room: DungeonRoom): Pair<Float, Float> {
-    val rs = DungeonScan.roomSize.takeIf { it != -1 } ?: return 0f to 0f
-    val rg = DungeonScan.roomGap
-    val half = rs / 2
-
-    fun tileCenter(tile: IVec2) = tile.x * rg + half to tile.z * rg + half
-
-    val rotation = room.rotation
-    if (rotation == null) {
-        val tile = room.tiles.minBy { it.x * 1000 + it.z }
-        return tileCenter(tile).let { it.first.toFloat() to it.second.toFloat() }
-    }
-
-    val centers = room.tiles.map { tileCenter(it) }
-    val x = (centers.minOf { it.first } + centers.maxOf { it.first }) / 2f
-    val z = when (room.shape) {
-        RoomShape.L ->
-            if (rotation == RoomRotation.NORTH || rotation == RoomRotation.WEST) centers.minOf { it.second }.toFloat()
-            else centers.maxOf { it.second }.toFloat()
-        else ->
-            (centers.minOf { it.second } + centers.maxOf { it.second }) / 2f
-    }
-    return x to z
 }
 
 fun roomTypeColor(type: RoomType): Color = when (type) {
