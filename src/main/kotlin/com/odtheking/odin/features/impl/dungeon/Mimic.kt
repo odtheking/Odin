@@ -42,11 +42,12 @@ object Mimic : Module(
 
         on<ChatPacketEvent> {
             if (value.matches(princeRegex)) princeKilled()
+            if (value.matches(batRegex)) batKilled()
         }
     }
 
     private fun mimicKilled() {
-        if (DungeonUtils.mimicKilled || DungeonUtils.inBoss) return
+        if (DungeonUtils.mimicKilled || !DungeonUtils.inClear) return
         if (mimicMessageToggle) sendCommand("pc Mimic Killed!")
         DungeonListener.dungeonStats.mimicKilled = true
     }

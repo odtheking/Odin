@@ -80,7 +80,7 @@ object MapInfo : Module(
 
         val unknownSecretsText = if (unknown == 0) {
             buildString {
-                append("§7D: §c")
+                append("§7Deaths: §c")
                 append(colorizeDeaths(cachedDeathCount))
             }
         } else {
@@ -91,12 +91,9 @@ object MapInfo : Module(
         }
 
         val mimicText = buildString {
-            append("§7M: ")
-            append(if (mimicKilled) "§a✔" else "§c✘")
-            append(" §8| §7P: ")
-            append(if (princeKilled) "§a✔" else "§c✘")
-            append(" §8| §7B: ")
-            append(if (batKilled) "§a✔" else "§c✘")
+            append("${if (mimicKilled) "§a" else "§c"}\uD83D\uDCE6")
+            append(" §8| ${if (princeKilled) "§a" else "§c"}\uD83E\uDD34")
+            append(" §8| ${if (batKilled) "§a" else "§c"}\uD83E\uDD87")
         }
 
         val cryptText = buildString {
@@ -261,20 +258,20 @@ object MapInfo : Module(
 
         on<RoomEnterEvent> {
             currentRoomSecrets = null
-            if (room?.data?.type == RoomType.BLOOD) {
+            if (room?.name == "Blood")
                 portalAABB = AABB.encapsulatingFullBlocks(room.getRealCoords(BlockPos(16, 69, 29)), room.getRealCoords(BlockPos(14, 69, 29))).inflate(0.0, 4.0, 0.0)
-            }
         }
 
         on<RenderEvent.Extract> {
-            if (!highlightPortal || !DungeonUtils.inClear || DungeonUtils.score < 300) return@on
-            portalAABB?.let{ pos ->
+            if (!highlightPortal || !DungeonUtils.inClear || cachedScore < 300) return@on
+            portalAABB?.let { pos ->
                 drawFilledBox(pos, Colors.MINECRAFT_GREEN.withAlpha(0.5f), depth = true)
             }
         }
 
         on<LevelEvent.Load> {
             shownTitle = false
+            portalAABB = null
         }
     }
 
