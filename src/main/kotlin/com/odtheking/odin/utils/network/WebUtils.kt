@@ -79,7 +79,7 @@ object WebUtils {
                 if (!cont.isActive) return@whenComplete
 
                 if (response.statusCode() in 200..299) cont.resume(Result.success(response))
-                else cont.resume(Result.failure(InputStreamException(response.statusCode(), response.body())))
+                else cont.resume(Result.failure(InputStreamException(response.body(), request.uri().toString())))
             }
         }
     }
@@ -90,15 +90,5 @@ object WebUtils {
         return mayor.get("name")?.asString == "Paul" && mayor.getAsJsonArray("perks")?.any { it.asJsonObject.get("name")?.asString == "EZPZ" } == true
     }
 
-    class InputStreamException(
-        code: Int,
-        body: String
-    ) : Exception(
-        buildString {
-            append(code)
-            if (body.isNotBlank()) {
-                append(": ")
-                append(body)
-            }
-        }
-    )}
+    class InputStreamException(body: String, link: String) : Exception("$body : $link")
+}
