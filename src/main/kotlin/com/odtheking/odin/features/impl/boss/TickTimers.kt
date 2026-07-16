@@ -11,6 +11,8 @@ import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.render.textDim
+import com.odtheking.odin.utils.skyblock.MORT_REGEX
+import com.odtheking.odin.utils.skyblock.SplitsManager
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.toFixed
 import net.minecraft.network.protocol.game.ClientboundSetTimePacket
@@ -80,21 +82,21 @@ object TickTimers : Module(
     }
 
     private var outboundsTime = -1
+    private var secretsCounter = 0
 
     private val secretsHud by HUD("Secrets Hud", "Displays a timer for secret spawn ticks.") {
-        if (it)                    textDim(formatTimer(15, 20, "§7Secret:"), 0, 0, Colors.MINECRAFT_DARK_RED)
-        else if (secretsTime >= 0) textDim(formatTimer(secretsTime, 20, "§7Secret:"), 0, 0, Colors.MINECRAFT_DARK_RED)
+        if (it) textDim(formatTimer(15, 20, "§7Secret:"), 0, 0, Colors.MINECRAFT_DARK_RED)
+        else if (DungeonUtils.openRoomCount != 0) textDim(formatTimer(20 - secretsCounter % 20, 20, "§7Secret:"), 0, 0, Colors.MINECRAFT_DARK_RED)
         else 0 to 0
     }
-
-    private var secretsTime = -1
 
     init {
         on<ChatPacketEvent> {
             when {
-                necronHud.enabled && value.matches(necronRegex) -> necronTime = 60
-                goldorHud.enabled && value.matches(goldorRegex) -> goldorTickTime = 60
-                goldorHud.enabled && value.matches(coreOpeningRegex) -> {
+                value.matches(MORT_REGEX) -> secretsCounter = 0
+                value.matches(necronRegex) -> necronTime = 60
+                value.matches(goldorRegex) -> goldorTickTime = 60
+                value.matches(coreOpeningRegex) -> {
                     goldorStartTime = -1
                     goldorTickTime = -1
                 }
@@ -102,11 +104,11 @@ object TickTimers : Module(
                     if (goldorHud.enabled) goldorStartTime = 104
                     if (stormHud.enabled) padTickTime = -1
                 }
-                (stormHud.enabled || lightningHud.enabled) && value.matches(stormPadRegex) -> {
-                    if (stormHud.enabled) padTickTime = 20
-                    if (lightningHud.enabled) lightningTickTime = 560
+                value.matches(stormPadRegex) -> {
+                    padTickTime = 20
+                    lightningTickTime = 560
                 }
-                pyHud.enabled && !pyTriggered && value.matches(stormPyRegex) -> {
+                !pyTriggered && value.matches(stormPyRegex) -> {
                     pyTriggered = true
                     pyTickTime = 95
                 }
@@ -115,29 +117,25 @@ object TickTimers : Module(
 
         on<TickEvent.Server> {
             if (!DungeonUtils.inDungeons) return@on
-            if (outboundsTime == 0 && outboundsHud.enabled) outboundsTime = 40
-            if (outboundsTime >= 0 && outboundsHud.enabled) outboundsTime--
-            if (secretsTime == 0 && secretsHud.enabled && !DungeonUtils.inBoss) secretsTime = 20
-            if (secretsTime >= 0 && secretsHud.enabled) secretsTime--
+            if (outboundsTime == 0) outboundsTime = 40
+            if (outboundsTime >= 0) outboundsTime--
+            secretsCounter++
             if (!DungeonUtils.inBoss) return@on
             if (goldorTickTime == 0 && goldorStartTime <= 0 && goldorHud.enabled) goldorTickTime = 60
-            if (goldorStartTime >= 0 && goldorHud.enabled) goldorStartTime--
-            if (goldorTickTime >= 0 && goldorHud.enabled) goldorTickTime--
+            if (goldorStartTime >= 0) goldorStartTime--
+            if (goldorTickTime >= 0) goldorTickTime--
             if (padTickTime == 0 && stormHud.enabled) padTickTime = 20
-            if (padTickTime >= 0 && stormHud.enabled) padTickTime--
-            if (lightningTickTime >= 0 && lightningHud.enabled) lightningTickTime--
-            if (pyTickTime >= 0 && pyHud.enabled) pyTickTime--
-            if (necronTime >= 0 && necronHud.enabled) necronTime--
+            if (padTickTime >= 0) padTickTime--
+            if (lightningTickTime >= 0) lightningTickTime--
+            if (pyTickTime >= 0) pyTickTime--
+            if (necronTime >= 0) necronTime--
         }
 
         onReceive<ClientboundSetTimePacket> {
             if (!DungeonUtils.inClear) return@onReceive
             if (DungeonUtils.openRoomCount == 0) {
                 if (outboundsHud.enabled) outboundsTime = 40 - (gameTime % 40).toInt()
-            } else {
-                if (secretsHud.enabled) secretsTime = 30 - (gameTime % 20).toInt()
-                outboundsTime = -1
-            }
+            } else outboundsTime = -1
         }
 
         on<LevelEvent.Load> {
@@ -148,8 +146,8 @@ object TickTimers : Module(
             pyTickTime = -1
             pyTriggered = false
             necronTime = -1
-            secretsTime = -1
             outboundsTime = -1
+            secretsCounter = 0
         }
     }
 
