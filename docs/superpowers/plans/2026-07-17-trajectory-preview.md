@@ -360,3 +360,156 @@ Any fix commits use the same style, e.g.:
 ```bash
 git commit -m "Fixed trajectory preview <specific issue>"
 ```
+
+---
+
+### Task 4: Meteor-style rework (user feedback round 1)
+
+User feedback from in-game testing: line origin renders too low, line/marker visually punches through the floor, entity wireframe unwanted. Rework to match meteor-client's Trajectories approach (reference clone: `/tmp/claude-1001/-home-girish-Odin/d78e02dd-b5ae-4d13-94cd-86eb14395a6a/scratchpad/meteor`, files `utils/entity/simulator/ProjectileEntitySimulator.java`, `systems/modules/render/Trajectories.java` — already Mojang mappings).
+
+**Files:**
+- Modify: `src/main/kotlin/com/odtheking/odin/utils/ProjectileSim.kt`
+- Modify: `src/main/kotlin/com/odtheking/odin/features/impl/render/TrajectoryPreview.kt`
+
+**Interfaces:**
+- Consumes: existing `ProjectileSim` public API (signatures unchanged except `simulate` maxTicks default 200→500).
+- Produces: same API. `SimResult` unchanged (blockHit carries the hit face via `blockHit.direction`).
+
+- [ ] **Step 1: Rework `ProjectileSim.kt`**
+
+Apply these exact changes:
+
+1. Replace the `ProjectileType` enum with (adds `power` and `roll`; constants from meteor's MotionData table):
+
+```kotlin
+    enum class ProjectileType(
+        val power: Double,
+        val roll: Float, // pitch offset in degrees — potions are thrown 20° upward
+        val gravity: Double,
+        val drag: Double,
+        val waterDrag: Double,
+        val order: StepOrder,
+        val hitsWater: Boolean = false
+    ) {
+        ARROW(0.0, 0f, 0.05, 0.99, 0.6, StepOrder.PDG), // power dynamic: 3.0 × bow charge
+        THROWN(1.5, 0f, 0.03, 0.99, 0.8, StepOrder.GDP),
+        POTION(0.5, -20f, 0.05, 0.99, 0.8, StepOrder.GDP),
+        FISHING_ROD(0.0, 0f, 0.03, 0.92, 0.92, StepOrder.GPD, hitsWater = true) // velocity from vanilla bobber formula
+    }
+```
+
+2. Replace `launchFor` with (changes: direction computed meteor-style for every type via a shared helper; unpulled-or-barely-pulled bow forces full charge like meteor does for the local player; fishing rod unchanged logic):
+
+```kotlin
+    /**
+     * Maps the held item to launch parameters, or null if the item is not a supported projectile.
+     * Bows use the real draw charge while drawing; below meteor's 0.1 threshold (or when not
+     * drawing at all) full charge is assumed — Skyblock shortbows always fire at full power.
+     */
+    fun launchFor(stack: ItemStack, player: Player, partialTicks: Float): Launch? {
+        val eyePos = player.getEyePosition(partialTicks).subtract(0.0, 0.1, 0.0)
+        return when (stack.item) {
+            is BowItem -> {
+                var charge = if (player.isUsingItem && player.useItem === stack)
+                    BowItem.getPowerForTime(player.ticksUsingItem)
+                else 1f
+                if (charge < 0.1f) charge = 1f
+                Launch(ProjectileType.ARROW, eyePos, direction(player, 0f).scale(3.0 * charge))
+            }
+            is EnderpearlItem, is SnowballItem, is EggItem ->
+                Launch(ProjectileType.THROWN, eyePos, direction(player, 0f).scale(ProjectileType.THROWN.power))
+            is ThrowablePotionItem ->
+                Launch(ProjectileType.POTION, eyePos, direction(player, ProjectileType.POTION.roll).scale(ProjectileType.POTION.power))
+            is FishingRodItem -> {
+                if (player.fishing != null) return null
+                val h = Mth.cos((-player.yRot * DEG_TO_RAD - Mth.PI).toDouble())
+                val i = Mth.sin((-player.yRot * DEG_TO_RAD - Mth.PI).toDouble())
+                val j = -Mth.cos((-player.xRot * DEG_TO_RAD).toDouble())
+                val k = Mth.sin((-player.xRot * DEG_TO_RAD).toDouble())
+                val eye = player.getEyePosition(partialTicks)
+                val pos = Vec3(eye.x - i * 0.3, eye.y, eye.z - h * 0.3)
+                var vel = Vec3((-i).toDouble(), Mth.clamp(-(k / j), -5f, 5f).toDouble(), (-h).toDouble())
+                val len = vel.length()
+                vel = vel.multiply(0.6 / len + 0.5, 0.6 / len + 0.5, 0.6 / len + 0.5)
+                Launch(ProjectileType.FISHING_ROD, pos, vel)
+            }
+            else -> null
+        }
+    }
+
+    // Meteor's direction formula: yaw/pitch trig with a per-item pitch offset (roll), normalized.
+    private fun direction(player: Player, roll: Float): Vec3 {
+        val x = -Mth.sin((player.yRot * DEG_TO_RAD).toDouble()) * Mth.cos((player.xRot * DEG_TO_RAD).toDouble())
+        val y = -Mth.sin(((player.xRot + roll) * DEG_TO_RAD).toDouble())
+        val z = Mth.cos((player.yRot * DEG_TO_RAD).toDouble()) * Mth.cos((player.xRot * DEG_TO_RAD).toDouble())
+        return Vec3(x.toDouble(), y.toDouble(), z.toDouble()).normalize()
+    }
+```
+
+Note: if `Mth.sin`/`Mth.cos` return Float in this codebase's mappings (they do — Task 1 established `float sin(double)`), the products `x`/`z` are Float×Float — keep the `.toDouble()` conversions on the results as shown when building the `Vec3`. Adjust conversions only as the compiler requires; the formula itself is fixed.
+
+3. Delete the now-unused `angleFromRot` private function.
+
+4. In `simulate`:
+   - Change signature default: `maxTicks: Int = 500`.
+   - Change `var vel = launch.velocity.add(player.deltaMovement)` to `var vel = launch.velocity` (meteor only adds player motion behind an "accurate" setting that defaults off; vanilla adds it server-side but the visual difference misleads more than helps).
+   - Replace the entity predicate with meteor's: `{ e -> !e.isSpectator && e.isAlive && e.isPickable && e !== player }` (drop the manual `Projectile`/`ItemEntity`/`ExperienceOrb` exclusions — `isPickable` covers them). Remove the now-unused imports (`Projectile`, `ItemEntity`, `ExperienceOrb`).
+   - Change the void cutoff from `pos.y < level.minY - 120` to `pos.y < level.minY` (meteor stops at world floor — the line no longer plunges 120 blocks past the island bottom).
+
+- [ ] **Step 2: Rework `TrajectoryPreview.kt` rendering**
+
+Replace the `init` block body and `typeEnabled` as follows (changes: skip the first 3 sim points like meteor's `ignore-rendering-first-ticks` so the line doesn't visually start at your body; entity hit now recolors the line instead of drawing a wireframe box; block-impact marker becomes a thin quad aligned to the hit face instead of a half-buried cube):
+
+```kotlin
+    private const val IGNORE_FIRST_POINTS = 3 // meteor's ignore-rendering-first-ticks default
+
+    init {
+        on<RenderEvent.Extract> {
+            val player = mc.player ?: return@on
+            val stack = player.mainHandItem
+            if (!typeEnabled(stack)) return@on
+            val partialTicks = mc.deltaTracker.getGameTimeDeltaPartialTick(true)
+            val launch = ProjectileSim.launchFor(stack, player, partialTicks) ?: return@on
+            val result = ProjectileSim.simulate(player, launch)
+
+            val visiblePoints = if (result.points.size > IGNORE_FIRST_POINTS) result.points.drop(IGNORE_FIRST_POINTS) else emptyList()
+            if (visiblePoints.size >= 2) {
+                val pathColor = if (result.entityHit != null) entityColor else lineColor
+                drawLine(visiblePoints, pathColor, depth = !throughWalls, thickness = lineWidth)
+            }
+
+            result.blockHit?.let { hit ->
+                drawFilledBox(impactQuad(hit), impactColor, depth = !throughWalls)
+            }
+        }
+    }
+
+    // Thin 0.5×0.5 quad lying on the hit face (meteor draws a flat hit quad, not a cube).
+    private fun impactQuad(hit: BlockHitResult): AABB {
+        val c = hit.location
+        return when (hit.direction.axis) {
+            Direction.Axis.Y -> AABB(c.x - 0.25, c.y - 0.01, c.z - 0.25, c.x + 0.25, c.y + 0.01, c.z + 0.25)
+            Direction.Axis.X -> AABB(c.x - 0.01, c.y - 0.25, c.z - 0.25, c.x + 0.01, c.y + 0.25, c.z + 0.25)
+            Direction.Axis.Z -> AABB(c.x - 0.25, c.y - 0.25, c.z - 0.01, c.x + 0.25, c.y + 0.25, c.z + 0.01)
+        }
+    }
+```
+
+Supporting changes in the same file:
+- Add imports: `net.minecraft.core.Direction`, `net.minecraft.world.phys.BlockHitResult`.
+- Remove import `com.odtheking.odin.utils.render.drawWireFrameBox` (no longer used).
+- Change the `entityColor` setting description to: `"Line color when the projectile would hit an entity."` (name stays "Entity Hit Color" so existing configs keep working).
+- `typeEnabled` unchanged.
+- Kotlin note: `private const val` must live in a `companion object` or top level — since `TrajectoryPreview` is an `object`, a plain `private const val IGNORE_FIRST_POINTS = 3` declared directly in the object body is legal. Place it above the settings.
+
+- [ ] **Step 3: Verify it compiles**
+
+Run: `JAVA_HOME=/home/girish/.jdks/jdk-25.0.3+9 ./gradlew build --console=plain`
+Expected: `BUILD SUCCESSFUL`
+
+- [ ] **Step 4: Commit**
+
+```bash
+git add src/main/kotlin/com/odtheking/odin/utils/ProjectileSim.kt src/main/kotlin/com/odtheking/odin/features/impl/render/TrajectoryPreview.kt
+git commit -m "Reworked trajectory preview to meteor-style rendering and simulation"
+```

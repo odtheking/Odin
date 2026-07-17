@@ -35,13 +35,13 @@ Pure physics. No settings, no rendering. Reusable by other modules (e.g. `PearlW
 
 `object TrajectoryPreview : Module(name = "Trajectory Preview", description = ...)` — category inferred RENDER from package. Registered in `ModuleManager.kt` render group (~line 62-82).
 
-`init { on<RenderEvent.Extract> { ... } }`:
-1. Held main-hand item → `heldProjectile` → null? skip.
+`init { on<RenderEvent.Extract> { ... } }` (rev 2 — meteor-style, per user feedback after in-game testing):
+1. Held main-hand item → `launchFor` → null? skip.
 2. Per-type toggle off? skip.
-3. `ProjectileSim.simulate(...)`.
-4. `drawLine(result.points, lineColor, depth = !throughWalls, thickness = lineWidth)`.
-5. Block hit → small filled box (`AABB.ofSize(hitPos, 0.25, 0.25, 0.25)`) in impact color.
-6. Entity hit → `drawWireFrameBox(entity.boundingBox, entityHitColor)`.
+3. `ProjectileSim.simulate(...)` (500-tick cap, meteor's default).
+4. Skip the first 3 sim points (meteor's `ignore-rendering-first-ticks`) so the line doesn't visually start at the player's body, then `drawLine(points, pathColor, depth = !throughWalls, thickness = lineWidth)` — where `pathColor` = Entity Hit Color when the predicted hit is an entity, else Line Color.
+5. Block hit → thin 0.5×0.5 filled quad lying on the hit face (not a cube — a centered cube half-sinks into the floor).
+6. Entity hit → no box; the line-color swap in step 4 is the indicator.
 
 ## Settings
 
@@ -54,7 +54,7 @@ Pure physics. No settings, no rendering. Reusable by other modules (e.g. `PearlW
 | Potions | BooleanSetting | off |
 | Line Color | ColorSetting | `Colors.WHITE`, alpha allowed |
 | Impact Color | ColorSetting | `Colors.MINECRAFT_RED`, alpha allowed |
-| Entity Hit Color | ColorSetting | `Colors.MINECRAFT_YELLOW`, alpha allowed |
+| Entity Hit Color | ColorSetting | `Colors.MINECRAFT_YELLOW`, alpha allowed — line color when predicted hit is an entity |
 | Line Width | NumberSetting | 3 (1–5) |
 | Through Walls | BooleanSetting | off |
 
@@ -65,7 +65,8 @@ Pure physics. No settings, no rendering. Reusable by other modules (e.g. `PearlW
 - Hypixel may deviate slightly from vanilla physics server-side; accepted, visual aid only.
 - Crossbows out of scope v1 (rare in Skyblock); adding later = one enum row + item mapping.
 - Offhand ignored v1.
-- Performance: ≤200 iterations/frame with cheap clips — same budget as the reference mod; no caching needed.
+- Performance: ≤500 iterations/frame with cheap clips (meteor's default budget); no caching needed. Sim stops at world `minY` (no plunge past floating-island bottoms).
+- Launch math follows meteor-client's `ProjectileEntitySimulator`: yaw/pitch trig direction with per-item pitch offset (potions −20°), no player-motion inheritance, `isPickable` entity filter, unpulled/barely-pulled bow forced to full charge.
 
 ## Testing
 
