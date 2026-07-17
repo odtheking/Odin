@@ -31,6 +31,7 @@ private val BEAM_TEXTURE = Identifier.withDefaultNamespace("textures/entity/beac
 
 internal data class LineData(val from: Vec3, val to: Vec3, val color1: Int, val color2: Int, val thickness: Float, val depth: Boolean)
 internal data class BoxData(val aabb: AABB, val r: Float, val g: Float, val b: Float, val a: Float, val thickness: Float, val depth: Boolean)
+internal data class SphereData(val center: Vec3, val radius: Float, val r: Float, val g: Float, val b: Float, val a: Float, val depth: Boolean)
 internal data class BeaconData(val pos: BlockPos, val color: Color, val isScoping: Boolean, val gameTime: Long)
 internal data class TextData(val text: String, val pos: Vec3, val scale: Float, val depth: Boolean, val cameraRotation: org.joml.Quaternionf, val font: Font, val textWidth: Float)
 internal data class TexturedQuadData(val texture: Identifier, val bl: Vec3, val tl: Vec3, val tr: Vec3, val br: Vec3, val nx: Float, val ny: Float, val nz: Float, val color: Int, val depth: Boolean)
@@ -38,6 +39,7 @@ internal data class TexturedQuadData(val texture: Identifier, val bl: Vec3, val 
 class RenderConsumer {
     internal val lines = ObjectArrayList<LineData>()
     internal val filledBoxes = ObjectArrayList<BoxData>()
+    internal val spheres = ObjectArrayList<SphereData>()
     internal val wireBoxes = ObjectArrayList<BoxData>()
 
     internal val beaconBeams = ObjectArrayList<BeaconData>()
@@ -47,6 +49,7 @@ class RenderConsumer {
     fun clear() {
         lines.clear()
         filledBoxes.clear()
+        spheres.clear()
         wireBoxes.clear()
         beaconBeams.clear()
         texts.clear()
@@ -68,6 +71,7 @@ object RenderBatchManager {
 
             poseStack.renderQueuedLinesAndWireBoxes(renderConsumer.lines, renderConsumer.wireBoxes, bufferSource)
             poseStack.renderQueuedFilledBoxes(renderConsumer.filledBoxes, bufferSource)
+            poseStack.renderQueuedSpheres(renderConsumer.spheres, bufferSource)
             poseStack.renderQueuedTexturedQuads(renderConsumer.texturedQuads, bufferSource)
             poseStack.popPose()
 
@@ -100,6 +104,8 @@ private fun BoxData.lineRenderType() = resolveLineRenderType(
 )
 
 private fun BoxData.filledRenderType() = if (depth) RenderTypes.debugFilledBox() else CustomRenderType.QUADS_ESP
+
+private fun SphereData.filledRenderType() = if (depth) RenderTypes.debugFilledBox() else CustomRenderType.QUADS_ESP
 
 fun RenderEvent.Extract.drawTexturedQuad(
     texture: Identifier,
@@ -197,6 +203,20 @@ private fun PoseStack.renderQueuedFilledBoxes(consumer: List<BoxData>, bufferSou
     }
 }
 
+private fun PoseStack.renderQueuedSpheres(consumer: List<SphereData>, bufferSource: MultiBufferSource.BufferSource) {
+    if (consumer.isEmpty()) return
+    val last = this.last()
+
+    for (sphere in consumer) {
+        val buffer = bufferSource.getBuffer(sphere.filledRenderType())
+        PrimitiveRenderer.renderSphere(
+            last, buffer,
+            sphere.center.x.toFloat(), sphere.center.y.toFloat(), sphere.center.z.toFloat(),
+            sphere.radius, sphere.r, sphere.g, sphere.b, sphere.a
+        )
+    }
+}
+
 private fun PoseStack.renderQueuedBeaconBeams(consumer: List<BeaconData>, camera: Vec3) {
     for (beacon in consumer) {
         pushPose()
@@ -283,6 +303,12 @@ fun RenderEvent.Extract.drawWireFrameBox(aabb: AABB, color: Color, thickness: Fl
 fun RenderEvent.Extract.drawFilledBox(aabb: AABB, color: Color, depth: Boolean = false) {
     consumer.filledBoxes.add(
         BoxData(aabb, color.redFloat, color.greenFloat, color.blueFloat, color.alphaFloat, 3f, depth)
+    )
+}
+
+fun RenderEvent.Extract.drawSphere(center: Vec3, radius: Float, color: Color, depth: Boolean = false) {
+    consumer.spheres.add(
+        SphereData(center, radius, color.redFloat, color.greenFloat, color.blueFloat, color.alphaFloat, depth)
     )
 }
 
@@ -478,6 +504,62 @@ object PrimitiveRenderer {
         vertex(maxX, maxY, maxZ)
         vertex(maxX, maxY, minZ)
         vertex(minX, maxY, minZ)
+    }
+
+    fun renderSphere(
+        pose: PoseStack.Pose,
+        buffer: VertexConsumer,
+        cx: Float, cy: Float, cz: Float,
+        radius: Float,
+        r: Float, g: Float, b: Float, a: Float,
+        stacks: Int = 6,
+        sectors: Int = 10
+    ) {
+        var firstVertex = true
+        var lastX = 0f
+        var lastY = 0f
+        var lastZ = 0f
+
+        fun vertex(x: Float, y: Float, z: Float) {
+            buffer.addVertex(pose, x, y, z).setColor(r, g, b, a)
+            lastX = x
+            lastY = y
+            lastZ = z
+        }
+
+        for (stack in 0 until stacks) {
+            val t1 = (Math.PI * stack / stacks).toFloat()
+            val t2 = (Math.PI * (stack + 1) / stacks).toFloat()
+            val sin1 = sin(t1)
+            val cos1 = cos(t1)
+            val sin2 = sin(t2)
+            val cos2 = cos(t2)
+
+            for (sector in 0..sectors) {
+                val phi = (2.0 * Math.PI * sector / sectors).toFloat()
+                val sp = sin(phi)
+                val cp = cos(phi)
+                val xa = cx + radius * sin2 * cp
+                val ya = cy + radius * cos2
+                val za = cz + radius * sin2 * sp
+                val xb = cx + radius * sin1 * cp
+                val yb = cy + radius * cos1
+                val zb = cz + radius * sin1 * sp
+
+                if (sector == 0) {
+                    if (firstVertex) {
+                        vertex(xa, ya, za) // chained-strip leading duplicate
+                        firstVertex = false
+                    } else {
+                        vertex(lastX, lastY, lastZ) // degenerate bridge out of previous band
+                        vertex(xa, ya, za)          // degenerate bridge into this band
+                    }
+                }
+                vertex(xa, ya, za)
+                vertex(xb, yb, zb)
+            }
+        }
+        vertex(lastX, lastY, lastZ) // chained-strip trailing duplicate
     }
 
     fun renderVector(

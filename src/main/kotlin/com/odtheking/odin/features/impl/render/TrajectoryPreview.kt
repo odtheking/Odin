@@ -7,10 +7,12 @@ import com.odtheking.odin.clickgui.settings.impl.SelectorSetting
 import com.odtheking.odin.events.RenderEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
+import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.ProjectileSim
 import com.odtheking.odin.utils.render.drawFilledBox
 import com.odtheking.odin.utils.render.drawLine
+import com.odtheking.odin.utils.render.drawSphere
 import net.minecraft.core.Direction
 import net.minecraft.world.item.BowItem
 import net.minecraft.world.item.EggItem
@@ -33,9 +35,9 @@ object TrajectoryPreview : Module(
     private val snowballs by BooleanSetting("Snowballs & Eggs", false, desc = "Preview snowballs and eggs.")
     private val fishingRod by BooleanSetting("Fishing Rod", false, desc = "Preview fishing rod casts.")
     private val potions by BooleanSetting("Potions", false, desc = "Preview splash and lingering potions.")
-    private val lineColor by ColorSetting("Line Color", Colors.WHITE, true, desc = "Color of the trajectory line.")
-    private val impactColor by ColorSetting("Impact Color", Colors.MINECRAFT_RED, true, desc = "Color of the impact marker.")
-    private val entityColor by ColorSetting("Entity Hit Color", Colors.MINECRAFT_YELLOW, true, desc = "Line color when the projectile would hit an entity.")
+    private val lineColor by ColorSetting("Line Color", Color(128, 0, 255), true, desc = "Color of the trajectory line.")
+    private val impactColor by ColorSetting("Impact Color", Colors.WHITE, true, desc = "Color of the impact marker.")
+    private val entityColor by ColorSetting("Entity Hit Color", Colors.MINECRAFT_RED, true, desc = "Line color when the projectile would hit an entity.")
     private val renderStyle by SelectorSetting("Render Style", "Line", listOf("Line", "Dots", "Both"), desc = "Trajectory drawn as a line, a dotted trail, or both.")
     private val lineWidth by NumberSetting("Line Width", 5f, 1, 10, 0.5, desc = "Thickness of the trajectory line.")
     private val throughWalls by BooleanSetting("Through Walls", false, desc = "Renders the preview through blocks.")
@@ -54,9 +56,9 @@ object TrajectoryPreview : Module(
                 val pathColor = if (result.entityHit != null) entityColor else lineColor
                 if (renderStyle != 1) drawLine(visiblePoints, pathColor, depth = !throughWalls, thickness = lineWidth)
                 if (renderStyle != 0) {
-                    val dotSize = (lineWidth * 0.02).toDouble()
+                    val dotRadius = lineWidth * 0.015f
                     visiblePoints.forEach { point ->
-                        drawFilledBox(AABB.ofSize(point, dotSize, dotSize, dotSize), pathColor, depth = !throughWalls)
+                        drawSphere(point, dotRadius, pathColor, depth = !throughWalls)
                     }
                 }
             }
