@@ -17,6 +17,7 @@
     "mixins.EntityRendererMixin",
     "mixins.ExperienceBarRendererMixin",
     "mixins.FontMixin",
+    "mixins.GameRendererMixin",
     "mixins.GuiMixin",
     "mixins.KeyBindingMixin",
     "mixins.LocalPlayerMixin",
