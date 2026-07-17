@@ -493,9 +493,11 @@ object PrimitiveRenderer {
         val endY = start.y() + direction.y.toFloat()
         val endZ = start.z() + direction.z.toFloat()
 
-        val nx = direction.x.toFloat()
-        val ny = direction.y.toFloat()
-        val nz = direction.z.toFloat()
+        val len = direction.length()
+        val inv = if (len > 1.0E-6) (1.0 / len).toFloat() else 0f
+        val nx = direction.x.toFloat() * inv
+        val ny = direction.y.toFloat() * inv
+        val nz = direction.z.toFloat() * inv
 
         buffer.addVertex(pose, start.x(), start.y(), start.z())
             .setColor(startColor)

@@ -3,6 +3,7 @@ package com.odtheking.odin.features.impl.render
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.ColorSetting
 import com.odtheking.odin.clickgui.settings.impl.NumberSetting
+import com.odtheking.odin.clickgui.settings.impl.SelectorSetting
 import com.odtheking.odin.events.RenderEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
@@ -35,6 +36,7 @@ object TrajectoryPreview : Module(
     private val lineColor by ColorSetting("Line Color", Colors.WHITE, true, desc = "Color of the trajectory line.")
     private val impactColor by ColorSetting("Impact Color", Colors.MINECRAFT_RED, true, desc = "Color of the impact marker.")
     private val entityColor by ColorSetting("Entity Hit Color", Colors.MINECRAFT_YELLOW, true, desc = "Line color when the projectile would hit an entity.")
+    private val renderStyle by SelectorSetting("Render Style", "Line", listOf("Line", "Dots", "Both"), desc = "Trajectory drawn as a line, a dotted trail, or both.")
     private val lineWidth by NumberSetting("Line Width", 5f, 1, 10, 0.5, desc = "Thickness of the trajectory line.")
     private val throughWalls by BooleanSetting("Through Walls", false, desc = "Renders the preview through blocks.")
 
@@ -50,7 +52,13 @@ object TrajectoryPreview : Module(
             val visiblePoints = if (result.points.size > IGNORE_FIRST_POINTS) result.points.drop(IGNORE_FIRST_POINTS) else emptyList()
             if (visiblePoints.size >= 2) {
                 val pathColor = if (result.entityHit != null) entityColor else lineColor
-                drawLine(visiblePoints, pathColor, depth = !throughWalls, thickness = lineWidth)
+                if (renderStyle != 1) drawLine(visiblePoints, pathColor, depth = !throughWalls, thickness = lineWidth)
+                if (renderStyle != 0) {
+                    val dotSize = (lineWidth * 0.02).toDouble()
+                    visiblePoints.forEach { point ->
+                        drawFilledBox(AABB.ofSize(point, dotSize, dotSize, dotSize), pathColor, depth = !throughWalls)
+                    }
+                }
             }
 
             result.blockHit?.let { hit ->
