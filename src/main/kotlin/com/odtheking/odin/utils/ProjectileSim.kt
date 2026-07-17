@@ -2,10 +2,7 @@ package com.odtheking.odin.utils
 
 import net.minecraft.util.Mth
 import net.minecraft.world.entity.Entity
-import net.minecraft.world.entity.ExperienceOrb
-import net.minecraft.world.entity.item.ItemEntity
 import net.minecraft.world.entity.player.Player
-import net.minecraft.world.entity.projectile.Projectile
 import net.minecraft.world.item.BowItem
 import net.minecraft.world.item.EggItem
 import net.minecraft.world.item.EnderpearlItem
@@ -32,16 +29,18 @@ object ProjectileSim {
     enum class StepOrder { PDG, GDP, GPD }
 
     enum class ProjectileType(
+        val power: Double,
+        val roll: Float, // pitch offset in degrees — potions are thrown 20° upward
         val gravity: Double,
         val drag: Double,
         val waterDrag: Double,
         val order: StepOrder,
         val hitsWater: Boolean = false
     ) {
-        ARROW(0.05, 0.99, 0.6, StepOrder.PDG),
-        THROWN(0.03, 0.99, 0.8, StepOrder.GDP),
-        POTION(0.05, 0.99, 0.8, StepOrder.GDP),
-        FISHING_ROD(0.03, 0.92, 0.92, StepOrder.GPD, hitsWater = true)
+        ARROW(0.0, 0f, 0.05, 0.99, 0.6, StepOrder.PDG), // power dynamic: 3.0 × bow charge
+        THROWN(1.5, 0f, 0.03, 0.99, 0.8, StepOrder.GDP),
+        POTION(0.5, -20f, 0.05, 0.99, 0.8, StepOrder.GDP),
+        FISHING_ROD(0.0, 0f, 0.03, 0.92, 0.92, StepOrder.GPD, hitsWater = true) // velocity from vanilla bobber formula
     }
 
     data class Launch(val type: ProjectileType, val position: Vec3, val velocity: Vec3)
@@ -50,23 +49,23 @@ object ProjectileSim {
 
     /**
      * Maps the held item to launch parameters, or null if the item is not a supported projectile.
-     * Bows use the real draw charge while drawing, otherwise assume full charge —
-     * Skyblock shortbows (Terminator, Juju) always fire at full power without drawing.
+     * Bows use the real draw charge while drawing; below meteor's 0.1 threshold (or when not
+     * drawing at all) full charge is assumed — Skyblock shortbows always fire at full power.
      */
     fun launchFor(stack: ItemStack, player: Player, partialTicks: Float): Launch? {
         val eyePos = player.getEyePosition(partialTicks).subtract(0.0, 0.1, 0.0)
         return when (stack.item) {
             is BowItem -> {
-                val charge = if (player.isUsingItem && player.useItem === stack)
+                var charge = if (player.isUsingItem && player.useItem === stack)
                     BowItem.getPowerForTime(player.ticksUsingItem)
                 else 1f
-                if (charge < 0.1f) return null
-                Launch(ProjectileType.ARROW, eyePos, player.getViewVector(partialTicks).scale(3.0 * charge))
+                if (charge < 0.1f) charge = 1f
+                Launch(ProjectileType.ARROW, eyePos, direction(player, 0f).scale(3.0 * charge))
             }
             is EnderpearlItem, is SnowballItem, is EggItem ->
-                Launch(ProjectileType.THROWN, eyePos, player.getViewVector(partialTicks).scale(1.5))
+                Launch(ProjectileType.THROWN, eyePos, direction(player, 0f).scale(ProjectileType.THROWN.power))
             is ThrowablePotionItem ->
-                Launch(ProjectileType.POTION, eyePos, angleFromRot(player.xRot, player.yRot, -20f).scale(0.5))
+                Launch(ProjectileType.POTION, eyePos, direction(player, ProjectileType.POTION.roll).scale(ProjectileType.POTION.power))
             is FishingRodItem -> {
                 if (player.fishing != null) return null
                 val h = Mth.cos((-player.yRot * DEG_TO_RAD - Mth.PI).toDouble())
@@ -88,12 +87,12 @@ object ProjectileSim {
      * Ticks the projectile forward until it hits a block, hits an entity,
      * falls out of the world, or maxTicks elapse.
      */
-    fun simulate(player: Player, launch: Launch, maxTicks: Int = 200): SimResult {
+    fun simulate(player: Player, launch: Launch, maxTicks: Int = 500): SimResult {
         val level = player.level()
         val points = ArrayList<Vec3>(maxTicks + 2)
         var pos = launch.position
         var prevPos = pos
-        var vel = launch.velocity.add(player.deltaMovement)
+        var vel = launch.velocity
         var drag = launch.type.drag
         val gravity = launch.type.gravity
 
@@ -110,7 +109,7 @@ object ProjectileSim {
             var closestDistSq = Double.MAX_VALUE
             var entityHitPos: Vec3? = null
             level.getEntitiesOfClass(Entity::class.java, AABB(prevPos, pos).inflate(1.0)) { e ->
-                !e.isSpectator && e.isAlive && e !is Projectile && e !is ItemEntity && e !is ExperienceOrb && e !== player
+                !e.isSpectator && e.isAlive && e.isPickable && e !== player
             }.forEach { entity ->
                 val clip = entity.boundingBox.inflate(entity.pickRadius.toDouble()).clip(prevPos, pos)
                 if (clip.isPresent) {
@@ -139,17 +138,17 @@ object ProjectileSim {
                 points.add(hit)
                 return SimResult(points, null, closestEntity)
             }
-            if (pos.y < level.minY - 120) return SimResult(points, null, null)
+            if (pos.y < level.minY) return SimResult(points, null, null)
             prevPos = pos
         }
         return SimResult(points, null, null)
     }
 
-    // Direction vector from pitch/yaw with a pitch offset — vanilla thrown-potion launch uses -20°.
-    private fun angleFromRot(pitch: Float, yaw: Float, pitchOffset: Float): Vec3 {
-        val x = -Mth.sin((yaw * DEG_TO_RAD).toDouble()) * Mth.cos((pitch * DEG_TO_RAD).toDouble())
-        val y = -Mth.sin(((pitch + pitchOffset) * DEG_TO_RAD).toDouble())
-        val z = Mth.cos((yaw * DEG_TO_RAD).toDouble()) * Mth.cos((pitch * DEG_TO_RAD).toDouble())
+    // Meteor's direction formula: yaw/pitch trig with a per-item pitch offset (roll), normalized.
+    private fun direction(player: Player, roll: Float): Vec3 {
+        val x = -Mth.sin((player.yRot * DEG_TO_RAD).toDouble()) * Mth.cos((player.xRot * DEG_TO_RAD).toDouble())
+        val y = -Mth.sin(((player.xRot + roll) * DEG_TO_RAD).toDouble())
+        val z = Mth.cos((player.yRot * DEG_TO_RAD).toDouble()) * Mth.cos((player.xRot * DEG_TO_RAD).toDouble())
         return Vec3(x.toDouble(), y.toDouble(), z.toDouble()).normalize()
     }
 }
