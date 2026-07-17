@@ -593,3 +593,87 @@ Expected: `BUILD SUCCESSFUL`
 git add src/main/kotlin/com/odtheking/odin/utils/ProjectileSim.kt src/main/kotlin/com/odtheking/odin/features/impl/render/TrajectoryPreview.kt
 git commit -m "Fixed trajectory entity collision using vanilla ProjectileUtil and improved hit visibility"
 ```
+
+---
+
+### Task 6: Line render stability (user feedback round 3)
+
+User feedback: the trajectory line "twists" whenever the camera rotates. Root cause: `PrimitiveRenderer.renderVector` (`RenderUtils.kt`) passes the **unnormalized** segment direction as the line-shader normal. Minecraft's `rendertype_lines` shader computes the screen-space line quad from `Position + Normal` with perspective division — vanilla always submits unit normals; magnitude-carrying normals skew that math and each segment's screen-space quad rotates independently as the view changes. Fix the normal, and add a camera-independent "Dots" style as a guaranteed-stable option (meteor's render-position-boxes).
+
+**Files:**
+- Modify: `src/main/kotlin/com/odtheking/odin/utils/render/RenderUtils.kt` (renderVector — repo-wide line fix)
+- Modify: `src/main/kotlin/com/odtheking/odin/features/impl/render/TrajectoryPreview.kt` (render style selector)
+
+**Interfaces:**
+- `ProjectileSim` untouched. `drawLine` signature unchanged — only the normal math inside `renderVector` changes.
+
+- [ ] **Step 1: Normalize line normals in `renderVector`**
+
+In `RenderUtils.kt`, `renderVector` currently computes:
+
+```kotlin
+        val nx = direction.x.toFloat()
+        val ny = direction.y.toFloat()
+        val nz = direction.z.toFloat()
+```
+
+Replace with (normalize, guarding the degenerate zero-length segment):
+
+```kotlin
+        val len = direction.length()
+        val inv = if (len > 1.0E-6) (1.0 / len).toFloat() else 0f
+        val nx = direction.x.toFloat() * inv
+        val ny = direction.y.toFloat() * inv
+        val nz = direction.z.toFloat() * inv
+```
+
+Both `setNormal` calls below already use `nx/ny/nz` — no other change. This matches the unit-normal contract vanilla's own line rendering follows and affects every `drawLine`/`drawTracer` user in the mod (an improvement, not a regression — direction is unchanged, only magnitude).
+
+- [ ] **Step 2: Add "Render Style" selector to `TrajectoryPreview.kt`**
+
+1. Add import `com.odtheking.odin.clickgui.settings.impl.SelectorSetting`.
+2. Add the setting directly above the `lineWidth` declaration:
+
+```kotlin
+    private val renderStyle by SelectorSetting("Render Style", "Line", listOf("Line", "Dots", "Both"), desc = "Trajectory drawn as a line, a dotted trail, or both.")
+```
+
+3. In the `on<RenderEvent.Extract>` block, replace the line-drawing section:
+
+```kotlin
+            val visiblePoints = if (result.points.size > IGNORE_FIRST_POINTS) result.points.drop(IGNORE_FIRST_POINTS) else emptyList()
+            if (visiblePoints.size >= 2) {
+                val pathColor = if (result.entityHit != null) entityColor else lineColor
+                drawLine(visiblePoints, pathColor, depth = !throughWalls, thickness = lineWidth)
+            }
+```
+
+with:
+
+```kotlin
+            val visiblePoints = if (result.points.size > IGNORE_FIRST_POINTS) result.points.drop(IGNORE_FIRST_POINTS) else emptyList()
+            if (visiblePoints.size >= 2) {
+                val pathColor = if (result.entityHit != null) entityColor else lineColor
+                if (renderStyle != 1) drawLine(visiblePoints, pathColor, depth = !throughWalls, thickness = lineWidth)
+                if (renderStyle != 0) {
+                    val dotSize = (lineWidth * 0.02).toDouble()
+                    visiblePoints.forEach { point ->
+                        drawFilledBox(AABB.ofSize(point, dotSize, dotSize, dotSize), pathColor, depth = !throughWalls)
+                    }
+                }
+            }
+```
+
+Note: `SelectorSetting`'s delegated value is the selected **index** (`Int`): 0 = Line, 1 = Dots, 2 = Both (established by `RenderTest.kt`'s `boxStyle` usage feeding `drawStyledBox(style: Int)`).
+
+- [ ] **Step 3: Verify it compiles**
+
+Run: `JAVA_HOME=/home/girish/.jdks/jdk-25.0.3+9 ./gradlew build --console=plain`
+Expected: `BUILD SUCCESSFUL`
+
+- [ ] **Step 4: Commit**
+
+```bash
+git add src/main/kotlin/com/odtheking/odin/utils/render/RenderUtils.kt src/main/kotlin/com/odtheking/odin/features/impl/render/TrajectoryPreview.kt
+git commit -m "Fixed line render twisting by normalizing line-shader normals and added trajectory render styles"
+```
