@@ -677,3 +677,179 @@ Expected: `BUILD SUCCESSFUL`
 git add src/main/kotlin/com/odtheking/odin/utils/render/RenderUtils.kt src/main/kotlin/com/odtheking/odin/features/impl/render/TrajectoryPreview.kt
 git commit -m "Fixed line render twisting by normalizing line-shader normals and added trajectory render styles"
 ```
+
+---
+
+### Task 7: Sphere dots + color defaults (user feedback round 4)
+
+User feedback: dots should be spheres, not cubes; default colors change to line = RGB(128, 0, 255), impact = white, entity hit = red. Requires a filled-sphere primitive in the shared render layer (none exists), modeled exactly on the existing filled-box path (`BoxData` → `renderQueuedFilledBoxes` → `PrimitiveRenderer.addChainedFilledBoxVertices`, chained TRIANGLE_STRIP with duplicated lead/tail vertices for degenerate stitching).
+
+**Files:**
+- Modify: `src/main/kotlin/com/odtheking/odin/utils/render/RenderUtils.kt`
+- Modify: `src/main/kotlin/com/odtheking/odin/features/impl/render/TrajectoryPreview.kt`
+
+**Interfaces:**
+- Produces: `RenderEvent.Extract.drawSphere(center: Vec3, radius: Float, color: Color, depth: Boolean = false)` — reusable by any module.
+- `ProjectileSim` untouched.
+
+- [ ] **Step 1: Add sphere primitive to `RenderUtils.kt`**
+
+1. Next to `internal data class BoxData(...)`, add:
+
+```kotlin
+internal data class SphereData(val center: Vec3, val radius: Float, val r: Float, val g: Float, val b: Float, val a: Float, val depth: Boolean)
+```
+
+2. In `RenderConsumer`: add `internal val spheres = ObjectArrayList<SphereData>()` beside `filledBoxes`, and `spheres.clear()` inside `clear()`.
+
+3. In `RenderBatchManager`'s `init` block, directly after the `renderQueuedFilledBoxes(...)` line, add:
+
+```kotlin
+            poseStack.renderQueuedSpheres(renderConsumer.spheres, bufferSource)
+```
+
+4. Beside `BoxData.filledRenderType()`, add:
+
+```kotlin
+private fun SphereData.filledRenderType() = if (depth) RenderTypes.debugFilledBox() else CustomRenderType.QUADS_ESP
+```
+
+5. Beside `renderQueuedFilledBoxes`, add:
+
+```kotlin
+private fun PoseStack.renderQueuedSpheres(consumer: List<SphereData>, bufferSource: MultiBufferSource.BufferSource) {
+    if (consumer.isEmpty()) return
+    val last = this.last()
+
+    for (sphere in consumer) {
+        val buffer = bufferSource.getBuffer(sphere.filledRenderType())
+        PrimitiveRenderer.renderSphere(
+            last, buffer,
+            sphere.center.x.toFloat(), sphere.center.y.toFloat(), sphere.center.z.toFloat(),
+            sphere.radius, sphere.r, sphere.g, sphere.b, sphere.a
+        )
+    }
+}
+```
+
+6. Public extension, next to `drawFilledBox`:
+
+```kotlin
+fun RenderEvent.Extract.drawSphere(center: Vec3, radius: Float, color: Color, depth: Boolean = false) {
+    consumer.spheres.add(
+        SphereData(center, radius, color.redFloat, color.greenFloat, color.blueFloat, color.alphaFloat, depth)
+    )
+}
+```
+
+7. In the `PrimitiveRenderer` object (same object that holds `renderVector`), add a UV-sphere emitted as one chained triangle strip — duplicated first and last vertices plus degenerate bridges between latitude bands, matching the chained-strip convention `addChainedFilledBoxVertices` uses:
+
+```kotlin
+    fun renderSphere(
+        pose: PoseStack.Pose,
+        buffer: VertexConsumer,
+        cx: Float, cy: Float, cz: Float,
+        radius: Float,
+        r: Float, g: Float, b: Float, a: Float,
+        stacks: Int = 6,
+        sectors: Int = 10
+    ) {
+        var firstVertex = true
+        var lastX = 0f
+        var lastY = 0f
+        var lastZ = 0f
+
+        fun vertex(x: Float, y: Float, z: Float) {
+            buffer.addVertex(pose, x, y, z).setColor(r, g, b, a)
+            lastX = x
+            lastY = y
+            lastZ = z
+        }
+
+        for (stack in 0 until stacks) {
+            val t1 = (Math.PI * stack / stacks).toFloat()
+            val t2 = (Math.PI * (stack + 1) / stacks).toFloat()
+            val sin1 = sin(t1)
+            val cos1 = cos(t1)
+            val sin2 = sin(t2)
+            val cos2 = cos(t2)
+
+            for (sector in 0..sectors) {
+                val phi = (2.0 * Math.PI * sector / sectors).toFloat()
+                val sp = sin(phi)
+                val cp = cos(phi)
+                val xa = cx + radius * sin2 * cp
+                val ya = cy + radius * cos2
+                val za = cz + radius * sin2 * sp
+                val xb = cx + radius * sin1 * cp
+                val yb = cy + radius * cos1
+                val zb = cz + radius * sin1 * sp
+
+                if (sector == 0) {
+                    if (firstVertex) {
+                        vertex(xa, ya, za) // chained-strip leading duplicate
+                        firstVertex = false
+                    } else {
+                        vertex(lastX, lastY, lastZ) // degenerate bridge out of previous band
+                        vertex(xa, ya, za)          // degenerate bridge into this band
+                    }
+                }
+                vertex(xa, ya, za)
+                vertex(xb, yb, zb)
+            }
+        }
+        vertex(lastX, lastY, lastZ) // chained-strip trailing duplicate
+    }
+```
+
+If `sin`/`cos` are unresolved in `PrimitiveRenderer`'s scope, add `import kotlin.math.cos` / `import kotlin.math.sin` at the top of the file (the file very likely has them already — `drawCylinder` uses both).
+
+- [ ] **Step 2: `TrajectoryPreview.kt` — sphere dots + new color defaults**
+
+1. Change the three color setting defaults (names unchanged — NOTE: existing saved configs override defaults; only fresh configs see these):
+
+```kotlin
+    private val lineColor by ColorSetting("Line Color", Color(128, 0, 255), true, desc = "Color of the trajectory line.")
+    private val impactColor by ColorSetting("Impact Color", Colors.WHITE, true, desc = "Color of the impact marker.")
+    private val entityColor by ColorSetting("Entity Hit Color", Colors.MINECRAFT_RED, true, desc = "Line color when the projectile would hit an entity.")
+```
+
+Add import `com.odtheking.odin.utils.Color` (keep the `Colors` import).
+
+2. Replace the dots block inside the render handler:
+
+```kotlin
+                if (renderStyle != 0) {
+                    val dotSize = (lineWidth * 0.02).toDouble()
+                    visiblePoints.forEach { point ->
+                        drawFilledBox(AABB.ofSize(point, dotSize, dotSize, dotSize), pathColor, depth = !throughWalls)
+                    }
+                }
+```
+
+with:
+
+```kotlin
+                if (renderStyle != 0) {
+                    val dotRadius = lineWidth * 0.015f
+                    visiblePoints.forEach { point ->
+                        drawSphere(point, dotRadius, pathColor, depth = !throughWalls)
+                    }
+                }
+```
+
+(This also removes the redundant `.toDouble()` the compiler warned about in Task 6.)
+
+3. Add import `com.odtheking.odin.utils.render.drawSphere`. Keep `drawFilledBox` and `AABB` imports — still used by the impact quad and entity-hit marker.
+
+- [ ] **Step 3: Verify it compiles**
+
+Run: `JAVA_HOME=/home/girish/.jdks/jdk-25.0.3+9 ./gradlew build --console=plain`
+Expected: `BUILD SUCCESSFUL`, and the Task 6 "Redundant call of conversion method" warning is gone.
+
+- [ ] **Step 4: Commit**
+
+```bash
+git add src/main/kotlin/com/odtheking/odin/utils/render/RenderUtils.kt src/main/kotlin/com/odtheking/odin/features/impl/render/TrajectoryPreview.kt
+git commit -m "Added sphere rendering for trajectory dots and updated default colors"
+```
