@@ -513,3 +513,83 @@ Expected: `BUILD SUCCESSFUL`
 git add src/main/kotlin/com/odtheking/odin/utils/ProjectileSim.kt src/main/kotlin/com/odtheking/odin/features/impl/render/TrajectoryPreview.kt
 git commit -m "Reworked trajectory preview to meteor-style rendering and simulation"
 ```
+
+---
+
+### Task 5: Vanilla entity collision + visibility fixes (user feedback round 2)
+
+User feedback: trajectory line passes through players (visible going behind them, then depth-hidden = "disappears"), and the line reads too thin. Fix by porting meteor's entity-collision exactly — vanilla `ProjectileUtil.getEntityHitResult` with meteor's growing tolerance margin — and improving hit visibility.
+
+**Files:**
+- Modify: `src/main/kotlin/com/odtheking/odin/utils/ProjectileSim.kt`
+- Modify: `src/main/kotlin/com/odtheking/odin/features/impl/render/TrajectoryPreview.kt`
+
+**Interfaces:**
+- Public API unchanged: `launchFor`, `simulate`, `Launch`, `SimResult(points, blockHit, entityHit)`.
+
+- [ ] **Step 1: Replace hand-rolled entity clip in `ProjectileSim.simulate` with `ProjectileUtil`**
+
+Verified against the mapped 26.1.2 jar: `net.minecraft.world.entity.projectile.ProjectileUtil` has
+`public static EntityHitResult getEntityHitResult(Level, Entity, Vec3, Vec3, AABB, Predicate<Entity>, float)`.
+
+In `ProjectileSim.kt`:
+
+1. Add import `net.minecraft.world.entity.projectile.ProjectileUtil`. Remove the now-unused `Entity` import ONLY if nothing else references it (`SimResult.entityHit` still does — keep it).
+2. Change the loop from `repeat(maxTicks) {` to `for (tick in 0 until maxTicks) {` (the tolerance margin needs the tick index; closing brace count unchanged).
+3. Replace the whole entity-search block (the `var closestEntity ... level.getEntitiesOfClass(...).forEach { ... }` section) with:
+
+```kotlin
+            // Meteor-style entity collision: vanilla ProjectileUtil with a tolerance margin
+            // that grows over flight time (meteor's getToleranceMargin).
+            val margin = Mth.clamp((tick - 2) / 20f, 0f, 0.3f)
+            val entityHit = ProjectileUtil.getEntityHitResult(
+                level, player, prevPos, pos,
+                AABB(prevPos, pos).inflate(1.0),
+                { e -> !e.isSpectator && e.isAlive && e.isPickable && e !== player },
+                margin
+            )
+            val entityDistSq = entityHit?.let { prevPos.distanceToSqr(it.location) } ?: Double.MAX_VALUE
+```
+
+4. Update the two hit checks that followed to use the new names (block hit wins only when strictly closer than the entity hit, as before):
+
+```kotlin
+            if (blockHit.type != HitResult.Type.MISS && prevPos.distanceToSqr(blockHit.location) < entityDistSq) {
+                points.add(blockHit.location)
+                return SimResult(points, blockHit, null)
+            }
+            entityHit?.let { hit ->
+                points.add(hit.location)
+                return SimResult(points, null, hit.entity)
+            }
+```
+
+5. Delete the now-unused imports for `net.minecraft.world.entity.projectile.Projectile` — wait: that import was already removed in Task 4. After this change nothing but `SimResult`/the predicate uses `Entity`; keep that import. No other import changes should be needed; let the compiler confirm.
+
+- [ ] **Step 2: Visibility fixes in `TrajectoryPreview.kt`**
+
+1. Widen the line-width setting (name unchanged so existing configs keep working; new installs default thicker):
+
+```kotlin
+    private val lineWidth by NumberSetting("Line Width", 5f, 1, 10, 0.5, desc = "Thickness of the trajectory line.")
+```
+
+2. After the `result.blockHit?.let { ... }` block, add an entity-hit marker so a predicted entity hit stays visible even where the player model occludes the line end (the sim appends the exact hit location as the last path point):
+
+```kotlin
+            if (result.entityHit != null && result.points.isNotEmpty()) {
+                drawFilledBox(AABB.ofSize(result.points.last(), 0.25, 0.25, 0.25), entityColor, depth = !throughWalls)
+            }
+```
+
+- [ ] **Step 3: Verify it compiles**
+
+Run: `JAVA_HOME=/home/girish/.jdks/jdk-25.0.3+9 ./gradlew build --console=plain`
+Expected: `BUILD SUCCESSFUL`
+
+- [ ] **Step 4: Commit**
+
+```bash
+git add src/main/kotlin/com/odtheking/odin/utils/ProjectileSim.kt src/main/kotlin/com/odtheking/odin/features/impl/render/TrajectoryPreview.kt
+git commit -m "Fixed trajectory entity collision using vanilla ProjectileUtil and improved hit visibility"
+```
