@@ -35,7 +35,7 @@ object TrajectoryPreview : Module(
     private val lineColor by ColorSetting("Line Color", Colors.WHITE, true, desc = "Color of the trajectory line.")
     private val impactColor by ColorSetting("Impact Color", Colors.MINECRAFT_RED, true, desc = "Color of the impact marker.")
     private val entityColor by ColorSetting("Entity Hit Color", Colors.MINECRAFT_YELLOW, true, desc = "Line color when the projectile would hit an entity.")
-    private val lineWidth by NumberSetting("Line Width", 3f, 1, 5, 0.5, desc = "Thickness of the trajectory line.")
+    private val lineWidth by NumberSetting("Line Width", 5f, 1, 10, 0.5, desc = "Thickness of the trajectory line.")
     private val throughWalls by BooleanSetting("Through Walls", false, desc = "Renders the preview through blocks.")
 
     init {
@@ -55,6 +55,10 @@ object TrajectoryPreview : Module(
 
             result.blockHit?.let { hit ->
                 drawFilledBox(impactQuad(hit), impactColor, depth = !throughWalls)
+            }
+
+            if (result.entityHit != null && result.points.isNotEmpty()) {
+                drawFilledBox(AABB.ofSize(result.points.last(), 0.25, 0.25, 0.25), entityColor, depth = !throughWalls)
             }
         }
     }

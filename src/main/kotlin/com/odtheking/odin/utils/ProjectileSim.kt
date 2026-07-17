@@ -3,6 +3,7 @@ package com.odtheking.odin.utils
 import net.minecraft.util.Mth
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.player.Player
+import net.minecraft.world.entity.projectile.ProjectileUtil
 import net.minecraft.world.item.BowItem
 import net.minecraft.world.item.EggItem
 import net.minecraft.world.item.EnderpearlItem
@@ -96,7 +97,7 @@ object ProjectileSim {
         var drag = launch.type.drag
         val gravity = launch.type.gravity
 
-        repeat(maxTicks) {
+        for (tick in 0 until maxTicks) {
             points.add(pos)
 
             when (launch.type.order) {
@@ -105,22 +106,16 @@ object ProjectileSim {
                 StepOrder.GPD -> { vel = vel.subtract(0.0, gravity, 0.0); pos = pos.add(vel); vel = vel.scale(drag) }
             }
 
-            var closestEntity: Entity? = null
-            var closestDistSq = Double.MAX_VALUE
-            var entityHitPos: Vec3? = null
-            level.getEntitiesOfClass(Entity::class.java, AABB(prevPos, pos).inflate(1.0)) { e ->
-                !e.isSpectator && e.isAlive && e.isPickable && e !== player
-            }.forEach { entity ->
-                val clip = entity.boundingBox.inflate(entity.pickRadius.toDouble()).clip(prevPos, pos)
-                if (clip.isPresent) {
-                    val distSq = prevPos.distanceToSqr(clip.get())
-                    if (distSq < closestDistSq) {
-                        closestDistSq = distSq
-                        closestEntity = entity
-                        entityHitPos = clip.get()
-                    }
-                }
-            }
+            // Meteor-style entity collision: vanilla ProjectileUtil with a tolerance margin
+            // that grows over flight time (meteor's getToleranceMargin).
+            val margin = Mth.clamp((tick - 2) / 20f, 0f, 0.3f)
+            val entityHit = ProjectileUtil.getEntityHitResult(
+                level, player, prevPos, pos,
+                AABB(prevPos, pos).inflate(1.0),
+                { e -> !e.isSpectator && e.isAlive && e.isPickable && e !== player },
+                margin
+            )
+            val entityDistSq = entityHit?.let { prevPos.distanceToSqr(it.location) } ?: Double.MAX_VALUE
 
             val fluid = if (launch.type.hitsWater) ClipContext.Fluid.WATER else ClipContext.Fluid.NONE
             val blockHit = level.clip(ClipContext(prevPos, pos, ClipContext.Block.COLLIDER, fluid, player))
@@ -130,13 +125,13 @@ object ProjectileSim {
                 ) launch.type.waterDrag else launch.type.drag
             }
 
-            if (blockHit.type != HitResult.Type.MISS && prevPos.distanceToSqr(blockHit.location) < closestDistSq) {
+            if (blockHit.type != HitResult.Type.MISS && prevPos.distanceToSqr(blockHit.location) < entityDistSq) {
                 points.add(blockHit.location)
                 return SimResult(points, blockHit, null)
             }
-            entityHitPos?.let { hit ->
-                points.add(hit)
-                return SimResult(points, null, closestEntity)
+            entityHit?.let { hit ->
+                points.add(hit.location)
+                return SimResult(points, null, hit.entity)
             }
             if (pos.y < level.minY) return SimResult(points, null, null)
             prevPos = pos
