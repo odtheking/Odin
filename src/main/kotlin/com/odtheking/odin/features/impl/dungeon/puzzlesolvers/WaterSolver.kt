@@ -98,7 +98,7 @@ object WaterSolver {
     }
 
     fun waterInteract(event: ServerboundUseItemOnPacket) {
-        if (solutions.isEmpty()) return
+        if (solutions.isEmpty() || mc.hasShiftDown()) return
         LeverBlock.entries.find { it.leverPos == event.hitResult.blockPos }?.let {
             if (it == LeverBlock.WATER && openedWaterTicks == -1) openedWaterTicks = tickCounter
             it.i++

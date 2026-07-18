@@ -21,9 +21,7 @@ object LocationUtils {
     var currentArea: Island = Island.Unknown
         private set(value) {
             field = value
-            if (value !== Island.Unknown) {
-                LocationChangeEvent.postAndCatch()
-            }
+            if (value !== Island.Unknown) LocationChangeEvent.postAndCatch()
         }
 
     var lobbyId: String? = null
