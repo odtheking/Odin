@@ -8,6 +8,7 @@ import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Color.Companion.darker
 import com.odtheking.odin.utils.Colors
+import com.odtheking.odin.utils.modMessage
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalTypes
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalUtils
 import net.minecraft.client.gui.GuiGraphicsExtractor
@@ -67,10 +68,12 @@ object TerminalSolver : Module(
         on<GuiEvent.SlotClick> {
             val term = TerminalUtils.currentTerm ?: return@on
 
-            if (
-                System.currentTimeMillis() - term.timeOpened < firstClickProt ||
-                (blockIncorrectClicks && !term.canClick(slotId, button))
-            ) return@on cancel()
+            if (blockIncorrectClicks && !term.canClick(slotId, button)) return@on cancel()
+
+            if (term.shouldProtect()) {
+                modMessage("§cBlocked first click ${System.currentTimeMillis() - term.timeOpened}ms after opening.")
+                return@on cancel()
+            }
 
             if (middleClickGUI) {
                 term.click(slotId, if (button == 0) GLFW.GLFW_MOUSE_BUTTON_3 else button, hideClicked && !term.isClicked)
