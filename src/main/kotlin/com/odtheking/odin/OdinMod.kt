@@ -89,10 +89,5 @@ object OdinMod : ClientModInitializer {
         PictureInPictureRendererRegistry.register { context ->
             ItemStateRenderer(context.bufferSource())
         }
-
-        val name = mc.user.name.takeIf { !it.matches(Regex("Player\\d{2,3}")) } ?: return
-        scope.launch {
-            postData("https://api.odtheking.com/tele/", """{"username": "$name", "version": "Fabric $version"}""")
-        }
     }
 }

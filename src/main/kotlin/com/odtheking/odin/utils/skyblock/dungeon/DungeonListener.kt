@@ -111,6 +111,9 @@ object DungeonListener {
                 "prince killed", "prince slain", "prince killed!", "prince dead", "prince dead!", ->
                     dungeonStats.princeKilled = true
 
+                "bat killed", "bat slain", "bat killed!", "bat dead", "bat dead!" ->
+                    dungeonStats.batKilled = true
+
                 "blaze done!", "blaze done", "blaze puzzle solved!" ->
                     puzzles.find { it == Puzzle.BLAZE }.let { it?.status = PuzzleStatus.Completed }
             }
@@ -203,6 +206,7 @@ object DungeonListener {
         var elapsedTime: String = "0s",
         private var _mimicKilled: Boolean = false,
         var princeKilled: Boolean = false,
+        var batKilled: Boolean = false,
         var doorOpener: String = "Unknown",
         var bloodDone: Boolean = false,
         var puzzleCount: Int = 0,

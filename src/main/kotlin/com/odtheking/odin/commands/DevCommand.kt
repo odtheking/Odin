@@ -64,12 +64,10 @@ val devCommand = Commodore("oddev") {
     }
 
     literal("adddev").runs { name: String, password: String, xSize: Float?, ySize: Float?, zSize: Float? ->
-        val x = xSize ?: 0.6f
-        val y = ySize ?: 0.6f
-        val z = zSize ?: 0.6f
-        modMessage("Sending data... name: $name, x: $x, y: $y, z: $z")
+        val devBody = buildDevBody(name, xSize ?: 0.6f, ySize ?: 0.6f, zSize ?: 0.6f, " ", password)
+        modMessage("Sending $devBody")
         OdinMod.scope.launch {
-            modMessage(postData(DEV_SERVER, buildDevBody(name, Colors.WHITE, x, y, z, false, " ", password)).getOrNull())
+            modMessage(postData(DEV_SERVER, devBody).getOrNull())
         }
     }
 
@@ -176,8 +174,8 @@ val devCommand = Commodore("oddev") {
 
     literal("roomdata").runs { x: Int?, z: Int? ->
         val player = mc.player ?: return@runs
-        val tileX = ((x ?: player.blockX) + 201) shr 5
-        val tileZ = ((z ?: player.blockZ) + 201) shr 5
+        val tileX = x ?: ((player.blockX + 201) shr 5)
+        val tileZ = z ?: ((player.blockZ + 201) shr 5)
 
         val roomPos = IVec2(tileX * 32 - 185, tileZ * 32 - 185)
         val chunk = mc.level?.getChunk(roomPos.x shr 4, roomPos.z shr 4) ?: return@runs

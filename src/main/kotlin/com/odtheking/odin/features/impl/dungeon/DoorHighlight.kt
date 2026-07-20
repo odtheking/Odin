@@ -68,13 +68,11 @@ object DoorHighlight : Module(
         on<RenderEvent.Extract> {
             if (!DungeonUtils.inClear) return@on
 
-            DungeonScan.viewableDoors.forEach { (door, _) ->
+            DungeonScan.doors.forEach { (_, door) ->
                 if (!door.type.equalsOneOf(DoorType.Wither, DoorType.Blood)) return@forEach
                 if (door.type == DoorType.Blood && bloodOpened) return@forEach
 
-                val worldX = (door.position.x - 6) * 32 + 7 + door.rotation.offset.x * 16
-                val worldZ = (door.position.z - 6) * 32 + 7 + door.rotation.offset.z * 16
-                val box = AABB(worldX - 1.0, 69.0, worldZ - 1.0, worldX + 2.0, 73.0, worldZ + 2.0)
+                val box = AABB(door.worldX - 1.0, 69.0, door.worldZ - 1.0, door.worldX + 2.0, 73.0, door.worldZ + 2.0)
 
                 val isOpenable = when (door.type) {
                     DoorType.Wither -> witherKeys > 0

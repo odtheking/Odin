@@ -30,8 +30,16 @@ value class IVec2 private constructor(val data: Long) {
         return IVec2(x + rhs, z + rhs)
     }
 
+    operator fun plus(rhs: IVec2): IVec2 {
+        return IVec2(x + rhs.x, z + rhs.z)
+    }
+
     operator fun minus(rhs: Int): IVec2 {
         return IVec2(x - rhs, z - rhs)
+    }
+
+    operator fun minus(rhs: IVec2): IVec2 {
+        return IVec2(x - rhs.x, z - rhs.z)
     }
 
     operator fun times(rhs: Int): IVec2 {
@@ -45,12 +53,10 @@ value class IVec2 private constructor(val data: Long) {
     override fun toString(): String {
         return "IVec2(x=$x, z=$z)"
     }
-
-    fun flip(): IVec2 {
-        return IVec2(z, x)
-    }
 }
 
 fun ChunkPos.toIVec2(): IVec2 {
     return IVec2(x, z)
 }
+
+val IVec2.sortKey: Int get() = x * 1000 + z

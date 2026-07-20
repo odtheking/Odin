@@ -41,6 +41,7 @@ object MapInfo : Module(
     private var cachedKnownSecrets = 0
     private var cachedMimicKilled = false
     private var cachedPrinceKilled = false
+    private var cachedBatKilled = false
     private var cachedCryptCount = 0
     private var cachedDeathCount = 0
 
@@ -53,6 +54,7 @@ object MapInfo : Module(
         val totalSecrets = cachedTotalSecrets
         val mimicKilled = cachedMimicKilled
         val princeKilled = cachedPrinceKilled
+        val batKilled = cachedBatKilled
         val cryptCount = cachedCryptCount
 
         val showRemaining = fullAddRemaining && alternate
@@ -89,10 +91,9 @@ object MapInfo : Module(
         }
 
         val mimicText = buildString {
-            append("§7M: ")
-            append(if (mimicKilled) "§a✔" else "§c✘")
-            append(" §8| §7P: ")
-            append(if (princeKilled) "§a✔" else "§c✘")
+            append("${if (mimicKilled) "§a" else "§c"}\uD83D\uDCE6")
+            append(" §8| ${if (princeKilled) "§a" else "§c"}\uD83E\uDD34")
+            append(" §8| ${if (batKilled) "§a" else "§c"}\uD83E\uDD87")
         }
 
         val cryptText = buildString {
@@ -169,12 +170,13 @@ object MapInfo : Module(
 
     private val compactScore: HudElement by HUD("Compact Score", "Displays a compact score hud with score info.") {
         if ((!DungeonUtils.inDungeons || (disableInBoss && DungeonUtils.inBoss)) && !it) return@HUD 0 to 0
-
         val score = cachedScore
         val mimicKilled = cachedMimicKilled
         val princeKilled = cachedPrinceKilled
+        val batKilled = cachedBatKilled
 
-        val missing = (if (mimicKilled) 0 else 2) + (if (princeKilled) 0 else 1)
+        val missing = (if (mimicKilled) 0 else 2) + (if (princeKilled) 0 else 1) + (if (batKilled) 0 else 1)
+
         val scoreText = buildString {
             append("§7Score: ")
             append(colorizeScore(score))
@@ -235,6 +237,7 @@ object MapInfo : Module(
             cachedKnownSecrets = DungeonUtils.knownSecrets
             cachedMimicKilled = DungeonUtils.mimicKilled
             cachedPrinceKilled = DungeonUtils.princeKilled
+            cachedBatKilled = DungeonUtils.batKilled
             cachedCryptCount = DungeonUtils.cryptCount.coerceAtMost(5)
             cachedDeathCount = DungeonUtils.deathCount
         }
@@ -255,20 +258,20 @@ object MapInfo : Module(
 
         on<RoomEnterEvent> {
             currentRoomSecrets = null
-            if (room?.data?.type == RoomType.BLOOD) {
+            if (room?.name == "Blood")
                 portalAABB = AABB.encapsulatingFullBlocks(room.getRealCoords(BlockPos(16, 69, 29)), room.getRealCoords(BlockPos(14, 69, 29))).inflate(0.0, 4.0, 0.0)
-            }
         }
 
         on<RenderEvent.Extract> {
-            if (!highlightPortal || !DungeonUtils.inClear || DungeonUtils.score < 300) return@on
-            portalAABB?.let{ pos ->
+            if (!highlightPortal || !DungeonUtils.inClear || cachedScore < 300) return@on
+            portalAABB?.let { pos ->
                 drawFilledBox(pos, Colors.MINECRAFT_GREEN.withAlpha(0.5f), depth = true)
             }
         }
 
         on<LevelEvent.Load> {
             shownTitle = false
+            portalAABB = null
         }
     }
 

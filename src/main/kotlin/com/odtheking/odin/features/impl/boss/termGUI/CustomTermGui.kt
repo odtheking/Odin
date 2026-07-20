@@ -5,9 +5,11 @@ import com.odtheking.odin.events.GuiEvent
 import com.odtheking.odin.events.ScreenEvent
 import com.odtheking.odin.features.impl.boss.TerminalSolver
 import com.odtheking.odin.features.impl.boss.TerminalSolver.hideClicked
+import com.odtheking.odin.features.impl.boss.TerminalSolver.notifyFirstClickProt
 import com.odtheking.odin.features.impl.boss.TerminalSolver.renderDebug
 import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.Colors
+import com.odtheking.odin.utils.modMessage
 import com.odtheking.odin.utils.render.roundedFill
 import com.odtheking.odin.utils.render.text
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalTypes
@@ -109,11 +111,11 @@ abstract class TermGui {
         TerminalUtils.currentTerm?.let { term ->
             val screen = mc.screen ?: return@let
             val btn = if (button == 0) GLFW.GLFW_MOUSE_BUTTON_3 else button
-            if (
-                (TerminalSolver.ignoreFirstClickProtMelody && (term.type == TerminalTypes.MELODY) ||
-                        (System.currentTimeMillis() - term.timeOpened >= TerminalSolver.firstClickProt &&
-                                (TerminalSolver.shouldFirstClickProtWithTicks || term.ticksOpened >= TerminalSolver.firstClickProtTicks))) &&
-                !GuiEvent.CustomTermGuiClick(screen, slotIndex, btn).postAndCatch() &&
+            if (term.shouldProtect()) {
+                if (notifyFirstClickProt ) modMessage("§cBlocked first click ${System.currentTimeMillis() - term.timeOpened}ms after opening.")
+            return@let
+            }
+            if (!GuiEvent.CustomTermGuiClick(screen, slotIndex, btn).postAndCatch() &&
                 term.canClick(slotIndex, btn)
             ) term.click(slotIndex, btn, hideClicked && !term.isClicked)
         }

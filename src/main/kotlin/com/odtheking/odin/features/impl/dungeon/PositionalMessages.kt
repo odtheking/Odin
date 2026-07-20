@@ -84,9 +84,10 @@ object PositionalMessages : Module(
     private fun handleAtString(posMessage: PosMessage) {
         val msgSent = sentMessages.getOrDefault(posMessage, false)
         val player = mc.player ?: return
-        if (player.distanceToSqr(posMessage.x, posMessage.y, posMessage.z) <= (posMessage.distance ?: return)) {
+        val radius = posMessage.distance ?: return
+        if (player.distanceToSqr(posMessage.x, posMessage.y, posMessage.z) <= radius * radius) {
             if (!msgSent) Timer().schedule(posMessage.delay) {
-                if (player.distanceToSqr(posMessage.x, posMessage.y, posMessage.z) <= posMessage.distance)
+                if (player.distanceToSqr(posMessage.x, posMessage.y, posMessage.z) <= radius * radius)
                     sendCommand("pc ${posMessage.message}")
             }
             sentMessages[posMessage] = true

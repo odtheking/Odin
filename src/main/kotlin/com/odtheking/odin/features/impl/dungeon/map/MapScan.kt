@@ -89,7 +89,8 @@ object MapScan {
 
     private fun mapTiles(colors: ByteArray, roomTypes: Array<RoomType?>, roomColors: ByteArray, centerColors: ByteArray) {
         val halfRoom = DungeonScan.roomSize / 2
-        val connectionGap = DungeonScan.roomSize + DungeonScan.ROOM_SPACING / 2
+        val connectionGap = DungeonScan.connectionGap
+        val sideCheckOffset = 4
 
         for (index in 0 until 36) {
             val tileX = index % 6
@@ -109,21 +110,25 @@ object MapScan {
                 }
             }
 
-            if (tileX < 5 && getPx(colors, originX + connectionGap, originZ) == EMPTY) {
+            if (tileX < 5) {
                 val doorColor = getPx(colors, originX + connectionGap, originZ + halfRoom)
-                if (doorColor != EMPTY) addOrFixDoor(IVec2(tileX, tileZ), DoorRotation.Horizontal, DoorType.fromColor(doorColor))
+                val sideColor = getPx(colors, originX + connectionGap, originZ + halfRoom - sideCheckOffset)
+                if (sideColor == EMPTY && doorColor != EMPTY)
+                    addOrFixDoor(IVec2(tileX, tileZ), DoorRotation.Horizontal, DoorType.fromColor(doorColor))
             }
 
-            if (tileZ < 5 && getPx(colors, originX, originZ + connectionGap) == EMPTY) {
+            if (tileZ < 5) {
                 val doorColor = getPx(colors, originX + halfRoom, originZ + connectionGap)
-                if (doorColor != EMPTY) addOrFixDoor(IVec2(tileX, tileZ), DoorRotation.Vertical, DoorType.fromColor(doorColor))
+                val sideColor = getPx(colors, originX + halfRoom - sideCheckOffset, originZ + connectionGap)
+                if (sideColor == EMPTY && doorColor != EMPTY)
+                    addOrFixDoor(IVec2(tileX, tileZ), DoorRotation.Vertical, DoorType.fromColor(doorColor))
             }
         }
     }
 
     private fun processRooms(colors: ByteArray, roomTypes: Array<RoomType?>, roomColors: ByteArray, centerColors: ByteArray) {
         val visited = BooleanArray(36)
-        val connectionGap = DungeonScan.roomSize + DungeonScan.ROOM_SPACING / 2
+        val connectionGap = DungeonScan.connectionGap
 
         for (startIndex in 0 until 36) {
             val roomType = roomTypes[startIndex] ?: continue
@@ -209,11 +214,8 @@ object MapScan {
     }
 
     private fun addOrFixDoor(position: IVec2, rotation: DoorRotation, doorType: DoorType) {
-        val chunkPos = IVec2(-12 + 2 * position.x + rotation.offset.x, -12 + 2 * position.z + rotation.offset.z)
-        val originIndex = position.x + position.z * 6
-        val destPos = IVec2(position.x + rotation.offset.x, position.z + rotation.offset.z)
-        val destIndex = destPos.x + destPos.z * 6
-        DungeonScan.doors.getOrPut(chunkPos) { DungeonDoor(position, rotation, doorType, originIndex, destIndex) }.type = doorType
+        DungeonScan.doors.getOrPut(IVec2(-12 + 2 * position.x + rotation.offset.x, -12 + 2 * position.z + rotation.offset.z))
+        { DungeonDoor(position, rotation, doorType) }.type = doorType
     }
 
     private fun getPx(colors: ByteArray, x: Int, z: Int): Byte =

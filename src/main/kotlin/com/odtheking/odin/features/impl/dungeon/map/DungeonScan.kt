@@ -8,6 +8,7 @@ import com.odtheking.odin.events.core.EventBus
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.impl.dungeon.map.tile.*
 import com.odtheking.odin.utils.Color
+import com.odtheking.odin.utils.Color.Companion.darker
 import com.odtheking.odin.utils.IVec2
 import com.odtheking.odin.utils.skyblock.dungeon.Floor
 import net.minecraft.world.entity.player.Player
@@ -20,6 +21,8 @@ object DungeonScan {
 
     var roomSize = 16
     var roomGap = 20
+
+    val connectionGap: Int get() = roomSize + ROOM_SPACING / 2
     var startX = 5
     var startY = 5
 
@@ -86,7 +89,6 @@ object DungeonScan {
 
     fun updateViewableDoors() {
         pathHints.clear()
-        viewableDoors.clear()
         for ((_, door) in doors) {
             val originTile = tiles[door.originTileIndex]
             val destTile = tiles[door.destinationTileIndex]
@@ -98,17 +100,17 @@ object DungeonScan {
                 pathHints.add(it)
             }
 
-            viewableDoors.add(door to when (door.type) {
+            door.color = when (door.type) {
                 DoorType.Wither -> DungeonMap.witherDoorColor
-                DoorType.Blood -> DungeonMap.bloodDoorColor
+                DoorType.Blood -> if (!originView || !destView) DungeonMap.bloodDoorColor.darker(0.5f) else DungeonMap.bloodDoorColor
                 DoorType.Fairy -> DungeonMap.fairyDoorColor
                 else -> {
-                    if (!originView || !destView) DungeonMap.unknownRoomColor
+                    if (!originView || !destView) DungeonMap.unknownDoorColor
                     else listOfNotNull(originTile.room, destTile.room)
                         .firstOrNull { it.type != RoomType.NORMAL && it.type != RoomType.FAIRY }
                         ?.type?.let { room -> roomTypeColor(room) } ?: DungeonMap.normalDoorColor
                 }
-            })
+            }
         }
     }
 }

@@ -111,10 +111,10 @@ object PlayerDisplay : Module(
     }
     private val speedColor by ColorSetting("Speed color", Colors.WHITE, true, "The color of the speed text.")
 
-    private val HEALTH_REGEX = Regex("[\\d|,]+/[\\d|,]+❤")
-    private val MANA_REGEX = Regex("[\\d|,]+/[\\d|,]+✎( Mana)?")
-    private val OVERFLOW_MANA_REGEX = Regex("§?[\\d|,]+ʬ")
-    private val DEFENSE_REGEX = Regex("[\\d|,]+§a❈ Defense")
+    private val HEALTH_REGEX = Regex("[\\d|,]+/[\\d|,]+\\uE010")
+    private val MANA_REGEX = Regex("[\\d|,]+/[\\d|,]+\\uE003( Mana)?")
+    private val OVERFLOW_MANA_REGEX = Regex("§?[\\d|,]+\\uE017")
+    private val DEFENSE_REGEX = Regex("[\\d|,]+§a\\uE008 Defense")
 
     @JvmStatic
     fun modifyText(text: Component): Component {

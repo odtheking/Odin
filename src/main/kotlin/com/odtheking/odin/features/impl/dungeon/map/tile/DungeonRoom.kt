@@ -2,12 +2,15 @@ package com.odtheking.odin.features.impl.dungeon.map.tile
 
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints
+import com.odtheking.odin.features.impl.dungeon.map.DungeonScan
 import com.odtheking.odin.utils.IVec2
 import com.odtheking.odin.utils.modMessage
 import com.odtheking.odin.utils.rotateAroundNorth
 import com.odtheking.odin.utils.rotateToNorth
+import com.odtheking.odin.utils.sortKey
 import net.minecraft.core.BlockPos
 import net.minecraft.world.level.block.Blocks
+import kotlin.math.roundToInt
 
 class DungeonRoom(var type: RoomType, initialPosition: IVec2, var data: RoomData? = null) {
     val tiles: ArrayList<IVec2> = ArrayList(4)
@@ -25,6 +28,9 @@ class DungeonRoom(var type: RoomType, initialPosition: IVec2, var data: RoomData
 
     var isKnown1x1: Boolean = false
 
+    var center: IVec2? = null
+        private set
+
     val isViewable: Boolean get() = walkedInto || checkmark != MapCheckmark.UNDISCOVERED
     val name: String? get() = data?.name
 
@@ -32,7 +38,38 @@ class DungeonRoom(var type: RoomType, initialPosition: IVec2, var data: RoomData
         if (!tiles.contains(segment.position)) {
             tiles.add(segment.position)
             topLeft = IVec2(tiles.minOf { it.x }, tiles.minOf { it.z })
+            highestBlock?.let { if (tiles.size == data?.shape?.tileAmount) inferLayout(it) }
+            recalculateCenter()
         }
+    }
+
+    private fun recalculateCenter() {
+        if (tiles.isEmpty()) return
+        val rs = DungeonScan.roomSize.takeIf { it != -1 } ?: return
+
+        val rg = DungeonScan.roomGap
+        val half = rs / 2
+
+        fun tileCenter(tile: IVec2) = tile.x * rg + half to tile.z * rg + half
+
+        val rot = rotation
+        if (rot == null) {
+            val tile = tiles.minBy { it.sortKey }
+            val (x, z) = tileCenter(tile)
+            center = IVec2(x, z)
+            return
+        }
+
+        val centers = tiles.map { tileCenter(it) }
+        val x = (centers.minOf { it.first } + centers.maxOf { it.first }) / 2f
+        val z = when (shape) {
+            RoomShape.L ->
+                if (rot == RoomRotation.NORTH || rot == RoomRotation.WEST) centers.minOf { it.second }.toFloat()
+                else centers.maxOf { it.second }.toFloat()
+            else ->
+                (centers.minOf { it.second } + centers.maxOf { it.second }) / 2f
+        }
+        center = IVec2(x.roundToInt(), z.roundToInt())
     }
 
     fun inferLayoutFromMap() {
@@ -53,8 +90,6 @@ class DungeonRoom(var type: RoomType, initialPosition: IVec2, var data: RoomData
     }
 
     fun inferLayout(highestBlock: Int) {
-        this.highestBlock = highestBlock
-
         val roomData = data ?: return
 
         if (applyFairyFallback(highestBlock)) return
@@ -79,8 +114,7 @@ class DungeonRoom(var type: RoomType, initialPosition: IVec2, var data: RoomData
     }
 
     private fun resolveGeometryRotation(): RoomRotation? {
-        val bottomRight = tiles.maxByOrNull { it.x * 1000 + it.z } ?: return null
-        val topLeft = tiles.minByOrNull { it.x * 1000 + it.z } ?: return null
+        val bottomRight = tiles.maxByOrNull { it.sortKey } ?: return null
 
         return if (shape == RoomShape.L) {
             val other = tiles.find { it != topLeft && it != bottomRight } ?: return null
@@ -96,8 +130,7 @@ class DungeonRoom(var type: RoomType, initialPosition: IVec2, var data: RoomData
     }
 
     private fun resolveClayPos(rotation: RoomRotation, height: Int): BlockPos? {
-        val bottomRight = tiles.maxByOrNull { it.x * 1000 + it.z } ?: return null
-        val topLeft = tiles.minByOrNull { it.x * 1000 + it.z } ?: return null
+        val bottomRight = tiles.maxByOrNull { it.sortKey } ?: return null
 
         val (tlX, tlZ) = getRealPosition(topLeft.x, topLeft.z)
         val (brX, brZ) = getRealPosition(bottomRight.x, bottomRight.z)
@@ -146,8 +179,7 @@ class DungeonRoom(var type: RoomType, initialPosition: IVec2, var data: RoomData
         return BlockPos(x + rotation.dx, y, z + rotation.dz)
     }
 
-    fun getRealPosition() = topLeft.x * 32 - 185 to topLeft.z * 32 - 185
-    fun getRealPosition(x: Int, z: Int) = x * 32 - 185 to z * 32 - 185
+    fun getRealPosition(x: Int = topLeft.x, z: Int = topLeft.z) = x * 32 - 185 to z * 32 - 185
 
     fun getRelativeCoords(pos: BlockPos): BlockPos {
         val clay = clayPos ?: return BlockPos.ZERO
