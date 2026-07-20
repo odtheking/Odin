@@ -6,10 +6,14 @@ import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.events.GuiEvent
 import com.odtheking.odin.events.PacketEvent
 import com.odtheking.odin.features.impl.boss.TerminalSolver.firstClickProt
+import com.odtheking.odin.features.impl.boss.TerminalSolver.firstClickProtTicks
+import com.odtheking.odin.features.impl.boss.TerminalSolver.ignoreFirstClickProtMelody
+import com.odtheking.odin.features.impl.boss.TerminalSolver.shouldFirstClickProtWithTicks
 import com.odtheking.odin.features.impl.boss.termsim.TermSimGUI
 import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.clickSlot
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalTypes
+import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalUtils.currentTerm
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
 import net.minecraft.client.gui.screens.inventory.ContainerScreen
 import net.minecraft.network.HashedStack
@@ -25,6 +29,7 @@ abstract class TerminalHandler(val type: TerminalTypes) {
     val timeOpened = System.currentTimeMillis()
     var isClicked = false
     var windowCount = 0
+    var ticksOpened = -1
 
     open fun updateSlot(event: GuiEvent.SlotUpdate) {
         if (event.packet.slot !in 0 until type.windowSize) return
@@ -77,5 +82,6 @@ abstract class TerminalHandler(val type: TerminalTypes) {
 
     open fun canClick(slotIndex: Int, button: Int): Boolean = slotIndex in solution
 
-    fun shouldProtect(): Boolean = System.currentTimeMillis() - timeOpened < firstClickProt
+    fun shouldProtect(): Boolean = (!(ignoreFirstClickProtMelody && (currentTerm?.type == TerminalTypes.MELODY))
+            && (System.currentTimeMillis() - timeOpened < firstClickProt || (shouldFirstClickProtWithTicks && ticksOpened < firstClickProtTicks)))
 }
