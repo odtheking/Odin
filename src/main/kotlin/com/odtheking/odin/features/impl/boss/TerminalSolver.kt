@@ -26,7 +26,6 @@ object TerminalSolver : Module(
     val customTermSize by NumberSetting("Term Size", 2f, 1f, 3f, 0.1f, desc = "The size of the custom terminal GUI.").withDependency { renderType == 2 }
     val roundness by NumberSetting("Roundness", 5, 0f, 15f, 1f, desc = "The roundness of the custom terminal gui.").withDependency { renderType == 2 }
     val gap by NumberSetting("Slot gap", 2, 0, 8, 1, desc = "The gap between the slots in the custom terminal gui.").withDependency { renderType == 2 }
-
     private val solverSettings by DropdownSetting("Solver Functionality")
     private val cancelToolTip by BooleanSetting("Stop Tooltips", true, desc = "Stops rendering tooltips in terminals.").withDependency { (renderType == 0 || renderType == 1) && solverSettings }
     private val middleClickGUI by BooleanSetting("Middle Click GUI", true, desc = "Replaces right click with middle click in terminals.").withDependency { (renderType == 0 || renderType == 1) && solverSettings }
@@ -35,7 +34,7 @@ object TerminalSolver : Module(
     val melodyTermSize by NumberSetting("Melody Size", 1.5f, 1f, 3f, 0.1f, desc = "The size of the melody terminal GUI.").withDependency { !cancelMelodySolver && solverSettings && renderType == 2 }
     val showNumbers by BooleanSetting("Show Numbers", true, desc = "Shows numbers in the order terminal.").withDependency { solverSettings }
     private val firstClickProtSettings by DropdownSetting("First Click Protect Dropdown")
-    val firstClickProt by NumberSetting("First Click Prot", 500, 350, 800, 10, unit = "ms", desc = "The amount of time after opening a terminal where clicks are blocked to prevent bans (recommended value is 500 minus your ping).").withDependency { firstClickProtSettings }
+    val firstClickProt by NumberSetting("First Click Protection", 500, 350, 800, 10, unit = "ms", desc = "The amount of time after opening a terminal where clicks are blocked to prevent bans (recommended value is 500 minus your ping).").withDependency { firstClickProtSettings }
     val ignoreFirstClickProtMelody by BooleanSetting("Ignore Melody", true, desc = "Ignores First Click Protection on the melody terminal (has been shown to not ban)").withDependency { firstClickProtSettings }
     val shouldFirstClickProtWithTicks by BooleanSetting("Account For Server Lag",  false, desc = "Prevents bans from clicking when the server lags after opening the terminal").withDependency { firstClickProtSettings }
     val firstClickProtTicks by NumberSetting("Lag Protection Ticks", 8, 7, 16, unit = "ticks", desc = "Each tick = 50ms (recommended value is 8)").withDependency { shouldFirstClickProtWithTicks && firstClickProtSettings }
@@ -43,7 +42,6 @@ object TerminalSolver : Module(
     val hideClicked by BooleanSetting("Hide Clicked", false, desc = "Visually hides your first click before a gui updates instantly to improve perceived response time. Does not affect actual click time.").withDependency { solverSettings }
     val terminalReloadThreshold by NumberSetting("Resolve timeout", 600, 300, 1000, 10, unit = "ms", desc = "The amount of time before the terminal reloads after a click wasn't registered while using hide clicked.").withDependency { hideClicked && solverSettings }
     private val debug by BooleanSetting("Debug", false, desc = "Shows debug terminals.").withDependency { solverSettings }
-
     private val showColors by DropdownSetting("Color Settings")
     val backgroundColor by ColorSetting("Background", Colors.gray26, true, desc = "Background color of the terminal solver.").withDependency { showColors }
 
