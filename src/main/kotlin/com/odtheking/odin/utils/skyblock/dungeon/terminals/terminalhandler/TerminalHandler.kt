@@ -5,6 +5,7 @@ import com.google.common.primitives.SignedBytes
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.events.GuiEvent
 import com.odtheking.odin.events.PacketEvent
+import com.odtheking.odin.features.impl.boss.TerminalSimulator
 import com.odtheking.odin.features.impl.boss.TerminalSolver.firstClickProt
 import com.odtheking.odin.features.impl.boss.TerminalSolver.firstClickProtTicks
 import com.odtheking.odin.features.impl.boss.TerminalSolver.ignoreFirstClickProtMelody
@@ -85,6 +86,7 @@ abstract class TerminalHandler(val type: TerminalTypes) {
     open fun canClick(slotIndex: Int, button: Int): Boolean = slotIndex in solution
 
     fun shouldProtect(): Boolean = (!(ignoreFirstClickProtMelody && (currentTerm?.type == TerminalTypes.MELODY))
+            && !(TerminalSimulator.disableFirstClickProtInTermsim && (mc.screen is TermSimGUI))
             && (System.currentTimeMillis() - timeOpened < firstClickProt ||
             (!LocationUtils.isCurrentArea(Island.SinglePlayer) && shouldFirstClickProtWithTicks && ticksOpened < firstClickProtTicks)))
 }

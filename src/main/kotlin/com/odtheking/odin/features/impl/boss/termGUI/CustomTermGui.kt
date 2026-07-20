@@ -12,7 +12,6 @@ import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.modMessage
 import com.odtheking.odin.utils.render.roundedFill
 import com.odtheking.odin.utils.render.text
-import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalTypes
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalUtils
 import com.odtheking.odin.utils.ui.widget.CustomGUIImpl
 import net.minecraft.client.gui.GuiGraphicsExtractor
@@ -112,7 +111,7 @@ abstract class TermGui {
             val screen = mc.screen ?: return@let
             val btn = if (button == 0) GLFW.GLFW_MOUSE_BUTTON_3 else button
             if (term.shouldProtect()) {
-                if (notifyFirstClickProt ) modMessage("§cBlocked first click ${System.currentTimeMillis() - term.timeOpened}ms after opening.")
+                if (notifyFirstClickProt) modMessage("§cBlocked first click ${System.currentTimeMillis() - term.timeOpened}ms after opening.")
             return@let
             }
             if (!GuiEvent.CustomTermGuiClick(screen, slotIndex, btn).postAndCatch() &&

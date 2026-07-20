@@ -134,6 +134,7 @@ object TerminalSolver : Module(
                 "§7Window Name: §f${mc.screen?.title?.string}",
                 "§7Container ID: §f${menu.containerId}",
                 "§7Time Open: §f${System.currentTimeMillis() - term.timeOpened}ms",
+                "§7Ticks Open: §f${term.ticksOpened}",
                 "§7Is Clicked: §f${term.isClicked}",
                 "§7Window Count: §f${term.windowCount}",
                 "§7Solution: §f${term.solution.joinToString(", ")}",
