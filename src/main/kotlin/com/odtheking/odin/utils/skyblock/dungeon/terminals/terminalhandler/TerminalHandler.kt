@@ -86,5 +86,5 @@ abstract class TerminalHandler(val type: TerminalTypes) {
 
     fun shouldProtect(): Boolean = (!(ignoreFirstClickProtMelody && (currentTerm?.type == TerminalTypes.MELODY))
             && (System.currentTimeMillis() - timeOpened < firstClickProt ||
-            (LocationUtils.isCurrentArea(Island.SinglePlayer) && shouldFirstClickProtWithTicks && ticksOpened < firstClickProtTicks)))
+            (!LocationUtils.isCurrentArea(Island.SinglePlayer) && shouldFirstClickProtWithTicks && ticksOpened < firstClickProtTicks)))
 }
