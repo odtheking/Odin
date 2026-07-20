@@ -12,6 +12,8 @@ import com.odtheking.odin.features.impl.boss.TerminalSolver.shouldFirstClickProt
 import com.odtheking.odin.features.impl.boss.termsim.TermSimGUI
 import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.clickSlot
+import com.odtheking.odin.utils.skyblock.Island
+import com.odtheking.odin.utils.skyblock.LocationUtils
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalTypes
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalUtils.currentTerm
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
@@ -83,5 +85,6 @@ abstract class TerminalHandler(val type: TerminalTypes) {
     open fun canClick(slotIndex: Int, button: Int): Boolean = slotIndex in solution
 
     fun shouldProtect(): Boolean = (!(ignoreFirstClickProtMelody && (currentTerm?.type == TerminalTypes.MELODY))
-            && (System.currentTimeMillis() - timeOpened < firstClickProt || (shouldFirstClickProtWithTicks && ticksOpened < firstClickProtTicks)))
+            && (System.currentTimeMillis() - timeOpened < firstClickProt ||
+            (LocationUtils.isCurrentArea(Island.SinglePlayer) && shouldFirstClickProtWithTicks && ticksOpened < firstClickProtTicks)))
 }
