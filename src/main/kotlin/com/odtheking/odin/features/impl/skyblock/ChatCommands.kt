@@ -43,6 +43,7 @@ object ChatCommands : Module(
     private val reinvite by BooleanSetting("Reinvite", false, desc = "Reinvites the player who sent it a few seconds later.").withDependency { showSettings }
     private val ping by BooleanSetting("Ping", true, desc = "Sends your current Ping.").withDependency { showSettings }
     private val tps by BooleanSetting("Tps", true, desc = "Sends your server's current TPS.").withDependency { showSettings }
+    private val detailedTps by BooleanSetting("Detailed TPS", false, desc = "Includes maximum, minimum, and average TPS from the last 20 samples.").withDependency { showSettings && tps }
     private val fps by BooleanSetting("FPS", true, desc = "Sends your current FPS.").withDependency { showSettings }
     private val dt by BooleanSetting("DT", true, desc = "Sets a reminder for the end of the run.").withDependency { showSettings }
     private val invite by BooleanSetting("Invite", true, desc = "Invites the player to your party.").withDependency { showSettings }
@@ -135,7 +136,14 @@ object ChatCommands : Module(
             "dice" -> if (dice) channelMessage((1..6).random(), name, channel)
             "racism" -> if (racism) channelMessage("$name is ${Random.nextInt(1, 101)}% racist. Racism is not allowed!", name, channel)
             "ping" -> if (ping) channelMessage("Current Ping: ${ServerUtils.currentPing}ms", name, channel)
-            "tps" -> if (tps) channelMessage("Current TPS: ${ServerUtils.averageTps.toFixed(1)}", name, channel)
+            "tps" -> if (tps) channelMessage(
+                if (detailedTps) {
+                    val stats = ServerUtils.getLast20TpsStatistics()
+                    "Current: ${ServerUtils.averageTps.toFixed(1)}, Last 20 pings: (max/min/avg) ${stats.max.toFixed(1)}/${stats.min.toFixed(1)}/${stats.average.toFixed(1)}"
+                } else "Current TPS: ${ServerUtils.averageTps.toFixed(1)}",
+                name,
+                channel
+            )
             "fps" -> if (fps) channelMessage("Current FPS: ${mc.fps}", name, channel)
             "time" -> if (time) channelMessage("Current Time: ${ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss z"))}", name, channel)
             "location" -> if (location) channelMessage("Current Location: ${LocationUtils.currentArea.displayName}", name, channel)
