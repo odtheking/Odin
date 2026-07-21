@@ -6,6 +6,7 @@ import com.odtheking.odin.events.ScreenEvent
 import com.odtheking.odin.features.impl.boss.TerminalSolver
 import com.odtheking.odin.features.impl.boss.TerminalSolver.hideClicked
 import com.odtheking.odin.features.impl.boss.TerminalSolver.renderDebug
+import com.odtheking.odin.features.impl.boss.TerminalSolver.adjustToGuiScale
 import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.render.roundedFill
@@ -36,7 +37,9 @@ abstract class TermGui {
     inline val currentSolution get() = TerminalUtils.currentTerm?.solution.orEmpty()
     private var grid: Grid? = null
     private var hoveredSlotIndex: Int? = null
-    protected open val guiScale get() = TerminalSolver.customTermSize
+    protected open val guiScale get() =
+        if(adjustToGuiScale) { TerminalSolver.customTermSize / mc.window.guiScale * mc.window.calculateScale(0, mc.isEnforceUnicode).toFloat() }
+        else { TerminalSolver.customTermSize }
     open fun buildTerminal(screen: AbstractContainerScreen<*>) {}
 
     init {
