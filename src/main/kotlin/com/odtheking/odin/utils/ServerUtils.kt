@@ -5,10 +5,14 @@ import com.odtheking.odin.events.core.onReceive
 import net.minecraft.network.protocol.game.ClientboundSetTimePacket
 import net.minecraft.network.protocol.ping.ClientboundPongResponsePacket
 import net.minecraft.util.Util
+import java.util.ArrayDeque
 import kotlin.math.min
 
 object ServerUtils {
+    data class TpsStatistics(val max: Float, val min: Float, val average: Float)
+
     private var prevTime = 0L
+    private val tpsLog = ArrayDeque<Float>(20)
     var averageTps = 20f
         private set
 
@@ -18,10 +22,19 @@ object ServerUtils {
     var averagePing: Int = 0
         private set
 
+    fun getLast20TpsStatistics(): TpsStatistics {
+        if (tpsLog.isEmpty()) return TpsStatistics(averageTps, averageTps, averageTps)
+
+        return TpsStatistics(tpsLog.max(), tpsLog.min(), tpsLog.average().toFloat())
+    }
+
     init {
         onReceive<ClientboundSetTimePacket> {
-            if (prevTime != 0L)
+            if (prevTime != 0L) {
                 averageTps = (20000f / (System.currentTimeMillis() - prevTime + 1)).coerceIn(0f, 20f)
+                if (tpsLog.size == 20) tpsLog.removeFirst()
+                tpsLog.addLast(averageTps)
+            }
 
             prevTime = System.currentTimeMillis()
         }
