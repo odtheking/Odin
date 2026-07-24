@@ -55,6 +55,7 @@ object ChatCommands : Module(
     private val kickOffline by BooleanSetting("Kick Offline", desc = "Allows you to kick offline players.").withDependency { showSettings && kick }
     private val location by BooleanSetting("Location", true, desc = "Sends your current location.").withDependency { showSettings }
     private val holding by BooleanSetting("Holding", true, desc = "Sends the item you are holding.").withDependency { showSettings }
+    private val song by BooleanSetting("Song", true, desc = "Sends the song currently playing on Spotify. Windows only.").withDependency { showSettings }
 
     // https://regex101.com/r/joY7dm/1
     private val messageRegex = Regex("^(?:Party > (\\[[^]]*?])? ?(\\w{1,16})(?: [ቾ⚒])?: ?(.+)$|Guild > (\\[[^]]*?])? ?(\\w{1,16})(?: \\[([^]]*?)])?: ?(.+)$|From (\\[[^]]*?])? ?(\\w{1,16}): ?(.+)$)")
@@ -116,10 +117,10 @@ object ChatCommands : Module(
             ChatChannel.PARTY -> mapOf(
                 "coords" to coords, "odin" to odin, "boop" to boop, "kick" to kick, "cf" to coinFlip, "8ball" to eightBall, "dice" to dice, "racism" to racism, "tps" to tps, "warp" to partyWarp,
                 "allinvite" to partyAllInvite, "pt" to partyTransfer, "m?" to queInstance, "f?" to queInstance, "t?" to queInstance, "time" to time,
-                "demote" to partyDemote, "promote" to partyPromote, "reinvite" to reinvite, "kickoffline" to kickOffline
+                "demote" to partyDemote, "promote" to partyPromote, "reinvite" to reinvite, "kickoffline" to kickOffline, "song" to song
             )
-            ChatChannel.GUILD -> mapOf("coords" to coords, "odin" to odin, "boop" to boop, "cf" to coinFlip, "8ball" to eightBall, "dice" to dice, "racism" to racism, "ping" to ping, "tps" to tps, "time" to time)
-            ChatChannel.PRIVATE -> mapOf("coords" to coords, "odin" to odin, "boop" to boop, "cf" to coinFlip, "8ball" to eightBall, "dice" to dice, "racism" to racism, "ping" to ping, "tps" to tps, "invite" to invite, "time" to time)
+            ChatChannel.GUILD -> mapOf("coords" to coords, "odin" to odin, "boop" to boop, "cf" to coinFlip, "8ball" to eightBall, "dice" to dice, "racism" to racism, "ping" to ping, "tps" to tps, "time" to time, "song" to song)
+            ChatChannel.PRIVATE -> mapOf("coords" to coords, "odin" to odin, "boop" to boop, "cf" to coinFlip, "8ball" to eightBall, "dice" to dice, "racism" to racism, "ping" to ping, "tps" to tps, "invite" to invite, "time" to time, "song" to song)
         }
 
         val words = message.drop(1).split(" ").map { it.lowercase() }
@@ -140,6 +141,7 @@ object ChatCommands : Module(
             "time" -> if (time) channelMessage("Current Time: ${ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss z"))}", name, channel)
             "location" -> if (location) channelMessage("Current Location: ${LocationUtils.currentArea.displayName}", name, channel)
             "holding" -> if (holding) channelMessage("Holding: ${mc.player?.mainHandItem?.hoverName?.string?.noControlCodes ?: "Nothing :("}", name, channel)
+            "song", "np" -> if (song) channelMessage(SpotifyUtils.nowPlaying?.let { "Now playing: $it" } ?: "Nothing is playing", name, channel)
 
             // party commands
 
