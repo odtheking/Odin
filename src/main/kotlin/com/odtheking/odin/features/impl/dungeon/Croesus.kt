@@ -60,6 +60,7 @@ object Croesus : Module(
     private var currentChestCount = 0
 
     private val chestNameRegex = Regex("^(Wood|Iron|Gold|Diamond|Emerald|Obsidian|Bedrock)(?: Chest)?$")
+    private val croesusScreenRegex = Regex("^(?:\\(\\d+/\\d+\\) )?Croesus$")
     private val previewEnchantedBookRegex = Regex("^Enchanted Book \\(?([\\w ]+) (\\w+)\\)$")
     private val chestPreviewScreenRegex = Regex("^(?:Master )?Catacombs - ([FloorVI\\d ]*)$")
     private val chestStatusRegex = Regex("^Opened Chest: (.+)$|^No more chests to open!$")
@@ -105,7 +106,7 @@ object Croesus : Module(
         }
 
         on<GuiEvent.RenderSlot> {
-            if (screen.title.string == "Croesus" && slot.item.hoverName.string.equalsOneOf("The Catacombs", "Master Mode The Catacombs")) {
+            if (screen.title.string.matches(croesusScreenRegex) && slot.item.hoverName.string.equalsOneOf("The Catacombs", "Master Mode The Catacombs")) {
                 val loreString = slot.item.loreString
 
                 if (hideClaimed && loreString.any { it.matches(chestStatusRegex) } && (!includeKey || hasStrikeThrough("Dungeon Chest Key", slot.item.lore ))) cancel()
