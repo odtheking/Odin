@@ -123,13 +123,13 @@ object ChatCommands : Module(
         }
 
         val words = message.drop(1).split(" ").map { it.lowercase() }
-
+        val arg = words.getOrNull(1)?.takeIf { it.length <= 16 }
         when (words[0]) {
             "help", "h" -> channelMessage("Commands: ${commandsMap.filterValues { it }.keys.joinToString(", ")}", name, channel)
             "odin", "od" -> if (odin) channelMessage("Odin! https://discord.gg/2nCbC9hkxT", name, channel)
             "coords", "co" -> if (coords) channelMessage(getPositionString(), name, channel)
 
-            "boop" if (boop) -> words.getOrNull(1)?.let { sendCommand("boop $it") }
+            "boop" if (boop) -> arg?.let { sendCommand("boop $it") }
             "cf" -> if (coinFlip) channelMessage(if (Math.random() < 0.5) "heads" else "tails", name, channel)
             "8ball" -> if (eightBall) channelMessage(responses.random(), name, channel)
             "dice" -> if (dice) channelMessage((1..6).random(), name, channel)
@@ -150,16 +150,16 @@ object ChatCommands : Module(
                 if (channel == ChatChannel.PARTY && partyAllInvite && PartyUtils.isLeader()) sendCommand("party settings allinvite")
 
             "pt", "ptme", "transfer" ->
-                if (channel == ChatChannel.PARTY && partyTransfer && PartyUtils.isLeader() && (words.getOrNull(1)?.length ?: 0) <= 16) sendCommand("party transfer ${words.getOrNull(1)?.let { findPartyMember(it) } ?: name}")
+                if (channel == ChatChannel.PARTY && partyTransfer && PartyUtils.isLeader()) sendCommand("party transfer ${arg?.let { findPartyMember(it) } ?: name}")
 
             "promote" ->
-                if (channel == ChatChannel.PARTY && partyPromote && PartyUtils.isLeader() && (words.getOrNull(1)?.length ?: 0) <= 16) sendCommand("party promote ${words.getOrNull(1)?.let { findPartyMember(it) } ?: name}")
+                if (channel == ChatChannel.PARTY && partyPromote && PartyUtils.isLeader()) sendCommand("party promote ${arg?.let { findPartyMember(it) } ?: name}")
 
             "demote" ->
-                if (channel == ChatChannel.PARTY && partyDemote && PartyUtils.isLeader() && (words.getOrNull(1)?.length ?: 0) <= 16) sendCommand("party demote ${words.getOrNull(1)?.let { findPartyMember(it) } ?: name}")
+                if (channel == ChatChannel.PARTY && partyDemote && PartyUtils.isLeader()) sendCommand("party demote ${arg?.let { findPartyMember(it) } ?: name}")
 
             "kick", "k" ->
-                if (channel == ChatChannel.PARTY && kick && PartyUtils.isLeader() && (words.getOrNull(1)?.length ?: 0) <= 16) sendCommand("p kick ${words.getOrNull(1)?.let { findPartyMember(it) } ?: name}")
+                if (channel == ChatChannel.PARTY && kick && PartyUtils.isLeader()) sendCommand("p kick ${arg?.let { findPartyMember(it) } ?: name}")
 
             "kickoffline", "ko" ->
                 if (channel == ChatChannel.PARTY && kickOffline && PartyUtils.isLeader()) sendCommand("p kickoffline")
