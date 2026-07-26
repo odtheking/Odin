@@ -2,6 +2,7 @@ package com.odtheking.odin.features.impl.dungeon.puzzlesolvers
 
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.events.RenderEvent
+import com.odtheking.odin.events.UseItemOnPostEvent
 import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.JsonResourceLoader
 import com.odtheking.odin.utils.modMessage
@@ -11,7 +12,7 @@ import com.odtheking.odin.utils.render.drawTracer
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.toFixed
 import net.minecraft.core.BlockPos
-import net.minecraft.network.protocol.game.ServerboundUseItemOnPacket
+import net.minecraft.world.InteractionResult
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.phys.Vec3
 
@@ -97,8 +98,11 @@ object WaterSolver {
         }
     }
 
-    fun waterInteract(event: ServerboundUseItemOnPacket) {
-        if (solutions.isEmpty()) return
+    fun waterInteract(event: UseItemOnPostEvent) {
+        // Interaction result different from SUCCESS either doesn't send the click packet to the server or
+        // doesn't consume the action. Not consuming the action leads to UseItemOn being called with the OFF_HAND
+        // which Hypixel treats as a regular click, causing a double lever flick i.e. the gate doesn't open.
+        if (solutions.isEmpty() || event.interactionResult != InteractionResult.SUCCESS) return
         LeverBlock.entries.find { it.leverPos == event.hitResult.blockPos }?.let {
             if (it == LeverBlock.WATER && openedWaterTicks == -1) openedWaterTicks = tickCounter
             it.i++
