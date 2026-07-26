@@ -85,6 +85,7 @@ object ChatCommands : Module(
             val msg = result.groups[3]?.value ?: result.groups[7]?.value ?: result.groups[10]?.value ?: return@on
 
             if (!msg.startsWith("!")) return@on
+            if (!msg.all { it.code in 32..126 }) return@on
 
             schedule(4) {
                 handleChatCommands(msg, ign, channel)
