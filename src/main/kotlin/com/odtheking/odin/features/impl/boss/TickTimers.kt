@@ -12,7 +12,6 @@ import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.render.textDim
 import com.odtheking.odin.utils.skyblock.MORT_REGEX
-import com.odtheking.odin.utils.skyblock.SplitsManager
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.toFixed
 import net.minecraft.network.protocol.game.ClientboundSetTimePacket
@@ -85,8 +84,13 @@ object TickTimers : Module(
     private var secretsCounter = 0
 
     private val secretsHud by HUD("Secrets Hud", "Displays a timer for secret spawn ticks.") {
-        if (it) textDim(formatTimer(15, 20, "§7Secret:"), 0, 0, Colors.MINECRAFT_DARK_RED)
-        else if (DungeonUtils.openRoomCount != 0) textDim(formatTimer(20 - secretsCounter % 20, 20, "§7Secret:"), 0, 0, Colors.MINECRAFT_DARK_RED)
+        if (it) textDim(formatTimer(15, 20, "§7Secret:", overrideColor = "§c"), 0, 0, Colors.MINECRAFT_DARK_RED)
+        else if (DungeonUtils.openRoomCount != 0 && !DungeonUtils.inBoss) {
+            // Color change at < 10 because that's when items are picked up.
+            val time = 20 - secretsCounter % 20
+            val color = if (time < 10) "§a" else "§c"
+            textDim(formatTimer(time, 20, "§7Secret:", overrideColor = color), 0, 0, Colors.MINECRAFT_DARK_RED)
+        }
         else 0 to 0
     }
 
@@ -151,8 +155,8 @@ object TickTimers : Module(
         }
     }
 
-    private fun formatTimer(time: Int, max: Int, prefix: String): String {
-        val color = when {
+    private fun formatTimer(time: Int, max: Int, prefix: String, overrideColor: String? = null): String {
+        val color = overrideColor ?: when {
             time.toFloat() >= max * 0.66 -> "§a"
             time.toFloat() >= max * 0.33 -> "§6"
             else -> "§c"
