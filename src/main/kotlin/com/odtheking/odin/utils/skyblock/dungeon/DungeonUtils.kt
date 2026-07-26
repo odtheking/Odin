@@ -219,8 +219,8 @@ object DungeonUtils {
         return previousTeammates
     }
 
-    private const val WITHER_ESSENCE_ID = "e0f3e929-869e-3dca-9504-54c666ee6f23"
-    private const val REDSTONE_KEY = "fed95410-aba1-39df-9b95-1d4f361eb66e"
+    private val WITHER_ESSENCE = setOf("2865274b-3097-394e-8149-ec629c72d850", "e0f3e929-869e-3dca-9504-54c666ee6f23").toTypedArray()
+    private val REDSTONE_KEY = setOf("fed95410-aba1-39df-9b95-1d4f361eb66e").toTypedArray()
 
     /**
      * Determines whether a given block state and position represent a secret location.
@@ -237,7 +237,7 @@ object DungeonUtils {
             state.block.equalsOneOf(Blocks.CHEST, Blocks.TRAPPED_CHEST, Blocks.LEVER) -> true
             state.block is SkullBlock ->
                 (mc.level?.getBlockEntity(pos) as? SkullBlockEntity)?.ownerProfile?.partialProfile()?.id
-                    ?.toString()?.equalsOneOf(WITHER_ESSENCE_ID, REDSTONE_KEY) ?: false
+                    ?.toString()?.equalsOneOf(*WITHER_ESSENCE, *REDSTONE_KEY) ?: false
 
             else -> false
         }
