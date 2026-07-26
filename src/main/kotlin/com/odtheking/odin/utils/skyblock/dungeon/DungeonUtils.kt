@@ -219,7 +219,7 @@ object DungeonUtils {
         return previousTeammates
     }
 
-    private const val WITHER_ESSENCE_ID = "e0f3e929-869e-3dca-9504-54c666ee6f23"
+    private const val WITHER_ESSENCE_ID = "2865274b-3097-394e-8149-ec629c72d850"
     private const val REDSTONE_KEY = "fed95410-aba1-39df-9b95-1d4f361eb66e"
 
     /**
