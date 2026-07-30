@@ -100,7 +100,7 @@ object PuzzleSolvers : Module(
     private inline val isInPuzzle get() = DungeonUtils.currentRoom?.data?.type == RoomType.PUZZLE
 
     init {
-        TickTask(10) {
+        TickTask(5) {
             if (!enabled || !isInPuzzle) return@TickTask
             if (blazeSolver) BlazeSolver.getBlaze()
             if (waterSolver) WaterSolver.scan(optimizedSolutions)

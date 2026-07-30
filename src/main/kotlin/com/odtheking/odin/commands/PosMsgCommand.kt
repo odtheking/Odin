@@ -32,11 +32,11 @@ val posMsgCommand = Commodore("posmsg") {
                 }
             }
 
-            runs { x: Double, y: Double, z: Double, delay: Long, distance: Double, color: String, message: GreedyString ->
+            runs { x: Double, y: Double, z: Double, delay: Int, distance: Double, color: String, message: GreedyString? ->
+                if (posMessageStrings.any { it.message == message?.string }) return@runs
                 val color = getColorFromString(color) ?: return@runs modMessage("Unknown color $color")
-                posMessageStrings.add(PositionalMessages.PosMessage(x, y, z, null, null, null, delay, distance, color, message.string
-                ).takeUnless { it in posMessageStrings } ?: return@runs modMessage("This message already exists!"))
-                modMessage("Message \"${message}\" added at $x, $y, $z, with ${delay}ms delay, triggered up to $distance blocks away.")
+                posMessageStrings.add(PositionalMessages.PosMessage(x, y, z, null, null, null, delay, distance, color, message?.string))
+                modMessage("Message \"${message}\" added at $x, $y, $z, with ${delay}t delay, triggered up to $distance blocks away.")
                 ModuleManager.saveConfigurations()
             }
         }
@@ -50,11 +50,11 @@ val posMsgCommand = Commodore("posmsg") {
                 }
             }
 
-            runs { x: Double, y: Double, z: Double, x2: Double, y2: Double, z2: Double, delay: Long, color: String, message: GreedyString ->
+            runs { x: Double, y: Double, z: Double, x2: Double, y2: Double, z2: Double, delay: Int, color: String, message: GreedyString? ->
+                if (posMessageStrings.any { it.message == message?.string }) return@runs
                 val color = getColorFromString(color) ?: return@runs modMessage("Unknown color $color")
-                posMessageStrings.add(
-                    PositionalMessages.PosMessage(x, y, z, x2, y2, z2, delay, null, color, message.string).takeUnless { it in posMessageStrings } ?: return@runs modMessage("This message already exists!"))
-                modMessage("Message \"${message}\" added in $x, $y, $z, $x2, $y2, $z2, with ${delay}ms delay.")
+                posMessageStrings.add(PositionalMessages.PosMessage(x, y, z, x2, y2, z2, delay, null, color, message?.string))
+                modMessage("Message \"${message}\" added in $x, $y, $z, $x2, $y2, $z2, with ${delay}t delay.")
                 ModuleManager.saveConfigurations()
             }
         }
@@ -64,37 +64,19 @@ val posMsgCommand = Commodore("posmsg") {
         param("message") {
             parser { greedy: GreedyString ->
                 val input = greedy.string.trim()
-
-                if (input.startsWith("#")) {
-                    val withoutHash = input.substring(1)
-                    val dashIndex = withoutHash.indexOf("-")
-                    val indexStr = if (dashIndex > 0) withoutHash.substring(0, dashIndex)
-                    else withoutHash
-                    val index = indexStr.toIntOrNull()
-                    if (index != null && index in 1..posMessageStrings.size) return@parser index.toString()
-                }
-
-                val plainIndex = input.toIntOrNull()
-                if (plainIndex != null && plainIndex in 1..posMessageStrings.size) {
-                    return@parser plainIndex.toString()
-                }
-
-                val found = posMessageStrings.find { it.message.equals(input, true) }
-                if (found != null) return@parser (posMessageStrings.indexOf(found) + 1).toString()
-
-                throw SyntaxException("Message not found. Available messages: ${List(posMessageStrings.size) { i -> "#${i+1}" }.joinToString()}")
+                val found = posMessageStrings.any { it.message.equals(input, true) }
+                if (!found) throw SyntaxException("Message not found. Available messages: ${posMessageStrings.joinToString { "\"${it.message}\"" }}")
+                input
             }
             suggests {
-                posMessageStrings.mapIndexed { index, msg -> "#${index + 1}-${msg.message}" }
+                posMessageStrings.mapNotNull { it.message }.distinct()
             }
         }
 
         runs { message: String ->
-            val index = message.toInt()
-            if (index < 1 || index > posMessageStrings.size) return@runs modMessage("Invalid Positional Message index #$index")
-            val removed = posMessageStrings[index - 1]
-            modMessage("Removed Positional Message #$index: \"${removed.message}\"")
-            posMessageStrings.removeAt(index - 1)
+            val removed = posMessageStrings.filter { it.message.equals(message, true) }
+            posMessageStrings.removeAll { it.message.equals(message, true) }
+            modMessage("Removed ${removed.size} Positional Message(s): \"$message\"")
             ModuleManager.saveConfigurations()
         }
     }
