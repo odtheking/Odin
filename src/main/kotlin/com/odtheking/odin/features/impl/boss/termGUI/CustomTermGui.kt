@@ -8,6 +8,7 @@ import com.odtheking.odin.features.impl.boss.TerminalSolver.hideClicked
 import com.odtheking.odin.features.impl.boss.TerminalSolver.renderDebug
 import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.Colors
+import com.odtheking.odin.utils.modMessage
 import com.odtheking.odin.utils.render.roundedFill
 import com.odtheking.odin.utils.render.text
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalUtils
@@ -108,10 +109,9 @@ abstract class TermGui {
         TerminalUtils.currentTerm?.let { term ->
             val screen = mc.screen ?: return@let
             val btn = if (button == 0) GLFW.GLFW_MOUSE_BUTTON_3 else button
-            if (System.currentTimeMillis() - term.timeOpened >= TerminalSolver.firstClickProt &&
-                !GuiEvent.CustomTermGuiClick(screen, slotIndex, btn).postAndCatch() &&
-                term.canClick(slotIndex, btn)
-            ) term.click(slotIndex, btn, hideClicked && !term.isClicked)
+            if (term.shouldProtect()) return@let
+            if (!GuiEvent.CustomTermGuiClick(screen, slotIndex, btn).postAndCatch() && term.canClick(slotIndex, btn))
+                term.click(slotIndex, btn, hideClicked && !term.isClicked)
         }
     }
 
