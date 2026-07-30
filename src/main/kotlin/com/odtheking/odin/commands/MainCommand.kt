@@ -24,8 +24,7 @@ val mainCommand = Commodore("odin", "od") {
     }
 
     literal("tps").runs {
-        val stats = ServerUtils.getLast20TpsStatistics()
-        modMessage("§aCurrent: §f${ServerUtils.averageTps.toFixed(1)}§a, Last 20 pings: (max/min/avg) §f${stats.max.toFixed(1)}/${stats.min.toFixed(1)}/${stats.average.toFixed(1)}")
+        modMessage(ServerUtils.getTpsString())
     }
 
     literal("ping").runs {

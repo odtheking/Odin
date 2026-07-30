@@ -9,10 +9,7 @@ import java.util.ArrayDeque
 import kotlin.math.min
 
 object ServerUtils {
-    data class TpsStatistics(val max: Float, val min: Float, val average: Float)
-
     private var prevTime = 0L
-    private val tpsLog = ArrayDeque<Float>(20)
     var averageTps = 20f
         private set
 
@@ -22,18 +19,29 @@ object ServerUtils {
     var averagePing: Int = 0
         private set
 
-    fun getLast20TpsStatistics(): TpsStatistics {
-        if (tpsLog.isEmpty()) return TpsStatistics(averageTps, averageTps, averageTps)
+    private const val TPS_HISTORY = 20
 
-        return TpsStatistics(tpsLog.max(), tpsLog.min(), tpsLog.average().toFloat())
+    private val tpsLog = FloatArray(TPS_HISTORY)
+    private var tpsIndex = 0
+    private var tpsCount = 0
+
+    private fun addTpsSample(tps: Float) {
+        tpsLog[tpsIndex] = tps
+        tpsIndex = (tpsIndex + 1) % TPS_HISTORY
+        if (tpsCount < TPS_HISTORY) tpsCount++
+    }
+
+    fun getTpsString(): String {
+        if (tpsLog.isEmpty()) return "Current: ${averageTps.toFixed(1)}"
+
+        return "Current: ${averageTps.toFixed(1)} (max/min/avg) ${tpsLog.max().toFixed(1)}/${tpsLog.min().toFixed(1)}/${tpsLog.average().toFloat().toFixed(1)}"
     }
 
     init {
         onReceive<ClientboundSetTimePacket> {
             if (prevTime != 0L) {
                 averageTps = (20000f / (System.currentTimeMillis() - prevTime + 1)).coerceIn(0f, 20f)
-                if (tpsLog.size == 20) tpsLog.removeFirst()
-                tpsLog.addLast(averageTps)
+                addTpsSample(averageTps)
             }
 
             prevTime = System.currentTimeMillis()
