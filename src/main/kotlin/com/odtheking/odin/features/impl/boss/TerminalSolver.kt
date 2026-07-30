@@ -11,8 +11,10 @@ import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.modMessage
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalTypes
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalUtils
+import net.minecraft.client.Options
 import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
+import net.minecraft.client.gui.screens.options.VideoSettingsScreen
 import net.minecraft.network.chat.Component
 import org.lwjgl.glfw.GLFW
 
@@ -21,7 +23,7 @@ object TerminalSolver : Module(
     description = "Renders solution for terminals in floor 7."
 ) {
     private val renderType by SelectorSetting("Render type", "Odin", arrayListOf("Odin", "Normal", "Custom GUI"), desc = "How the terminal solver should render.")
-    private val normalTermSize by NumberSetting("Normal Term Size", 3, 1, 5, 1, desc = "The GUI scale increase for normal terminal GUI.").withDependency { renderType == 0 || renderType == 1 }
+    private val normalTermSize by NumberSetting("Normal Term Size", 3, 1, 6, 1, desc = "The GUI scale increase for normal terminal GUI.").withDependency { renderType == 0 || renderType == 1 }
     val customTermSize by NumberSetting("Term Size", 2f, 1f, 3f, 0.1f, desc = "The size of the custom terminal GUI.").withDependency { renderType == 2 }
     val roundness by NumberSetting("Roundness", 5, 0f, 15f, 1f, desc = "The roundness of the custom terminal gui.").withDependency { renderType == 2 }
     val gap by NumberSetting("Slot gap", 2, 0, 8, 1, desc = "The gap between the slots in the custom terminal gui.").withDependency { renderType == 2 }
@@ -56,11 +58,11 @@ object TerminalSolver : Module(
 
     val selectColor by ColorSetting("Select", Colors.MINECRAFT_GREEN, true, desc = "Color of the select terminal solver.").withDependency { showColors }
 
-    val melodyColumColor by ColorSetting("Melody Column", Colors.MINECRAFT_DARK_PURPLE, true, desc = "Color of the colum indicator for melody.").withDependency { showColors && !cancelMelodySolver }
+    val melodyColumColor by ColorSetting("Melody Column", Colors.MINECRAFT_DARK_PURPLE, true, desc = "Color of the column indicator for melody.").withDependency { showColors && !cancelMelodySolver }
     val melodyPointerColor by ColorSetting("Melody Pointer", Colors.MINECRAFT_GREEN, true, desc = "Color of the location for pressing for melody.").withDependency { showColors && !cancelMelodySolver }
     val melodyBackgroundColor by ColorSetting("Melody Background", Colors.gray38, true, desc = "Color of the background slot in melody.").withDependency { showColors && !cancelMelodySolver }
 
-    @JvmStatic val termSize get() = if (enabled && (renderType == 0 || renderType == 1) && TerminalUtils.currentTerm != null) normalTermSize else 1
+    @JvmStatic val termSize get() = if (enabled && (renderType == 0 || renderType == 1) && TerminalUtils.currentTerm != null) if (normalTermSize == 6) Options.AUTO_GUI_SCALE else normalTermSize else 1
     val customGuiEnabled get() = enabled && renderType == 2 && renderMelody
     private val renderMelody get() = !(cancelMelodySolver && TerminalUtils.currentTerm?.type == TerminalTypes.MELODY)
 
