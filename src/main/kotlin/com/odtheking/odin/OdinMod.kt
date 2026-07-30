@@ -9,7 +9,6 @@ import com.odtheking.odin.features.impl.render.Shenanigans
 import com.odtheking.odin.utils.IrisCompatability
 import com.odtheking.odin.utils.ServerUtils
 import com.odtheking.odin.utils.handlers.TickTasks
-import com.odtheking.odin.utils.network.WebUtils.postData
 import com.odtheking.odin.utils.render.ItemStateRenderer
 import com.odtheking.odin.utils.render.RenderBatchManager
 import com.odtheking.odin.utils.render.RoundRectPIPRenderer
@@ -21,7 +20,6 @@ import com.odtheking.odin.utils.ui.rendering.NVGPIPRenderer
 import com.odtheking.odin.utils.ui.widget.CustomGUIImpl
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.launch
 import net.fabricmc.api.ClientModInitializer
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback
 import net.fabricmc.fabric.api.client.rendering.v1.PictureInPictureRendererRegistry
@@ -71,7 +69,7 @@ object OdinMod : ClientModInitializer {
 
         listOf(
             this, LocationUtils, TickTasks, KuudraUtils,
-            SkyblockPlayer, ServerUtils, EventDispatcher,
+            ActionBarListener, ServerUtils, EventDispatcher,
             DungeonListener, PartyUtils, TerminalUtils,
             DungeonUtils, SplitsManager, DungeonScan,
             IrisCompatability, RenderBatchManager,

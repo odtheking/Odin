@@ -8,7 +8,7 @@ import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.render.textDim
 import com.odtheking.odin.utils.skyblock.LocationUtils
-import com.odtheking.odin.utils.skyblock.SkyblockPlayer
+import com.odtheking.odin.utils.skyblock.ActionBarListener
 import net.minecraft.network.chat.Component
 import kotlin.math.abs
 
@@ -43,7 +43,7 @@ object PlayerDisplay : Module(
         val text = when {
             example -> 3000 to 4000
             !LocationUtils.isInSkyblock -> return@HUD 0 to 0
-            SkyblockPlayer.currentHealth != 0 && SkyblockPlayer.maxHealth != 0 -> SkyblockPlayer.currentHealth to SkyblockPlayer.maxHealth
+            ActionBarListener.currentHealth != 0 && ActionBarListener.maxHealth != 0 -> ActionBarListener.currentHealth to ActionBarListener.maxHealth
             else -> return@HUD 0 to 0
         }
         return@HUD textDim(generateText(text.first, text.second, "❤"), 0, 0, healthColor)
@@ -52,13 +52,13 @@ object PlayerDisplay : Module(
 
     private val manaHud by HUD("Mana HUD", "Displays the player's mana.") { example ->
         val text = when {
-            example -> generateText(2000, 20000, "✎") + (if (!separateOverflow) " ${generateText(SkyblockPlayer.overflowMana, "ʬ", hideZeroSF)}" else "")
+            example -> generateText(2000, 20000, "✎") + (if (!separateOverflow) " ${generateText(ActionBarListener.overflowMana, "ʬ", hideZeroSF)}" else "")
 
             !LocationUtils.isInSkyblock -> return@HUD 0 to 0
-            SkyblockPlayer.maxMana != 0 -> when {
-                SkyblockPlayer.currentMana == 0 && separateOverflow -> return@HUD 0 to 0
-                else -> generateText(SkyblockPlayer.currentMana, SkyblockPlayer.maxMana, "✎") +
-                        (if (!separateOverflow && overflowManaHud.enabled) " ${generateText(SkyblockPlayer.overflowMana, "ʬ", hideZeroSF)}" else "")
+            ActionBarListener.maxMana != 0 -> when {
+                ActionBarListener.currentMana == 0 && separateOverflow -> return@HUD 0 to 0
+                else -> generateText(ActionBarListener.currentMana, ActionBarListener.maxMana, "✎") +
+                        (if (!separateOverflow && overflowManaHud.enabled) " ${generateText(ActionBarListener.overflowMana, "ʬ", hideZeroSF)}" else "")
             }
 
             else -> return@HUD 0 to 0
@@ -71,7 +71,7 @@ object PlayerDisplay : Module(
         val text = when {
             example -> 333
             !LocationUtils.isInSkyblock -> return@HUD 0 to 0
-            separateOverflow -> SkyblockPlayer.overflowMana
+            separateOverflow -> ActionBarListener.overflowMana
             else -> return@HUD 0 to 0
         }
         return@HUD textDim(generateText(text, "ʬ", hideZeroSF), 0, 0, overflowManaColor)
@@ -82,18 +82,29 @@ object PlayerDisplay : Module(
         val text = when {
             example -> 1000
             !LocationUtils.isInSkyblock -> return@HUD 0 to 0
-            SkyblockPlayer.currentDefense != 0 -> SkyblockPlayer.currentDefense
+            ActionBarListener.currentDefense != 0 -> ActionBarListener.currentDefense
             else -> return@HUD 0 to 0
         }
         return@HUD textDim(generateText(text, "❈", true), 0, 0, defenseColor)
     }
     private val defenseColor by ColorSetting("Defense Color", Colors.MINECRAFT_GREEN, true, desc = "The color of the defense text.")
 
+    private val vitalityHud by HUD("Vitality HUD", "Displays the player's vitality.") { example ->
+        val text = when {
+            example -> 100 to 100
+            !LocationUtils.isInSkyblock -> return@HUD 0 to 0
+            ActionBarListener.isVitalityShown && ActionBarListener.maxVitality != 0 -> ActionBarListener.currentVitality to ActionBarListener.maxVitality
+            else -> return@HUD 0 to 0
+        }
+        return@HUD textDim(generateText(text.first, text.second, "♨"), 0, 0, vitalityColor)
+    }
+    private val vitalityColor by ColorSetting("Vitality Color", Colors.MINECRAFT_DARK_RED, true, "The color of the vitality text.")
+
     private val ehpHud by HUD("EHP HUD", "Displays the player's effective health (EHP).") { example ->
         val text = when {
             example -> 1000000
             !LocationUtils.isInSkyblock -> return@HUD 0 to 0
-            SkyblockPlayer.effectiveHP != 0 -> SkyblockPlayer.effectiveHP
+            ActionBarListener.effectiveHP != 0 -> ActionBarListener.effectiveHP
             else -> return@HUD 0 to 0
         }
         return@HUD textDim(generateText(text, "", true), 0, 0, ehpColor)
@@ -104,7 +115,7 @@ object PlayerDisplay : Module(
         val text = when {
             example -> 100
             !LocationUtils.isInSkyblock -> return@HUD 0 to 0
-            SkyblockPlayer.currentSpeed != 0 -> SkyblockPlayer.currentSpeed
+            ActionBarListener.currentSpeed != 0 -> ActionBarListener.currentSpeed
             else -> return@HUD 0 to 0
         }
         return@HUD textDim(generateText(text, "✦", true), 0, 0, speedColor)
