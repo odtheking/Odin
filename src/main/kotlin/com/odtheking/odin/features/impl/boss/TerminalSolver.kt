@@ -35,10 +35,8 @@ object TerminalSolver : Module(
     val showNumbers by BooleanSetting("Show Numbers", true, desc = "Shows numbers in the order terminal.").withDependency { solverSettings }
     private val firstClickProtSettings by DropdownSetting("First Click Protect Dropdown")
     val firstClickProt by NumberSetting("First Click Protection", 500, 350, 800, 10, unit = "ms", desc = "The amount of time after opening a terminal where clicks are blocked to prevent bans (recommended value is 500 minus your ping).").withDependency { firstClickProtSettings }
-    val ignoreFirstClickProtMelody by BooleanSetting("Ignore Melody", true, desc = "Ignores First Click Protection on the melody terminal (has been shown to not ban)").withDependency { firstClickProtSettings }
     val shouldFirstClickProtWithTicks by BooleanSetting("Account For Server Lag",  false, desc = "Prevents bans from clicking when the server lags after opening the terminal (disabled in singleplayer").withDependency { firstClickProtSettings }
     val firstClickProtTicks by NumberSetting("Lag Protection Ticks", 8, 7, 16, unit = "ticks", desc = "Each tick = 50ms (recommended value is 8)").withDependency { shouldFirstClickProtWithTicks && firstClickProtSettings }
-    val notifyFirstClickProt by BooleanSetting("Notify on blocked clicks", false, desc = "Notifies you in chat when First Click Protection blocks a click").withDependency { firstClickProtSettings }
     val hideClicked by BooleanSetting("Hide Clicked", false, desc = "Visually hides your first click before a gui updates instantly to improve perceived response time. Does not affect actual click time.").withDependency { solverSettings }
     val terminalReloadThreshold by NumberSetting("Resolve timeout", 600, 300, 1000, 10, unit = "ms", desc = "The amount of time before the terminal reloads after a click wasn't registered while using hide clicked.").withDependency { hideClicked && solverSettings }
     private val debug by BooleanSetting("Debug", false, desc = "Shows debug terminals.").withDependency { solverSettings }
@@ -78,10 +76,7 @@ object TerminalSolver : Module(
 
             if (blockIncorrectClicks && !term.canClick(slotId, button)) return@on cancel()
 
-            if (term.shouldProtect()) {
-                if (notifyFirstClickProt) modMessage("§cBlocked first click ${System.currentTimeMillis() - term.timeOpened}ms after opening.")
-                return@on cancel()
-            }
+            if (term.shouldProtect()) return@on cancel()
 
             if (middleClickGUI) {
                 term.click(slotId, if (button == 0) GLFW.GLFW_MOUSE_BUTTON_3 else button, hideClicked && !term.isClicked)

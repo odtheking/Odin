@@ -8,7 +8,6 @@ import com.odtheking.odin.events.PacketEvent
 import com.odtheking.odin.features.impl.boss.TerminalSimulator
 import com.odtheking.odin.features.impl.boss.TerminalSolver.firstClickProt
 import com.odtheking.odin.features.impl.boss.TerminalSolver.firstClickProtTicks
-import com.odtheking.odin.features.impl.boss.TerminalSolver.ignoreFirstClickProtMelody
 import com.odtheking.odin.features.impl.boss.TerminalSolver.shouldFirstClickProtWithTicks
 import com.odtheking.odin.features.impl.boss.termsim.TermSimGUI
 import com.odtheking.odin.utils.Color
@@ -16,7 +15,6 @@ import com.odtheking.odin.utils.clickSlot
 import com.odtheking.odin.utils.skyblock.Island
 import com.odtheking.odin.utils.skyblock.LocationUtils
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalTypes
-import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalUtils.currentTerm
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
 import net.minecraft.client.gui.screens.inventory.ContainerScreen
 import net.minecraft.network.HashedStack
@@ -85,8 +83,8 @@ abstract class TerminalHandler(val type: TerminalTypes) {
 
     open fun canClick(slotIndex: Int, button: Int): Boolean = slotIndex in solution
 
-    fun shouldProtect(): Boolean = (!(ignoreFirstClickProtMelody && (currentTerm?.type == TerminalTypes.MELODY))
-            && !(TerminalSimulator.disableFirstClickProtInTermsim && (mc.screen is TermSimGUI))
+    fun shouldProtect(): Boolean =
+            !(TerminalSimulator.disableFirstClickProtection && mc.screen is TermSimGUI)
             && (System.currentTimeMillis() - timeOpened < firstClickProt ||
-            (!LocationUtils.isCurrentArea(Island.SinglePlayer) && shouldFirstClickProtWithTicks && ticksOpened < firstClickProtTicks)))
+            (!LocationUtils.isCurrentArea(Island.SinglePlayer) && shouldFirstClickProtWithTicks && ticksOpened < firstClickProtTicks))
 }
