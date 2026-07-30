@@ -170,9 +170,13 @@ object PuzzleSolvers : Module(
 
         onSend<ServerboundUseItemOnPacket> {
             if (!DungeonUtils.inClear || this.hand == InteractionHand.OFF_HAND) return@onSend
-            if (waterSolver) WaterSolver.waterInteract(this)
             if (boulderSolver) BoulderSolver.playerInteract(this)
        }
+
+        on<UseItemOnPostEvent> {
+            if (!DungeonUtils.inClear || this.hand == InteractionHand.OFF_HAND) return@on
+            if (waterSolver) WaterSolver.waterInteract(this)
+        }
 
         on<RenderEvent.Extract> {
             if (!DungeonUtils.inClear) return@on
