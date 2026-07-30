@@ -24,7 +24,7 @@ val mainCommand = Commodore("odin", "od") {
     }
 
     literal("tps").runs {
-        modMessage("§aTPS: §f${ServerUtils.averageTps}")
+        modMessage(ServerUtils.getTpsString())
     }
 
     literal("ping").runs {

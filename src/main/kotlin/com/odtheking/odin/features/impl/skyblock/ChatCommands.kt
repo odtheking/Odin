@@ -135,7 +135,7 @@ object ChatCommands : Module(
             "dice" -> if (dice) channelMessage((1..6).random(), name, channel)
             "racism" -> if (racism) channelMessage("$name is ${Random.nextInt(1, 101)}% racist. Racism is not allowed!", name, channel)
             "ping" -> if (ping) channelMessage("Current Ping: ${ServerUtils.currentPing}ms", name, channel)
-            "tps" -> if (tps) channelMessage("Current TPS: ${ServerUtils.averageTps.toFixed(1)}", name, channel)
+            "tps" -> if (tps) channelMessage(ServerUtils.getTpsString(), name, channel)
             "fps" -> if (fps) channelMessage("Current FPS: ${mc.fps}", name, channel)
             "time" -> if (time) channelMessage("Current Time: ${ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss z"))}", name, channel)
             "location" -> if (location) channelMessage("Current Location: ${LocationUtils.currentArea.displayName}", name, channel)
