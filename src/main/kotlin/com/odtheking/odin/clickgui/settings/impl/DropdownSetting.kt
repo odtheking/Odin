@@ -38,8 +38,8 @@ class DropdownSetting(
         val offset = (imageSize - 24f) / 2f
 
         NVGRenderer.push()
-        NVGRenderer.translate(x + width - 18f, y + height / 2f - 4f)
-        NVGRenderer.rotate(toggleAnimation.get(0f, Math.PI.toFloat() / 2f, enabled))
+        NVGRenderer.translate(x + width - 22f, y + height / 2f)
+        NVGRenderer.rotate(toggleAnimation.get(Math.PI.toFloat() / 2f, 0f, enabled))
         NVGRenderer.translate(-(12f + offset), -(12f + offset))
         NVGRenderer.image(ClickGUI.chevronImage, 0f, 0f, imageSize, imageSize)
         NVGRenderer.pop()
