@@ -179,7 +179,7 @@ private fun GuiGraphicsExtractor.renderPlayers() {
     val (selfX, selfZ) = DungeonScan.playerRenderPosition(mc.player, IVec2(0, 0))
     pose().translate(selfX, selfZ)
     pose().rotate(Math.toRadians(180.0 + (mc.player?.yRot ?: 0f)).toFloat())
-    DungeonUtils.currentDungeonPlayer
+
     if (DungeonMap.playerHead) {
         mc.player?.skin?.let { skin ->
             fill(-5, -5, 5, 5, DungeonUtils.currentDungeonPlayer.clazz.color.rgba)
