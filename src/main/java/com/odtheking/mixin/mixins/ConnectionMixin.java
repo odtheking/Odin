@@ -16,13 +16,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class ConnectionMixin {
 
     @Inject(method = "channelRead0(Lio/netty/channel/ChannelHandlerContext;Lnet/minecraft/network/protocol/Packet;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/Connection;genericsFtw(Lnet/minecraft/network/protocol/Packet;Lnet/minecraft/network/PacketListener;)V"), cancellable = true)
-    private void channelRead0(ChannelHandlerContext channelHandlerContext, Packet<?> packet, CallbackInfo ci) {
+    private void channelRead0(ChannelHandlerContext ctx, Packet<?> packet, CallbackInfo ci) {
         if (packet instanceof ClientboundPingPacket pingPacket && pingPacket.getId() != 0) TickEvent.Server.INSTANCE.postAndCatch();
         if (new PacketEvent.Receive(packet).postAndCatch()) ci.cancel();
     }
 
     @Inject(method = "sendPacket", at = @At("HEAD"), cancellable = true)
-    private void sendImmediately(Packet<?> packet, ChannelFutureListener channelFutureListener, boolean flush, CallbackInfo ci) {
+    private void sendImmediately(Packet<?> packet, ChannelFutureListener listener, boolean flush, CallbackInfo ci) {
         if (new PacketEvent.Send(packet).postAndCatch()) ci.cancel();
     }
 }

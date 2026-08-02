@@ -13,9 +13,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(MultiPlayerGameMode.class)
 public class MultiPlayerGameModeMixin {
+
     @Inject(method = "useItemOn(Lnet/minecraft/client/player/LocalPlayer;Lnet/minecraft/world/InteractionHand;Lnet/minecraft/world/phys/BlockHitResult;)Lnet/minecraft/world/InteractionResult;", at = @At("RETURN"))
     void useItemOnReturn(LocalPlayer player, InteractionHand hand, BlockHitResult blockHit, CallbackInfoReturnable<InteractionResult> cir) {
-        var returnValue = cir.getReturnValue();
-        new UseItemOnPostEvent(hand, blockHit, returnValue).postAndCatch();
+        new UseItemOnPostEvent(hand, blockHit, cir.getReturnValue()).postAndCatch();
     }
 }
