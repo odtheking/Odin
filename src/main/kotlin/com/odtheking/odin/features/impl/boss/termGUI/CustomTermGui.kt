@@ -65,7 +65,7 @@ abstract class TermGui {
         )
     }
 
-    private fun currentTermScreen() = mc.screen as? AbstractContainerScreen<*>
+    private fun currentTermScreen() = mc.gui.screen() as? AbstractContainerScreen<*>
 
     private fun isActiveTermScreen(): Boolean {
         if (!TerminalSolver.customGuiEnabled || TerminalUtils.currentTerm == null || currentTermScreen() == null) return false
@@ -107,7 +107,7 @@ abstract class TermGui {
 
     fun customTerminalClick(slotIndex: Int, button: Int) {
         TerminalUtils.currentTerm?.let { term ->
-            val screen = mc.screen ?: return@let
+            val screen = mc.gui.screen() ?: return@let
             val btn = if (button == 0) GLFW.GLFW_MOUSE_BUTTON_3 else button
             if (term.shouldProtect()) return@let
             if (!GuiEvent.CustomTermGuiClick(screen, slotIndex, btn).postAndCatch() && term.canClick(slotIndex, btn))

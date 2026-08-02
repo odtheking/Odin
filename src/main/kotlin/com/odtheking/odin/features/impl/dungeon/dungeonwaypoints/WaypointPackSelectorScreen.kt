@@ -68,7 +68,7 @@ class WaypointPackSelectorScreen(private val parent: Screen?) : Screen(Component
         scrollableLayout.setPosition(width / 2 - scrollableLayout.width / 2, scrollTop)
 
         val footerLayout = LinearLayout.horizontal().spacing(8)
-        footerLayout.addChild(Button.builder(Component.literal("Done")) { mc.setScreen(parent) }.width(80).build())
+        footerLayout.addChild(Button.builder(Component.literal("Done")) { if (parent != null) mc.setScreenAndShow(parent) else mc.gui.setScreen(null) }.width(80).build())
         footerLayout.arrangeElements()
         footerLayout.setPosition(width / 2 - footerLayout.width / 2, height - 30)
 
@@ -153,7 +153,7 @@ class WaypointPackSelectorScreen(private val parent: Screen?) : Screen(Component
     }
 
     private fun showCreateDialog() {
-        mc.setScreen(TextPromptScreen("Create Pack").apply {
+        mc.setScreenAndShow(TextPromptScreen("Create Pack").apply {
             setCallback { name ->
                 if (name.isNotBlank()) {
                     loading = true
@@ -162,13 +162,13 @@ class WaypointPackSelectorScreen(private val parent: Screen?) : Screen(Component
                         needsRefresh = true
                     }
                 }
-                mc.setScreen(this@WaypointPackSelectorScreen)
+                mc.setScreenAndShow(this@WaypointPackSelectorScreen)
             }
         })
     }
 
     private fun showRenameDialog(oldName: String) {
-        mc.setScreen(TextPromptScreen("Rename Pack").apply {
+        mc.setScreenAndShow(TextPromptScreen("Rename Pack").apply {
             setCallback { newName ->
                 if (newName.isNotBlank() && newName != oldName) {
                     loading = true
@@ -177,7 +177,7 @@ class WaypointPackSelectorScreen(private val parent: Screen?) : Screen(Component
                         needsRefresh = true
                     }
                 }
-                mc.setScreen(this@WaypointPackSelectorScreen)
+                mc.setScreenAndShow(this@WaypointPackSelectorScreen)
             }
         })
     }
@@ -200,7 +200,7 @@ class WaypointPackSelectorScreen(private val parent: Screen?) : Screen(Component
     private fun importFromClipboard() {
         val clipboard = mc.keyboardHandler.clipboard.trim().trim { it == '\n' }
         if (clipboard.isBlank()) return modMessage("§cClipboard is empty!")
-        mc.setScreen(TextPromptScreen("Import as New Pack").setCallback { name ->
+        mc.setScreenAndShow(TextPromptScreen("Import as New Pack").setCallback { name ->
             if (name.isNotBlank()) {
                 loading = true
                 OdinMod.scope.launch {
@@ -216,7 +216,7 @@ class WaypointPackSelectorScreen(private val parent: Screen?) : Screen(Component
                     }
                 }
             }
-            mc.setScreen(this@WaypointPackSelectorScreen)
+            mc.setScreenAndShow(this@WaypointPackSelectorScreen)
         })
     }
 

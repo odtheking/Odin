@@ -97,3 +97,5 @@ private fun Vec3.intermediateWithZValue(goal: Vec3, z: Double): Vec3? {
         this.z + dz * t
     ) else null
 }
+
+val BlockPos.center: Vec3 get() = Vec3.atCenterOf(this)

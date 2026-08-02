@@ -9,6 +9,7 @@ import com.odtheking.odin.features.impl.dungeon.dungeonwaypoints.DungeonWaypoint
 import com.odtheking.odin.features.impl.dungeon.map.tile.DungeonRoom
 import com.odtheking.odin.features.impl.render.Etherwarp
 import com.odtheking.odin.utils.Color.Companion.withAlpha
+import com.odtheking.odin.utils.center
 import com.odtheking.odin.utils.devMessage
 import com.odtheking.odin.utils.getBlockBounds
 import com.odtheking.odin.utils.isEtherwarpItem
@@ -42,7 +43,7 @@ internal fun DungeonWaypoints.renderWaypoints(event: RenderEvent.Extract) {
 }
 
 internal fun DungeonWaypoints.handleEditorInput(event: InputEvent) {
-    if (event.key.value != GLFW.GLFW_MOUSE_BUTTON_RIGHT || mc.screen != null) return
+    if (event.key.value != GLFW.GLFW_MOUSE_BUTTON_RIGHT || mc.gui.screen() != null) return
     cacheEtherwarpTarget()
     if (!allowEdits) return
     val room = DungeonUtils.currentRoom ?: return
@@ -98,12 +99,12 @@ private fun DungeonWaypoints.openWaypointTitlePrompt(
     aabb: AABB,
     editableWaypoints: MutableList<DungeonWaypoint>,
 ) {
-    mc.setScreen(TextPromptScreen("Waypoint Name").setCallback { text ->
+    mc.setScreenAndShow(TextPromptScreen("Waypoint Name").setCallback { text ->
         editableWaypoints.removeIf { it.blockPos == blockPos }
         editableWaypoints.add(createWaypoint(blockPos, aabb, text))
         devMessage("Added waypoint with $text at $blockPos")
         syncRoomToActive(room)
-        mc.setScreen(null)
+        mc.gui.setScreen(null)
         OdinMod.scope.launch { saveWaypoints() }
     })
 }

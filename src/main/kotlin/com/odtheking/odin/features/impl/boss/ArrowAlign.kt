@@ -9,6 +9,7 @@ import com.odtheking.odin.events.RenderEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.addVec
+import com.odtheking.odin.utils.center
 import com.odtheking.odin.utils.component1
 import com.odtheking.odin.utils.component2
 import com.odtheking.odin.utils.component3

@@ -16,6 +16,7 @@ import net.minecraft.core.BlockPos
 import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket
 import net.minecraft.world.effect.MobEffects
 import net.minecraft.world.entity.player.Player
+import net.minecraft.world.item.DyeColor
 import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.Blocks
 
@@ -77,15 +78,15 @@ object LividSolver : Module(
     }
 
     private enum class Livid(val entityName: String, val colorCode: Char, val color: Color, val wool: Block) {
-        VENDETTA("Vendetta", 'f', Colors.WHITE, Blocks.WHITE_WOOL),
-        CROSSED("Crossed", 'd', Colors.MINECRAFT_DARK_PURPLE, Blocks.MAGENTA_WOOL),
-        ARCADE("Arcade", 'e', Colors.MINECRAFT_YELLOW, Blocks.YELLOW_WOOL),
-        SMILE("Smile", 'a', Colors.MINECRAFT_GREEN, Blocks.LIME_WOOL),
-        DOCTOR("Doctor", '7', Colors.MINECRAFT_GRAY, Blocks.GRAY_WOOL),
-        PURPLE("Purple", '5', Colors.MINECRAFT_DARK_PURPLE, Blocks.PURPLE_WOOL),
-        SCREAM("Scream", '9', Colors.MINECRAFT_BLUE, Blocks.BLUE_WOOL),
-        FROG("Frog", '2', Colors.MINECRAFT_DARK_GREEN, Blocks.GREEN_WOOL),
-        HOCKEY("Hockey", 'c', Colors.MINECRAFT_RED, Blocks.RED_WOOL);
+        VENDETTA("Vendetta", 'f', Colors.WHITE, Blocks.WOOL.pick(DyeColor.WHITE)),
+        CROSSED("Crossed", 'd', Colors.MINECRAFT_DARK_PURPLE, Blocks.WOOL.pick(DyeColor.MAGENTA)),
+        ARCADE("Arcade", 'e', Colors.MINECRAFT_YELLOW, Blocks.WOOL.pick(DyeColor.YELLOW)),
+        SMILE("Smile", 'a', Colors.MINECRAFT_GREEN, Blocks.WOOL.pick(DyeColor.LIME)),
+        DOCTOR("Doctor", '7', Colors.MINECRAFT_GRAY, Blocks.WOOL.pick(DyeColor.GRAY)),
+        PURPLE("Purple", '5', Colors.MINECRAFT_DARK_PURPLE, Blocks.WOOL.pick(DyeColor.PURPLE)),
+        SCREAM("Scream", '9', Colors.MINECRAFT_BLUE, Blocks.WOOL.pick(DyeColor.BLUE)),
+        FROG("Frog", '2', Colors.MINECRAFT_DARK_GREEN, Blocks.WOOL.pick(DyeColor.GREEN)),
+        HOCKEY("Hockey", 'c', Colors.MINECRAFT_RED, Blocks.WOOL.pick(DyeColor.RED));
 
         var entity: Player? = null
     }

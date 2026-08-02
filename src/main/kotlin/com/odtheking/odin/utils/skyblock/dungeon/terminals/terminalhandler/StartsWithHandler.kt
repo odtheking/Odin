@@ -18,7 +18,7 @@ class StartsWithHandler(private val letter: String): TerminalHandler(TerminalTyp
 
     override fun solve(items: List<ItemStack>): List<Int> {
         clickedSlot?.let {
-            val screenHandler = (mc.screen as? ContainerScreen)?.menu
+            val screenHandler = (mc.gui.screen() as? ContainerScreen)?.menu
             if (it.first != screenHandler?.containerId) {
                 val item = items[it.second].item
                 if (item in enchantOverrides) clickedSlots.add(it.second)
@@ -34,7 +34,7 @@ class StartsWithHandler(private val letter: String): TerminalHandler(TerminalTyp
     }
 
     override fun click(slotIndex: Int, button: Int, simulateClick: Boolean) {
-        val screenHandler = (mc.screen as? ContainerScreen)?.menu ?: return
+        val screenHandler = (mc.gui.screen() as? ContainerScreen)?.menu ?: return
         if (canClick(slotIndex, button) && clickedSlot == null)
             clickedSlot = screenHandler.containerId to slotIndex
 

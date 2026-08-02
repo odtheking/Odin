@@ -73,7 +73,7 @@ object Vesuvius : Module(
         }
 
         onReceive<ClientboundContainerSetSlotPacket> {
-            val title = mc.screen?.title?.string ?:return@onReceive
+            val title = mc.gui.screen()?.title?.string ?:return@onReceive
             if (!title.matches(chestRegex)) return@onReceive
             if (slot == 31 && item.item == Items.CHEST) handleKuudraChest(item)
             if (slot == 14 && item.item == Items.PLAYER_HEAD) handleKuudraChest(item)

@@ -63,11 +63,11 @@ abstract class TerminalHandler(val type: TerminalTypes) {
     abstract fun solve(items: List<ItemStack>): List<Int>
 
     open fun click(slotIndex: Int, button: Int, simulateClick: Boolean) {
-        val screenHandler = (mc.screen as? ContainerScreen)?.menu ?: return
+        val screenHandler = (mc.gui.screen() as? ContainerScreen)?.menu ?: return
         if (simulateClick) simulateClick(slotIndex, button)
         isClicked = true
 
-        if (mc.screen is TermSimGUI) {
+        if (mc.gui.screen() is TermSimGUI) {
             PacketEvent.Send(
                 ServerboundContainerClickPacket(
                     -1, -1,
@@ -84,7 +84,7 @@ abstract class TerminalHandler(val type: TerminalTypes) {
     open fun canClick(slotIndex: Int, button: Int): Boolean = slotIndex in solution
 
     fun shouldProtect(): Boolean =
-            !(TerminalSimulator.disableFirstClickProtection && mc.screen is TermSimGUI)
+            !(TerminalSimulator.disableFirstClickProtection && mc.gui.screen() is TermSimGUI)
             && (System.currentTimeMillis() - timeOpened < firstClickProt ||
             (!LocationUtils.isCurrentArea(Island.SinglePlayer) && shouldFirstClickProtWithTicks && ticksOpened < firstClickProtTicks))
 }

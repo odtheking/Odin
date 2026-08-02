@@ -55,7 +55,7 @@ object LeapMenu : Module(
 
     private fun currentLeapScreen(): AbstractContainerScreen<*>? {
         if (!enabled) return null
-        val screen = mc.screen as? AbstractContainerScreen<*> ?: return null
+        val screen = mc.gui.screen() as? AbstractContainerScreen<*> ?: return null
         if (!screen.title.string.equalsOneOf("Spirit Leap", "Teleport to Player")) return null
         if (leapTeammates.isEmpty() || leapTeammates.all { it == EMPTY }) return null
         return screen

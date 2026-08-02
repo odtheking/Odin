@@ -1,5 +1,7 @@
 package com.odtheking.odin.utils.render
 
+import com.mojang.blaze3d.PrimitiveTopology
+import com.mojang.blaze3d.pipeline.BindGroupLayout
 import com.mojang.blaze3d.pipeline.BlendFunction
 import com.mojang.blaze3d.pipeline.ColorTargetState
 import com.mojang.blaze3d.pipeline.RenderPipeline
@@ -37,8 +39,9 @@ object CustomRenderPipelines {
             .withLocation(Identifier.fromNamespaceAndPath("odin", "pipeline/round_rect"))
             .withFragmentShader(Identifier.fromNamespaceAndPath("odin", "core/round_rect"))
             .withVertexShader(Identifier.fromNamespaceAndPath("odin", "core/round_rect"))
-            .withVertexFormat(DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.QUADS)
-            .withUniform("u", UniformType.UNIFORM_BUFFER)
+            .withVertexBinding(0, DefaultVertexFormat.POSITION_COLOR)
+            .withPrimitiveTopology(PrimitiveTopology.QUADS)
+            .withBindGroupLayout(BindGroupLayout.builder().withUniform("u", UniformType.UNIFORM_BUFFER).build())
             .withColorTargetState(ColorTargetState(BlendFunction.TRANSLUCENT))
             .build()
     )
