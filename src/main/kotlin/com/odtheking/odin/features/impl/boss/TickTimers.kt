@@ -88,7 +88,11 @@ object TickTimers : Module(
         else if (DungeonUtils.openRoomCount != 0 && !DungeonUtils.inBoss) {
             // Color change at < 10 because that's when items are picked up.
             val time = 20 - secretsCounter % 20
-            val color = if (time < 10) "§a" else "§c"
+            val color = when {
+                time < 5 -> "§a"
+                time < 10 -> "§6"
+                else -> "§c"
+            }
             textDim(formatTimer(time, 20, "§7Secret:", overrideColor = color), 0, 0, Colors.MINECRAFT_DARK_RED)
         }
         else 0 to 0
