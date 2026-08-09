@@ -68,7 +68,7 @@ object ActionBarListener {
 
             val vitalityMatch = VITALITY_REGEX.find(msg)
             isVitalityShown = vitalityMatch != null
-            vitalityMatch?.destructured?.let { (cVitality, mVitality, _) ->
+            vitalityMatch?.destructured?.let { (cVitality, mVitality) ->
                 currentVitality = cVitality.replace(",", "").toDoubleOrNull()?.toInt() ?: currentVitality
                 maxVitality = mVitality.replace(",", "").toDoubleOrNull()?.toInt() ?: maxVitality
             }

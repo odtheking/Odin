@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class ChatScreenMixin {
 
     @Inject(method = "handleChatInput", at = @At("HEAD"), cancellable = true)
-    private void onSendMessage(String message, boolean addToHistory, CallbackInfo ci) {
-        if (new MessageSentEvent(message).postAndCatch()) ci.cancel();
+    private void onSendMessage(String msg, boolean addToRecent, CallbackInfo ci) {
+        if (new MessageSentEvent(msg).postAndCatch()) ci.cancel();
     }
 }

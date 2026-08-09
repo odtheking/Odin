@@ -9,6 +9,7 @@ import net.minecraft.client.gui.screens.inventory.ContainerScreen
 import net.minecraft.core.component.DataComponents
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.world.item.ItemStack
+import net.minecraft.world.item.Items
 
 class StartsWithHandler(private val letter: String): TerminalHandler(TerminalTypes.STARTS_WITH) {
 
@@ -44,6 +45,6 @@ class StartsWithHandler(private val letter: String): TerminalHandler(TerminalTyp
     override fun renderSlot(slotIndex: Int): Pair<Color, String?> = TerminalSolver.startsWithColor to null
 
     companion object {
-        private val enchantOverrides = BuiltInRegistries.ITEM.filter { it.components().has(DataComponents.ENCHANTMENT_GLINT_OVERRIDE) }
+        private val enchantOverrides = BuiltInRegistries.ITEM.filter { it.components().has(DataComponents.ENCHANTMENT_GLINT_OVERRIDE) } + Items.GOLDEN_APPLE
     }
 }
