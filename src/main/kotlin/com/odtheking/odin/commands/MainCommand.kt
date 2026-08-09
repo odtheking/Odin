@@ -17,7 +17,7 @@ import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 
 val mainCommand = Commodore("odin", "od") {
     runs {
-        schedule(0) { mc.setScreen(ClickGUI) }
+        schedule(0) { mc.setScreenAndShow(ClickGUI) }
     }
 
     literal("test").runs {
@@ -25,11 +25,11 @@ val mainCommand = Commodore("odin", "od") {
     }
 
     literal("edithud").runs {
-        schedule(0) { mc.setScreen(HudManager) }
+        schedule(0) { mc.setScreenAndShow(HudManager) }
     }
 
     literal("tps").runs {
-        modMessage("§aTPS: §f${ServerUtils.averageTps}")
+        modMessage(ServerUtils.getTpsString())
     }
 
     literal("ping").runs {

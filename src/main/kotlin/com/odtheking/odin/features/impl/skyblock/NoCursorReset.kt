@@ -16,10 +16,10 @@ object NoCursorReset : Module(
 
     init {
         on<TickEvent.End> {
-            if (mc.screen != null) {
+            if (mc.gui.screen() != null) {
                 wasNotNull = true
                 clock = System.currentTimeMillis()
-            } else if (wasNotNull && mc.screen == null) {
+            } else if (wasNotNull && mc.gui.screen() == null) {
                 wasNotNull = false
                 clock = System.currentTimeMillis()
             }

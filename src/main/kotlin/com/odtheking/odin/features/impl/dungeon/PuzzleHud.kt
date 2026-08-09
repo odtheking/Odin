@@ -13,6 +13,7 @@ object PuzzleHud : Module(
     description = "Displays remaining, completed, and failed puzzles in the HUD during dungeons."
 ) {
     private val showPlayerNames by BooleanSetting("Show Player Names", true, desc = "Shows which player solved or failed the puzzle.")
+    private val showOnlyPre by BooleanSetting("Show Only Pre-Run", false, desc = "Shows only puzzles that are before the boss room.")
 
     private data class PuzzleEntry(val name: String, val statusIcon: String, val statusColor: String, val player: String?)
     private val examplePuzzles = listOf(
@@ -24,6 +25,8 @@ object PuzzleHud : Module(
 
     private val hud by HUD("Puzzle HUD Position", "Displays dungeon puzzle statuses on the HUD.") { example ->
         if (!DungeonUtils.inDungeons || DungeonUtils.inBoss && !example) return@HUD 0 to 0
+
+        if (!example && showOnlyPre && DungeonUtils.openRoomCount != 0) return@HUD 0 to 0
 
         val puzzleCount = if (example) 4 else DungeonUtils.puzzleCount
         if (puzzleCount == 0) return@HUD 0 to 0

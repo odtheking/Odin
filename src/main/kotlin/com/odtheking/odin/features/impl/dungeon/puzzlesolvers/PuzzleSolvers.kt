@@ -7,12 +7,11 @@ import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.events.core.onSend
 import com.odtheking.odin.features.Module
+import com.odtheking.odin.features.impl.dungeon.map.tile.RoomType
 import com.odtheking.odin.utils.*
 import com.odtheking.odin.utils.Color.Companion.withAlpha
 import com.odtheking.odin.utils.handlers.TickTask
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
-import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils.getRealCoords
-import com.odtheking.odin.utils.skyblock.dungeon.tiles.RoomType
 import net.minecraft.core.BlockPos
 import net.minecraft.network.chat.ClickEvent
 import net.minecraft.network.chat.Component
@@ -101,7 +100,7 @@ object PuzzleSolvers : Module(
     private inline val isInPuzzle get() = DungeonUtils.currentRoom?.data?.type == RoomType.PUZZLE
 
     init {
-        TickTask(10) {
+        TickTask(5) {
             if (!enabled || !isInPuzzle) return@TickTask
             if (blazeSolver) BlazeSolver.getBlaze()
             if (waterSolver) WaterSolver.scan(optimizedSolutions)
@@ -112,7 +111,7 @@ object PuzzleSolvers : Module(
             if (waterSolver) WaterSolver.onServerTick()
         }
 
-        on<WorldEvent.Load> {
+        on<LevelEvent.Load> {
             puzzleTimersMap.clear()
             IceFillSolver.reset()
             WeirdosSolver.reset()
@@ -130,7 +129,8 @@ object PuzzleSolvers : Module(
             TPMazeSolver.onRoomEnter(this)
             BeamsSolver.onRoomEnter(this)
             QuizSolver.onRoomEnter(this)
-            if (puzzleTimers && this.room?.data?.type == RoomType.PUZZLE && puzzleTimersMap.none { it.key == this.room.data.name }) puzzleTimersMap[this.room.data.name] = PuzzleTimer()
+            val name = room?.data?.name ?: return@on
+            if (puzzleTimers && room.data?.type == RoomType.PUZZLE && puzzleTimersMap.none { it.key == name }) puzzleTimersMap[name] = PuzzleTimer()
         }
 
         on<BlockUpdateEvent> {
@@ -156,23 +156,27 @@ object PuzzleSolvers : Module(
 
         onReceive<ClientboundBlockEventPacket> {
             if (!DungeonUtils.inClear || block != Blocks.CHERRY_LOG) return@onReceive
-            val room = DungeonUtils.currentRoom?.takeIf { room -> room.data.type == RoomType.PUZZLE } ?: return@onReceive
+            val room = DungeonUtils.currentRoom?.takeIf { room -> room.data?.type == RoomType.PUZZLE } ?: return@onReceive
 
-            when (room.data.name) {
+            when (room.data?.name) {
                 "Three Weirdos" -> pos.equalsOneOf(room.getRealCoords(BlockPos(18, 69, 24)), room.getRealCoords(BlockPos(16, 69, 25)), room.getRealCoords(BlockPos(14, 69, 24)))
                 "Ice Fill"      -> pos.equalsOneOf(room.getRealCoords(BlockPos(14, 75, 29)), room.getRealCoords(BlockPos(16, 75, 29)))
                 "Teleport Maze" -> pos == room.getRealCoords(BlockPos(15, 70, 20))
                 "Water Board"   -> pos == room.getRealCoords(BlockPos(15, 56, 22))
                 "Boulder"       -> pos == room.getRealCoords(BlockPos(15, 66, 29))
                 else            -> false
-            }.takeIf { !it } ?: onPuzzleComplete(room.data.name)
+            }.takeIf { !it } ?: onPuzzleComplete(room.data?.name ?: return@onReceive)
         }
 
         onSend<ServerboundUseItemOnPacket> {
             if (!DungeonUtils.inClear || this.hand == InteractionHand.OFF_HAND) return@onSend
-            if (waterSolver) WaterSolver.waterInteract(this)
             if (boulderSolver) BoulderSolver.playerInteract(this)
        }
+
+        on<UseItemOnPostEvent> {
+            if (!DungeonUtils.inClear || this.hand == InteractionHand.OFF_HAND) return@on
+            if (waterSolver) WaterSolver.waterInteract(this)
+        }
 
         on<RenderEvent.Extract> {
             if (!DungeonUtils.inClear) return@on

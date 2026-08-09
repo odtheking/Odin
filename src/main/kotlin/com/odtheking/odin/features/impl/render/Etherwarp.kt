@@ -66,7 +66,7 @@ object Etherwarp : Module(
         }
 
         on<RenderEvent.Extract> (EventPriority.LOW) {
-            if (mc.screen != null || !render) return@on
+            if (mc.gui.screen() != null || !render) return@on
 
             val mainHandItem = mc.player?.mainHandItem ?: return@on
 

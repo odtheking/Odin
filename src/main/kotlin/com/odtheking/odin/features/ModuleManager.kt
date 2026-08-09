@@ -14,6 +14,7 @@ import com.odtheking.odin.features.ModuleManager.configs
 import com.odtheking.odin.features.impl.boss.*
 import com.odtheking.odin.features.impl.dungeon.*
 import com.odtheking.odin.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints
+import com.odtheking.odin.features.impl.dungeon.map.DungeonMap
 import com.odtheking.odin.features.impl.dungeon.puzzlesolvers.PuzzleSolvers
 import com.odtheking.odin.features.impl.nether.*
 import com.odtheking.odin.features.impl.render.*
@@ -22,7 +23,7 @@ import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry
 import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements
 import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.client.DeltaTracker
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.resources.Identifier
 import net.minecraft.resources.Identifier.fromNamespaceAndPath
 import java.io.File
@@ -59,9 +60,9 @@ object ModuleManager {
         registerModules(config = ModuleConfig(file = File(OdinMod.configFile, "odin-config.json")),
             // dungeon
             PuzzleSolvers, BlessingDisplay, LeapMenu, SecretClicked, MapInfo, Mimic, DungeonQueue,
-            KeyHighlight, BloodCamp, PositionalMessages, TerracottaTimer, BreakerDisplay, LividSolver,
-            InvincibilityTimer, SpiritBear, DungeonWaypoints, ExtraStats, BetterPartyFinder, Croesus, MageBeam, DungeonMap,
-            SecretsCounter, PuzzleHud, Test,
+            DoorHighlight, BloodCamp, PositionalMessages, TerracottaTimer, BreakerDisplay, LividSolver,
+            InvincibilityTimer, SpiritBear, DungeonWaypoints, ExtraStats, BetterPartyFinder, Croesus, MageBeam,
+            SecretsCounter, DungeonMap, PuzzleHud, RoomClear, Test,
 
             // boss
             TerminalSimulator, TerminalSolver, TerminalTimes, TerminalSounds, TickTimers, ArrowAlign,
@@ -73,10 +74,12 @@ object ModuleManager {
 
             //skyblock
             ChatCommands, NoCursorReset, Ragnarock, SpringBoots, WardrobeKeybinds, PetKeybinds, AutoSprint,
-            CommandKeybinds, SlotBinds, Splits,
+            CommandKeybinds, SlotBinds, Splits, LoadoutKeybinds,
 
             // nether
-            SupplyHelper, BuildHelper, RemovePerks, NoPre, PearlWaypoints, FreshTools, KuudraInfo, Misc, Vesuvius
+            SupplyHelper, BuildHelper, RemovePerks, NoPre, PearlWaypoints, FreshTools, KuudraInfo, Misc, Vesuvius,
+
+            RenderTest,
         )
 
         // hashmap, but would need to keep track when setting values change
@@ -139,8 +142,8 @@ object ModuleManager {
         }
     }
 
-    fun render(guiGraphics: GuiGraphics, tickCounter: DeltaTracker) {
-        if (mc.level == null || mc.player == null || mc.screen == HudManager || mc.options.hideGui) return
+    fun render(guiGraphics: GuiGraphicsExtractor, tickCounter: DeltaTracker) {
+        if (mc.level == null || mc.player == null || mc.gui.screen() == HudManager) return
 
         guiGraphics.pose().pushMatrix()
         val sf = mc.window.guiScale

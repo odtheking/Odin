@@ -6,8 +6,10 @@ import com.odtheking.odin.events.InputEvent
 import com.odtheking.odin.events.RenderEvent
 import com.odtheking.odin.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.DungeonWaypoint
 import com.odtheking.odin.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.WaypointType
+import com.odtheking.odin.features.impl.dungeon.map.tile.DungeonRoom
 import com.odtheking.odin.features.impl.render.Etherwarp
 import com.odtheking.odin.utils.Color.Companion.withAlpha
+import com.odtheking.odin.utils.center
 import com.odtheking.odin.utils.devMessage
 import com.odtheking.odin.utils.getBlockBounds
 import com.odtheking.odin.utils.isEtherwarpItem
@@ -16,8 +18,6 @@ import com.odtheking.odin.utils.render.drawBoxes
 import com.odtheking.odin.utils.render.drawStyledBox
 import com.odtheking.odin.utils.render.drawText
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
-import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils.getRelativeCoords
-import com.odtheking.odin.utils.skyblock.dungeon.tiles.Room
 import kotlinx.coroutines.launch
 import net.minecraft.core.BlockPos
 import net.minecraft.world.phys.AABB
@@ -43,7 +43,7 @@ internal fun DungeonWaypoints.renderWaypoints(event: RenderEvent.Extract) {
 }
 
 internal fun DungeonWaypoints.handleEditorInput(event: InputEvent) {
-    if (event.key.value != GLFW.GLFW_MOUSE_BUTTON_RIGHT || mc.screen != null) return
+    if (event.key.value != GLFW.GLFW_MOUSE_BUTTON_RIGHT || mc.gui.screen() != null) return
     cacheEtherwarpTarget()
     if (!allowEdits) return
     val room = DungeonUtils.currentRoom ?: return
@@ -94,17 +94,17 @@ private fun DungeonWaypoints.cacheEtherwarpTarget() {
 }
 
 private fun DungeonWaypoints.openWaypointTitlePrompt(
-    room: Room,
+    room: DungeonRoom,
     blockPos: BlockPos,
     aabb: AABB,
     editableWaypoints: MutableList<DungeonWaypoint>,
 ) {
-    mc.setScreen(TextPromptScreen("Waypoint Name").setCallback { text ->
+    mc.setScreenAndShow(TextPromptScreen("Waypoint Name").setCallback { text ->
         editableWaypoints.removeIf { it.blockPos == blockPos }
         editableWaypoints.add(createWaypoint(blockPos, aabb, text))
         devMessage("Added waypoint with $text at $blockPos")
         syncRoomToActive(room)
-        mc.setScreen(null)
+        mc.gui.setScreen(null)
         OdinMod.scope.launch { saveWaypoints() }
     })
 }

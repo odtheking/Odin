@@ -5,7 +5,7 @@ import com.odtheking.odin.clickgui.settings.impl.*
 import com.odtheking.odin.events.ChatPacketEvent
 import com.odtheking.odin.events.RenderEvent
 import com.odtheking.odin.events.SecretPickupEvent
-import com.odtheking.odin.events.WorldEvent
+import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Color.Companion.withAlpha
@@ -71,7 +71,7 @@ object SecretClicked : Module(
             }
         }
 
-        on<WorldEvent.Load> {
+        on<LevelEvent.Load> {
             clickedSecretsList.clear()
         }
     }

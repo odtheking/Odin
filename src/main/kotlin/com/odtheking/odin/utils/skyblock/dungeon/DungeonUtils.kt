@@ -2,13 +2,12 @@ package com.odtheking.odin.utils.skyblock.dungeon
 
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.features.impl.dungeon.MapInfo.togglePaul
+import com.odtheking.odin.features.impl.dungeon.map.WorldScan
+import com.odtheking.odin.features.impl.dungeon.map.tile.DungeonRoom
 import com.odtheking.odin.utils.equalsOneOf
 import com.odtheking.odin.utils.romanToInt
-import com.odtheking.odin.utils.rotateAroundNorth
-import com.odtheking.odin.utils.rotateToNorth
 import com.odtheking.odin.utils.skyblock.Island
 import com.odtheking.odin.utils.skyblock.LocationUtils
-import com.odtheking.odin.utils.skyblock.dungeon.tiles.Room
 import net.minecraft.core.BlockPos
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.level.block.SkullBlock
@@ -72,7 +71,7 @@ object DungeonUtils {
         get() = DungeonListener.dungeonStats.elapsedTime
 
     inline val currentRoomName: String
-        get() = DungeonListener.currentRoom?.data?.name ?: "Unknown"
+        get() = WorldScan.currentRoom?.data?.name ?: "Unknown"
 
     inline val dungeonTeammates: List<DungeonPlayer>
         get() = DungeonListener.dungeonTeammates
@@ -85,7 +84,7 @@ object DungeonUtils {
 
     inline val currentDungeonPlayer: DungeonPlayer
         get() = dungeonTeammates.find { it.name == mc.player?.name?.string } ?:
-            DungeonPlayer(mc.player?.name?.string ?: "Unknown", DungeonClass.Unknown, 0, null)
+            DungeonPlayer(mc.player?.name?.string ?: "Unknown", DungeonClass.EMPTY, 0, null)
 
     inline val doorOpener: String
         get() = DungeonListener.dungeonStats.doorOpener
@@ -96,11 +95,11 @@ object DungeonUtils {
     inline val princeKilled: Boolean
         get() = DungeonListener.dungeonStats.princeKilled
 
-    inline val currentRoom: Room?
-        get() = DungeonListener.currentRoom
+    inline val batKilled: Boolean
+        get() = DungeonListener.dungeonStats.batKilled
 
-    inline val passedRooms: Set<Room>
-        get() = DungeonListener.passedRooms
+    inline val currentRoom: DungeonRoom?
+        get() = WorldScan.currentRoom
 
     inline val isPaul: Boolean
         get() = DungeonListener.paul
@@ -110,6 +109,7 @@ object DungeonUtils {
             var score = cryptCount.coerceAtMost(5)
             if (mimicKilled) score += 2
             if (princeKilled) score += 1
+            if (batKilled) score += 1
             if ((isPaul && togglePaul == 0) || togglePaul == 2) score += 10
             return score
         }
@@ -178,8 +178,8 @@ object DungeonUtils {
     }
 
     private fun getMageCooldownMultiplier(): Double {
-        return if (currentDungeonPlayer.clazz != DungeonClass.Mage) 1.0
-        else 1 - 0.25 - (floor(currentDungeonPlayer.clazzLvl / 2.0) / 100) * if (dungeonTeammates.count { it.clazz == DungeonClass.Mage } == 1) 2 else 1
+        return if (currentDungeonPlayer.clazz != DungeonClass.MAGE) 1.0
+        else 1 - 0.25 - (floor(currentDungeonPlayer.clazzLvl / 2.0) / 100) * if (dungeonTeammates.count { it.clazz == DungeonClass.MAGE } == 1) 2 else 1
     }
 
     /**
@@ -198,22 +198,28 @@ object DungeonUtils {
         for (line in tabList) {
             val (_, name, clazz, clazzLevel) = tablistRegex.find(line)?.destructured ?: continue
 
-            previousTeammates.find { it.name == name }?.let { player -> player.isDead = clazz == "DEAD" }
-                ?: run {
-                    val player = mc.connection?.getPlayerInfo(name) ?: continue
-                    previousTeammates.add(
-                        DungeonPlayer(
-                            name, DungeonClass.entries.find { it.name == clazz } ?: continue,
-                            romanToInt(clazzLevel), player.skin,
-                            entity = mc.level?.getPlayerByUUID(player.profile.id )
-                        )
-                    )
+            previousTeammates.find { it.name == name }?.let { player ->
+                if (player.clazz == DungeonClass.EMPTY) {
+                    player.clazz = DungeonClass.entries.find { it.name.equals(clazz, ignoreCase = true) } ?: DungeonClass.EMPTY
+                    player.clazzLvl = if (clazzLevel.isNotEmpty()) romanToInt(clazzLevel) else -1
                 }
+
+                player.isDead = clazz == "DEAD"
+            } ?: run {
+                val player = mc.connection?.getPlayerInfo(name) ?: continue
+                previousTeammates.add(
+                    DungeonPlayer(
+                        name, DungeonClass.entries.find { it.name.equals(clazz, ignoreCase = true) } ?: continue,
+                        if (clazzLevel.isEmpty()) -1 else romanToInt(clazzLevel), player.skin,
+                        entity = mc.level?.getPlayerByUUID(player.profile.id)
+                    )
+                )
+            }
         }
         return previousTeammates
     }
 
-    private const val WITHER_ESSENCE_ID = "e0f3e929-869e-3dca-9504-54c666ee6f23"
+    private const val WITHER_ESSENCE_ID = "2865274b-3097-394e-8149-ec629c72d850"
     private const val REDSTONE_KEY = "fed95410-aba1-39df-9b95-1d4f361eb66e"
 
     /**
@@ -236,7 +242,4 @@ object DungeonUtils {
             else -> false
         }
     }
-
-    fun Room.getRelativeCoords(pos: BlockPos) = pos.subtract(clayPos.atY(0)).rotateToNorth(rotation)
-    fun Room.getRealCoords(pos: BlockPos) = pos.rotateAroundNorth(rotation).offset(clayPos.x, 0, clayPos.z)
 }

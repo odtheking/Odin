@@ -1,18 +1,21 @@
 package com.odtheking.odin.features.impl.boss
 
-import com.odtheking.mixin.accessors.AbstractContainerScreenAccessor
 import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.*
 import com.odtheking.odin.events.GuiEvent
 import com.odtheking.odin.events.TerminalEvent
+import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Color.Companion.darker
 import com.odtheking.odin.utils.Colors
+import com.odtheking.odin.utils.modMessage
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalTypes
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalUtils
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.Options
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
+import net.minecraft.client.gui.screens.options.VideoSettingsScreen
 import net.minecraft.network.chat.Component
 import org.lwjgl.glfw.GLFW
 
@@ -21,11 +24,10 @@ object TerminalSolver : Module(
     description = "Renders solution for terminals in floor 7."
 ) {
     private val renderType by SelectorSetting("Render type", "Odin", arrayListOf("Odin", "Normal", "Custom GUI"), desc = "How the terminal solver should render.")
-    private val normalTermSize by NumberSetting("Normal Term Size", 3, 1, 5, 1, desc = "The GUI scale increase for normal terminal GUI.").withDependency { renderType == 0 || renderType == 1 }
+    private val normalTermSize by NumberSetting("Normal Term Size", 3, 1, 6, 1, desc = "The GUI scale increase for normal terminal GUI.").withDependency { renderType == 0 || renderType == 1 }
     val customTermSize by NumberSetting("Term Size", 2f, 1f, 3f, 0.1f, desc = "The size of the custom terminal GUI.").withDependency { renderType == 2 }
     val roundness by NumberSetting("Roundness", 5, 0f, 15f, 1f, desc = "The roundness of the custom terminal gui.").withDependency { renderType == 2 }
     val gap by NumberSetting("Slot gap", 2, 0, 8, 1, desc = "The gap between the slots in the custom terminal gui.").withDependency { renderType == 2 }
-
     private val solverSettings by DropdownSetting("Solver Functionality")
     private val cancelToolTip by BooleanSetting("Stop Tooltips", true, desc = "Stops rendering tooltips in terminals.").withDependency { (renderType == 0 || renderType == 1) && solverSettings }
     private val middleClickGUI by BooleanSetting("Middle Click GUI", true, desc = "Replaces right click with middle click in terminals.").withDependency { (renderType == 0 || renderType == 1) && solverSettings }
@@ -33,11 +35,13 @@ object TerminalSolver : Module(
     private val cancelMelodySolver by BooleanSetting("Stop Melody Solver", false, desc = "Stops rendering the melody solver.").withDependency { solverSettings }
     val melodyTermSize by NumberSetting("Melody Size", 1.5f, 1f, 3f, 0.1f, desc = "The size of the melody terminal GUI.").withDependency { !cancelMelodySolver && solverSettings && renderType == 2 }
     val showNumbers by BooleanSetting("Show Numbers", true, desc = "Shows numbers in the order terminal.").withDependency { solverSettings }
-    val firstClickProt by NumberSetting("First Click Protection", 500, 350, 800, 10, unit = "ms", desc = "The amount of time after opening a terminal where clicks are blocked to prevent bans (recommended value is 500 minus your ping).").withDependency { solverSettings }
+    private val firstClickProtSettings by DropdownSetting("First Click Protect Dropdown")
+    val firstClickProt by NumberSetting("First Click Protection", 500, 350, 800, 10, unit = "ms", desc = "The amount of time after opening a terminal where clicks are blocked to prevent bans (recommended value is 500 minus your ping).").withDependency { firstClickProtSettings }
+    val shouldFirstClickProtWithTicks by BooleanSetting("Account For Server Lag",  false, desc = "Prevents bans from clicking when the server lags after opening the terminal (disabled in singleplayer").withDependency { firstClickProtSettings }
+    val firstClickProtTicks by NumberSetting("Lag Protection Ticks", 8, 7, 16, unit = "ticks", desc = "Each tick = 50ms (recommended value is 8)").withDependency { shouldFirstClickProtWithTicks && firstClickProtSettings }
     val hideClicked by BooleanSetting("Hide Clicked", false, desc = "Visually hides your first click before a gui updates instantly to improve perceived response time. Does not affect actual click time.").withDependency { solverSettings }
     val terminalReloadThreshold by NumberSetting("Resolve timeout", 600, 300, 1000, 10, unit = "ms", desc = "The amount of time before the terminal reloads after a click wasn't registered while using hide clicked.").withDependency { hideClicked && solverSettings }
     private val debug by BooleanSetting("Debug", false, desc = "Shows debug terminals.").withDependency { solverSettings }
-
     private val showColors by DropdownSetting("Color Settings")
     val backgroundColor by ColorSetting("Background", Colors.gray26, true, desc = "Background color of the terminal solver.").withDependency { showColors }
 
@@ -56,22 +60,25 @@ object TerminalSolver : Module(
 
     val selectColor by ColorSetting("Select", Colors.MINECRAFT_GREEN, true, desc = "Color of the select terminal solver.").withDependency { showColors }
 
-    val melodyColumColor by ColorSetting("Melody Column", Colors.MINECRAFT_DARK_PURPLE, true, desc = "Color of the colum indicator for melody.").withDependency { showColors && !cancelMelodySolver }
+    val melodyColumColor by ColorSetting("Melody Column", Colors.MINECRAFT_DARK_PURPLE, true, desc = "Color of the column indicator for melody.").withDependency { showColors && !cancelMelodySolver }
     val melodyPointerColor by ColorSetting("Melody Pointer", Colors.MINECRAFT_GREEN, true, desc = "Color of the location for pressing for melody.").withDependency { showColors && !cancelMelodySolver }
     val melodyBackgroundColor by ColorSetting("Melody Background", Colors.gray38, true, desc = "Color of the background slot in melody.").withDependency { showColors && !cancelMelodySolver }
 
-    @JvmStatic val termSize get() = if (enabled && (renderType == 0 || renderType == 1) && TerminalUtils.currentTerm != null) normalTermSize else 1
+    @JvmStatic val termSize get() = if (enabled && (renderType == 0 || renderType == 1) && TerminalUtils.currentTerm != null) if (normalTermSize == 6) Options.AUTO_GUI_SCALE else normalTermSize else 1
     val customGuiEnabled get() = enabled && renderType == 2 && renderMelody
     private val renderMelody get() = !(cancelMelodySolver && TerminalUtils.currentTerm?.type == TerminalTypes.MELODY)
 
     init {
+        on<TickEvent.Server> {
+            TerminalUtils.currentTerm?.ticksOpened++
+        }
+
         on<GuiEvent.SlotClick> {
             val term = TerminalUtils.currentTerm ?: return@on
 
-            if (
-                System.currentTimeMillis() - term.timeOpened < firstClickProt ||
-                (blockIncorrectClicks && !term.canClick(slotId, button))
-            ) return@on cancel()
+            if (blockIncorrectClicks && !term.canClick(slotId, button)) return@on cancel()
+
+            if (term.shouldProtect()) return@on cancel()
 
             if (middleClickGUI) {
                 term.click(slotId, if (button == 0) GLFW.GLFW_MOUSE_BUTTON_3 else button, hideClicked && !term.isClicked)
@@ -84,8 +91,8 @@ object TerminalSolver : Module(
         on<GuiEvent.Render> {
             if (TerminalUtils.currentTerm == null || !renderMelody || renderType != 0) return@on
 
-            val screen = (screen as? AbstractContainerScreen<*>) as? AbstractContainerScreenAccessor ?: return@on
-            guiGraphics.fill(screen.x + 7, screen.y + 16, screen.x + screen.width - 7, screen.y + screen.height - 96, backgroundColor.rgba)
+            val screen = screen as? AbstractContainerScreen<*> ?: return@on
+            guiGraphics.fill(screen.leftPos + 7, screen.topPos + 16, screen.leftPos + screen.imageWidth - 7, screen.topPos + screen.imageHeight - 96, backgroundColor.rgba)
         }
 
         on<GuiEvent.RenderSlot> {
@@ -95,7 +102,7 @@ object TerminalSolver : Module(
             if (slot.index <= currentTerm.type.windowSize - 1) {
                 currentTerm.getSlotRendering(slot.index)?.let { (color, text) ->
                     guiGraphics.fill(slot.x, slot.y, slot.x + 16, slot.y + 16, color.rgba)
-                    text?.let { guiGraphics.drawCenteredString(screen.font, it, slot.x + 8, slot.y + 4, Colors.WHITE.rgba) }
+                    text?.let { guiGraphics.centeredText(screen.font, it, slot.x + 8, slot.y + 4, Colors.WHITE.rgba) }
                     cancel()
                 }
                 if (renderType == 0) cancel()
@@ -108,22 +115,23 @@ object TerminalSolver : Module(
         }
 
         on<TerminalEvent.Open> {
-            if (renderType == 0 || renderType == 1) mc.execute { mc.resizeDisplay() }
+            if (renderType == 0 || renderType == 1) mc.execute { mc.resizeGui() }
         }
 
         on<TerminalEvent.Close> {
-            if (renderType == 0 || renderType == 1) mc.execute { mc.resizeDisplay() }
+            if (renderType == 0 || renderType == 1) mc.execute { mc.resizeGui() }
         }
     }
 
-    fun GuiGraphics.renderDebug() {
+    fun GuiGraphicsExtractor.renderDebug() {
         if (debug) TerminalUtils.currentTerm?.let { term ->
-            val menu = (mc.screen as? AbstractContainerScreen<*>)?.menu ?: return@let
+            val menu = (mc.gui.screen() as? AbstractContainerScreen<*>)?.menu ?: return@let
             val debugInfo = listOf(
                 "§7Type: §f${term.type.name}",
-                "§7Window Name: §f${mc.screen?.title?.string}",
+                "§7Window Name: §f${mc.gui.screen()?.title?.string}",
                 "§7Container ID: §f${menu.containerId}",
                 "§7Time Open: §f${System.currentTimeMillis() - term.timeOpened}ms",
+                "§7Ticks Open: §f${term.ticksOpened}",
                 "§7Is Clicked: §f${term.isClicked}",
                 "§7Window Count: §f${term.windowCount}",
                 "§7Solution: §f${term.solution.joinToString(", ")}",
@@ -134,15 +142,15 @@ object TerminalSolver : Module(
             pose().scale(1f / sf, 1f / sf)
             pose().scale(3f)
 
-            drawWordWrap(mc.font, Component.literal(menu.items.filter { !it.isEmpty }.map { stack -> stack.hoverName.string  }.toString()), 400, 0, 300, Colors.WHITE.rgba)
+            textWithWordWrap(mc.font, Component.literal(menu.items.filter { !it.isEmpty }.map { stack -> stack.hoverName.string  }.toString()), 400, 0, 300, Colors.WHITE.rgba)
 
             debugInfo.forEachIndexed { index, line ->
-                drawWordWrap(mc.font, Component.literal(line), 5, 20 + (index * 10), 300, Colors.WHITE.rgba)
+                textWithWordWrap(mc.font, Component.literal(line), 5, 20 + (index * 10), 300, Colors.WHITE.rgba)
             }
 
             menu.items.forEachIndexed { index, stack ->
-                renderItem(stack, 5 + (index % 9) * 18, 250 + (index / 9) * 18)
-                renderItemDecorations(mc.font, stack, 5 + (index % 9) * 18, 250 + (index / 9) * 18)
+                item(stack, 5 + (index % 9) * 18, 250 + (index / 9) * 18)
+                itemDecorations(mc.font, stack, 5 + (index % 9) * 18, 250 + (index / 9) * 18)
             }
             pose().popMatrix()
         }

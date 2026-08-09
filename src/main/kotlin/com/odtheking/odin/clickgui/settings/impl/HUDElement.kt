@@ -3,21 +3,21 @@ package com.odtheking.odin.clickgui.settings.impl
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.render.hollowFill
 import com.odtheking.odin.utils.ui.isAreaHovered
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 
 open class HudElement(
     var x: Int,
     var y: Int,
     var scale: Float,
     var enabled: Boolean = true,
-    val render: GuiGraphics.(Boolean) -> Pair<Int, Int> = { _ -> 0 to 0 }
+    val render: GuiGraphicsExtractor.(Boolean) -> Pair<Int, Int> = { _ -> 0 to 0 }
 ) {
     var width: Int = 0
         private set
     var height: Int = 0
         private set
 
-    fun draw(context: GuiGraphics, example: Boolean) {
+    fun draw(context: GuiGraphicsExtractor, example: Boolean) {
         context.pose().pushMatrix()
         context.pose().translate(x.toFloat(), y.toFloat())
 

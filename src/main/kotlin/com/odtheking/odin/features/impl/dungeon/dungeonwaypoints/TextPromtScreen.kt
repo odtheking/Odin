@@ -1,7 +1,7 @@
 package com.odtheking.odin.features.impl.dungeon.dungeonwaypoints
 
 import com.odtheking.odin.OdinMod.mc
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.components.Button
 import net.minecraft.client.gui.components.EditBox
 import net.minecraft.client.gui.components.StringWidget
@@ -41,7 +41,7 @@ class TextPromptScreen(val promptTitle: String) : Screen(Component.literal(promp
         }.width(100).build())
 
         buttonLayout.addChild(Button.builder(CommonComponents.GUI_CANCEL) { _ ->
-            mc.setScreen(null)
+            mc.gui.setScreen(null)
         }.width(100).build())
 
         layout.visitWidgets(this::addRenderableWidget)
@@ -55,7 +55,7 @@ class TextPromptScreen(val promptTitle: String) : Screen(Component.literal(promp
         FrameLayout.centerInRectangle(layout, rectangle)
     }
 
-    override fun render(context: GuiGraphics, mouseX: Int, mouseY: Int, delta: Float) {
+    override fun extractRenderState(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, delta: Float) {
         val dialogWidth = 300
         val dialogHeight = 140
         val dialogX = (width - dialogWidth) / 2
@@ -68,12 +68,12 @@ class TextPromptScreen(val promptTitle: String) : Screen(Component.literal(promp
         context.fill(dialogX - 1, dialogY, dialogX, dialogY + dialogHeight, 0xFF404040.toInt())
         context.fill(dialogX + dialogWidth, dialogY, dialogX + dialogWidth + 1, dialogY + dialogHeight, 0xFF404040.toInt())
 
-        super.render(context, mouseX, mouseY, delta)
+        super.extractRenderState(context, mouseX, mouseY, delta)
     }
 
     override fun keyPressed(input: KeyEvent): Boolean {
         if (input.key == GLFW.GLFW_KEY_ESCAPE) {
-            mc.setScreen(null)
+            mc.gui.setScreen(null)
             return true
         }
 

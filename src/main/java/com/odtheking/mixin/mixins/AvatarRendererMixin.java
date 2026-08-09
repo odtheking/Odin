@@ -15,16 +15,16 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class AvatarRendererMixin {
 
     @Inject(method = "scale(Lnet/minecraft/client/renderer/entity/state/AvatarRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;)V", at = @At("HEAD"))
-    private void scale(AvatarRenderState avatarRenderState, PoseStack poseStack, CallbackInfo ci) {
-        PlayerSize.preRenderCallbackScaleHook(avatarRenderState, poseStack);
+    private void scale(AvatarRenderState state, PoseStack poseStack, CallbackInfo ci) {
+        PlayerSize.preRenderCallbackScaleHook(state, poseStack);
     }
 
     @Inject(
             method = "extractRenderState(Lnet/minecraft/world/entity/Avatar;Lnet/minecraft/client/renderer/entity/state/AvatarRenderState;F)V",
             at = @At("HEAD")
     )
-    private void extractRenderState(Avatar avatar, AvatarRenderState avatarRenderState, float f, CallbackInfo ci) {
-        if (!(avatar instanceof AbstractClientPlayer clientAvatarEntity)) return;
+    private void extractRenderState(Avatar entity, AvatarRenderState avatarRenderState, float f, CallbackInfo ci) {
+        if (!(entity instanceof AbstractClientPlayer clientAvatarEntity)) return;
         avatarRenderState.setData(PlayerSize.getGAME_PROFILE_KEY(), clientAvatarEntity.getGameProfile());
     }
 }

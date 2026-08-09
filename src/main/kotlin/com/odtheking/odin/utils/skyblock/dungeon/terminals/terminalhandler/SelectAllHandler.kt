@@ -24,7 +24,7 @@ class SelectAllHandler(color: DyeColor) : TerminalHandler(TerminalTypes.SELECT) 
 
     override fun solve(items: List<ItemStack>): List<Int> =
         items.mapIndexedNotNull { index, item ->
-            if (item.hasGlint() || item.item == Items.BLACK_STAINED_GLASS_PANE) return@mapIndexedNotNull null
+            if (item.hasGlint() || item.item == Items.STAINED_GLASS_PANE.pick(DyeColor.BLACK)) return@mapIndexedNotNull null
             if (validPrefixes.any(item.hoverName.string.lowercase()::startsWith)) index else null
         }
 

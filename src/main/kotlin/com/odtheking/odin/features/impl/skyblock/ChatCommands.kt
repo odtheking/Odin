@@ -52,6 +52,7 @@ object ChatCommands : Module(
     private val time by BooleanSetting("Time", false, desc = "Sends the current time.").withDependency { showSettings }
     private val partyDemote by BooleanSetting("Demote", false, desc = "Executes the /party demote command.").withDependency { showSettings }
     private val partyPromote by BooleanSetting("Promote", false, desc = "Executes the /party promote command.").withDependency { showSettings }
+    private val kickOffline by BooleanSetting("Kick Offline", desc = "Allows you to kick offline players.").withDependency { showSettings && kick }
     private val location by BooleanSetting("Location", true, desc = "Sends your current location.").withDependency { showSettings }
     private val holding by BooleanSetting("Holding", true, desc = "Sends the item you are holding.").withDependency { showSettings }
 
@@ -115,26 +116,26 @@ object ChatCommands : Module(
             ChatChannel.PARTY -> mapOf(
                 "coords" to coords, "odin" to odin, "boop" to boop, "kick" to kick, "cf" to coinFlip, "8ball" to eightBall, "dice" to dice, "racism" to racism, "tps" to tps, "warp" to partyWarp,
                 "allinvite" to partyAllInvite, "pt" to partyTransfer, "m?" to queInstance, "f?" to queInstance, "t?" to queInstance, "time" to time,
-                "demote" to partyDemote, "promote" to partyPromote, "reinvite" to reinvite
+                "demote" to partyDemote, "promote" to partyPromote, "reinvite" to reinvite, "kickoffline" to kickOffline
             )
             ChatChannel.GUILD -> mapOf("coords" to coords, "odin" to odin, "boop" to boop, "cf" to coinFlip, "8ball" to eightBall, "dice" to dice, "racism" to racism, "ping" to ping, "tps" to tps, "time" to time)
             ChatChannel.PRIVATE -> mapOf("coords" to coords, "odin" to odin, "boop" to boop, "cf" to coinFlip, "8ball" to eightBall, "dice" to dice, "racism" to racism, "ping" to ping, "tps" to tps, "invite" to invite, "time" to time)
         }
 
         val words = message.drop(1).split(" ").map { it.lowercase() }
-
+        val arg = words.getOrNull(1)?.takeIf { it.length <= 16 }
         when (words[0]) {
             "help", "h" -> channelMessage("Commands: ${commandsMap.filterValues { it }.keys.joinToString(", ")}", name, channel)
             "odin", "od" -> if (odin) channelMessage("Odin! https://discord.gg/2nCbC9hkxT", name, channel)
             "coords", "co" -> if (coords) channelMessage(getPositionString(), name, channel)
 
-            "boop" if (boop) -> words.getOrNull(1)?.let { sendCommand("boop $it") }
+            "boop" if (boop) -> arg?.let { sendCommand("boop $it") }
             "cf" -> if (coinFlip) channelMessage(if (Math.random() < 0.5) "heads" else "tails", name, channel)
             "8ball" -> if (eightBall) channelMessage(responses.random(), name, channel)
             "dice" -> if (dice) channelMessage((1..6).random(), name, channel)
             "racism" -> if (racism) channelMessage("$name is ${Random.nextInt(1, 101)}% racist. Racism is not allowed!", name, channel)
             "ping" -> if (ping) channelMessage("Current Ping: ${ServerUtils.currentPing}ms", name, channel)
-            "tps" -> if (tps) channelMessage("Current TPS: ${ServerUtils.averageTps.toFixed(1)}", name, channel)
+            "tps" -> if (tps) channelMessage(ServerUtils.getTpsString(), name, channel)
             "fps" -> if (fps) channelMessage("Current FPS: ${mc.fps}", name, channel)
             "time" -> if (time) channelMessage("Current Time: ${ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss z"))}", name, channel)
             "location" -> if (location) channelMessage("Current Location: ${LocationUtils.currentArea.displayName}", name, channel)
@@ -149,16 +150,19 @@ object ChatCommands : Module(
                 if (channel == ChatChannel.PARTY && partyAllInvite && PartyUtils.isLeader()) sendCommand("party settings allinvite")
 
             "pt", "ptme", "transfer" ->
-                if (channel == ChatChannel.PARTY && partyTransfer && PartyUtils.isLeader()) sendCommand("party transfer ${words.getOrNull(1)?.let { findPartyMember(it) } ?: name}")
+                if (channel == ChatChannel.PARTY && partyTransfer && PartyUtils.isLeader()) sendCommand("party transfer ${arg?.let { findPartyMember(it) } ?: name}")
 
             "promote" ->
-                if (channel == ChatChannel.PARTY && partyPromote && PartyUtils.isLeader()) sendCommand("party promote ${words.getOrNull(1)?.let { findPartyMember(it) } ?: name}")
+                if (channel == ChatChannel.PARTY && partyPromote && PartyUtils.isLeader()) sendCommand("party promote ${arg?.let { findPartyMember(it) } ?: name}")
 
             "demote" ->
-                if (channel == ChatChannel.PARTY && partyDemote && PartyUtils.isLeader()) sendCommand("party demote ${words.getOrNull(1)?.let { findPartyMember(it) } ?: name}")
+                if (channel == ChatChannel.PARTY && partyDemote && PartyUtils.isLeader()) sendCommand("party demote ${arg?.let { findPartyMember(it) } ?: name}")
 
             "kick", "k" ->
-                if (channel == ChatChannel.PARTY && kick && PartyUtils.isLeader()) sendCommand("p kick ${words.getOrNull(1)?.let { findPartyMember(it) } ?: name}")
+                if (channel == ChatChannel.PARTY && kick && PartyUtils.isLeader()) sendCommand("p kick ${arg?.let { findPartyMember(it) } ?: name}")
+
+            "kickoffline", "ko" ->
+                if (channel == ChatChannel.PARTY && kickOffline && PartyUtils.isLeader()) sendCommand("p kickoffline")
 
             "f1", "f2", "f3", "f4", "f5", "f6", "f7", "m1", "m2", "m3", "m4", "m5", "m6", "m7", "t1", "t2", "t3", "t4", "t5" -> {
                 if (!queInstance || channel != ChatChannel.PARTY || !PartyUtils.isLeader()) return

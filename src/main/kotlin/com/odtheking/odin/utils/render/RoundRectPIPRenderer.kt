@@ -1,27 +1,31 @@
 package com.odtheking.odin.utils.render
 
+import com.mojang.blaze3d.PrimitiveTopology
+import com.mojang.blaze3d.buffers.GpuBuffer
 import com.mojang.blaze3d.buffers.Std140Builder
 import com.mojang.blaze3d.buffers.Std140SizeCalculator
 import com.mojang.blaze3d.systems.RenderSystem
+import com.mojang.blaze3d.vertex.BufferBuilder
+import com.mojang.blaze3d.vertex.ByteBufferBuilder
 import com.mojang.blaze3d.vertex.DefaultVertexFormat
 import com.mojang.blaze3d.vertex.PoseStack
-import com.mojang.blaze3d.vertex.Tesselator
 import com.mojang.blaze3d.vertex.VertexFormat
+import com.odtheking.odin.OdinMod.mc
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.navigation.ScreenRectangle
 import net.minecraft.client.gui.render.pip.PictureInPictureRenderer
-import net.minecraft.client.gui.render.state.pip.PictureInPictureRenderState
 import net.minecraft.client.renderer.DynamicUniformStorage
-import net.minecraft.client.renderer.MultiBufferSource
+import net.minecraft.client.renderer.SubmitNodeCollector
+import net.minecraft.client.renderer.state.gui.pip.PictureInPictureRenderState
 import org.joml.Matrix3x2f
 import org.joml.Matrix4f
 import org.joml.Vector3f
 import org.joml.Vector4f
 import java.util.*
 
-class RoundRectPIPRenderer(bufferSource: MultiBufferSource.BufferSource)
-    : PictureInPictureRenderer<RoundRectPIPRenderer.State>(bufferSource) {
+class RoundRectPIPRenderer
+    : PictureInPictureRenderer<RoundRectPIPRenderer.State>() {
 
     private var lastState: State? = null
 
@@ -29,11 +33,12 @@ class RoundRectPIPRenderer(bufferSource: MultiBufferSource.BufferSource)
 
     override fun textureIsReadyToBlit(state: State): Boolean = state.visuallyEquals(lastState)
 
-    override fun renderToTexture(state: State, poseStack: PoseStack) {
+    override fun renderToTexture(state: State, poseStack: PoseStack, collector: SubmitNodeCollector) {
         val w = state.x1 * state.scale
         val h = state.y1 * state.scale
 
-        val builder = Tesselator.getInstance().begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR)
+        val byteBufferBuilder = ByteBufferBuilder(DefaultVertexFormat.POSITION_COLOR.vertexSize * 4)
+        val builder = BufferBuilder(byteBufferBuilder, PrimitiveTopology.QUADS, DefaultVertexFormat.POSITION_COLOR)
         builder.addVertex(0f, 0f, 0f).setColor(state.topLeftColor)
         builder.addVertex(0f, h, 0f).setColor(state.bottomLeftColor)
         builder.addVertex(w, h, 0f).setColor(state.bottomRightColor)
@@ -41,7 +46,7 @@ class RoundRectPIPRenderer(bufferSource: MultiBufferSource.BufferSource)
         val mesh = builder.buildOrThrow()
 
         val dynamicTransforms = RenderSystem.getDynamicUniforms().writeTransform(
-            RenderSystem.getModelViewMatrix(), Vector4f(1f, 1f, 1f, 1f), Vector3f(), Matrix4f()
+            RenderSystem.getModelViewMatrixCopy(), Vector4f(1f, 1f, 1f, 1f), Vector3f(), Matrix4f()
         )
 
         val uniformBuffer = uniformStorage.writeUniform { buffer ->
@@ -52,15 +57,15 @@ class RoundRectPIPRenderer(bufferSource: MultiBufferSource.BufferSource)
                 .putVec4(state.outlineWidth * state.scale, 0f, 0f, 0f)                       // u_OutlineWidth (std140 padded)
         }
 
-        val vertexBuffer = CustomRenderPipelines.PIPELINE_ROUND_RECT.vertexFormat.uploadImmediateVertexBuffer(mesh.vertexBuffer())
-        val indexStorage = RenderSystem.getSequentialBuffer(mesh.drawState().mode())
+        val vertexBuffer = RenderSystem.getDevice().createBuffer({ "Odin Rounded Rectangle VB" }, GpuBuffer.USAGE_VERTEX, mesh.vertexBuffer())
+        val indexStorage = RenderSystem.getSequentialBuffer(mesh.drawState().primitiveTopology())
         val indexBuffer = indexStorage.getBuffer(mesh.drawState().indexCount())
-        val renderTarget = Minecraft.getInstance().mainRenderTarget
+        val renderTarget = mc.gameRenderer.mainRenderTarget()
 
         mesh.use {
             (RenderSystem.outputColorTextureOverride ?: renderTarget.colorTextureView)?.let { gpuTextureView ->
                 RenderSystem.getDevice().createCommandEncoder().createRenderPass(
-                    { "Odin Rounded Rectangle" }, gpuTextureView, OptionalInt.empty(),
+                    { "Odin Rounded Rectangle" }, gpuTextureView, Optional.empty(),
                     if (renderTarget.useDepth) Objects.requireNonNullElse(RenderSystem.outputDepthTextureOverride, renderTarget.depthTextureView) else null,
                     OptionalDouble.empty()
                 )
@@ -69,11 +74,13 @@ class RoundRectPIPRenderer(bufferSource: MultiBufferSource.BufferSource)
                 RenderSystem.bindDefaultUniforms(pass)
                 pass.setUniform("DynamicTransforms", dynamicTransforms)
                 pass.setUniform("u", uniformBuffer)
-                pass.setVertexBuffer(0, vertexBuffer)
+                pass.setVertexBuffer(0, vertexBuffer.slice())
                 pass.setIndexBuffer(indexBuffer, indexStorage.type())
-                pass.drawIndexed(0, 0, mesh.drawState().indexCount(), 1)
+                pass.drawIndexed(0, 0, mesh.drawState().indexCount(), 0, 1)
             }
         }
+        vertexBuffer.close()
+        byteBufferBuilder.close()
 
         lastState = state
     }
@@ -147,7 +154,7 @@ class RoundRectPIPRenderer(bufferSource: MultiBufferSource.BufferSource)
         fun clear() = uniformStorage.endFrame()
 
         fun submit(
-            context: GuiGraphics,
+            context: GuiGraphicsExtractor,
             x0: Int, y0: Int, x1: Int, y1: Int,
             topLeftColor: Int, topRightColor: Int, bottomRightColor: Int, bottomLeftColor: Int,
             topLeftRadius: Float, topRightRadius: Float, bottomRightRadius: Float, bottomLeftRadius: Float,
@@ -159,7 +166,7 @@ class RoundRectPIPRenderer(bufferSource: MultiBufferSource.BufferSource)
             val screenRect = ScreenRectangle(x0, y0, x1 - x0, y1 - y0).transformMaxBounds(pose)
             val bounds = if (scissor != null) scissor.intersection(screenRect) else screenRect
 
-            context.guiRenderState.submitPicturesInPictureState(
+            context.guiRenderState.addPicturesInPictureState(
                 State(
                     x0, y0, x1 - x0, y1 - y0,
                     topLeftColor, topRightColor, bottomRightColor, bottomLeftColor,

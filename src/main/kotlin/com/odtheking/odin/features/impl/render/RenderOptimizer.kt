@@ -13,6 +13,7 @@ import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket
 import net.minecraft.network.protocol.game.ClientboundSetEquipmentPacket
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.EntityType
+import net.minecraft.world.entity.EntityTypes
 import net.minecraft.world.entity.EquipmentSlot
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.Items
@@ -43,9 +44,9 @@ object RenderOptimizer : Module(
     init {
         onReceive<ClientboundAddEntityPacket> {
             when (type) {
-                EntityType.FALLING_BLOCK if hideFallingBlocks -> it.cancel()
-                EntityType.LIGHTNING_BOLT if hideLightning -> it.cancel()
-                EntityType.EXPERIENCE_ORB if hideExperienceOrbs -> it.cancel()
+                EntityTypes.FALLING_BLOCK if hideFallingBlocks -> it.cancel()
+                EntityTypes.LIGHTNING_BOLT if hideLightning -> it.cancel()
+                EntityTypes.EXPERIENCE_ORB if hideExperienceOrbs -> it.cancel()
             }
         }
 

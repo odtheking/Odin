@@ -17,7 +17,7 @@ import com.odtheking.odin.utils.ui.HoverHandler
 import com.odtheking.odin.utils.ui.animations.LinearAnimation
 import com.odtheking.odin.utils.ui.isAreaHovered
 import com.odtheking.odin.utils.ui.rendering.NVGRenderer
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.input.MouseButtonEvent
 
 class HUDSetting(
@@ -36,7 +36,7 @@ class HUDSetting(
         toggleable: Boolean,
         description: String,
         module: Module,
-        draw: GuiGraphics.(Boolean) -> Pair<Int, Int>
+        draw: GuiGraphicsExtractor.(Boolean) -> Pair<Int, Int>
     ) : this(name, HudElement(x, y, scale, !toggleable, draw), toggleable, description, module)
 
     override val default: HudElement = hud
@@ -86,7 +86,7 @@ class HUDSetting(
     override fun mouseClicked(mouseX: Float, mouseY: Float, click: MouseButtonEvent): Boolean {
         if (click.button() != 0) return false
         return if (isHovered) {
-            mc.setScreen(HudManager)
+            mc.setScreenAndShow(HudManager)
             true
         } else if (toggleable && isAreaHovered(lastX + width - 70f, lastY + getHeight() / 2f - 10f, 34f, 20f, true)) {
             toggleAnimation.start()

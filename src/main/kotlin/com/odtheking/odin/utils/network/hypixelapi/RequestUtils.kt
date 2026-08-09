@@ -46,7 +46,7 @@ object RequestUtils {
         val uuidData = getUuid(name).getOrElse { return Result.failure(Exception(it.cause)) }
 
         return fetchJson<HypixelData.ProfilesData>(getServer(EndPoint.GET, uuidData.id)).map { data ->
-            data.failed?.let { return Result.failure(Exception("Failed to get hypixel data: $it")) }
+            data.cause?.let { return Result.failure(Exception("Failed to get hypixel data: $it")) }
 
             HypixelData.PlayerInfo(data, uuidData.id, uuidData.name).also(::putPlayerInCache)
         }

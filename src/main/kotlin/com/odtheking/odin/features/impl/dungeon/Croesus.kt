@@ -18,7 +18,7 @@ import com.odtheking.odin.utils.render.text
 import com.odtheking.odin.utils.render.textDim
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import kotlinx.coroutines.launch
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 import net.minecraft.network.chat.Component
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket
@@ -51,7 +51,7 @@ object Croesus : Module(
     private val chestWarning by NumberSetting("Chest Warning Threshold", 55, 0, 60, desc = "Displays a warning in the chest profit HUD if the profit is below this amount.")
     private val refresh by ActionSetting("Refresh Prices", desc = "Manually refresh the cached prices used for profit calculations.") {
         scope.launch {
-            cachedPrices = fetchJson<Map<String, Double>>("https://api.odtheking.com/lb/lowestbins").getOrElse { OdinMod.logger.error("Failed to fetch lowest bin prices for Croesus module.", it); emptyMap() }
+            cachedPrices = fetchJson<Map<String, Double>>("https://lb.odtheking.com/averages/7day").getOrElse { OdinMod.logger.error("Failed to fetch lowest bin prices for Croesus module.", it); emptyMap() }
             modMessage("§aCroesus prices refreshed.")
         }
     }
@@ -60,6 +60,7 @@ object Croesus : Module(
     private var currentChestCount = 0
 
     private val chestNameRegex = Regex("^(Wood|Iron|Gold|Diamond|Emerald|Obsidian|Bedrock)(?: Chest)?$")
+    private val croesusScreenRegex = Regex("^(?:\\(\\d+/\\d+\\) )?Croesus$")
     private val previewEnchantedBookRegex = Regex("^Enchanted Book \\(?([\\w ]+) (\\w+)\\)$")
     private val chestPreviewScreenRegex = Regex("^(?:Master )?Catacombs - ([FloorVI\\d ]*)$")
     private val chestStatusRegex = Regex("^Opened Chest: (.+)$|^No more chests to open!$")
@@ -86,7 +87,7 @@ object Croesus : Module(
 
     init {
         scope.launch {
-            cachedPrices = fetchJson<Map<String, Double>>("https://api.odtheking.com/lb/averages/7day").getOrElse { OdinMod.logger.error("Failed to fetch lowest bin prices for Croesus module.", it); emptyMap() }
+            cachedPrices = fetchJson<Map<String, Double>>("https://lb.odtheking.com/averages/7day").getOrElse { OdinMod.logger.error("Failed to fetch lowest bin prices for Croesus module.", it); emptyMap() }
         }
 
         on<GuiEvent.DrawTooltip> {
@@ -105,7 +106,7 @@ object Croesus : Module(
         }
 
         on<GuiEvent.RenderSlot> {
-            if (screen.title.string == "Croesus" && slot.item.hoverName.string.equalsOneOf("The Catacombs", "Master Mode The Catacombs")) {
+            if (screen.title.string.matches(croesusScreenRegex) && slot.item.hoverName.string.equalsOneOf("The Catacombs", "Master Mode The Catacombs")) {
                 val loreString = slot.item.loreString
 
                 if (hideClaimed && loreString.any { it.matches(chestStatusRegex) } && (!includeKey || hasStrikeThrough("Dungeon Chest Key", slot.item.lore ))) cancel()
@@ -124,8 +125,8 @@ object Croesus : Module(
         }
 
         onReceive<ClientboundContainerSetSlotPacket> {
-            val screenTitle = mc.screen?.title?.string ?: return@onReceive
-            val menu = (mc.screen as? AbstractContainerScreen<*>)?.menu ?: return@onReceive
+            val screenTitle = mc.gui.screen()?.title?.string ?: return@onReceive
+            val menu = (mc.gui.screen() as? AbstractContainerScreen<*>)?.menu ?: return@onReceive
 
             when {
                 screenTitle.matches(chestNameRegex) -> handleChestContents(menu.items)
@@ -270,7 +271,7 @@ object Croesus : Module(
             }
         }
 
-    private fun GuiGraphics.drawOverlay(isEditing: Boolean): Pair<Int, Int> {
+    private fun GuiGraphicsExtractor.drawOverlay(isEditing: Boolean): Pair<Int, Int> {
         val dataToDisplay = if (isEditing) sampleChestData else chestData
         var yOffset = 0
         var maxWidth = 0

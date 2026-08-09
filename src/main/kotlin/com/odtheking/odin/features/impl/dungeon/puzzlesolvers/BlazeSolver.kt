@@ -19,7 +19,7 @@ object BlazeSolver {
     private var blazes = mutableListOf<ArmorStand>()
     private var roomType = 0
     private var lastBlazeCount = 10
-    private val blazeHealthRegex = Regex("^\\[Lv15] ♨ Blaze [\\d,]+/([\\d,]+)❤$")
+    private val blazeHealthRegex = Regex("^\\[Lv15]  Blaze [\\d,]+/([\\d,]+)❤$")
 
     fun getBlaze() {
         if (!DungeonUtils.inDungeons || DungeonUtils.currentRoom?.data?.name?.equalsOneOf("Lower Blaze", "Higher Blaze") == false) return

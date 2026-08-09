@@ -4,37 +4,36 @@ import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.render.DrawContextRenderer.CornerRadii
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.util.FormattedCharSequence
 import org.joml.Matrix3x2f
 import kotlin.math.atan2
 import kotlin.math.ceil
 import kotlin.math.hypot
-import kotlin.math.max
 
-fun GuiGraphics.text(text: String, x: Int, y: Int, color: Color = Colors.WHITE, shadow: Boolean = true) {
-    drawString(mc.font, text, x, y, color.rgba, shadow)
+fun GuiGraphicsExtractor.text(text: String, x: Int, y: Int, color: Color = Colors.WHITE, shadow: Boolean = true) {
+    text(mc.font, text, x, y, color.rgba, shadow)
 }
 
-fun GuiGraphics.textDim(text: String, x: Int, y: Int, color: Color = Colors.WHITE, shadow: Boolean = true): Pair<Int, Int> {
+fun GuiGraphicsExtractor.textDim(text: String, x: Int, y: Int, color: Color = Colors.WHITE, shadow: Boolean = true): Pair<Int, Int> {
     text(text, x, y, color, shadow)
     return mc.font.width(text) to mc.font.lineHeight
 }
 
-fun GuiGraphics.text(text: FormattedCharSequence, x: Int, y: Int, color: Color = Colors.WHITE, shadow: Boolean = true) {
-    drawString(mc.font, text, x, y, color.rgba, shadow)
+fun GuiGraphicsExtractor.text(text: FormattedCharSequence, x: Int, y: Int, color: Color = Colors.WHITE, shadow: Boolean = true) {
+    text(mc.font, text, x, y, color.rgba, shadow)
 }
 
 fun getStringWidth(text: String): Int = mc.font.width(text)
 
-fun GuiGraphics.hollowFill(x: Int, y: Int, width: Int, height: Int, thickness: Int, color: Color) {
+fun GuiGraphicsExtractor.hollowFill(x: Int, y: Int, width: Int, height: Int, thickness: Int, color: Color) {
     fill(x, y, x + width, y + thickness, color.rgba)
     fill(x, y + height - thickness, x + width, y + height, color.rgba)
     fill(x, y + thickness, x + thickness, y + height - thickness, color.rgba)
     fill(x + width - thickness, y + thickness, x + width, y + height - thickness, color.rgba)
 }
 
-fun GuiGraphics.drawLine(
+fun GuiGraphicsExtractor.drawLine(
     x1: Float,
     y1: Float,
     x2: Float,
@@ -44,21 +43,23 @@ fun GuiGraphics.drawLine(
 ) {
     val dx = x2 - x1
     val dy = y2 - y1
-
-    val half = max(1, (lineWidth / 2f).toInt())
+    val length = hypot(dx, dy)
 
     pose().pushMatrix()
     pose().translate(x1, y1)
     pose().mul(Matrix3x2f().identity().rotate(atan2(dy, dx)))
-    fill(0, -half, ceil(hypot(dx, dy)).toInt(), half, color.rgba)
+    pose().scale(1f, lineWidth)
+
+    fill(0, -1, ceil(length).toInt(), 1, color.rgba)
+
     pose().popMatrix()
 }
 
-fun GuiGraphics.roundedFill(x0: Int, y0: Int, x1: Int, y1: Int, color: Int, radius: Int) {
+fun GuiGraphicsExtractor.roundedFill(x0: Int, y0: Int, x1: Int, y1: Int, color: Int, radius: Int) {
     DrawContextRenderer.roundedFill(this, x0, y0, x1, y1, color, radius.toFloat())
 }
 
-fun GuiGraphics.roundedFill(x0: Int, y0: Int, x1: Int, y1: Int, color: Int, rl: Int, rr: Int, br: Int, bl: Int) {
+fun GuiGraphicsExtractor.roundedFill(x0: Int, y0: Int, x1: Int, y1: Int, color: Int, rl: Int, rr: Int, br: Int, bl: Int) {
     DrawContextRenderer.roundedFill(this, x0, y0, x1, y1, color, CornerRadii(rl.toFloat(), rr.toFloat(), br.toFloat(), bl.toFloat()))
 }
 
@@ -71,7 +72,7 @@ fun GuiGraphics.roundedFill(
     )
 }
 
-fun GuiGraphics.roundedOutline(
+fun GuiGraphicsExtractor.roundedOutline(
     x0: Int, y0: Int, x1: Int, y1: Int, outlineColor: Int,
     outlineWidth: Float, radius: Int = 0
 ) {

@@ -10,19 +10,10 @@ import java.nio.charset.StandardCharsets
 object JsonResourceLoader {
     val defaultGson: Gson = GsonBuilder().setPrettyPrinting().create()
 
-    inline fun <reified T> loadJson(
-        resourcePath: String,
-        defaultValue: T,
-        gsonBuilder: GsonBuilder? = null
-    ): T {
+    inline fun <reified T> loadJson(resourcePath: String, defaultValue: T, ): T {
         return try {
             val stream = JsonResourceLoader::class.java.getResourceAsStream(resourcePath) ?: throw IllegalStateException("Resource not found: $resourcePath")
-
-            val gson = gsonBuilder?.create() ?: defaultGson
-            val type = if (gsonBuilder != null) T::class.java
-            else object : TypeToken<T>() {}.type
-
-            InputStreamReader(stream, StandardCharsets.UTF_8).use { reader -> gson.fromJson(reader, type) }
+            InputStreamReader(stream, StandardCharsets.UTF_8).use { reader -> defaultGson.fromJson(reader, object : TypeToken<T>() {}.type) }
         } catch (e: Exception) {
             logger.error("Error loading $resourcePath", e)
             defaultValue

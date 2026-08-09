@@ -9,33 +9,35 @@ import net.minecraft.network.protocol.game.ClientboundSystemChatPacket
 import net.minecraft.world.entity.ai.attributes.Attributes
 import kotlin.math.floor
 
-object SkyblockPlayer {
-    /*
-    in module there should be:
-    health display current/Max
-    health bar
-    defense display
-    mana display current/Max
-    mana bar
-    current speed
-    current ehp
-    current overflow mana
-     */
-
-    private val HEALTH_REGEX = Regex("([\\d|,]+)/([\\d|,]+)❤")
-    private val MANA_REGEX = Regex("([\\d|,]+)/([\\d|,]+)✎")
-    private val OVERFLOW_MANA_REGEX = Regex("([\\d|,]+)ʬ")
-    private val DEFENSE_REGEX = Regex("([\\d|,]+)❈ Defense")
+object ActionBarListener {
+    private val HEALTH_REGEX = Regex("([\\d|,]+)/([\\d|,]+)\\uE010")
+    private val MANA_REGEX = Regex("([\\d|,]+)/([\\d|,]+)\\uE003")
+    private val OVERFLOW_MANA_REGEX = Regex("([\\d|,]+)\\uE017")
+    private val DEFENSE_REGEX = Regex("([\\d|,]+)\\uE008( Defense)?")
+    private val VITALITY_REGEX = Regex("([\\d.,]+)/([\\d.,]+)\\uE028")
 
     var currentHealth: Int = 0
         private set
     var maxHealth: Int = 0
+        private set
     var currentMana: Int = 0
+        private set
     var maxMana: Int = 0
+        private set
     var currentSpeed: Int = 0
+        private set
     var currentDefense: Int = 0
+        private set
     var overflowMana: Int = 0
+        private set
     var effectiveHP: Int = 0
+        private set
+    var currentVitality: Int = 0
+        private set
+    var maxVitality: Int = 0
+        private set
+    var isVitalityShown: Boolean = false
+        private set
 
     init {
         on<TickEvent.End> {
@@ -62,6 +64,13 @@ object SkyblockPlayer {
 
             DEFENSE_REGEX.find(msg)?.groupValues?.get(1)?.let {
                 currentDefense = it.replace(",", "").toIntOrNull() ?: currentDefense
+            }
+
+            val vitalityMatch = VITALITY_REGEX.find(msg)
+            isVitalityShown = vitalityMatch != null
+            vitalityMatch?.destructured?.let { (cVitality, mVitality) ->
+                currentVitality = cVitality.replace(",", "").toDoubleOrNull()?.toInt() ?: currentVitality
+                maxVitality = mVitality.replace(",", "").toDoubleOrNull()?.toInt() ?: maxVitality
             }
 
             effectiveHP = (currentHealth * (1 + currentDefense / 100))

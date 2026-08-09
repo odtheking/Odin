@@ -4,7 +4,7 @@ import com.odtheking.odin.utils.Color.Companion.alpha
 import com.odtheking.odin.utils.Color.Companion.blue
 import com.odtheking.odin.utils.Color.Companion.green
 import com.odtheking.odin.utils.Color.Companion.red
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 
 object DrawContextRenderer {
 
@@ -41,21 +41,21 @@ object DrawContextRenderer {
         val outline: OutlineStyle? = null
     )
 
-    fun roundedFill(context: GuiGraphics, x0: Int, y0: Int, x1: Int, y1: Int, color: Int, options: RoundedOptions = RoundedOptions())
+    fun roundedFill(context: GuiGraphicsExtractor, x0: Int, y0: Int, x1: Int, y1: Int, color: Int, options: RoundedOptions = RoundedOptions())
         = submitRoundedRect(context, x0, y0, x1, y1, color, color, color, color, options)
 
     fun roundedFill(
-        context: GuiGraphics, x0: Int, y0: Int, x1: Int, y1: Int,
+        context: GuiGraphicsExtractor, x0: Int, y0: Int, x1: Int, y1: Int,
         color: Int, radius: Float, outlineColor: Int = 0, outlineWidth: Float = 0.0f
     ) = roundedFill(context, x0, y0, x1, y1, color, RoundedOptions(CornerRadii.uniform(radius), outlineOrNull(outlineColor, outlineWidth)))
 
     fun roundedFill(
-        context: GuiGraphics, x0: Int, y0: Int, x1: Int, y1: Int,
+        context: GuiGraphicsExtractor, x0: Int, y0: Int, x1: Int, y1: Int,
         color: Int, radii: CornerRadii, outlineColor: Int = 0, outlineWidth: Float = 0.0f
     ) = roundedFill(context, x0, y0, x1, y1, color, RoundedOptions(radii, outlineOrNull(outlineColor, outlineWidth)))
 
     fun roundedOutline(
-        context: GuiGraphics, x0: Int, y0: Int, x1: Int, y1: Int,
+        context: GuiGraphicsExtractor, x0: Int, y0: Int, x1: Int, y1: Int,
         outlineColor: Int, outlineWidth: Float, radii: CornerRadii = CornerRadii.ZERO
     ) {
         val transparent = outlineColor and 0x00FFFFFF
@@ -67,12 +67,12 @@ object DrawContextRenderer {
     }
 
     fun roundedOutline(
-        context: GuiGraphics, x0: Int, y0: Int, x1: Int, y1: Int,
+        context: GuiGraphicsExtractor, x0: Int, y0: Int, x1: Int, y1: Int,
         outlineColor: Int, outlineWidth: Float, radius: Float
     ) = roundedOutline(context, x0, y0, x1, y1, outlineColor, outlineWidth, CornerRadii.uniform(radius))
 
     fun roundedFillGradient(
-        context: GuiGraphics, x0: Int, y0: Int, x1: Int, y1: Int,
+        context: GuiGraphicsExtractor, x0: Int, y0: Int, x1: Int, y1: Int,
         startColor: Int, endColor: Int, direction: GradientDirection = GradientDirection.LEFT_TO_RIGHT,
         options: RoundedOptions = RoundedOptions()
     ) {
@@ -81,7 +81,7 @@ object DrawContextRenderer {
     }
 
     fun roundedFillGradient(
-        context: GuiGraphics, x0: Int, y0: Int, x1: Int, y1: Int,
+        context: GuiGraphicsExtractor, x0: Int, y0: Int, x1: Int, y1: Int,
         startColor: Int, endColor: Int, direction: GradientDirection,
         radius: Float, outlineColor: Int = 0, outlineWidth: Float = 0f
     ) = roundedFillGradient(context, x0, y0, x1, y1, startColor, endColor, direction,
@@ -93,7 +93,7 @@ object DrawContextRenderer {
     }
 
     private fun submitRoundedRect(
-        guiGraphics: GuiGraphics,
+        guiGraphics: GuiGraphicsExtractor,
         x0: Int, y0: Int, x1: Int, y1: Int,
         topLeftColor: Int, topRightColor: Int, bottomRightColor: Int,
         bottomLeftColor: Int, options: RoundedOptions

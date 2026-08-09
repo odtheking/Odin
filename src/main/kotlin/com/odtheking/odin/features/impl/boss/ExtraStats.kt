@@ -3,7 +3,7 @@ package com.odtheking.odin.features.impl.boss
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.SelectorSetting
 import com.odtheking.odin.events.ChatPacketEvent
-import com.odtheking.odin.events.WorldEvent
+import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.*
@@ -127,7 +127,7 @@ object ExtraStats : Module(
             }
         }
 
-        on<WorldEvent.Load> {
+        on<LevelEvent.Load> {
             extraStats.reset()
         }
     }
@@ -136,11 +136,8 @@ object ExtraStats : Module(
         val defeatedText = if (extraStats.bossKilled == null) "§c§lFAILED §a- §e${DungeonUtils.dungeonTime}"
         else "§aDefeated §c${extraStats.bossKilled} §ain §e${DungeonUtils.dungeonTime}${if (extraStats.timePB) " §d§l(NEW RECORD!)" else ""}"
 
-        val passedRoomsText = "Passed rooms: \n${DungeonUtils.passedRooms.joinToString("\n") { room -> "§a${room.data.name}" }}"
-
-        val message = Component.literal(getChatBreak()).withStyle {
-            it.withHoverEvent(HoverEvent.ShowText(Component.literal(passedRoomsText)))
-        }   .append("\n\n")
+        val message = Component.literal(getChatBreak())
+            .append("\n\n")
             .append(getCenteredText((if (DungeonUtils.floor?.isMM == true) "§cMaster Mode" else "§cThe Catacombs") + " §r- §e${DungeonUtils.floor?.name}"))
             .append("\n\n")
             .append(getCenteredText(defeatedText))
@@ -190,13 +187,7 @@ object ExtraStats : Module(
             ).append("\n")
         }
 
-        message.append("\n")
-            .append(
-                Component.literal(getChatBreak()).withStyle {
-                    it.withClickEvent(ClickEvent.SuggestCommand(passedRoomsText))
-                        .withHoverEvent(HoverEvent.ShowText(Component.literal(passedRoomsText)))
-                }
-            )
+        message.append("\n").append(Component.literal(getChatBreak()))
 
         modMessage(message, "")
     }

@@ -6,12 +6,12 @@ import com.odtheking.odin.events.RoomEnterEvent
 import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.Color.Companion.withAlpha
 import com.odtheking.odin.utils.Colors
+import com.odtheking.odin.utils.center
 import com.odtheking.odin.utils.getBlockBounds
 import com.odtheking.odin.utils.isXZInterceptable
 import com.odtheking.odin.utils.render.drawFilledBox
 import com.odtheking.odin.utils.render.drawTracer
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
-import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils.getRealCoords
 import net.minecraft.core.BlockPos
 import net.minecraft.network.protocol.game.ClientboundPlayerPositionPacket
 import net.minecraft.util.Mth

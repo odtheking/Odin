@@ -7,7 +7,7 @@ import com.odtheking.odin.clickgui.settings.impl.ColorSetting
 import com.odtheking.odin.events.BlockUpdateEvent
 import com.odtheking.odin.events.ChatPacketEvent
 import com.odtheking.odin.events.RenderEvent
-import com.odtheking.odin.events.WorldEvent
+import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.features.Module
@@ -20,6 +20,7 @@ import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.skyblock.dungeon.M7Phases
 import net.minecraft.core.BlockPos
 import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket
+import net.minecraft.world.item.DyeColor
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.Vec3
@@ -65,11 +66,11 @@ object ArrowsDevice : Module(
         on<BlockUpdateEvent> {
             if (DungeonUtils.getF7Phase() != M7Phases.P3 || !devicePositions.contains(pos)) return@on
 
-            if (old.block == Blocks.EMERALD_BLOCK && updated.block == Blocks.BLUE_TERRACOTTA) {
+            if (old.block == Blocks.EMERALD_BLOCK && updated.block == Blocks.DYED_TERRACOTTA.pick(DyeColor.BLUE)) {
                 markedPositions.add(pos.immutable())
                 if (targetPosition == pos) targetPosition = null
                 if (showAimPositions) optimalAimPositions = calculateOptimalAimPositions(pos)
-            } else if (old.block == Blocks.BLUE_TERRACOTTA && updated.block == Blocks.EMERALD_BLOCK) {
+            } else if (old.block == Blocks.DYED_TERRACOTTA.pick(DyeColor.BLUE) && updated.block == Blocks.EMERALD_BLOCK) {
                 markedPositions.remove(pos)
                 targetPosition = pos.immutable()
                 if (showAimPositions) optimalAimPositions = calculateOptimalAimPositions(pos)
@@ -95,7 +96,7 @@ object ArrowsDevice : Module(
             }
         }
 
-        on<WorldEvent.Load> {
+        on<LevelEvent.Load> {
             markedPositions.clear()
             targetPosition = null
             isDeviceComplete = false

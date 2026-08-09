@@ -15,7 +15,7 @@ import net.minecraft.world.level.Level
 
 object Mimic : Module(
     name = "Mimic",
-    description = "Highlights and announces mimic kills in dungeons."
+    description = "Announces Mimic, Prince and Bat kills in dungeons."
 ) {
     private val mimicMessageToggle by BooleanSetting("Send Mimic Message", true, desc = "Toggles the mimic killed message.")
     private val reset by ActionSetting("Mimic Killed", desc = "Sends Mimic killed message in party chat.") { mimicKilled() }
@@ -23,7 +23,11 @@ object Mimic : Module(
     private val princeMessageToggle by BooleanSetting("Send Prince Message", true, desc = "Toggles the prince killed message.")
     private val princeReset by ActionSetting("Prince Killed", desc = "Sends Prince killed message in party chat.") { princeKilled() }
 
+    private val batMessageToggle by BooleanSetting("Send Bat Message", true, desc = "Toggles the bat killed message.")
+    private val batReset by ActionSetting("Bat Killed", desc = "Sends Bat killed message in party chat.") { batKilled() }
+
     private val princeRegex = Regex("^A Prince falls\\. \\+1 Bonus Score$")
+    private val batRegex = Regex("^A Bat has been slain\\. \\+1 Bonus Score$")
 
     init {
         onReceive<ClientboundEntityEventPacket> {
@@ -38,11 +42,12 @@ object Mimic : Module(
 
         on<ChatPacketEvent> {
             if (value.matches(princeRegex)) princeKilled()
+            if (value.matches(batRegex)) batKilled()
         }
     }
 
     private fun mimicKilled() {
-        if (DungeonUtils.mimicKilled || DungeonUtils.inBoss) return
+        if (DungeonUtils.mimicKilled || !DungeonUtils.inClear) return
         if (mimicMessageToggle) sendCommand("pc Mimic Killed!")
         DungeonListener.dungeonStats.mimicKilled = true
     }
@@ -51,5 +56,11 @@ object Mimic : Module(
         if (DungeonUtils.princeKilled || !DungeonUtils.inClear) return
         if (princeMessageToggle) sendCommand("pc Prince Killed!")
         DungeonListener.dungeonStats.princeKilled = true
+    }
+
+    private fun batKilled() {
+        if (DungeonUtils.batKilled || !DungeonUtils.inClear) return
+        if (batMessageToggle) sendCommand("pc Bat Killed!")
+        DungeonListener.dungeonStats.batKilled = true
     }
 }

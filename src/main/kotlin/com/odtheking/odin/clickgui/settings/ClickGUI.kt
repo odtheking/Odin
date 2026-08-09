@@ -13,7 +13,7 @@ import com.odtheking.odin.utils.ui.mouseX
 import com.odtheking.odin.utils.ui.mouseY
 import com.odtheking.odin.utils.ui.rendering.NVGPIPRenderer
 import com.odtheking.odin.utils.ui.rendering.NVGRenderer
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.screens.Screen
 import net.minecraft.client.input.CharacterEvent
 import net.minecraft.client.input.KeyEvent
@@ -35,7 +35,7 @@ object ClickGUI : Screen(Component.literal("Click GUI")) {
     val gray38 = Color(38, 38, 38)
     val gray26 = Color(26, 26, 26)
 
-    override fun render(context: GuiGraphics, mouseX: Int, mouseY: Int, deltaTicks: Float) {
+    override fun extractRenderState(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, deltaTicks: Float) {
         NVGPIPRenderer.draw(context, 0, 0, context.guiWidth(), context.guiHeight()) {
             val scaledMouseX = com.odtheking.odin.utils.ui.mouseX / ClickGUIModule.getStandardGuiScale()
             val scaledMouseY = com.odtheking.odin.utils.ui.mouseY / ClickGUIModule.getStandardGuiScale()
@@ -68,7 +68,7 @@ object ClickGUI : Screen(Component.literal("Click GUI")) {
 
             desc.render()
         }
-        super.render(context, mouseX, mouseY, deltaTicks)
+        super.extractRenderState(context, mouseX, mouseY, deltaTicks)
     }
 
     override fun mouseScrolled(

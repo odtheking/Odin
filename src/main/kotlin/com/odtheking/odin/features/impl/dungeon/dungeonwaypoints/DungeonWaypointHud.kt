@@ -7,10 +7,10 @@ import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.render.textDim
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.toFixed
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.world.phys.AABB
 
-internal fun GuiGraphics.drawWaypointEditorHud(example: Boolean): Pair<Int, Int> {
+internal fun GuiGraphicsExtractor.drawWaypointEditorHud(example: Boolean): Pair<Int, Int> {
     if (example) {
         return drawEditorHud(
             title = "§fEditing Waypoints §8|§f Placing",
@@ -33,10 +33,10 @@ internal fun GuiGraphics.drawWaypointEditorHud(example: Boolean): Pair<Int, Int>
     )
 }
 
-private fun GuiGraphics.drawEditorHud(title: String, text: String, color: Color): Pair<Int, Int> {
+private fun GuiGraphicsExtractor.drawEditorHud(title: String, text: String, color: Color): Pair<Int, Int> {
     val textWidth = textDim(text, 0, 10, color).first
 
-    drawCenteredString(mc.font, title, textWidth / 2, 0, Colors.WHITE.rgba)
+    centeredText(mc.font, title, textWidth / 2, 0, Colors.WHITE.rgba)
     return textWidth to 19
 }
 

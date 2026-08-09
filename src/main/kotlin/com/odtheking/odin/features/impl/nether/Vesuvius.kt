@@ -9,7 +9,7 @@ import com.odtheking.odin.features.impl.dungeon.Croesus.cachedPrices
 import com.odtheking.odin.utils.*
 import com.odtheking.odin.utils.render.text
 import net.minecraft.ChatFormatting
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.Style
 import net.minecraft.network.chat.TextColor
@@ -73,7 +73,7 @@ object Vesuvius : Module(
         }
 
         onReceive<ClientboundContainerSetSlotPacket> {
-            val title = mc.screen?.title?.string ?:return@onReceive
+            val title = mc.gui.screen()?.title?.string ?:return@onReceive
             if (!title.matches(chestRegex)) return@onReceive
             if (slot == 31 && item.item == Items.CHEST) handleKuudraChest(item)
             if (slot == 14 && item.item == Items.PLAYER_HEAD) handleKuudraChest(item)
@@ -176,7 +176,7 @@ object Vesuvius : Module(
         currentChest = ChestData(chestItems, chestCost, (profit - chestCost))
     }
 
-    private fun GuiGraphics.drawOverlay(isEditing: Boolean): Pair<Int, Int> {
+    private fun GuiGraphicsExtractor.drawOverlay(isEditing: Boolean): Pair<Int, Int> {
         val dataToDisplay = if (isEditing) sampleChestData else currentChest
         var yOffset = 0
         val maxWidth = 251
@@ -187,7 +187,7 @@ object Vesuvius : Module(
         dataToDisplay?.items?.forEach { item ->
             val price: String = "%,.0f".format(item.price)
 
-            drawString(mc.font,item.name, 0, yOffset, -1)
+            text(mc.font,item.name, 0, yOffset, -1)
             text(price, maxWidth - mc.font.width(price), yOffset, Colors.MINECRAFT_GRAY)
 
             yOffset += 9

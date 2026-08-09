@@ -4,27 +4,25 @@ import com.odtheking.odin.commands.*
 import com.odtheking.odin.events.EventDispatcher
 import com.odtheking.odin.events.core.EventBus
 import com.odtheking.odin.features.ModuleManager
+import com.odtheking.odin.features.impl.dungeon.map.DungeonScan
 import com.odtheking.odin.features.impl.render.Shenanigans
 import com.odtheking.odin.utils.IrisCompatability
 import com.odtheking.odin.utils.ServerUtils
 import com.odtheking.odin.utils.handlers.TickTasks
-import com.odtheking.odin.utils.network.WebUtils.postData
 import com.odtheking.odin.utils.render.ItemStateRenderer
 import com.odtheking.odin.utils.render.RenderBatchManager
 import com.odtheking.odin.utils.render.RoundRectPIPRenderer
 import com.odtheking.odin.utils.skyblock.*
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonListener
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
-import com.odtheking.odin.utils.skyblock.dungeon.ScanUtils
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalUtils
 import com.odtheking.odin.utils.ui.rendering.NVGPIPRenderer
 import com.odtheking.odin.utils.ui.widget.CustomGUIImpl
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.launch
 import net.fabricmc.api.ClientModInitializer
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback
-import net.fabricmc.fabric.api.client.rendering.v1.SpecialGuiElementRegistry
+import net.fabricmc.fabric.api.client.rendering.v1.PictureInPictureRendererRegistry
 import net.fabricmc.loader.api.FabricLoader
 import net.fabricmc.loader.api.Version
 import net.minecraft.client.Minecraft
@@ -63,7 +61,7 @@ object OdinMod : ClientModInitializer {
     override fun onInitializeClient() {
         ClientCommandRegistrationCallback.EVENT.register { dispatcher, _ ->
             arrayOf(
-                mainCommand, petCommand, devCommand, waypointCommand,
+                mainCommand, devCommand, waypointCommand,
                 soopyCommand, termSimCommand, posMsgCommand,
                 dungeonWaypointsCommand, cataCommand
             ).forEach { commodore -> commodore.register(dispatcher) }
@@ -71,28 +69,17 @@ object OdinMod : ClientModInitializer {
 
         listOf(
             this, LocationUtils, TickTasks, KuudraUtils,
-            SkyblockPlayer, ServerUtils, EventDispatcher,
+            ActionBarListener, ServerUtils, EventDispatcher,
             DungeonListener, PartyUtils, TerminalUtils,
-            ScanUtils, DungeonUtils, SplitsManager,
+            DungeonUtils, SplitsManager, DungeonScan,
             IrisCompatability, RenderBatchManager,
-            ModuleManager, CustomGUIImpl, Shenanigans
+            ModuleManager, CustomGUIImpl, Shenanigans,
         ).forEach { EventBus.subscribe(it) }
 
-        SpecialGuiElementRegistry.register { context ->
-            NVGPIPRenderer(context.vertexConsumers())
-        }
+        PictureInPictureRendererRegistry.register { NVGPIPRenderer() }
 
-        SpecialGuiElementRegistry.register { context ->
-            RoundRectPIPRenderer(context.vertexConsumers())
-        }
+        PictureInPictureRendererRegistry.register { RoundRectPIPRenderer() }
 
-        SpecialGuiElementRegistry.register { context ->
-            ItemStateRenderer(context.vertexConsumers())
-        }
-
-        val name = mc.user.name.takeIf { !it.matches(Regex("Player\\d{2,3}")) } ?: return
-        scope.launch {
-            postData("https://api.odtheking.com/tele/", """{"username": "$name", "version": "Fabric $version"}""")
-        }
+        PictureInPictureRendererRegistry.register { ItemStateRenderer() }
     }
 }

@@ -9,7 +9,7 @@ import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.ServerUtils
 import com.odtheking.odin.utils.render.textDim
 import com.odtheking.odin.utils.toFixed
-import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.client.gui.GuiGraphicsExtractor
 
 object PerformanceHUD : Module(
     name = "Performance HUD",
@@ -47,7 +47,7 @@ object PerformanceHUD : Module(
         width to if (direction == HORIZONTAL) lineHeight else height
     }
 
-    private fun GuiGraphics.drawText(name: String, value: String, x: Int, y: Int): Int {
+    private fun GuiGraphicsExtractor.drawText(name: String, value: String, x: Int, y: Int): Int {
         var width = 0
         width += textDim(name, x, y, nameColor, true).first
         width += textDim(value, x + width, y, valueColor, true).first

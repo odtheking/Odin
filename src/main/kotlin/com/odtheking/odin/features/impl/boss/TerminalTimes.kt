@@ -5,7 +5,7 @@ import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.events.ChatPacketEvent
 import com.odtheking.odin.events.TerminalEvent
 import com.odtheking.odin.events.TickEvent
-import com.odtheking.odin.events.WorldEvent
+import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.features.impl.boss.termsim.TermSimGUI
@@ -41,8 +41,8 @@ object TerminalTimes : Module(
 
     init {
         on<TerminalEvent.Solve> {
-            val pbs = if (mc.screen is TermSimGUI) TerminalSimulator.termSimPBs else terminalPBs
-            pbs.time(terminal.type.name, (System.currentTimeMillis() - terminal.timeOpened) / 1000f, "s§7!", "§a${terminal.type.termName}${if (mc.screen is TermSimGUI) " §7(termsim)" else ""} §7solved in §6", sendMessage = terminalTimes)
+            val pbs = if (mc.gui.screen() is TermSimGUI) TerminalSimulator.termSimPBs else terminalPBs
+            pbs.time(terminal.type.name, (System.currentTimeMillis() - terminal.timeOpened) / 1000f, "s§7!", "§a${terminal.type.termName}${if (mc.gui.screen() is TermSimGUI) " §7(termsim)" else ""} §7solved in §6", sendMessage = terminalTimes)
         }
 
         on<ChatPacketEvent> {
@@ -73,7 +73,7 @@ object TerminalTimes : Module(
             if (terminalSplits && !useRealTime) currentTick += 50
         }
 
-        on<WorldEvent.Load> {
+        on<LevelEvent.Load> {
             resetSection(true)
         }
     }

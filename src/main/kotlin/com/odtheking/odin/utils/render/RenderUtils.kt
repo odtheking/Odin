@@ -10,16 +10,18 @@ import com.odtheking.odin.features.impl.dungeon.dungeonwaypoints.DungeonWaypoint
 import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.Color.Companion.multiplyAlpha
 import com.odtheking.odin.utils.addVec
-import com.odtheking.odin.utils.renderPos
+import com.odtheking.odin.utils.center
 import com.odtheking.odin.utils.unaryMinus
 import it.unimi.dsi.fastutil.objects.ObjectArrayList
 import net.minecraft.client.gui.Font
-import net.minecraft.client.renderer.LightTexture
-import net.minecraft.client.renderer.MultiBufferSource
+import net.minecraft.client.renderer.SubmitNodeCollector
 import net.minecraft.client.renderer.rendertype.RenderTypes
+import net.minecraft.network.chat.Style
+import net.minecraft.util.FormattedCharSequence
 import net.minecraft.client.renderer.texture.OverlayTexture
 import net.minecraft.core.BlockPos
 import net.minecraft.resources.Identifier
+import net.minecraft.util.LightCoordsUtil
 import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.Vec3
 import org.joml.Vector3f
@@ -60,20 +62,20 @@ object RenderBatchManager {
 
     init {
         on<RenderEvent.Last> {
-            val matrix = context.matrices()
-            val bufferSource = context.consumers() as? MultiBufferSource.BufferSource ?: return@on
-            val camera = mc.gameRenderer.mainCamera.position()
+            val poseStack = context.poseStack()
+            val collector = context.submitNodeCollector()
+            val camera = mc.gameRenderer.mainCamera().position()
 
-            matrix.pushPose()
-            matrix.translate(-camera.x, -camera.y, -camera.z)
+            poseStack.pushPose()
+            poseStack.translate(-camera.x, -camera.y, -camera.z)
 
-            matrix.renderQueuedLinesAndWireBoxes(renderConsumer.lines, renderConsumer.wireBoxes, bufferSource)
-            matrix.renderQueuedFilledBoxes(renderConsumer.filledBoxes, bufferSource)
-            matrix.renderQueuedTexturedQuads(renderConsumer.texturedQuads, bufferSource)
-            matrix.popPose()
+            poseStack.renderQueuedLinesAndWireBoxes(renderConsumer.lines, renderConsumer.wireBoxes, collector)
+            poseStack.renderQueuedFilledBoxes(renderConsumer.filledBoxes, collector)
+            poseStack.renderQueuedTexturedQuads(renderConsumer.texturedQuads, collector)
+            poseStack.popPose()
 
-            matrix.renderQueuedBeaconBeams(renderConsumer.beaconBeams, camera)
-            matrix.renderQueuedTexts(renderConsumer.texts, bufferSource, camera)
+            poseStack.renderQueuedBeaconBeams(renderConsumer.beaconBeams, collector, camera)
+            poseStack.renderQueuedTexts(renderConsumer.texts, collector, camera)
             renderConsumer.clear()
 
             RoundRectPIPRenderer.clear()
@@ -128,77 +130,77 @@ fun RenderEvent.Extract.drawTexturedQuad(
 
 private fun PoseStack.renderQueuedTexturedQuads(
     quads: List<TexturedQuadData>,
-    bufferSource: MultiBufferSource.BufferSource
+    collector: SubmitNodeCollector
 ) {
     if (quads.isEmpty()) return
-    val last = this.last()
 
     for (quad in quads) {
-        val buffer = bufferSource.getBuffer(RenderTypes.entityCutoutNoCullZOffset(quad.texture))
+        collector.submitCustomGeometry(this, RenderTypes.entityCutout(quad.texture)) { pose, buffer ->
+            fun vertex(p: Vec3, u: Float, v: Float) {
+                buffer.addVertex(pose, p.x.toFloat(), p.y.toFloat(), p.z.toFloat())
+                    .setColor(quad.color)
+                    .setUv(u, v)
+                    .setOverlay(OverlayTexture.NO_OVERLAY)
+                    .setUv2(LightCoordsUtil.FULL_BRIGHT, LightCoordsUtil.FULL_BRIGHT)
+                    .setNormal(pose, quad.nx, quad.ny, quad.nz)
+            }
 
-        fun vertex(p: Vec3, u: Float, v: Float) {
-            buffer.addVertex(last, p.x.toFloat(), p.y.toFloat(), p.z.toFloat())
-                .setColor(quad.color)
-                .setUv(u, v)
-                .setOverlay(OverlayTexture.NO_OVERLAY)
-                .setUv2(LightTexture.FULL_BRIGHT, LightTexture.FULL_BRIGHT)
-                .setNormal(last, quad.nx, quad.ny, quad.nz)
+            vertex(quad.bl, 0f, 1f)
+            vertex(quad.tl, 0f, 0f)
+            vertex(quad.tr, 1f, 0f)
+            vertex(quad.br, 1f, 1f)
         }
-
-        vertex(quad.bl, 0f, 1f)
-        vertex(quad.tl, 0f, 0f)
-        vertex(quad.tr, 1f, 0f)
-        vertex(quad.br, 1f, 1f)
     }
 }
 
 private fun PoseStack.renderQueuedLinesAndWireBoxes(
     lines: List<LineData>,
     wireBoxes: List<BoxData>,
-    bufferSource: MultiBufferSource.BufferSource
+    collector: SubmitNodeCollector
 ) {
     if (lines.isEmpty() && wireBoxes.isEmpty()) return
-    val last = this.last()
 
     for (line in lines) {
         val dirX = line.to.x - line.from.x
         val dirY = line.to.y - line.from.y
         val dirZ = line.to.z - line.from.z
-        val buffer = bufferSource.getBuffer(line.renderType())
 
-        PrimitiveRenderer.renderVector(
-            last, buffer,
-            Vector3f(line.from.x.toFloat(), line.from.y.toFloat(), line.from.z.toFloat()),
-            Vec3(dirX, dirY, dirZ),
-            line.color1, line.color2, line.thickness
-        )
+        collector.submitCustomGeometry(this, line.renderType()) { pose, buffer ->
+            PrimitiveRenderer.renderVector(
+                pose, buffer,
+                Vector3f(line.from.x.toFloat(), line.from.y.toFloat(), line.from.z.toFloat()),
+                Vec3(dirX, dirY, dirZ),
+                line.color1, line.color2, line.thickness
+            )
+        }
     }
 
     for (box in wireBoxes) {
-        val buffer = bufferSource.getBuffer(box.lineRenderType())
-        PrimitiveRenderer.renderLineBox(
-            last, buffer, box.aabb,
-            box.r, box.g, box.b, box.a, box.thickness
-        )
+        collector.submitCustomGeometry(this, box.lineRenderType()) { pose, buffer ->
+            PrimitiveRenderer.renderLineBox(
+                pose, buffer, box.aabb,
+                box.r, box.g, box.b, box.a, box.thickness
+            )
+        }
     }
 }
 
-private fun PoseStack.renderQueuedFilledBoxes(consumer: List<BoxData>, bufferSource: MultiBufferSource.BufferSource) {
+private fun PoseStack.renderQueuedFilledBoxes(consumer: List<BoxData>, collector: SubmitNodeCollector) {
     if (consumer.isEmpty()) return
-    val last = this.last()
 
     for (box in consumer) {
-        val buffer = bufferSource.getBuffer(box.filledRenderType())
-        PrimitiveRenderer.addChainedFilledBoxVertices(
-            last, buffer,
-            box.aabb.minX.toFloat(), box.aabb.minY.toFloat(), box.aabb.minZ.toFloat(),
-            box.aabb.maxX.toFloat(), box.aabb.maxY.toFloat(), box.aabb.maxZ.toFloat(),
-            box.r, box.g, box.b, box.a
-        )
+        collector.submitCustomGeometry(this, box.filledRenderType()) { pose, buffer ->
+            PrimitiveRenderer.addChainedFilledBoxVertices(
+                pose, buffer,
+                box.aabb.minX.toFloat(), box.aabb.minY.toFloat(), box.aabb.minZ.toFloat(),
+                box.aabb.maxX.toFloat(), box.aabb.maxY.toFloat(), box.aabb.maxZ.toFloat(),
+                box.r, box.g, box.b, box.a
+            )
+        }
     }
 }
 
-private fun PoseStack.renderQueuedBeaconBeams(consumer: List<BeaconData>, camera: Vec3) {
+private fun PoseStack.renderQueuedBeaconBeams(consumer: List<BeaconData>, collector: SubmitNodeCollector, camera: Vec3) {
     for (beacon in consumer) {
         pushPose()
         translate(beacon.pos.x - camera.x, beacon.pos.y - camera.y, beacon.pos.z - camera.z)
@@ -213,7 +215,7 @@ private fun PoseStack.renderQueuedBeaconBeams(consumer: List<BeaconData>, camera
 
         BeaconBeamAccessor.invokeRenderBeam(
             this,
-            mc.gameRenderer.featureRenderDispatcher.submitNodeStorage,
+            collector,
             BEAM_TEXTURE,
             1f,
             beacon.gameTime.toFloat(),
@@ -227,23 +229,29 @@ private fun PoseStack.renderQueuedBeaconBeams(consumer: List<BeaconData>, camera
     }
 }
 
-private fun PoseStack.renderQueuedTexts(consumer: List<TextData>, bufferSource: MultiBufferSource.BufferSource, camera: Vec3) {
+private fun PoseStack.renderQueuedTexts(consumer: List<TextData>, collector: SubmitNodeCollector, camera: Vec3) {
     val cameraPos = -camera
 
     for (textData in consumer) {
         pushPose()
-        val pose = last().pose()
         val scaleFactor = textData.scale * 0.025f
 
-        pose.translate(textData.pos.toVector3f())
+        last().pose()
+            .translate(textData.pos.toVector3f())
             .translate(cameraPos.x.toFloat(), cameraPos.y.toFloat(), cameraPos.z.toFloat())
             .rotate(textData.cameraRotation)
             .scale(scaleFactor, -scaleFactor, scaleFactor)
 
-        textData.font.drawInBatch(
-            textData.text, -textData.textWidth / 2f, 0f, -1, true, pose, bufferSource,
+        // NOTE(26.2 port): Font.drawInBatch was removed; text is now submitted through the
+        // SubmitNodeCollector. The trailing int args (color / backgroundColor / outline / light)
+        // ordering should be verified in-game.
+        collector.submitText(
+            this,
+            -textData.textWidth / 2f, 0f,
+            FormattedCharSequence.forward(textData.text, Style.EMPTY),
+            true,
             if (textData.depth) Font.DisplayMode.POLYGON_OFFSET else Font.DisplayMode.SEE_THROUGH,
-            0, LightTexture.FULL_BRIGHT
+            -1, 0, 0, LightCoordsUtil.FULL_BRIGHT
         )
 
         popPose()
@@ -251,10 +259,8 @@ private fun PoseStack.renderQueuedTexts(consumer: List<TextData>, bufferSource: 
 }
 
 fun RenderEvent.Extract.drawTracer(to: Vec3, color: Color, depth: Boolean, thickness: Float = 3f) {
-    val from = mc.player?.let { player ->
-        player.renderPos.add(player.forward.add(0.0, player.eyeHeight.toDouble(), 0.0))
-    } ?: return
-    drawLine(listOf(from, to), color, depth, thickness)
+    val cam = mc.gameRenderer.gameRenderState().levelRenderState.cameraRenderState
+    drawLine(listOf(cam.pos.add(Vec3.directionFromRotation(cam.xRot, cam.yRot)), to), color, depth, thickness)
 }
 
 fun RenderEvent.Extract.drawLine(points: Collection<Vec3>, color: Color, depth: Boolean, thickness: Float = 3f) {
@@ -313,7 +319,7 @@ fun RenderEvent.Extract.drawBeaconBeam(position: BlockPos, color: Color) {
 }
 
 fun RenderEvent.Extract.drawText(text: String, pos: Vec3, scale: Float, depth: Boolean) {
-    val cameraRotation = mc.gameRenderer.mainCamera.rotation()
+    val cameraRotation = mc.gameRenderer.mainCamera().rotation()
     val font = mc.font
     val textWidth = font.width(text).toFloat()
 

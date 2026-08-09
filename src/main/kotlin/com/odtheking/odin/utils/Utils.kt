@@ -15,7 +15,7 @@ import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.HoverEvent
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.player.Player
-import net.minecraft.world.inventory.ClickType
+import net.minecraft.world.inventory.ContainerInput
 import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.Vec3
 import java.util.*
@@ -171,8 +171,8 @@ fun BlockPos.getBlockBounds() =
         level.getBlockState(this).getShape(level, this).singleEncompassing().takeIf { !it.isEmpty }?.bounds()
     }
 
-fun Player.clickSlot(containerId: Int, slotIndex: Int, button: Int = 0, clickType: ClickType = ClickType.PICKUP) {
-    mc.gameMode?.handleInventoryMouseClick(containerId, slotIndex, button, clickType, this)
+fun Player.clickSlot(containerId: Int, slotIndex: Int, button: Int = 0, containerInput: ContainerInput = ContainerInput.PICKUP) {
+    mc.gameMode?.handleContainerInput(containerId, slotIndex, button, containerInput, this)
 }
 
 fun formatNumber(numStr: String): String {

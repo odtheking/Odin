@@ -29,12 +29,12 @@ object WebUtils {
     suspend fun fetchString(url: String): Result<String> =
         executeRequest(createGetRequest(url))
             .mapCatching { response -> response.body() }
-            .onFailure { logger.warn("Failed to fetch from $url: ${it.message}") }
+            .onFailure { logger.warn("Failed to fetch from $url: ${it.message} ${it.cause}") }
 
     suspend fun getInputStream(url: String): Result<InputStream> =
         executeRequest(createGetRequest(url))
             .map { response -> response.body().byteInputStream() }
-            .onFailure { logger.warn("Failed to get input stream from $url: ${it.message}") }
+            .onFailure { logger.warn("Failed to get input stream from $url: ${it.message} ${it.cause}") }
 
     suspend fun postData(url: String, body: String): Result<String> =
         executeRequest(
@@ -79,7 +79,7 @@ object WebUtils {
                 if (!cont.isActive) return@whenComplete
 
                 if (response.statusCode() in 200..299) cont.resume(Result.success(response))
-                else cont.resume(Result.failure(InputStreamException(response.statusCode(), request.uri().toString())))
+                else cont.resume(Result.failure(InputStreamException(response.body(), request.uri().toString())))
             }
         }
     }
@@ -90,5 +90,5 @@ object WebUtils {
         return mayor.get("name")?.asString == "Paul" && mayor.getAsJsonArray("perks")?.any { it.asJsonObject.get("name")?.asString == "EZPZ" } == true
     }
 
-    class InputStreamException(code: Int, url: String) : Exception("Failed to get input stream from $url: HTTP $code")
+    class InputStreamException(body: String, link: String) : Exception("$body : $link")
 }

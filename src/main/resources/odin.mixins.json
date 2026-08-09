@@ -7,7 +7,6 @@
     "defaultRequire": 1
   },
   "client": [
-    "accessors.AbstractContainerScreenAccessor",
     "accessors.BeaconBeamAccessor",
     "mixins.AbstractContainerScreenMixin",
     "mixins.AvatarRendererMixin",
@@ -23,11 +22,11 @@
     "mixins.LocalPlayerMixin",
     "mixins.MinecraftMixin",
     "mixins.MouseHandlerMixin",
+    "mixins.MultiPlayerGameModeMixin",
     "mixins.ScreenEffectRendererMixin",
     "mixins.ScreenMixin"
   ],
   "mixins": [
-    "accessors.ServerboundInteractPacketAccessor",
     "mixins.ConnectionMixin",
     "mixins.EntityMixin",
     "mixins.LevelChunkMixin",
