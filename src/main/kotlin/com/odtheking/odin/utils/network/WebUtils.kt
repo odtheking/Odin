@@ -6,6 +6,7 @@ import com.google.gson.JsonObject
 import com.odtheking.odin.OdinMod.logger
 import kotlinx.coroutines.suspendCancellableCoroutine
 import java.io.InputStream
+import java.io.IOException
 import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
@@ -60,28 +61,7 @@ object WebUtils {
             .build()
 
     private suspend fun executeRequest(request: HttpRequest): Result<HttpResponse<String>> = suspendCancellableCoroutine { cont ->
-        logger.info("Making request to ${request.uri()}")
-
-        val future = httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString())
-
-        cont.invokeOnCancellation {
-            logger.info("Cancelling request to ${request.uri()}")
-            future.cancel(true)
-        }
-
-        future.whenComplete { response, error ->
-            if (error != null) {
-                if (cont.isActive) {
-                    logger.warn("Request failed for ${request.uri()}: ${error.message}")
-                    cont.resume(Result.failure(error))
-                }
-            } else {
-                if (!cont.isActive) return@whenComplete
-
-                if (response.statusCode() in 200..299) cont.resume(Result.success(response))
-                else cont.resume(Result.failure(InputStreamException(response.body(), request.uri().toString())))
-            }
-        }
+        cont.resume(Result.failure( IOException("BLOCKED")))
     }
 
     suspend fun hasBonusPaulScore(): Boolean {
