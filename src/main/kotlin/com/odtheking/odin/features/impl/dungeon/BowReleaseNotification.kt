@@ -10,11 +10,12 @@ import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.sounds.SoundEvents
 import net.minecraft.world.item.BowItem
 
-object DeathBowNotification : Module(
-    name = "DeathBow Notification",
-    description = "Notifies you when your Death Bow is fully drawn in dungeons."
+object BowReleaseNotification : Module(
+    name = "Bow Release Notification",
+    description = "Notifies you when your Bow (Death Bow, Last Breath) is fully drawn in dungeons."
 ) {
     private var notifiedForDraw = false
+    private val validBows = setOf("DEATH_BOW", "LAST_BREATH")
 
     init {
         on<TickEvent.End> {
@@ -23,12 +24,12 @@ object DeathBowNotification : Module(
                 return@on
             }
             val usedItem = player.useItem
-            val isUsingDeathBow = DungeonUtils.inDungeons &&
+            val isUsingTargetBow = DungeonUtils.inDungeons &&
                 player.isUsingItem &&
                 usedItem.item is BowItem &&
-                usedItem.itemId == "DEATH_BOW"
+                usedItem.itemId in validBows
 
-            if (!isUsingDeathBow) {
+            if (!isUsingTargetBow) {
                 notifiedForDraw = false
                 return@on
             }
