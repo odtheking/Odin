@@ -62,7 +62,7 @@ object ModuleManager {
             PuzzleSolvers, BlessingDisplay, LeapMenu, SecretClicked, MapInfo, Mimic, DungeonQueue,
             DoorHighlight, BloodCamp, PositionalMessages, TerracottaTimer, BreakerDisplay, LividSolver,
             InvincibilityTimer, SpiritBear, DungeonWaypoints, ExtraStats, BetterPartyFinder, Croesus, MageBeam,
-            SecretsCounter, DungeonMap, PuzzleHud, RoomClear,
+            SecretsCounter, DungeonMap, PuzzleHud, RoomClear, DeathBowNotification,
 
             // boss
             TerminalSimulator, TerminalSolver, TerminalTimes, TerminalSounds, TickTimers, ArrowAlign,
