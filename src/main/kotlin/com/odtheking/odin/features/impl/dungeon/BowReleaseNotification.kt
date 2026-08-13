@@ -12,10 +12,14 @@ import net.minecraft.world.item.BowItem
 
 object BowReleaseNotification : Module(
     name = "Bow Release Notification",
-    description = "Notifies you when your Bow (Death Bow, Last Breath) is fully drawn in dungeons."
+    description = "Notifies you when your standard bow (excluding shortbows) is fully drawn in dungeons."
 ) {
     private var notifiedForDraw = false
-    private val validBows = setOf("DEATH_BOW", "LAST_BREATH")
+
+    // Terminator is the only bow that in it is ITEMID does not contain SHORTBOW and might in future updates more like this come
+    private val ignoredBowIds = setOf(
+        "TERMINATOR"
+    )
 
     init {
         on<TickEvent.End> {
@@ -23,11 +27,16 @@ object BowReleaseNotification : Module(
                 notifiedForDraw = false
                 return@on
             }
+            
             val usedItem = player.useItem
+            val itemId = usedItem.itemId
+
+            val isShortbow = itemId.contains("SHORTBOW", ignoreCase = true) || itemId in ignoredBowIds
+            val isStandardBow = usedItem.item is BowItem && !isShortbow
+
             val isUsingTargetBow = DungeonUtils.inDungeons &&
                 player.isUsingItem &&
-                usedItem.item is BowItem &&
-                usedItem.itemId in validBows
+                isStandardBow
 
             if (!isUsingTargetBow) {
                 notifiedForDraw = false
