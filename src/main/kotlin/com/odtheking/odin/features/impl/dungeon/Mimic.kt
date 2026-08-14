@@ -60,7 +60,7 @@ object Mimic : Module(
 
     private fun batKilled() {
         if(!DungeonUtils.inClear) return
-        DungeonListener.dungeonStats.incBat(-1)
-        if (batMessageToggle) sendCommand("pc Bat Killed (${DungeonUtils.batKilled})")
+        if (batMessageToggle) sendCommand("pc Bat Killed!")
+        DungeonListener.dungeonStats.batKilled++
     }
 }
