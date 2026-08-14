@@ -12,6 +12,9 @@ import net.minecraft.core.BlockPos
 import net.minecraft.world.phys.AABB
 
 object QuizSolver {
+    private const val START_DURATION = 220
+    private const val QUESTION_DURATION = 100
+
     private var answers: MutableMap<String, List<String>> = JsonResourceLoader.loadJson(
         "/assets/odin/puzzles/quizAnswers.json", mutableMapOf()
     )
@@ -20,7 +23,22 @@ object QuizSolver {
     private var triviaOptions: MutableList<TriviaAnswer> = MutableList(3) { TriviaAnswer(null, false) }
     private data class TriviaAnswer(var blockPos: BlockPos?, var isCorrect: Boolean)
 
+    var timer: Triple<Int, Int, Int> = Triple(0, 0, 0)
+        private set
+
+    fun onServerTick() {
+        val (tick, maxTick, stage) = timer
+        if (tick <= 0) return
+        timer = Triple(tick - 1, maxTick, stage)
+    }
+
     fun onMessage(msg: String) {
+        when (msg) {
+            "[STATUE] Oruo the Omniscient: I am Oruo the Omniscient. I have lived many lives. I have learned all there is to know." -> timer = Triple(START_DURATION, START_DURATION, 1)
+            "[STATUE] Oruo the Omniscient: 2 questions left... Then you will have proven your worth to me!" -> timer = Triple(QUESTION_DURATION, QUESTION_DURATION, 2)
+            "[STATUE] Oruo the Omniscient: One more question!" -> timer = Triple(QUESTION_DURATION, QUESTION_DURATION, 3)
+        }
+
         if (msg.startsWith("[STATUE] Oruo the Omniscient: ") && msg.endsWith("correctly!")) {
             if (msg.contains("answered the final question")) {
                 onPuzzleComplete("Quiz")
@@ -66,5 +84,6 @@ object QuizSolver {
     fun reset() {
         triviaOptions = MutableList(3) { TriviaAnswer(null, false) }
         triviaAnswers = null
+        timer = Triple(0, 0, 0)
     }
 }
