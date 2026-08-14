@@ -44,7 +44,11 @@ object DungeonListener {
 
     init {
         on<TickEvent.End> {
-            if (DungeonUtils.inDungeons) inBoss = getBoss()
+            if (!DungeonUtils.inDungeons) return@on
+            val newInBoss = getBoss()
+            if (newInBoss == inBoss) return@on
+            inBoss = newInBoss
+            DungeonUtils.updateScore()
         }
 
         on<LevelEvent.Load> {
@@ -58,6 +62,7 @@ object DungeonListener {
             inBoss = false
             floor = null
             paul = false
+            DungeonUtils.updateScore()
         }
 
         on<RoomEnterEvent> {
@@ -69,6 +74,7 @@ object DungeonListener {
             updateDungeonTeammates(tabListEntries)
             updateDungeonStats(tabListEntries)
             getDungeonPuzzles(tabListEntries)
+            DungeonUtils.updateScore()
         }
 
         onReceive<ClientboundSetPlayerTeamPacket> {
@@ -86,6 +92,7 @@ object DungeonListener {
             clearedRegex.find(text)?.groupValues?.get(1)?.toIntOrNull()?.let {
                 if (dungeonStats.percentCleared != it && expectingBloodUpdate) dungeonStats.bloodDone = true
                 dungeonStats.percentCleared = it
+                DungeonUtils.updateScore()
             }
         }
 
@@ -116,7 +123,10 @@ object DungeonListener {
 
                 "blaze done!", "blaze done", "blaze puzzle solved!" ->
                     puzzles.find { it == Puzzle.BLAZE }.let { it?.status = PuzzleStatus.Completed }
+
+                else -> return@on
             }
+            DungeonUtils.updateScore()
         }
 
         onReceive<ClientboundRemoveEntitiesPacket> {

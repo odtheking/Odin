@@ -56,7 +56,7 @@ object PuzzleSolvers : Module(
     private val blazeLineNext by BooleanSetting("Blaze Solver Next Line", true, desc = "Shows the next line to click.").withDependency { blazeSolver && blazeDropDown }
     private val blazeLineAmount by NumberSetting("Blaze Solver Lines", 1, 1, 10, 1, desc = "Amount of lines to show.").withDependency { blazeSolver && blazeDropDown }
     private val blazeLineWidth by NumberSetting("Blaze Solver Lines Width", 2f, 0.5, 5, 0.1, desc = "Width for blaze lines.").withDependency { blazeSolver && blazeDropDown }
-    private val blazeStyle by SelectorSetting("Blaze Style", "Outline", arrayListOf("Filled", "Outline", "Filled Outline"), desc = "Whether or not the box should be filled.").withDependency { blazeSolver && blazeDropDown }
+    private val blazeStyle by SelectorSetting("Blaze Style", "Filled Outline", arrayListOf("Filled", "Outline", "Filled Outline"), desc = "Whether or not the box should be filled.").withDependency { blazeSolver && blazeDropDown }
     private val blazeFirstColor by ColorSetting("First Color", Colors.MINECRAFT_GREEN.withAlpha(.75f), true, desc = "Color for the first blaze.").withDependency { blazeSolver && blazeDropDown }
     private val blazeSecondColor by ColorSetting("Second Color", Colors.MINECRAFT_GOLD.withAlpha(.75f), true, desc = "Color for the second blaze.").withDependency { blazeSolver && blazeDropDown }
     private val blazeThirdColor by ColorSetting("Third Color", Colors.MINECRAFT_RED.withAlpha(.75f), true, desc = "Color for the third blaze.").withDependency { blazeSolver && blazeDropDown }

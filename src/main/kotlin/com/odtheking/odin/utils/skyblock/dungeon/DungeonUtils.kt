@@ -1,6 +1,7 @@
 package com.odtheking.odin.utils.skyblock.dungeon
 
 import com.odtheking.odin.OdinMod.mc
+import com.odtheking.odin.events.ScoreUpdateEvent
 import com.odtheking.odin.features.impl.dungeon.MapInfo.togglePaul
 import com.odtheking.odin.features.impl.dungeon.map.WorldScan
 import com.odtheking.odin.features.impl.dungeon.map.tile.DungeonRoom
@@ -117,28 +118,34 @@ object DungeonUtils {
     inline val bloodDone: Boolean
         get() = DungeonListener.dungeonStats.bloodDone
 
-    inline val score: Int
-        get() {
-            val completed = completedRoomCount + (if (!bloodDone) 1 else 0) + (if (!inBoss) 1 else 0)
-            val total = if (totalRooms != 0) totalRooms else 36
+    var score: Int = 0
+        private set
 
-            val exploration = floor?.let {
-                val secretScore = if (totalSecrets > 0) {
-                    floor(secretCount.toDouble() / (totalSecrets.toDouble() * it.requiredPercentage) * 40.0)
-                        .toInt().coerceIn(0, 40)
-                } else 0
+    fun updateScore() {
+        val completed = completedRoomCount + (if (!bloodDone) 1 else 0) + (if (!inBoss) 1 else 0)
+        val total = if (totalRooms != 0) totalRooms else 36
 
-                secretScore + floor(completed.toFloat() / total * 60f).coerceIn(0f, 60f).toInt()
-            } ?: 0
+        val exploration = floor?.let {
+            val secretScore = if (totalSecrets > 0) {
+                floor(secretCount.toDouble() / (totalSecrets.toDouble() * it.requiredPercentage) * 40.0)
+                    .toInt().coerceIn(0, 40)
+            } else 0
 
-            val skillRooms = floor(completed.toFloat() / total * 80f).coerceIn(0f, 80f).toInt()
-            val puzzlePenalty = (puzzleCount - puzzles.count { it.status == PuzzleStatus.Completed }) * 10
+            secretScore + floor(completed.toFloat() / total * 60f).coerceIn(0f, 60f).toInt()
+        } ?: 0
 
-            return exploration + (20 + skillRooms - puzzlePenalty - (deathCount * 2 - 1).coerceAtLeast(0)).coerceIn(
-                20,
-                100
-            ) + getBonusScore + 100
-        }
+        val skillRooms = floor(completed.toFloat() / total * 80f).coerceIn(0f, 80f).toInt()
+        val puzzlePenalty = (puzzleCount - puzzles.count { it.status == PuzzleStatus.Completed }) * 10
+
+        val newScore = exploration + (20 + skillRooms - puzzlePenalty - (deathCount * 2 - 1).coerceAtLeast(0)).coerceIn(
+            20,
+            100
+        ) + getBonusScore + 100
+
+        if (newScore == score) return
+        score = newScore
+        ScoreUpdateEvent(newScore).postAndCatch()
+    }
 
     inline val neededSecretsAmount: Int
         get() =
