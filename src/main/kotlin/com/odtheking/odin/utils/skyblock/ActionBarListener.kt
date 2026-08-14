@@ -13,8 +13,8 @@ object ActionBarListener {
     private val HEALTH_REGEX = Regex("([\\d|,]+)/([\\d|,]+)\\uE010")
     private val MANA_REGEX = Regex("([\\d|,]+)/([\\d|,]+)\\uE003")
     private val OVERFLOW_MANA_REGEX = Regex("([\\d|,]+)\\uE017")
-    private val DEFENSE_REGEX = Regex("([\\d|,]+)\\uE008 Defense")
-    private val VITALITY_REGEX = Regex("([\\d.,]+)/([\\d.,]+)♨( Vitality)?")
+    private val DEFENSE_REGEX = Regex("([\\d|,]+)\\uE008( Defense)?")
+    private val VITALITY_REGEX = Regex("([\\d.,]+)/([\\d.,]+)\\uE028")
 
     var currentHealth: Int = 0
         private set
@@ -68,7 +68,7 @@ object ActionBarListener {
 
             val vitalityMatch = VITALITY_REGEX.find(msg)
             isVitalityShown = vitalityMatch != null
-            vitalityMatch?.destructured?.let { (cVitality, mVitality, _) ->
+            vitalityMatch?.destructured?.let { (cVitality, mVitality) ->
                 currentVitality = cVitality.replace(",", "").toDoubleOrNull()?.toInt() ?: currentVitality
                 maxVitality = mVitality.replace(",", "").toDoubleOrNull()?.toInt() ?: maxVitality
             }

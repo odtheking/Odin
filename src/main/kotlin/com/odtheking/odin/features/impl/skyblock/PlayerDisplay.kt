@@ -33,6 +33,7 @@ object PlayerDisplay : Module(
     private val hideMana by BooleanSetting("Hide Mana", true, desc = "Hides the mana bar.").withDependency { hideActionBar }
     private val hideOverflow by BooleanSetting("Hide Overflow Mana", true, desc = "Hides the overflow mana bar.").withDependency { hideActionBar }
     private val hideDefense by BooleanSetting("Hide Defense", true, desc = "Hides the defense bar.").withDependency { hideActionBar }
+    private val hideVitality by BooleanSetting("Hide Vitality", true, desc = "Hides the vitality bar.").withDependency { hideActionBar }
     private val overflow by DropdownSetting("Overflow Mana")
     private val separateOverflow by BooleanSetting("Separate Overflow Mana", true, desc = "Separates the overflow mana from the mana bar.").withDependency { overflow }
     private val hideZeroSF by BooleanSetting("Hide 0 Overflow", true, desc = "Hides the overflow mana when it's 0.").withDependency { overflow && separateOverflow }
@@ -125,7 +126,8 @@ object PlayerDisplay : Module(
     private val HEALTH_REGEX = Regex("[\\d|,]+/[\\d|,]+\\uE010")
     private val MANA_REGEX = Regex("[\\d|,]+/[\\d|,]+\\uE003( Mana)?")
     private val OVERFLOW_MANA_REGEX = Regex("§?[\\d|,]+\\uE017")
-    private val DEFENSE_REGEX = Regex("[\\d|,]+§a\\uE008 Defense")
+    private val DEFENSE_REGEX = Regex("[\\d|,]+(§.)?\\uE008( Defense)?")
+    private val VITALITY_REGEX = Regex("[\\d.,]+/[\\d.,]+(§.)?\\uE028")
 
     @JvmStatic
     fun modifyText(text: Component): Component {
@@ -135,6 +137,7 @@ object PlayerDisplay : Module(
         toReturn = if (hideMana) toReturn.replace(MANA_REGEX, "") else toReturn
         toReturn = if (hideOverflow) toReturn.replace(OVERFLOW_MANA_REGEX, "") else toReturn
         toReturn = if (hideDefense) toReturn.replace(DEFENSE_REGEX, "") else toReturn
+        toReturn = if (hideVitality) toReturn.replace(VITALITY_REGEX, "") else toReturn
         return Component.literal(toReturn.trim())
     }
 

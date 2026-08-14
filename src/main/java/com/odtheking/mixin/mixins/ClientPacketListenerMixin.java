@@ -26,9 +26,9 @@ public class ClientPacketListenerMixin {
     }
 
     @Inject(method = "handleContainerSetSlot", at = @At("TAIL"))
-    private void onSetSlot(ClientboundContainerSetSlotPacket clientboundContainerSetSlotPacket, CallbackInfo ci) {
+    private void onSetSlot(ClientboundContainerSetSlotPacket packet, CallbackInfo ci) {
         if (getMc().screen instanceof AbstractContainerScreen<?> container)
-            new GuiEvent.SlotUpdate(getMc().screen, clientboundContainerSetSlotPacket, container.getMenu()).postAndCatch();
+            new GuiEvent.SlotUpdate(getMc().screen, packet, container.getMenu()).postAndCatch();
     }
 
     @WrapOperation(method = "handleBundlePacket", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/protocol/Packet;handle(Lnet/minecraft/network/PacketListener;)V"))
