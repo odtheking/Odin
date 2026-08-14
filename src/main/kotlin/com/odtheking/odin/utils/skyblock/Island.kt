@@ -22,7 +22,9 @@ enum class Island(val displayName: String) {
     Mineshaft("Mineshaft"),
     Rift("The Rift"),
     BackwaterBayou("Backwater Bayou"),
-    Galatea("Galatea"),
+    MoongladeMarsh("Moonglade Marsh"),
     LotusAtoll("Lotus Atoll"),
+    TorrhusCanyon("Torrhus Canyon"),
+    Safari("Safari"),
     Unknown("(Unknown)");
 }

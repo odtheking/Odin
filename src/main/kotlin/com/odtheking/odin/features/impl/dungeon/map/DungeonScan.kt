@@ -10,6 +10,8 @@ import com.odtheking.odin.features.impl.dungeon.map.tile.*
 import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.Color.Companion.darker
 import com.odtheking.odin.utils.IVec2
+import com.odtheking.odin.utils.renderX
+import com.odtheking.odin.utils.renderZ
 import com.odtheking.odin.utils.skyblock.dungeon.Floor
 import net.minecraft.world.entity.player.Player
 import java.util.concurrent.ConcurrentHashMap
@@ -77,8 +79,8 @@ object DungeonScan {
 
     fun playerRenderPosition(entity: Player?, mapPos: IVec2): Pair<Float, Float> {
         entity?.let {
-            val mapX = (it.x.toFloat() + 200f) * roomGap / 32f
-            val mapZ = (it.z.toFloat() + 200f) * roomGap / 32f
+            val mapX = (it.renderX.toFloat() + 200f) * roomGap / 32f
+            val mapZ = (it.renderZ.toFloat() + 200f) * roomGap / 32f
             return mapX to mapZ
         }
 

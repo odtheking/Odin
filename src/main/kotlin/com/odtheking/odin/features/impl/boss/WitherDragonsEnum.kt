@@ -6,7 +6,6 @@ import com.odtheking.odin.features.impl.boss.WitherDragons.currentTick
 import com.odtheking.odin.features.impl.boss.WitherDragons.dragonPriorityToggle
 import com.odtheking.odin.features.impl.boss.WitherDragons.priorityDragon
 import com.odtheking.odin.features.impl.boss.WitherDragons.sendSpawned
-import com.odtheking.odin.features.impl.boss.WitherDragons.sendSpawning
 import com.odtheking.odin.features.impl.boss.WitherDragons.sendTime
 import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.Colors
@@ -125,8 +124,6 @@ fun handleSpawnPacket(particle: ClientboundLevelParticlesPacket) {
 
         if (particle.x !in dragon.xRange || particle.z !in dragon.zRange) return@fold newSpawned to dragons
 
-        if (sendSpawning && WitherDragons.enabled) modMessage("§${dragon.colorCode}$dragon §fdragon is spawning.")
-
         dragon.state = WitherDragonState.SPAWNING
         dragon.timeToSpawn = 100
         dragons.add(dragon)
@@ -135,8 +132,7 @@ fun handleSpawnPacket(particle: ClientboundLevelParticlesPacket) {
 
     if (dragons.isNotEmpty() && (dragons.size == 2 || spawned >= 2) && priorityDragon == null)
         priorityDragon = findPriority(dragons).also { dragon ->
-            if (WitherDragons.dragonTitle && WitherDragons.enabled) alert("§${dragon.colorCode}${dragon.name} is spawning!", true)
-            if (dragonPriorityToggle && WitherDragons.enabled) modMessage("${dragons.joinToString(", ") { "§${it.colorCode}${it.name}" }}§r -> §${dragon.colorCode}${dragon.name} §7is your priority dragon!")
+            if (dragonPriorityToggle && WitherDragons.enabled && dragons.size > 1) modMessage("${dragons.joinToString(", ") { "§${it.colorCode}${it.name}" }}§r -> §${dragon.colorCode}${dragon.name} §7is your priority dragon!")
         }
 }
 
