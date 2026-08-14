@@ -66,6 +66,7 @@ abstract class RenderEvent(open val context: AbstractLevelRenderContext) : Event
 }
 
 abstract class PartyEvent(val members: List<String>) : Event {
+    class Join(members: List<String>, val playerName: String) : PartyEvent(members)
     class Leave(members: List<String>) : PartyEvent(members)
 }
 

@@ -136,7 +136,9 @@ object PartyUtils {
 
     private fun addMember(playerName: String) {
         if (!isInParty) isInParty = true
-        if (playerName !in members) members.add(playerName)
+        if (members.any { it.equals(playerName, true) }) return
+        members.add(playerName)
+        PartyEvent.Join(members, playerName).postAndCatch()
     }
 
     private fun removeMember(playerName: String) {
