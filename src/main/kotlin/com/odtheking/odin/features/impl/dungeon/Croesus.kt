@@ -48,7 +48,7 @@ object Croesus : Module(
         else 0 to 0
     }
 
-    private val chestWarning by NumberSetting("Chest Warning Threshold", 55, 0, 60, desc = "Displays a warning in the chest profit HUD if the profit is below this amount.")
+    private val chestWarning by NumberSetting("Chest Warning Threshold", 55, 0..60, desc = "Displays a warning in the chest profit HUD if the profit is below this amount.")
     private val refresh by ActionSetting("Refresh Prices", desc = "Manually refresh the cached prices used for profit calculations.") {
         scope.launch {
             cachedPrices = fetchJson<Map<String, Double>>("https://lb.odtheking.com/averages/7day").getOrElse { OdinMod.logger.error("Failed to fetch lowest bin prices for Croesus module.", it); emptyMap() }

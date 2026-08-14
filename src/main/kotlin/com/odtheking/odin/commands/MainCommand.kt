@@ -6,8 +6,7 @@ import com.github.stivais.commodore.utils.GreedyString
 import com.github.stivais.commodore.utils.SyntaxException
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.clickgui.HudManager
-import com.odtheking.odin.clickgui.settings.ClickGUI
-import com.odtheking.odin.clickgui.vanilla.VanillaGUI
+import com.odtheking.odin.clickgui.ClickGUI
 import com.odtheking.odin.features.ModuleManager
 import com.odtheking.odin.features.impl.render.ClickGUIModule
 import com.odtheking.odin.utils.*
@@ -18,10 +17,6 @@ import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 val mainCommand = Commodore("odin", "od") {
     runs {
         schedule(0) { mc.setScreenAndShow(ClickGUI) }
-    }
-
-    literal("test").runs {
-        schedule(0) { mc.setScreen(VanillaGUI) }
     }
 
     literal("edithud").runs {

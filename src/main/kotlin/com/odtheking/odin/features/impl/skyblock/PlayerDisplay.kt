@@ -23,18 +23,18 @@ object PlayerDisplay : Module(
     name = "Player Display",
     description = "Allows to customize the player stat displays (health, defense and more)."
 ) {
-    private val hideElements by DropdownSetting("Hide Elements")
+    private val hideElements by DropdownSetting("Hide Elements", desc = "Shows toggles for hiding vanilla HUD elements.")
     private val hideArmor by BooleanSetting("Hide Armor", false, desc = "Hides the armor bar.").withDependency { hideElements }
     private val hideFood by BooleanSetting("Hide Food", false, desc = "Hides the food bar.").withDependency { hideElements }
     private val hideHearts by BooleanSetting("Hide Hearts", false, desc = "Hides the hearts.").withDependency { hideElements }
     private val hideXP by BooleanSetting("Hide XP Level", false, desc = "Hides the XP level.").withDependency { hideElements }
-    private val hideActionBar by DropdownSetting("Hide Action Bar Elements")
+    private val hideActionBar by DropdownSetting("Hide Action Bar Elements", desc = "Shows toggles for hiding action bar elements.")
     private val hideHealth by BooleanSetting("Hide Health", true, desc = "Hides the health bar.").withDependency { hideActionBar }
     private val hideMana by BooleanSetting("Hide Mana", true, desc = "Hides the mana bar.").withDependency { hideActionBar }
     private val hideOverflow by BooleanSetting("Hide Overflow Mana", true, desc = "Hides the overflow mana bar.").withDependency { hideActionBar }
     private val hideDefense by BooleanSetting("Hide Defense", true, desc = "Hides the defense bar.").withDependency { hideActionBar }
     private val hideVitality by BooleanSetting("Hide Vitality", true, desc = "Hides the vitality bar.").withDependency { hideActionBar }
-    private val overflow by DropdownSetting("Overflow Mana")
+    private val overflow by DropdownSetting("Overflow Mana", desc = "Shows settings for the overflow mana bar.")
     private val separateOverflow by BooleanSetting("Separate Overflow Mana", true, desc = "Separates the overflow mana from the mana bar.").withDependency { overflow }
     private val hideZeroSF by BooleanSetting("Hide 0 Overflow", true, desc = "Hides the overflow mana when it's 0.").withDependency { overflow && separateOverflow }
 

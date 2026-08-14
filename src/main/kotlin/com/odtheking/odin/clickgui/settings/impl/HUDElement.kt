@@ -1,8 +1,11 @@
 package com.odtheking.odin.clickgui.settings.impl
 
+import com.google.gson.JsonElement
+import com.google.gson.JsonObject
+import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.render.hollowFill
-import com.odtheking.odin.utils.ui.isAreaHovered
+import com.odtheking.odin.utils.render.roundedOutline
 import net.minecraft.client.gui.GuiGraphicsExtractor
 
 open class HudElement(
@@ -17,19 +20,50 @@ open class HudElement(
     var height: Int = 0
         private set
 
-    fun draw(context: GuiGraphicsExtractor, example: Boolean) {
+    val scaledWidth: Int get() = (width * scale).toInt()
+    val scaledHeight: Int get() = (height * scale).toInt()
+
+    fun draw(context: GuiGraphicsExtractor, example: Boolean, mouseX: Int = -1, mouseY: Int = -1) {
         context.pose().pushMatrix()
         context.pose().translate(x.toFloat(), y.toFloat())
-
         context.pose().scale(scale, scale)
-        val (width, height) = context.render(example).let { (w, h) -> w to h }
-
+        val (renderedWidth, renderedHeight) = context.render(example)
         context.pose().popMatrix()
-        if (example) context.hollowFill(x - 1, y - 1, (width * scale).toInt(), (height * scale).toInt(), if (isHovered()) 2 else 1, Colors.WHITE)
 
-        this.width = width
-        this.height = height
+        width = renderedWidth
+        height = renderedHeight
+
+        if (example)
+            context.roundedOutline(x - 1, y - 1, x + scaledWidth + 1, y + scaledHeight + 1, Colors.WHITE.rgba, if (isHovered(mouseX, mouseY)) 1.5f else 1f, 3f)
     }
 
-    fun isHovered(): Boolean = isAreaHovered(x.toFloat(), y.toFloat(), width * scale, height * scale)
+    fun isHovered(mouseX: Int, mouseY: Int): Boolean =
+        mouseX >= x && mouseX < x + scaledWidth && mouseY >= y && mouseY < y + scaledHeight
+
+    fun clampToScreen() {
+        x = x.coerceIn(0, (mc.window.guiScaledWidth - scaledWidth).coerceAtLeast(0))
+        y = y.coerceIn(0, (mc.window.guiScaledHeight - scaledHeight).coerceAtLeast(0))
+    }
+
+    fun write(): JsonObject =
+        JsonObject().apply {
+            addProperty("x", x)
+            addProperty("y", y)
+            addProperty("scale", scale)
+            addProperty("enabled", enabled)
+        }
+
+    fun read(element: JsonElement, toggleable: Boolean) {
+        if (element !is JsonObject) return
+
+        x = element.get("x")?.asInt ?: x
+        y = element.get("y")?.asInt ?: y
+        scale = element.get("scale")?.asFloat ?: scale
+        enabled = if (toggleable) element.get("enabled")?.asBoolean ?: enabled else true
+    }
+
+    companion object {
+        const val MIN_SCALE = 0.5f
+        const val MAX_SCALE = 5f
+    }
 }

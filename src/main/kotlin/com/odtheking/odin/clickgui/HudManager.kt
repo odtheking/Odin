@@ -1,10 +1,12 @@
 package com.odtheking.odin.clickgui
 
 import com.odtheking.odin.OdinMod.mc
+import com.odtheking.odin.clickgui.settings.impl.HUDSetting
 import com.odtheking.odin.clickgui.settings.impl.HudElement
 import com.odtheking.odin.features.ModuleManager
 import com.odtheking.odin.features.ModuleManager.hudSettingsCache
 import com.odtheking.odin.utils.Colors
+import com.odtheking.odin.utils.ui.animations.Animations
 import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.screens.Screen
 import net.minecraft.client.input.KeyEvent
@@ -12,76 +14,58 @@ import net.minecraft.client.input.MouseButtonEvent
 import net.minecraft.network.chat.Component
 import org.lwjgl.glfw.GLFW
 import kotlin.math.sign
-import com.odtheking.odin.utils.ui.mouseX as odinMouseX
-import com.odtheking.odin.utils.ui.mouseY as odinMouseY
 
 object HudManager : Screen(Component.literal("HUD Manager")) {
 
     private var dragging: HudElement? = null
-
-    private var deltaX = 0f
-    private var deltaY = 0f
+    private var grabX = 0
+    private var grabY = 0
 
     override fun init() {
-        for (hud in hudSettingsCache) {
-            if (hud.isEnabled) {
-                hud.value.x = hud.value.x.coerceIn(0, (mc.window.screenWidth - (hud.value.width * hud.value.scale)).toInt())
-                hud.value.y = hud.value.y.coerceIn(0, (mc.window.screenHeight - (hud.value.height * hud.value.scale)).toInt())
-            }
+        Animations.settle()
+        for (setting in hudSettingsCache) {
+            if (setting.isEnabled) setting.hud.clampToScreen()
         }
-        super.init()
     }
 
     override fun extractRenderState(guiGraphics: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, deltaTicks: Float) {
         super.extractRenderState(guiGraphics, mouseX, mouseY, deltaTicks)
 
-        dragging?.let {
-            it.x = (odinMouseX + deltaX).coerceIn(0f, (mc.window.screenWidth - (it.width * it.scale))).toInt()
-            it.y = (odinMouseY + deltaY).coerceIn(0f, (mc.window.screenHeight - (it.height * it.scale))).toInt()
+        dragging?.let { element ->
+            element.x = mouseX - grabX
+            element.y = mouseY - grabY
+            element.clampToScreen()
         }
 
-        guiGraphics.pose().pushMatrix()
-        val sf = mc.window.guiScale
-        guiGraphics.pose().scale(1f / sf, 1f / sf)
-
-        for (hud in hudSettingsCache) {
-            if (hud.isEnabled) hud.value.draw(guiGraphics, true)
+        for (setting in hudSettingsCache) {
+            if (setting.isEnabled) setting.hud.draw(guiGraphics, true, mouseX, mouseY)
         }
 
-        hudSettingsCache.firstOrNull { it.isEnabled && it.value.isHovered() }?.let { hoveredHud ->
-            guiGraphics.pose().pushMatrix()
-            guiGraphics.pose().translate(
-                (hoveredHud.value.x + hoveredHud.value.width * hoveredHud.value.scale + 10f),
-                hoveredHud.value.y.toFloat(),
+        hovered(mouseX, mouseY)?.let { setting ->
+            val element = setting.hud
+            val labelX = element.x + element.scaledWidth + LABEL_GAP
+            guiGraphics.text(font, setting.name, labelX, element.y, Colors.WHITE.rgba, true)
+            guiGraphics.textWithWordWrap(
+                font, Component.literal(setting.description),
+                labelX, element.y + font.lineHeight + 1, LABEL_WIDTH, Colors.WHITE.rgba
             )
-            guiGraphics.pose().scale(2f, 2f)
-            guiGraphics.text(mc.font, hoveredHud.name, 0, 0, Colors.WHITE.rgba)
-            guiGraphics.textWithWordWrap(mc.font, Component.literal(hoveredHud.description), 0, 10, 150, Colors.WHITE.rgba)
-            guiGraphics.pose().popMatrix()
         }
-
-        guiGraphics.pose().popMatrix()
     }
 
     override fun mouseScrolled(mouseX: Double, mouseY: Double, horizontalAmount: Double, verticalAmount: Double): Boolean {
-        val actualAmount = verticalAmount.sign.toFloat() * 0.2f
-        hudSettingsCache.firstOrNull { it.isEnabled && it.value.isHovered() }?.let { hovered ->
-            hovered.value.scale = (hovered.value.scale + actualAmount).coerceIn(1f, 10f)
-            return true
-        }
-        return super.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount)
+        val hovered = hovered(mouseX.toInt(), mouseY.toInt()) ?: return super.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount)
+        resize(hovered.hud, verticalAmount.sign.toFloat() * SCROLL_STEP)
+        return true
     }
 
     override fun mouseClicked(mouseButtonEvent: MouseButtonEvent, bl: Boolean): Boolean {
-        hudSettingsCache.firstOrNull { it.isEnabled && it.value.isHovered() }?.let { hovered ->
-            dragging = hovered.value
+        val hovered = hovered(mouseButtonEvent.x().toInt(), mouseButtonEvent.y().toInt())
+            ?: return super.mouseClicked(mouseButtonEvent, bl)
 
-            deltaX = (hovered.value.x - odinMouseX)
-            deltaY = (hovered.value.y - odinMouseY)
-            return true
-        }
-
-        return super.mouseClicked(mouseButtonEvent, bl)
+        dragging = hovered.hud
+        grabX = mouseButtonEvent.x().toInt() - hovered.hud.x
+        grabY = mouseButtonEvent.y().toInt() - hovered.hud.y
+        return true
     }
 
     override fun mouseReleased(mouseButtonEvent: MouseButtonEvent): Boolean {
@@ -90,32 +74,56 @@ object HudManager : Screen(Component.literal("HUD Manager")) {
     }
 
     override fun keyPressed(keyEvent: KeyEvent): Boolean {
-        hudSettingsCache.firstOrNull { it.isEnabled && it.value.isHovered() }?.let { hovered ->
+        val (mouseX, mouseY) = mousePosition()
+        hovered(mouseX, mouseY)?.let { setting ->
+            val element = setting.hud
             when (keyEvent.key) {
-                GLFW.GLFW_KEY_EQUAL -> hovered.value.scale = (hovered.value.scale + 0.1f).coerceIn(1f, 10f)
-                GLFW.GLFW_KEY_MINUS -> hovered.value.scale = (hovered.value.scale - 0.1f).coerceIn(1f, 10f)
-                GLFW.GLFW_KEY_RIGHT -> hovered.value.x += 10
-                GLFW.GLFW_KEY_LEFT -> hovered.value.x -= 10
-                GLFW.GLFW_KEY_UP -> hovered.value.y -= 10
-                GLFW.GLFW_KEY_DOWN -> hovered.value.y += 10
+                GLFW.GLFW_KEY_EQUAL -> resize(element, KEY_STEP)
+                GLFW.GLFW_KEY_MINUS -> resize(element, -KEY_STEP)
+                GLFW.GLFW_KEY_RIGHT -> element.x += NUDGE
+                GLFW.GLFW_KEY_LEFT -> element.x -= NUDGE
+                GLFW.GLFW_KEY_UP -> element.y -= NUDGE
+                GLFW.GLFW_KEY_DOWN -> element.y += NUDGE
+                else -> return super.keyPressed(keyEvent)
             }
+            element.clampToScreen()
+            return true
         }
-
         return super.keyPressed(keyEvent)
     }
 
     override fun onClose() {
+        dragging = null
         ModuleManager.saveConfigurations()
         super.onClose()
     }
 
+    override fun isPauseScreen(): Boolean = false
+
     fun resetHUDS() {
-        hudSettingsCache.forEach {
-            it.value.x = 10
-            it.value.y = 10
-            it.value.scale = 2f
+        for (setting in hudSettingsCache) {
+            setting.hud.x = 10
+            setting.hud.y = 10
+            setting.hud.scale = 1f
         }
     }
 
-    override fun isPauseScreen(): Boolean = false
+    private fun hovered(mouseX: Int, mouseY: Int): HUDSetting? =
+        hudSettingsCache.firstOrNull { it.isEnabled && it.hud.isHovered(mouseX, mouseY) }
+
+    private fun resize(element: HudElement, amount: Float) {
+        element.scale = (element.scale + amount).coerceIn(HudElement.MIN_SCALE, HudElement.MAX_SCALE)
+        element.clampToScreen()
+    }
+
+    private fun mousePosition(): Pair<Int, Int> {
+        val scale = mc.window.guiScale.coerceAtLeast(1)
+        return (mc.mouseHandler.xpos() / scale).toInt() to (mc.mouseHandler.ypos() / scale).toInt()
+    }
+
+    private const val LABEL_GAP = 10
+    private const val LABEL_WIDTH = 150
+    private const val SCROLL_STEP = 0.1f
+    private const val KEY_STEP = 0.1f
+    private const val NUDGE = 5
 }

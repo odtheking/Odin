@@ -3,7 +3,6 @@ package com.odtheking.odin.utils.render
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.Colors
-import com.odtheking.odin.utils.render.DrawContextRenderer.CornerRadii
 import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.util.FormattedCharSequence
 import org.joml.Matrix3x2f
@@ -53,31 +52,4 @@ fun GuiGraphicsExtractor.drawLine(
     fill(0, -1, ceil(length).toInt(), 1, color.rgba)
 
     pose().popMatrix()
-}
-
-fun GuiGraphicsExtractor.roundedFill(x0: Int, y0: Int, x1: Int, y1: Int, color: Int, radius: Int) {
-    DrawContextRenderer.roundedFill(this, x0, y0, x1, y1, color, radius.toFloat())
-}
-
-fun GuiGraphicsExtractor.roundedFill(x0: Int, y0: Int, x1: Int, y1: Int, color: Int, rl: Int, rr: Int, br: Int, bl: Int) {
-    DrawContextRenderer.roundedFill(this, x0, y0, x1, y1, color, CornerRadii(rl.toFloat(), rr.toFloat(), br.toFloat(), bl.toFloat()))
-}
-
-fun GuiGraphics.roundedFill(
-    x0: Int, y0: Int, x1: Int, y1: Int,
-    color: Int, radius: Int, outlineColor: Int, outlineWidth: Float) {
-    DrawContextRenderer.roundedFill(
-        this, x0, y0, x1, y1, color,
-        radius.toFloat(), outlineColor, outlineWidth
-    )
-}
-
-fun GuiGraphicsExtractor.roundedOutline(
-    x0: Int, y0: Int, x1: Int, y1: Int, outlineColor: Int,
-    outlineWidth: Float, radius: Int = 0
-) {
-    DrawContextRenderer.roundedOutline(
-        this, x0, y0, x1, y1, outlineColor,
-        outlineWidth, radius.toFloat()
-    )
 }

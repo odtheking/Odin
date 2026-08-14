@@ -13,6 +13,7 @@ import com.odtheking.odin.utils.JsonResourceLoader
 import com.odtheking.odin.utils.center
 import com.odtheking.odin.utils.equalsOneOf
 import com.odtheking.odin.utils.render.drawLine
+import com.odtheking.odin.utils.render.BoxStyle
 import com.odtheking.odin.utils.render.drawStyledBox
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.core.BlockPos
@@ -43,7 +44,7 @@ object BeamsSolver {
         }
     }
 
-    fun onRenderWorld(event: RenderEvent.Extract, beamStyle: Int, beamsTracer: Boolean, beamsAlpha: Float) {
+    fun onRenderWorld(event: RenderEvent.Extract, beamStyle: BoxStyle, beamsTracer: Boolean, beamsAlpha: Float) {
         if (DungeonUtils.currentRoomName != "Creeper Beams" || currentLanternPairs.isEmpty()) return
 
         currentLanternPairs.entries.forEach { positions ->

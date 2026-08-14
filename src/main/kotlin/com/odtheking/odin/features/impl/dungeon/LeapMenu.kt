@@ -8,13 +8,13 @@ import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.*
 import com.odtheking.odin.utils.Color.Companion.withAlpha
-import com.odtheking.odin.utils.render.roundedFill
+import com.odtheking.odin.utils.render.roundedRect
 import com.odtheking.odin.utils.render.text
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonClass
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonPlayer
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils.leapTeammates
-import com.odtheking.odin.utils.ui.HoverHandler
+import com.odtheking.odin.utils.ui.animations.Fade
 import com.odtheking.odin.utils.ui.widget.CustomGUIImpl
 import net.minecraft.client.gui.components.PlayerFaceExtractor
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
@@ -25,33 +25,36 @@ object LeapMenu : Module(
     description = "Renders a custom leap menu when in the Spirit Leap gui.",
     key = GLFW.GLFW_KEY_UNKNOWN
 ) {
-    val type by SelectorSetting("Sorting", "Odin Sorting", arrayListOf("Odin Sorting", "A-Z Class", "A-Z Name", "Custom sorting", "No Sorting"), desc = "How to sort the leap menu. /od leaporder to configure custom sorting.")
+    val type by SelectorSetting("Sorting", Sorting.ODIN, desc = "How to sort the leap menu. /od leaporder to configure custom sorting.")
     private val onRelease by BooleanSetting("On Key Release", false, desc = "Whether to trigger the leap on key release instead of key press.")
     private val onlyClass by BooleanSetting("Only Classes", false, desc = "Renders classes instead of names.")
     private val colorStyle by BooleanSetting("Color Style", false, desc = "Which color style to use.")
     private val backgroundColor by ColorSetting("Background Color", Colors.gray38.withAlpha(0.75f), true, desc = "Color of the background of the leap menu.").withDependency { !colorStyle }
-    private val scale by NumberSetting("Render Scale", 1f, 0.1f, 2f, 0.1f, desc = "Scale of the leap menu.", unit = "x")
-    val keybindType by SelectorSetting("Mode", "Normal", arrayListOf("Corners", "Class"), desc = "How the keybinds should function.")
+    private val scale by NumberSetting("Render Scale", 1f, 0.1..2.0, 0.1f, desc = "Scale of the leap menu.", unit = "x")
+    val keybindType by SelectorSetting("Mode", KeybindMode.CORNERS, desc = "How the keybinds should function.")
 
-    private val topLeftKeybind by KeybindSetting("Top Left", GLFW.GLFW_KEY_UNKNOWN, "Used to click on the first person in the leap menu.").withDependency { keybindType == 0 }
-    private val topRightKeybind by KeybindSetting("Top Right", GLFW.GLFW_KEY_UNKNOWN, "Used to click on the second person in the leap menu.").withDependency { keybindType == 0 }
-    private val bottomLeftKeybind by KeybindSetting("Bottom Left", GLFW.GLFW_KEY_UNKNOWN, "Used to click on the third person in the leap menu.").withDependency { keybindType == 0 }
-    private val bottomRightKeybind by KeybindSetting("Bottom Right", GLFW.GLFW_KEY_UNKNOWN, "Used to click on the fourth person in the leap menu.").withDependency { keybindType == 0 }
+    private val topLeftKeybind by KeybindSetting("Top Left", GLFW.GLFW_KEY_UNKNOWN, "Used to click on the first person in the leap menu.").withDependency { keybindType == KeybindMode.CORNERS }
+    private val topRightKeybind by KeybindSetting("Top Right", GLFW.GLFW_KEY_UNKNOWN, "Used to click on the second person in the leap menu.").withDependency { keybindType == KeybindMode.CORNERS }
+    private val bottomLeftKeybind by KeybindSetting("Bottom Left", GLFW.GLFW_KEY_UNKNOWN, "Used to click on the third person in the leap menu.").withDependency { keybindType == KeybindMode.CORNERS }
+    private val bottomRightKeybind by KeybindSetting("Bottom Right", GLFW.GLFW_KEY_UNKNOWN, "Used to click on the fourth person in the leap menu.").withDependency { keybindType == KeybindMode.CORNERS }
 
-    private val archerKeybind by KeybindSetting("Archer", GLFW.GLFW_KEY_UNKNOWN, "Used to leap to the Archer in the leap menu.").withDependency { keybindType == 1 }
-    private val berserkerKeybind by KeybindSetting("Berserker", GLFW.GLFW_KEY_UNKNOWN, "Used to leap to the Berserker in the leap menu.").withDependency { keybindType == 1 }
-    private val healerKeybind by KeybindSetting("Healer", GLFW.GLFW_KEY_UNKNOWN, "Used to leap to the Healer in the leap menu.").withDependency { keybindType == 1 }
-    private val mageKeybind by KeybindSetting("Mage", GLFW.GLFW_KEY_UNKNOWN, "Used to leap to the Mage in the leap menu.").withDependency { keybindType == 1 }
-    private val tankKeybind by KeybindSetting("Tank", GLFW.GLFW_KEY_UNKNOWN, "Used to leap to the Tank in the leap menu.").withDependency { keybindType == 1 }
+    private val archerKeybind by KeybindSetting("Archer", GLFW.GLFW_KEY_UNKNOWN, "Used to leap to the Archer in the leap menu.").withDependency { keybindType == KeybindMode.CLASS }
+    private val berserkerKeybind by KeybindSetting("Berserker", GLFW.GLFW_KEY_UNKNOWN, "Used to leap to the Berserker in the leap menu.").withDependency { keybindType == KeybindMode.CLASS }
+    private val healerKeybind by KeybindSetting("Healer", GLFW.GLFW_KEY_UNKNOWN, "Used to leap to the Healer in the leap menu.").withDependency { keybindType == KeybindMode.CLASS }
+    private val mageKeybind by KeybindSetting("Mage", GLFW.GLFW_KEY_UNKNOWN, "Used to leap to the Mage in the leap menu.").withDependency { keybindType == KeybindMode.CLASS }
+    private val tankKeybind by KeybindSetting("Tank", GLFW.GLFW_KEY_UNKNOWN, "Used to leap to the Tank in the leap menu.").withDependency { keybindType == KeybindMode.CLASS }
 
     private val leapAnnounce by BooleanSetting("Leap Announce", false, desc = "Announces when you leap to a player.")
-    private val hoverHandler = List(4) { HoverHandler(200L) }
+    private val hoverFade = List(4) { Fade(HOVER_DURATION) }
 
     private val EMPTY = DungeonPlayer("Empty", DungeonClass.EMPTY, 0, null)
     private val leapedRegex = Regex("You have teleported to (\\w{1,16})!")
 
     const val BOX_WIDTH = 200
     const val BOX_HEIGHT = 75
+
+    private const val GROW = 5f
+    private const val HOVER_DURATION = 200L
 
     private fun currentLeapScreen(): AbstractContainerScreen<*>? {
         if (!enabled) return null
@@ -83,13 +86,13 @@ object LeapMenu : Module(
             },
             key = fun ScreenEvent.KeyPress.(): Any {
                 if (leapTeammates.isEmpty()) return false
-                val keybindList = if (keybindType == 0) listOf(topLeftKeybind, topRightKeybind, bottomLeftKeybind, bottomRightKeybind)
+                val keybindList = if (keybindType == KeybindMode.CORNERS) listOf(topLeftKeybind, topRightKeybind, bottomLeftKeybind, bottomRightKeybind)
                 else listOf(archerKeybind, berserkerKeybind, healerKeybind, mageKeybind, tankKeybind)
                 if (keybindList.none { it.value == input.key() }) return false
 
                 val chest = currentLeapScreen() ?: return false
 
-                val index = if (keybindType == 0) keybindList.indexOfFirst { it.value == input.key() }
+                val index = if (keybindType == KeybindMode.CORNERS) keybindList.indexOfFirst { it.value == input.key() }
                 else DungeonClass.entries.find { clazz -> clazz.ordinal == keybindList.indexOfFirst { it.value == input.key() } }
                     ?.let { clazz -> leapTeammates.indexOfFirst { it.clazz == clazz } } ?: return false
 
@@ -116,26 +119,14 @@ object LeapMenu : Module(
                     val localX = if (col == 0) -BOX_WIDTH else 0
                     val localY = if (row == 0) -BOX_HEIGHT else 0
 
-                    val hover = hoverHandler[i]
                     val hovered = (if (col == 0) mouseX < halfW else mouseX >= halfW) && (if (row == 0) mouseY < halfH else mouseY >= halfH)
-                    if (hovered != hover.isHovered) {
-                        hover.anim.start()
-                        hover.isHovered = hovered
-                    }
-
-                    val grow = hover.anim.get(0f, 5f, !hover.isHovered)
+                    val grow = hoverFade[i].lerp(hovered, 0f, GROW)
 
                     guiGraphics.pose().pushMatrix()
                     guiGraphics.pose().translate(nearX.toFloat(), nearY.toFloat())
-                    guiGraphics.pose().scale(
-                        scale * (BOX_WIDTH + grow * 2f) / BOX_WIDTH,
-                        scale * (BOX_HEIGHT + grow * 2f) / BOX_HEIGHT
-                    )
+                    guiGraphics.pose().scale(scale * (BOX_WIDTH + grow * 2f) / BOX_WIDTH, scale * (BOX_HEIGHT + grow * 2f) / BOX_HEIGHT)
 
-                    guiGraphics.roundedFill(
-                        localX, localY, localX + BOX_WIDTH, localY + BOX_HEIGHT,
-                        (if (colorStyle) player.clazz.color else backgroundColor).rgba, 9
-                    )
+                    guiGraphics.roundedRect(localX, localY, localX + BOX_WIDTH, localY + BOX_HEIGHT, (if (colorStyle) player.clazz.color else backgroundColor).rgba, 9f)
 
                     val face = (BOX_HEIGHT * 0.76).toInt()
                     (player.playerSkin ?: mc.player?.skin)?.let { PlayerFaceExtractor.extractRenderState(guiGraphics, it, localX + 9, localY + 9, face) }
@@ -149,7 +140,7 @@ object LeapMenu : Module(
 
                     if (!onlyClass || player.isDead) {
                         guiGraphics.text(
-                            if (player.isDead) "DEAD" else player.clazz.name,
+                            if (player.isDead) "DEAD" else player.clazz.name.lowercase(),
                             localX + 15 + face,
                             localY + (BOX_HEIGHT / 1.7).toInt(),
                             if (player.isDead) Colors.MINECRAFT_RED else Colors.WHITE
@@ -169,7 +160,7 @@ object LeapMenu : Module(
     }
 
     fun AbstractContainerScreen<*>.mouseTrigger(player: DungeonPlayer, quadrant: Int) {
-        if ((type.equalsOneOf(1,2,3)) && leapTeammates.size < quadrant) return
+        if (type != Sorting.ODIN && type != Sorting.NONE && leapTeammates.size < quadrant) return
 
         if (player == EMPTY) return
         if (player.isDead) return modMessage("This player is dead, can't leap.")
@@ -186,10 +177,10 @@ object LeapMenu : Module(
     }
 
     /*private val leapTeammates: MutableList<DungeonPlayer> = mutableListOf(
-        DungeonPlayer("Stiviaisd", DungeonClass.Healer, 50, null),
-        DungeonPlayer("Odtheking", DungeonClass.Archer, 50, null),
-        DungeonPlayer("Bonzi", DungeonClass.Mage, 47, null),
-        DungeonPlayer("Cezar", DungeonClass.Tank, 38, null)
+        DungeonPlayer("Stiviaisd", DungeonClass.HEALER, 50, null),
+        DungeonPlayer("Odtheking", DungeonClass.ARCHER, 50, null),
+        DungeonPlayer("Bonzi", DungeonClass.MAGE, 47, null),
+        DungeonPlayer("Cezar", DungeonClass.TANK, 38, null)
     )*/
 
     /**
@@ -224,4 +215,15 @@ object LeapMenu : Module(
         }
         return result
     }
+
+    enum class Sorting(private val label: String) {
+        ODIN("Odin Sorting"),
+        CLASS("A-Z Class"),
+        NAME("A-Z Name"),
+        CUSTOM("Custom sorting"),
+        NONE("No Sorting");
+
+        override fun toString(): String = label
+    }
+    enum class KeybindMode { CORNERS, CLASS }
 }

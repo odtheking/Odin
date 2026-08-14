@@ -30,7 +30,7 @@ object BuildHelper : Module(
         width to mc.font.lineHeight * 3
     }
 
-    private val stunNotificationNumber by NumberSetting("Stun Percent", 93f, 0, 100, desc = "The build % to notify at (set to 0 to disable).", unit = "%")
+    private val stunNotificationNumber by NumberSetting("Stun Percent", 93f, 0..100, desc = "The build % to notify at (set to 0 to disable).", unit = "%")
 
     init {
         on<RenderEvent.Extract> {

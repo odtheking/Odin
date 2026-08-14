@@ -15,6 +15,7 @@ import com.odtheking.odin.utils.getBlockBounds
 import com.odtheking.odin.utils.isEtherwarpItem
 import com.odtheking.odin.utils.modMessage
 import com.odtheking.odin.utils.render.drawBoxes
+import com.odtheking.odin.utils.render.BoxStyle
 import com.odtheking.odin.utils.render.drawStyledBox
 import com.odtheking.odin.utils.render.drawText
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
@@ -38,7 +39,7 @@ internal fun DungeonWaypoints.renderWaypoints(event: RenderEvent.Extract) {
     }
 
     reachPosition?.takeIf { allowEdits }?.let { pos ->
-        event.drawStyledBox(relativeAabbAt(pos).move(pos), color.withAlpha(0.3f), style = if (filled) 0 else 1, depthCheck)
+        event.drawStyledBox(relativeAabbAt(pos).move(pos), color.withAlpha(0.3f), style = if (filled) BoxStyle.FILLED else BoxStyle.OUTLINE, depthCheck)
     }
 }
 
@@ -116,7 +117,7 @@ private fun DungeonWaypoints.createWaypoint(blockPos: BlockPos, aabb: AABB, titl
     depth = depthCheck,
     aabb = aabb,
     title = title,
-    type = WaypointType.getByInt(waypointType),
+    type = waypointType.takeIf { it != WaypointType.NONE },
 )
 
 internal fun DungeonWaypoints.relativeAabbAt(pos: BlockPos): AABB =

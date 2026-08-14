@@ -1,13 +1,8 @@
 package com.odtheking.odin.utils.render
 
-import com.mojang.blaze3d.PrimitiveTopology
-import com.mojang.blaze3d.pipeline.BindGroupLayout
 import com.mojang.blaze3d.pipeline.BlendFunction
 import com.mojang.blaze3d.pipeline.ColorTargetState
 import com.mojang.blaze3d.pipeline.RenderPipeline
-import com.mojang.blaze3d.shaders.UniformType
-import com.mojang.blaze3d.vertex.DefaultVertexFormat
-import com.mojang.blaze3d.vertex.VertexFormat
 import net.minecraft.client.renderer.RenderPipelines
 import net.minecraft.resources.Identifier
 import java.util.*
@@ -34,15 +29,16 @@ object CustomRenderPipelines {
             .build()
     )
 
-    val PIPELINE_ROUND_RECT: RenderPipeline = RenderPipelines.register(
-        RenderPipeline.builder(RenderPipelines.GUI_SNIPPET)
-            .withLocation(Identifier.fromNamespaceAndPath("odin", "pipeline/round_rect"))
-            .withFragmentShader(Identifier.fromNamespaceAndPath("odin", "core/round_rect"))
-            .withVertexShader(Identifier.fromNamespaceAndPath("odin", "core/round_rect"))
-            .withVertexBinding(0, DefaultVertexFormat.POSITION_COLOR)
-            .withPrimitiveTopology(PrimitiveTopology.QUADS)
-            .withBindGroupLayout(BindGroupLayout.builder().withUniform("u", UniformType.UNIFORM_BUFFER).build())
-            .withColorTargetState(ColorTargetState(BlendFunction.TRANSLUCENT_PREMULTIPLIED_ALPHA))
+    val PIPELINE_ROUND_RECT: RenderPipeline = roundRect("round_rect", RenderPipelines.GUI_SNIPPET, "round_rect")
+    val PIPELINE_ROUND_RECT_TEXTURED: RenderPipeline = roundRect("round_rect_textured", RenderPipelines.GUI_TEXTURED_SNIPPET, "round_rect")
+    val PIPELINE_ROUND_RECT_SHADOW: RenderPipeline = roundRect("round_rect_shadow", RenderPipelines.GUI_SNIPPET, "round_rect_shadow")
+
+    private fun roundRect(name: String, snippet: RenderPipeline.Snippet, vertex: String): RenderPipeline = RenderPipelines.register(
+        RenderPipeline.builder(snippet)
+            .withLocation(Identifier.fromNamespaceAndPath("odin", "pipeline/$name"))
+            .withFragmentShader(Identifier.fromNamespaceAndPath("odin", "core/$name"))
+            .withVertexShader(Identifier.fromNamespaceAndPath("odin", "core/$vertex"))
+            .withVertexBinding(0, RoundedRectRenderer.FORMAT)
             .build()
     )
 }

@@ -25,7 +25,7 @@ object SplitsManager {
                 tickCounter = 0L
                 currentSplits = when (LocationUtils.currentArea) {
                     Island.Dungeon -> {
-                        if (Splits.splitLocation == 2) return@on
+                        if (Splits.splitLocation == Splits.SplitLocation.KUUDRA_ONLY) return@on
                         val floor = DungeonListener.floor ?: return@on
 
                         with(dungeonSplits[floor.floorNumber].toMutableList()) {
@@ -41,7 +41,7 @@ object SplitsManager {
                     }
 
                     Island.Kuudra -> {
-                        if (Splits.splitLocation == 1) return@on
+                        if (Splits.splitLocation == Splits.SplitLocation.DUNGEONS_ONLY) return@on
                         when (KuudraUtils.kuudraTier) {
                             5 -> SplitsGroup(kuudraT5SplitsGroup.map { it.copy(time = 0L, ticks = 0L) }, Splits.kuudraT5PBs)
                             4 -> SplitsGroup(kuudraSplitsGroup.map { it.copy(time = 0L, ticks = 0L) }, Splits.kuudraT4PBs)

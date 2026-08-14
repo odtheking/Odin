@@ -9,6 +9,7 @@ import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.modMessage
 import com.odtheking.odin.utils.render.drawStyledBox
+import com.odtheking.odin.utils.render.BoxStyle
 import com.odtheking.odin.utils.render.textDim
 import com.odtheking.odin.utils.renderBoundingBox
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
@@ -61,7 +62,7 @@ object LividSolver : Module(
         on<RenderEvent.Extract> {
             if (!DungeonUtils.inBoss || !DungeonUtils.isFloor(5) || mc.player?.getEffect(MobEffects.BLINDNESS) != null) return@on
             currentLivid.entity?.let { entity ->
-                drawStyledBox(entity.renderBoundingBox, highlightColor, 2, true)
+                drawStyledBox(entity.renderBoundingBox, highlightColor, BoxStyle.FILLED_OUTLINE, true)
             }
         }
 

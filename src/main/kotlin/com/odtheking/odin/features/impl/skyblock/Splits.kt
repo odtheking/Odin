@@ -84,7 +84,9 @@ object Splits : Module(
     private val bossEntrySplit by BooleanSetting("Boss Entry Split", true, desc = "Split for boss entry.")
     val sendSplits by BooleanSetting("Send Splits", true, desc = "Send splits to chat.")
     val showTickTime by BooleanSetting("Show Tick Time", true, desc = "Show tick-based time alongside real time.")
-    val splitLocation by SelectorSetting("Split Location", "Both", listOf("Both", "Dungeons Only", "Kuudra Only"), desc = "Which areas to show splits in.")
+    val splitLocation by SelectorSetting("Location", SplitLocation.BOTH, desc = "Which areas to show splits in.")
+
+    enum class SplitLocation { BOTH, DUNGEONS_ONLY, KUUDRA_ONLY }
 
     val kuudraT5PBs = PersonalBest(this, "KuudraT5")
     val kuudraT4PBs = PersonalBest(this, "KuudraT4")

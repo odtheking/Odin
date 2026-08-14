@@ -62,7 +62,7 @@ object ModuleManager {
             PuzzleSolvers, BlessingDisplay, LeapMenu, SecretClicked, MapInfo, Mimic, DungeonQueue,
             DoorHighlight, BloodCamp, PositionalMessages, TerracottaTimer, BreakerDisplay, LividSolver,
             InvincibilityTimer, SpiritBear, DungeonWaypoints, ExtraStats, BetterPartyFinder, Croesus, MageBeam,
-            SecretsCounter, DungeonMap, PuzzleHud, RoomClear, Test,
+            SecretsCounter, DungeonMap, PuzzleHud, RoomClear,
 
             // boss
             TerminalSimulator, TerminalSolver, TerminalTimes, TerminalSounds, TickTimers, ArrowAlign,
@@ -85,7 +85,7 @@ object ModuleManager {
         // hashmap, but would need to keep track when setting values change
         on<InputEvent> {
             for (setting in keybindSettingsCache) {
-                if (setting.value.value == key.value) setting.onPress?.invoke()
+                if (setting.boundKey.value == key.value) setting.onPress?.invoke()
             }
         }
 
@@ -115,7 +115,10 @@ object ModuleManager {
 
             for ((_, setting) in module.settings) {
                 when (setting) {
-                    is KeybindSetting -> keybindSettingsCache.add(setting)
+                    is KeybindSetting -> {
+                        keybindSettingsCache.add(setting)
+                        setting.registerKeyMapping(module.name)
+                    }
                     is HUDSetting -> hudSettingsCache.add(setting)
                 }
             }
@@ -140,17 +143,14 @@ object ModuleManager {
         for (config in configs) {
             config.save()
         }
+        KeybindSetting.saveOptionsIfChanged()
     }
 
     fun render(guiGraphics: GuiGraphicsExtractor, tickCounter: DeltaTracker) {
         if (mc.level == null || mc.player == null || mc.gui.screen() == HudManager) return
 
-        guiGraphics.pose().pushMatrix()
-        val sf = mc.window.guiScale
-        guiGraphics.pose().scale(1f / sf, 1f / sf)
-        for (hudSettings in hudSettingsCache) {
-            if (hudSettings.isEnabled) hudSettings.value.draw(guiGraphics, false)
+        for (hudSetting in hudSettingsCache) {
+            if (hudSetting.isEnabled) hudSetting.hud.draw(guiGraphics, false)
         }
-        guiGraphics.pose().popMatrix()
     }
 }

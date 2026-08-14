@@ -30,12 +30,12 @@ object BetterPartyFinder : Module(
     private val sendKickLine by BooleanSetting("Send Kick Line", true, desc = "Sends a line in party chat to kick a player.").withDependency { statsDisplay }
 
     private val autoKickToggle by BooleanSetting("Auto Kick", desc = "Automatically kicks players who don't meet requirements.")
-    private val floor by SelectorSetting("Floor", "F7", Floor.entries.mapNotNull { if (!it.isMM) it.name else null }, desc = "Determines which floor to check pb.").withDependency { autoKickToggle }
+    private val floor by SelectorSetting("Floor", Floor.F7, desc = "Determines which floor to check pb.", options = Floor.entries.filter { !it.isMM }).withDependency { autoKickToggle }
     private val mmToggle by BooleanSetting("Master Mode", true, desc = "Use master mode times").withDependency { autoKickToggle }
     private val informKicked by BooleanSetting("Inform Kicked", desc = "Informs the player why they were kicked.").withDependency { autoKickToggle }
-    private val maximumSeconds by NumberSetting("Minimum PB", 400, 60, 480, 5, desc = "Minimum amount of seconds before kicking.", unit = "s").withDependency { autoKickToggle }
-    private val secretsMin by NumberSetting("Minimum Secrets", 0, 0, 200, desc = "Secret minimum in thousands for kicking.", unit = "k").withDependency { autoKickToggle }
-    private val magicalPowerReq by NumberSetting("Magical Power", 1300, 0, 2000, 20, desc = "Magical power minimum for kicking.").withDependency { autoKickToggle  }
+    private val maximumSeconds by NumberSetting("Minimum PB", 400, 60..480, 5, desc = "Minimum amount of seconds before kicking.", unit = "s").withDependency { autoKickToggle }
+    private val secretsMin by NumberSetting("Minimum Secrets", 0, 0..200, desc = "Secret minimum in thousands for kicking.", unit = "k").withDependency { autoKickToggle }
+    private val magicalPowerReq by NumberSetting("Magical Power", 1300, 0..2000, 20, desc = "Magical power minimum for kicking.").withDependency { autoKickToggle  }
     private val apiOffKick by BooleanSetting("Api Off Kick", false, desc = "Kicks if the player's api is off. If this setting is disabled, it will ignore the item check when players have api disabled.").withDependency { autoKickToggle }
 
     private val kickCache by BooleanSetting("Kick Cache", true, desc = "Caches kicked players to automatically kick when they attempt to rejoin.").withDependency { autoKickToggle }

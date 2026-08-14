@@ -3,8 +3,8 @@ package com.odtheking.odin.clickgui.settings.impl
 import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.google.gson.reflect.TypeToken
+import com.odtheking.odin.clickgui.settings.AbstractSetting
 import com.odtheking.odin.clickgui.settings.Saving
-import com.odtheking.odin.clickgui.settings.Setting
 import java.lang.reflect.Type
 
 /**
@@ -16,7 +16,7 @@ class ListSetting<E, T : MutableCollection<E>>(
     name: String,
     override val default: T,
     private val type: Type
-) : Setting<T>(name, description = ""), Saving {
+) : AbstractSetting<T>(name, description = ""), Saving {
 
     override var value: T = default
 

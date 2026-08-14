@@ -77,8 +77,6 @@ object RenderBatchManager {
             poseStack.renderQueuedBeaconBeams(renderConsumer.beaconBeams, collector, camera)
             poseStack.renderQueuedTexts(renderConsumer.texts, collector, camera)
             renderConsumer.clear()
-
-            RoundRectPIPRenderer.clear()
         }
     }
 }
@@ -242,16 +240,13 @@ private fun PoseStack.renderQueuedTexts(consumer: List<TextData>, collector: Sub
             .rotate(textData.cameraRotation)
             .scale(scaleFactor, -scaleFactor, scaleFactor)
 
-        // NOTE(26.2 port): Font.drawInBatch was removed; text is now submitted through the
-        // SubmitNodeCollector. The trailing int args (color / backgroundColor / outline / light)
-        // ordering should be verified in-game.
         collector.submitText(
             this,
             -textData.textWidth / 2f, 0f,
             FormattedCharSequence.forward(textData.text, Style.EMPTY),
             true,
-            if (textData.depth) Font.DisplayMode.POLYGON_OFFSET else Font.DisplayMode.SEE_THROUGH,
-            -1, 0, 0, LightCoordsUtil.FULL_BRIGHT
+            if (textData.depth) Font.DisplayMode.POLYGON_OFFSET else Font.DisplayMode.SEE_THROUGH, LightCoordsUtil.FULL_BRIGHT,
+            -1, 0, 0
         )
 
         popPose()
@@ -295,16 +290,18 @@ fun RenderEvent.Extract.drawFilledBox(aabb: AABB, color: Color, depth: Boolean =
     )
 }
 
+enum class BoxStyle { FILLED, OUTLINE, FILLED_OUTLINE }
+
 fun RenderEvent.Extract.drawStyledBox(
     aabb: AABB,
     color: Color,
-    style: Int = 0,
+    style: BoxStyle = BoxStyle.FILLED,
     depth: Boolean = true
 ) {
     when (style) {
-        0 -> drawFilledBox(aabb, color, depth = depth)
-        1 -> drawWireFrameBox(aabb, color, depth = depth)
-        2 -> {
+        BoxStyle.FILLED -> drawFilledBox(aabb, color, depth = depth)
+        BoxStyle.OUTLINE -> drawWireFrameBox(aabb, color, depth = depth)
+        BoxStyle.FILLED_OUTLINE -> {
             drawFilledBox(aabb, color.multiplyAlpha(0.5f), depth = depth)
             drawWireFrameBox(aabb, color, depth = depth)
         }

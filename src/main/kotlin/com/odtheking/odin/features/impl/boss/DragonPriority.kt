@@ -34,7 +34,7 @@ object DragonPriority {
         spawningDragons.sortBy { priorityList.indexOf(it) }
 
         if (totalPower >= easyPower) {
-            if (soloDebuff == 1 && playerClass == DungeonClass.TANK && (spawningDragons.any { it == WitherDragonsEnum.Purple } || soloDebuffOnAll))
+            if (soloDebuff == WitherDragons.SoloDebuff.HEALER && playerClass == DungeonClass.TANK && (spawningDragons.any { it == WitherDragonsEnum.Purple } || soloDebuffOnAll))
                 spawningDragons.sortByDescending { priorityList.indexOf(it) }
             else if (playerClass == DungeonClass.HEALER && (spawningDragons.any { it == WitherDragonsEnum.Purple } || soloDebuffOnAll))
                 spawningDragons.sortByDescending { priorityList.indexOf(it) }

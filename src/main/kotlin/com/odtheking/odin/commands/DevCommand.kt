@@ -26,7 +26,6 @@ import com.odtheking.odin.utils.skyblock.Supply
 import com.odtheking.odin.utils.skyblock.dungeon.Blessing
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.skyblock.dungeon.Floor
-import com.odtheking.odin.utils.ui.rendering.NVGRenderer
 import kotlinx.coroutines.launch
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.network.chat.Component
@@ -78,7 +77,7 @@ val devCommand = Commodore("oddev") {
             for ((category, modulesInCategory) in ModuleManager.modulesByCategory) {
                 featureList.appendLine("Category: ${category.name}")
                 for (module in modulesInCategory.sortedByDescending {
-                    NVGRenderer.textWidth(it.name, 16f, NVGRenderer.defaultFont)
+                    mc.font.width(it.name)
                 }) featureList.appendLine("- ${module.name}: ${module.description}")
                 featureList.appendLine()
             }

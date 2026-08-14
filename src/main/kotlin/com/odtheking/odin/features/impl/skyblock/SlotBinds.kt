@@ -1,6 +1,7 @@
 package com.odtheking.odin.features.impl.skyblock
 
 import com.odtheking.odin.clickgui.settings.impl.*
+import com.odtheking.odin.clickgui.settings.impl.label
 import com.odtheking.odin.events.GuiEvent
 import com.odtheking.odin.events.ScreenEvent
 import com.odtheking.odin.events.core.on
@@ -21,15 +22,23 @@ object SlotBinds : Module(
 ) {
     private val setNewSlotbind by KeybindSetting("Bind set key", GLFW.GLFW_KEY_UNKNOWN, desc = "Key to set new bindings.")
     private val lineColor by ColorSetting("Bind Color", Colors.MINECRAFT_GREEN, desc = "Color of the line drawn between slots (used in hover modes).")
-    private val lineWidth by NumberSetting("Line Width", 0.5f, 0.1, 2f, 0.1, desc = "Width of the line drawn between slots.")
-    private val displayModeOptions = listOf("Hover", "On Hover + Shift", "None")
-    private val lineDisplayMode by SelectorSetting("Line Display", "Hover", displayModeOptions, desc = "When to show lines between bound slots.")
-    private val profileOptions = listOf("Profile 1", "Profile 2", "Profile 3", "Profile 4", "Profile 5", "Profile 6")
-    private val currentProfile by SelectorSetting("Profile", "Profile 1", profileOptions, desc = "Select which profile to use.")
+    private val lineWidth by NumberSetting("Line Width", 0.5f, 0.1..2.0, 0.1, desc = "Width of the line drawn between slots.")
+    private val lineDisplayMode by SelectorSetting("Line Display", LineDisplay.HOVER, desc = "When to show lines between bound slots.")
+    private val currentProfile by SelectorSetting("Profile", Profile.PROFILE_1, desc = "Select which profile to use.")
+
+    enum class LineDisplay(private val label: String) {
+        HOVER("Hover"),
+        ON_HOVER_SHIFT("On Hover + Shift"),
+        NONE("None");
+
+        override fun toString(): String = label
+    }
+
+    enum class Profile { PROFILE_1, PROFILE_2, PROFILE_3, PROFILE_4, PROFILE_5, PROFILE_6 }
     private val profileData by MapSetting("ProfileData", mutableMapOf<String, MutableMap<Int, Int>>())
 
     private val currentProfileName: String
-        get() = profileOptions[currentProfile]
+        get() = currentProfile.label
 
     private val slotBinds: MutableMap<Int, Int>
         get() = profileData.getOrPut(currentProfileName) { mutableMapOf() }
@@ -60,7 +69,7 @@ object SlotBinds : Module(
             previousSlot?.let { slot ->
                 if (slot == clickedSlot) return@on modMessage("§cYou can't bind a slot to itself.")
                 if (slot !in 36..44 && clickedSlot !in 36..44) return@on modMessage("§cOne of the slots must be in the hotbar (36–44).")
-                modMessage("§aAdded bind from slot §b$slot §ato §d${clickedSlot} §7(${profileOptions[currentProfile]}).")
+                modMessage("§aAdded bind from slot §b$slot §ato §d${clickedSlot} §7($currentProfileName).")
 
                 slotBinds[slot] = clickedSlot
                 ModuleManager.saveConfigurations()
@@ -69,7 +78,7 @@ object SlotBinds : Module(
                 slotBinds.entries.firstOrNull { it.key == clickedSlot }?.let {
                     slotBinds.remove(it.key)
                     ModuleManager.saveConfigurations()
-                    return@on modMessage("§cRemoved bind from slot §b${it.key} §cto §d${it.value} §7(${profileOptions[currentProfile]}).")
+                    return@on modMessage("§cRemoved bind from slot §b${it.key} §cto §d${it.value} §7($currentProfileName).")
                 }
                 previousSlot = clickedSlot
             }
@@ -89,10 +98,9 @@ object SlotBinds : Module(
             } ?: return@on
 
             val shouldDraw = when (lineDisplayMode) {
-                0 -> previousSlot != null || boundSlot != null
-                1 -> previousSlot != null || (boundSlot != null && mc.hasShiftDown())
-                2 -> previousSlot != null
-                else -> false
+                LineDisplay.HOVER -> previousSlot != null || boundSlot != null
+                LineDisplay.ON_HOVER_SHIFT -> previousSlot != null || (boundSlot != null && mc.hasShiftDown())
+                LineDisplay.NONE -> previousSlot != null
             }
             if (!shouldDraw) return@on
 

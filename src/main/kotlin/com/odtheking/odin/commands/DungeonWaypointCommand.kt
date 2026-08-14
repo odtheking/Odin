@@ -3,6 +3,7 @@ package com.odtheking.odin.commands
 import com.github.stivais.commodore.Commodore
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.OdinMod.scope
+import com.odtheking.odin.clickgui.settings.impl.label
 import com.odtheking.odin.config.DungeonWaypointConfig
 import com.odtheking.odin.features.impl.dungeon.dungeonwaypoints.*
 import com.odtheking.odin.utils.Color
@@ -37,8 +38,8 @@ val dungeonWaypointsCommand = Commodore("dwp", "dungeonwaypoints") {
 
     literal("type").runs { type: String ->
         DungeonWaypoints.WaypointType.getByName(type)?.let {
-            DungeonWaypoints.waypointType = it.ordinal
-            modMessage("Waypoint type changed to: ${it.displayName}")
+            DungeonWaypoints.waypointType = it
+            modMessage("Waypoint type changed to: ${it.label}")
         } ?: modMessage("§cInvalid waypoint type!")
     }
 

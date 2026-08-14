@@ -34,7 +34,7 @@ object KingRelics : Module(
 
     private val relicAnnounceTime by BooleanSetting("Relic Time", true, desc = "Announces the time it took to place the relic.")
     private val relicBeacon by BooleanSetting("Relic Beacon", true, desc = "Draws a beacon at the relic cauldron.")
-    private val relicSpawnTicks by NumberSetting("Relic Spawn Ticks", 38, 0, 100, desc = "The number of ticks it takes for the relic to spawn.")
+    private val relicSpawnTicks by NumberSetting("Relic Spawn Ticks", 38, 0..100, desc = "The number of ticks it takes for the relic to spawn.")
 
     private var currentRelic: Relic? = null
     private var serverTickCounter = 0L

@@ -22,11 +22,11 @@ object MageBeam : Module(
     name = "Mage Beam",
     description = "Allows you to customize the rendering of the mage beam ability."
 ) {
-    private val duration by NumberSetting("Duration", 40, 1, 100, 1, unit = "ticks", desc = "The duration of the beam in ticks.")
+    private val duration by NumberSetting("Duration", 40, 1..100, 1, unit = "ticks", desc = "The duration of the beam in ticks.")
     private val color by ColorSetting("Color", Colors.MINECRAFT_DARK_RED, true, desc = "The color of the beam.")
     private val depth by BooleanSetting("Depth Check", true, desc = "Whether or not to depth check the beam.")
     private val hideParticles by BooleanSetting("Hide Particles", true, desc = "Whether or not to hide the particles.")
-    private val minPoints by NumberSetting("Min Points", 3, 2, 10, 1, desc = "Minimum number of points required to render a beam.")
+    private val minPoints by NumberSetting("Min Points", 3, 2..10, 1, desc = "Minimum number of points required to render a beam.")
 
     private data class MageBeamData(
         val points: CopyOnWriteArrayList<Vec3> = CopyOnWriteArrayList(),

@@ -32,7 +32,11 @@ object MapInfo : Module(
     private val disableInBoss by BooleanSetting("Disable in boss", true, desc = "Disables the information display when you're in boss.")
     private val scoreTitle by BooleanSetting("300 Score Title", true, desc = "Displays a title on 300 score.")
     private val printWhenScore by BooleanSetting("Print Score Time", true, desc = "Sends elapsed time in chat when 300 score is reached.")
-    val togglePaul by SelectorSetting("Paul Settings", "Automatic", arrayListOf("Automatic", "Force Disable", "Force Enable"), desc = "Toggle Paul's settings.")
+    val togglePaul by SelectorSetting("Paul Settings", PaulSetting.AUTOMATIC, desc = "Toggle Paul's settings.")
+
+    enum class PaulSetting { AUTOMATIC, FORCE_DISABLE, FORCE_ENABLE }
+    enum class SecretCount { MINIMUM, REMAINING }
+    enum class DeathDisplay { DEATHS, UNFOUND }
 
     private var cachedScore = 0
     private var cachedSecretCount = 0
@@ -58,7 +62,7 @@ object MapInfo : Module(
         val cryptCount = cachedCryptCount
 
         val showRemaining = fullAddRemaining && alternate
-        val useNeededSecrets = fullRemaining != 0 || showRemaining
+        val useNeededSecrets = fullRemaining != SecretCount.MINIMUM || showRemaining
 
         val scoreText = buildString {
             append("§7Score: ")
@@ -78,7 +82,7 @@ object MapInfo : Module(
             append(totalSecrets)
         }
 
-        val unknownSecretsText = if (unknown == 0) {
+        val unknownSecretsText = if (unknown == DeathDisplay.DEATHS) {
             buildString {
                 append("§7Deaths: §c")
                 append(colorizeDeaths(cachedDeathCount))
@@ -125,11 +129,11 @@ object MapInfo : Module(
 
     private val alternate by BooleanSetting("Flip Crypts and Score", false, desc = "Flips crypts and score.").withDependency { fullHud.enabled }
     private val fullAddRemaining by BooleanSetting("Include Remaining", false, desc = "Adds remaining to the secrets display.").withDependency { alternate && fullHud.enabled }
-    private val fullRemaining by SelectorSetting("Remaining Secrets", "Minimum", options = arrayListOf("Minimum", "Remaining"), desc = "Display minimum secrets or secrets until s+.").withDependency { !(fullAddRemaining && alternate) && fullHud.enabled }
-    private val fullWidth by NumberSetting("Width", 160, 160, 200, 1, desc = "The width of the hud.").withDependency { fullHud.enabled }
-    private val unknown by SelectorSetting("Deaths", "Deaths", arrayListOf("Deaths", "Unfound"), desc = "Display deaths or unfound secrets. (Unknown secrets are secrets in rooms that haven't been discovered yet. May not be helpful in full party runs.)").withDependency { fullHud.enabled }
+    private val fullRemaining by SelectorSetting("Remaining Secrets", SecretCount.MINIMUM, desc = "Display minimum secrets or secrets until s+.").withDependency { !(fullAddRemaining && alternate) && fullHud.enabled }
+    private val fullWidth by NumberSetting("Width", 160, 160..200, 1, desc = "The width of the hud.").withDependency { fullHud.enabled }
+    private val unknown by SelectorSetting("Deaths", DeathDisplay.DEATHS, desc = "Display deaths or unfound secrets. (Unknown secrets are secrets in rooms that haven't been discovered yet. May not be helpful in full party runs.)").withDependency { fullHud.enabled }
     private val fullBackground by BooleanSetting("Hud Background", false, desc = "Render a background behind the score info.").withDependency { fullHud.enabled }
-    private val fullMargin by NumberSetting("Hud Margin", 0f, 0f, 5f, 1f, desc = "The margin around the hud.").withDependency { fullBackground && fullHud.enabled }
+    private val fullMargin by NumberSetting("Hud Margin", 0f, 0.0..5.0, 1f, desc = "The margin around the hud.").withDependency { fullBackground && fullHud.enabled }
     private val fullColor by ColorSetting("Hud Background Color", Colors.MINECRAFT_DARK_GRAY.withAlpha(0.5f), true, desc = "The color of the background.").withDependency { fullBackground && fullHud.enabled }
 
     private val compactSecrets: HudElement by HUD("Compact Secrets", "Displays a compact secrets hud with score and secrets.") {
@@ -147,7 +151,7 @@ object MapInfo : Module(
                 append((neededSecrets - secretCount).coerceAtLeast(0))
             }
             append("§7-§e")
-            append(if (compactRemaining == 0 || fullAddRemaining) neededSecrets else (neededSecrets - secretCount).coerceAtLeast(0))
+            append(if (compactRemaining == SecretCount.MINIMUM || fullAddRemaining) neededSecrets else (neededSecrets - secretCount).coerceAtLeast(0))
             append("§7-§c")
             append(totalSecrets)
         }
@@ -163,9 +167,9 @@ object MapInfo : Module(
     }
 
     private val compactAddRemaining by BooleanSetting("Compact Include remaining", false, desc = "Adds remaining to the secrets display.").withDependency { compactSecrets.enabled }
-    private val compactRemaining by SelectorSetting("Min Secrets", "Minimum", options = arrayListOf("Minimum", "Remaining"), desc = "Display minimum secrets or secrets until s+.").withDependency { !compactAddRemaining && compactSecrets.enabled }
+    private val compactRemaining by SelectorSetting("Min Secrets", SecretCount.MINIMUM, desc = "Display minimum secrets or secrets until s+.").withDependency { !compactAddRemaining && compactSecrets.enabled }
     private val compactSecretBackground by BooleanSetting("Secret Background", false, desc = "Render a background behind the score info.").withDependency { compactSecrets.enabled }
-    private val compactSecretMargin by NumberSetting("Secret Margin", 0f, 0f, 5f, 1f, desc = "The margin around the hud.").withDependency { compactSecretBackground && compactSecrets.enabled }
+    private val compactSecretMargin by NumberSetting("Secret Margin", 0f, 0.0..5.0, 1f, desc = "The margin around the hud.").withDependency { compactSecretBackground && compactSecrets.enabled }
     private val compactSecretColor by ColorSetting("Secret Background Color", Colors.MINECRAFT_DARK_GRAY.withAlpha(0.5f), true, desc = "The color of the background.").withDependency { compactSecretBackground && compactSecrets.enabled }
 
     private val compactScore: HudElement by HUD("Compact Score", "Displays a compact score hud with score info.") {
@@ -197,7 +201,7 @@ object MapInfo : Module(
     }
 
     private val compactScoreBackground by BooleanSetting("Score Background", false, desc = "Render a background behind the score info.").withDependency { compactScore.enabled }
-    private val compactScoreMargin by NumberSetting("Score Margin", 0f, 0f, 5f, 1f, desc = "The margin around the hud.").withDependency { compactScoreBackground && compactScore.enabled }
+    private val compactScoreMargin by NumberSetting("Score Margin", 0f, 0.0..5.0, 1f, desc = "The margin around the hud.").withDependency { compactScoreBackground && compactScore.enabled }
     private val compactScoreColor by ColorSetting("Score Background Color", Colors.MINECRAFT_DARK_GRAY.withAlpha(0.5f), true, desc = "The color of the background.").withDependency { compactScoreBackground && compactScore.enabled }
 
     private val roomSecrets by HUD("Room Secrets", "Displays the number of secrets in the current room.") {

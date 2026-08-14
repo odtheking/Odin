@@ -2,189 +2,55 @@ package com.odtheking.odin.clickgui.settings.impl
 
 import com.google.gson.Gson
 import com.google.gson.JsonElement
-import com.odtheking.odin.clickgui.settings.ClickGUI
-import com.odtheking.odin.clickgui.settings.ClickGUI.gray38
-import com.odtheking.odin.clickgui.settings.Panel
+import com.odtheking.odin.OdinMod.mc
+import com.odtheking.odin.clickgui.GuiTheme
 import com.odtheking.odin.clickgui.settings.RenderableSetting
 import com.odtheking.odin.clickgui.settings.Saving
-import com.odtheking.odin.features.impl.render.ClickGUIModule
+import com.odtheking.odin.clickgui.widget.isOver
+import com.odtheking.odin.clickgui.widget.stripChrome
 import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.Color.Companion.darker
 import com.odtheking.odin.utils.Color.Companion.hsbMax
 import com.odtheking.odin.utils.Color.Companion.withAlpha
 import com.odtheking.odin.utils.Colors
-import com.odtheking.odin.utils.ui.TextInputHandler
-import com.odtheking.odin.utils.ui.animations.EaseInOutAnimation
-import com.odtheking.odin.utils.ui.animations.LinearAnimation
-import com.odtheking.odin.utils.ui.isAreaHovered
-import com.odtheking.odin.utils.ui.rendering.Gradient
-import com.odtheking.odin.utils.ui.rendering.NVGRenderer
-import net.minecraft.client.input.CharacterEvent
-import net.minecraft.client.input.KeyEvent
+import com.odtheking.odin.utils.render.Corners
+import com.odtheking.odin.utils.render.GradientDirection
+import com.odtheking.odin.utils.render.circle
+import com.odtheking.odin.utils.render.pushScissor
+import com.odtheking.odin.utils.render.roundedGradient
+import com.odtheking.odin.utils.render.roundedRect
+import com.odtheking.odin.utils.render.roundedRectOutlined
+import com.odtheking.odin.utils.render.roundedTexture
+import com.odtheking.odin.utils.ui.animations.Easing
+import com.odtheking.odin.utils.ui.animations.Fade
+import com.odtheking.odin.utils.ui.animations.Tween
+import net.minecraft.client.gui.Font
+import net.minecraft.client.gui.GuiGraphicsExtractor
+import net.minecraft.client.gui.components.EditBox
+import net.minecraft.client.gui.components.events.GuiEventListener
 import net.minecraft.client.input.MouseButtonEvent
+import net.minecraft.network.chat.Component
+import net.minecraft.resources.Identifier
+import kotlin.math.roundToInt
 
 class ColorSetting(
     name: String,
     override val default: Color,
-    private var allowAlpha: Boolean = false,
+    private val allowAlpha: Boolean = false,
     desc: String
 ) : RenderableSetting<Color>(name, desc), Saving {
 
     override var value: Color = default.copy()
 
-    private val expandAnim = EaseInOutAnimation(200)
-    private val defaultHeight = Panel.HEIGHT
-    private var extended = false
+    private val hexLength = if (allowAlpha) 8 else 6
 
-    private val mainSliderAnim = LinearAnimation<Float>(100)
-    private var mainSliderPrevSat = 0f
-    private var mainSliderPrevBright = 0f
+    private val hex: String get() = value.hex(allowAlpha)
 
-    private val hueSliderAnim = LinearAnimation<Float>(100)
-    private var hueSliderPrev = 0f
-
-    private val alphaSliderAnim = LinearAnimation<Float>(100)
-    private var alphaSliderPrev = 0f
-
-    var section: Int? = null
-
-    private var hexString = value.hex(allowAlpha)
-        set(value) {
-            if (value == field) return
-            field = value
-            hexWidth = NVGRenderer.textWidth(field, 16f, NVGRenderer.defaultFont)
-        }
-
-    private var hexWidth = -1f
-
-    private val textInputHandler = TextInputHandler(
-        textProvider = { textInputValue },
-        textSetter = { textInputValue = it }
-    )
-
-    private var textInputValue
-        get() = hexString
-        set(textValue) {
-            if (textValue.length > 8 && allowAlpha) return
-            if (textValue.length > 6 && !allowAlpha) return
-            hexString = textValue.filter { it in '0'..'9' || it in 'A'..'F' || it in 'a'..'f' }
-
-            if (hexString.length == 8 && allowAlpha || hexString.length == 6 && !allowAlpha)
-                value = Color(if (allowAlpha) hexString else hexString.padEnd(8, 'F'))
-        }
-
-    override fun render(x: Float, y: Float, mouseX: Float, mouseY: Float): Float {
-        super.render(x, y, mouseX, mouseY)
-        if (hexWidth < 0) {
-            hexString = value.hex(allowAlpha)
-            hexWidth = NVGRenderer.textWidth(hexString, 16f, NVGRenderer.defaultFont)
-        }
-
-        NVGRenderer.text(name, x + 6f, y + defaultHeight / 2f - 8f, 16f, Colors.WHITE.rgba, NVGRenderer.defaultFont)
-        NVGRenderer.rect(x + width - 40f, y + defaultHeight / 2f - 10f, 34f, 20f, value.rgba, 5f)
-        NVGRenderer.hollowRect(x + width - 40f, y + defaultHeight / 2f - 10f, 34f, 20f, 2f, value.withAlpha(1f).darker().rgba, 5f)
-
-        if (!extended && !expandAnim.isAnimating()) return defaultHeight
-
-        if (expandAnim.isAnimating()) NVGRenderer.pushScissor(x, y + defaultHeight, width, getHeight() - defaultHeight)
-        // SATURATION AND BRIGHTNESS
-        NVGRenderer.gradientRect(x + 6f, y + defaultHeight + 4f, width - 12f, 169f, Colors.WHITE.rgba, value.hsbMax().rgba, Gradient.LeftToRight, 5f)
-        NVGRenderer.gradientRect(x + 6f, y + defaultHeight + 4f, width - 12f, 170f, Colors.TRANSPARENT.rgba, Colors.BLACK.rgba, Gradient.TopToBottom, 5f)
-
-        val animatedSat = mainSliderAnim.get(mainSliderPrevSat, value.saturation, false)
-        val animatedBright = mainSliderAnim.get(mainSliderPrevBright, value.brightness, false)
-        val sbPointer = Pair((x + 6f + animatedSat * 220), (y + 38f + (1 - animatedBright) * 170))
-        NVGRenderer.dropShadow(sbPointer.first - 8.5f, sbPointer.second - 8.5f, 17f, 17f, 2.5f, 2.5f, 9f)
-        NVGRenderer.circle(sbPointer.first, sbPointer.second, 8f, Colors.WHITE.rgba)
-        NVGRenderer.circle(sbPointer.first, sbPointer.second, 7f, value.withAlpha(1f).rgba)
-
-        // HUE
-        NVGRenderer.image(ClickGUI.hueImage, x + 6f, y + 212f, width - 12f, 15f, 5f)
-        NVGRenderer.hollowRect(x + 6f, y + 212f, width - 12f, 15f, 1f, gray38.rgba, 5f)
-
-        val huePos = x + 6f + hueSliderAnim.get(hueSliderPrev, value.hue, false) * 219f to y + 219f
-        NVGRenderer.dropShadow(huePos.first - 8.5f, huePos.second - 8.5f, 17f, 17f, 2.5f, 2.5f, 9f)
-        NVGRenderer.circle(huePos.first, huePos.second, 8f, Colors.WHITE.rgba)
-        NVGRenderer.circle(huePos.first, huePos.second, 7f, value.hsbMax().withAlpha(1f).rgba)
-
-        // ALPHA
-        if (allowAlpha) {
-            NVGRenderer.gradientRect(x + 6f, y + 232f, width - 12f, 15f, Colors.TRANSPARENT.rgba, value.withAlpha(1f).rgba, Gradient.LeftToRight, 5f)
-
-            val alphaPos = Pair((x + 6f + alphaSliderAnim.get(alphaSliderPrev, value.alphaFloat, false) * 217f), y + 240f)
-            NVGRenderer.dropShadow(alphaPos.first - 8.5f, alphaPos.second - 8.5f, 17f, 17f, 2.5f, 2.5f, 9f)
-            NVGRenderer.circle(alphaPos.first, alphaPos.second, 8f, Colors.WHITE.darker(.5f).rgba)
-            NVGRenderer.circle(alphaPos.first, alphaPos.second, 7f, Colors.WHITE.rgba)
-        }
-
-        handleColorDrag(mouseX, mouseY, x, y, width)
-
-        if (section != null) hexString = value.hex(allowAlpha)
-
-        // main width - text input
-        val sidePadding = (width - width / 2) / 2f
-
-        val rectX = x + sidePadding
-        val actualHeight = defaultHeight + if (allowAlpha) 250f else 230f
-
-        NVGRenderer.rect(rectX, y + actualHeight - 28f, width / 2, 24f, gray38.rgba, 4f)
-        NVGRenderer.hollowRect(rectX, y + actualHeight - 28f, width / 2, 24f, 2f, ClickGUIModule.clickGUIColor.rgba, 4f)
-
-        textInputHandler.x = rectX + (width / 4) - (hexWidth / 2)
-        textInputHandler.y = y + actualHeight - 26f
-        textInputHandler.width = width / 2
-        textInputHandler.draw(mouseX, mouseY)
-
-        if (expandAnim.isAnimating()) NVGRenderer.popScissor()
-        return getHeight()
+    fun applyHex(hex: String) {
+        val digits = hex.filter { it.isHex() }
+        if (digits.length != hexLength) return
+        value = Color(digits.padEnd(8, 'F'))
     }
-
-    override fun mouseClicked(mouseX: Float, mouseY: Float, click: MouseButtonEvent): Boolean {
-        if (isHovered) {
-            expandAnim.start()
-            extended = !extended
-            return true
-        }
-
-        if (!extended) return false
-        textInputHandler.mouseClicked(mouseX, mouseY, click)
-
-        section = when {
-            isAreaHovered(lastX + 6f, lastY + 36f, width - 12f, 170f, true) -> 0 // sat & brightness
-            isAreaHovered(lastX + 6f, lastY + 212f, width - 12f, 15f, true) -> 1 // hue
-            isAreaHovered(lastX + 6f, lastY + 232, width - 12f, 15f, true) && allowAlpha -> 2 // alpha
-            else -> null
-        }
-
-        return section != null
-    }
-
-    override fun mouseReleased(click: MouseButtonEvent) {
-        textInputHandler.mouseReleased()
-        section = null
-    }
-
-    override fun keyPressed(input: KeyEvent): Boolean {
-        return if (extended) textInputHandler.keyPressed(input)
-        else false
-    }
-
-    override fun keyTyped(input: CharacterEvent): Boolean {
-        return if (extended) textInputHandler.keyTyped(input)
-        else false
-    }
-
-    override fun getHeight(): Float =
-        expandAnim.get(defaultHeight, defaultHeight + if (allowAlpha) 250f else 230f, !extended)
-
-    override val isHovered: Boolean
-        get() = isAreaHovered(
-            lastX + width - 40f,
-            lastY + defaultHeight / 2f - 10f,
-            34f,
-            20f,
-            true
-        )
 
     override fun write(gson: Gson): JsonElement = gson.toJsonTree(value, Color::class.java)
 
@@ -192,39 +58,217 @@ class ColorSetting(
         value = gson.fromJson(element, Color::class.java) ?: default.copy()
     }
 
-    private fun handleColorDrag(mouseX: Float, mouseY: Float, x: Float, y: Float, width: Float) {
-        when (section) {
-            0 -> { // Saturation & Brightness
-                val newSaturation = ((mouseX - (x + 6f)) / (width - 12f)).coerceIn(0f, 1f)
-                val newBrightness = (1f - ((mouseY - (y + 38f)) / 170f)).coerceIn(0f, 1f)
+    private enum class Slider { SATURATION, HUE, ALPHA }
 
-                if (newSaturation != value.saturation || newBrightness != value.brightness) {
-                    mainSliderPrevSat = mainSliderAnim.get(mainSliderPrevSat, value.saturation, false)
-                    mainSliderPrevBright = mainSliderAnim.get(mainSliderPrevBright, value.brightness, false)
-                    mainSliderAnim.start()
+    private val expand = Fade(EXPAND_DURATION, Easing.EASE_IN_OUT)
+    private val saturationMarker = Tween(MARKER_DURATION)
+    private val brightnessMarker = Tween(MARKER_DURATION)
+    private val hueMarker = Tween(MARKER_DURATION)
+    private val alphaMarker = Tween(MARKER_DURATION)
 
-                    value.saturation = newSaturation
-                    value.brightness = newBrightness
-                }
+    private var extended = false
+    private var holding: Slider? = null
+
+    private val hexInput by lazy {
+        HexEditBox(mc.font, GuiTheme.ROW_WIDTH / 2 - HEX_INSET * 2, HEX_FIELD_HEIGHT, Component.literal(name))
+            .stripChrome(true)
+            .apply {
+                setMaxLength(hexLength)
+                value = hex
+                setResponder(::applyHex)
             }
+    }
 
-            1 -> { // Hue
-                val newHue = ((mouseX - (x + 6f)) / (width - 12f)).coerceIn(0f, 1f)
-                if (newHue != value.hue) {
-                    hueSliderPrev = hueSliderAnim.get(hueSliderPrev, value.hue, false)
-                    hueSliderAnim.start()
-                    value.hue = newHue
-                }
-            }
+    private val barX get() = x + GuiTheme.PADDING
+    private val barWidth get() = width - GuiTheme.PADDING * 2
+    private val expandedHeight get() = if (allowAlpha) EXPANDED_WITH_ALPHA else EXPANDED
 
-            2 -> { // Alpha
-                val newAlpha = ((mouseX - (x + 6f)) / (width - 12f)).coerceIn(0f, 1f)
-                if (newAlpha != value.alphaFloat) {
-                    alphaSliderPrev = alphaSliderAnim.get(alphaSliderPrev, value.alphaFloat, false)
-                    alphaSliderAnim.start()
-                    value.alphaFloat = newAlpha
-                }
-            }
+    override fun children(): List<GuiEventListener> = if (extended) listOf(hexInput) else emptyList()
+
+    override fun measure() {
+        height = expand.lerp(extended, GuiTheme.ROW_HEIGHT, GuiTheme.ROW_HEIGHT + expandedHeight)
+    }
+
+    private var pushedHex = hex
+
+    override fun place() {
+        hexInput.x = x + width / 4 + HEX_INSET
+        hexInput.y = GuiTheme.textY(hexBoxY, HEX_BOX_HEIGHT)
+
+        val current = hex
+        if (current == pushedHex) return
+        pushedHex = current
+        if (!hexInput.isFocused) hexInput.value = current
+    }
+
+    private val hexBoxY get() = y + GuiTheme.ROW_HEIGHT + expandedHeight - HEX_BOTTOM_PAD
+
+    override fun render(graphics: GuiGraphicsExtractor, mouseX: Int, mouseY: Int) {
+        drawLabel(graphics)
+        val left = swatchX
+        val top = swatchY
+        val right = left + SWATCH_WIDTH
+        val bottom = top + SWATCH_HEIGHT
+        graphics.roundedRectOutlined(left, top, right, bottom, value.rgba, value.withAlpha(1f).darker().rgba, 1.5f, GuiTheme.RADIUS)
+
+        val revealed = height - GuiTheme.ROW_HEIGHT
+        if (revealed <= 0) return
+
+        graphics.pushScissor(x, y + GuiTheme.ROW_HEIGHT, x + width, y + GuiTheme.ROW_HEIGHT + revealed)
+
+        drawSaturationSquare(graphics)
+        drawHueBar(graphics)
+        if (allowAlpha) drawAlphaBar(graphics)
+        drawHexBox(graphics)
+        renderChildren(graphics, mouseX, mouseY)
+
+        graphics.disableScissor()
+    }
+
+    override fun onClick(event: MouseButtonEvent, doubleClick: Boolean) {
+        val mouseX = event.x().toInt()
+        val mouseY = event.y().toInt()
+
+        if (isOver(mouseX, mouseY, swatchX, swatchY, SWATCH_WIDTH, SWATCH_HEIGHT)) {
+            extended = !extended
+            if (!extended) setFocused(null)
+            return
+        }
+        if (!extended) return
+
+        if (isOver(mouseX, mouseY, x + width / 4, hexBoxY, width / 2, HEX_BOX_HEIGHT)) {
+            setFocused(hexInput)
+            hexInput.onClick(event, doubleClick)
+            return
+        }
+
+        holding = when {
+            isOver(mouseX, mouseY, barX, y + SQUARE_TOP, barWidth, SQUARE_HEIGHT) -> Slider.SATURATION
+            isOver(mouseX, mouseY, barX, y + HUE_TOP, barWidth, BAR_HEIGHT) -> Slider.HUE
+            allowAlpha && isOver(mouseX, mouseY, barX, y + ALPHA_TOP, barWidth, BAR_HEIGHT) -> Slider.ALPHA
+            else -> null
+        }
+        if (holding != null) {
+            setFocused(null)
+            seek(mouseX, mouseY)
         }
     }
+
+    override fun onDrag(event: MouseButtonEvent, dragX: Double, dragY: Double) {
+        if (holding != null) seek(event.x().toInt(), event.y().toInt())
+    }
+
+    override fun onRelease(event: MouseButtonEvent) {
+        holding = null
+    }
+
+    override fun release() {
+        holding = null
+        extended = false
+        setFocused(null)
+    }
+
+    private val swatchX get() = x + width - SWATCH_RIGHT
+    private val swatchY get() = y + (GuiTheme.ROW_HEIGHT - SWATCH_HEIGHT) / 2
+
+    private fun drawSaturationSquare(graphics: GuiGraphicsExtractor) {
+        val left = barX
+        val right = left + barWidth
+        val top = y + SQUARE_TOP
+        val bottom = top + SQUARE_HEIGHT
+        val corners = BAR_CORNERS
+
+        graphics.roundedGradient(left, top, right, bottom, Colors.WHITE.rgba, value.hsbMax().rgba, GradientDirection.LEFT_TO_RIGHT, corners)
+        graphics.roundedGradient(left, top, right, bottom, Colors.TRANSPARENT.rgba, Colors.BLACK.rgba, GradientDirection.TOP_TO_BOTTOM, corners)
+
+        saturationMarker.target(value.saturation)
+        brightnessMarker.target(value.brightness)
+        val markerX = (left + saturationMarker.value * barWidth).roundToInt()
+        val markerY = (top + (1f - brightnessMarker.value) * SQUARE_HEIGHT).roundToInt()
+        graphics.circle(markerX, markerY, MARKER_RADIUS, Colors.WHITE.rgba)
+    }
+
+    private fun drawHueBar(graphics: GuiGraphicsExtractor) {
+        val top = y + HUE_TOP
+        graphics.roundedTexture(barX, top, barX + barWidth, top + BAR_HEIGHT, HUE_GRADIENT, corners = BAR_CORNERS)
+        hueMarker.target(value.hue)
+        drawBarMarker(graphics, top, hueMarker.value)
+    }
+
+    private fun drawAlphaBar(graphics: GuiGraphicsExtractor) {
+        val top = y + ALPHA_TOP
+        graphics.roundedGradient(
+            barX, top, barX + barWidth, top + BAR_HEIGHT,
+            Colors.TRANSPARENT.rgba, value.withAlpha(1f).rgba, GradientDirection.LEFT_TO_RIGHT,
+            BAR_CORNERS
+        )
+
+        alphaMarker.target(value.alphaFloat)
+        drawBarMarker(graphics, top, alphaMarker.value)
+    }
+
+    private fun drawBarMarker(graphics: GuiGraphicsExtractor, top: Int, progress: Float) {
+        val markerX = (barX + progress * barWidth).roundToInt()
+        graphics.roundedRect(markerX - 2, top - 1, markerX + 2, top + BAR_HEIGHT + 1, Colors.WHITE.rgba, 2f)
+    }
+
+    private fun drawHexBox(graphics: GuiGraphicsExtractor) {
+        val left = x + width / 4
+        val top = hexBoxY
+        val right = left + width / 2
+        val bottom = top + HEX_BOX_HEIGHT
+        graphics.roundedRectOutlined(left, top, right, bottom, GuiTheme.surface.rgba, GuiTheme.accent.rgba, 1f, GuiTheme.RADIUS)
+    }
+
+    private fun seek(mouseX: Int, mouseY: Int) {
+        val horizontal = ((mouseX - barX).toFloat() / barWidth).coerceIn(0f, 1f)
+        when (holding) {
+            Slider.SATURATION -> {
+                value.saturation = horizontal
+                value.brightness = (1f - (mouseY - (y + SQUARE_TOP)).toFloat() / SQUARE_HEIGHT).coerceIn(0f, 1f)
+            }
+            Slider.HUE -> value.hue = horizontal
+            Slider.ALPHA -> value.alphaFloat = horizontal
+            null -> Unit
+        }
+    }
+
+    private companion object {
+        val HUE_GRADIENT: Identifier = Identifier.fromNamespaceAndPath("odin", "textures/huegradient.png")
+
+        const val EXPAND_DURATION = 200L
+        const val MARKER_DURATION = 100L
+
+        const val SQUARE_TOP = GuiTheme.ROW_HEIGHT + 3
+        const val SQUARE_HEIGHT = 112
+        const val HUE_TOP = SQUARE_TOP + SQUARE_HEIGHT + 3
+        const val BAR_HEIGHT = 10
+        const val ALPHA_TOP = HUE_TOP + BAR_HEIGHT + 3
+        const val BAR_RADIUS = 2f
+        const val MARKER_RADIUS = 4f
+        val BAR_CORNERS = Corners(BAR_RADIUS)
+
+        const val EXPANDED = 152
+        const val EXPANDED_WITH_ALPHA = 168
+
+        const val HEX_BOX_HEIGHT = 16
+        const val HEX_BOTTOM_PAD = 18
+        const val HEX_INSET = 3
+        const val HEX_FIELD_HEIGHT = 8
+
+        const val SWATCH_WIDTH = 22
+        const val SWATCH_HEIGHT = 14
+        const val SWATCH_RIGHT = 28
+    }
 }
+
+private class HexEditBox(
+    font: Font, width: Int, height: Int, message: Component
+) : EditBox(font, 0, 0, width, height, message) {
+
+    override fun insertText(text: String) {
+        super.insertText(text.filter { it.isHex() })
+    }
+}
+
+fun Char.isHex() = isDigit() || this in 'a'..'f' || this in 'A'..'F'

@@ -5,6 +5,7 @@ import com.odtheking.odin.events.RenderEvent
 import com.odtheking.odin.events.RoomEnterEvent
 import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.JsonResourceLoader
+import com.odtheking.odin.utils.render.BoxStyle
 import com.odtheking.odin.utils.render.drawStyledBox
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.core.BlockPos
@@ -33,7 +34,7 @@ object BoulderSolver {
         }?.toMutableList() ?: return@with
     }
 
-    fun onRenderWorld(event: RenderEvent.Extract, showAllBoulderClicks: Boolean, boulderStyle: Int, boulderColor: Color) {
+    fun onRenderWorld(event: RenderEvent.Extract, showAllBoulderClicks: Boolean, boulderStyle: BoxStyle, boulderColor: Color) {
         if (DungeonUtils.currentRoomName != "Boulder" || currentPositions.isEmpty()) return
         if (showAllBoulderClicks) currentPositions.forEach {
             event.drawStyledBox(it.render, boulderColor, boulderStyle, false)

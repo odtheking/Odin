@@ -28,7 +28,7 @@ object Waypoints : Module(
 
     private val personalWaypoint by BooleanSetting("Personal Waypoint", false, desc = "Makes waypoints you send also create for you.")
 
-    private val pingLocationDropDown by DropdownSetting("Ping Location Dropdown", false)
+    private val pingLocationDropDown by DropdownSetting("Ping Location Dropdown", false, desc = "Shows settings for placing a waypoint at the block you're looking at.")
     private val pingLocationToggle by BooleanSetting("Ping Waypoint", false, desc = "Adds a waypoint at the location you are looking at.").withDependency { pingLocationDropDown }
     private val pingLocation by KeybindSetting("Ping Keybind", GLFW.GLFW_KEY_UNKNOWN, desc = "Sends the location you are looking at as coords in chat for waypoints.").onPress {
         if (!pingLocationToggle) return@onPress
@@ -38,8 +38,8 @@ object Waypoints : Module(
         }
     }.withDependency { pingLocationToggle && pingLocationDropDown }
     private val sendPingedLocation by BooleanSetting("Send Pinged Location", false, desc = "Sends the location you are looking at as coords in chat for waypoints.").withDependency { pingLocationToggle && pingLocationDropDown }
-    private val pingWaypointTime by NumberSetting("Ping Waypoint Time", 15000L, 0L, 128000L, 1000L, unit = "ms", desc = "Time to wait before sending the waypoint command.").withDependency { pingLocationToggle && pingLocationDropDown }
-    private val pingDistance by NumberSetting("Ping Distance", 64.0, 1, 128, 1, desc = "Distance to ping location.").withDependency { pingLocationToggle && pingLocationDropDown }
+    private val pingWaypointTime by NumberSetting("Ping Waypoint Time", 15000L, 0.0..128000.0, 1000L, unit = "ms", desc = "Time to wait before sending the waypoint command.").withDependency { pingLocationToggle && pingLocationDropDown }
+    private val pingDistance by NumberSetting("Ping Distance", 64.0, 1..128, 1, desc = "Distance to ping location.").withDependency { pingLocationToggle && pingLocationDropDown }
 
     private val partyRegex =
         Regex("^Party > (?:\\[[^]]*?])? ?(\\w{1,16})(?: [ቾ⚒])?: x: (-?\\d+), y: (-?\\d+), z: (-?\\d+).*") // https://regex101.com/r/8K26A1/1

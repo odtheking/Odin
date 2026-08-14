@@ -11,6 +11,7 @@ import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.render.drawCylinder
 import com.odtheking.odin.utils.render.drawFilledBox
 import com.odtheking.odin.utils.render.drawLine
+import com.odtheking.odin.utils.render.BoxStyle
 import com.odtheking.odin.utils.render.drawStyledBox
 import com.odtheking.odin.utils.render.drawWireFrameBox
 import net.minecraft.world.phys.AABB
@@ -23,16 +24,10 @@ object RenderTest : Module(
     description = "Test rendering stuff",
     category = Category.RENDER,
 ) {
+    val boxStyle by SelectorSetting("Styled Box Style", BoxStyle.FILLED, desc = "Style of the styled box")
 
-    val boxStyle by SelectorSetting(
-        name = "Styled Box Style",
-        default = "FilledBox",
-        options = listOf("FilledBox", "WireFrame", "Both"),
-        desc = "Style of the styled box"
-    )
-
-    val boxCount by NumberSetting("Box Count", 0, 0, 200000, 1, desc = "Approx number of boxes to render")
-    val boxLevels by NumberSetting("Box Levels", 4, 1, 12, 1, desc = "Vertical layers for boxes")
+    val boxCount by NumberSetting("Box Count", 0, 0..200000, 1, desc = "Approx number of boxes to render")
+    val boxLevels by NumberSetting("Box Levels", 4, 1..12, 1, desc = "Vertical layers for boxes")
 
     init {
         on<RenderEvent.Extract> {
@@ -102,7 +97,7 @@ object RenderTest : Module(
                                     val cInt = (0xff000000.toInt() or (((bx + range) and 0xff) shl 16) or (((by + 32) and 0xff) shl 8) or ((bz + range) and 0xff))
                                     val c = Color(cInt)
 
-                                    drawStyledBox(aabb = aabb, color = c, style = 2)
+                                    drawStyledBox(aabb = aabb, color = c, style = BoxStyle.FILLED_OUTLINE)
 
                                     drawn++
                                 }

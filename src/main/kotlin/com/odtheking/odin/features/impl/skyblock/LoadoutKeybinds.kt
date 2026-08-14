@@ -21,7 +21,7 @@ object LoadoutKeybinds : Module(
     private val nextPageKeybind by KeybindSetting("Next Page", GLFW.GLFW_KEY_RIGHT, desc = "Keybind to go to the next page in the loadout.")
     private val previousPageKeybind by KeybindSetting("Previous Page", GLFW.GLFW_KEY_LEFT, desc = "Keybind to go to the previous page in the loadout.")
 
-    private val advanced by DropdownSetting("Show Settings")
+    private val advanced by DropdownSetting("Show Settings", desc = "Shows keybinds to equip each loadout slot directly.")
     private val loadout1 by KeybindSetting("Loadout 1", GLFW.GLFW_KEY_1, desc = "Keybind to equip the first loadout slot.").withDependency { advanced }
     private val loadout2 by KeybindSetting("Loadout 2", GLFW.GLFW_KEY_2, desc = "Keybind to equip the second loadout slot.").withDependency { advanced }
     private val loadout3 by KeybindSetting("Loadout 3", GLFW.GLFW_KEY_3, desc = "Keybind to equip the third loadout slot.").withDependency { advanced }

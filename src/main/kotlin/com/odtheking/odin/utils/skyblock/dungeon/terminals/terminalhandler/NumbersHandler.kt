@@ -12,8 +12,9 @@ import kotlin.math.abs
 class NumbersHandler: TerminalHandler(TerminalTypes.NUMBERS) {
 
     override fun solve(items: List<ItemStack>): List<Int> {
+        val redPane = Items.STAINED_GLASS_PANE.pick(DyeColor.RED)
         return items.mapIndexedNotNull { index, item ->
-            if (item.item == Items.STAINED_GLASS_PANE.pick(DyeColor.RED)) index else null
+            if (item.item == redPane) index else null
         }.sortedBy { items[it].count }
     }
 

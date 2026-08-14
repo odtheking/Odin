@@ -14,6 +14,7 @@ import com.odtheking.odin.utils.createSoundSettings
 import com.odtheking.odin.utils.getBlockBounds
 import com.odtheking.odin.utils.handlers.schedule
 import com.odtheking.odin.utils.playSoundSettings
+import com.odtheking.odin.utils.render.BoxStyle
 import com.odtheking.odin.utils.render.drawStyledBox
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.core.BlockPos
@@ -24,17 +25,17 @@ object SecretClicked : Module(
     name = "Secret Clicked",
     description = "Provides both audio and visual feedback when a secret is clicked."
 ) {
-    private val boxesDropdown by DropdownSetting("Secret Boxes Dropdown")
+    private val boxesDropdown by DropdownSetting("Secret Boxes Dropdown", desc = "Shows settings for the boxes drawn around clicked secrets.")
     private val boxes by BooleanSetting("Secret Boxes", true, desc = "Whether or not to render boxes around clicked secrets.").withDependency { boxesDropdown }
-    private val style by SelectorSetting("Style", "Outline", arrayListOf("Filled", "Outline", "Filled Outline"), desc = "The style of the box.").withDependency { boxesDropdown && boxes }
+    private val style by SelectorSetting("Style", BoxStyle.OUTLINE, desc = "The style of the box.").withDependency { boxesDropdown && boxes }
     private val color by ColorSetting("Color", Colors.MINECRAFT_GOLD.withAlpha(.4f), true, desc = "The color of the box.").withDependency { boxesDropdown && boxes }
     private val depthCheck by BooleanSetting("Depth check", false, desc = "Boxes show through walls.").withDependency { boxesDropdown && boxes }
     private val lockedColor by ColorSetting("Locked Color", Colors.MINECRAFT_RED.withAlpha(.4f), true, desc = "The color of the box when the chest is locked.").withDependency { boxesDropdown && boxes }
-    private val timeToStay by NumberSetting("Time To Stay", 7, 1, 120, 0.5, desc = "The time the chests should remain highlighted.", unit = "s").withDependency { boxesDropdown && boxes }
+    private val timeToStay by NumberSetting("Time To Stay", 7, 1..120, 0.5, desc = "The time the chests should remain highlighted.", unit = "s").withDependency { boxesDropdown && boxes }
     private val boxInBoss by BooleanSetting("Box In Boss", false, desc = "Highlight clicks in boss.").withDependency { boxesDropdown && boxes }
     private val toggleItems by BooleanSetting("Item Boxes", true, desc = "Render boxes for collected items.").withDependency { boxesDropdown && boxes }
 
-    private val chimeDropdownSetting by DropdownSetting("Secret Chime Dropdown")
+    private val chimeDropdownSetting by DropdownSetting("Secret Chime Dropdown", desc = "Shows settings for the sound played when a secret is clicked.")
     private val chime by BooleanSetting("Secret Chime", true, desc = "Whether or not to play a sound when a secret is clicked.").withDependency { chimeDropdownSetting }
     private val soundSettings = createSoundSettings("Chime Sound", "entity.blaze.hurt") { chimeDropdownSetting && chime }
     private val chimeInBoss by BooleanSetting("Chime In Boss", false, desc = "Prevent playing the sound if in boss room.").withDependency { chimeDropdownSetting && chime }

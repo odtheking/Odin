@@ -20,7 +20,15 @@ object ExtraStats : Module(
     private val showBits by BooleanSetting("Show Bits", true, desc = "Show bits earned.")
     private val showClassEXP by BooleanSetting("Show Class EXP", true, desc = "Show class experience.")
     private val showCombatStats by BooleanSetting("Show Combat Stats", true, desc = "Show damage, enemy kills and healing.")
-    private val teamStats by SelectorSetting("Show Team Stats", "Both", arrayListOf("Off", "Personal", "Team", "Both"), desc = "Toggle how show team stats.")
+    private val teamStats by SelectorSetting("Show Team Stats", TeamStats.BOTH, desc = "Toggle how show team stats.")
+
+    enum class TeamStats(val personal: Boolean = false, val team: Boolean = false) {
+        OFF,
+        PERSONAL(personal = true),
+        TEAM(team = true),
+        BOTH(personal = true, team = true)
+    }
+
     private val showTeammates by BooleanSetting("Show Teammates", false, desc = "Show teammates.")
 
     private val extraStats = PostDungeonStats()
@@ -109,15 +117,15 @@ object ExtraStats : Module(
 
             deathsRegex.find(value)?.let {
                 extraStats.deaths = it.groupValues[2].toIntOrNull() ?: 0
-                if (teamStats.equalsOneOf(1, 3)) extraStats.skillStats.add("§c${it.groupValues[1]}")
+                if (teamStats.personal) extraStats.skillStats.add("§c${it.groupValues[1]}")
                 return@on
             }
 
             secretsRegex.find(value)?.let {
                 extraStats.secretsFound = it.groupValues[2].toIntOrNull() ?: 0
-                if (teamStats.equalsOneOf(1, 3)) extraStats.skillStats.add(0, "§b${it.groupValues[1]}")
-                if (teamStats == 3) extraStats.skillStats.add("")
-                if (teamStats.equalsOneOf(2, 3)) {
+                if (teamStats.personal) extraStats.skillStats.add(0, "§b${it.groupValues[1]}")
+                if (teamStats == TeamStats.BOTH) extraStats.skillStats.add("")
+                if (teamStats.team) {
                     extraStats.skillStats.add("§bTeam Secrets Found: ${DungeonUtils.secretCount}")
                     extraStats.skillStats.add("§6Crypt: ${DungeonUtils.cryptCount}")
                     extraStats.skillStats.add("§cTeam Deaths: ${DungeonUtils.deathCount}")
@@ -162,12 +170,12 @@ object ExtraStats : Module(
             ).append("\n")
         }
 
-        if (teamStats != 0) {
+        if (teamStats != TeamStats.OFF) {
             val statsText = when (teamStats) {
-                1 -> "§b${extraStats.secretsFound}§r-§c${extraStats.deaths}" // Personal
-                2 -> "§b${DungeonUtils.secretCount}§r-§6${DungeonUtils.cryptCount}§r-§c${DungeonUtils.deathCount}" // Team
-                3 -> "§b${extraStats.secretsFound}§r-§c${extraStats.deaths} §r/ §b${DungeonUtils.secretCount}§r-§6${DungeonUtils.cryptCount}§r-§c${DungeonUtils.deathCount}" // Both
-                else -> ""
+                TeamStats.PERSONAL -> "§b${extraStats.secretsFound}§r-§c${extraStats.deaths}"
+                TeamStats.TEAM -> "§b${DungeonUtils.secretCount}§r-§6${DungeonUtils.cryptCount}§r-§c${DungeonUtils.deathCount}"
+                TeamStats.BOTH -> "§b${extraStats.secretsFound}§r-§c${extraStats.deaths} §r/ §b${DungeonUtils.secretCount}§r-§6${DungeonUtils.cryptCount}§r-§c${DungeonUtils.deathCount}"
+                TeamStats.OFF -> ""
             }
             message.append(
                 Component.literal(getCenteredText(statsText)).withStyle {

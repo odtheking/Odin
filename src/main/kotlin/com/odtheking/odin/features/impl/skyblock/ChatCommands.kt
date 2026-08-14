@@ -29,7 +29,7 @@ object ChatCommands : Module(
     private val guildChatCommands by BooleanSetting("Guild Commands", false, "Enables guild chat commands.")
     private val privateChatCommands by BooleanSetting("Private Commands", true, "Enables private chat commands.")
 
-    private val showSettings by DropdownSetting("Show Settings", false)
+    private val showSettings by DropdownSetting("Show Settings", false, desc = "Toggles which chat commands are enabled.")
     private val partyWarp by BooleanSetting("Warp", true, desc = "Executes the /party warp command.").withDependency { showSettings }
     private val coords by BooleanSetting("Coords (coords)", true, desc = "Sends your current coordinates.").withDependency { showSettings }
     private val partyAllInvite by BooleanSetting("Allinvite", true, desc = "Executes the /party settings allinvite command.").withDependency { showSettings }

@@ -1,11 +1,12 @@
 package com.odtheking.odin.clickgui.settings.impl
 
-import com.odtheking.odin.clickgui.settings.ClickGUI.gray38
+import com.odtheking.odin.OdinMod.mc
+import com.odtheking.odin.clickgui.GuiTheme
+import com.odtheking.odin.clickgui.hoverTint
 import com.odtheking.odin.clickgui.settings.RenderableSetting
-import com.odtheking.odin.features.impl.render.ClickGUIModule
-import com.odtheking.odin.utils.Color.Companion.darker
 import com.odtheking.odin.utils.Colors
-import com.odtheking.odin.utils.ui.rendering.NVGRenderer
+import com.odtheking.odin.utils.render.roundedRectOutlined
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.input.MouseButtonEvent
 
 class ActionSetting(
@@ -18,23 +19,30 @@ class ActionSetting(
 
     var action: () -> Unit by this::value
 
-    private val textWidth by lazy { NVGRenderer.textWidth(name, 16f, NVGRenderer.defaultFont) }
+    override fun render(graphics: GuiGraphicsExtractor, mouseX: Int, mouseY: Int) {
+        val left = x + 3
+        val top = y + 2
+        val right = x + width - 3
+        val bottom = y + height - 2
 
-    override fun render(x: Float, y: Float, mouseX: Float, mouseY: Float): Float {
-        super.render(x, y, mouseX, mouseY)
-        val height = getHeight()
+        val hovered = hover
+        val centerX = (left + right) / 2f
+        val centerY = (top + bottom) / 2f
+        val scale = 1f - HOVER_SHRINK * hovered
 
-        NVGRenderer.rect(x + 4f, y + height / 2f - 13f, width - 8f, 26f, gray38.rgba, 6f)
-        NVGRenderer.hollowRect(x + 4f, y + height / 2f - 13f, width - 8f, 26f, 2f, ClickGUIModule.clickGUIColor.rgba, 6f)
-        NVGRenderer.text(name, x + width / 2f - textWidth / 2, y + height / 2f - 8f, 16f, if (isHovered) Colors.WHITE.darker().rgba else Colors.WHITE.rgba, NVGRenderer.defaultFont)
-        return height
+        graphics.pose().pushMatrix()
+        graphics.pose().translate(centerX, centerY)
+        graphics.pose().scale(scale, scale)
+        graphics.pose().translate(-centerX, -centerY)
+        graphics.roundedRectOutlined(left, top, right, bottom, GuiTheme.surface.hoverTint(hovered), GuiTheme.accent.rgba, 1f, GuiTheme.RADIUS)
+        graphics.pose().popMatrix()
+
+        graphics.centeredText(mc.font, name, x + width / 2, GuiTheme.textY(y, height), Colors.WHITE.rgba)
     }
 
-    override fun mouseClicked(mouseX: Float, mouseY: Float, click: MouseButtonEvent): Boolean {
-        return if (click.button() != 0 || !isHovered) false
-        else {
-            action()
-            true
-        }
+    override fun onClick(event: MouseButtonEvent, doubleClick: Boolean) = action()
+
+    private companion object {
+        const val HOVER_SHRINK = 0.06f
     }
 }
