@@ -113,14 +113,14 @@ object DungeonListener {
                     dungeonStats.princeKilled = true
 
                 "bat killed", "bat slain", "bat killed!", "bat dead", "bat dead!" ->
-                    dungeonStats.batKilled=-1
+                    dungeonStats.incBat(-1)
                 
                 "bat killed (1)" ->
-                    dungeonStats.batKilled=1
+                    dungeonStats.incBat(1)
                 "bat killed (2)" ->
-                    dungeonStats.batKilled=2
+                    dungeonStats.incBat(2)
                 "bat killed (3)" ->
-                    dungeonStats.batKilled=3
+                    dungeonStats.incBat(3)
 
                 "blaze done!", "blaze done", "blaze puzzle solved!" ->
                     puzzles.find { it == Puzzle.BLAZE }.let { it?.status = PuzzleStatus.Completed }
@@ -228,19 +228,21 @@ object DungeonListener {
                 }
                 _mimicKilled = value
             }
-        var batKilled: Int
+        
+        val batKilled: Int
             get()=_batKilled
-            set(value) {
-                if(value==-1){
-                    if(!batCd) {
-                        _batKilled++
-                        batCd=true
-                        schedule(10,true){batCd=false}
-                    }
-                    return
+        
+        fun incBat(value:Int){
+            if(value==-1){
+                if(!batCd) {
+                    _batKilled++
+                    batCd=true
+                    schedule(10,true){batCd=false}
                 }
-                if(value>=_batKilled)return
-                _batKilled++
+                return
             }
+            if(value>=_batKilled)return
+            _batKilled++
+        }
     }
 }
