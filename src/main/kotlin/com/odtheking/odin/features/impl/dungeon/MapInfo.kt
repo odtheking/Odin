@@ -41,7 +41,8 @@ object MapInfo : Module(
     private var cachedKnownSecrets = 0
     private var cachedMimicKilled = false
     private var cachedPrinceKilled = false
-    private var cachedBatKilled = false
+    private var cachedBatKilled = 0
+    private var cachedPlayerCount=0
     private var cachedCryptCount = 0
     private var cachedDeathCount = 0
 
@@ -55,6 +56,7 @@ object MapInfo : Module(
         val mimicKilled = cachedMimicKilled
         val princeKilled = cachedPrinceKilled
         val batKilled = cachedBatKilled
+        val playerCount = cachedPlayerCount
         val cryptCount = cachedCryptCount
 
         val showRemaining = fullAddRemaining && alternate
@@ -93,7 +95,7 @@ object MapInfo : Module(
         val mimicText = buildString {
             append("${if (mimicKilled) "§a" else "§c"}\uD83D\uDCE6")
             append(" §8| ${if (princeKilled) "§a" else "§c"}\uD83E\uDD34")
-            append(" §8| ${if (batKilled) "§a" else "§c"}\uD83E\uDD87")
+            append(" §8| ${colorizeBats(playerCount-batKilled)}\uD83E\uDD87$batKilled")
         }
 
         val cryptText = buildString {
@@ -174,8 +176,9 @@ object MapInfo : Module(
         val mimicKilled = cachedMimicKilled
         val princeKilled = cachedPrinceKilled
         val batKilled = cachedBatKilled
+        val playerCount = cachedPlayerCount
 
-        val missing = (if (mimicKilled) 0 else 2) + (if (princeKilled) 0 else 1) + (if (batKilled) 0 else 1)
+        val missing = (if (mimicKilled) 0 else 2) + (if (princeKilled) 0 else 1) + (playerCount-batKilled)
 
         val scoreText = buildString {
             append("§7Score: ")
@@ -238,6 +241,7 @@ object MapInfo : Module(
             cachedMimicKilled = DungeonUtils.mimicKilled
             cachedPrinceKilled = DungeonUtils.princeKilled
             cachedBatKilled = DungeonUtils.batKilled
+            cachedPlayerCount = DungeonUtils.dungeonTeammates.size
             cachedCryptCount = DungeonUtils.cryptCount.coerceAtMost(5)
             cachedDeathCount = DungeonUtils.deathCount
         }
@@ -274,7 +278,15 @@ object MapInfo : Module(
             portalAABB = null
         }
     }
-
+    
+    private fun colorizeBats(score: Int): String {
+        return when {
+            score > 2 -> "§c"
+            score > 0 -> "§e"
+            else -> "§a"
+        }
+    }
+    
     private fun colorizeCrypts(count: Int): String {
         return when {
             count < 3 -> "§c${count}"

@@ -8,6 +8,7 @@ import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.features.impl.dungeon.LeapMenu
 import com.odtheking.odin.features.impl.dungeon.LeapMenu.odinSorting
 import com.odtheking.odin.features.impl.dungeon.map.DungeonScan
+import com.odtheking.odin.utils.handlers.schedule
 import com.odtheking.odin.utils.network.WebUtils.hasBonusPaulScore
 import com.odtheking.odin.utils.noControlCodes
 import com.odtheking.odin.utils.romanToInt
@@ -112,7 +113,14 @@ object DungeonListener {
                     dungeonStats.princeKilled = true
 
                 "bat killed", "bat slain", "bat killed!", "bat dead", "bat dead!" ->
-                    dungeonStats.batKilled = true
+                    dungeonStats.batKilled=-1
+                
+                "bat killed (1)" ->
+                    dungeonStats.batKilled=1
+                "bat killed (2)" ->
+                    dungeonStats.batKilled=2
+                "bat killed (3)" ->
+                    dungeonStats.batKilled=3
 
                 "blaze done!", "blaze done", "blaze puzzle solved!" ->
                     puzzles.find { it == Puzzle.BLAZE }.let { it?.status = PuzzleStatus.Completed }
@@ -206,7 +214,8 @@ object DungeonListener {
         var elapsedTime: String = "0s",
         private var _mimicKilled: Boolean = false,
         var princeKilled: Boolean = false,
-        var batKilled: Boolean = false,
+        private var _batKilled: Int = 0,
+        private var batCd:Boolean = false,
         var doorOpener: String = "Unknown",
         var bloodDone: Boolean = false,
         var puzzleCount: Int = 0,
@@ -218,6 +227,20 @@ object DungeonListener {
                     error("Attempted to set mimicKilled = true on floor that has no mimic")
                 }
                 _mimicKilled = value
+            }
+        var batKilled: Int
+            get()=_batKilled
+            set(value) {
+                if(value==-1){
+                    if(!batCd) {
+                        _batKilled++
+                        batCd=true
+                        schedule(10,true){batCd=false}
+                    }
+                    return
+                }
+                if(value>=_batKilled)return
+                _batKilled++
             }
     }
 }
