@@ -69,11 +69,11 @@ object MapInfo : Module(
             }
         }
 
-        val batKilled=DungeonUtils.batKilled
+        val batKilled = DungeonUtils.batKilled
         val mimicText = buildString {
             append("${if (DungeonUtils.mimicKilled) "§a" else "§c"}\uD83D\uDCE6")
             append(" §8| ${if (DungeonUtils.princeKilled) "§a" else "§c"}\uD83E\uDD34")
-            append(" §8| ${colorizeBats(DungeonUtils.dungeonTeammates.size-batKilled)}\uD83E\uDD87$batKilled")
+            append(" §8| ${colorizeBats(DungeonUtils.dungeonTeammates.size - batKilled)}\uD83E\uDD87$batKilled")
         }
 
         val cryptText = buildString {
@@ -150,9 +150,9 @@ object MapInfo : Module(
         val mimicKilled = DungeonUtils.mimicKilled
         val princeKilled = DungeonUtils.princeKilled
         val batKilled = DungeonUtils.batKilled
-        val playerCount =DungeonUtils.dungeonTeammates.size
+        val playerCount = DungeonUtils.dungeonTeammates.size
 
-        val missing = (if (mimicKilled) 0 else 2) + (if (princeKilled) 0 else 1) + (playerCount-batKilled)
+        val missing = (if (mimicKilled) 0 else 2) + (if (princeKilled) 0 else 1) + (playerCount - batKilled)
         
         val scoreText = buildString {
             append("§7Score: ")

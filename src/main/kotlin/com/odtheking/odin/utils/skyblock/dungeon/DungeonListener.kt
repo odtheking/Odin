@@ -111,8 +111,8 @@ object DungeonListener {
                 }?.deaths?.inc()
             }
             
-            val partyMessage=partyMessageRegex.find(value)?.groupValues ?: return@on
-            if(partyMessage[1]==DungeonUtils.currentDungeonPlayer.name)
+            val partyMessage = partyMessageRegex.find(value)?.groupValues ?: return@on
+            if(partyMessage[1] == DungeonUtils.currentDungeonPlayer.name)
             when (partyMessage[2].lowercase()) {
                 "mimic killed", "mimic slain", "mimic killed!", "mimic dead", "mimic dead!" ->
                     if (DungeonUtils.isFloor(6, 7)) dungeonStats.mimicKilled = true
@@ -121,7 +121,7 @@ object DungeonListener {
                     dungeonStats.princeKilled = true
 
                 "bat killed", "bat slain", "bat killed!", "bat dead", "bat dead!" ->
-                    dungeonStats.batKilled ++
+                    dungeonStats.batKilled++
 
                 "blaze done!", "blaze done", "blaze puzzle solved!" ->
                     puzzles.find { it == Puzzle.BLAZE }.let { it?.status = PuzzleStatus.Completed }
