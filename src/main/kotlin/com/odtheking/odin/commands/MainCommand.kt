@@ -16,11 +16,11 @@ import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 
 val mainCommand = Commodore("odin", "od") {
     runs {
-        schedule(0) { mc.setScreen(ClickGUI) }
+        mc.schedule { mc.setScreen(ClickGUI) }
     }
 
     literal("edithud").runs {
-        schedule(0) { mc.setScreen(HudManager) }
+        mc.schedule { mc.setScreen(HudManager) }
     }
 
     literal("tps").runs {

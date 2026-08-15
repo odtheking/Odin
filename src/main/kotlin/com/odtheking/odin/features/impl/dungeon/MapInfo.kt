@@ -202,10 +202,12 @@ object MapInfo : Module(
     private var portalAABB: AABB? = null
     private var currentRoomSecrets: Pair<Int, Int>? = null
     private val secretRegex = Regex("(\\d+)/(\\d+) Secrets")
+    private var shownTitle = false
 
     init {
         on<ScoreUpdateEvent> {
-            if (!DungeonUtils.inDungeons || (!scoreTitle && !printWhenScore) || score < 300) return@on
+            if (shownTitle || !DungeonUtils.inDungeons || (!scoreTitle && !printWhenScore) || score < 300) return@on
+            shownTitle = true
             if (scoreTitle) alert("§c300 Score!")
             if (printWhenScore) modMessage("§b${DungeonUtils.score} §ascore reached in §6${DungeonUtils.dungeonTime} §8|| §e${DungeonUtils.floor?.name}.")
         }
@@ -231,6 +233,7 @@ object MapInfo : Module(
         }
 
         on<LevelEvent.Load> {
+            shownTitle = false
             portalAABB = null
         }
     }

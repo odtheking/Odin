@@ -40,7 +40,7 @@ object WitherDragons : Module(
     }.withDependency { dragonTimerDropDown }
 
     private val dragonBoxes by BooleanSetting("Dragon Boxes", true, desc = "Displays boxes for where M7 dragons spawn.")
-    private val dragonTracers by BooleanSetting("Dragon Tracer", true, desc = "Draws a line to spawning dragons.")
+    private val dragonTracers by BooleanSetting("Target Tracer", true, desc = "Draws a line to priority spawning dragon.")
 
     private val dragonAlerts by DropdownSetting("Dragon Alerts Dropdown")
     private val sendNotification by BooleanSetting("Send Dragon Confirmation", true, desc = "Sends a confirmation message when a dragon dies.").withDependency { dragonAlerts }

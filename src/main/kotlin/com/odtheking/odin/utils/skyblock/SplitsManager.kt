@@ -174,7 +174,7 @@ private val floor6SplitGroup = mutableListOf(
     Split(Regex("^\\[BOSS] Sadan: You did it\\. I understand now, you have earned my respect\\.$"), "§4Cleared"),
 )
 
-private val floor7SplitGroup = mutableListOf(
+val floor7SplitGroup = mutableListOf(
     Split(entryRegexes[6], "§5Maxor"),
     Split(Regex("\\[BOSS] Storm: Pathetic Maxor, just like expected\\."), "§3Storm"),
     Split(Regex("\\[BOSS] Goldor: Who dares trespass into my domain\\?"), "§6Terminals"),

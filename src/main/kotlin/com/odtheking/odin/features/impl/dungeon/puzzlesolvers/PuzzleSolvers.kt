@@ -86,7 +86,7 @@ object PuzzleSolvers : Module(
     private val quizTimerHud by HUD("Quiz Timer Hud", "Displays a timer counting down until you must answer the quiz question.") { example ->
         val timer = if (example) Triple(220, 220, 1) else QuizSolver.timer
         if (quizSolver && timer.first > 0) textDim(formatQuizTimer(timer), 0, 0, Colors.WHITE) else 0 to 0
-    }
+    }.withDependency { quizDropdown && quizSolver }
     private val quizReset by ActionSetting("Reset Quiz", desc = "Resets the solver.") { QuizSolver.reset() }.withDependency { quizDropdown && quizSolver }
 
     private val boulderDropDown by DropdownSetting("Boulder")

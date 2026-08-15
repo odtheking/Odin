@@ -83,18 +83,11 @@ class ItemStateRenderer(vertexConsumers: MultiBufferSource.BufferSource)
     }
 
     companion object {
-        private val trackingCache = object : LinkedHashMap<ItemStack, TrackingItemStackRenderState>(16, 0.75f, true) {
-            override fun removeEldestEntry(eldest: MutableMap.MutableEntry<ItemStack, TrackingItemStackRenderState>) = size > 10
-        }
-
         fun GuiGraphicsExtractor.drawItemStack(item: ItemStack, x: Int, y: Int) {
             if (item.isEmpty) return
 
-            val tracking = trackingCache.getOrPut(item) {
-                TrackingItemStackRenderState().also {
-                    mc.itemModelResolver.updateForTopItem(it, item, ItemDisplayContext.GUI, mc.level, mc.player, 0)
-                }
-            }
+            val tracking = TrackingItemStackRenderState()
+            mc.itemModelResolver.updateForTopItem(tracking, item, ItemDisplayContext.GUI, mc.level, mc.player, 0)
 
             val state = State(
                 GuiItemRenderState(
