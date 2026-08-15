@@ -20,9 +20,11 @@ import java.util.concurrent.CopyOnWriteArrayList
 object DungeonScan {
 
     const val ROOM_SPACING = 4
+    const val MAP_ROOM_SIZE = 16
+    const val MAP_ROOM_GAP = MAP_ROOM_SIZE + ROOM_SPACING
 
     var roomSize = 16
-    var roomGap = 20
+    val roomGap: Int get () = roomSize + ROOM_SPACING
 
     val connectionGap: Int get() = roomSize + ROOM_SPACING / 2
     var startX = 5
@@ -54,14 +56,12 @@ object DungeonScan {
         viewableDoors.clear()
         pathHints.clear()
         roomSize = 16
-        roomGap = 20
         startX = 5
         startY = 5
     }
 
     fun initClient(floor: Floor) {
         roomSize = if (floor.floorNumber <= 3) 18 else 16
-        roomGap = roomSize + ROOM_SPACING
 
         startX = when {
             floor.floorNumber <= 1 -> 22
@@ -79,8 +79,8 @@ object DungeonScan {
 
     fun playerRenderPosition(entity: Player?, mapPos: IVec2): Pair<Float, Float> {
         entity?.let {
-            val mapX = (it.renderX.toFloat() + 200f) * roomGap / 32f
-            val mapZ = (it.renderZ.toFloat() + 200f) * roomGap / 32f
+            val mapX = (it.renderX.toFloat() + 200f) * MAP_ROOM_GAP / 32f
+            val mapZ = (it.renderZ.toFloat() + 200f) * MAP_ROOM_GAP / 32f
             return mapX to mapZ
         }
 

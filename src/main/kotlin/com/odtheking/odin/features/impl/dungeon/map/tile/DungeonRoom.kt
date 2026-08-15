@@ -3,19 +3,18 @@ package com.odtheking.odin.features.impl.dungeon.map.tile
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints
 import com.odtheking.odin.features.impl.dungeon.map.DungeonScan
-import com.odtheking.odin.utils.IVec2
-import com.odtheking.odin.utils.modMessage
-import com.odtheking.odin.utils.rotateAroundNorth
-import com.odtheking.odin.utils.rotateToNorth
-import com.odtheking.odin.utils.sortKey
+import com.odtheking.odin.utils.*
 import net.minecraft.core.BlockPos
 import net.minecraft.world.level.block.Blocks
-import kotlin.math.roundToInt
 
 class DungeonRoom(var type: RoomType, initialPosition: IVec2, var data: RoomData? = null) {
     val tiles: ArrayList<IVec2> = ArrayList(4)
     var topLeft: IVec2 = initialPosition
     var rotation: RoomRotation? = null
+        set(value) {
+            field = value
+            recalculateCenter()
+        }
 
     var shape: RoomShape = RoomShape.OneByOne
 
@@ -43,33 +42,41 @@ class DungeonRoom(var type: RoomType, initialPosition: IVec2, var data: RoomData
         }
     }
 
+    fun occupiedTiles(): List<IVec2> {
+        val rot = rotation ?: return emptyList()
+        return tileOffsets(rot).map { topLeft + it }
+    }
+
+    private fun tileOffsets(rot: RoomRotation): List<IVec2> = when (shape) {
+        RoomShape.OneByOne -> listOf(IVec2(0, 0))
+        RoomShape.TwoByTwo -> listOf(IVec2(0, 0), IVec2(1, 0), IVec2(0, 1), IVec2(1, 1))
+        RoomShape.L -> when (rot) {
+            RoomRotation.WEST  -> listOf(IVec2(0, 0), IVec2(1, 0), IVec2(0, 1))
+            RoomRotation.NORTH -> listOf(IVec2(0, 0), IVec2(1, 0), IVec2(1, 1))
+            else               -> listOf(IVec2(0, 0), IVec2(0, 1), IVec2(1, 1))
+        }
+        else -> if (rot == RoomRotation.SOUTH) (0 until shape.tileAmount).map { IVec2(it, 0) }
+                else (0 until shape.tileAmount).map { IVec2(0, it) }
+    }
+
     private fun recalculateCenter() {
-        if (tiles.isEmpty()) return
-        val rs = DungeonScan.roomSize.takeIf { it != -1 } ?: return
-
-        val rg = DungeonScan.roomGap
-        val half = rs / 2
-
-        fun tileCenter(tile: IVec2) = tile.x * rg + half to tile.z * rg + half
+        fun tileCenter(tile: IVec2) = IVec2(tile.x * DungeonScan.MAP_ROOM_GAP + DungeonScan.MAP_ROOM_SIZE / 2, tile.z * DungeonScan.MAP_ROOM_GAP + DungeonScan.MAP_ROOM_SIZE / 2)
 
         val rot = rotation
         if (rot == null) {
-            val tile = tiles.minBy { it.sortKey }
-            val (x, z) = tileCenter(tile)
-            center = IVec2(x, z)
+            if (tiles.isEmpty()) return
+            center = tileCenter(tiles.minBy { it.sortKey })
             return
         }
 
-        val centers = tiles.map { tileCenter(it) }
-        val x = (centers.minOf { it.first } + centers.maxOf { it.first }) / 2f
+        val corners = occupiedTiles().map(::tileCenter)
         val z = when (shape) {
             RoomShape.L ->
-                if (rot == RoomRotation.NORTH || rot == RoomRotation.WEST) centers.minOf { it.second }.toFloat()
-                else centers.maxOf { it.second }.toFloat()
-            else ->
-                (centers.minOf { it.second } + centers.maxOf { it.second }) / 2f
+                if (rot == RoomRotation.NORTH || rot == RoomRotation.WEST) corners.minOf { it.z }
+                else corners.maxOf { it.z }
+            else -> (corners.minOf { it.z } + corners.maxOf { it.z }) / 2
         }
-        center = IVec2(x.roundToInt(), z.roundToInt())
+        center = IVec2((corners.minOf { it.x } + corners.maxOf { it.x }) / 2, z)
     }
 
     fun inferLayoutFromMap() {

@@ -47,7 +47,6 @@ object MapScan {
             val length = end - index
             if (length == 16 || length == 18) {
                 DungeonScan.roomSize = length
-                DungeonScan.roomGap = length + DungeonScan.ROOM_SPACING
                 DungeonScan.startX = (index % MAP_SIZE) % DungeonScan.roomGap
                 DungeonScan.startY = (index / MAP_SIZE) % DungeonScan.roomGap
 
