@@ -6,6 +6,7 @@ import com.odtheking.odin.events.MapUpdateEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.features.impl.dungeon.map.tile.*
+import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.IVec2
 import com.odtheking.odin.utils.equalsOneOf
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
@@ -214,7 +215,7 @@ object MapScan {
 
     private fun addOrFixDoor(position: IVec2, rotation: DoorRotation, doorType: DoorType) {
         DungeonScan.doors.getOrPut(IVec2(-12 + 2 * position.x + rotation.offset.x, -12 + 2 * position.z + rotation.offset.z))
-        { DungeonDoor(position, rotation, doorType) }.type = doorType
+        { DungeonDoor(position, rotation, doorType, Colors.WHITE) }.type = doorType
     }
 
     private fun getPx(colors: ByteArray, x: Int, z: Int): Byte =

@@ -48,7 +48,7 @@ object DungeonMap : Module(
     val disablePred by BooleanSetting("Disable Prediction", false, desc = "Disables special-column room type prediction.")
 
     private val exampleRooms by lazy { buildExampleRooms() }
-    private val exampleDoors by lazy { buildExampleDoors(exampleRooms) }
+    private val exampleDoors by lazy { buildExampleDoors() }
 
     private val mapHud by HUD("Dungeon Map", "Displays the dungeon map.", false) { example ->
         if ((!DungeonUtils.inDungeons || (disableBoss && DungeonUtils.inBoss)) && !example) return@HUD 0 to 0

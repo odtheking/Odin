@@ -42,41 +42,27 @@ class DungeonRoom(var type: RoomType, initialPosition: IVec2, var data: RoomData
         }
     }
 
-    fun occupiedTiles(): List<IVec2> {
-        val rot = rotation ?: return emptyList()
-        return tileOffsets(rot).map { topLeft + it }
-    }
-
-    private fun tileOffsets(rot: RoomRotation): List<IVec2> = when (shape) {
-        RoomShape.OneByOne -> listOf(IVec2(0, 0))
-        RoomShape.TwoByTwo -> listOf(IVec2(0, 0), IVec2(1, 0), IVec2(0, 1), IVec2(1, 1))
-        RoomShape.L -> when (rot) {
-            RoomRotation.WEST  -> listOf(IVec2(0, 0), IVec2(1, 0), IVec2(0, 1))
-            RoomRotation.NORTH -> listOf(IVec2(0, 0), IVec2(1, 0), IVec2(1, 1))
-            else               -> listOf(IVec2(0, 0), IVec2(0, 1), IVec2(1, 1))
-        }
-        else -> if (rot == RoomRotation.SOUTH) (0 until shape.tileAmount).map { IVec2(it, 0) }
-                else (0 until shape.tileAmount).map { IVec2(0, it) }
-    }
-
     private fun recalculateCenter() {
-        fun tileCenter(tile: IVec2) = IVec2(tile.x * DungeonScan.MAP_ROOM_GAP + DungeonScan.MAP_ROOM_SIZE / 2, tile.z * DungeonScan.MAP_ROOM_GAP + DungeonScan.MAP_ROOM_SIZE / 2)
-
+        val gap = DungeonScan.MAP_ROOM_GAP
+        val half = DungeonScan.MAP_ROOM_SIZE / 2
         val rot = rotation
+
         if (rot == null) {
-            if (tiles.isEmpty()) return
-            center = tileCenter(tiles.minBy { it.sortKey })
+            val anchor = tiles.minByOrNull { it.sortKey } ?: return
+            center = IVec2(anchor.x * gap + half, anchor.z * gap + half)
             return
         }
 
-        val corners = occupiedTiles().map(::tileCenter)
-        val z = when (shape) {
-            RoomShape.L ->
-                if (rot == RoomRotation.NORTH || rot == RoomRotation.WEST) corners.minOf { it.z }
-                else corners.maxOf { it.z }
-            else -> (corners.minOf { it.z } + corners.maxOf { it.z }) / 2
+        val (offX, offZ) = when (shape) {
+            RoomShape.OneByOne -> 0 to 0
+            RoomShape.TwoByTwo -> gap / 2 to gap / 2
+            RoomShape.L -> if (rot == RoomRotation.NORTH || rot == RoomRotation.WEST) gap / 2 to 0 else gap / 2 to gap
+            else -> {
+                val span = (shape.tileAmount - 1) * gap / 2
+                if (rot == RoomRotation.SOUTH) span to 0 else 0 to span
+            }
         }
-        center = IVec2((corners.minOf { it.x } + corners.maxOf { it.x }) / 2, z)
+        center = IVec2(topLeft.x * gap + half + offX, topLeft.z * gap + half + offZ)
     }
 
     fun inferLayoutFromMap() {

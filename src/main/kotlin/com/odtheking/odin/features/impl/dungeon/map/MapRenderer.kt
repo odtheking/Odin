@@ -217,44 +217,28 @@ fun buildExampleRooms(): List<DungeonRoom> {
     )
 }
 
-fun buildExampleDoors(rooms: List<DungeonRoom>): List<DungeonDoor> {
-    val roomByTile = rooms.flatMap { room -> room.occupiedTiles().map { it to room } }.toMap()
+fun buildExampleDoors(): List<DungeonDoor> = listOf(
+    DungeonDoor(IVec2(2, 0), DoorRotation.Vertical, DoorType.Normal, DungeonMap.entranceRoomColor),
+    DungeonDoor(IVec2(1, 0), DoorRotation.Vertical, DoorType.Normal, DungeonMap.puzzleRoomColor),
+    DungeonDoor(IVec2(0, 1), DoorRotation.Horizontal, DoorType.Normal, DungeonMap.normalDoorColor),
+    DungeonDoor(IVec2(2, 2), DoorRotation.Horizontal, DoorType.Normal, DungeonMap.normalDoorColor),
+    DungeonDoor(IVec2(1, 2), DoorRotation.Vertical, DoorType.Normal, DungeonMap.normalDoorColor),
+    DungeonDoor(IVec2(4, 0), DoorRotation.Vertical, DoorType.Normal, DungeonMap.normalDoorColor),
+    DungeonDoor(IVec2(3, 1), DoorRotation.Horizontal, DoorType.Normal, DungeonMap.normalDoorColor),
+    DungeonDoor(IVec2(3, 3), DoorRotation.Vertical, DoorType.Normal, DungeonMap.normalDoorColor),
+    DungeonDoor(IVec2(1, 3), DoorRotation.Horizontal, DoorType.Fairy, DungeonMap.fairyDoorColor),
+    DungeonDoor(IVec2(2, 3), DoorRotation.Vertical, DoorType.Normal, DungeonMap.normalDoorColor),
+    DungeonDoor(IVec2(4, 3), DoorRotation.Vertical, DoorType.Normal, DungeonMap.championRoomColor),
+    DungeonDoor(IVec2(5, 3), DoorRotation.Vertical, DoorType.Normal, DungeonMap.trapRoomColor),
+    DungeonDoor(IVec2(0, 4), DoorRotation.Horizontal, DoorType.Normal, DungeonMap.puzzleRoomColor),
+    DungeonDoor(IVec2(1, 4), DoorRotation.Horizontal, DoorType.Normal, DungeonMap.normalDoorColor),
+    DungeonDoor(IVec2(1, 4), DoorRotation.Vertical, DoorType.Normal, DungeonMap.normalDoorColor),
+    DungeonDoor(IVec2(3, 4), DoorRotation.Horizontal, DoorType.Normal, DungeonMap.normalDoorColor),
+    DungeonDoor(IVec2(3, 4), DoorRotation.Vertical, DoorType.Normal, DungeonMap.normalDoorColor),
+    DungeonDoor(IVec2(5, 4), DoorRotation.Vertical, DoorType.Normal, DungeonMap.normalDoorColor),
+    DungeonDoor(IVec2(1, 5), DoorRotation.Horizontal, DoorType.Blood, DungeonMap.bloodDoorColor)
+)
 
-    fun door(position: IVec2, rotation: DoorRotation, type: DoorType): DungeonDoor {
-        val door = DungeonDoor(position, rotation, type)
-        door.color = when (type) {
-            DoorType.Wither -> DungeonMap.witherDoorColor
-            DoorType.Blood  -> DungeonMap.bloodDoorColor
-            DoorType.Fairy  -> DungeonMap.fairyDoorColor
-            DoorType.Normal -> listOfNotNull(roomByTile[position], roomByTile[position + rotation.offset])
-                .firstOrNull { it.type != RoomType.NORMAL && it.type != RoomType.FAIRY }
-                ?.type?.let(::roomTypeColor) ?: DungeonMap.normalDoorColor
-        }
-        return door
-    }
-
-    return listOf(
-        door(IVec2(2, 0), DoorRotation.Vertical, DoorType.Normal),
-        door(IVec2(1, 0), DoorRotation.Vertical, DoorType.Normal),
-        door(IVec2(0, 1), DoorRotation.Horizontal, DoorType.Normal),
-        door(IVec2(2, 2), DoorRotation.Horizontal, DoorType.Normal),
-        door(IVec2(1, 2), DoorRotation.Vertical, DoorType.Normal),
-        door(IVec2(4, 0), DoorRotation.Vertical, DoorType.Normal),
-        door(IVec2(3, 1), DoorRotation.Horizontal, DoorType.Normal),
-        door(IVec2(3, 3), DoorRotation.Vertical, DoorType.Normal),
-        door(IVec2(1, 3), DoorRotation.Horizontal, DoorType.Fairy),
-        door(IVec2(2, 3), DoorRotation.Vertical, DoorType.Normal),
-        door(IVec2(4, 3), DoorRotation.Vertical, DoorType.Normal),
-        door(IVec2(5, 3), DoorRotation.Vertical, DoorType.Normal),
-        door(IVec2(0, 4), DoorRotation.Horizontal, DoorType.Normal),
-        door(IVec2(1, 4), DoorRotation.Horizontal, DoorType.Normal),
-        door(IVec2(1, 4), DoorRotation.Vertical, DoorType.Normal),
-        door(IVec2(3, 4), DoorRotation.Horizontal, DoorType.Normal),
-        door(IVec2(3, 4), DoorRotation.Vertical, DoorType.Normal),
-        door(IVec2(5, 4), DoorRotation.Vertical, DoorType.Normal),
-        door(IVec2(1, 5), DoorRotation.Horizontal, DoorType.Blood),
-    )
-}
 
 fun roomTypeColor(type: RoomType): Color = when (type) {
     RoomType.NORMAL   -> DungeonMap.normalRoomColor
