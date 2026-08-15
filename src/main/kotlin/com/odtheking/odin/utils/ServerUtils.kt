@@ -5,7 +5,6 @@ import com.odtheking.odin.events.core.onReceive
 import net.minecraft.network.protocol.game.ClientboundSetTimePacket
 import net.minecraft.network.protocol.ping.ClientboundPongResponsePacket
 import net.minecraft.util.Util
-import java.util.ArrayDeque
 import kotlin.math.min
 
 object ServerUtils {

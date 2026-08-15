@@ -9,7 +9,6 @@ import com.odtheking.odin.features.impl.boss.WitherDragons.sendSpawned
 import com.odtheking.odin.features.impl.boss.WitherDragons.sendTime
 import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.Colors
-import com.odtheking.odin.utils.alert
 import com.odtheking.odin.utils.modMessage
 import net.minecraft.core.BlockPos
 import net.minecraft.core.particles.ParticleTypes

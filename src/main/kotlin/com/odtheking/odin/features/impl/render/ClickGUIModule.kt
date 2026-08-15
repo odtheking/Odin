@@ -17,7 +17,6 @@ import com.odtheking.odin.utils.getChatBreak
 import com.odtheking.odin.utils.modMessage
 import com.odtheking.odin.utils.network.WebUtils.fetchJson
 import com.odtheking.odin.utils.network.WebUtils.postData
-import com.odtheking.odin.utils.skyblock.LocationUtils
 import com.odtheking.odin.utils.ui.rendering.NVGRenderer
 import kotlinx.coroutines.launch
 import net.minecraft.network.chat.ClickEvent

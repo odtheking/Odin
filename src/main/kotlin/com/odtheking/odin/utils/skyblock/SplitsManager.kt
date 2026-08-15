@@ -1,8 +1,8 @@
 package com.odtheking.odin.utils.skyblock
 
 import com.odtheking.odin.events.ChatPacketEvent
-import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.LevelEvent
+import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.impl.skyblock.Splits
 import com.odtheking.odin.utils.PersonalBest

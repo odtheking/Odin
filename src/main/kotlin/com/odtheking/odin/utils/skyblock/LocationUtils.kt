@@ -1,8 +1,8 @@
 package com.odtheking.odin.utils.skyblock
 
 import com.odtheking.odin.OdinMod.mc
-import com.odtheking.odin.events.LocationChangeEvent
 import com.odtheking.odin.events.LevelEvent
+import com.odtheking.odin.events.LocationChangeEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.utils.equalsOneOf

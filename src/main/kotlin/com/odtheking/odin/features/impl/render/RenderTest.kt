@@ -8,11 +8,7 @@ import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Category
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Color
-import com.odtheking.odin.utils.render.drawCylinder
-import com.odtheking.odin.utils.render.drawFilledBox
-import com.odtheking.odin.utils.render.drawLine
-import com.odtheking.odin.utils.render.drawStyledBox
-import com.odtheking.odin.utils.render.drawWireFrameBox
+import com.odtheking.odin.utils.render.*
 import net.minecraft.world.phys.AABB
 import kotlin.math.ceil
 import kotlin.math.sqrt

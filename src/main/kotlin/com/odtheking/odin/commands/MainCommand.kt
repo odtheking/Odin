@@ -10,7 +10,6 @@ import com.odtheking.odin.clickgui.HudManager
 import com.odtheking.odin.features.ModuleManager
 import com.odtheking.odin.features.impl.render.ClickGUIModule
 import com.odtheking.odin.utils.*
-import com.odtheking.odin.utils.handlers.schedule
 import com.odtheking.odin.utils.skyblock.PartyUtils
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 
