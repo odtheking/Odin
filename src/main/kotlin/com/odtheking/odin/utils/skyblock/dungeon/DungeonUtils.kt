@@ -97,7 +97,7 @@ object DungeonUtils {
         get() = DungeonListener.dungeonStats.princeKilled
 
     inline val batKilled: Int
-        get() = DungeonListener.dungeonStats.batKilled
+        get() = DungeonListener.dungeonStats.batKilled.coerceAtMost(dungeonTeammates.size)
 
     inline val currentRoom: DungeonRoom?
         get() = WorldScan.currentRoom

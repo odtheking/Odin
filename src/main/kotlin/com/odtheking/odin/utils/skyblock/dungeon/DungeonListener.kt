@@ -110,10 +110,8 @@ object DungeonListener {
                     teammate.name == (match.groupValues[1].takeUnless { it == "You" } ?: mc.player?.name?.string)
                 }?.deaths?.inc()
             }
-            
-            val partyMessage = partyMessageRegex.find(value)?.groupValues ?: return@on
-            if(partyMessage[1] == DungeonUtils.currentDungeonPlayer.name)
-            when (partyMessage[2].lowercase()) {
+            // I know people can abuse it to get multiple additional score no idc hopefully hypixel will fix it before i have to
+            when (partyMessageRegex.find(value)?.groupValues?.get(1)?.lowercase() ?: return@on)  {
                 "mimic killed", "mimic slain", "mimic killed!", "mimic dead", "mimic dead!" ->
                     if (DungeonUtils.isFloor(6, 7)) dungeonStats.mimicKilled = true
 
@@ -201,7 +199,7 @@ object DungeonListener {
     private val secretCountRegex = Regex("^ Secrets Found: (\\d+)$")
     private val openedRoomsRegex = Regex("^ Opened Rooms: (\\d+)$")
     private val floorRegex = Regex("The Catacombs \\((\\w+)\\)$")
-    private val partyMessageRegex = Regex("^Party > (.*?): (.+)$")
+    private val partyMessageRegex = Regex("^Party > .*?: (.+)$")
     private val puzzleCountRegex = Regex("^Puzzles: \\((\\d+)\\)$")
     private val deathsRegex = Regex("^Team Deaths: (\\d+)$")
     private val cryptRegex = Regex("^ Crypts: (\\d+)$")
