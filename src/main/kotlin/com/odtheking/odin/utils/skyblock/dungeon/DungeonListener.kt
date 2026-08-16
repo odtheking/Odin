@@ -203,7 +203,7 @@ object DungeonListener {
     private val secretCountRegex = Regex("^ Secrets Found: (\\d+)$")
     private val openedRoomsRegex = Regex("^ Opened Rooms: (\\d+)$")
     private val floorRegex = Regex("The Catacombs \\((\\w+)\\)$")
-    private val partyMessageRegex = Regex("^Party > .*?: (.+)$")
+    private val partyMessageRegex = Regex("^Party > (.*?): (.+)$")
     private val puzzleCountRegex = Regex("^Puzzles: \\((\\d+)\\)$")
     private val deathsRegex = Regex("^Team Deaths: (\\d+)$")
     private val cryptRegex = Regex("^ Crypts: (\\d+)$")
