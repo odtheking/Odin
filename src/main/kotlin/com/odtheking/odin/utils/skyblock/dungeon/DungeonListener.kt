@@ -110,8 +110,12 @@ object DungeonListener {
                     teammate.name == (match.groupValues[1].takeUnless { it == "You" } ?: mc.player?.name?.string)
                 }?.deaths?.inc()
             }
+            
             // I know people can abuse it to get multiple additional score no idc hopefully hypixel will fix it before i have to
-            when (partyMessageRegex.find(value)?.groupValues?.get(1)?.lowercase() ?: return@on)  {
+            // the check is to make sure that its not proccing off your own party chat message, forgot the return@on before
+            val partyMessage = partyMessageRegex.find(value)?.groupValues ?: return@on
+            if (partyMessage.get(1) == DungeonUtils.currentDungeonPlayer.name) return@on
+            when (partyMessage.get(2).lowercase()) {
                 "mimic killed", "mimic slain", "mimic killed!", "mimic dead", "mimic dead!" ->
                     if (DungeonUtils.isFloor(6, 7)) dungeonStats.mimicKilled = true
 
