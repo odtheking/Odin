@@ -36,7 +36,7 @@ object Vesuvius : Module(
     private val shardRegex = Regex("^([A-Za-z' ]+) Shard(?: x(\\d+))?$")
     private val teethRegex = Regex("^Kuudra Teeth x(\\d+)$")
     private val pearlRegex = Regex("^Heavy Pearl x(\\d+)$")
-    private val chestRegex = Regex("^((Free|Paid) Chest Chest)|(Kuudra - .+)|Vesuvius$")
+    private val chestRegex = Regex("^((Free|Paid) Chest Chest)|(Kuudra - .+)|.*Vesuvius|.*Croesus$")
     private val uselessLinesRegex = Regex("^Contents|Cost|Click to open!|FREE|Already opened!|Can't open another chest!|Paid Chest|")
     private val salvageItemsRegex = Regex("^Boots|Chestplate|Helmet|Cloak|Aurora Staff|Hollow Wand")
 
@@ -67,13 +67,13 @@ object Vesuvius : Module(
         }
 
         on<GuiEvent.RenderSlot> {
-            if (screen.title.string.equalsOneOf("Vesuvius", "Croesus") && slot.item.hoverName.string == "Kuudra's Hollow") {
+            if (screen.title.string.containsOneOf("Vesuvius", "Croesus") && slot.item.hoverName.string == "Kuudra's Hollow") {
                 if (hideClaimed && slot.item.loreString.any { it == "No more chests to open!"}) cancel()
             }
         }
 
         onReceive<ClientboundContainerSetSlotPacket> {
-            val title = mc.gui.screen()?.title?.string ?:return@onReceive
+            val title = mc.gui.screen()?.title?.string ?: return@onReceive
             if (!title.matches(chestRegex)) return@onReceive
             if (slot == 31 && item.item == Items.CHEST) handleKuudraChest(item)
             if (slot == 14 && item.item == Items.PLAYER_HEAD) handleKuudraChest(item)
