@@ -37,7 +37,8 @@ object Vesuvius : Module(
     private val shardRegex = Regex("^([A-Za-z' ]+) Shard(?: x(\\d+))?$")
     private val teethRegex = Regex("^Kuudra Teeth x(\\d+)$")
     private val pearlRegex = Regex("^Heavy Pearl x(\\d+)$")
-    private val chestRegex = Regex("^((Free|Paid) Chest Chest)|(Kuudra - .+)|.*Vesuvius|.*Croesus$")
+    private val chestRegex = Regex("^((Free|Paid) Chest)|(Kuudra - .+)|.*Vesuvius|.*Croesus$")
+    private val hudRegex = Regex("^((Free|Paid) Chest)|(Kuudra - .+)$")
     private val uselessLinesRegex = Regex("^Contents|Cost|Click to open!|FREE|Already opened!|Can't open another chest!|Paid Chest|")
     private val salvageItemsRegex = Regex("^Boots|Chestplate|Helmet|Cloak|Aurora Staff|Hollow Wand")
 
@@ -54,7 +55,7 @@ object Vesuvius : Module(
     init {
         on<GuiEvent.DrawTooltip> {
             val title = screen.title.string
-            if (vesuviusHud.enabled && title.matches(chestRegex) && currentChest != null && title != "Vesuvius") {
+            if (vesuviusHud.enabled && title.matches(hudRegex) && currentChest != null) {
                 guiGraphics.pose().pushMatrix()
                 val sf = mc.window.guiScale
                 guiGraphics.pose().scale(1f / sf, 1f / sf)
@@ -110,6 +111,8 @@ object Vesuvius : Module(
 
         previewEnchantedBookRegex.find(item)?.destructured?.let { (name, level) ->
             val ult = if (name in ultimateEnchants) "ULTIMATE_" else ""
+
+            enchantReplacements[name]?.let { itemId -> return cachedPrices["$itemId-${romanToInt(level)}"] }
             return cachedPrices["ENCHANTED_BOOK-$ult${name.uppercase().replace(" ", "_")}-${romanToInt(level)}"]
         }
 
@@ -217,6 +220,13 @@ object Vesuvius : Module(
     private val itemReplacements = mapOf(
         "Hellstorm Wand" to "HELLSTORM_STAFF",
         "Aurora Staff" to "RUNIC_STAFF",
+    )
+
+    private val enchantReplacements = mapOf(
+        "Vivacious Vitality" to "ENCHANTED_BOOK-FEROCIOUS_MANA",
+        "Hardened Vitality" to "ENCHANTED_BOOK-HARDENED_MANA",
+        "Strong Vitality" to "ENCHANTED_BOOK-STRONG_MANA",
+        "Vampiric Vitality" to "ENCHANTED_BOOK-MANA_VAMPIRE",
     )
 
     private val starCountToEssence = mapOf(
