@@ -2,6 +2,7 @@ package com.odtheking.odin.utils.skyblock.dungeon
 
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.events.ScoreUpdateEvent
+import com.odtheking.odin.features.impl.dungeon.MapInfo
 import com.odtheking.odin.features.impl.dungeon.MapInfo.togglePaul
 import com.odtheking.odin.features.impl.dungeon.map.WorldScan
 import com.odtheking.odin.features.impl.dungeon.map.tile.DungeonRoom
