@@ -2,6 +2,7 @@ package com.odtheking.odin.features.impl.boss
 
 import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
+import com.odtheking.odin.clickgui.settings.impl.SelectorSetting
 import com.odtheking.odin.clickgui.settings.impl.StringSetting
 import com.odtheking.odin.events.ChatPacketEvent
 import com.odtheking.odin.events.GuiEvent
@@ -37,18 +38,19 @@ object MelodyMessage : Module(
 
     private val broadcast by BooleanSetting("Broadcast Progress", true, desc = "Broadcasts melody progress to all other odin users in the party.")
     private val melodyGui by HUD("Progress GUI", "Shows a gui with the progress of broadcasting odin users in melody.", true) {
-        if (it) drawMelody(MelodyData(3, 1, 2), 0)
+        if (it) drawMelody(MelodyData(3, 1, 2), 0, mc.user.name)
 
         if (broadcast && melodyWebSocket.connected) {
-            melodies.entries.forEachIndexed { i, (name, data) ->
-                if (!showOwn && name == mc.user.name) return@forEachIndexed
-                drawMelody(data, i)
+            var renderedIndex = 0
+            melodies.entries.forEach { (name, data) ->
+                if (showPlayer == 0 && name == mc.user.name) return@forEach
+                drawMelody(data, renderedIndex++, name)
             }
         }
         40 to 15
     }.withDependency { broadcast }
 
-    private val showOwn: Boolean by BooleanSetting("Show Own", false, desc = "Shows your own progress in the melody GUI.").withDependency { broadcast && melodyGui.enabled }
+    private val showPlayer by SelectorSetting("Show Player", "Name", arrayListOf("None", "Class", "Name", "Class & Name"), desc = "How player details should be rendered in the Melody GUI.").withDependency { broadcast }
 
     val melodyWebSocket = webSocket {
         onMessage {
@@ -152,14 +154,32 @@ object MelodyMessage : Module(
 
     private val width by lazy { getStringWidth("§d■") }
 
-    private fun GuiGraphicsExtractor.drawMelody(data: MelodyData, index: Int) {
+    private fun GuiGraphicsExtractor.drawMelody(data: MelodyData, index: Int, playerName: String) {
         val y = width * 2 * index
 
         repeat(5) {
             if (data.purple == it) textDim("§d■", width * it, y)
             textDim("${if (data.pane == it) "§a" else "§f"}■", width * it, y + width)
         }
-        data.clay?.let { textDim(it.toString(), width * 5 + 2, y + width / 2) }
+        
+        var textToRender = data.clay?.toString() ?: ""
+        val dungeonTeammate = DungeonUtils.dungeonTeammates.firstOrNull { it.name == playerName }
+        val dungeonClass = dungeonTeammate?.clazz?.name
+
+        val label = when (showPlayer) {
+            1 -> dungeonClass
+            2 -> playerName
+            3 -> if (dungeonClass != null) "$playerName ($dungeonClass)" else playerName
+            else -> null
+        }
+
+        if (!label.isNullOrEmpty()) {
+            textToRender += if (textToRender.isNotEmpty()) " - $label" else label
+        }
+
+        if (textToRender.isNotEmpty()) {
+            textDim(textToRender, width * 5 + 2, y + width / 2)
+        }
     }
 
     private data class UpdateMessage(val user: String, val type: Int, val slot: Int)
