@@ -7,14 +7,13 @@ import com.odtheking.odin.clickgui.settings.impl.label
 import com.odtheking.odin.config.DungeonWaypointConfig
 import com.odtheking.odin.features.impl.dungeon.dungeonwaypoints.*
 import com.odtheking.odin.utils.Color
-import com.odtheking.odin.utils.handlers.schedule
 import com.odtheking.odin.utils.modMessage
 import com.odtheking.odin.utils.setClipboardContent
 import kotlinx.coroutines.launch
 
 val dungeonWaypointsCommand = Commodore("dwp", "dungeonwaypoints") {
     runs {
-        schedule(0) { mc.setScreenAndShow(WaypointPackSelectorScreen(mc.gui.screen())) }
+        mc.schedule { mc.setScreenAndShow(WaypointPackSelectorScreen(mc.gui.screen())) }
     }
 
     literal("fill").runs {

@@ -7,8 +7,8 @@ import com.odtheking.odin.clickgui.settings.impl.DropdownSetting
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.render.textDim
-import com.odtheking.odin.utils.skyblock.LocationUtils
 import com.odtheking.odin.utils.skyblock.ActionBarListener
+import com.odtheking.odin.utils.skyblock.LocationUtils
 import net.minecraft.network.chat.Component
 import kotlin.math.abs
 

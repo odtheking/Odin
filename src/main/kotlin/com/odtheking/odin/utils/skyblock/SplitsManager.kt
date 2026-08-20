@@ -1,8 +1,8 @@
 package com.odtheking.odin.utils.skyblock
 
 import com.odtheking.odin.events.ChatPacketEvent
-import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.LevelEvent
+import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.impl.skyblock.Splits
 import com.odtheking.odin.utils.PersonalBest
@@ -174,7 +174,7 @@ private val floor6SplitGroup = mutableListOf(
     Split(Regex("^\\[BOSS] Sadan: You did it\\. I understand now, you have earned my respect\\.$"), "§4Cleared"),
 )
 
-private val floor7SplitGroup = mutableListOf(
+val floor7SplitGroup = mutableListOf(
     Split(entryRegexes[6], "§5Maxor"),
     Split(Regex("\\[BOSS] Storm: Pathetic Maxor, just like expected\\."), "§3Storm"),
     Split(Regex("\\[BOSS] Goldor: Who dares trespass into my domain\\?"), "§6Terminals"),

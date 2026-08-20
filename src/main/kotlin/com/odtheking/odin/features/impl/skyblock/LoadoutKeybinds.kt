@@ -1,17 +1,14 @@
 package com.odtheking.odin.features.impl.skyblock
 
 import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
-import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.DropdownSetting
 import com.odtheking.odin.clickgui.settings.impl.KeybindSetting
 import com.odtheking.odin.events.ScreenEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.clickSlot
-import com.odtheking.odin.utils.modMessage
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 import org.lwjgl.glfw.GLFW
-import java.security.Key
 
 object LoadoutKeybinds : Module(
     name = "Loadout Keybinds",

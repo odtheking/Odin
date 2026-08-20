@@ -21,7 +21,7 @@ object DungeonMap : Module(
     private val disableBoss by BooleanSetting("Disable in Boss", true, desc = "Disables the map during boss fights.")
 
     val backgroundOutline by ColorSetting("Background Outline", Colors.BLACK, true, desc = "The color of the background border.")
-    val backgroundColor by ColorSetting("Background Color", Colors.BLACK.withAlpha(0.2f), true, desc = "Background color of the map.")
+    val backgroundColor by ColorSetting("Background Color", Colors.BLACK.withAlpha(0.1f), true, desc = "Background color of the map.")
     val textScaling by NumberSetting("Text Scaling", 0.45f, 0.1..1.0, 0.05f, desc = "Scale of room name text.")
 
     private val playerDropdown by DropdownSetting("Player Settings", desc = "Shows settings for player name labels on the map.")
@@ -48,29 +48,31 @@ object DungeonMap : Module(
 
     val disablePred by BooleanSetting("Disable Prediction", false, desc = "Disables special-column room type prediction.")
 
+    private val exampleRooms by lazy { buildExampleRooms() }
+    private val exampleDoors by lazy { buildExampleDoors() }
+
     private val mapHud by HUD("Dungeon Map", "Displays the dungeon map.", false) { example ->
-        when {
-            (!DungeonUtils.inDungeons || (disableBoss && DungeonUtils.inBoss)) && !example -> 0 to 0
-            example -> renderExampleMap()
-            else    -> renderDungeonMap()
+        if ((!DungeonUtils.inDungeons || (disableBoss && DungeonUtils.inBoss)) && !example) return@HUD 0 to 0
+        fill(0, 0, MAP_PX, MAP_PX, backgroundColor.rgba)
+        hollowFill(0, 0, MAP_PX, MAP_PX, 1, backgroundOutline)
+        pose().pushMatrix()
+
+        if (example) {
+            pose().translate(5f, 5f)
+            renderMap(exampleRooms, exampleDoors, emptyList())
         }
+        else {
+            pose().translate(DungeonScan.startX.toFloat(), DungeonScan.startY.toFloat())
+            pose().scale(DungeonScan.roomSize / DungeonScan.MAP_ROOM_SIZE.toFloat())
+
+            renderMap(DungeonScan.rooms, DungeonScan.doors.values, DungeonScan.pathHints)
+
+            if (!DungeonUtils.inBoss) renderPlayers()
+        }
+        pose().popMatrix()
+
+        MAP_PX to MAP_PX
     }
 
     private const val MAP_PX = 128
-
-    private fun GuiGraphicsExtractor.renderExampleMap(): Pair<Int, Int> {
-        fill(0, 0, MAP_PX, MAP_PX, backgroundColor.rgba)
-        hollowFill(0, 0, MAP_PX, MAP_PX, 1, backgroundOutline)
-        centeredText(mc.font, "MAP", MAP_PX / 2, MAP_PX / 2 - mc.font.lineHeight / 2, Colors.WHITE.rgba)
-        return MAP_PX to MAP_PX
-    }
-
-    private fun GuiGraphicsExtractor.renderDungeonMap(): Pair<Int, Int> {
-        fill(0, 0, MAP_PX, MAP_PX, backgroundColor.rgba)
-        hollowFill(0, 0, MAP_PX, MAP_PX, 1, Colors.gray26)
-
-        renderMap()
-
-        return MAP_PX to MAP_PX
-    }
 }

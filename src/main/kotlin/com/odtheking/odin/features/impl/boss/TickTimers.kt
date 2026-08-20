@@ -4,8 +4,8 @@ import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.HudElement
 import com.odtheking.odin.events.ChatPacketEvent
-import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.LevelEvent
+import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.features.Module

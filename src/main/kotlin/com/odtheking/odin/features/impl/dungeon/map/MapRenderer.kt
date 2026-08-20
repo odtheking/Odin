@@ -16,24 +16,9 @@ private val green = Identifier.fromNamespaceAndPath("odin", "map/green_check.png
 private val white = Identifier.fromNamespaceAndPath("odin", "map/white_check.png")
 private val question = Identifier.fromNamespaceAndPath("odin", "map/question.png")
 
-internal fun GuiGraphicsExtractor.renderMap() {
-    pose().pushMatrix()
-    pose().translate(DungeonScan.startX.toFloat(), DungeonScan.startY.toFloat())
-
-    renderDoors()
-
-    for (room in DungeonScan.rooms) {
-        if (room.isViewable) fillRoom(room, roomTypeColor(room.type).rgba, DungeonScan.roomSize, DungeonScan.roomGap)
-    }
-
-    for (room in DungeonScan.rooms) renderRoomText(room)
-
-    if (!DungeonUtils.inBoss) renderPlayers()
-
-    pose().popMatrix()
-}
-
-private fun GuiGraphicsExtractor.fillRoom(room: DungeonRoom, color: Int, rs: Int, rg: Int) {
+fun GuiGraphicsExtractor.fillRoom(room: DungeonRoom, color: Int) {
+    val rs = DungeonScan.MAP_ROOM_SIZE
+    val rg = DungeonScan.MAP_ROOM_GAP
     val ox = room.topLeft.x * rg
     val oy = room.topLeft.z * rg
     when (val shape = room.shape) {
@@ -62,12 +47,12 @@ private fun GuiGraphicsExtractor.fillRoom(room: DungeonRoom, color: Int, rs: Int
     }
 }
 
-private fun GuiGraphicsExtractor.renderDoors() {
-    val rs = DungeonScan.roomSize
-    val rg = DungeonScan.roomGap
+fun GuiGraphicsExtractor.renderDoors(doors: Collection<DungeonDoor>) {
+    val rs = DungeonScan.MAP_ROOM_SIZE
+    val rg = DungeonScan.MAP_ROOM_GAP
     val half = (rs - 8) / 2f
 
-    for ((_, door) in DungeonScan.doors) {
+    for (door in doors) {
         val offset = door.rotation.offset
 
         pose().pushMatrix()
@@ -78,13 +63,17 @@ private fun GuiGraphicsExtractor.renderDoors() {
         fill(0, 0, 4 + 4 * offset.z, 4 + 4 * offset.x, door.color.rgba)
         pose().popMatrix()
     }
+}
 
-    for (unknownTile in DungeonScan.pathHints) {
-        val (x, y) = unknownTile.position.x * rg to unknownTile.position.z * rg
-        val rs = DungeonScan.roomSize
+fun GuiGraphicsExtractor.renderPathHints(pathHints: Collection<DungeonTile>) {
+    val rs = DungeonScan.MAP_ROOM_SIZE
+    val rg = DungeonScan.MAP_ROOM_GAP
 
-        val colors = if (unknownTile.room?.type == RoomType.BLOOD) arrayOf(DungeonMap.bloodRoomColor.darker(0.5f))
-        else if (!DungeonMap.disablePred && unknownTile.room?.isKnown1x1 == true) SpecialColumn.colorGuessForUnknown(unknownTile.position.x)
+    for ((position, room) in pathHints) {
+        val (x, y) = position.x * rg to position.z * rg
+
+        val colors = if (room?.type == RoomType.BLOOD) arrayOf(DungeonMap.bloodRoomColor.darker(0.5f))
+        else if (!DungeonMap.disablePred && room?.isKnown1x1 == true) SpecialColumn.colorGuessForUnknown(position.x)
         else arrayOf(DungeonMap.unknownRoomColor)
 
         when (colors.size) {
@@ -108,21 +97,20 @@ private fun GuiGraphicsExtractor.renderDoors() {
 }
 
 fun GuiGraphicsExtractor.renderIcon(pos: IVec2, identifier: Identifier) {
-    val rs = DungeonScan.roomSize - 4
-    blit(RenderPipelines.GUI_TEXTURED, identifier, pos.x + 2, pos.z + 2, rs.toFloat(), rs.toFloat(), rs, rs, rs, rs)
+    val size = DungeonScan.MAP_ROOM_SIZE - DungeonScan.ROOM_SPACING
+    blit(RenderPipelines.GUI_TEXTURED, identifier, pos.x + 2, pos.z + 2, size.toFloat(), size.toFloat(), size, size, size, size)
 }
 
-private fun GuiGraphicsExtractor.renderRoomText(room: DungeonRoom) {
+fun GuiGraphicsExtractor.renderRoomText(room: DungeonRoom) {
     if (room.type.equalsOneOf(RoomType.UNDISCOVERED, RoomType.FAIRY, RoomType.ENTRANCE, RoomType.BLOOD)) return
-    val scannedRoom = DungeonScan.tiles.getOrNull(room.topLeft.x + room.topLeft.z * 6)?.room
 
-    if (scannedRoom?.walkedInto != true) {
+    if (!room.walkedInto) {
         when (room.checkmark) {
             MapCheckmark.GREEN -> green
             MapCheckmark.WHITE -> white
             MapCheckmark.RED -> cross
             else -> null
-        }?.let { texture -> renderIcon(room.topLeft * DungeonScan.roomGap, texture) }
+        }?.let { texture -> renderIcon(room.topLeft * DungeonScan.MAP_ROOM_GAP, texture) }
         return
     }
 
@@ -136,7 +124,7 @@ private fun GuiGraphicsExtractor.renderRoomText(room: DungeonRoom) {
         else               -> Color(100, 100, 100)
     }.rgba
 
-    val lines  = scannedRoom.name?.split(" ") ?: return
+    val lines  = room.name?.split(" ") ?: return
     val totalH = (lines.size - 1) * fontH * DungeonMap.textScaling
 
     for ((i, line) in lines.withIndex()) {
@@ -148,7 +136,7 @@ private fun GuiGraphicsExtractor.renderRoomText(room: DungeonRoom) {
     }
 }
 
-private fun GuiGraphicsExtractor.renderPlayers() {
+fun GuiGraphicsExtractor.renderPlayers() {
     val showNames = mc.player?.mainHandItem?.itemId?.equalsOneOf("INFINITE_SPIRIT_LEAP", "SPIRIT_LEAP") == true
 
     for (player in DungeonUtils.dungeonTeammatesNoSelf) {
@@ -188,6 +176,69 @@ private fun GuiGraphicsExtractor.renderPlayers() {
     } else blit(RenderPipelines.GUI_TEXTURED, marker, -2, -3, 2f, 0f, 5, 7, 8, 8)
     pose().popMatrix()
 }
+
+fun GuiGraphicsExtractor.renderMap(rooms: Collection<DungeonRoom>, doors: Collection<DungeonDoor>, pathHints: Collection<DungeonTile>) {
+    renderDoors(doors)
+    for (room in rooms) if (room.isViewable) fillRoom(room, roomTypeColor(room.type).rgba)
+    for (room in rooms) renderRoomText(room)
+    renderPathHints(pathHints)
+}
+
+fun buildExampleRooms(): List<DungeonRoom> {
+    fun room(type: RoomType, topLeft: IVec2, rotation: RoomRotation?, checkmark: MapCheckmark, walkedInto: Boolean, data: RoomData? = null) =
+        DungeonRoom(type, topLeft, data).apply {
+            data?.let { shape = it.shape }
+            this.rotation = rotation
+            this.checkmark = checkmark
+            this.walkedInto = walkedInto
+        }
+
+    return listOf(
+        room(RoomType.ENTRANCE, IVec2(2, 0), RoomRotation.NORTH, MapCheckmark.GREEN, true),
+        room(RoomType.NORMAL,   IVec2(0, 0), RoomRotation.WEST,  MapCheckmark.NONE,  true, RoomData.getRoomData(1051405699)), // hallway
+        room(RoomType.PUZZLE,   IVec2(1, 0), RoomRotation.NORTH, MapCheckmark.NONE,  true, RoomData.getRoomData(379499781)), // water board
+        room(RoomType.NORMAL,   IVec2(3, 0), RoomRotation.WEST,  MapCheckmark.WHITE, true, RoomData.getRoomData(90256084)), // waterfall
+        room(RoomType.NORMAL,   IVec2(4, 0), RoomRotation.SOUTH, MapCheckmark.NONE,  true, RoomData.getRoomData(1024359556)), // bridges
+        room(RoomType.NORMAL,   IVec2(1, 1), RoomRotation.SOUTH, MapCheckmark.WHITE, true, RoomData.getRoomData(1250712883)), // museum
+        room(RoomType.NORMAL,   IVec2(4, 1), RoomRotation.SOUTH, MapCheckmark.NONE,  true, RoomData.getRoomData(950592972)), // cathedral
+        room(RoomType.NORMAL,   IVec2(1, 3), RoomRotation.NORTH, MapCheckmark.WHITE, true, RoomData.getRoomData(-333637832)), // water
+        room(RoomType.FAIRY,    IVec2(2, 3), RoomRotation.SOUTH, MapCheckmark.GREEN, true),
+        room(RoomType.CHAMPION, IVec2(4, 3), RoomRotation.SOUTH, MapCheckmark.GREEN,  false, RoomData.getRoomData(-1334473473)), // dragon
+        room(RoomType.TRAP,     IVec2(5, 3), RoomRotation.NORTH, MapCheckmark.GREEN, false, RoomData.getRoomData(1590699551)), // old trap
+        room(RoomType.PUZZLE,   IVec2(0, 4), RoomRotation.WEST,  MapCheckmark.NONE,  true, RoomData.getRoomData(799715466)), // tp maze
+        room(RoomType.NORMAL,   IVec2(1, 4), RoomRotation.EAST,  MapCheckmark.WHITE, true, RoomData.getRoomData(1484939648)), // spikes
+        room(RoomType.NORMAL,   IVec2(2, 4), RoomRotation.WEST,  MapCheckmark.WHITE, true, RoomData.getRoomData(-1764045332)), // beams
+        room(RoomType.NORMAL,   IVec2(3, 4), RoomRotation.NORTH, MapCheckmark.NONE,  false, RoomData.getRoomData(76347246)), // mirror
+        room(RoomType.NORMAL,   IVec2(4, 4), RoomRotation.WEST,  MapCheckmark.NONE,  false, RoomData.getRoomData(-1899702429)), // silver sword
+        room(RoomType.NORMAL,   IVec2(5, 4), RoomRotation.WEST,  MapCheckmark.WHITE,  false, RoomData.getRoomData(-151940807)), // staircase
+        room(RoomType.NORMAL,   IVec2(0, 5), RoomRotation.SOUTH, MapCheckmark.WHITE, true, RoomData.getRoomData(259768244)), // archway
+        room(RoomType.BLOOD,    IVec2(2, 5), RoomRotation.EAST,  MapCheckmark.NONE,  true),
+        room(RoomType.NORMAL,   IVec2(3, 5), RoomRotation.SOUTH, MapCheckmark.NONE,  false, RoomData.getRoomData(222124420)), // wizard
+    )
+}
+
+fun buildExampleDoors(): List<DungeonDoor> = listOf(
+    DungeonDoor(IVec2(2, 0), DoorRotation.Vertical, DoorType.Normal, DungeonMap.entranceRoomColor),
+    DungeonDoor(IVec2(1, 0), DoorRotation.Vertical, DoorType.Normal, DungeonMap.puzzleRoomColor),
+    DungeonDoor(IVec2(0, 1), DoorRotation.Horizontal, DoorType.Normal, DungeonMap.normalDoorColor),
+    DungeonDoor(IVec2(2, 2), DoorRotation.Horizontal, DoorType.Normal, DungeonMap.normalDoorColor),
+    DungeonDoor(IVec2(1, 2), DoorRotation.Vertical, DoorType.Normal, DungeonMap.normalDoorColor),
+    DungeonDoor(IVec2(4, 0), DoorRotation.Vertical, DoorType.Normal, DungeonMap.normalDoorColor),
+    DungeonDoor(IVec2(3, 1), DoorRotation.Horizontal, DoorType.Normal, DungeonMap.normalDoorColor),
+    DungeonDoor(IVec2(3, 3), DoorRotation.Vertical, DoorType.Normal, DungeonMap.normalDoorColor),
+    DungeonDoor(IVec2(1, 3), DoorRotation.Horizontal, DoorType.Fairy, DungeonMap.fairyDoorColor),
+    DungeonDoor(IVec2(2, 3), DoorRotation.Vertical, DoorType.Normal, DungeonMap.normalDoorColor),
+    DungeonDoor(IVec2(4, 3), DoorRotation.Vertical, DoorType.Normal, DungeonMap.championRoomColor),
+    DungeonDoor(IVec2(5, 3), DoorRotation.Vertical, DoorType.Normal, DungeonMap.trapRoomColor),
+    DungeonDoor(IVec2(0, 4), DoorRotation.Horizontal, DoorType.Normal, DungeonMap.puzzleRoomColor),
+    DungeonDoor(IVec2(1, 4), DoorRotation.Horizontal, DoorType.Normal, DungeonMap.normalDoorColor),
+    DungeonDoor(IVec2(1, 4), DoorRotation.Vertical, DoorType.Normal, DungeonMap.normalDoorColor),
+    DungeonDoor(IVec2(3, 4), DoorRotation.Horizontal, DoorType.Normal, DungeonMap.normalDoorColor),
+    DungeonDoor(IVec2(3, 4), DoorRotation.Vertical, DoorType.Normal, DungeonMap.normalDoorColor),
+    DungeonDoor(IVec2(5, 4), DoorRotation.Vertical, DoorType.Normal, DungeonMap.normalDoorColor),
+    DungeonDoor(IVec2(1, 5), DoorRotation.Horizontal, DoorType.Blood, DungeonMap.bloodDoorColor)
+)
+
 
 fun roomTypeColor(type: RoomType): Color = when (type) {
     RoomType.NORMAL   -> DungeonMap.normalRoomColor

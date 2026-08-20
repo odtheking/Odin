@@ -12,6 +12,7 @@ import com.odtheking.odin.features.impl.dungeon.map.tile.RoomType
 import com.odtheking.odin.utils.*
 import com.odtheking.odin.utils.Color.Companion.withAlpha
 import com.odtheking.odin.utils.handlers.TickTask
+import com.odtheking.odin.utils.render.textDim
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.core.BlockPos
 import net.minecraft.network.chat.ClickEvent
@@ -57,7 +58,7 @@ object PuzzleSolvers : Module(
     private val blazeLineNext by BooleanSetting("Blaze Solver Next Line", true, desc = "Shows the next line to click.").withDependency { blazeSolver && blazeDropDown }
     private val blazeLineAmount by NumberSetting("Blaze Solver Lines", 1, 1..10, 1, desc = "Amount of lines to show.").withDependency { blazeSolver && blazeDropDown }
     private val blazeLineWidth by NumberSetting("Blaze Solver Lines Width", 2f, 0.5..5.0, 0.1, desc = "Width for blaze lines.").withDependency { blazeSolver && blazeDropDown }
-    private val blazeStyle by SelectorSetting("Blaze Style", BoxStyle.OUTLINE, desc = "Whether or not the box should be filled.").withDependency { blazeSolver && blazeDropDown }
+    private val blazeStyle by SelectorSetting("Blaze Style", BoxStyle.FILLED_OUTLINE, desc = "Whether or not the box should be filled.").withDependency { blazeSolver && blazeDropDown }
     private val blazeFirstColor by ColorSetting("First Color", Colors.MINECRAFT_GREEN.withAlpha(.75f), true, desc = "Color for the first blaze.").withDependency { blazeSolver && blazeDropDown }
     private val blazeSecondColor by ColorSetting("Second Color", Colors.MINECRAFT_GOLD.withAlpha(.75f), true, desc = "Color for the second blaze.").withDependency { blazeSolver && blazeDropDown }
     private val blazeThirdColor by ColorSetting("Third Color", Colors.MINECRAFT_RED.withAlpha(.75f), true, desc = "Color for the third blaze.").withDependency { blazeSolver && blazeDropDown }
@@ -83,6 +84,10 @@ object PuzzleSolvers : Module(
     private val quizSolver by BooleanSetting("Quiz Solver", true, desc = "Solver for the trivia puzzle.").withDependency { quizDropdown }
     private val quizColor by ColorSetting("Quiz Color", Colors.MINECRAFT_GREEN.withAlpha(.75f), true, desc = "Color for the quiz solver.").withDependency { quizDropdown && quizSolver }
     private val quizDepth by BooleanSetting("Quiz Depth", false, desc = "Depth check for the trivia puzzle.").withDependency { quizDropdown && quizSolver }
+    private val quizTimerHud by HUD("Quiz Timer Hud", "Displays a timer counting down until you must answer the quiz question.") { example ->
+        val timer = if (example) Triple(220, 220, 1) else QuizSolver.timer
+        if (quizSolver && timer.first > 0) textDim(formatQuizTimer(timer), 0, 0, Colors.WHITE) else 0 to 0
+    }.withDependency { quizDropdown && quizSolver }
     private val quizReset by ActionSetting("Reset Quiz", desc = "Resets the solver.") { QuizSolver.reset() }.withDependency { quizDropdown && quizSolver }
 
     private val boulderDropDown by DropdownSetting("Boulder", desc = "Shows settings for the boulder puzzle solver.")
@@ -110,6 +115,7 @@ object PuzzleSolvers : Module(
         on<TickEvent.Server> {
             if (!DungeonUtils.inClear) return@on
             if (waterSolver) WaterSolver.onServerTick()
+            QuizSolver.onServerTick()
         }
 
         on<LevelEvent.Load> {
@@ -200,5 +206,15 @@ object PuzzleSolvers : Module(
             puzzlePBs.time(puzzleName, (System.currentTimeMillis() - it.timeEntered) / 1000f, "s§7!", "§a${puzzleName} §7solved in §6")
             it.sentMessage = true
         }
+    }
+
+    private fun formatQuizTimer(timer: Triple<Int, Int, Int>): String {
+        val (tick, maxTick, stage) = timer
+        val color = when {
+            tick.toFloat() >= maxTick * 0.66 -> "§a"
+            tick.toFloat() >= maxTick * 0.33 -> "§6"
+            else -> "§c"
+        }
+        return "§5Quiz §8(§f$stage§8/§f3§8): $color${(tick / 20f).toFixed()}s"
     }
 }

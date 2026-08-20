@@ -1,14 +1,13 @@
 package com.odtheking.odin.features.impl.dungeon.map.tile
 
 import com.odtheking.odin.utils.Color
-import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.IVec2
 
 class DungeonDoor(
     val position: IVec2,
     val rotation: DoorRotation,
     var type: DoorType,
-    var color: Color = Colors.WHITE,
+    var color: Color,
 ) {
     val originTileIndex = position.x + position.z * 6
     val destinationTileIndex = position.x + rotation.offset.x + (position.z + rotation.offset.z) * 6

@@ -4,8 +4,8 @@ import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.ListSetting
 import com.odtheking.odin.clickgui.settings.impl.NumberSetting
-import com.odtheking.odin.events.RenderEvent
 import com.odtheking.odin.events.LevelEvent
+import com.odtheking.odin.events.RenderEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onSend
 import com.odtheking.odin.features.Module
@@ -19,8 +19,6 @@ import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.network.protocol.game.ServerboundMovePlayerPacket
 import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.Vec3
-import java.util.*
-import kotlin.concurrent.schedule
 
 object PositionalMessages : Module(
     name = "Positional Messages",

@@ -10,17 +10,16 @@ import com.odtheking.odin.clickgui.ClickGUI
 import com.odtheking.odin.features.ModuleManager
 import com.odtheking.odin.features.impl.render.ClickGUIModule
 import com.odtheking.odin.utils.*
-import com.odtheking.odin.utils.handlers.schedule
 import com.odtheking.odin.utils.skyblock.PartyUtils
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 
 val mainCommand = Commodore("odin", "od") {
     runs {
-        schedule(0) { mc.setScreenAndShow(ClickGUI) }
+        mc.schedule { mc.setScreenAndShow(ClickGUI) }
     }
 
     literal("edithud").runs {
-        schedule(0) { mc.setScreenAndShow(HudManager) }
+        mc.schedule { mc.setScreenAndShow(HudManager) }
     }
 
     literal("tps").runs {

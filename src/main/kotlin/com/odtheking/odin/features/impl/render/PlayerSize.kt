@@ -14,7 +14,7 @@ import com.odtheking.odin.utils.network.WebUtils.postData
 import kotlinx.coroutines.launch
 import net.fabricmc.fabric.api.client.rendering.v1.RenderStateDataKey
 import net.minecraft.client.renderer.entity.state.AvatarRenderState
-import java.util.UUID
+import java.util.*
 
 object PlayerSize : Module(
     name = "Player Size",

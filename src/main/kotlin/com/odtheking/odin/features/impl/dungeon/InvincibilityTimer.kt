@@ -6,8 +6,8 @@ import com.odtheking.odin.clickgui.settings.impl.ColorSetting
 import com.odtheking.odin.clickgui.settings.impl.SelectorSetting
 import com.odtheking.odin.events.ChatPacketEvent
 import com.odtheking.odin.events.GuiEvent
-import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.LevelEvent
+import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.*

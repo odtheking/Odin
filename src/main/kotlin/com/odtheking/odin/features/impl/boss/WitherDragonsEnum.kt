@@ -6,7 +6,6 @@ import com.odtheking.odin.features.impl.boss.WitherDragons.currentTick
 import com.odtheking.odin.features.impl.boss.WitherDragons.dragonPriorityToggle
 import com.odtheking.odin.features.impl.boss.WitherDragons.priorityDragon
 import com.odtheking.odin.features.impl.boss.WitherDragons.sendSpawned
-import com.odtheking.odin.features.impl.boss.WitherDragons.sendSpawning
 import com.odtheking.odin.features.impl.boss.WitherDragons.sendTime
 import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.Colors
@@ -31,14 +30,13 @@ enum class WitherDragonsEnum(
     var timesSpawned: Int = 0,
     var entityUUID: UUID? = null,
     var isSprayed: Boolean = false,
-    var spawnedTime: Long = 0,
-    val skipKillTime: Int = 0
+    var spawnedTime: Long = 0
 ) {
-    Red(BlockPos(27, 14, 59), BlockPos(32, 22, 59), AABB(14.5, 13.0, 45.5, 39.5, 28.0, 70.5), 'c', Colors.MINECRAFT_RED, 24.0..30.0, 56.0..62.0, skipKillTime = 50),
-    Orange(BlockPos(85, 14, 56), BlockPos(80, 23, 56), AABB(72.0, 8.0, 47.0, 102.0, 28.0, 77.0), '6', Colors.MINECRAFT_GOLD, 82.0..88.0, 53.0..59.0, skipKillTime = 62),
-    Green(BlockPos(27, 14, 94), BlockPos(32, 23, 94), AABB(7.0, 8.0, 80.0, 37.0, 28.0, 110.0), 'a', Colors.MINECRAFT_GREEN, 23.0..29.0, 91.0..97.0, skipKillTime = 52),
-    Blue(BlockPos(84, 14, 94), BlockPos(79, 23, 94), AABB(71.5, 13.0, 82.5, 96.5, 26.0, 107.5), 'b', Colors.MINECRAFT_AQUA, 82.0..88.0, 91.0..97.0, skipKillTime = 47),
-    Purple(BlockPos(56, 14, 125), BlockPos(56, 22, 120), AABB(45.5, 13.0, 113.5, 68.5, 23.0, 136.5), '5', Colors.MINECRAFT_DARK_PURPLE, 53.0..59.0, 122.0..128.0, skipKillTime = 38);
+    Red(BlockPos(27, 14, 59), BlockPos(32, 22, 59), AABB(14.5, 13.0, 45.5, 39.5, 28.0, 70.5), 'c', Colors.MINECRAFT_RED, 24.0..30.0, 56.0..62.0),
+    Orange(BlockPos(85, 14, 56), BlockPos(80, 23, 56), AABB(72.0, 8.0, 47.0, 102.0, 28.0, 77.0), '6', Colors.MINECRAFT_GOLD, 82.0..88.0, 53.0..59.0),
+    Green(BlockPos(27, 14, 94), BlockPos(32, 23, 94), AABB(7.0, 8.0, 80.0, 37.0, 28.0, 110.0), 'a', Colors.MINECRAFT_GREEN, 23.0..29.0, 91.0..97.0),
+    Blue(BlockPos(84, 14, 94), BlockPos(79, 23, 94), AABB(71.5, 13.0, 82.5, 96.5, 26.0, 107.5), 'b', Colors.MINECRAFT_AQUA, 82.0..88.0, 91.0..97.0),
+    Purple(BlockPos(56, 14, 125), BlockPos(56, 22, 120), AABB(45.5, 13.0, 113.5, 68.5, 23.0, 136.5), '5', Colors.MINECRAFT_DARK_PURPLE, 53.0..59.0, 122.0..128.0);
 
     fun setAlive(entityId: UUID?) {
         if (entityId != null) this.entityUUID = entityId
@@ -50,15 +48,8 @@ enum class WitherDragonsEnum(
         spawnedTime = currentTick
         isSprayed = false
 
-        if (sendSpawned && WitherDragons.enabled) {
-            val numberSuffix = when (timesSpawned) {
-                1 -> "st"
-                2 -> "nd"
-                3 -> "rd"
-                else -> "th"
-            }
-            modMessage("§${colorCode}${name} §fdragon spawned. This is the §${colorCode}${timesSpawned}${numberSuffix}§f time it has spawned.")
-        }
+        if (sendSpawned && WitherDragons.enabled)
+            modMessage("§${colorCode}${name} §fdragon spawned §8(§7${timesSpawned}§8)")
     }
 
     fun setDead(realTime: Boolean) {
@@ -125,8 +116,6 @@ fun handleSpawnPacket(particle: ClientboundLevelParticlesPacket) {
 
         if (particle.x !in dragon.xRange || particle.z !in dragon.zRange) return@fold newSpawned to dragons
 
-        if (sendSpawning && WitherDragons.enabled) modMessage("§${dragon.colorCode}$dragon §fdragon is spawning.")
-
         dragon.state = WitherDragonState.SPAWNING
         dragon.timeToSpawn = 100
         dragons.add(dragon)
@@ -136,7 +125,7 @@ fun handleSpawnPacket(particle: ClientboundLevelParticlesPacket) {
     if (dragons.isNotEmpty() && (dragons.size == 2 || spawned >= 2) && priorityDragon == null)
         priorityDragon = findPriority(dragons).also { dragon ->
             if (WitherDragons.dragonTitle && WitherDragons.enabled) alert("§${dragon.colorCode}${dragon.name} is spawning!", true)
-            if (dragonPriorityToggle && WitherDragons.enabled) modMessage("${dragons.joinToString(", ") { "§${it.colorCode}${it.name}" }}§r -> §${dragon.colorCode}${dragon.name} §7is your priority dragon!")
+            if (dragonPriorityToggle && WitherDragons.enabled && dragons.size > 1) modMessage("${dragons.joinToString(", ") { "§${it.colorCode}${it.name}" }}§r -> §${dragon.colorCode}${dragon.name} §7is your priority dragon!")
         }
 }
 

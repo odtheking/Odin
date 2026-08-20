@@ -10,6 +10,7 @@ import com.odtheking.odin.utils.render.getStringWidth
 import com.odtheking.odin.utils.render.text
 import com.odtheking.odin.utils.skyblock.SplitsManager.currentSplits
 import com.odtheking.odin.utils.skyblock.SplitsManager.getAndUpdateSplitsTimes
+import com.odtheking.odin.utils.skyblock.floor7SplitGroup
 import com.odtheking.odin.utils.toFixed
 
 object Splits : Module(
@@ -17,44 +18,54 @@ object Splits : Module(
     description = "Provides visual timers for Kuudra and Dungeons."
 ) {
     private val hud by HUD("Splits Display HUD", "Shows timers for each split.") { example ->
-        val totalWidth = getStringWidth("Split 0: 0h 00m 00s" + if (showTickTime) " (0h 00m 00s)" else "") + 2
+        val timeWidth = 75 + if (showTickTime) 20 else -20
 
         if (example) {
-            repeat(5) { i ->
-                val exampleTime = "0h 00m 00s" + if (showTickTime) " §8(§70s§8)" else ""
+            val labelWidth = floor7SplitGroup.maxOf { getStringWidth("${it.name}:") }
+            val timeExample = "59m 59s" + if (showTickTime) " §8(§759.9§8)" else ""
+            val totalWidth = labelWidth + 4 + timeWidth + 2
+
+            floor7SplitGroup.forEachIndexed { i, split ->
                 if (fixedWidth) {
-                    text("Split $i:", 0, i * 9, Colors.WHITE)
-                    text(exampleTime, totalWidth - getStringWidth("0h 00m 00s" + if (showTickTime) " (0s)" else ""), i * 9, Colors.WHITE)
-                } else {
-                    text("Split $i: $exampleTime", 0, i * 9, Colors.WHITE)
-                }
+                    text("${split.name}:", 0, i * 9, Colors.WHITE)
+                    text(timeExample, totalWidth - getStringWidth(timeExample) - 2, i * 9, Colors.WHITE)
+                } else text("${split.name}: $timeExample", 0, i * 9, Colors.WHITE)
             }
-            return@HUD totalWidth to 9 * 5
+            return@HUD totalWidth to 9 * floor7SplitGroup.size
         }
 
         val (times, tickTimes, current) = getAndUpdateSplitsTimes(currentSplits)
         if (currentSplits.splits.isEmpty()) return@HUD 0 to 0
+        val splits = currentSplits.splits.dropLast(1)
 
-        val maxWidth = currentSplits.splits.dropLast(1).maxOf { getStringWidth(it.name) }
+        val labelWidth = splits.maxOfOrNull { getStringWidth(it.name) } ?: 0
+        val totalWidth = labelWidth + 4 + timeWidth + 2
 
-        currentSplits.splits.dropLast(1).forEachIndexed { index, split ->
+        splits.forEachIndexed { index, split ->
             val time = formatTime(if (index >= times.size) 0 else times[index])
             text(split.name, 0, index * 9, Colors.WHITE)
 
-            val displayText = if (showTickTime && index < tickTimes.size) "$time §8(§7${(tickTimes[index] / 20f).toFixed()}§8)" else time
-            val timeX = if (fixedWidth) totalWidth - getStringWidth(displayText) else maxWidth + 4
+            val displayText = if (showTickTime && index < tickTimes.size) "$time §8(§7${(tickTimes[index] / 20f).toFixed()}§8)"
+            else time
+
+            val timeX = if (fixedWidth) labelWidth + 4 + timeWidth - getStringWidth(displayText)
+            else labelWidth + 4
 
             text(displayText, timeX, index * 9, Colors.WHITE)
         }
 
         if (bossEntrySplit && currentSplits.splits.size > 3) {
-            text("§9Boss Entry", 0, (currentSplits.splits.size - 1) * 9, Colors.WHITE)
+            val y = splits.size * 9
+            text("§9Boss Entry", 0, y, Colors.WHITE)
 
             val totalTime = formatTime(times.take(3).sum())
-            val displayText = if (showTickTime) "$totalTime §8(§7${(tickTimes.take(3).sum() / 20f).toFixed()}§8)" else totalTime
-            val timeX = if (fixedWidth) totalWidth - getStringWidth(displayText) else maxWidth + 4
+            val displayText = if (showTickTime) "$totalTime §8(§7${(tickTimes.take(3).sum() / 20f).toFixed()}§8)"
+            else totalTime
 
-            text(displayText, timeX, (currentSplits.splits.size - 1) * 9, Colors.WHITE)
+            val timeX = if (fixedWidth) labelWidth + 4 + timeWidth - getStringWidth(displayText)
+            else labelWidth + 4
+
+            text(displayText, timeX, y, Colors.WHITE)
         }
 
         totalWidth to 9 * (currentSplits.splits.size + (if (bossEntrySplit) 1 else 0))
