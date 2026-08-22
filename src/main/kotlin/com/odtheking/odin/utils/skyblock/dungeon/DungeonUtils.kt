@@ -96,8 +96,8 @@ object DungeonUtils {
     inline val princeKilled: Boolean
         get() = DungeonListener.dungeonStats.princeKilled
 
-    inline val batKilled: Boolean
-        get() = DungeonListener.dungeonStats.batKilled
+    inline val batKilled: Int
+        get() = DungeonListener.dungeonStats.batKilled.coerceAtMost(dungeonTeammates.size)
 
     inline val currentRoom: DungeonRoom?
         get() = WorldScan.currentRoom
@@ -110,7 +110,7 @@ object DungeonUtils {
             var score = cryptCount.coerceAtMost(5)
             if (mimicKilled) score += 2
             if (princeKilled) score += 1
-            if (batKilled) score += 1
+            score += batKilled
             if ((isPaul && togglePaul == 0) || togglePaul == 2) score += 10
             return score
         }

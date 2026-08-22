@@ -18,7 +18,7 @@ object Mimic : Module(
     description = "Announces Mimic, Prince and Bat kills in dungeons."
 ) {
     private val mimicMessageToggle by BooleanSetting("Send Mimic Message", true, desc = "Toggles the mimic killed message.")
-    private val reset by ActionSetting("Mimic Killed", desc = "Sends Mimic killed message in party chat.") { mimicKilled() }
+    private val mimicReset by ActionSetting("Mimic Killed", desc = "Sends Mimic killed message in party chat.") { mimicKilled() }
 
     private val princeMessageToggle by BooleanSetting("Send Prince Message", true, desc = "Toggles the prince killed message.")
     private val princeReset by ActionSetting("Prince Killed", desc = "Sends Prince killed message in party chat.") { princeKilled() }
@@ -59,8 +59,8 @@ object Mimic : Module(
     }
 
     private fun batKilled() {
-        if (DungeonUtils.batKilled || !DungeonUtils.inClear) return
+        if (!DungeonUtils.inClear) return
         if (batMessageToggle) sendCommand("pc Bat Killed!")
-        DungeonListener.dungeonStats.batKilled = true
+        DungeonListener.dungeonStats.batKilled++
     }
 }

@@ -66,10 +66,11 @@ object MapInfo : Module(
             }
         }
 
+        val batKilled = DungeonUtils.batKilled
         val mimicText = buildString {
             append("${if (DungeonUtils.mimicKilled) "§a" else "§c"}\uD83D\uDCE6")
             append(" §8| ${if (DungeonUtils.princeKilled) "§a" else "§c"}\uD83E\uDD34")
-            append(" §8| ${if (DungeonUtils.batKilled) "§a" else "§c"}\uD83E\uDD87")
+            append(" §8| ${colorizeBats(DungeonUtils.dungeonTeammates.size - batKilled)}\uD83E\uDD87$batKilled")
         }
 
         val cryptText = buildString {
@@ -146,9 +147,10 @@ object MapInfo : Module(
         val mimicKilled = DungeonUtils.mimicKilled
         val princeKilled = DungeonUtils.princeKilled
         val batKilled = DungeonUtils.batKilled
+        val playerCount = DungeonUtils.dungeonTeammates.size
 
-        val missing = (if (mimicKilled) 0 else 2) + (if (princeKilled) 0 else 1) + (if (batKilled) 0 else 1)
-
+        val missing = (if (mimicKilled) 0 else 2) + (if (princeKilled) 0 else 1) + (playerCount - batKilled)
+        
         val scoreText = buildString {
             append("§7Score: ")
             append(colorizeScore(score))
@@ -224,7 +226,15 @@ object MapInfo : Module(
             portalAABB = null
         }
     }
-
+    
+    private fun colorizeBats(score: Int): String {
+        return when {
+            score > 2 -> "§c"
+            score > 0 -> "§e"
+            else -> "§a"
+        }
+    }
+    
     private fun colorizeCrypts(count: Int): String {
         return when {
             count < 3 -> "§c${count}"

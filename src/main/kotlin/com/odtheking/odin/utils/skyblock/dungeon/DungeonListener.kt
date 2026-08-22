@@ -110,16 +110,20 @@ object DungeonListener {
                     teammate.name == (match.groupValues[1].takeUnless { it == "You" } ?: mc.player?.name?.string)
                 }?.deaths?.inc()
             }
-
-            when (partyMessageRegex.find(value)?.groupValues?.get(1)?.lowercase() ?: return@on) {
-                "mimic killed", "mimic slain", "mimic killed!", "mimic dead", "mimic dead!", ->
+            
+            // I know people can abuse it to get multiple additional score no idc hopefully hypixel will fix it before i have to
+            // the check is to make sure that its not proccing off your own party chat message, forgot the return@on before
+            val partyMessage = partyMessageRegex.find(value)?.groupValues ?: return@on
+            if (partyMessage.get(1) == DungeonUtils.currentDungeonPlayer.name) return@on
+            when (partyMessage.get(2).lowercase()) {
+                "mimic killed", "mimic slain", "mimic killed!", "mimic dead", "mimic dead!" ->
                     if (DungeonUtils.isFloor(6, 7)) dungeonStats.mimicKilled = true
 
-                "prince killed", "prince slain", "prince killed!", "prince dead", "prince dead!", ->
+                "prince killed", "prince slain", "prince killed!", "prince dead", "prince dead!" ->
                     dungeonStats.princeKilled = true
 
                 "bat killed", "bat slain", "bat killed!", "bat dead", "bat dead!" ->
-                    dungeonStats.batKilled = true
+                    dungeonStats.batKilled++
 
                 "blaze done!", "blaze done", "blaze puzzle solved!" ->
                     puzzles.find { it == Puzzle.BLAZE }.let { it?.status = PuzzleStatus.Completed }
@@ -199,7 +203,7 @@ object DungeonListener {
     private val secretCountRegex = Regex("^ Secrets Found: (\\d+)$")
     private val openedRoomsRegex = Regex("^ Opened Rooms: (\\d+)$")
     private val floorRegex = Regex("The Catacombs \\((\\w+)\\)$")
-    private val partyMessageRegex = Regex("^Party > .*?: (.+)$")
+    private val partyMessageRegex = Regex("^Party > (.*?): (.+)$")
     private val puzzleCountRegex = Regex("^Puzzles: \\((\\d+)\\)$")
     private val deathsRegex = Regex("^Team Deaths: (\\d+)$")
     private val cryptRegex = Regex("^ Crypts: (\\d+)$")
@@ -216,7 +220,7 @@ object DungeonListener {
         var elapsedTime: String = "0s",
         private var _mimicKilled: Boolean = false,
         var princeKilled: Boolean = false,
-        var batKilled: Boolean = false,
+        var batKilled: Int = 0,
         var doorOpener: String = "Unknown",
         var bloodDone: Boolean = false,
         var puzzleCount: Int = 0,
