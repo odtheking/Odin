@@ -13,6 +13,7 @@ import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.Style
 import net.minecraft.network.chat.TextColor
+import net.minecraft.network.protocol.game.ClientboundContainerSetContentPacket
 import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket
 import net.minecraft.network.protocol.game.ClientboundOpenScreenPacket
 import net.minecraft.world.item.ItemStack
@@ -36,7 +37,8 @@ object Vesuvius : Module(
     private val shardRegex = Regex("^([A-Za-z' ]+) Shard(?: x(\\d+))?$")
     private val teethRegex = Regex("^Kuudra Teeth x(\\d+)$")
     private val pearlRegex = Regex("^Heavy Pearl x(\\d+)$")
-    private val chestRegex = Regex("^((Free|Paid) Chest Chest)|(Kuudra - .+)|Vesuvius$")
+    private val chestRegex = Regex("^((Free|Paid) Chest)|(Kuudra - .+)|.*Vesuvius|.*Croesus$")
+    private val hudRegex = Regex("^((Free|Paid) Chest)|(Kuudra - .+)$")
     private val uselessLinesRegex = Regex("^Contents|Cost|Click to open!|FREE|Already opened!|Can't open another chest!|Paid Chest|")
     private val salvageItemsRegex = Regex("^Boots|Chestplate|Helmet|Cloak|Aurora Staff|Hollow Wand")
 
@@ -53,7 +55,7 @@ object Vesuvius : Module(
     init {
         on<GuiEvent.DrawTooltip> {
             val title = screen.title.string
-            if (vesuviusHud.enabled && title.matches(chestRegex) && currentChest != null && title != "Vesuvius") {
+            if (vesuviusHud.enabled && title.matches(hudRegex) && currentChest != null) {
                 guiGraphics.pose().pushMatrix()
                 val sf = mc.window.guiScale
                 guiGraphics.pose().scale(1f / sf, 1f / sf)
@@ -67,13 +69,14 @@ object Vesuvius : Module(
         }
 
         on<GuiEvent.RenderSlot> {
-            if (screen.title.string.equalsOneOf("Vesuvius", "Croesus") && slot.item.hoverName.string == "Kuudra's Hollow") {
+            if (screen.title.string.containsOneOf("Vesuvius", "Croesus") && slot.item.hoverName.string == "Kuudra's Hollow") {
                 if (hideClaimed && slot.item.loreString.any { it == "No more chests to open!"}) cancel()
             }
         }
 
+        //Sometimes this gets sent before the screen title gets sent and the regex wouldn't work if you have more than 1 page
         onReceive<ClientboundContainerSetSlotPacket> {
-            val title = mc.screen?.title?.string ?:return@onReceive
+            val title = mc.screen?.title?.string ?: return@onReceive
             if (!title.matches(chestRegex)) return@onReceive
             if (slot == 31 && item.item == Items.CHEST) handleKuudraChest(item)
             if (slot == 14 && item.item == Items.PLAYER_HEAD) handleKuudraChest(item)
@@ -108,6 +111,8 @@ object Vesuvius : Module(
 
         previewEnchantedBookRegex.find(item)?.destructured?.let { (name, level) ->
             val ult = if (name in ultimateEnchants) "ULTIMATE_" else ""
+
+            enchantReplacements[name]?.let { itemId -> return cachedPrices["$itemId-${romanToInt(level)}"] }
             return cachedPrices["ENCHANTED_BOOK-$ult${name.uppercase().replace(" ", "_")}-${romanToInt(level)}"]
         }
 
@@ -215,6 +220,13 @@ object Vesuvius : Module(
     private val itemReplacements = mapOf(
         "Hellstorm Wand" to "HELLSTORM_STAFF",
         "Aurora Staff" to "RUNIC_STAFF",
+    )
+
+    private val enchantReplacements = mapOf(
+        "Vivacious Vitality" to "ENCHANTED_BOOK-FEROCIOUS_MANA",
+        "Hardened Vitality" to "ENCHANTED_BOOK-HARDENED_MANA",
+        "Strong Vitality" to "ENCHANTED_BOOK-STRONG_MANA",
+        "Vampiric Vitality" to "ENCHANTED_BOOK-MANA_VAMPIRE",
     )
 
     private val starCountToEssence = mapOf(
