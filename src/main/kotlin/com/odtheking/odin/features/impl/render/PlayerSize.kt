@@ -24,6 +24,11 @@ object PlayerSize : Module(
     private val devSizeX by NumberSetting("Size X", 1f, -1, 3f, 0.1, desc = "X scale of the dev size.")
     private val devSizeY by NumberSetting("Size Y", 1f, -1, 3f, 0.1, desc = "Y scale of the dev size.")
     private val devSizeZ by NumberSetting("Size Z", 1f, -1, 3f, 0.1, desc = "Z scale of the dev size.")
+    private val resizeOthers by BooleanSetting(
+        "Resize Others",
+        false,
+        desc = "Applies your configured size to other players."
+    )
     private var showHidden by DropdownSetting("Show Hidden").withDependency { isRandom }
     private val passcode by StringSetting("Passcode", "odin", desc = "Passcode for dev features.").withDependency { showHidden && isRandom }
 
@@ -58,15 +63,29 @@ object PlayerSize : Module(
     @JvmStatic
     fun preRenderCallbackScaleHook(entityRenderer: AvatarRenderState, matrix: PoseStack) {
         val gameProfile = entityRenderer.getData(GAME_PROFILE_KEY) ?: return
-        if (enabled && gameProfile.name == mc.player?.gameProfile?.name && !randoms.containsKey(gameProfile.id)) {
-            if (devSizeY < 0) matrix.translate(0f, devSizeY * 2, 0f)
-            matrix.scale(devSizeX, devSizeY, devSizeZ)
+        val playerProfile = mc.player?.gameProfile ?: return
+        val isSelf = gameProfile.id == playerProfile.id
+
+        if (enabled && isSelf && !randoms.containsKey(gameProfile.id)) {
+            applyScale(matrix, devSizeX, devSizeY, devSizeZ)
+            return
         }
-        if (!randoms.containsKey(gameProfile.id)) return
-        if (!devSize && gameProfile.name == mc.player?.gameProfile?.name) return
-        val random = randoms[gameProfile.id] ?: return
-        if (random.scale[1] < 0) matrix.translate(0f, random.scale[1] * 2, 1f)
-        matrix.scale(random.scale[0], random.scale[1], random.scale[2])
+
+        randoms[gameProfile.id]?.let { random ->
+            if (!devSize && isSelf) return
+            if (random.scale[1] < 0) matrix.translate(0f, random.scale[1] * 2, 1f)
+            matrix.scale(random.scale[0], random.scale[1], random.scale[2])
+            return
+        }
+
+        if (enabled && resizeOthers && !isSelf) {
+            applyScale(matrix, devSizeX, devSizeY, devSizeZ)
+        }
+    }
+
+    private fun applyScale(matrix: PoseStack, scaleX: Float, scaleY: Float, scaleZ: Float) {
+        if (scaleY < 0) matrix.translate(0f, scaleY * 2, 0f)
+        matrix.scale(scaleX, scaleY, scaleZ)
     }
 
     suspend fun updateCustomProperties(): String {
