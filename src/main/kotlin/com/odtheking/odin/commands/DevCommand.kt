@@ -10,6 +10,7 @@ import com.odtheking.odin.features.impl.boss.MelodyMessage.melodyWebSocket
 import com.odtheking.odin.features.impl.boss.WitherDragonState
 import com.odtheking.odin.features.impl.boss.WitherDragons
 import com.odtheking.odin.features.impl.boss.WitherDragonsEnum
+import com.odtheking.odin.features.impl.dungeon.map.DungeonMap
 import com.odtheking.odin.features.impl.dungeon.map.DungeonScan
 import com.odtheking.odin.features.impl.dungeon.map.WorldScan
 import com.odtheking.odin.features.impl.nether.NoPre
@@ -35,8 +36,11 @@ import net.minecraft.world.phys.BlockHitResult
 val devCommand = Commodore("oddev") {
 
     literal("ws") {
-        literal("connect").runs { lobby: String ->
+        literal("melody").runs { lobby: String ->
             melodyWebSocket.connect("${webSocketUrl}${lobby}")
+        }
+        literal("secrets").runs { lobby: String ->
+            DungeonMap.syncSocket.connect("${webSocketUrl}${lobby}")
         }
     }
 

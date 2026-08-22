@@ -10,18 +10,13 @@ import com.odtheking.odin.features.impl.dungeon.map.tile.*
 import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.Color.Companion.darker
 import com.odtheking.odin.utils.IVec2
-import com.odtheking.odin.utils.renderX
-import com.odtheking.odin.utils.renderZ
 import com.odtheking.odin.utils.skyblock.dungeon.Floor
-import net.minecraft.world.entity.player.Player
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 
 object DungeonScan {
 
     const val ROOM_SPACING = 4
-    const val MAP_ROOM_SIZE = 16
-    const val MAP_ROOM_GAP = MAP_ROOM_SIZE + ROOM_SPACING
 
     var roomSize = 16
     val roomGap: Int get () = roomSize + ROOM_SPACING
@@ -75,18 +70,6 @@ object DungeonScan {
             in 1..3 -> 11
             else -> 5
         }
-    }
-
-    fun playerRenderPosition(entity: Player?, mapPos: IVec2): Pair<Float, Float> {
-        entity?.let {
-            val mapX = (it.renderX.toFloat() + 200f) * MAP_ROOM_GAP / 32f
-            val mapZ = (it.renderZ.toFloat() + 200f) * MAP_ROOM_GAP / 32f
-            return mapX to mapZ
-        }
-
-        val pixelX = (mapPos.x + 128) / 2f - startX
-        val pixelY = (mapPos.z + 128) / 2f - startY
-        return pixelX to pixelY
     }
 
     fun updateViewableDoors() {

@@ -11,7 +11,7 @@ data class RoomData private constructor(
     val shape: RoomShape,
     val cores: List<Int>,
     val crypts: Int,
-    val secrets: Int,
+    val maxSecrets: Int,
     val trappedChests: Int,
 ) {
     companion object {

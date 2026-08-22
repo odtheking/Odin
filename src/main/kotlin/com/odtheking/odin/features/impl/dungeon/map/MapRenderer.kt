@@ -1,6 +1,9 @@
 package com.odtheking.odin.features.impl.dungeon.map
 
 import com.odtheking.odin.OdinMod.mc
+import com.odtheking.odin.features.impl.dungeon.map.DungeonScan.ROOM_SPACING
+import com.odtheking.odin.features.impl.dungeon.map.DungeonScan.startX
+import com.odtheking.odin.features.impl.dungeon.map.DungeonScan.startY
 import com.odtheking.odin.features.impl.dungeon.map.tile.*
 import com.odtheking.odin.utils.*
 import com.odtheking.odin.utils.Color.Companion.darker
@@ -9,6 +12,7 @@ import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.components.PlayerFaceExtractor
 import net.minecraft.client.renderer.RenderPipelines
 import net.minecraft.resources.Identifier
+import net.minecraft.world.entity.player.Player
 
 private val marker = Identifier.withDefaultNamespace("textures/map/decorations/frame.png")
 private val cross = Identifier.fromNamespaceAndPath("odin", "map/cross.png")
@@ -16,49 +20,49 @@ private val green = Identifier.fromNamespaceAndPath("odin", "map/green_check.png
 private val white = Identifier.fromNamespaceAndPath("odin", "map/white_check.png")
 private val question = Identifier.fromNamespaceAndPath("odin", "map/question.png")
 
+private const val MAP_ROOM_SIZE = 16
+private const val MAP_ROOM_GAP = MAP_ROOM_SIZE + ROOM_SPACING
+
 fun GuiGraphicsExtractor.fillRoom(room: DungeonRoom, color: Int) {
-    val rs = DungeonScan.MAP_ROOM_SIZE
-    val rg = DungeonScan.MAP_ROOM_GAP
-    val ox = room.topLeft.x * rg
-    val oy = room.topLeft.z * rg
+    val ox = room.topLeft.x * MAP_ROOM_GAP
+    val oy = room.topLeft.z * MAP_ROOM_GAP
     when (val shape = room.shape) {
-        RoomShape.OneByOne -> fill(ox, oy, ox + rs, oy + rs, color)
-        RoomShape.TwoByTwo -> fill(ox, oy, ox + rg + rs, oy + rg + rs, color)
+        RoomShape.OneByOne -> fill(ox, oy, ox + MAP_ROOM_SIZE, oy + MAP_ROOM_SIZE, color)
+        RoomShape.TwoByTwo -> fill(ox, oy, ox + MAP_ROOM_GAP + MAP_ROOM_SIZE, oy + MAP_ROOM_GAP + MAP_ROOM_SIZE, color)
 
         RoomShape.L -> when (room.rotation) {
             RoomRotation.WEST -> {
-                fill(ox, oy,      ox + rg + rs, oy + rs,      color)
-                fill(ox, oy + rs, ox + rs,      oy + rg + rs, color)
+                fill(ox, oy,      ox + MAP_ROOM_GAP + MAP_ROOM_SIZE, oy + MAP_ROOM_SIZE, color)
+                fill(ox, oy + MAP_ROOM_SIZE, ox + MAP_ROOM_SIZE, oy + MAP_ROOM_GAP + MAP_ROOM_SIZE, color)
             }
             RoomRotation.NORTH -> {
-                fill(ox,      oy,      ox + rg + rs, oy + rs,      color)
-                fill(ox + rg, oy + rs, ox + rg + rs, oy + rg + rs, color)
+                fill(ox,      oy,      ox + MAP_ROOM_GAP + MAP_ROOM_SIZE, oy + MAP_ROOM_SIZE, color)
+                fill(ox + MAP_ROOM_GAP, oy + MAP_ROOM_SIZE, ox + MAP_ROOM_GAP + MAP_ROOM_SIZE, oy + MAP_ROOM_GAP + MAP_ROOM_SIZE, color)
             }
             else -> {
-                fill(ox,      oy,      ox + rs,      oy + rg + rs, color)
-                fill(ox + rs, oy + rg, ox + rg + rs, oy + rg + rs, color)
+                fill(ox,      oy,      ox + MAP_ROOM_SIZE,      oy + MAP_ROOM_GAP + MAP_ROOM_SIZE, color)
+                fill(ox + MAP_ROOM_SIZE, oy + MAP_ROOM_GAP, ox + MAP_ROOM_GAP + MAP_ROOM_SIZE, oy + MAP_ROOM_GAP + MAP_ROOM_SIZE, color)
             }
         }
 
         else -> {
-            if (room.rotation == RoomRotation.SOUTH) fill(ox, oy, ox + (shape.tileAmount - 1) * rg + rs, oy + rs, color)
-            else fill(ox, oy, ox + rs, oy + (shape.tileAmount - 1) * rg + rs, color)
+            if (room.rotation == RoomRotation.SOUTH) fill(ox, oy, ox + (shape.tileAmount - 1) * MAP_ROOM_GAP + MAP_ROOM_SIZE, oy + MAP_ROOM_SIZE, color)
+            else fill(ox, oy, ox + MAP_ROOM_SIZE, oy + (shape.tileAmount - 1) * MAP_ROOM_GAP + MAP_ROOM_SIZE, color)
         }
     }
 }
 
 fun GuiGraphicsExtractor.renderDoors(doors: Collection<DungeonDoor>) {
-    val rs = DungeonScan.MAP_ROOM_SIZE
-    val rg = DungeonScan.MAP_ROOM_GAP
-    val half = (rs - 8) / 2f
+    val rg = MAP_ROOM_GAP
+    val half = (MAP_ROOM_SIZE - 8) / 2f
 
     for (door in doors) {
         val offset = door.rotation.offset
 
         pose().pushMatrix()
         pose().translate(
-            door.position.x * rg + offset.x * rs + offset.z * half,
-            door.position.z * rg + offset.z * rs + offset.x * half
+            door.position.x * rg + offset.x * MAP_ROOM_SIZE + offset.z * half,
+            door.position.z * rg + offset.z * MAP_ROOM_SIZE + offset.x * half
         )
         fill(0, 0, 4 + 4 * offset.z, 4 + 4 * offset.x, door.color.rgba)
         pose().popMatrix()
@@ -66,30 +70,27 @@ fun GuiGraphicsExtractor.renderDoors(doors: Collection<DungeonDoor>) {
 }
 
 fun GuiGraphicsExtractor.renderPathHints(pathHints: Collection<DungeonTile>) {
-    val rs = DungeonScan.MAP_ROOM_SIZE
-    val rg = DungeonScan.MAP_ROOM_GAP
-
     for ((position, room) in pathHints) {
-        val (x, y) = position.x * rg to position.z * rg
+        val (x, y) = position.x * MAP_ROOM_GAP to position.z * MAP_ROOM_GAP
 
         val colors = if (room?.type == RoomType.BLOOD) arrayOf(DungeonMap.bloodRoomColor.darker(0.5f))
         else if (!DungeonMap.disablePred && room?.isKnown1x1 == true) SpecialColumn.colorGuessForUnknown(position.x)
         else arrayOf(DungeonMap.unknownRoomColor)
 
         when (colors.size) {
-            1 -> fill(x, y, x + rs, y + rs, colors[0].rgba)
+            1 -> fill(x, y, x + MAP_ROOM_SIZE, y + MAP_ROOM_SIZE, colors[0].rgba)
 
             2 -> {
-                val half = rs / 2
-                fill(x, y, x + half, y + rs, colors[0].darker(0.5f).rgba)
-                fill(x + half, y, x + rs, y + rs, colors[1].darker(0.5f).rgba)
+                val half = MAP_ROOM_SIZE / 2
+                fill(x, y, x + half, y + MAP_ROOM_SIZE, colors[0].darker(0.5f).rgba)
+                fill(x + half, y, x + MAP_ROOM_SIZE, y + MAP_ROOM_SIZE, colors[1].darker(0.5f).rgba)
             }
 
             3 -> {
-                val third = rs / 3
-                fill(x, y, x + third, y + rs, colors[0].darker(0.5f).rgba)
-                fill(x + third, y, x + third * 2, y + rs, colors[1].darker(0.5f).rgba)
-                fill(x + third * 2, y, x + rs, y + rs, colors[2].darker(0.5f).rgba)
+                val third = MAP_ROOM_SIZE / 3
+                fill(x, y, x + third, y + MAP_ROOM_SIZE, colors[0].darker(0.5f).rgba)
+                fill(x + third, y, x + third * 2, y + MAP_ROOM_SIZE, colors[1].darker(0.5f).rgba)
+                fill(x + third * 2, y, x + MAP_ROOM_SIZE, y + MAP_ROOM_SIZE, colors[2].darker(0.5f).rgba)
             }
         }
         renderIcon(IVec2(x, y), question)
@@ -97,7 +98,7 @@ fun GuiGraphicsExtractor.renderPathHints(pathHints: Collection<DungeonTile>) {
 }
 
 fun GuiGraphicsExtractor.renderIcon(pos: IVec2, identifier: Identifier) {
-    val size = DungeonScan.MAP_ROOM_SIZE - DungeonScan.ROOM_SPACING
+    val size = MAP_ROOM_SIZE - ROOM_SPACING
     blit(RenderPipelines.GUI_TEXTURED, identifier, pos.x + 2, pos.z + 2, size.toFloat(), size.toFloat(), size, size, size, size)
 }
 
@@ -110,7 +111,7 @@ fun GuiGraphicsExtractor.renderRoomText(room: DungeonRoom) {
             MapCheckmark.WHITE -> white
             MapCheckmark.RED -> cross
             else -> null
-        }?.let { texture -> renderIcon(room.topLeft * DungeonScan.MAP_ROOM_GAP, texture) }
+        }?.let { texture -> renderIcon(room.topLeft * MAP_ROOM_GAP, texture) }
         return
     }
 
@@ -124,7 +125,12 @@ fun GuiGraphicsExtractor.renderRoomText(room: DungeonRoom) {
         else               -> Color(100, 100, 100)
     }.rgba
 
-    val lines  = room.name?.split(" ") ?: return
+    val secretsLine = if ((room.data?.maxSecrets ?: 0) > 0) " ${room.foundSecrets ?: "?"}/${room.data?.maxSecrets}" else ""
+    val lines = when (DungeonMap.roomText) {
+        0 -> "${room.name}$secretsLine"
+        1 -> room.name
+        else -> secretsLine
+    }?.trim()?.split(" ") ?: return
     val totalH = (lines.size - 1) * fontH * DungeonMap.textScaling
 
     for ((i, line) in lines.withIndex()) {
@@ -136,12 +142,24 @@ fun GuiGraphicsExtractor.renderRoomText(room: DungeonRoom) {
     }
 }
 
+private fun playerRenderPosition(entity: Player?, mapPos: IVec2): Pair<Float, Float> {
+    entity?.let {
+        val mapX = (it.renderX.toFloat() + 200f) * MAP_ROOM_GAP / 32f
+        val mapZ = (it.renderZ.toFloat() + 200f) * MAP_ROOM_GAP / 32f
+        return mapX to mapZ
+    }
+
+    val pixelX = (mapPos.x + 128) / 2f - startX
+    val pixelY = (mapPos.z + 128) / 2f - startY
+    return pixelX to pixelY
+}
+
 fun GuiGraphicsExtractor.renderPlayers() {
     val showNames = mc.player?.mainHandItem?.itemId?.equalsOneOf("INFINITE_SPIRIT_LEAP", "SPIRIT_LEAP") == true
 
     for (player in DungeonUtils.dungeonTeammatesNoSelf) {
         if (player.isDead) continue
-        val (px, pz) = DungeonScan.playerRenderPosition(player.entity, player.mapPos)
+        val (px, pz) = playerRenderPosition(player.entity, player.mapPos)
 
         pose().pushMatrix()
         pose().translate(px, pz)
@@ -164,7 +182,7 @@ fun GuiGraphicsExtractor.renderPlayers() {
     }
 
     pose().pushMatrix()
-    val (selfX, selfZ) = DungeonScan.playerRenderPosition(mc.player, IVec2(0, 0))
+    val (selfX, selfZ) = playerRenderPosition(mc.player, IVec2(0, 0))
     pose().translate(selfX, selfZ)
     pose().rotate(Math.toRadians(180.0 + (mc.player?.yRot ?: 0f)).toFloat())
 
@@ -238,7 +256,6 @@ fun buildExampleDoors(): List<DungeonDoor> = listOf(
     DungeonDoor(IVec2(5, 4), DoorRotation.Vertical, DoorType.Normal, DungeonMap.normalDoorColor),
     DungeonDoor(IVec2(1, 5), DoorRotation.Horizontal, DoorType.Blood, DungeonMap.bloodDoorColor)
 )
-
 
 fun roomTypeColor(type: RoomType): Color = when (type) {
     RoomType.NORMAL   -> DungeonMap.normalRoomColor

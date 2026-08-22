@@ -1,10 +1,12 @@
 package com.odtheking.odin.utils.skyblock
 
 import com.odtheking.odin.OdinMod.mc
+import com.odtheking.odin.events.SecretsUpdateEvent
 import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.utils.noControlCodes
+import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.network.protocol.game.ClientboundSystemChatPacket
 import net.minecraft.world.entity.ai.attributes.Attributes
 import kotlin.math.floor
@@ -15,6 +17,7 @@ object ActionBarListener {
     private val OVERFLOW_MANA_REGEX = Regex("([\\d|,]+)\\uE017")
     private val DEFENSE_REGEX = Regex("([\\d|,]+)\\uE008( Defense)?")
     private val VITALITY_REGEX = Regex("([\\d.,]+)/([\\d.,]+)\\uE028")
+    private val SECRETS_REGEX = Regex("(\\d+)/(\\d+) Secrets")
 
     var currentHealth: Int = 0
         private set
@@ -48,6 +51,15 @@ object ActionBarListener {
         onReceive<ClientboundSystemChatPacket> {
             if (!overlay) return@onReceive
             val msg = content.string.noControlCodes
+
+            SECRETS_REGEX.find(msg)?.destructured?.let { (found, max) ->
+                DungeonUtils.currentRoom?.let {
+                    val updatedFoundSecrets = found.toIntOrNull() ?: return@let
+                    if (it.data?.maxSecrets != max.toIntOrNull() || (it.foundSecrets ?: 0) >= updatedFoundSecrets) return@let
+                    it.foundSecrets = updatedFoundSecrets
+                    SecretsUpdateEvent(it, updatedFoundSecrets).postAndCatch()
+                }
+            }
 
             HEALTH_REGEX.find(msg)?.destructured?.let { (_, maxHp) ->
                 maxHealth = maxHp.replace(",", "").toIntOrNull() ?: maxHealth

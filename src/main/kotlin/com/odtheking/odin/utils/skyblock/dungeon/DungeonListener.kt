@@ -66,7 +66,7 @@ object DungeonListener {
         }
 
         on<RoomEnterEvent> {
-            dungeonStats.knownSecrets = DungeonScan.rooms.sumOf { if (it.walkedInto) it.data?.secrets ?: 0 else 0 }
+            dungeonStats.knownSecrets = DungeonScan.rooms.sumOf { if (it.walkedInto) it.data?.maxSecrets ?: 0 else 0 }
         }
 
         onReceive<ClientboundPlayerInfoUpdatePacket> {

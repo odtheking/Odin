@@ -2,7 +2,6 @@ package com.odtheking.odin.features.impl.dungeon.map.tile
 
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints
-import com.odtheking.odin.features.impl.dungeon.map.DungeonScan
 import com.odtheking.odin.utils.*
 import net.minecraft.core.BlockPos
 import net.minecraft.world.level.block.Blocks
@@ -30,6 +29,8 @@ class DungeonRoom(var type: RoomType, initialPosition: IVec2, var data: RoomData
     var center: IVec2? = null
         private set
 
+    var foundSecrets: Int? = null
+
     val isViewable: Boolean get() = walkedInto || checkmark != MapCheckmark.UNDISCOVERED
     val name: String? get() = data?.name
 
@@ -43,26 +44,21 @@ class DungeonRoom(var type: RoomType, initialPosition: IVec2, var data: RoomData
     }
 
     private fun recalculateCenter() {
-        val gap = DungeonScan.MAP_ROOM_GAP
-        val half = DungeonScan.MAP_ROOM_SIZE / 2
-        val rot = rotation
-
-        if (rot == null) {
-            val anchor = tiles.minByOrNull { it.sortKey } ?: return
-            center = IVec2(anchor.x * gap + half, anchor.z * gap + half)
-            return
-        }
-
-        val (offX, offZ) = when (shape) {
-            RoomShape.OneByOne -> 0 to 0
-            RoomShape.TwoByTwo -> gap / 2 to gap / 2
-            RoomShape.L -> if (rot == RoomRotation.NORTH || rot == RoomRotation.WEST) gap / 2 to 0 else gap / 2 to gap
-            else -> {
-                val span = (shape.tileAmount - 1) * gap / 2
-                if (rot == RoomRotation.SOUTH) span to 0 else 0 to span
+        rotation?.let { rot ->
+            val (offX, offZ) = when (shape) {
+                RoomShape.OneByOne -> 0 to 0
+                RoomShape.TwoByTwo -> 10 to 10
+                RoomShape.L -> if (rot == RoomRotation.NORTH || rot == RoomRotation.WEST) 10 to 0 else 10 to 20
+                else -> {
+                    val span = (shape.tileAmount - 1) * 10
+                    if (rot == RoomRotation.SOUTH) span to 0 else 0 to span
+                }
             }
+            center = IVec2(topLeft.x * 20 + 8 + offX, topLeft.z * 20 + 8 + offZ)
+        } ?: run {
+            val anchor = tiles.minByOrNull { it.sortKey } ?: return
+            center = IVec2(anchor.x * 20 + 8, anchor.z * 20 + 8)
         }
-        center = IVec2(topLeft.x * gap + half + offX, topLeft.z * gap + half + offZ)
     }
 
     fun inferLayoutFromMap() {

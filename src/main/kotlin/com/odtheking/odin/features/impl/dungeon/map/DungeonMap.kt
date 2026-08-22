@@ -1,16 +1,21 @@
 package com.odtheking.odin.features.impl.dungeon.map
 
 import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
-import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
-import com.odtheking.odin.clickgui.settings.impl.ColorSetting
-import com.odtheking.odin.clickgui.settings.impl.DropdownSetting
-import com.odtheking.odin.clickgui.settings.impl.NumberSetting
+import com.odtheking.odin.clickgui.settings.impl.*
+import com.odtheking.odin.events.FloorEnterEvent
+import com.odtheking.odin.events.RoomEnterEvent
+import com.odtheking.odin.events.SecretsUpdateEvent
+import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
+import com.odtheking.odin.features.impl.render.ClickGUIModule
 import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.Color.Companion.darker
 import com.odtheking.odin.utils.Color.Companion.withAlpha
 import com.odtheking.odin.utils.Colors
+import com.odtheking.odin.utils.network.WebUtils.gson
+import com.odtheking.odin.utils.network.webSocket
 import com.odtheking.odin.utils.render.hollowFill
+import com.odtheking.odin.utils.skyblock.LocationUtils
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 
 object DungeonMap : Module(
@@ -21,6 +26,7 @@ object DungeonMap : Module(
 
     val backgroundOutline by ColorSetting("Background Outline", Colors.BLACK, true, desc = "The color of the background border.")
     val backgroundColor by ColorSetting("Background Color", Colors.BLACK.withAlpha(0.1f), true, desc = "Background color of the map.")
+    val roomText by SelectorSetting("Room Text", "Both", listOf("Both", "Room Name", "Room Secrets"), desc = "What to display on the rooms.")
     val textScaling by NumberSetting("Text Scaling", 0.45f, 0.1f, 1f, 0.05f, desc = "Scale of room name text.")
 
     private val playerDropdown by DropdownSetting("Player Settings")
@@ -47,8 +53,11 @@ object DungeonMap : Module(
 
     val disablePred by BooleanSetting("Disable Prediction", false, desc = "Disables special-column room type prediction.")
 
+    val shareSecrets by BooleanSetting("Share Secrets", true, desc = "Shares found secrets in your room with the rest of your dungeon party.")
+
     private val exampleRooms by lazy { buildExampleRooms() }
     private val exampleDoors by lazy { buildExampleDoors() }
+    private const val MAP_PX = 128
 
     private val mapHud by HUD("Dungeon Map", "Displays the dungeon map.", false) { example ->
         if ((!DungeonUtils.inDungeons || (disableBoss && DungeonUtils.inBoss)) && !example) return@HUD 0 to 0
@@ -62,7 +71,7 @@ object DungeonMap : Module(
         }
         else {
             pose().translate(DungeonScan.startX.toFloat(), DungeonScan.startY.toFloat())
-            pose().scale(DungeonScan.roomSize / DungeonScan.MAP_ROOM_SIZE.toFloat())
+            pose().scale(DungeonScan.roomSize / 16f)
 
             renderMap(DungeonScan.rooms, DungeonScan.doors.values, DungeonScan.pathHints)
 
@@ -73,5 +82,28 @@ object DungeonMap : Module(
         MAP_PX to MAP_PX
     }
 
-    private const val MAP_PX = 128
+    val syncSocket = webSocket {
+        onMessage { message ->
+            val sync = try { gson.fromJson(message, RoomSecretsSync::class.java) } catch (_: Exception) { return@onMessage }
+            val room = DungeonScan.rooms.find { it.name == sync.roomName } ?: return@onMessage
+            if ((room.foundSecrets ?: 0) >= sync.foundSecrets) return@onMessage
+            room.foundSecrets = sync.foundSecrets
+        }
+    }
+
+    init {
+        on<SecretsUpdateEvent> {
+            if (!shareSecrets || !syncSocket.connected) return@on
+            room.name?.let { syncSocket.send(gson.toJson(RoomSecretsSync(it, foundSecrets))) }
+        }
+
+        on<FloorEnterEvent> {
+            if (!shareSecrets) return@on
+            LocationUtils.lobbyId?.let { syncSocket.connect("${ClickGUIModule.webSocketUrl}$it") }
+        }
+
+        on<RoomEnterEvent> { if (room == null) syncSocket.shutdown() }
+    }
+
+    private data class RoomSecretsSync(val roomName: String, val foundSecrets: Int)
 }

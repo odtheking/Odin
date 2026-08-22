@@ -79,5 +79,6 @@ class FloorEnterEvent(val floor: Floor) : Event
 class ScoreUpdateEvent(val score: Int) : Event
 data object MapUpdateEvent : Event
 class CheckmarkUpdateEvent(val room: DungeonRoom, val checkmark: MapCheckmark) : Event
+class SecretsUpdateEvent(val room: DungeonRoom, val foundSecrets: Int) : Event
 
 object LocationChangeEvent : Event
