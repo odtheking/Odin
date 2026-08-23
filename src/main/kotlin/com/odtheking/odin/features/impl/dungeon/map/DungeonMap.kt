@@ -13,6 +13,7 @@ import com.odtheking.odin.utils.Color.Companion.darker
 import com.odtheking.odin.utils.Color.Companion.withAlpha
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.IVec2
+import com.odtheking.odin.utils.devMessage
 import com.odtheking.odin.utils.network.WebUtils.gson
 import com.odtheking.odin.utils.network.webSocket
 import com.odtheking.odin.utils.render.hollowFill
@@ -94,13 +95,13 @@ object DungeonMap : Module(
 
     init {
         on<SecretsUpdateEvent> {
-            if (!allowWebsocket || !syncSocket.connected) return@on
+            if (!allowWebsocket) return@on
             room.name?.let { syncSocket.send(gson.toJson(RoomSync(it, foundSecrets, room.topLeft))) }
         }
 
         on<FloorEnterEvent> {
             if (!allowWebsocket) return@on
-            LocationUtils.lobbyId?.let { syncSocket.connect("${ClickGUIModule.webSocketUrl}$it") }
+            LocationUtils.lobbyId?.let { syncSocket.connect("${ClickGUIModule.webSocketUrl}$it") } ?: devMessage("Failed to connect to dungeon websocket, lobbyId is null.")
         }
 
         on<RoomEnterEvent> {

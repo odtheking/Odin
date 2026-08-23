@@ -3,6 +3,7 @@ package com.odtheking.odin.utils.skyblock
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.LocationChangeEvent
+import com.odtheking.odin.events.core.EventPriority
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.utils.equalsOneOf
@@ -40,7 +41,7 @@ object LocationUtils {
             if (!isInSkyblock) isInSkyblock = objectiveName == "SBScoreboard"
         }
 
-        onReceive<ClientboundSetPlayerTeamPacket> {
+        onReceive<ClientboundSetPlayerTeamPacket> (EventPriority.LOW) {
             if (!isCurrentArea(Island.Unknown)) return@onReceive
             val text = parameters.getOrNull()?.let { it.playerPrefix.string.plus(it.playerSuffix.string).noControlCodes } ?: return@onReceive
 
