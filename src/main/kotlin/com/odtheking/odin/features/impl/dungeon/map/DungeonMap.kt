@@ -12,6 +12,7 @@ import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.Color.Companion.darker
 import com.odtheking.odin.utils.Color.Companion.withAlpha
 import com.odtheking.odin.utils.Colors
+import com.odtheking.odin.utils.IVec2
 import com.odtheking.odin.utils.network.WebUtils.gson
 import com.odtheking.odin.utils.network.webSocket
 import com.odtheking.odin.utils.render.hollowFill
@@ -53,7 +54,7 @@ object DungeonMap : Module(
 
     val disablePred by BooleanSetting("Disable Prediction", false, desc = "Disables special-column room type prediction.")
 
-    val shareSecrets by BooleanSetting("Share Secrets", true, desc = "Shares found secrets in your room with the rest of your dungeon party.")
+    private val allowWebsocket by BooleanSetting("Websocket", true, desc = "Shares information in your room with the rest of your dungeon party.")
 
     private val exampleRooms by lazy { buildExampleRooms() }
     private val exampleDoors by lazy { buildExampleDoors() }
@@ -84,26 +85,29 @@ object DungeonMap : Module(
 
     val syncSocket = webSocket {
         onMessage { message ->
-            val sync = try { gson.fromJson(message, RoomSecretsSync::class.java) } catch (_: Exception) { return@onMessage }
-            val room = DungeonScan.rooms.find { it.name == sync.roomName } ?: return@onMessage
-            if ((room.foundSecrets ?: 0) >= sync.foundSecrets) return@onMessage
-            room.foundSecrets = sync.foundSecrets
+            val (roomName, foundSecrets, position) = try { gson.fromJson(message, RoomSync::class.java) } catch (_: Exception) { return@onMessage }
+            val room = DungeonScan.rooms.find { it.name == roomName && it.topLeft == position } ?: return@onMessage
+            if ((room.foundSecrets ?: -1) < (foundSecrets ?: -1)) room.foundSecrets = foundSecrets
+            room.walkedInto = true
         }
     }
 
     init {
         on<SecretsUpdateEvent> {
-            if (!shareSecrets || !syncSocket.connected) return@on
-            room.name?.let { syncSocket.send(gson.toJson(RoomSecretsSync(it, foundSecrets))) }
+            if (!allowWebsocket || !syncSocket.connected) return@on
+            room.name?.let { syncSocket.send(gson.toJson(RoomSync(it, foundSecrets, room.topLeft))) }
         }
 
         on<FloorEnterEvent> {
-            if (!shareSecrets) return@on
+            if (!allowWebsocket) return@on
             LocationUtils.lobbyId?.let { syncSocket.connect("${ClickGUIModule.webSocketUrl}$it") }
         }
 
-        on<RoomEnterEvent> { if (room == null) syncSocket.shutdown() }
+        on<RoomEnterEvent> {
+            if (room == null) syncSocket.shutdown()
+            else if (allowWebsocket) room.name?.let { syncSocket.send(gson.toJson(RoomSync(it, room.foundSecrets, room.topLeft))) }
+        }
     }
 
-    private data class RoomSecretsSync(val roomName: String, val foundSecrets: Int)
+    private data class RoomSync(val roomName: String, val foundSecrets: Int?, val position: IVec2)
 }

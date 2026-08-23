@@ -55,7 +55,7 @@ object ActionBarListener {
             SECRETS_REGEX.find(msg)?.destructured?.let { (found, max) ->
                 DungeonUtils.currentRoom?.let {
                     val updatedFoundSecrets = found.toIntOrNull() ?: return@let
-                    if (it.data?.maxSecrets != max.toIntOrNull() || (it.foundSecrets ?: 0) >= updatedFoundSecrets) return@let
+                    if (it.data?.maxSecrets != max.toIntOrNull() || (it.foundSecrets ?: -1) >= updatedFoundSecrets) return@let
                     it.foundSecrets = updatedFoundSecrets
                     SecretsUpdateEvent(it, updatedFoundSecrets).postAndCatch()
                 }
