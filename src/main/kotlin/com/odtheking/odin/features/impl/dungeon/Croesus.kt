@@ -14,6 +14,7 @@ import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.*
 import com.odtheking.odin.utils.network.WebUtils.fetchJson
 import com.odtheking.odin.utils.render.getStringWidth
+import com.odtheking.odin.utils.render.roundedOutline
 import com.odtheking.odin.utils.render.text
 import com.odtheking.odin.utils.render.textDim
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
@@ -72,6 +73,9 @@ object Croesus : Module(
     private val extraStatsRegex = Regex(" {29}> EXTRA STATS <")
     private val chestCostRegex = Regex("^([\\d,]+) Coins$")
     private val shardRegex = Regex("^([A-Za-z ]+) Shard$")
+    private val noMoreChestsRegex = Regex("^No more chests to open!$")
+
+    private const val KISMET_FEATHER_LABEL = "Kismet Feather"
 
     private val ultimateEnchants = setOf(
         "Soul Eater", "Combo", "Legion", "One For All", "Rend",
@@ -110,9 +114,19 @@ object Croesus : Module(
                 val loreString = slot.item.loreString
 
                 if (hideClaimed && loreString.any { it.matches(chestStatusRegex) } && (!includeKey || hasStrikeThrough("Dungeon Chest Key", slot.item.lore ))) cancel()
-                else if (highlightState)
-                    guiGraphics.fill(slot.x, slot.y, slot.x + 16, slot.y + 16,
-                        if (loreString.any { it.matches(chestOpenedRegex) }) Colors.MINECRAFT_GOLD.rgba else Colors.MINECRAFT_GREEN.rgba)
+                else {
+                    if (highlightState) {
+                        val color = when {
+                            loreString.any { it.matches(noMoreChestsRegex) } -> Colors.MINECRAFT_RED.rgba
+                            loreString.any { it.matches(chestOpenedRegex) } -> Colors.MINECRAFT_GOLD.rgba
+                            else -> Colors.MINECRAFT_GREEN.rgba
+                        }
+                        guiGraphics.fill(slot.x, slot.y, slot.x + 16, slot.y + 16, color)
+                    }
+
+                    if (hasStrikeThrough(KISMET_FEATHER_LABEL, slot.item.lore))
+                        guiGraphics.roundedOutline(slot.x, slot.y, slot.x + 16, slot.y + 16, Colors.MINECRAFT_AQUA.rgba, 1f)
+                }
 
             } else if (highlightProfitable && screen.title.string.matches(chestPreviewScreenRegex) && slot.index in mostProfitableSlots) {
                 val color = when (mostProfitableSlots.indexOf(slot.index)) {
@@ -126,11 +140,11 @@ object Croesus : Module(
 
         onReceive<ClientboundContainerSetSlotPacket> {
             val screenTitle = mc.screen?.title?.string ?: return@onReceive
-            val menu = (mc.screen as? AbstractContainerScreen<*>)?.menu ?: return@onReceive
+            val items = (mc.screen as? AbstractContainerScreen<*>)?.menu?.items ?: return@onReceive
 
             when {
-                screenTitle.matches(chestNameRegex) -> handleChestContents(menu.items)
-                screenTitle.matches(chestPreviewScreenRegex) -> handleCroesusScreen(menu.items)
+                screenTitle.matches(chestNameRegex) -> handleChestContents(items)
+                screenTitle.matches(chestPreviewScreenRegex) -> handleCroesusScreen(items)
             }
         }
 

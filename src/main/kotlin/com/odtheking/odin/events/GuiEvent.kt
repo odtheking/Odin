@@ -12,7 +12,7 @@ abstract class GuiEvent(val screen: Screen) : CancellableEvent() {
 
     class Render(screen: Screen, val guiGraphics: GuiGraphicsExtractor, val mouseX: Int, val mouseY: Int) : GuiEvent(screen)
 
-    class SlotClick(screen: Screen, val slot: Slot, val slotId: Int, val button: Int, val containerInput: ContainerInput) : GuiEvent(screen)
+    class SlotClick(screen: Screen, val slot: Slot?, val slotId: Int, val button: Int, val containerInput: ContainerInput) : GuiEvent(screen)
 
     class SlotUpdate(screen: Screen, val packet: ClientboundContainerSetSlotPacket, val menu: AbstractContainerMenu) : GuiEvent(screen)
 
