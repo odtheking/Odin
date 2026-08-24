@@ -1,6 +1,7 @@
 package com.odtheking.odin.features.impl.nether
 
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
+import com.odtheking.odin.clickgui.settings.impl.NumberSetting
 import com.odtheking.odin.events.GuiEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
@@ -26,6 +27,9 @@ object Vesuvius : Module(
 ) {
     private val hideClaimed by BooleanSetting("Hide Claimed", true, desc = "Hides chests that have already been claimed.")
     private val useSalvagePrices by BooleanSetting("Use Salvaged", false, desc = "Uses the essence you would get by salvaging the piece instead.")
+
+    private val kuudraPetBonus by NumberSetting("Kuudra Pet Bonus", 0.0, 0.0, 20.0, 0.05, "The essence bonus from Kuudra pet.", unit = "%")
+    private val lavaLeechBonus by NumberSetting("Lava Leech Bonus", 0.0, 0.0, 13.0, 0.05, "The essence bonus from the Lava Leech Shard.", unit = "%")
 
     private val vesuviusHud by HUD("Croesus Chest HUD", "Displays all chest contents with prices, sorted by profit.") {
         if (!it) return@HUD 0 to 0
@@ -92,6 +96,8 @@ object Vesuvius : Module(
         var starCount = 0
         val salvage = salvageItemsRegex.containsMatchIn(component.string)
 
+        val essenceBonus = (1 + kuudraPetBonus / 100.0) * (1 + lavaLeechBonus / 100.0)
+
         component.visit({ style, str ->
             val count = str.count { it == '✪' }
             if (count > 0) {
@@ -106,7 +112,7 @@ object Vesuvius : Module(
         val item = component.string.replace("✪", "").trim()
 
         if (item.contains("Molten") && useSalvagePrices) {
-            return (cachedPrices["ESSENCE_CRIMSON"] ?: 0.0) * 600.0
+            return (cachedPrices["ESSENCE_CRIMSON"] ?: 0.0) * 600.0 * essenceBonus
         }
 
         previewEnchantedBookRegex.find(item)?.destructured?.let { (name, level) ->
@@ -118,7 +124,7 @@ object Vesuvius : Module(
 
         previewEssenceRegex.find(item)?.destructured?.let { (name, quantity) ->
             val price = cachedPrices["ESSENCE_${name.uppercase()}"] ?: return null
-            return price * quantity.toDouble()
+            return price * quantity.toDouble() * essenceBonus
         }
 
         shardRegex.find(item)?.let { shard ->
