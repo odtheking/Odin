@@ -9,6 +9,8 @@ import com.odtheking.odin.features.Module
 import com.odtheking.odin.features.impl.dungeon.Croesus.cachedPrices
 import com.odtheking.odin.utils.*
 import com.odtheking.odin.utils.render.text
+import com.odtheking.odin.utils.skyblock.Island
+import com.odtheking.odin.utils.skyblock.LocationUtils
 import net.minecraft.ChatFormatting
 import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.network.chat.Component
@@ -78,12 +80,10 @@ object Vesuvius : Module(
             }
         }
 
-        //Sometimes this gets sent before the screen title gets sent and the regex wouldn't work if you have more than 1 page
         onReceive<ClientboundContainerSetSlotPacket> {
-            val title = mc.screen?.title?.string ?: return@onReceive
-            if (!title.matches(chestRegex)) return@onReceive
+            if (!LocationUtils.currentArea.equalsOneOf(Island.CrimsonIsle, Island.DungeonHub)) return@onReceive
             if (slot == 31 && item.item == Items.CHEST) handleKuudraChest(item)
-            if (slot == 14 && item.item == Items.PLAYER_HEAD) handleKuudraChest(item)
+            if (slot.equalsOneOf(13, 14) && item.item == Items.PLAYER_HEAD) handleKuudraChest(item)
         }
 
         onReceive<ClientboundOpenScreenPacket> {
@@ -164,6 +164,8 @@ object Vesuvius : Module(
     }
 
     private fun handleKuudraChest(item: ItemStack) {
+        if (!item.hoverName.string.equalsOneOf("Paid Chest", "Open Reward Chest", "Free Chest")) return
+
         val chestItems = mutableListOf<ChestItem>()
         var profit = 0.0
         var chestCost = 0.0
