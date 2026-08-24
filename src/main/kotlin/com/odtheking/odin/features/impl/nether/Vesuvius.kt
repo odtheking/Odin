@@ -9,15 +9,11 @@ import com.odtheking.odin.features.Module
 import com.odtheking.odin.features.impl.dungeon.Croesus.cachedPrices
 import com.odtheking.odin.utils.*
 import com.odtheking.odin.utils.render.text
-import com.odtheking.odin.utils.skyblock.Island
-import com.odtheking.odin.utils.skyblock.LocationUtils
 import net.minecraft.ChatFormatting
 import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.Style
 import net.minecraft.network.chat.TextColor
-import net.minecraft.network.protocol.game.ClientboundContainerSetContentPacket
-import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket
 import net.minecraft.network.protocol.game.ClientboundOpenScreenPacket
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.Items
