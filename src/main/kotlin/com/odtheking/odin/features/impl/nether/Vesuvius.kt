@@ -43,8 +43,7 @@ object Vesuvius : Module(
     private val shardRegex = Regex("^([A-Za-z' ]+) Shard(?: x(\\d+))?$")
     private val teethRegex = Regex("^Kuudra Teeth x(\\d+)$")
     private val pearlRegex = Regex("^Heavy Pearl x(\\d+)$")
-    private val chestRegex = Regex("^((Free|Paid) Chest)|(Kuudra - .+)|.*Vesuvius|.*Croesus$")
-    private val hudRegex = Regex("^((Free|Paid) Chest)|(Kuudra - .+)$")
+    private val chestRegex = Regex("^((Free|Paid) Chest)|(Kuudra - .+)$")
     private val uselessLinesRegex = Regex("^Contents|Cost|Click to open!|FREE|Already opened!|Can't open another chest!|Paid Chest|")
     private val salvageItemsRegex = Regex("^Boots|Chestplate|Helmet|Cloak|Aurora Staff|Hollow Wand")
 
@@ -61,7 +60,7 @@ object Vesuvius : Module(
     init {
         on<GuiEvent.DrawTooltip> {
             val title = screen.title.string
-            if (vesuviusHud.enabled && title.matches(hudRegex) && currentChest != null) {
+            if (vesuviusHud.enabled && title.matches(chestRegex) && currentChest != null) {
                 guiGraphics.pose().pushMatrix()
                 val sf = mc.window.guiScale
                 guiGraphics.pose().scale(1f / sf, 1f / sf)
@@ -80,10 +79,13 @@ object Vesuvius : Module(
             }
         }
 
-        onReceive<ClientboundContainerSetSlotPacket> {
-            if (!LocationUtils.currentArea.equalsOneOf(Island.CrimsonIsle, Island.DungeonHub)) return@onReceive
-            if (slot == 31 && item.item == Items.CHEST) handleKuudraChest(item)
-            if (slot.equalsOneOf(13, 14) && item.item == Items.PLAYER_HEAD) handleKuudraChest(item)
+        on<GuiEvent.SlotUpdate> {
+            if (!screen.title.string.matches(chestRegex)) return@on
+
+            val item = packet.item
+
+            if (packet.slot == 31 && item.item == Items.CHEST) handleKuudraChest(item)
+            if (packet.slot.equalsOneOf(13, 14) && item.item == Items.PLAYER_HEAD) handleKuudraChest(item)
         }
 
         onReceive<ClientboundOpenScreenPacket> {
@@ -164,8 +166,6 @@ object Vesuvius : Module(
     }
 
     private fun handleKuudraChest(item: ItemStack) {
-        if (!item.hoverName.string.equalsOneOf("Paid Chest", "Open Reward Chest", "Free Chest")) return
-
         val chestItems = mutableListOf<ChestItem>()
         var profit = 0.0
         var chestCost = 0.0
