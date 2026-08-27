@@ -8,7 +8,8 @@ import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Color.Companion.brighter
 import com.odtheking.odin.utils.Color.Companion.darker
 import com.odtheking.odin.utils.Colors
-import com.odtheking.odin.utils.render.pushScissor
+import com.odtheking.odin.utils.render.clipped
+import com.odtheking.odin.utils.render.scissoredReveal
 import com.odtheking.odin.utils.ui.animations.Easing
 import com.odtheking.odin.utils.ui.animations.Fade
 import net.minecraft.client.gui.GuiGraphicsExtractor
@@ -27,8 +28,7 @@ class ModuleWidget(val module: Module) : OdinContainerWidget(0, 0, GuiTheme.ROW_
     private val filter = Fade(FILTER_DURATION, Easing.EASE_IN_OUT, initial = true)
 
     private var revealed = 0
-    var expanded = false
-        private set
+    val expanded: Boolean get() = expand.current
 
     private var shown = 1f
 
@@ -42,20 +42,21 @@ class ModuleWidget(val module: Module) : OdinContainerWidget(0, 0, GuiTheme.ROW_
     }
 
     fun toggleExpanded() {
-        if (settings.isNotEmpty()) expanded = !expanded
+        if (settings.isNotEmpty()) expand.toggle()
     }
 
     fun release() = settings.forEach { it.release() }
 
     fun measure() {
-        val progress = expand.progress(expanded)
+        val progress = expand.progress()
 
         var content = 0
         for (widget in settings) {
-            widget.visible = progress > 0f && widget.isVisible
+            val reveal = widget.revealFraction
+            widget.visible = progress > 0f && reveal > 0f
             if (!widget.visible) continue
             widget.measure()
-            content += widget.height
+            content += (widget.height * reveal).toInt()
         }
 
         revealed = (progress * content).toInt()
@@ -72,26 +73,25 @@ class ModuleWidget(val module: Module) : OdinContainerWidget(0, 0, GuiTheme.ROW_
             widget.x = x
             widget.y = y + offset
             widget.place()
-            offset += widget.height
+            offset += (widget.height * widget.revealFraction).toInt()
         }
     }
 
     override fun render(graphics: GuiGraphicsExtractor, mouseX: Int, mouseY: Int) {
         val squeezed = height < GuiTheme.ROW_HEIGHT + revealed
-        if (squeezed) graphics.pushScissor(x, y, x + width, y + height)
+        graphics.clipped(squeezed, x, y, x + width, y + height) {
+            header.extractRenderState(graphics, mouseX, mouseY, 0f)
 
-        header.extractRenderState(graphics, mouseX, mouseY, 0f)
-
-        if (revealed > 0) {
-            val top = y + GuiTheme.ROW_HEIGHT
-            graphics.pushScissor(x, top, x + width, top + revealed)
-            for (widget in settings) {
-                if (widget.visible) widget.extractRenderState(graphics, mouseX, mouseY, 0f)
+            graphics.scissoredReveal(x, y + GuiTheme.ROW_HEIGHT, x + width, revealed) {
+                for (widget in settings) {
+                    if (!widget.visible) continue
+                    val fraction = widget.revealFraction
+                    graphics.clipped(fraction < 1f, widget.x, widget.y, widget.x + widget.width, widget.y + (widget.height * fraction).toInt()) {
+                        widget.extractRenderState(graphics, mouseX, mouseY, 0f)
+                    }
+                }
             }
-            graphics.disableScissor()
         }
-
-        if (squeezed) graphics.disableScissor()
     }
 
     private companion object {

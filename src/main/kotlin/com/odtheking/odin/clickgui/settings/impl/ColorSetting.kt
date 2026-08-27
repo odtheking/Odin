@@ -13,14 +13,7 @@ import com.odtheking.odin.utils.Color.Companion.darker
 import com.odtheking.odin.utils.Color.Companion.hsbMax
 import com.odtheking.odin.utils.Color.Companion.withAlpha
 import com.odtheking.odin.utils.Colors
-import com.odtheking.odin.utils.render.Corners
-import com.odtheking.odin.utils.render.GradientDirection
-import com.odtheking.odin.utils.render.circle
-import com.odtheking.odin.utils.render.pushScissor
-import com.odtheking.odin.utils.render.roundedGradient
-import com.odtheking.odin.utils.render.roundedRect
-import com.odtheking.odin.utils.render.roundedRectOutlined
-import com.odtheking.odin.utils.render.roundedTexture
+import com.odtheking.odin.utils.render.*
 import com.odtheking.odin.utils.ui.animations.Easing
 import com.odtheking.odin.utils.ui.animations.Fade
 import com.odtheking.odin.utils.ui.animations.Tween
@@ -66,7 +59,6 @@ class ColorSetting(
     private val hueMarker = Tween(MARKER_DURATION)
     private val alphaMarker = Tween(MARKER_DURATION)
 
-    private var extended = false
     private var holding: Slider? = null
 
     private val hexInput by lazy {
@@ -83,10 +75,10 @@ class ColorSetting(
     private val barWidth get() = width - GuiTheme.PADDING * 2
     private val expandedHeight get() = if (allowAlpha) EXPANDED_WITH_ALPHA else EXPANDED
 
-    override fun children(): List<GuiEventListener> = if (extended) listOf(hexInput) else emptyList()
+    override fun children(): List<GuiEventListener> = if (expand.current) listOf(hexInput) else emptyList()
 
     override fun measure() {
-        height = expand.lerp(extended, GuiTheme.ROW_HEIGHT, GuiTheme.ROW_HEIGHT + expandedHeight)
+        height = expand.lerp(GuiTheme.ROW_HEIGHT, GuiTheme.ROW_HEIGHT + expandedHeight)
     }
 
     private var pushedHex = hex
@@ -111,18 +103,13 @@ class ColorSetting(
         val bottom = top + SWATCH_HEIGHT
         graphics.roundedRectOutlined(left, top, right, bottom, value.rgba, value.withAlpha(1f).darker().rgba, 1.5f, GuiTheme.RADIUS)
 
-        val revealed = height - GuiTheme.ROW_HEIGHT
-        if (revealed <= 0) return
-
-        graphics.pushScissor(x, y + GuiTheme.ROW_HEIGHT, x + width, y + GuiTheme.ROW_HEIGHT + revealed)
-
-        drawSaturationSquare(graphics)
-        drawHueBar(graphics)
-        if (allowAlpha) drawAlphaBar(graphics)
-        drawHexBox(graphics)
-        renderChildren(graphics, mouseX, mouseY)
-
-        graphics.disableScissor()
+        renderExpanded(graphics) {
+            drawSaturationSquare(graphics)
+            drawHueBar(graphics)
+            if (allowAlpha) drawAlphaBar(graphics)
+            drawHexBox(graphics)
+            renderChildren(graphics, mouseX, mouseY)
+        }
     }
 
     override fun onClick(event: MouseButtonEvent, doubleClick: Boolean) {
@@ -130,11 +117,11 @@ class ColorSetting(
         val mouseY = event.y().toInt()
 
         if (isOver(mouseX, mouseY, swatchX, swatchY, SWATCH_WIDTH, SWATCH_HEIGHT)) {
-            extended = !extended
-            if (!extended) setFocused(null)
+            expand.toggle()
+            if (!expand.current) setFocused(null)
             return
         }
-        if (!extended) return
+        if (!expand.current) return
 
         if (isOver(mouseX, mouseY, x + width / 4, hexBoxY, width / 2, HEX_BOX_HEIGHT)) {
             setFocused(hexInput)
@@ -164,7 +151,7 @@ class ColorSetting(
 
     override fun release() {
         holding = null
-        extended = false
+        expand.progress(false)
         setFocused(null)
     }
 

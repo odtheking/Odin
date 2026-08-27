@@ -14,6 +14,11 @@ class Fade(
 
     val isAnimating: Boolean get() = System.currentTimeMillis() < endTime
 
+    val current: Boolean get() = state
+
+    fun toggle(): Float = progress(!state)
+    fun progress(): Float = progress(state)
+
     fun progress(state: Boolean): Float {
         val now = System.currentTimeMillis()
 
@@ -38,4 +43,5 @@ class Fade(
 
     fun lerp(state: Boolean, from: Float, to: Float): Float = from + (to - from) * progress(state)
     fun lerp(state: Boolean, from: Int, to: Int): Int = from + ((to - from) * progress(state)).roundToInt()
+    fun lerp(from: Int, to: Int): Int = lerp(state, from, to)
 }

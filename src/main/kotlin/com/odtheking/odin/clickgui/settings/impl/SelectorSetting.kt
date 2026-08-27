@@ -11,7 +11,6 @@ import com.odtheking.odin.clickgui.settings.Saving
 import com.odtheking.odin.clickgui.widget.isOver
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.capitalizeFirst
-import com.odtheking.odin.utils.render.pushScissor
 import com.odtheking.odin.utils.render.roundedOutline
 import com.odtheking.odin.utils.render.roundedRect
 import com.odtheking.odin.utils.render.roundedRectOutlined
@@ -35,7 +34,6 @@ class SelectorSetting<E : Enum<E>>(
 
     private val expand = Fade(EXPAND_DURATION, Easing.EASE_IN_OUT)
     private val pillHover = Fade(HOVER_DURATION)
-    private var extended = false
 
     override val clickButtons: IntArray = BOTH_BUTTONS
 
@@ -44,7 +42,7 @@ class SelectorSetting<E : Enum<E>>(
     }
 
     override fun measure() {
-        height = expand.lerp(extended, GuiTheme.ROW_HEIGHT, options.size * OPTION_HEIGHT + CLOSED_PADDING)
+        height = expand.lerp(GuiTheme.ROW_HEIGHT, options.size * OPTION_HEIGHT + CLOSED_PADDING)
     }
 
     override fun render(graphics: GuiGraphicsExtractor, mouseX: Int, mouseY: Int) {
@@ -61,56 +59,51 @@ class SelectorSetting<E : Enum<E>>(
         drawLabel(graphics)
         graphics.text(mc.font, label, pillX + PILL_PADDING, GuiTheme.textY(pillY, PILL_HEIGHT), Colors.WHITE.rgba, false)
 
-        val revealed = height - GuiTheme.ROW_HEIGHT
-        if (revealed <= 0) return
+        renderExpanded(graphics) {
+            val listX = x + LIST_INSET
+            val listWidth = width - LIST_INSET * 2
+            val listY = y + LIST_TOP
+            graphics.roundedRect(
+                listX, listY, listX + listWidth,
+                listY + options.size * OPTION_HEIGHT, GuiTheme.surface.rgba, GuiTheme.RADIUS
+            )
 
-        graphics.pushScissor(x, y + GuiTheme.ROW_HEIGHT, x + width, y + GuiTheme.ROW_HEIGHT + revealed)
-
-        val listX = x + LIST_INSET
-        val listWidth = width - LIST_INSET * 2
-        val listY = y + LIST_TOP
-        graphics.roundedRect(
-            listX, listY, listX + listWidth,
-            listY + options.size * OPTION_HEIGHT, GuiTheme.surface.rgba, GuiTheme.RADIUS
-        )
-
-        options.forEachIndexed { index, option ->
-            val optionY = listY + index * OPTION_HEIGHT
-            if (index != options.lastIndex) {
-                graphics.fill(
-                    listX + SEPARATOR_INSET, optionY + OPTION_HEIGHT,
-                    listX + listWidth - SEPARATOR_INSET, optionY + OPTION_HEIGHT + 1, Colors.MINECRAFT_DARK_GRAY.rgba
-                )
-            }
-            graphics.centeredText(mc.font, option.label, x + width / 2, GuiTheme.textY(optionY, OPTION_HEIGHT), Colors.WHITE.rgba)
-            if (isOver(mouseX, mouseY, listX, optionY, listWidth, OPTION_HEIGHT)) {
-                graphics.roundedOutline(
-                    listX, optionY, listX + listWidth,
-                    optionY + OPTION_HEIGHT + 1, GuiTheme.accent.rgba, 1.5f, GuiTheme.RADIUS
-                )
+            options.forEachIndexed { index, option ->
+                val optionY = listY + index * OPTION_HEIGHT
+                if (index != options.lastIndex) {
+                    graphics.fill(
+                        listX + SEPARATOR_INSET, optionY + OPTION_HEIGHT,
+                        listX + listWidth - SEPARATOR_INSET, optionY + OPTION_HEIGHT + 1, Colors.MINECRAFT_DARK_GRAY.rgba
+                    )
+                }
+                graphics.centeredText(mc.font, option.label, x + width / 2, GuiTheme.textY(optionY, OPTION_HEIGHT), Colors.WHITE.rgba)
+                if (isOver(mouseX, mouseY, listX, optionY, listWidth, OPTION_HEIGHT)) {
+                    graphics.roundedOutline(
+                        listX, optionY, listX + listWidth,
+                        optionY + OPTION_HEIGHT + 1, GuiTheme.accent.rgba, 1.5f, GuiTheme.RADIUS
+                    )
+                }
             }
         }
-
-        graphics.disableScissor()
     }
 
     override fun onClick(event: MouseButtonEvent, doubleClick: Boolean) {
         val mouseY = event.y().toInt()
 
         if (mouseY < y + GuiTheme.ROW_HEIGHT) {
-            if (event.button() == RIGHT) cycle() else extended = !extended
+            if (event.button() == RIGHT) cycle() else expand.toggle()
             return
         }
-        if (!extended || event.button() != LEFT) return
+        if (!expand.current || event.button() != LEFT) return
 
         options.getOrNull((mouseY - (y + LIST_TOP)) / OPTION_HEIGHT)?.let {
             value = it
-            extended = false
+            expand.progress(false)
         }
     }
 
     override fun release() {
-        extended = false
+        expand.progress(false)
     }
 
     override fun write(gson: Gson): JsonElement = JsonPrimitive(value.name)

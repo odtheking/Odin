@@ -6,6 +6,7 @@ import com.odtheking.odin.clickgui.widget.SearchBarWidget
 import com.odtheking.odin.features.Category
 import com.odtheking.odin.features.ModuleManager
 import com.odtheking.odin.features.impl.render.ClickGUIModule
+import com.odtheking.odin.utils.Color.Companion.hsbMax
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.render.roundedRectOutlined
 import com.odtheking.odin.utils.ui.animations.Animations
@@ -86,7 +87,7 @@ object ClickGUI : Screen(Component.literal("Click GUI")) {
 
         graphics.roundedRectOutlined(
             boxX, boxY, boxX + boxWidth, boxY + boxHeight,
-            GuiTheme.surface.rgba, GuiTheme.accent.rgba, 1f, GuiTheme.RADIUS
+            GuiTheme.surface.rgba, GuiTheme.accent.hsbMax().rgba, 1.5f, GuiTheme.RADIUS
         )
         lines.forEachIndexed { index, line ->
             graphics.text(

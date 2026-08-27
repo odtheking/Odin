@@ -8,9 +8,9 @@ import com.odtheking.odin.features.ModuleManager
 import com.odtheking.odin.features.impl.render.ClickGUIModule
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.render.Corners
-import com.odtheking.odin.utils.render.pushScissor
 import com.odtheking.odin.utils.render.roundedRect
 import com.odtheking.odin.utils.render.roundedShadow
+import com.odtheking.odin.utils.render.scissored
 import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.components.events.GuiEventListener
 import net.minecraft.client.input.MouseButtonEvent
@@ -70,12 +70,12 @@ class PanelWidget(category: Category) : OdinContainerWidget(
         val capY = y + height - GuiTheme.CAP
         if (extended) {
             val top = y + GuiTheme.ROW_HEIGHT
-            graphics.pushScissor(x, top, x + width, capY)
-            for (module in modules) {
-                if (!module.visible || module.bottom <= top || module.y >= capY) continue
-                module.extractRenderState(graphics, mouseX, mouseY, 0f)
+            graphics.scissored(x, top, x + width, capY) {
+                for (module in modules) {
+                    if (!module.visible || module.bottom <= top || module.y >= capY) continue
+                    module.extractRenderState(graphics, mouseX, mouseY, 0f)
+                }
             }
-            graphics.disableScissor()
         }
 
         graphics.roundedRect(

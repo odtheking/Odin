@@ -4,7 +4,6 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.utils.Colors
-import com.odtheking.odin.utils.render.hollowFill
 import com.odtheking.odin.utils.render.roundedOutline
 import net.minecraft.client.gui.GuiGraphicsExtractor
 
@@ -20,10 +19,14 @@ open class HudElement(
     var height: Int = 0
         private set
 
+    private var pendingCoordMigration = false
+
     val scaledWidth: Int get() = (width * scale).toInt()
     val scaledHeight: Int get() = (height * scale).toInt()
 
     fun draw(context: GuiGraphicsExtractor, example: Boolean, mouseX: Int = -1, mouseY: Int = -1) {
+        if (pendingCoordMigration) clampToScreen()
+
         context.pose().pushMatrix()
         context.pose().translate(x.toFloat(), y.toFloat())
         context.pose().scale(scale, scale)
@@ -41,6 +44,13 @@ open class HudElement(
         mouseX >= x && mouseX < x + scaledWidth && mouseY >= y && mouseY < y + scaledHeight
 
     fun clampToScreen() {
+        if (pendingCoordMigration) {
+            pendingCoordMigration = false
+            val guiScale = mc.window.guiScale.coerceAtLeast(1)
+            x /= guiScale
+            y /= guiScale
+        }
+
         x = x.coerceIn(0, (mc.window.guiScaledWidth - scaledWidth).coerceAtLeast(0))
         y = y.coerceIn(0, (mc.window.guiScaledHeight - scaledHeight).coerceAtLeast(0))
     }
@@ -51,15 +61,19 @@ open class HudElement(
             addProperty("y", y)
             addProperty("scale", scale)
             addProperty("enabled", enabled)
+            addProperty("scaled", true)
         }
 
     fun read(element: JsonElement, toggleable: Boolean) {
         if (element !is JsonObject) return
 
+        val hasLegacyPosition = element.has("x") && !element.has("scaled")
+
         x = element.get("x")?.asInt ?: x
         y = element.get("y")?.asInt ?: y
         scale = element.get("scale")?.asFloat ?: scale
-        enabled = if (toggleable) element.get("enabled")?.asBoolean ?: enabled else true
+        enabled = !toggleable || element.get("enabled")?.asBoolean ?: enabled
+        pendingCoordMigration = hasLegacyPosition
     }
 
     companion object {
