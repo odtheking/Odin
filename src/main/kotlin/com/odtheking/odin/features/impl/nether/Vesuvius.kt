@@ -41,13 +41,13 @@ object Vesuvius : Module(
     private val pearlRegex = Regex("^Heavy Pearl x(\\d+)$")
     private val chestRegex = Regex("^((Free|Paid) Chest)|(Kuudra - .+)$")
     private val uselessLinesRegex = Regex("^Contents|Cost|Click to open!|FREE|Already opened!|Can't open another chest!|Paid Chest|")
-    private val salvageItemsRegex = Regex("^Boots|Chestplate|Helmet|Cloak|Aurora Staff|Hollow Wand")
+    private val salvageItemsRegex = Regex("Boots|Chestplate|Helmet|Cloak|Aurora Staff|Hollow Wand")
 
     private val ultimateEnchants = setOf(
         "Fatal Tempo", "Inferno"
     )
 
-    private data class Key(val type: String, val coins: Int, val quantity: Int)
+    data class Key(val type: String, val coins: Int, val quantity: Int, val tier: Int)
     private data class ChestItem(val name: Component, val price: Double)
     private data class ChestData(val items: List<ChestItem>, val cost: Double, val profit: Double)
 
@@ -89,10 +89,12 @@ object Vesuvius : Module(
         }
     }
 
-    private fun parseItemValue(component: Component): Double? {
+    fun parseItemValue(component: Component): Double? {
 
         var starCount = 0
         val salvage = salvageItemsRegex.containsMatchIn(component.string)
+
+        modMessage("$salvage with ${component.string}")
 
         val essenceBonus = (1 + kuudraPetBonus / 100.0) * (1 + lavaLeechBonus / 100.0)
 
@@ -141,6 +143,7 @@ object Vesuvius : Module(
         }
 
         if (useSalvagePrices && salvage) {
+            modMessage("$component}")
             val price = cachedPrices["ESSENCE_CRIMSON"] ?: 0.0
             val quantity = starCountToEssence[starCount] ?: 0.0
             return price * quantity
@@ -151,7 +154,7 @@ object Vesuvius : Module(
         return cachedPrices[item.uppercase().replace(" ", "_")]
     }
 
-    private fun getPriceOfKey(key: String): Double {
+    fun getPriceOfKey(key: String): Double {
         keys.find { it.type == key }?.let {
             val material = minOf(cachedPrices["ENCHANTED_RED_SAND"] ?: 0.0, cachedPrices["ENCHANTED_MYCELIUM"] ?: 0.0)
             val star = (cachedPrices["CORRUPTED_NETHER_STAR"] ?: 0.0)
@@ -213,12 +216,12 @@ object Vesuvius : Module(
         return maxWidth to yOffset
     }
 
-    private val keys = listOf<Key>(
-        Key("Kuudra Key", 155200, 2),
-        Key("Hot Kuudra Key", 310400, 4),
-        Key("Burning Kuudra Key", 582000, 16),
-        Key("Fiery Kuudra Key", 1164000, 40),
-        Key("Infernal Kuudra Key", 2328000, 80)
+    val keys = listOf<Key>(
+        Key("Kuudra Key", 155200, 2, 1),
+        Key("Hot Kuudra Key", 310400, 4, 2),
+        Key("Burning Kuudra Key", 582000, 16, 3),
+        Key("Fiery Kuudra Key", 1164000, 40, 4),
+        Key("Infernal Kuudra Key", 2328000, 80, 5)
     )
 
     private val itemReplacements = mapOf(
