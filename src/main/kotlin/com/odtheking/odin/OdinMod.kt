@@ -9,9 +9,7 @@ import com.odtheking.odin.features.impl.render.Shenanigans
 import com.odtheking.odin.utils.IrisCompatability
 import com.odtheking.odin.utils.ServerUtils
 import com.odtheking.odin.utils.handlers.TickTasks
-import com.odtheking.odin.utils.render.CustomRenderPipelines
 import com.odtheking.odin.utils.render.ItemStateRenderer
-import com.odtheking.odin.utils.render.RenderBatchManager
 import com.odtheking.odin.utils.skyblock.*
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonListener
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
@@ -71,7 +69,7 @@ object OdinMod : ClientModInitializer {
             ActionBarListener, ServerUtils, EventDispatcher,
             DungeonListener, PartyUtils, TerminalUtils,
             DungeonUtils, SplitsManager, DungeonScan,
-            IrisCompatability, RenderBatchManager,
+            IrisCompatability,
             ModuleManager, CustomGUIImpl, Shenanigans,
         ).forEach { EventBus.subscribe(it) }
 

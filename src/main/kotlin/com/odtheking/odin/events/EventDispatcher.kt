@@ -7,7 +7,6 @@ import com.odtheking.odin.utils.ChatManager
 import com.odtheking.odin.utils.containsOneOf
 import com.odtheking.odin.utils.equalsOneOf
 import com.odtheking.odin.utils.noControlCodes
-import com.odtheking.odin.utils.render.RenderBatchManager
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils.isSecret
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents
@@ -33,10 +32,7 @@ object EventDispatcher {
         ClientTickEvents.START_LEVEL_TICK.register { world -> TickEvent.Start(world).postAndCatch() }
         ClientTickEvents.END_LEVEL_TICK.register { world -> TickEvent.End(world).postAndCatch() }
 
-        LevelRenderEvents.AFTER_TRANSLUCENT_TERRAIN.register {
-            context -> RenderEvent.Extract(context, RenderBatchManager.renderConsumer).postAndCatch()
-            RenderEvent.Last(context).postAndCatch()
-        }
+        LevelRenderEvents.COLLECT_SUBMITS.register { context -> RenderEvent.Extract(context).postAndCatch() }
 
         ScreenEvents.AFTER_INIT.register { _, screen, _, _ -> ScreenEvent.Open(screen).postAndCatch() }
         ScreenEvents.BEFORE_INIT.register { _, screen, _, _ ->

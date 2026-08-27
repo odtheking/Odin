@@ -5,7 +5,6 @@ import com.odtheking.odin.events.core.CancellableEvent
 import com.odtheking.odin.events.core.Event
 import com.odtheking.odin.features.impl.dungeon.map.tile.DungeonRoom
 import com.odtheking.odin.features.impl.dungeon.map.tile.MapCheckmark
-import com.odtheking.odin.utils.render.RenderConsumer
 import com.odtheking.odin.utils.skyblock.dungeon.Floor
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.terminalhandler.TerminalHandler
 import net.fabricmc.fabric.api.client.rendering.v1.level.AbstractLevelRenderContext
@@ -61,8 +60,7 @@ interface LevelEvent : Event {
 }
 
 abstract class RenderEvent(open val context: AbstractLevelRenderContext) : Event {
-    class Extract(override val context: LevelRenderContext, val consumer: RenderConsumer) : RenderEvent(context)
-    class Last(override val context: LevelRenderContext) : RenderEvent(context)
+    class Extract(override val context: LevelRenderContext) : RenderEvent(context)
 }
 
 abstract class PartyEvent(val members: List<String>) : Event {

@@ -24,13 +24,31 @@ object CustomRenderType {
             .createRenderSetup()
     )
 
-    // RenderTypes.DEBUG_FILLED_BOX || QUADS_ESP
+    // RenderTypes.DEBUG_FILLED_BOX / RenderTypes.debugFilledBox() || QUADS_OPAQUE / QUADS_TRANSLUCENT / QUADS_ESP / QUADS_TRANSLUCENT_ESP
+
+    val QUADS_OPAQUE: RenderType = RenderType.create(
+        "quads-opaque",
+        RenderSetup.builder(CustomRenderPipelines.QUADS_OPAQUE)
+            .createRenderSetup()
+    )
+
+    val QUADS_TRANSLUCENT: RenderType = RenderType.create(
+        "quads-translucent",
+        RenderSetup.builder(CustomRenderPipelines.QUADS_TRANSLUCENT)
+            .sortOnUpload()
+            .createRenderSetup()
+    )
 
     val QUADS_ESP: RenderType = RenderType.create(
         "quads-esp",
         RenderSetup.builder(CustomRenderPipelines.QUADS_ESP)
+            .createRenderSetup()
+    )
+
+    val QUADS_TRANSLUCENT_ESP: RenderType = RenderType.create(
+        "quads-translucent-esp",
+        RenderSetup.builder(CustomRenderPipelines.QUADS_TRANSLUCENT_ESP)
             .sortOnUpload()
-            .setLayeringTransform(LayeringTransform.VIEW_OFFSET_Z_LAYERING)
             .createRenderSetup()
     )
 }
