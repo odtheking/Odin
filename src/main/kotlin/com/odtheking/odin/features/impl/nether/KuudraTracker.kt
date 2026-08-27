@@ -46,11 +46,11 @@ object KuudraTracker : Module(
     private val uselessLinesRegex = Regex("^Contents|Cost|Click to open!|FREE|Already opened!|Can't open another chest!|Paid Chest$")
     private val amountRegex = Regex("(.+)? x(\\d+)$")
 
-    private val lightPurpleRegex = Regex("Crimson Essence")
-    private val whiteRegex = Regex("Fatal Tempo|Inferno|Book")
-    private val darkPurpleRegex = Regex("Kuudra Teeth|Fire Eel Shard|Kuudra Mandible|Barbarian Duke X Shard|XYZ Shard")
+    private val lightPurpleRegex = Regex("Fatal Tempo|Inferno|Crimson Essence")
+    private val whiteRegex = Regex("Book")
+    private val darkPurpleRegex = Regex("Kuudra Teeth|Fire Eel Shard|Kuudra Mandible|Barbarian Duke X Shard|XYZ Shard|Hellstorm Wand|Tentacle Dye")
     private val blueRegex = Regex("Kada Knight Shard|Wheel of Fate|Ananke Feather|Burning Kuudra Core|Matcho Shard|Kuudra Tentacle|Lava Flame Shard|Wither Spectre Shard")
-    private val goldRegex = Regex("Boots|Leggings|Chestplate|Helmet|Cloak|Aurora Staff|Hollow Wand|Heavy Pearl|Kraken Shard|Hellwisp Shard|Ananke Shard|Moltenfish Shard")
+    private val goldRegex = Regex("Boots|Leggings|Chestplate|Helmet|Cloak|Aurora Staff|Hollow Wand|Heavy Pearl|Kraken Shard|Hellwisp Shard|Ananke Shard|Moltenfish Shard|Tormentor")
 
     val profitHud by HUD("Kuudra Tracker HUD", "Displays the profit of all your Kudura chests.") {
         if (!it) return@HUD 0 to 0
