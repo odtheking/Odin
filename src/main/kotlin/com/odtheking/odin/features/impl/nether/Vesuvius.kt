@@ -94,8 +94,6 @@ object Vesuvius : Module(
         var starCount = 0
         val salvage = salvageItemsRegex.containsMatchIn(component.string)
 
-        modMessage("$salvage with ${component.string}")
-
         val essenceBonus = (1 + kuudraPetBonus / 100.0) * (1 + lavaLeechBonus / 100.0)
 
         component.visit({ style, str ->
