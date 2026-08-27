@@ -13,19 +13,16 @@ object NumbersSim : TermSimGUI(
     TerminalTypes.NUMBERS.termName, TerminalTypes.NUMBERS.windowSize
 ) {
     override fun create() {
-        val used = (1..14).shuffled().toMutableList()
-        createNewGui {
-            if (floor(it.index / 9f) in 1f..2f && it.index % 9 in 1..7) ItemStack(Items.RED_STAINED_GLASS_PANE, used.first()).apply { set(DataComponents.CUSTOM_NAME, Component.literal("§a${used.removeFirst()}")) }
+        val used = (1..10).shuffled().toMutableList()
+        setSlots {
+            if (floor(it.index / 9f) in 1f..2f && it.index % 9 in 2..6) ItemStack(Items.RED_STAINED_GLASS_PANE, used.first()).apply { set(DataComponents.CUSTOM_NAME, Component.literal("§a${used.removeFirst()}")) }
             else blackPane
         }
     }
 
     override fun slotClick(slot: Slot, button: Int) {
         if (guiInventorySlots.minByOrNull { if (it.item.item == Items.RED_STAINED_GLASS_PANE) it.item.count else 1000 } != slot) return
-        createNewGui {
-            if (it == slot) ItemStack(Items.LIME_STAINED_GLASS_PANE, slot.item.count).apply { set(DataComponents.CUSTOM_NAME, Component.literal("")) }
-            else it.item
-        }
+        slot.setSlot(ItemStack(Items.LIME_STAINED_GLASS_PANE, slot.item.count).apply { set(DataComponents.CUSTOM_NAME, Component.literal("")) })
 
         if (guiInventorySlots.none { it?.item?.item == Items.RED_STAINED_GLASS_PANE })
             TerminalUtils.lastTermOpened?.onComplete()

@@ -131,7 +131,6 @@ object TerminalSolver : Module(
                 "§7Time Open: §f${System.currentTimeMillis() - term.timeOpened}ms",
                 "§7Ticks Open: §f${term.ticksOpened}",
                 "§7Is Clicked: §f${term.isClicked}",
-                "§7Window Count: §f${term.windowCount}",
                 "§7Solution: §f${term.solution.joinToString(", ")}",
             )
 
@@ -140,13 +139,14 @@ object TerminalSolver : Module(
             pose().scale(1f / sf, 1f / sf)
             pose().scale(3f)
 
-            textWithWordWrap(mc.font, Component.literal(menu.items.filter { !it.isEmpty }.map { stack -> stack.hoverName.string  }.toString()), 400, 0, 300, Colors.WHITE.rgba)
+            val items = menu.items.subList(0, term.type.windowSize)
+            textWithWordWrap(mc.font, Component.literal(items.filter { !it.isEmpty }.map { stack -> stack.hoverName.string }.toString()), 400, 0, 300, Colors.WHITE.rgba)
 
             debugInfo.forEachIndexed { index, line ->
                 textWithWordWrap(mc.font, Component.literal(line), 5, 20 + (index * 10), 300, Colors.WHITE.rgba)
             }
 
-            menu.items.forEachIndexed { index, stack ->
+            items.forEachIndexed { index, stack ->
                 item(stack, 5 + (index % 9) * 18, 250 + (index / 9) * 18)
                 itemDecorations(mc.font, stack, 5 + (index % 9) * 18, 250 + (index / 9) * 18)
             }

@@ -16,7 +16,7 @@ class StartsWithSim(private val letter: String = listOf("A", "B", "C", "G", "D",
     TerminalTypes.STARTS_WITH.windowSize
 ) {
     override fun create() {
-        createNewGui {
+        setSlots {
             when {
                 floor(it.index / 9f) !in 1f..3f || it.index % 9 !in 1..7 -> blackPane
                 it.index == (10..16).random() -> getLetterItemStack()
@@ -29,7 +29,7 @@ class StartsWithSim(private val letter: String = listOf("A", "B", "C", "G", "D",
     override fun slotClick(slot: Slot, button: Int) = with(slot.item) {
         if (!hoverName.string.startsWith(letter, true) || hasGlint()) return@with modMessage("§cThat item does not start with: \'$letter\'!")
 
-        createNewGui { if (it == slot) apply { set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, false) } else it.item }
+        slot.setSlot(apply { set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, false) })
 
         if (guiInventorySlots.none { it.item.hoverName.string.startsWith(letter, true) && !it.item.hasGlint() })
             TerminalUtils.lastTermOpened?.onComplete()

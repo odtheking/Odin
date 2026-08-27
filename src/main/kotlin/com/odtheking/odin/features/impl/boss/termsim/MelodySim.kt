@@ -28,7 +28,7 @@ object MelodySim : TermSimGUI(
         magentaColumn = (1..5).random()
         limeColumn = 1
         limeDirection = 1
-        createNewGui { it.generateItemStack() }
+        setSlots { it.generateItemStack() }
     }
 
     private var counter = 0
@@ -37,25 +37,26 @@ object MelodySim : TermSimGUI(
         if (counter++ % 10 != 0) return
         limeColumn += limeDirection
         if (limeColumn == 1 || limeColumn == 5) limeDirection *= -1
-        updateGui()
+        updateRow(currentRow)
         super.containerTick()
     }
 
     override fun slotClick(slot: Slot, button: Int) {
         if (slot.index % 9 != 7 || limeColumn != magentaColumn || slot.index / 9 != currentRow) return
 
+        val oldRow = currentRow
         magentaColumn = (1 until 5).random()
         currentRow++
-        updateGui()
+        updateRow(0)
+        updateRow(oldRow)
+        if (currentRow <= 4) updateRow(currentRow)
 
         if (currentRow >= 5) TerminalUtils.lastTermOpened?.onComplete()
         super.slotClick(slot, button)
     }
 
-    private fun updateGui() {
-        guiInventorySlots.forEachIndexed { index, currentStack ->
-            currentStack?.setSlot(guiInventorySlots.map { it.generateItemStack() }.getOrNull(index)?.takeIf { it != currentStack.item } ?: return@forEachIndexed)
-        }
+    private fun updateRow(row: Int) {
+        for (col in 0..8) guiInventorySlots[row * 9 + col].let { it.setSlot(it.generateItemStack()) }
     }
 
     private fun Slot.generateItemStack(): ItemStack {

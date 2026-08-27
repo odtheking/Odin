@@ -171,8 +171,8 @@ fun BlockPos.getBlockBounds() =
         level.getBlockState(this).getShape(level, this).singleEncompassing().takeIf { !it.isEmpty }?.bounds()
     }
 
-fun Player.clickSlot(containerId: Int, slotIndex: Int, button: Int = 0, containerInput: ContainerInput = ContainerInput.PICKUP) {
-    mc.gameMode?.handleContainerInput(containerId, slotIndex, button, containerInput, this)
+fun Player.clickSlot(slotIndex: Int, button: Int = 0, containerInput: ContainerInput = ContainerInput.PICKUP) {
+    mc.gameMode?.handleContainerInput(containerMenu.containerId, slotIndex, button, containerInput, this)
 }
 
 fun formatNumber(numStr: String): String {

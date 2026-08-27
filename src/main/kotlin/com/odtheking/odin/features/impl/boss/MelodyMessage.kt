@@ -4,8 +4,8 @@ import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.StringSetting
 import com.odtheking.odin.events.ChatPacketEvent
-import com.odtheking.odin.events.GuiEvent
 import com.odtheking.odin.events.LevelEvent
+import com.odtheking.odin.events.SetSlotEvent
 import com.odtheking.odin.events.TerminalEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
@@ -77,8 +77,8 @@ object MelodyMessage : Module(
             if (broadcast || melodyProgress) onChatMessage(value)
         }
 
-        on<GuiEvent.SlotUpdate> {
-            if (broadcast || melodyProgress) onSlotUpdate(this)
+        on<SetSlotEvent> {
+            if (broadcast || melodyProgress) onSlotUpdate()
         }
 
         on<LevelEvent.Load> {
@@ -106,13 +106,13 @@ object MelodyMessage : Module(
         }
     }
 
-    private fun onSlotUpdate(event: GuiEvent.SlotUpdate) {
+    private fun SetSlotEvent.onSlotUpdate() {
         val term = TerminalUtils.currentTerm ?: return
         if (DungeonUtils.getF7Phase() != M7Phases.P3 || term.type != TerminalTypes.MELODY || mc.screen is TermSimGUI) return
 
-        val item = event.packet.item.item
+        val item = itemStack.item
         if (item == Items.LIME_TERRACOTTA) {
-            val position = event.packet.slot / 9
+            val position = slotIndex / 9
             if (lastSent.clay == position) return
             if (broadcast) melodyWebSocket.send(update(1, position))
             if (melodyProgress) clayProgress[position]?.let { sendCommand("pc $it") }
@@ -120,7 +120,7 @@ object MelodyMessage : Module(
             return
         }
         if (!broadcast || !item.equalsOneOf(Items.MAGENTA_STAINED_GLASS_PANE, Items.LIME_STAINED_GLASS_PANE)) return
-        val index = mapToRange(event.packet.slot) ?: return
+        val index = mapToRange(slotIndex) ?: return
         val meta = when (item) {
             Items.MAGENTA_STAINED_GLASS_PANE -> {
                 if (lastSent.purple == index) return

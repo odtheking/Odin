@@ -3,9 +3,12 @@ package com.odtheking.mixin.mixins;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.odtheking.odin.events.BlockInteractEvent;
 import com.odtheking.odin.events.EntityInteractEvent;
+import com.odtheking.odin.events.ScreenCloseEvent;
+import com.odtheking.odin.events.ScreenEvent;
 import com.odtheking.odin.features.impl.boss.TerminalSolver;
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalUtils;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
@@ -39,5 +42,11 @@ public abstract class MinecraftMixin {
     private Object modifyGuiScaleValue(Object original) {
         if (TerminalUtils.getCurrentTerm() != null && TerminalSolver.getTermSize() != (Integer) original) return TerminalSolver.getTermSize();
         return original;
+    }
+
+    @Inject(method = "setScreen", at = @At(value = "HEAD"))
+    private void onSetScreen(Screen screen, CallbackInfo ci) {
+        if (screen != null) new ScreenEvent.Open(screen).postAndCatch();
+        else ScreenCloseEvent.INSTANCE.postAndCatch();
     }
 }

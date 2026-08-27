@@ -22,7 +22,7 @@ class SelectAllSim(
 ) {
     override fun create() {
         val guaranteed = (10..16).plus(19..25).plus(28..34).plus(37..43).random()
-        createNewGui { slot ->
+        setSlots { slot ->
             if (floor(slot.index / 9.0) in 1.0..4.0 && slot.index % 9 in 1..7) {
                 val item = ItemStack(getPossibleItems(color).random())
 
@@ -54,10 +54,7 @@ class SelectAllSim(
         val possibleItems = getPossibleItems(color)
         if (!possibleItems.contains(slot.item.item)) return modMessage("§cThat item is not: ${color.name.uppercase()}!")
 
-        createNewGui {
-            if (it == slot) slot.item.apply { set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true) }
-            else it.item
-        }
+        slot.setSlot(slot.item.apply { set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true) })
 
         if (guiInventorySlots.none { !it.item.hasGlint() && possibleItems.contains(it.item.item) })
             TerminalUtils.lastTermOpened?.onComplete()

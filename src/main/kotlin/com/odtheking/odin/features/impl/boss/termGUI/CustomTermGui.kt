@@ -66,10 +66,8 @@ abstract class TermGui {
 
     private fun currentTermScreen() = mc.screen as? AbstractContainerScreen<*>
 
-    private fun isActiveTermScreen(): Boolean {
-        if (!TerminalSolver.customGuiEnabled || TerminalUtils.currentTerm == null || currentTermScreen() == null) return false
-        return TerminalUtils.currentTerm?.type?.getGUI() === this
-    }
+    private fun isActiveTermScreen(): Boolean =
+        !(!TerminalSolver.customGuiEnabled || TerminalUtils.currentTerm == null || currentTermScreen() == null) && TerminalUtils.currentTerm?.type?.getGUI() === this
 
     private fun isTerminalOverrideKey(event: KeyEvent) =
         mc.options.keyDrop.matches(event) || mc.options.keyHotbarSlots.any { it.matches(event) }

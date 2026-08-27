@@ -3,6 +3,7 @@ package com.odtheking.odin.features.impl.nether
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.NumberSetting
 import com.odtheking.odin.events.GuiEvent
+import com.odtheking.odin.events.SetSlotEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.features.Module
@@ -75,13 +76,11 @@ object Vesuvius : Module(
             }
         }
 
-        on<GuiEvent.SlotUpdate> {
-            if (!screen.title.string.matches(chestRegex)) return@on
+        on<SetSlotEvent> {
+            if (mc.screen?.title?.string?.matches(chestRegex) == false) return@on
 
-            val item = packet.item
-
-            if (packet.slot == 31 && item.item == Items.CHEST) handleKuudraChest(item)
-            if (packet.slot.equalsOneOf(13, 14) && item.item == Items.PLAYER_HEAD) handleKuudraChest(item)
+            if (slotIndex == 31 && itemStack.item == Items.CHEST) handleKuudraChest(itemStack)
+            if (slotIndex.equalsOneOf(13, 14) && itemStack.item == Items.PLAYER_HEAD) handleKuudraChest(itemStack)
         }
 
         onReceive<ClientboundOpenScreenPacket> {
@@ -194,7 +193,7 @@ object Vesuvius : Module(
         val profit = "%,.0f".format(dataToDisplay?.profit)
 
         dataToDisplay?.items?.forEach { item ->
-            val price: String = "%,.0f".format(item.price)
+            val price = "%,.0f".format(item.price)
 
             text(mc.font,item.name, 0, yOffset, -1)
             text(price, maxWidth - mc.font.width(price), yOffset, Colors.MINECRAFT_GRAY)

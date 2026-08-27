@@ -4,8 +4,8 @@ import com.odtheking.odin.features.impl.boss.TerminalSolver
 import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.hasGlint
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalTypes
+import net.minecraft.world.inventory.Slot
 import net.minecraft.world.item.DyeColor
-import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.Items
 
 class SelectAllHandler(color: DyeColor) : TerminalHandler(TerminalTypes.SELECT) {
@@ -22,10 +22,10 @@ class SelectAllHandler(color: DyeColor) : TerminalHandler(TerminalTypes.SELECT) 
         else                -> setOf(color.name.lowercase().replace('_', ' '))
     }
 
-    override fun solve(items: List<ItemStack>): List<Int> =
-        items.mapIndexedNotNull { index, item ->
-            if (item.hasGlint() || item.item == Items.BLACK_STAINED_GLASS_PANE) return@mapIndexedNotNull null
-            if (validPrefixes.any(item.hoverName.string.lowercase()::startsWith)) index else null
+    override fun solve(slots: List<Slot>, updatedIndex: Int): List<Int> =
+        slots.mapIndexedNotNull { index, slot ->
+            if (slot.item.item != Items.BLACK_STAINED_GLASS_PANE && !slot.item.hasGlint()
+                && validPrefixes.any(slot.item.hoverName.string.lowercase()::startsWith)) index else null
         }
 
     override fun renderSlot(slotIndex: Int): Pair<Color, String?> = TerminalSolver.selectColor to null

@@ -1,10 +1,7 @@
 package com.odtheking.odin.utils.skyblock.dungeon.terminals
 
 import com.odtheking.odin.OdinMod.mc
-import com.odtheking.odin.events.ChatPacketEvent
-import com.odtheking.odin.events.GuiEvent
-import com.odtheking.odin.events.TerminalEvent
-import com.odtheking.odin.events.TickEvent
+import com.odtheking.odin.events.*
 import com.odtheking.odin.events.core.EventPriority
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
@@ -14,7 +11,8 @@ import com.odtheking.odin.features.impl.boss.termsim.TermSimGUI
 import com.odtheking.odin.utils.devMessage
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.terminalhandler.TerminalHandler
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
-import net.minecraft.network.protocol.game.*
+import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket
+import net.minecraft.network.protocol.game.ServerboundContainerClickPacket
 import net.minecraft.world.inventory.ContainerInput
 import net.minecraft.world.item.ItemStack
 
@@ -29,42 +27,45 @@ object TerminalUtils {
         private set
 
     init {
-        onReceive<ClientboundOpenScreenPacket> (EventPriority.HIGHEST) {
-            val windowName = title.string
-            currentTerm?.let { if (!it.isClicked && it.windowCount <= 2) leftTerm() }
-            val newType = TerminalTypes.entries.find { it.regex.matches(windowName) } ?: return@onReceive
-
-            if (newType != currentTerm?.type) newType.openHandler(windowName)?.let {
+        on<ScreenEvent.Open> (EventPriority.HIGHEST) {
+            TerminalTypes.openHandler(screen.title.string)?.let {
                 devMessage("§aNew terminal: §6${it.type.name}")
                 currentTerm = it
                 TerminalEvent.Open(it).postAndCatch()
                 lastTermOpened = it
             }
-            currentTerm?.openScreen()
         }
 
-        on<GuiEvent.SlotUpdate> {
+        on<ScreenCloseEvent> {
+            currentTerm?.let {
+                devMessage("§cLeft terminal: §6${it.type.name}")
+                currentTerm = null
+                TerminalEvent.Close(it).postAndCatch()
+            }
+        }
+
+        on<SetSlotEvent> {
+            if (menu !== (mc.screen as? AbstractContainerScreen<*>)?.menu) return@on
             currentTerm?.updateSlot(this)
+            currentTerm?.isClicked = false
         }
 
-        onReceive<ClientboundContainerClosePacket> { leftTerm() }
-        onSend<ServerboundContainerClosePacket> { leftTerm() }
+        on<GuiEvent.SlotClick> {
+            lastClickTime = System.currentTimeMillis()
+            currentTerm?.isClicked = true
+        }
 
-        onSend<ServerboundContainerClickPacket> {
+        on<GuiEvent.SlotClick> (EventPriority.HIGH) {
             lastClickTime = System.currentTimeMillis()
             currentTerm?.isClicked = true
         }
 
         on<TickEvent.End> {
-            val term = currentTerm ?: return@on
-            if (System.currentTimeMillis() - lastClickTime >= TerminalSolver.terminalReloadThreshold && term.isClicked) {
-                val screen = (mc.screen as? AbstractContainerScreen<*>) ?: return@on
-                GuiEvent.SlotUpdate(
-                    screen,
-                    ClientboundContainerSetSlotPacket(screen.menu.containerId, 0, term.type.windowSize - 1, ItemStack.EMPTY),
-                    screen.menu
-                ).postAndCatch()
-                term.isClicked = false
+            currentTerm?.let {
+                if (System.currentTimeMillis() - lastClickTime >= TerminalSolver.terminalReloadThreshold && it.isClicked) {
+                    SetSlotEvent(0, ItemStack.EMPTY, emptyList(), mc.player!!.inventoryMenu).postAndCatch()
+                    it.isClicked = false
+                }
             }
         }
 
@@ -74,11 +75,6 @@ object TerminalUtils {
                     TerminalEvent.Solve(it).postAndCatch()
                 }
             }
-        }
-
-        on<GuiEvent.SlotClick> (EventPriority.HIGH) {
-            lastClickTime = System.currentTimeMillis()
-            currentTerm?.isClicked = true
         }
 
         onSend<ServerboundContainerClickPacket> (EventPriority.LOW) {
@@ -92,14 +88,6 @@ object TerminalUtils {
             if (slot !in 0 until termSimScreen.size) return@onReceive
             item.let { item -> mc.player?.inventoryMenu?.setItem(slot, stateId, item) }
             it.cancel()
-        }
-    }
-
-    private fun leftTerm() {
-        currentTerm?.let {
-            devMessage("§cLeft terminal: §6${it.type.name}")
-            currentTerm = null
-            TerminalEvent.Close(it).postAndCatch()
         }
     }
 }

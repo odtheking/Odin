@@ -41,7 +41,7 @@ object StartGUI : TermSimGUI(
 
     override fun create() {
         val termItems = buildTermItems()
-        createNewGui {
+        setSlots {
             when (it.index) {
                 4 -> resetButton
                 13  -> randomButton
