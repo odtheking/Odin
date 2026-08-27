@@ -77,7 +77,7 @@ object Vesuvius : Module(
         }
 
         on<SetSlotEvent> {
-            if (mc.screen?.title?.string?.matches(chestRegex) == false) return@on
+            if (mc.screen?.title?.string?.matches(chestRegex) != true) return@on
 
             if (slotIndex == 31 && itemStack.item == Items.CHEST) handleKuudraChest(itemStack)
             if (slotIndex.equalsOneOf(13, 14) && itemStack.item == Items.PLAYER_HEAD) handleKuudraChest(itemStack)
