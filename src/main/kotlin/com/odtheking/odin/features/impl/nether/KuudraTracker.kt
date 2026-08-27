@@ -1,13 +1,8 @@
 package com.odtheking.odin.features.impl.nether
 
-import com.google.gson.Gson
-import com.google.gson.JsonArray
-import com.google.gson.JsonElement
-import com.google.gson.JsonObject
-import com.mojang.serialization.JsonOps
-import com.odtheking.odin.clickgui.settings.Saving
-import com.odtheking.odin.clickgui.settings.Setting
+import com.odtheking.odin.clickgui.settings.impl.ActionSetting
 import com.odtheking.odin.clickgui.settings.impl.ListSetting
+import com.odtheking.odin.clickgui.settings.impl.MapSetting
 import com.odtheking.odin.clickgui.settings.impl.NumberSetting
 import com.odtheking.odin.events.ChatPacketEvent
 import com.odtheking.odin.events.GuiEvent
@@ -24,35 +19,49 @@ import com.odtheking.odin.utils.render.text
 import net.minecraft.ChatFormatting
 import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.network.chat.Component
-import net.minecraft.network.chat.ComponentSerialization
 import net.minecraft.network.chat.MutableComponent
-import net.minecraft.network.chat.Style
-import net.minecraft.network.chat.TextColor
 import net.minecraft.network.protocol.game.ServerboundContainerClickPacket
 import net.minecraft.world.item.Items
-import java.util.Optional
+import kotlin.let
 
 object KuudraTracker : Module(
     name = "Kuudra Tracker",
     description = "Tracks your Kuudra runs."
 ) {
     private val lineAmount by NumberSetting("Lines", 10, 0,40, 1, "The amount of items to display in the profit tracker.")
+    private val reset by ActionSetting("Reset Profit", "Resets the Profit Tracker") {
+        totalKeys = mutableListOf(0, 0, 0, 0, 0)
+        singleItems.clear()
+        multiItems.clear()
+        paid = 0
+        free = 0
+        last = LastAdded(mutableListOf(), mutableListOf(), 0)
+
+        updateDisplay()
+        ModuleManager.saveConfigurations()
+    }
 
     private val chestRegex = Regex("(Free|Paid) Chest")
     private val hudRegex = Regex("^((Free|Paid) Chest)|(Kuudra - .+)|(.+)?Vesuvius$")
-    private val uselessLinesRegex = Regex("^Contents|Cost|Click to open!|FREE|Already opened!|Can't open another chest!|Paid Chest|")
-    private val amountRegex = Regex("""x(\d+)$""")
+    private val uselessLinesRegex = Regex("^Contents|Cost|Click to open!|FREE|Already opened!|Can't open another chest!|Paid Chest$")
+    private val amountRegex = Regex("(.+)? x(\\d+)$")
 
-    val profitHud by HUD("Kuudra Tracker HUD", "") {
+    private val lightPurpleRegex = Regex("Crimson Essence")
+    private val whiteRegex = Regex("Fatal Tempo|Inferno|Book")
+    private val darkPurpleRegex = Regex("Kuudra Teeth|Fire Eel Shard|Kuudra Mandible|Barbarian Duke X Shard|XYZ Shard")
+    private val blueRegex = Regex("Kada Knight Shard|Wheel of Fate|Ananke Feather|Burning Kuudra Core|Matcho Shard|Kuudra Tentacle|Lava Flame Shard|Wither Spectre Shard")
+    private val goldRegex = Regex("Boots|Leggings|Chestplate|Helmet|Cloak|Aurora Staff|Hollow Wand|Heavy Pearl|Kraken Shard|Hellwisp Shard|Ananke Shard|Moltenfish Shard")
+
+    val profitHud by HUD("Kuudra Tracker HUD", "Displays the profit of all your Kudura chests.") {
         if (!it) return@HUD 0 to 0
         drawOverlay(true)
     }
 
-    private var singleItems by ComponentCountMapSetting("Single Items", ::updateDisplay)
-    private var multiItems by ComponentCountMapSetting("Multi Items", ::updateDisplay)
+    private var singleItems by MapSetting("Single Items",mutableMapOf<String, Int>())
+    private var multiItems by MapSetting("Multi Items", mutableMapOf<String, Int>())
 
-    private var paid by NumberSetting("Paid Chests", 0, 0, Int.MAX_VALUE, 1, "").hide()
-    private var free by NumberSetting("Free Chests", 0, 0,Int.MAX_VALUE, 1, "").hide()
+    private var paid by NumberSetting("Paid Chests", 0, 0, Int.MAX_VALUE, 1, "Amount of Paid Chests opened.").hide()
+    private var free by NumberSetting("Free Chests", 0, 0, Int.MAX_VALUE, 1, "Amount of Paid Chests opened").hide()
 
     private var toDisplay = mutableListOf<Pair<MutableComponent, Double>>()
     private var totalKeys by ListSetting("Total Keys", mutableListOf(0, 0, 0, 0, 0)).hide() //Tier 1-5
@@ -121,15 +130,12 @@ object KuudraTracker : Module(
                     }
                 }
 
-                val (item, amount) = split(lore) ?: continue
-
-                if (amount == 1) {
-                    singleItems[item] = singleItems.getOrDefault(item, 0).coerceAtLeast(0) + amount
-                    last.single.add(item)
-                } else {
-                    multiItems[item] = multiItems.getOrDefault(item, 0).coerceAtLeast(0) + amount
-                    last.multi.add(Multi(item, amount))
+                amountRegex.find(lore.string)?.destructured?.let { (name, amount) ->
+                    multiItems[name] = multiItems.getOrDefault(name, 0) + (amount.toIntOrNull() ?: 0)
+                    continue
                 }
+
+                singleItems[lore.string] = singleItems.getOrDefault(lore.string, 0) + 1
             }
 
             if (title == "Paid Chest") paid++
@@ -140,51 +146,25 @@ object KuudraTracker : Module(
         }
     }
 
-    private fun split(line: Component): Pair<Component, Int>? {
-        val result = Component.empty()
-
-        val amount = amountRegex.find(line.string.trim())
-            ?.groupValues
-            ?.get(1)
-            ?.toIntOrNull()
-            ?: 1
-
-        line.visit(
-            { style, str ->
-                if (style.color != TextColor.fromLegacyFormat(ChatFormatting.DARK_GRAY)) {
-                    result.append(Component.literal(str).withStyle(style))
-                }
-
-                Optional.empty<Unit>()
-            },
-            Style.EMPTY
-        )
-
-        if (result.string.isBlank()) return null
-        return result to amount
-    }
-
     private fun updateDisplay() {
         toDisplay.clear()
-        singleItems.forEach { (item, amount) ->
+
+        singleItems.forEach { (name, amount) ->
             if (amount == 0) return@forEach
 
-            val new = Component.empty()
-            new.append(item).append(Component.literal(" x$amount").withStyle(ChatFormatting.DARK_GRAY))
+            val price = Vesuvius.parseItemValue(Component.literal(name))?.times(amount) ?: return@forEach
 
-            val price = Vesuvius.parseItemValue(item)?.times(amount) ?: 0.0
-
-            toDisplay.add(Pair(new, price))
+            toDisplay.add(Component.literal(name).withStyle(getColor(name)).append(Component.literal(" x$amount").withStyle(ChatFormatting.DARK_GRAY)) to price)
         }
-        multiItems.forEach { (item, amount) ->
+
+        multiItems.forEach { (name, amount) ->
             if (amount == 0) return@forEach
 
-            val new = Component.empty()
-            new.append(item).append(Component.literal("x$amount").withStyle(ChatFormatting.DARK_GRAY))
+            val built = Component.literal(name).append(Component.literal(" x$amount").withStyle(ChatFormatting.DARK_GRAY))
 
-            val price = Vesuvius.parseItemValue(new) ?: 0.0
+            val price = Vesuvius.parseItemValue(built) ?: return@forEach
 
-            toDisplay.add(Pair(new, price))
+            toDisplay.add(built.withStyle(getColor(name)) to price)
         }
     }
 
@@ -197,12 +177,14 @@ object KuudraTracker : Module(
     }
 
     private fun GuiGraphicsExtractor.drawOverlay(isEditing: Boolean): Pair<Int, Int> {
-        var yOffset = 100
+        var yOffset = 0
         val maxWidth = 300
 
         var profit = 0.0
 
-        for ((index, pair) in toDisplay
+        val display = if (isEditing) { sampleProfitData } else toDisplay
+
+        for ((index, pair) in display
             .sortedByDescending { it.second }
             .withIndex()
         ) {
@@ -220,7 +202,7 @@ object KuudraTracker : Module(
 
         yOffset += 6
 
-        val keyPrices = "%,.0f".format(getKeyPrices())
+        val keyPrices = if (isEditing) getPriceOfKey("Infernal Kuudra Key").toString() else "%,.0f".format(getKeyPrices())
 
         text(mc.font, "§cTotal Key Costs:", 0, yOffset, -1)
         text(mc.font, keyPrices, maxWidth - mc.font.width(keyPrices), yOffset, Colors.MINECRAFT_RED.rgba)
@@ -234,54 +216,58 @@ object KuudraTracker : Module(
 
         yOffset += 15
 
-        val avg = "%,.0f".format((profit - getKeyPrices()) / (free + paid))
+        val freeChests = if (isEditing) 0 else free
+        val paidChests = if (isEditing) 1 else paid
 
-        text(mc.font, "Total Chests: Free [$free], Paid [$paid]", 0, yOffset, Colors.MINECRAFT_YELLOW.rgba)
+        val avg = "%,.0f".format((profit - getKeyPrices()) / (freeChests + paidChests))
+
+        text(mc.font, "Total Chests: Free [$freeChests], Paid [$paidChests]", 0, yOffset, Colors.MINECRAFT_YELLOW.rgba)
         text(mc.font, "Avg [$avg]", maxWidth - mc.font.width("Avg [$avg]"), yOffset, Colors.MINECRAFT_GOLD.rgba)
+
+        yOffset += 9
 
         return maxWidth to yOffset
     }
 
-    data class LastAdded(var single: MutableList<Component>, var multi: MutableList<Multi>, var key: Int)
-    data class Multi(val component: Component, val amount: Int)
+    private fun getColor(name: String): ChatFormatting {
+        if (name.contains(whiteRegex)) return ChatFormatting.WHITE
+        if (name.contains(goldRegex)) return ChatFormatting.GOLD
+        if (name.contains(darkPurpleRegex)) return ChatFormatting.DARK_PURPLE
+        if (name.contains(lightPurpleRegex)) return ChatFormatting.LIGHT_PURPLE
+        if (name.contains(blueRegex)) return ChatFormatting.BLUE
 
-    private class ComponentCountMapSetting(
-        name: String,
-        private val afterLoad: () -> Unit
-    ) : Setting<MutableMap<Component, Int>>(name), Saving {
-        override val default = mutableMapOf<Component, Int>()
-        override var value = default
-
-        init {
-            hidden = true
-        }
-
-        override fun write(gson: Gson): JsonElement = JsonArray().apply {
-            value.forEach { (component, count) ->
-                val encoded = ComponentSerialization.CODEC
-                    .encodeStart(JsonOps.INSTANCE, component)
-                    .result()
-                    .orElse(null) ?: return@forEach
-
-                add(JsonObject().apply {
-                    add("component", encoded)
-                    addProperty("count", count)
-                })
-            }
-        }
-
-        override fun read(element: JsonElement, gson: Gson) {
-            value.clear()
-            element.asJsonArray.forEach { entry ->
-                val obj = entry.asJsonObject
-                val component = ComponentSerialization.CODEC
-                    .parse(JsonOps.INSTANCE, obj["component"])
-                    .result()
-                    .orElse(null) ?: return@forEach
-                val count = obj["count"]?.asInt ?: return@forEach
-                value[component] = count
-            }
-            afterLoad()
-        }
+        return ChatFormatting.WHITE
     }
+
+    data class LastAdded(var single: MutableList<String>, var multi: MutableList<Multi>, var key: Int)
+    data class Multi(val component: String, val amount: Int)
+
+    private val sampleProfitData = listOf(
+        Pair(
+            Component.literal("Fervor Helmet")
+                .withStyle(ChatFormatting.GOLD),
+            748000.0
+        ),
+        Pair(
+            Component.literal("Enchanted Book (").withStyle(ChatFormatting.WHITE)
+                .append(Component.literal("Ferocious Mana V").withStyle(ChatFormatting.LIGHT_PURPLE))
+                .append(Component.literal(")").withStyle(ChatFormatting.WHITE)),
+            118500000.0
+        ),
+        Pair(
+            Component.literal("Crimson Essence").withStyle(ChatFormatting.LIGHT_PURPLE)
+                .append(Component.literal(" x2000").withStyle(ChatFormatting.DARK_GRAY)),
+            2420000.0
+        ),
+        Pair(
+            Component.literal("Kuudra Teeth").withStyle(ChatFormatting.DARK_PURPLE)
+                .append(Component.literal(" x4").withStyle(ChatFormatting.DARK_GRAY)),
+            35480.0
+        ),
+        Pair(
+            Component.literal("Kraken Shard").withStyle(ChatFormatting.GOLD)
+                .append(Component.literal(" x2").withStyle(ChatFormatting.DARK_GRAY)),
+            821226.0
+        )
+    )
 }

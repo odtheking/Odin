@@ -41,7 +41,7 @@ object Vesuvius : Module(
     private val pearlRegex = Regex("^Heavy Pearl x(\\d+)$")
     private val chestRegex = Regex("^((Free|Paid) Chest)|(Kuudra - .+)$")
     private val uselessLinesRegex = Regex("^Contents|Cost|Click to open!|FREE|Already opened!|Can't open another chest!|Paid Chest|")
-    private val salvageItemsRegex = Regex("Boots|Chestplate|Helmet|Cloak|Aurora Staff|Hollow Wand")
+    private val salvageItemsRegex = Regex("Boots|Leggings|Chestplate|Helmet|Cloak|Aurora Staff|Hollow Wand")
 
     private val ultimateEnchants = setOf(
         "Fatal Tempo", "Inferno"
