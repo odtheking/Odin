@@ -53,6 +53,7 @@ class SelectAllSim(
     override fun slotClick(slot: Slot, button: Int) {
         val possibleItems = getPossibleItems(color)
         if (!possibleItems.contains(slot.item.item)) return modMessage("§cThat item is not: ${color.name.uppercase()}!")
+        if (slot.item.hasGlint()) return modMessage("§cAlready selected!")
 
         slot.setSlot(slot.item.apply { set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true) })
 

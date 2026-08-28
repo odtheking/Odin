@@ -14,11 +14,11 @@ class StartsWithHandler(private val letter: String): TerminalHandler(TerminalTyp
     private val clickedOverrides = HashMap<Int, Boolean>()
 
     override fun solve(slots: List<Slot>, updatedIndex: Int): List<Int> {
-        clickedOverrides[updatedIndex] = true
+        clickedOverrides.computeIfPresent(updatedIndex) { _, _ -> true }
         return slots.mapIndexedNotNull { index, slot ->
             if (
                 slot.item.hoverName.string.startsWith(letter, true) &&
-                clickedOverrides[index] == true &&
+                clickedOverrides[index] != true &&
                 (!slot.item.hasGlint() || slot.item.item in enchantOverrides)
             ) index else null
         }

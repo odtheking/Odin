@@ -22,7 +22,7 @@ abstract class TerminalHandler(val type: TerminalTypes) {
     val clickedSlots = ArrayList<Pair<Int, Int>>()
     val timeOpened = System.currentTimeMillis()
     val solution = ArrayList<Int>()
-    var lastSetSlotTime = 0L
+    var lastClickTime = 0L
     var ticksOpened = -1
 
     open fun updateSlot(event: SetSlotEvent) {
@@ -30,7 +30,6 @@ abstract class TerminalHandler(val type: TerminalTypes) {
 
         val index = clickedSlots.indexOfFirst { it.first == event.slotIndex }
         if (index >= 0) clickedSlots.subList(0, index + 1).clear()
-        lastSetSlotTime = System.currentTimeMillis()
 
         solution.clear()
         solution.addAll(solve(event.slots.subList(0, type.windowSize - 9), event.slotIndex))
@@ -51,6 +50,7 @@ abstract class TerminalHandler(val type: TerminalTypes) {
     open fun click(slotIndex: Int, button: Int, simulateClick: Boolean) {
         val screen = mc.screen ?: return
         clickedSlots.add(slotIndex to button)
+        lastClickTime = System.currentTimeMillis()
         if (simulateClick) simulateClick(slotIndex, button)
 
         if (screen is TermSimGUI) {

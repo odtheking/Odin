@@ -50,7 +50,7 @@ object TerminalUtils {
 
         on<TickEvent.End> {
             currentTerm?.let { term ->
-                if (System.currentTimeMillis() - term.lastSetSlotTime >= TerminalSolver.terminalReloadThreshold) {
+                if (term.clickedSlots.isNotEmpty() && System.currentTimeMillis() - term.lastClickTime >= TerminalSolver.terminalReloadThreshold) {
                     term.clickedSlots.clear()
                     (mc.screen as? AbstractContainerScreen<*>)?.menu?.let { SetSlotEvent(0, ItemStack.EMPTY, it.slots, it).postAndCatch() }
                 }
