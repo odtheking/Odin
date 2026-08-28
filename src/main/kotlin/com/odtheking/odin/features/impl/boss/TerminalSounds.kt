@@ -39,7 +39,7 @@ object TerminalSounds : Module(
         }
 
         on<GuiEvent.SlotClick> (EventPriority.HIGHEST) {
-            if (shouldReplaceSounds) playSoundForSlot(slotId, button)
+            if (shouldReplaceSounds) playSoundForSlot(slotIndex, button)
         }
 
         on<GuiEvent.CustomTermGuiClick> (EventPriority.HIGHEST) {

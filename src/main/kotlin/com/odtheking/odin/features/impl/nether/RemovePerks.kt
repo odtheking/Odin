@@ -21,7 +21,7 @@ object RemovePerks : Module(
         }
 
         on<GuiEvent.SlotClick> {
-            if (screen is AbstractContainerScreen<*> && screen.title.string == "Perk Menu" && slotCheck(screen.menu.getSlot(slotId).item.hoverName.string))
+            if (screen is AbstractContainerScreen<*> && screen.title.string == "Perk Menu" && slotCheck(screen.menu.getSlot(slotIndex).item.hoverName.string))
                 cancel()
         }
     }

@@ -41,7 +41,6 @@ open class TermSimGUI(
 ) {
     val blackPane = ItemStack(Items.BLACK_STAINED_GLASS_PANE).apply { set(DataComponents.CUSTOM_NAME, Component.literal("")) }
     protected val guiInventorySlots get() = menu.slots.subList(0, size)
-    private var doesAcceptClick = true
     protected var ping = 0L
 
     open fun create() {
@@ -65,7 +64,6 @@ open class TermSimGUI(
     }
 
     override fun onClose() {
-        doesAcceptClick = true
         super.onClose()
     }
 
@@ -81,11 +79,9 @@ open class TermSimGUI(
 
     private fun delaySlotClick(slot: Slot, button: Int) {
         if (mc.screen == StartGUI) return slotClick(slot, button)
-        if (!doesAcceptClick || slot.container != inv || slot.item.item == Items.BLACK_STAINED_GLASS_PANE) return
+        if (slot.container != inv || slot.item.item == Items.BLACK_STAINED_GLASS_PANE) return
         if (ping <= 0L) return slotClick(slot, button)
-        doesAcceptClick = false
         schedule((ping / 50).toInt().coerceAtLeast(0)) {
-            doesAcceptClick = true
             if (mc.screen == this) slotClick(slot, button)
         }
     }

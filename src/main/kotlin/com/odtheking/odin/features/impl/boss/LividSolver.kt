@@ -25,7 +25,7 @@ object LividSolver : Module(
 ) {
     private val hud by HUD("Invulnerability Timer", "Shows time remaining on Livid's invulnerability.") { example ->
         if (!example && (!DungeonUtils.inBoss || !DungeonUtils.isFloor(5) || invulnTime <= 0)) return@HUD 0 to 0
-        val time = if (example) 390 else invulnTime
+        val time = if (example) 350 else invulnTime
         val color = when {
             time > 260 -> "§a"
             time > 130 -> "§e"
@@ -43,7 +43,7 @@ object LividSolver : Module(
     init {
         on<ChatPacketEvent> {
             if (!DungeonUtils.inDungeons || !DungeonUtils.isFloor(5)) return@on
-            if (value.matches(lividStartRegex)) invulnTime = 390
+            if (value.matches(lividStartRegex)) invulnTime = 350
         }
 
         on<BlockUpdateEvent> {

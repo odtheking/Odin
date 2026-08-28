@@ -11,20 +11,22 @@ import net.minecraft.world.item.Items
 
 class StartsWithHandler(private val letter: String): TerminalHandler(TerminalTypes.STARTS_WITH) {
 
-    private val clickedOverrides = mutableSetOf<Int>()
+    private val clickedOverrides = HashMap<Int, Boolean>()
 
-    override fun solve(slots: List<Slot>, updatedIndex: Int): List<Int> =
-        slots.mapIndexedNotNull { index, slot ->
+    override fun solve(slots: List<Slot>, updatedIndex: Int): List<Int> {
+        clickedOverrides[updatedIndex] = true
+        return slots.mapIndexedNotNull { index, slot ->
             if (
                 slot.item.hoverName.string.startsWith(letter, true) &&
-                index !in clickedOverrides &&
+                clickedOverrides[index] == true &&
                 (!slot.item.hasGlint() || slot.item.item in enchantOverrides)
             ) index else null
         }
+    }
 
     override fun click(slotIndex: Int, button: Int, simulateClick: Boolean) {
         if (canClick(slotIndex, button) && slotIndex !in clickedOverrides)
-            clickedOverrides.add(slotIndex)
+            clickedOverrides[slotIndex] = false
 
         super.click(slotIndex, button, simulateClick)
     }

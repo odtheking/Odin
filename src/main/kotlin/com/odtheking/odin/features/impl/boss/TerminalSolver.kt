@@ -33,12 +33,12 @@ object TerminalSolver : Module(
     private val cancelMelodySolver by BooleanSetting("Stop Melody Solver", false, desc = "Stops rendering the melody solver.").withDependency { solverSettings }
     val melodyTermSize by NumberSetting("Melody Size", 1.5f, 1f, 3f, 0.1f, desc = "The size of the melody terminal GUI.").withDependency { !cancelMelodySolver && solverSettings && renderType == 2 }
     val showNumbers by BooleanSetting("Show Numbers", true, desc = "Shows numbers in the order terminal.").withDependency { solverSettings }
-    private val firstClickProtSettings by DropdownSetting("First Click Protect Dropdown")
-    val firstClickProt by NumberSetting("First Click Protection", 500, 350, 800, 10, unit = "ms", desc = "The amount of time after opening a terminal where clicks are blocked to prevent bans (recommended value is 500 minus your ping).").withDependency { firstClickProtSettings }
+    val hideClicked by BooleanSetting("Hide Clicked", false, desc = "Visually hides your first click before a gui updates instantly to improve perceived response time. Does not affect actual click time.").withDependency { solverSettings }
+    val terminalReloadThreshold by NumberSetting("Resolve timeout", 600, 100, 2000, 10, unit = "ms", desc = "The amount of time before the terminal reloads after a click wasn't registered while using hide clicked.").withDependency { hideClicked && solverSettings }
+    private val firstClickProtSettings by DropdownSetting("First Click Prot Dropdown")
+    val firstClickProt by NumberSetting("First Click Prot", 500, 350, 800, 10, unit = "ms", desc = "The amount of time after opening a terminal where clicks are blocked to prevent bans (recommended value is 500 minus your ping).").withDependency { firstClickProtSettings }
     val shouldFirstClickProtWithTicks by BooleanSetting("Account For Server Lag",  false, desc = "Prevents bans from clicking when the server lags after opening the terminal (disabled in singleplayer").withDependency { firstClickProtSettings }
     val firstClickProtTicks by NumberSetting("Lag Protection Ticks", 8, 7, 16, unit = "ticks", desc = "Each tick = 50ms (recommended value is 8)").withDependency { shouldFirstClickProtWithTicks && firstClickProtSettings }
-    val hideClicked by BooleanSetting("Hide Clicked", false, desc = "Visually hides your first click before a gui updates instantly to improve perceived response time. Does not affect actual click time.").withDependency { solverSettings }
-    val terminalReloadThreshold by NumberSetting("Resolve timeout", 600, 300, 1000, 10, unit = "ms", desc = "The amount of time before the terminal reloads after a click wasn't registered while using hide clicked.").withDependency { hideClicked && solverSettings }
     private val debug by BooleanSetting("Debug", false, desc = "Shows debug terminals.").withDependency { solverSettings }
     private val showColors by DropdownSetting("Color Settings")
     val backgroundColor by ColorSetting("Background", Colors.gray26, true, desc = "Background color of the terminal solver.").withDependency { showColors }
@@ -74,16 +74,16 @@ object TerminalSolver : Module(
         on<GuiEvent.SlotClick> {
             val term = TerminalUtils.currentTerm ?: return@on
 
-            if (blockIncorrectClicks && !term.canClick(slotId, button)) return@on cancel()
+            if (blockIncorrectClicks && !term.canClick(slotIndex, button)) return@on cancel()
 
             if (term.shouldProtect()) return@on cancel()
 
             if (middleClickGUI) {
-                term.click(slotId, if (button == 0) GLFW.GLFW_MOUSE_BUTTON_3 else button, hideClicked && !term.isClicked)
+                term.click(slotIndex, if (button == 0) GLFW.GLFW_MOUSE_BUTTON_3 else button, hideClicked)
                 return@on cancel()
             }
 
-            if (hideClicked && !term.isClicked) term.simulateClick(slotId, button)
+            if (hideClicked) term.simulateClick(slotIndex, button)
         }
 
         on<GuiEvent.Render> {
@@ -130,7 +130,7 @@ object TerminalSolver : Module(
                 "§7Container ID: §f${menu.containerId}",
                 "§7Time Open: §f${System.currentTimeMillis() - term.timeOpened}ms",
                 "§7Ticks Open: §f${term.ticksOpened}",
-                "§7Is Clicked: §f${term.isClicked}",
+                "§7Clicked Slots: §f${term.clickedSlots}",
                 "§7Solution: §f${term.solution.joinToString(", ")}",
             )
 

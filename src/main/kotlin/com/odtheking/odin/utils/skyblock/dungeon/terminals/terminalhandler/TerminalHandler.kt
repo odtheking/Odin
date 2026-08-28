@@ -3,6 +3,7 @@ package com.odtheking.odin.utils.skyblock.dungeon.terminals.terminalhandler
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.events.SetSlotEvent
 import com.odtheking.odin.features.impl.boss.TerminalSimulator
+import com.odtheking.odin.features.impl.boss.TerminalSolver
 import com.odtheking.odin.features.impl.boss.TerminalSolver.firstClickProt
 import com.odtheking.odin.features.impl.boss.TerminalSolver.firstClickProtTicks
 import com.odtheking.odin.features.impl.boss.TerminalSolver.shouldFirstClickProtWithTicks
@@ -16,20 +17,24 @@ import net.minecraft.world.inventory.ContainerInput
 import net.minecraft.world.inventory.Slot
 import net.minecraft.world.item.Items
 import org.lwjgl.glfw.GLFW
-import java.util.concurrent.CopyOnWriteArrayList
 
 abstract class TerminalHandler(val type: TerminalTypes) {
-    val solution: CopyOnWriteArrayList<Int> = CopyOnWriteArrayList()
+    val clickedSlots = ArrayList<Pair<Int, Int>>()
     val timeOpened = System.currentTimeMillis()
-    var isClicked = false
+    val solution = ArrayList<Int>()
+    var lastSetSlotTime = 0L
     var ticksOpened = -1
 
     open fun updateSlot(event: SetSlotEvent) {
-        if (event.slots.isEmpty()) return
-        if (event.slotIndex !in 0 until type.windowSize - 9 || event.itemStack.item == Items.BLACK_STAINED_GLASS_PANE) return
+        if (event.slots.isEmpty() || event.slotIndex !in 0 until type.windowSize - 9 || event.itemStack.item == Items.BLACK_STAINED_GLASS_PANE) return
+
+        val index = clickedSlots.indexOfFirst { it.first == event.slotIndex }
+        if (index >= 0) clickedSlots.subList(0, index + 1).clear()
+        lastSetSlotTime = System.currentTimeMillis()
 
         solution.clear()
         solution.addAll(solve(event.slots.subList(0, type.windowSize - 9), event.slotIndex))
+        if (TerminalSolver.hideClicked) clickedSlots.forEach { (index, button) -> if (canClick(index, button)) simulateClick(index, button) }
     }
 
     protected abstract fun renderSlot(slotIndex: Int): Pair<Color, String?>?
@@ -45,8 +50,8 @@ abstract class TerminalHandler(val type: TerminalTypes) {
 
     open fun click(slotIndex: Int, button: Int, simulateClick: Boolean) {
         val screen = mc.screen ?: return
+        clickedSlots.add(slotIndex to button)
         if (simulateClick) simulateClick(slotIndex, button)
-        isClicked = true
 
         if (screen is TermSimGUI) {
             screen.clickIndex(slotIndex, button)

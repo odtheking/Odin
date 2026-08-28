@@ -19,7 +19,6 @@ import net.minecraft.world.item.ItemStack
 object TerminalUtils {
 
     private val termSolverRegex = Regex("^(.{1,16}) activated a terminal! \\((\\d)/(\\d)\\)$")
-    private var lastClickTime = 0L
 
     @JvmStatic var currentTerm: TerminalHandler? = null
         private set
@@ -47,24 +46,13 @@ object TerminalUtils {
         on<SetSlotEvent> {
             if (menu !== (mc.screen as? AbstractContainerScreen<*>)?.menu) return@on
             currentTerm?.updateSlot(this)
-            currentTerm?.isClicked = false
-        }
-
-        on<GuiEvent.SlotClick> {
-            lastClickTime = System.currentTimeMillis()
-            currentTerm?.isClicked = true
-        }
-
-        on<GuiEvent.SlotClick> (EventPriority.HIGH) {
-            lastClickTime = System.currentTimeMillis()
-            currentTerm?.isClicked = true
         }
 
         on<TickEvent.End> {
-            currentTerm?.let {
-                if (System.currentTimeMillis() - lastClickTime >= TerminalSolver.terminalReloadThreshold && it.isClicked) {
-                    SetSlotEvent(0, ItemStack.EMPTY, emptyList(), mc.player!!.inventoryMenu).postAndCatch()
-                    it.isClicked = false
+            currentTerm?.let { term ->
+                if (System.currentTimeMillis() - term.lastSetSlotTime >= TerminalSolver.terminalReloadThreshold) {
+                    term.clickedSlots.clear()
+                    (mc.screen as? AbstractContainerScreen<*>)?.menu?.let { SetSlotEvent(0, ItemStack.EMPTY, it.slots, it).postAndCatch() }
                 }
             }
         }
