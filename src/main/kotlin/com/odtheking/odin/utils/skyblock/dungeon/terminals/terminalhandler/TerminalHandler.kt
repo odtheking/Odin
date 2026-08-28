@@ -33,7 +33,7 @@ abstract class TerminalHandler(val type: TerminalTypes) {
 
         solution.clear()
         solution.addAll(solve(event.slots.subList(0, type.windowSize - 9), event.slotIndex))
-        if (TerminalSolver.hideClicked) clickedSlots.forEach { (index, button) -> if (canClick(index, button)) simulateClick(index, button) }
+        if (TerminalSolver.hideClicked) clickedSlots.forEach { (index, button) -> simulateClick(index, button) }
     }
 
     protected abstract fun renderSlot(slotIndex: Int): Pair<Color, String?>?

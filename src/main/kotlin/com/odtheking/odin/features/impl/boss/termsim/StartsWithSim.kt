@@ -51,7 +51,6 @@ class StartsWithSim(private val letter: String = listOf("A", "B", "C", "G", "D",
         return ItemStack(matchingItem)
     }
 
-
     private companion object {
         fun ItemStack.hasRealGlint(): Boolean = hasGlint() && item !in enchantOverrides
         val enchantOverrides = BuiltInRegistries.ITEM.filter { it.components().has(DataComponents.ENCHANTMENT_GLINT_OVERRIDE) } + Items.GOLDEN_APPLE
