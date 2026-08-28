@@ -2,7 +2,6 @@ package com.odtheking.odin.utils.skyblock.dungeon.terminals.terminalhandler
 
 import com.odtheking.odin.features.impl.boss.TerminalSolver
 import com.odtheking.odin.utils.Color
-import com.odtheking.odin.utils.equalsOneOf
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalTypes
 import net.minecraft.world.inventory.Slot
 import net.minecraft.world.item.BlockItem
@@ -40,17 +39,13 @@ class RubixHandler : TerminalHandler(TerminalTypes.RUBIX) {
         get() = ((item as? BlockItem)?.block as? StainedGlassPaneBlock)?.color
 
     override fun simulateClick(slotIndex: Int, clickType: Int) {
-        if (slotIndex !in solution) return
-        if (clickType == 1) {
-            if (solution.count { it == slotIndex } >= 4) solution.removeAll { it == slotIndex }
-            else solution.add(slotIndex)
-        } else solution.remove(slotIndex)
+        if (clickType == 1) solution.add(slotIndex)
+        else solution.remove(slotIndex)
     }
 
     override fun canClick(slotIndex: Int, button: Int): Boolean {
-        if (slotIndex !in solution) return false
         val needed = solution.count { it == slotIndex }
-        return !((needed < 3 && button == 1) || (needed.equalsOneOf(3, 4) && button != 1))
+        return !((needed < 3 && button == 1) || (needed > 3 && button != 1))
     }
 
     private fun getRealSize(clicks: List<Int>): Int =
