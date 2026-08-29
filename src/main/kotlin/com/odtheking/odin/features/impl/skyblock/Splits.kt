@@ -8,8 +8,7 @@ import com.odtheking.odin.utils.PersonalBest
 import com.odtheking.odin.utils.formatTime
 import com.odtheking.odin.utils.render.getStringWidth
 import com.odtheking.odin.utils.render.text
-import com.odtheking.odin.utils.skyblock.SplitsManager.currentSplits
-import com.odtheking.odin.utils.skyblock.SplitsManager.getAndUpdateSplitsTimes
+import com.odtheking.odin.utils.skyblock.SplitsManager.currentRows
 import com.odtheking.odin.utils.skyblock.floor7SplitGroup
 import com.odtheking.odin.utils.toFixed
 
@@ -34,19 +33,19 @@ object Splits : Module(
             return@HUD totalWidth to 9 * floor7SplitGroup.size
         }
 
-        val (times, tickTimes, current) = getAndUpdateSplitsTimes(currentSplits)
-        if (currentSplits.splits.isEmpty()) return@HUD 0 to 0
-        val splits = currentSplits.splits.dropLast(1)
+        val rows = currentRows()
+        if (rows.isEmpty()) return@HUD 0 to 0
+        val segments = rows.dropLast(1)
 
-        val labelWidth = splits.maxOfOrNull { getStringWidth(it.name) } ?: 0
+        val labelWidth = segments.maxOfOrNull { getStringWidth(it.name) } ?: 0
         val totalWidth = labelWidth + 4 + timeWidth + 2
 
-        splits.forEachIndexed { index, split ->
-            val time = formatTime(if (index >= times.size) 0 else times[index])
-            text(split.name, 0, index * 9, Colors.WHITE)
+        segments.forEachIndexed { index, row ->
+            if (row.time == 0L && !show0Time) return@forEachIndexed
+            val time = formatTime(row.time)
+            text(row.name, 0, index * 9, Colors.WHITE)
 
-            val displayText = if (showTickTime && index < tickTimes.size) "$time §8(§7${(tickTimes[index] / 20f).toFixed()}§8)"
-            else time
+            val displayText = if (showTickTime) "$time §8(§7${(row.tickTime / 20f).toFixed()}§8)" else time
 
             val timeX = if (fixedWidth) labelWidth + 4 + timeWidth - getStringWidth(displayText)
             else labelWidth + 4
@@ -54,12 +53,12 @@ object Splits : Module(
             text(displayText, timeX, index * 9, Colors.WHITE)
         }
 
-        if (bossEntrySplit && currentSplits.splits.size > 3) {
-            val y = splits.size * 9
+        if (bossEntrySplit && rows.size > 3) {
+            val y = segments.size * 9
             text("§9Boss Entry", 0, y, Colors.WHITE)
 
-            val totalTime = formatTime(times.take(3).sum())
-            val displayText = if (showTickTime) "$totalTime §8(§7${(tickTimes.take(3).sum() / 20f).toFixed()}§8)"
+            val totalTime = formatTime(segments.take(3).sumOf { it.time })
+            val displayText = if (showTickTime) "$totalTime §8(§7${(segments.take(3).sumOf { it.tickTime } / 20f).toFixed()}§8)"
             else totalTime
 
             val timeX = if (fixedWidth) labelWidth + 4 + timeWidth - getStringWidth(displayText)
@@ -68,7 +67,7 @@ object Splits : Module(
             text(displayText, timeX, y, Colors.WHITE)
         }
 
-        totalWidth to 9 * (currentSplits.splits.size + (if (bossEntrySplit) 1 else 0))
+        totalWidth to 9 * (rows.size + (if (bossEntrySplit) 1 else 0))
     }
 
     private val currentSplitHud by HUD("Current Split HUD", "Shows only the current split and its tick time.") { example ->
@@ -79,13 +78,9 @@ object Splits : Module(
             return@HUD w to 9
         }
 
-        val splits = currentSplits.splits
-        if (splits.isEmpty()) return@HUD 0 to 0
+        val current = currentRows().find { it.isCurrent } ?: return@HUD 0 to 0
 
-        val (_, tickTimes, current) = getAndUpdateSplitsTimes(currentSplits)
-        if (current !in splits.indices || current >= tickTimes.size) return@HUD 0 to 0
-
-        val displayText = "§7${(tickTimes[current] / 20f).toFixed()}s"
+        val displayText = "§7${(current.tickTime / 20f).toFixed()}s"
         val w = getStringWidth(displayText) + 2
         text(displayText, -w / 2, 0, Colors.WHITE)
         w to 9
@@ -93,7 +88,7 @@ object Splits : Module(
 
     private val fixedWidth by BooleanSetting("Fixed Width", true, desc = "Always use a fixed HUD width, right-aligning the times.")
     private val bossEntrySplit by BooleanSetting("Boss Entry Split", true, desc = "Split for boss entry.")
-    val sendSplits by BooleanSetting("Send Splits", true, desc = "Send splits to chat.")
+    private val show0Time by BooleanSetting("Show 0 splits", false, desc = "Shows splits which have their time at 0.")
     val showTickTime by BooleanSetting("Show Tick Time", true, desc = "Show tick-based time alongside real time.")
     val splitLocation by SelectorSetting("Split Location", "Both", listOf("Both", "Dungeons Only", "Kuudra Only"), desc = "Which areas to show splits in.")
 

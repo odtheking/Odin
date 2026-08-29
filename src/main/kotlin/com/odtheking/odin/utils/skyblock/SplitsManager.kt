@@ -13,71 +13,16 @@ import com.odtheking.odin.utils.skyblock.dungeon.DungeonListener
 
 data class Split(val regex: Regex, val name: String, var time: Long = 0L, var ticks: Long = 0L)
 data class SplitsGroup(val splits: List<Split>, val personalBest: PersonalBest?)
+data class SplitRow(val name: String, val time: Long, val tickTime: Long, val isCurrent: Boolean)
 
 object SplitsManager {
 
-    var currentSplits: SplitsGroup = SplitsGroup(emptyList(), null)
+    private var currentSplits: SplitsGroup = SplitsGroup(emptyList(), null)
     private var tickCounter: Long = 0L
 
     init {
         on<ChatPacketEvent> {
-            if (value == "Starting in 1 second.") {
-                tickCounter = 0L
-                currentSplits = when (LocationUtils.currentArea) {
-                    Island.Dungeon -> {
-                        if (Splits.splitLocation == 2) return@on
-                        val floor = DungeonListener.floor ?: return@on
-
-                        with(dungeonSplits[floor.floorNumber].toMutableList()) {
-                            addAll(0, listOf(
-                                Split(MORT_REGEX, "§2Blood Open"),
-                                Split(BLOOD_OPEN_REGEX, "§bBlood Clear"),
-                                Split(Regex("\\[BOSS] The Watcher: You have proven yourself\\. You may pass\\."), "§dPortal Entry")
-                            )
-                            )
-                            add(Split(Regex("^\\s*☠ Defeated (.+) in 0?([\\dhms ]+?)\\s*(\\(NEW RECORD!\\))?$"), "§1Total"))
-                            SplitsGroup(map { it.copy(time = 0L, ticks = 0L) }, Splits.dungeonPBsList[floor.ordinal])
-                        }
-                    }
-
-                    Island.Kuudra -> {
-                        if (Splits.splitLocation == 1) return@on
-                        when (KuudraUtils.kuudraTier) {
-                            5 -> SplitsGroup(kuudraT5SplitsGroup.map { it.copy(time = 0L, ticks = 0L) }, Splits.kuudraT5PBs)
-                            4 -> SplitsGroup(kuudraSplitsGroup.map { it.copy(time = 0L, ticks = 0L) }, Splits.kuudraT4PBs)
-                            3 -> SplitsGroup(kuudraSplitsGroup.map { it.copy(time = 0L, ticks = 0L) }, Splits.kuudraT3PBs)
-                            2 -> SplitsGroup(kuudraSplitsGroup.map { it.copy(time = 0L, ticks = 0L) }, Splits.kuudraT2PBs)
-                            1 -> SplitsGroup(kuudraSplitsGroup.map { it.copy(time = 0L, ticks = 0L) }, Splits.kuudraT1PBs)
-                            else -> SplitsGroup(emptyList(), null)
-                        }
-                    }
-
-                    else -> SplitsGroup(emptyList(), null)
-                }
-            } else {
-                val currentSplit = currentSplits.splits.find { it.regex.matches(value) } ?: return@on
-                if (currentSplit.time != 0L) return@on
-                currentSplit.time = System.currentTimeMillis()
-                currentSplit.ticks = tickCounter
-
-                val index = currentSplits.splits.indexOf(currentSplit).takeIf { it != 0 } ?: return@on
-                val currentSplitTime = (currentSplit.time - currentSplits.splits[index - 1].time) / 1000f
-
-                if (index == currentSplits.splits.size - 1) {
-                    val (times, _, _) = getAndUpdateSplitsTimes(currentSplits)
-                    val capturedSplits = currentSplits.splits.toList()
-                    val capturedPB = currentSplits.personalBest
-                    schedule(10) {
-                        if (capturedSplits.isEmpty()) return@schedule
-                        capturedPB?.time(capturedSplits[index - 1].name, currentSplitTime, "s§7!", "§6${capturedSplits[index - 1].name} §7took §6", Splits.enabled)
-                        capturedPB?.time(capturedSplits[index].name, times.last() / 1000f, "s§7!", "§6Total time §7took §6", Splits.enabled)
-                        times.forEachIndexed { i, it ->
-                            val name = if (i == capturedSplits.size - 1) "Total" else capturedSplits[i].name
-                            if (Splits.sendSplits && Splits.enabled) modMessage("§6$name §7took §6${formatTime((it))}§7.")
-                        }
-                    }
-                } else currentSplits.personalBest?.time(currentSplits.splits[index - 1].name, currentSplitTime, "s§7!", "§6${currentSplits.splits[index - 1].name} §7took §6", Splits.enabled)
-            }
+            if (value == "Starting in 1 second.") startRun() else onSplitMessage(value)
         }
 
         on<TickEvent.Server> {
@@ -85,34 +30,106 @@ object SplitsManager {
         }
 
         on<LevelEvent.Load> {
-            currentSplits = SplitsGroup(mutableListOf(), null)
+            currentSplits = SplitsGroup(emptyList(), null)
             tickCounter = 0L
         }
     }
 
-    fun getAndUpdateSplitsTimes(currentSplits: SplitsGroup): Triple<List<Long>, List<Long>, Int> {
-        if (currentSplits.splits.isEmpty() || currentSplits.splits[0].time == 0L)
-            return Triple(List(currentSplits.splits.size) { 0L }, List(currentSplits.splits.size) { 0L }, -1)
+    private fun startRun() {
+        tickCounter = 0L
+        currentSplits = when (LocationUtils.currentArea) {
+            Island.Dungeon -> buildDungeonSplits() ?: return
+            Island.Kuudra -> buildKuudraSplits() ?: return
+            else -> SplitsGroup(emptyList(), null)
+        }
+    }
 
-        val latestTime = if (currentSplits.splits.last().time == 0L) System.currentTimeMillis() else currentSplits.splits.last().time
-        val latestTick = if (currentSplits.splits.last().ticks == 0L) tickCounter else currentSplits.splits.last().ticks
+    private fun buildDungeonSplits(): SplitsGroup? {
+        if (Splits.splitLocation == 2) return null
+        val floor = DungeonListener.floor ?: return null
 
-        val times = MutableList(currentSplits.splits.size) { 0L }.apply { this[size - 1] = latestTime - currentSplits.splits.first().time }
-        val tickTimes = MutableList(currentSplits.splits.size) { 0L }.apply { this[size - 1] = latestTick - currentSplits.splits.first().ticks }
+        val splits = dungeonSplits[floor.floorNumber].toMutableList().apply {
+            addAll(0, listOf(
+                Split(MORT_REGEX, "§2Blood Open"),
+                Split(BLOOD_OPEN_REGEX, "§bBlood Clear"),
+                Split(PORTAL_ENTRY_REGEX, "§dPortal Entry"),
+            ))
+            add(Split(DUNGEON_CLEARED_REGEX, "§1Total"))
+        }
+        return SplitsGroup(splits.map { it.copy() }, Splits.dungeonPBsList[floor.ordinal])
+    }
 
-        var current = currentSplits.splits.size
-        for (i in 0 until currentSplits.splits.size - 1) {
-            if (currentSplits.splits[i + 1].time != 0L) {
-                times[i] = currentSplits.splits[i + 1].time - currentSplits.splits[i].time
-                tickTimes[i] = currentSplits.splits[i + 1].ticks - currentSplits.splits[i].ticks
+    private fun buildKuudraSplits(): SplitsGroup? {
+        if (Splits.splitLocation == 1) return null
+        return when (KuudraUtils.kuudraTier) {
+            5 -> SplitsGroup(kuudraT5SplitsGroup.map { it.copy() }, Splits.kuudraT5PBs)
+            4 -> SplitsGroup(kuudraSplitsGroup.map { it.copy() }, Splits.kuudraT4PBs)
+            3 -> SplitsGroup(kuudraSplitsGroup.map { it.copy() }, Splits.kuudraT3PBs)
+            2 -> SplitsGroup(kuudraSplitsGroup.map { it.copy() }, Splits.kuudraT2PBs)
+            1 -> SplitsGroup(kuudraSplitsGroup.map { it.copy() }, Splits.kuudraT1PBs)
+            else -> SplitsGroup(emptyList(), null)
+        }
+    }
+
+    private fun onSplitMessage(message: String) {
+        val splits = currentSplits.splits
+        val split = splits.find { it.regex.matches(message) } ?: return
+        if (split.time != 0L) return
+
+        split.time = System.currentTimeMillis()
+        split.ticks = tickCounter
+
+        val index = splits.indexOf(split)
+        if (index == 0) return
+
+        val previous = splits[index - 1]
+        val segmentTime = (split.time - previous.time) / 1000f
+
+        if (index == splits.lastIndex) finishRun(index, segmentTime)
+        else currentSplits.personalBest?.time(previous.name, segmentTime, "s§7!", "§6${previous.name} §7took §6", Splits.enabled)
+    }
+
+    private fun finishRun(totalIndex: Int, lastSegmentTime: Float) {
+        val rows = currentRows()
+        val splits = currentSplits.splits
+        val personalBest = currentSplits.personalBest
+
+        schedule(10) {
+            if (rows.isEmpty()) return@schedule
+            personalBest?.time(splits[totalIndex - 1].name, lastSegmentTime, "s§7!", "§6${splits[totalIndex - 1].name} §7took §6", Splits.enabled)
+            personalBest?.time(splits[totalIndex].name, rows.last().time / 1000f, "s§7!", "§6Total time §7took §6", Splits.enabled)
+            rows.forEachIndexed { i, row ->
+                if (Splits.enabled) modMessage("§6${if (i == rows.lastIndex) "Total" else row.name} §7took §6${formatTime(row.time)}§7.")
+            }
+        }
+    }
+
+    fun currentRows(): List<SplitRow> {
+        val splits = currentSplits.splits
+        if (splits.isEmpty()) return emptyList()
+        if (splits[0].time == 0L) return splits.map { SplitRow(it.name, 0L, 0L, isCurrent = false) }
+
+        val last = splits.last()
+        val latestTime = if (last.time != 0L) last.time else System.currentTimeMillis()
+        val latestTicks = if (last.ticks != 0L) last.ticks else tickCounter
+
+        val times = LongArray(splits.size).apply { this[splits.lastIndex] = latestTime - splits.first().time }
+        val ticks = LongArray(splits.size).apply { this[splits.lastIndex] = latestTicks - splits.first().ticks }
+
+        var currentIndex = -1
+        for (i in 0 until splits.lastIndex) {
+            val next = splits[i + 1]
+            if (next.time != 0L) {
+                times[i] = next.time - splits[i].time
+                ticks[i] = next.ticks - splits[i].ticks
             } else {
-                current = i
-                times[i] = latestTime - currentSplits.splits[i].time
-                tickTimes[i] = latestTick - currentSplits.splits[i].ticks
+                times[i] = latestTime - splits[i].time
+                ticks[i] = latestTicks - splits[i].ticks
+                currentIndex = i
                 break
             }
         }
-        return Triple(times, tickTimes, current)
+        return splits.indices.map { i -> SplitRow(splits[i].name, times[i], ticks[i], isCurrent = i == currentIndex) }
     }
 }
 
@@ -193,6 +210,9 @@ private val dungeonSplits = listOf(
     floor6SplitGroup,
     floor7SplitGroup,
 )
+
+private val PORTAL_ENTRY_REGEX = Regex("\\[BOSS] The Watcher: You have proven yourself\\. You may pass\\.")
+private val DUNGEON_CLEARED_REGEX = Regex("^\\s*☠ Defeated (.+) in 0?([\\dhms ]+?)\\s*(\\(NEW RECORD!\\))?$")
 
 // https://regex101.com/r/BXKhOI/1
 private val BLOOD_OPEN_REGEX = Regex("^\\[BOSS] The Watcher: (Congratulations, you made it through the Entrance\\.|Ah, you've finally arrived\\.|Ah, we meet again\\.\\.\\.|So you made it this far\\.\\.\\. interesting\\.|You've managed to scratch and claw your way here, eh\\?|I'm starting to get tired of seeing you around here\\.\\.\\.|Oh\\.\\. hello\\?|Things feel a little more roomy now, eh\\?)$|^The BLOOD DOOR has been opened!$")
