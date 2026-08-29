@@ -3,9 +3,9 @@ package com.odtheking.odin.features.impl.dungeon
 import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.*
 import com.odtheking.odin.events.ChatPacketEvent
-import com.odtheking.odin.events.GuiEvent
 import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.ScreenEvent
+import com.odtheking.odin.events.SetSlotEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.*
@@ -172,11 +172,11 @@ object LeapMenu : Module(
                 leapedRegex.find(value)?.groupValues?.get(1)?.let { sendCommand("pc Leaped to ${it}!") }
         }
 
-        on<GuiEvent.SlotUpdate> {
+        on<SetSlotEvent> {
             currentLeapScreen()?.let {
-                if (packet.item.isEmpty || packet.item.item != Items.PLAYER_HEAD) return@on
-                val (name) = playerNameRegex.find(packet.item.hoverName.string)?.destructured ?: return@on
-                leapIndex[name] = packet.slot
+                if (itemStack.isEmpty || itemStack.item != Items.PLAYER_HEAD) return@on
+                val (name) = playerNameRegex.find(itemStack.hoverName.string)?.destructured ?: return@on
+                leapIndex[name] = slotIndex
             }
         }
 
