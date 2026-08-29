@@ -25,7 +25,7 @@ object ArrowAlign : Module(
     name = "Arrow Align",
     description = "Shows the solution for the Arrow Align device."
 ) {
-    private val blockWrong by BooleanSetting("Block Wrong Clicks", false, desc = "Blocks wrong clicks, shift will override this.")
+    private val blockWrong by BooleanSetting("Block Wrong Clicks", true, desc = "Blocks wrong clicks, shift will override this.")
     private val preventKey by KeybindSetting("Prevent Blocking", GLFW.GLFW_KEY_LEFT_SHIFT, desc = "While holding this key, wrong clicks won't be blocked, even if you aren't sneaking.").withDependency { blockWrong }
     private val invertKey by BooleanSetting("Invert Key", false, desc = "Inverts the behavior of the prevent key. Wrong clicks will be blocked while holding the prevent key, and allowed otherwise.").withDependency { blockWrong }
 
