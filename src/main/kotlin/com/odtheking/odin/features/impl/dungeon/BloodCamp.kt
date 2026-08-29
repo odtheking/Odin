@@ -160,7 +160,7 @@ object BloodCamp : Module(
 
         on<RenderBossBarEvent> {
             if (!watcherBar || !DungeonUtils.inClear || bossBar.name.string != "§c§lThe Watcher") return@on
-            val amount = 12 + (DungeonUtils.floor?.floorNumber ?: 0)
+            val amount = 8 + (DungeonUtils.floor?.floorNumber ?: 0)
             bossBar.name = Component.literal(bossBar.progress.takeIf { it >= 0.05 }?.let { "${bossBar.name.string} ${(amount * it).roundToInt()}/$amount" } ?: return@on)
         }
 
