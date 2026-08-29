@@ -41,11 +41,12 @@ class RubixHandler : TerminalHandler(TerminalTypes.RUBIX) {
     override fun simulateClick(slotIndex: Int, clickType: Int) {
         if (clickType == 1) solution.add(slotIndex)
         else solution.remove(slotIndex)
+        if (solution.count { it == slotIndex } >= 5) solution.removeAll { it == slotIndex }
     }
 
     override fun canClick(slotIndex: Int, button: Int): Boolean {
         val needed = solution.count { it == slotIndex }
-        return !((needed < 3 && button == 1) || (needed > 3 && button != 1))
+        return (needed >= 3 && button == 1) || (needed in 1..<3 && button != 1)
     }
 
     private fun getRealSize(clicks: List<Int>): Int =
