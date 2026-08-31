@@ -43,6 +43,7 @@ object ClickGUIModule : Module(
 
     private val action by ActionSetting("Open HUD Editor", desc = "Opens the HUD editor when clicked.") { mc.setScreen(HudManager) }
     val devMessage by BooleanSetting("Developer Message", false, desc = "Sends development related messages to the chat.")
+    val dungeonCoresLogging by BooleanSetting("Core loggings", false, desc = "")
 
     private var firstJoin by BooleanSetting("First join", true, "").hide()
 
