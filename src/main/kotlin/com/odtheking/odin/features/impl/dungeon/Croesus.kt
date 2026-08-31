@@ -8,6 +8,7 @@ import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.NumberSetting
 import com.odtheking.odin.events.ChatMessageEvent
 import com.odtheking.odin.events.GuiEvent
+import com.odtheking.odin.events.ScreenEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.features.Module
@@ -22,8 +23,6 @@ import kotlinx.coroutines.launch
 import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 import net.minecraft.network.chat.Component
-import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket
-import net.minecraft.network.protocol.game.ClientboundOpenScreenPacket
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.Items
@@ -138,9 +137,9 @@ object Croesus : Module(
             }
         }
 
-        onReceive<ClientboundContainerSetSlotPacket> {
-            val screenTitle = mc.screen?.title?.string ?: return@onReceive
-            val items = (mc.screen as? AbstractContainerScreen<*>)?.menu?.items ?: return@onReceive
+        on<GuiEvent.SlotUpdate> {
+            val screenTitle = mc.screen?.title?.string ?: return@on
+            val items = (mc.screen as? AbstractContainerScreen<*>)?.menu?.items ?: return@on
 
             when {
                 screenTitle.matches(chestNameRegex) -> handleChestContents(items)
@@ -148,7 +147,7 @@ object Croesus : Module(
             }
         }
 
-        onReceive<ClientboundOpenScreenPacket> {
+        on<ScreenEvent.Open> {
             mostProfitableSlots = emptySet()
             currentChestProfit = null
             chestData = emptyList()

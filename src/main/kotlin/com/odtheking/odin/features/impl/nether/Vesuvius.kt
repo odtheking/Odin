@@ -3,8 +3,8 @@ package com.odtheking.odin.features.impl.nether
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.NumberSetting
 import com.odtheking.odin.events.GuiEvent
+import com.odtheking.odin.events.ScreenEvent
 import com.odtheking.odin.events.core.on
-import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.features.impl.dungeon.Croesus.cachedPrices
 import com.odtheking.odin.utils.*
@@ -14,7 +14,6 @@ import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.Style
 import net.minecraft.network.chat.TextColor
-import net.minecraft.network.protocol.game.ClientboundOpenScreenPacket
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.Items
 import java.util.*
@@ -84,7 +83,7 @@ object Vesuvius : Module(
             if (packet.slot.equalsOneOf(13, 14) && item.item == Items.PLAYER_HEAD) handleKuudraChest(item)
         }
 
-        onReceive<ClientboundOpenScreenPacket> {
+        on<ScreenEvent.Open> {
             currentChest = null
         }
     }
