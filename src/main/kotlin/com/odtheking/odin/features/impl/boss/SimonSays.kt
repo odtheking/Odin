@@ -115,9 +115,9 @@ object SimonSays : Module(
             }
 
             if (pos.x == 110 && pos.y in 120..123 && pos.z in 92..95) {
-                if (announceProgress && clickInOrder.isNotEmpty()) {
-                    if (pos == clickInOrder[clickInOrder.size - 1]) sendCommand("pc SS ${clickInOrder.size}/5")
-                }
+                if (announceProgress && clickInOrder.isNotEmpty() && pos == clickInOrder[clickInOrder.size - 1])
+                    sendCommand("pc SS ${clickInOrder.size}/4")
+
                 if (blockWrong && mc.player?.isShiftKeyDown == false && pos.east() != clickInOrder.getOrNull(clickNeeded)) {
                     if (customClickSounds) playSoundSettings(blockedClick())
                     cancel()

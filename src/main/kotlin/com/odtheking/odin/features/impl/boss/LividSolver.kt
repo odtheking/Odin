@@ -49,7 +49,6 @@ object LividSolver : Module(
         on<BlockUpdateEvent> {
             if (!DungeonUtils.inBoss || !DungeonUtils.isFloor(5) || pos != woolLocation) return@on
             currentLivid = Livid.entries.find { livid -> livid.wool.defaultBlockState() == updated.block.defaultBlockState() } ?: return@on
-            modMessage("Found Livid: §${currentLivid.colorCode}${currentLivid.entityName}")
         }
 
         onReceive<ClientboundSetEntityDataPacket> {
@@ -58,7 +57,7 @@ object LividSolver : Module(
         }
 
         on<RenderEvent.Extract> {
-            if (!DungeonUtils.inBoss || !DungeonUtils.isFloor(5) || mc.player?.getEffect(MobEffects.BLINDNESS) != null) return@on
+            if (!DungeonUtils.inBoss || !DungeonUtils.isFloor(5) || mc.player?.getEffect(MobEffects.BLINDNESS) != null || invulnTime > 80) return@on
             currentLivid.entity?.let { entity ->
                 drawStyledBox(entity.renderBoundingBox, highlightColor, 2, true)
             }
@@ -66,7 +65,8 @@ object LividSolver : Module(
 
         on<TickEvent.Server> {
             if (!DungeonUtils.inBoss || !DungeonUtils.isFloor(5)) return@on
-            if (invulnTime > 0) invulnTime--
+            if (invulnTime >= 0) invulnTime--
+            if (invulnTime == 80) modMessage("Found Livid: §${currentLivid.colorCode}${currentLivid.entityName}")
         }
 
         on<LevelEvent.Load> {
