@@ -2,7 +2,7 @@ package com.odtheking.odin.features.impl.dungeon
 
 import com.odtheking.odin.OdinMod.scope
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
-import com.odtheking.odin.events.ChatPacketEvent
+import com.odtheking.odin.events.ChatMessageEvent
 import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
@@ -32,7 +32,7 @@ object SecretsCounter : Module(
             snapshotDone = false
         }
 
-        on<ChatPacketEvent> {
+        on<ChatMessageEvent> {
             if (dungeonEndRegex.containsMatchIn(value)) schedule(30) { fetchAndDisplay() }
 
             if (!dungeonStartRegex.containsMatchIn(value) || !secretsEnabled || snapshotDone) return@on

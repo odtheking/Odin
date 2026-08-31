@@ -1,7 +1,7 @@
 package com.odtheking.odin.utils.skyblock
 
 import com.odtheking.odin.OdinMod.mc
-import com.odtheking.odin.events.ChatPacketEvent
+import com.odtheking.odin.events.ChatMessageEvent
 import com.odtheking.odin.events.PartyEvent
 import com.odtheking.odin.events.core.on
 
@@ -45,7 +45,7 @@ object PartyUtils {
         private set
 
     init {
-        on<ChatPacketEvent> {
+        on<ChatMessageEvent> {
             joinedOther.find(value)?.let { return@on addMember(it.groupValues[2]) }
 
             joinedSelf.find(value)?.let {

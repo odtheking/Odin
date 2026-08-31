@@ -3,7 +3,7 @@ package com.odtheking.odin.features.impl.nether
 import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.NumberSetting
-import com.odtheking.odin.events.ChatPacketEvent
+import com.odtheking.odin.events.ChatMessageEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.handlers.schedule
@@ -22,7 +22,7 @@ object Misc : Module(
     private val endStoneRegex = Regex("^Used Extreme Focus! \\((\\d+) Mana\\)$")
 
     init {
-        on<ChatPacketEvent> {
+        on<ChatMessageEvent> {
             if (manaDrain) endStoneRegex.find(value)?.groupValues?.getOrNull(1)?.let { mana ->
                 val players =
                     mc.level?.players()?.filter { it.distanceToSqr(mc.player ?: return@on) < 49 && it.uuid.version() == 4 } ?: return@on

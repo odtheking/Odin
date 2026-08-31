@@ -1,7 +1,7 @@
 package com.odtheking.odin.utils.skyblock.dungeon.terminals
 
 import com.odtheking.odin.OdinMod.mc
-import com.odtheking.odin.events.ChatPacketEvent
+import com.odtheking.odin.events.ChatMessageEvent
 import com.odtheking.odin.events.GuiEvent
 import com.odtheking.odin.events.TerminalEvent
 import com.odtheking.odin.events.TickEvent
@@ -68,7 +68,7 @@ object TerminalUtils {
             }
         }
 
-        on<ChatPacketEvent> {
+        on<ChatMessageEvent> {
             termSolverRegex.find(value)?.let { message ->
                 if (message.groupValues[1] == mc.player?.name?.string) lastTermOpened?.let {
                     TerminalEvent.Solve(it).postAndCatch()

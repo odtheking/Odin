@@ -6,7 +6,7 @@ import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.ActionSetting
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.NumberSetting
-import com.odtheking.odin.events.ChatPacketEvent
+import com.odtheking.odin.events.ChatMessageEvent
 import com.odtheking.odin.events.GuiEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
@@ -164,7 +164,7 @@ object Croesus : Module(
             }
         }
 
-        on<ChatPacketEvent> {
+        on<ChatMessageEvent> {
             if (DungeonUtils.inBoss && value.matches(extraStatsRegex)) {
                 currentChestCount++
                 if (currentChestCount > chestWarning) alert("§cChest limit reached!")

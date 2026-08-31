@@ -1,13 +1,13 @@
 package com.odtheking.odin.utils
 
-import com.odtheking.odin.events.ChatPacketEvent
+import com.odtheking.odin.events.ChatMessageEvent
 import net.minecraft.network.chat.Component
 import java.util.concurrent.ConcurrentLinkedQueue
 
 object ChatManager {
     private val cancelQueue = ConcurrentLinkedQueue<Component>()
 
-    fun ChatPacketEvent.hideMessage() {
+    fun ChatMessageEvent.hideMessage() {
         cancelQueue.add(component)
     }
 

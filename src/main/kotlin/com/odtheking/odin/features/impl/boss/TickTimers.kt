@@ -3,7 +3,7 @@ package com.odtheking.odin.features.impl.boss
 import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.HudElement
-import com.odtheking.odin.events.ChatPacketEvent
+import com.odtheking.odin.events.ChatMessageEvent
 import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.core.on
@@ -101,7 +101,7 @@ object TickTimers : Module(
     }
 
     init {
-        on<ChatPacketEvent> {
+        on<ChatMessageEvent> {
             when {
                 value.matches(MORT_REGEX) -> secretsCounter = 0
                 value.matches(necronRegex) -> necronTime = 60

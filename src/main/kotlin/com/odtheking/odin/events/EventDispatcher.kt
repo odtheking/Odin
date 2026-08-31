@@ -3,7 +3,6 @@ package com.odtheking.odin.events
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.events.core.onSend
-import com.odtheking.odin.utils.ChatManager
 import com.odtheking.odin.utils.containsOneOf
 import com.odtheking.odin.utils.equalsOneOf
 import com.odtheking.odin.utils.noControlCodes
@@ -17,7 +16,10 @@ import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderEvents
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents
 import net.fabricmc.fabric.api.client.screen.v1.ScreenKeyboardEvents
 import net.fabricmc.fabric.api.client.screen.v1.ScreenMouseEvents
-import net.minecraft.network.protocol.game.*
+import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket
+import net.minecraft.network.protocol.game.ClientboundSoundPacket
+import net.minecraft.network.protocol.game.ClientboundTakeItemEntityPacket
+import net.minecraft.network.protocol.game.ServerboundUseItemOnPacket
 import net.minecraft.sounds.SoundEvents
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.entity.item.ItemEntity
@@ -54,9 +56,9 @@ object EventDispatcher {
             }
         }
 
-        ClientReceiveMessageEvents.ALLOW_GAME.register { text, overlay ->
+        ClientReceiveMessageEvents.ALLOW_GAME.register { message, overlay ->
             if (overlay) return@register true
-            !ChatManager.shouldCancelMessage(text)
+            !ChatMessageEvent(message.string.noControlCodes, message).postAndCatch()
         }
 
         onReceive<ClientboundTakeItemEntityPacket> {
@@ -90,10 +92,6 @@ object EventDispatcher {
             }
 
             if (isSecret(blockState, hitResult.blockPos)) SecretPickupEvent.Interact(hitResult.blockPos, blockState).postAndCatch()
-        }
-
-        onReceive<ClientboundSystemChatPacket> {
-            if (!overlay) ChatPacketEvent(content.string.noControlCodes, content).postAndCatch()
         }
     }
 

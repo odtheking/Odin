@@ -150,7 +150,7 @@ object PuzzleSolvers : Module(
             if (tpMaze) TPMazeSolver.tpPacket(this)
         }
 
-        on<ChatPacketEvent> {
+        on<ChatMessageEvent> {
             if (!DungeonUtils.inClear) return@on
             if (draftPrompt && isInPuzzle) failRegex.find(value)?.destructured?.let {
                 modMessage("§7Click §ehere §7to fetch architect's draft", chatStyle = Style.EMPTY

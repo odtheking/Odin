@@ -3,7 +3,7 @@ package com.odtheking.odin.features.impl.skyblock
 import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.DropdownSetting
-import com.odtheking.odin.events.ChatPacketEvent
+import com.odtheking.odin.events.ChatMessageEvent
 import com.odtheking.odin.events.MessageSentEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
@@ -62,7 +62,7 @@ object ChatCommands : Module(
     private val dtReason = mutableListOf<Pair<String, String>>()
 
     init {
-        on<ChatPacketEvent> {
+        on<ChatMessageEvent> {
             if (value.matches(endRunRegex)) {
                 if (!dt || dtReason.isEmpty()) return@on
                 schedule(30) {

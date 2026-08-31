@@ -2,7 +2,7 @@ package com.odtheking.odin.features.impl.skyblock
 
 import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
-import com.odtheking.odin.events.ChatPacketEvent
+import com.odtheking.odin.events.ChatMessageEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.features.Module
@@ -22,7 +22,7 @@ object Ragnarock : Module(
     private val cancelRegex = Regex("Ragnarock was cancelled due to (?:being hit|taking damage)!")
 
     init {
-        on<ChatPacketEvent> {
+        on<ChatMessageEvent> {
             if (cancelAlert && value.matches(cancelRegex)) alert("§cRagnarock Cancelled!")
         }
 

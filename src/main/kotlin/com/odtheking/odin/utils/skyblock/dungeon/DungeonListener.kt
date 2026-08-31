@@ -102,7 +102,7 @@ object DungeonListener {
             }
         }
 
-        on<ChatPacketEvent> {
+        on<ChatMessageEvent> {
             if (expectingBloodRegex.matches(value)) expectingBloodUpdate = true
             doorOpenRegex.find(value)?.let { dungeonStats.doorOpener = it.groupValues[1] }
             deathRegex.find(value)?.let { match ->
