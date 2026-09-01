@@ -67,7 +67,7 @@ object WardrobeKeybinds : Module(
             }
         }
         if (disallowUnequippingEquipped && screen.menu.slots[index].item.isEmpty) return false
-        mc.player?.clickSlot(screen.menu.containerId, index)
+        mc.player?.clickSlot(index)
         return true
     }
 }

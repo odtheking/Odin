@@ -198,7 +198,7 @@ object LeapMenu : Module(
         val index = screenHandler.menu.slots.subList(11, 16).firstOrNull {
             it.item.hoverName.string.substringAfter(' ').equals(name.noControlCodes, true)
         }?.index ?: return
-        mc.player?.clickSlot(screenHandler.menu.containerId, index)
+        mc.player?.clickSlot(index)
         modMessage("Teleporting to $name.")
     }
 

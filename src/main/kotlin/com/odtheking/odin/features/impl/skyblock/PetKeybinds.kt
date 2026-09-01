@@ -74,7 +74,7 @@ object PetKeybinds : Module(
             else if (nounequip) return false
         }
 
-        mc.player?.clickSlot(screen.menu.containerId, index)
+        mc.player?.clickSlot(index)
         return true
     }
 }
