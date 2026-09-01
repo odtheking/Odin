@@ -171,6 +171,13 @@ object MelodyMessage : Module(
 
     private val width by lazy { getStringWidth("§d■") }
 
+    private fun melodyLabel(data: MelodyData, playerName: String): String? = when (showPlayer) {
+        1 -> data.dungeonClass.toString()
+        2 -> playerName
+        3 -> "$playerName (${data.dungeonClass})"
+        else -> null
+    }
+
     private fun GuiGraphicsExtractor.drawMelody(data: MelodyData, index: Int, playerName: String) {
         val y = width * 2 * index
 
@@ -179,12 +186,7 @@ object MelodyMessage : Module(
             textDim("${if (data.pane == it) "§a" else "§f"}■", width * it, y + width)
         }
 
-        val label = when (showPlayer) {
-            1 -> data.dungeonClass
-            2 -> playerName
-            3 -> "$playerName (${data.dungeonClass})"
-            else -> return
-        }
+        val label = melodyLabel(data, playerName) ?: return
 
         data.clay?.let { textDim("$it $label", width * 5 + 2, y + width / 2) }
     }

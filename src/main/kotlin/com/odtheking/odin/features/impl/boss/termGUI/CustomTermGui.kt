@@ -109,7 +109,7 @@ abstract class TermGui {
             val btn = if (button == 0) GLFW.GLFW_MOUSE_BUTTON_3 else button
             if (term.shouldProtect()) return@let
             if (!GuiEvent.CustomTermGuiClick(screen, slotIndex, btn).postAndCatch() && term.canClick(slotIndex, btn))
-                term.click(slotIndex, btn, hideClicked && !term.isClicked)
+                term.click(slotIndex, btn, hideClicked)
         }
     }
 
