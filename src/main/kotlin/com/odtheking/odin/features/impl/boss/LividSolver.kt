@@ -57,7 +57,7 @@ object LividSolver : Module(
         }
 
         on<RenderEvent.Extract> {
-            if (!DungeonUtils.inBoss || !DungeonUtils.isFloor(5) || mc.player?.getEffect(MobEffects.BLINDNESS) != null || invulnTime > 80) return@on
+            if (!DungeonUtils.inBoss || !DungeonUtils.isFloor(5) || mc.player?.getEffect(MobEffects.BLINDNESS) != null || invulnTime > 50) return@on
             currentLivid.entity?.let { entity ->
                 drawStyledBox(entity.renderBoundingBox, highlightColor, 2, true)
             }
@@ -66,7 +66,7 @@ object LividSolver : Module(
         on<TickEvent.Server> {
             if (!DungeonUtils.inBoss || !DungeonUtils.isFloor(5)) return@on
             if (invulnTime >= 0) invulnTime--
-            if (invulnTime == 80) modMessage("Found Livid: §${currentLivid.colorCode}${currentLivid.entityName}")
+            if (invulnTime == 50) modMessage("§7Found Livid: §${currentLivid.colorCode}${currentLivid.entityName}")
         }
 
         on<LevelEvent.Load> {
