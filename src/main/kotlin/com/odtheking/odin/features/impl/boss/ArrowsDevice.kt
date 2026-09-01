@@ -5,7 +5,7 @@ import com.odtheking.odin.clickgui.settings.impl.ActionSetting
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.ColorSetting
 import com.odtheking.odin.events.BlockUpdateEvent
-import com.odtheking.odin.events.ChatPacketEvent
+import com.odtheking.odin.events.ChatMessageEvent
 import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.RenderEvent
 import com.odtheking.odin.events.core.on
@@ -102,7 +102,7 @@ object ArrowsDevice : Module(
             optimalAimPositions = emptyList()
         }
 
-        on<ChatPacketEvent> {
+        on<ChatMessageEvent> {
             if (DungeonUtils.getF7Phase() != M7Phases.P3 || !isPlayerInRoom || isDeviceComplete) return@on
             if (deviceCompleteRegex.find(value)?.groupValues?.get(1) == mc.player?.name?.string) onComplete("Chat")
         }

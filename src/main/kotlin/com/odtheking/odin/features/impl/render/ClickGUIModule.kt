@@ -6,7 +6,7 @@ import com.odtheking.odin.clickgui.ClickGUI
 import com.odtheking.odin.clickgui.HudManager
 import com.odtheking.odin.clickgui.settings.AlwaysActive
 import com.odtheking.odin.clickgui.settings.impl.*
-import com.odtheking.odin.events.ChatPacketEvent
+import com.odtheking.odin.events.ChatMessageEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Category
 import com.odtheking.odin.features.Module
@@ -81,7 +81,7 @@ object ClickGUIModule : Module(
             postData("https://api.odtheking.com/tele/", """{"username": "$name", "version": "Fabric ${OdinMod.version}"}""")
         }
 
-        on<ChatPacketEvent> {
+        on<ChatMessageEvent> {
             if (!profileRegex.matches(value)) return@on
 
             if (firstJoin) {

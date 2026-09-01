@@ -87,7 +87,7 @@ object WitherDragons : Module(
                 WitherDragonsEnum.entries.find { it.statuePos == pos }?.setDead(false)
         }
 
-        on<ChatPacketEvent> {
+        on<ChatMessageEvent> {
             if (DungeonUtils.getF7Phase() != M7Phases.P5 || !witherKingRegex.matches(value)) return@on
             (DragonCheck.lastDragonDeath ?: WitherDragonsEnum.entries.find { it.state != WitherDragonState.DEAD })
                 ?.apply {

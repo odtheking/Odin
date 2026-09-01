@@ -100,7 +100,7 @@ object BloodCamp : Module(
             }
         }
 
-        on<ChatPacketEvent> {
+        on<ChatMessageEvent> {
             if (!DungeonUtils.inClear) return@on
             if (BLOOD_START_REGEX.matches(value)) startTime = currentTickTime
             else if (BLOOD_MOVE_REGEX.matches(value)) {

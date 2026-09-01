@@ -57,7 +57,7 @@ object TerminalUtils {
             }
         }
 
-        on<ChatPacketEvent> {
+        on<ChatMessageEvent> {
             termSolverRegex.find(value)?.let { message ->
                 if (message.groupValues[1] == mc.player?.name?.string) lastTermOpened?.let {
                     TerminalEvent.Solve(it).postAndCatch()

@@ -4,7 +4,7 @@ import com.github.stivais.commodore.Commodore
 import com.github.stivais.commodore.utils.GreedyString
 import com.odtheking.odin.OdinMod
 import com.odtheking.odin.OdinMod.mc
-import com.odtheking.odin.events.ChatPacketEvent
+import com.odtheking.odin.events.ChatMessageEvent
 import com.odtheking.odin.features.ModuleManager
 import com.odtheking.odin.features.impl.boss.MelodyMessage.melodyWebSocket
 import com.odtheking.odin.features.impl.boss.WitherDragonState
@@ -53,7 +53,7 @@ val devCommand = Commodore("oddev") {
     }
 
     literal("simulate").runs { greedyString: GreedyString ->
-        ChatPacketEvent(greedyString.string, Component.literal(greedyString.string)).postAndCatch()
+        ChatMessageEvent(greedyString.string, Component.literal(greedyString.string)).postAndCatch()
         modMessage("§8Simulated message: ${greedyString.string}")
     }
 

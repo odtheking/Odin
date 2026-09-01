@@ -2,7 +2,7 @@ package com.odtheking.odin.features.impl.boss
 
 import com.odtheking.odin.clickgui.settings.impl.ActionSetting
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
-import com.odtheking.odin.events.ChatPacketEvent
+import com.odtheking.odin.events.ChatMessageEvent
 import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.TerminalEvent
 import com.odtheking.odin.events.TickEvent
@@ -45,7 +45,7 @@ object TerminalTimes : Module(
             pbs.time(terminal.type.name, (System.currentTimeMillis() - terminal.timeOpened) / 1000f, "s§7!", "§a${terminal.type.termName}${if (mc.screen is TermSimGUI) " §7(termsim)" else ""} §7solved in §6", sendMessage = terminalTimes)
         }
 
-        on<ChatPacketEvent> {
+        on<ChatMessageEvent> {
             if (!terminalSplits) return@on
             terminalCompleteRegex.find(value)?.destructured?.let { (name, activated, type, current, total) ->
                 hideMessage()

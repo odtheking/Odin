@@ -52,7 +52,7 @@ object SimonSays : Module(
             startClickCounter = 0
         }
 
-        on<ChatPacketEvent> {
+        on<ChatMessageEvent> {
             if (value == "[BOSS] Goldor: Who dares trespass into my domain?") startClickCounter = 0
         }
 

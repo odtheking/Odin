@@ -5,7 +5,7 @@ import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.DropdownSetting
 import com.odtheking.odin.clickgui.settings.impl.KeybindSetting
 import com.odtheking.odin.clickgui.settings.impl.NumberSetting
-import com.odtheking.odin.events.ChatPacketEvent
+import com.odtheking.odin.events.ChatMessageEvent
 import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.RenderEvent
 import com.odtheking.odin.events.core.on
@@ -49,7 +49,7 @@ object Waypoints : Module(
     private val temporaryWaypoints = mutableListOf<Waypoint>()
 
     init {
-        on<ChatPacketEvent> {
+        on<ChatMessageEvent> {
             val (name, x, y, z) = when {
                 fromParty && partyRegex.matches(value) -> partyRegex.find(value)?.destructured
                 fromAll && allRegex.matches(value) -> allRegex.find(value)?.destructured

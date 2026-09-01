@@ -2,7 +2,7 @@ package com.odtheking.odin.features.impl.dungeon
 
 import com.odtheking.odin.clickgui.settings.impl.ActionSetting
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
-import com.odtheking.odin.events.ChatPacketEvent
+import com.odtheking.odin.events.ChatMessageEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.features.Module
@@ -40,7 +40,7 @@ object Mimic : Module(
             mimicKilled()
         }
 
-        on<ChatPacketEvent> {
+        on<ChatMessageEvent> {
             if (value.matches(princeRegex)) princeKilled()
             if (value.matches(batRegex)) batKilled()
         }

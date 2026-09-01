@@ -2,7 +2,7 @@ package com.odtheking.odin.features.impl.boss
 
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.NumberSetting
-import com.odtheking.odin.events.ChatPacketEvent
+import com.odtheking.odin.events.ChatMessageEvent
 import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.RenderEvent
 import com.odtheking.odin.events.TickEvent
@@ -47,7 +47,7 @@ object KingRelics : Module(
     private val relicPBs = PersonalBest(this, "Relics")
 
     init {
-        on<ChatPacketEvent> {
+        on<ChatMessageEvent> {
             if (DungeonUtils.getF7Phase() != M7Phases.P5 || !relicPickupRegex.matches(value)) return@on
             relicPlaceTick = serverTickCounter
             relicTicksToSpawn = relicSpawnTicks

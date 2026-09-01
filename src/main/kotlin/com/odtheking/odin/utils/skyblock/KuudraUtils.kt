@@ -1,7 +1,7 @@
 package com.odtheking.odin.utils.skyblock
 
 import com.odtheking.odin.OdinMod.mc
-import com.odtheking.odin.events.ChatPacketEvent
+import com.odtheking.odin.events.ChatMessageEvent
 import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
@@ -84,7 +84,7 @@ object KuudraUtils {
             }
         }
 
-        on<ChatPacketEvent> {
+        on<ChatMessageEvent> {
             if (!inKuudra) return@on
 
             when (value) {

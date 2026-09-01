@@ -41,7 +41,7 @@ object LividSolver : Module(
     private var invulnTime = 0
 
     init {
-        on<ChatPacketEvent> {
+        on<ChatMessageEvent> {
             if (!DungeonUtils.inDungeons || !DungeonUtils.isFloor(5)) return@on
             if (value.matches(lividStartRegex)) invulnTime = 350
         }

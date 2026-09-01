@@ -2,7 +2,7 @@ package com.odtheking.odin.features.impl.dungeon
 
 import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.*
-import com.odtheking.odin.events.ChatPacketEvent
+import com.odtheking.odin.events.ChatMessageEvent
 import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.RenderEvent
 import com.odtheking.odin.events.SecretPickupEvent
@@ -59,7 +59,7 @@ object SecretClicked : Module(
             secretChime()
         }
 
-        on<ChatPacketEvent> {
+        on<ChatMessageEvent> {
             if (value == "That chest is locked!") clickedSecretsList.lastOrNull()?.locked = true
         }
 

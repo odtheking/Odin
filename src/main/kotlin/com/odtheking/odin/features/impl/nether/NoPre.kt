@@ -2,7 +2,7 @@ package com.odtheking.odin.features.impl.nether
 
 import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
-import com.odtheking.odin.events.ChatPacketEvent
+import com.odtheking.odin.events.ChatMessageEvent
 import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
@@ -29,7 +29,7 @@ object NoPre : Module(
     var missing = Supply.None
 
     init {
-        on<ChatPacketEvent> {
+        on<ChatMessageEvent> {
             if (!KuudraUtils.inKuudra) return@on
 
             when {

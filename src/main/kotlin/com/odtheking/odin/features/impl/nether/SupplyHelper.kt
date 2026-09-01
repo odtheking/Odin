@@ -3,7 +3,7 @@ package com.odtheking.odin.features.impl.nether
 import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.ColorSetting
-import com.odtheking.odin.events.ChatPacketEvent
+import com.odtheking.odin.events.ChatMessageEvent
 import com.odtheking.odin.events.RenderEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
@@ -36,7 +36,7 @@ object SupplyHelper : Module(
     private var startRun = 0L
 
     init {
-        on<ChatPacketEvent> {
+        on<ChatMessageEvent> {
             if (!KuudraUtils.inKuudra || !sendSupplyTime) return@on
 
             when {
