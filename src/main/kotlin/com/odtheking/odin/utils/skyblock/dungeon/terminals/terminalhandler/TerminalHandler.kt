@@ -15,10 +15,12 @@ import com.odtheking.odin.utils.skyblock.LocationUtils
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalTypes
 import net.minecraft.world.inventory.ContainerInput
 import net.minecraft.world.inventory.Slot
+import net.minecraft.world.item.Item
 import net.minecraft.world.item.Items
 import org.lwjgl.glfw.GLFW
 
 abstract class TerminalHandler(val type: TerminalTypes) {
+    private val lastSeenItems = HashMap<Int, Item>()
     val clickedSlots = ArrayList<Pair<Int, Int>>()
     val timeOpened = System.currentTimeMillis()
     val solution = ArrayList<Int>()
@@ -28,8 +30,10 @@ abstract class TerminalHandler(val type: TerminalTypes) {
     open fun updateSlot(event: SetSlotEvent) {
         if (event.slots.isEmpty() || event.slotIndex !in 0 until type.windowSize - 9 || event.itemStack.item == Items.BLACK_STAINED_GLASS_PANE) return
 
-        val index = clickedSlots.indexOfFirst { it.first == event.slotIndex }
-        if (index >= 0) clickedSlots.subList(0, index + 1).clear()
+        if (lastSeenItems.put(event.slotIndex, event.itemStack.item) != event.itemStack.item) {
+            val index = clickedSlots.indexOfFirst { it.first == event.slotIndex }
+            if (index >= 0) clickedSlots.subList(0, index + 1).clear()
+        }
 
         solution.clear()
         solution.addAll(solve(event.slots.subList(0, type.windowSize - 9), event.slotIndex))
