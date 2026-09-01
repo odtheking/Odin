@@ -67,7 +67,8 @@ abstract class TermGui {
     private fun currentTermScreen() = mc.screen as? AbstractContainerScreen<*>
 
     private fun isActiveTermScreen(): Boolean =
-        !(!TerminalSolver.customGuiEnabled || TerminalUtils.currentTerm == null || currentTermScreen() == null) && TerminalUtils.currentTerm?.type?.getGUI() === this
+        !(!TerminalSolver.customGuiEnabled || TerminalUtils.currentTerm == null || currentTermScreen() == null) &&
+                TerminalUtils.currentTerm?.type?.getGUI() === this
 
     private fun isTerminalOverrideKey(event: KeyEvent) =
         mc.options.keyDrop.matches(event) || mc.options.keyHotbarSlots.any { it.matches(event) }
@@ -108,7 +109,7 @@ abstract class TermGui {
             val btn = if (button == 0) GLFW.GLFW_MOUSE_BUTTON_3 else button
             if (term.shouldProtect()) return@let
             if (!GuiEvent.CustomTermGuiClick(screen, slotIndex, btn).postAndCatch() && term.canClick(slotIndex, btn))
-                term.click(slotIndex, btn, hideClicked)
+                term.click(slotIndex, btn, hideClicked && !term.isClicked)
         }
     }
 

@@ -67,7 +67,7 @@ abstract class TerminalHandler(val type: TerminalTypes) {
     open fun canClick(slotIndex: Int, button: Int): Boolean = slotIndex in solution
 
     fun shouldProtect(): Boolean =
-            !(TerminalSimulator.disableFirstClickProtection && mc.screen is TermSimGUI)
-            && (System.currentTimeMillis() - timeOpened < firstClickProt ||
-            (!LocationUtils.isCurrentArea(Island.SinglePlayer) && shouldFirstClickProtWithTicks && ticksOpened < firstClickProtTicks))
+        !(TerminalSimulator.disableFirstClickProtection && mc.screen is TermSimGUI)
+                && (System.currentTimeMillis() - timeOpened < firstClickProt ||
+                (!LocationUtils.isCurrentArea(Island.SinglePlayer) && shouldFirstClickProtWithTicks && ticksOpened < firstClickProtTicks))
 }

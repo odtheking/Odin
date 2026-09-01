@@ -39,18 +39,34 @@ object MelodyMessage : Module(
 
     private val broadcast by BooleanSetting("Broadcast Progress", true, desc = "Broadcasts melody progress to all other odin users in the party.")
     private val melodyGui by HUD("Progress GUI", "Shows a gui with the progress of broadcasting odin users in melody.", true) {
-        if (it) drawMelody(MelodyData(3, 1, 2, DungeonClass.ARCHER), 0, mc.user.name)
+        var rows = 0
+        var labelWidth = 0
+
+        fun track(data: MelodyData, index: Int, name: String) {
+            rows = maxOf(rows, index + 1)
+            val clay = data.clay ?: return
+            val label = melodyLabel(data, name) ?: return
+            labelWidth = maxOf(labelWidth, getStringWidth("$clay $label"))
+        }
+
+        if (it) {
+            val example = MelodyData(3, 1, 2, DungeonClass.ARCHER)
+            drawMelody(example, 0, mc.user.name)
+            track(example, 0, mc.user.name)
+        }
 
         if (broadcast && melodyWebSocket.connected) {
             melodies.entries.forEachIndexed { i, (name, data) ->
                 if (showPlayer == 0 && name == mc.user.name) return@forEachIndexed
                 drawMelody(data, i, name)
+                track(data, i, name)
             }
         }
-        40 to 15
+
+        (width * 5 + 2 + labelWidth) to (width * 2 * rows)
     }.withDependency { broadcast }
 
-    private val showPlayer by SelectorSetting("Show Player", "Name", arrayListOf("None", "Class", "Name", "Class & Name"), desc = "How player details should be rendered in the Melody GUI.").withDependency { broadcast }
+    private val showPlayer by SelectorSetting("Show Player", "None", arrayListOf("None", "Class", "Name", "Class & Name"), desc = "How player details should be rendered in the Melody GUI.").withDependency { broadcast }
 
     val melodyWebSocket = webSocket {
         onMessage { message ->
@@ -81,7 +97,7 @@ object MelodyMessage : Module(
         }
 
         on<SetSlotEvent> {
-            if (broadcast || melodyProgress) onSlotUpdate()
+            if (broadcast || melodyProgress) onSlotUpdate(this)
         }
 
         on<LevelEvent.Load> {
@@ -109,13 +125,13 @@ object MelodyMessage : Module(
         }
     }
 
-    private fun SetSlotEvent.onSlotUpdate() {
+    private fun onSlotUpdate(event: SetSlotEvent) {
         val term = TerminalUtils.currentTerm ?: return
         if (DungeonUtils.getF7Phase() != M7Phases.P3 || term.type != TerminalTypes.MELODY || mc.screen is TermSimGUI) return
 
-        val item = itemStack.item
+        val item = event.itemStack.item
         if (item == Items.LIME_TERRACOTTA) {
-            val position = slotIndex / 9
+            val position = event.slotIndex / 9
             if (lastSent.clay == position) return
             if (broadcast) melodyWebSocket.send(update(1, position))
             if (melodyProgress) clayProgress[position]?.let { sendCommand("pc $it") }
@@ -123,7 +139,7 @@ object MelodyMessage : Module(
             return
         }
         if (!broadcast || !item.equalsOneOf(Items.MAGENTA_STAINED_GLASS_PANE, Items.LIME_STAINED_GLASS_PANE)) return
-        val index = mapToRange(slotIndex) ?: return
+        val index = mapToRange(event.slotIndex) ?: return
         val meta = when (item) {
             Items.MAGENTA_STAINED_GLASS_PANE -> {
                 if (lastSent.purple == index) return

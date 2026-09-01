@@ -1,5 +1,7 @@
 package com.odtheking.odin.features.impl.dungeon.map
 
+import com.google.gson.reflect.TypeToken
+import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.events.FloorEnterEvent
 import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.MapUpdateEvent
@@ -10,7 +12,9 @@ import com.odtheking.odin.features.impl.dungeon.map.tile.*
 import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.Color.Companion.darker
 import com.odtheking.odin.utils.IVec2
+import com.odtheking.odin.utils.JsonResourceLoader.defaultGson
 import com.odtheking.odin.utils.skyblock.dungeon.Floor
+import java.io.File
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 
@@ -33,6 +37,17 @@ object DungeonScan {
     val pathHints = CopyOnWriteArrayList<DungeonTile>()
 
     val directions = arrayOf(1 to 0, -1 to 0, 0 to 1, 0 to -1)
+
+    private val roomCoresFile = File(mc.gameDirectory, "config/odin/room-cores.json")
+    val roomCores: MutableMap<String, MutableList<Map<Int, List<String>>>> = runCatching {
+        defaultGson.fromJson<MutableMap<String, MutableList<Map<Int, List<String>>>>>(roomCoresFile.readText(), object : TypeToken<MutableMap<String, MutableList<Map<Int, List<String>>>>>() {}.type)
+    }.getOrNull() ?: mutableMapOf()
+
+    fun recordRoomCore(name: String, core: Int, blocks: List<String>) {
+        roomCores.getOrPut(name) { mutableListOf() }.add(mapOf(core to blocks))
+        roomCoresFile.parentFile.mkdirs()
+        roomCoresFile.writeText(defaultGson.toJson(roomCores))
+    }
 
     init {
         on<LevelEvent.Load> { reset() }

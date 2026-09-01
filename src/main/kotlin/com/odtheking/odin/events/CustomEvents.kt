@@ -85,6 +85,5 @@ class CheckmarkUpdateEvent(val room: DungeonRoom, val checkmark: MapCheckmark) :
 class SecretsUpdateEvent(val room: DungeonRoom, val foundSecrets: Int) : Event
 
 object LocationChangeEvent : Event
-
 object ScreenCloseEvent : Event
 class SetSlotEvent(val slotIndex: Int, val itemStack: ItemStack, val slots: List<Slot>, val menu: AbstractContainerMenu) : Event

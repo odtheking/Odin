@@ -13,6 +13,7 @@ import com.odtheking.odin.utils.Color.Companion.withAlpha
 import com.odtheking.odin.utils.handlers.TickTask
 import com.odtheking.odin.utils.render.textDim
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
+import com.odtheking.odin.utils.skyblock.dungeon.Puzzle
 import net.minecraft.core.BlockPos
 import net.minecraft.network.chat.ClickEvent
 import net.minecraft.network.chat.Component
@@ -200,10 +201,14 @@ object PuzzleSolvers : Module(
     private val puzzlePBs = PersonalBest(this, "PuzzlePBs")
 
     fun onPuzzleComplete(puzzleName: String) {
-        puzzleTimersMap[puzzleName]?.let {
-            if (it.sentMessage || (System.currentTimeMillis() - it.timeEntered) / 1000f < 5) return
-            puzzlePBs.time(puzzleName, (System.currentTimeMillis() - it.timeEntered) / 1000f, "s§7!", "§a${puzzleName} §7solved in §6")
-            it.sentMessage = true
+        puzzleTimersMap[puzzleName]?.let { puzzleTimer ->
+            if (puzzleTimer.sentMessage) return
+
+            val puzzleTime = (System.currentTimeMillis() - puzzleTimer.timeEntered) / 1000f
+            if (puzzleTime < (Puzzle.entries.find { it.displayName == puzzleName }?.timeToBeat ?: 0)) return@onPuzzleComplete
+
+            puzzlePBs.time(puzzleName, puzzleTime, "s§7!", "§a${puzzleName} §7solved in §6")
+            puzzleTimer.sentMessage = true
         }
     }
 

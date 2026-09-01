@@ -101,10 +101,10 @@ object Vesuvius : Module(
                 when (style.color) {
                     TextColor.fromLegacyFormat(ChatFormatting.GOLD) -> starCount += count
                     TextColor.fromLegacyFormat(ChatFormatting.LIGHT_PURPLE) -> starCount += count * 2
-                    }
                 }
+            }
             Optional.empty<Unit>()
-            }, Style.EMPTY)
+        }, Style.EMPTY)
 
         val item = component.string.replace("✪", "").trim()
 
@@ -178,9 +178,9 @@ object Vesuvius : Module(
             if (string.matches(uselessLinesRegex)) return@forEach
 
             val price = parseItemValue(component) ?: 0.0
-                profit += price
-                chestItems.add(ChestItem(component, price))
-            }
+            profit += price
+            chestItems.add(ChestItem(component, price))
+        }
         currentChest = ChestData(chestItems, chestCost, (profit - chestCost))
     }
 
@@ -258,7 +258,7 @@ object Vesuvius : Module(
             ),
             ChestItem(
                 Component.literal("Crimson Essence").withStyle(ChatFormatting.LIGHT_PURPLE)
-                        .append(Component.literal(" x2000").withStyle(ChatFormatting.DARK_GRAY)),
+                    .append(Component.literal(" x2000").withStyle(ChatFormatting.DARK_GRAY)),
                 2420000.0
             ),
             ChestItem(
