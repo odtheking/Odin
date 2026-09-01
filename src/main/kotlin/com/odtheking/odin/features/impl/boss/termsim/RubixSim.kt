@@ -20,7 +20,7 @@ object RubixSim : TermSimGUI(
     private val indices = listOf(12, 13, 14, 21, 22, 23, 30, 31, 32)
 
     override fun create() {
-        setSlots  {
+        setSlots {
             if (floor(it.index / 9f) in 1f..3f && it.index % 9 in 3..5) getPane()
             else blackPane
         }

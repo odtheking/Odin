@@ -22,7 +22,7 @@ class SelectAllSim(
 ) {
     override fun create() {
         val guaranteed = (10..16).plus(19..25).plus(28..34).plus(37..43).random()
-        setSlots  { slot ->
+        setSlots { slot ->
             if (floor(slot.index / 9.0) in 1.0..4.0 && slot.index % 9 in 1..7) {
                 val item = ItemStack(getPossibleItems(color).random())
 

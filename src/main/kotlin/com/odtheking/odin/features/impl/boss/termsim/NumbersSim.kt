@@ -14,7 +14,7 @@ object NumbersSim : TermSimGUI(
 ) {
     override fun create() {
         val used = (1..14).shuffled().toMutableList()
-        setSlots  {
+        setSlots {
             if (floor(it.index / 9f) in 1f..2f && it.index % 9 in 1..7) ItemStack(Items.RED_STAINED_GLASS_PANE, used.first()).apply { set(DataComponents.CUSTOM_NAME, Component.literal("§a${used.removeFirst()}")) }
             else blackPane
         }
