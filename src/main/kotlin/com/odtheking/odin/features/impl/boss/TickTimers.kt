@@ -79,7 +79,7 @@ object TickTimers : Module(
     private val stormTickHud by HUD("Storm Tick Hud", "Displays a timer for Storm's second phase, optionally counting down to the crush window.") {
         if (it) {
             val (time, max, prefix) = Triple(200, 620, "§bStorm:")
-            textDim(formatTimer(time, max, prefix), 0, 0, Colors.MINECRAFT_DARK_RED)
+            textDim(formatTimer(time, max, prefix, "§a"), 0, 0, Colors.MINECRAFT_DARK_RED)
         } else if (stormTick >= 0) textDim(formatTimer(stormTick, 620, "§bStorm:"), 0, 0, Colors.MINECRAFT_DARK_RED)
         else 0 to 0
     }

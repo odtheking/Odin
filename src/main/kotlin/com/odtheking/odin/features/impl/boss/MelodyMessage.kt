@@ -16,7 +16,7 @@ import com.odtheking.odin.utils.equalsOneOf
 import com.odtheking.odin.utils.network.WebUtils.gson
 import com.odtheking.odin.utils.network.webSocket
 import com.odtheking.odin.utils.render.getStringWidth
-import com.odtheking.odin.utils.render.textDim
+import com.odtheking.odin.utils.render.text
 import com.odtheking.odin.utils.sendCommand
 import com.odtheking.odin.utils.skyblock.LocationUtils
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonClass
@@ -45,7 +45,7 @@ object MelodyMessage : Module(
         fun track(data: MelodyData, index: Int, name: String) {
             rows = maxOf(rows, index + 1)
             val clay = data.clay ?: return
-            val label = melodyLabel(data, name) ?: return
+            val label = melodyLabel(data, name) ?: ""
             labelWidth = maxOf(labelWidth, getStringWidth("$clay $label"))
         }
 
@@ -63,7 +63,7 @@ object MelodyMessage : Module(
             }
         }
 
-        (width * 5 + 2 + labelWidth) to (width * 2 * rows)
+        (width * 5 + 2 + labelWidth) to (width * rows)
     }.withDependency { broadcast }
 
     private val showPlayer by SelectorSetting("Show Player", "None", arrayListOf("None", "Class", "Name", "Class & Name"), desc = "How player details should be rendered in the Melody GUI.").withDependency { broadcast }
@@ -172,22 +172,26 @@ object MelodyMessage : Module(
     private val width by lazy { getStringWidth("§d■") }
 
     private fun melodyLabel(data: MelodyData, playerName: String): String? = when (showPlayer) {
-        1 -> data.dungeonClass.toString()
-        2 -> playerName
-        3 -> "$playerName (${data.dungeonClass})"
+        1 -> "§${data.dungeonClass.colorCode}${data.dungeonClass.name.lowercase()}"
+        2 -> "§6$playerName"
+        3 -> "§6$playerName §8(§${data.dungeonClass.colorCode}${data.dungeonClass.name.lowercase()}§8)"
         else -> null
     }
 
     private fun GuiGraphicsExtractor.drawMelody(data: MelodyData, index: Int, playerName: String) {
-        val y = width * 2 * index
+        val y = width * index - 1
 
         repeat(5) {
-            if (data.purple == it) textDim("§d■", width * it, y)
-            textDim("${if (data.pane == it) "§a" else "§f"}■", width * it, y + width)
+            val color = when (it) {
+                data.pane -> "§a"
+                data.purple -> "§d"
+                else -> "§f"
+            }
+            text("$color■", width * it, y)
         }
 
-        val label = melodyLabel(data, playerName) ?: return
-        data.clay?.let { textDim("$it $label", width * 5 + 2, y + width / 2) }
+        val label = melodyLabel(data, playerName) ?: ""
+        data.clay?.let { text("$it $label", width * 5 + 2, y) }
     }
 
     private data class UpdateMessage(val username: String, val type: Int, val slot: Int)
