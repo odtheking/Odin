@@ -9,7 +9,6 @@ import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.features.impl.boss.termsim.TermSimGUI
-import com.odtheking.odin.utils.ChatManager.hideMessage
 import com.odtheking.odin.utils.PersonalBest
 import com.odtheking.odin.utils.modMessage
 
@@ -48,7 +47,7 @@ object TerminalTimes : Module(
         on<ChatMessageEvent> {
             if (!terminalSplits) return@on
             terminalCompleteRegex.find(value)?.destructured?.let { (name, activated, type, current, total) ->
-                hideMessage()
+                cancel()
 
                 modMessage("§6$name §a$activated a $type! (§c${current}§a/${total}) §8(§7${sectionTimer.seconds}s §8| §7${phaseTimer.seconds}s§8)", "")
 

@@ -7,7 +7,6 @@ import com.odtheking.odin.events.ChatMessageEvent
 import com.odtheking.odin.events.RenderEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
-import com.odtheking.odin.utils.ChatManager.hideMessage
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.equalsOneOf
 import com.odtheking.odin.utils.formatTime
@@ -46,7 +45,7 @@ object SupplyHelper : Module(
                     if (KuudraUtils.phase != 1) return@on
                     val (name, current, total) = supplyPickUpRegex.find(value)?.destructured ?: return@on
                     modMessage("§6$name §a§lrecovered a supply in ${formatTime(System.currentTimeMillis() - startRun)}! §r§8($current/$total)", "")
-                    hideMessage()
+                    cancel()
                 }
             }
         }
