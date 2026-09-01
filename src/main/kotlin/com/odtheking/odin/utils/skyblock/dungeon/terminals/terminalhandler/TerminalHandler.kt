@@ -1,11 +1,9 @@
 package com.odtheking.odin.utils.skyblock.dungeon.terminals.terminalhandler
 
-import com.google.common.primitives.Shorts
-import com.google.common.primitives.SignedBytes
 import com.odtheking.odin.OdinMod.mc
-import com.odtheking.odin.events.GuiEvent
-import com.odtheking.odin.events.PacketEvent
+import com.odtheking.odin.events.SetSlotEvent
 import com.odtheking.odin.features.impl.boss.TerminalSimulator
+import com.odtheking.odin.features.impl.boss.TerminalSolver
 import com.odtheking.odin.features.impl.boss.TerminalSolver.firstClickProt
 import com.odtheking.odin.features.impl.boss.TerminalSolver.firstClickProtTicks
 import com.odtheking.odin.features.impl.boss.TerminalSolver.shouldFirstClickProtWithTicks
@@ -15,76 +13,61 @@ import com.odtheking.odin.utils.clickSlot
 import com.odtheking.odin.utils.skyblock.Island
 import com.odtheking.odin.utils.skyblock.LocationUtils
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalTypes
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap
-import net.minecraft.client.gui.screens.inventory.ContainerScreen
-import net.minecraft.network.HashedStack
-import net.minecraft.network.protocol.game.ServerboundContainerClickPacket
 import net.minecraft.world.inventory.ContainerInput
-import net.minecraft.world.item.ItemStack
+import net.minecraft.world.inventory.Slot
+import net.minecraft.world.item.Item
+import net.minecraft.world.item.Items
 import org.lwjgl.glfw.GLFW
-import java.util.concurrent.CopyOnWriteArrayList
-import kotlin.math.min
 
 abstract class TerminalHandler(val type: TerminalTypes) {
-    val solution: CopyOnWriteArrayList<Int> = CopyOnWriteArrayList()
+    private val lastSeenItems = HashMap<Int, Item>()
+    val clickedSlots = ArrayList<Pair<Int, Int>>()
     val timeOpened = System.currentTimeMillis()
-    var isClicked = false
-    var windowCount = 0
+    val solution = ArrayList<Int>()
+    var lastClickTime = 0L
     var ticksOpened = -1
 
-    open fun updateSlot(event: GuiEvent.SlotUpdate) {
-        if (event.packet.slot !in 0 until type.windowSize) return
-        val items = event.menu.items.subList(0, min(event.menu.items.size, type.windowSize))
+    open fun updateSlot(event: SetSlotEvent) {
+        if (event.slots.isEmpty() || event.slotIndex !in 0 until type.windowSize - 9 || event.itemStack.item == Items.BLACK_STAINED_GLASS_PANE) return
 
-        if (canSolve(items, event.packet.slot)) {
-            solution.clear()
-            solution.addAll(solve(items))
+        if (lastSeenItems.put(event.slotIndex, event.itemStack.item) != event.itemStack.item) {
+            val index = clickedSlots.indexOfFirst { it.first == event.slotIndex }
+            if (index >= 0) clickedSlots.subList(0, index + 1).clear()
         }
-    }
 
-    fun openScreen() {
-        isClicked = false
-        windowCount++
+        solution.clear()
+        solution.addAll(solve(event.slots.subList(0, type.windowSize - 9), event.slotIndex))
+        if (TerminalSolver.hideClicked) clickedSlots.forEach { (index, button) -> simulateClick(index, button) }
     }
 
     protected abstract fun renderSlot(slotIndex: Int): Pair<Color, String?>?
 
-    fun getSlotRendering(slotIndex: Int): Pair<Color, String?>? {
-        return if (slotIndex !in solution) null
-        else renderSlot(slotIndex)
-    }
-
-    open fun canSolve(items: List<ItemStack>, currentIndex: Int): Boolean = currentIndex == type.windowSize - 1
+    fun getSlotRendering(slotIndex: Int): Pair<Color, String?>? =
+        if (slotIndex !in solution) null else renderSlot(slotIndex)
 
     open fun simulateClick(slotIndex: Int, clickType: Int) {
         solution.removeAt(solution.indexOf(slotIndex).takeIf { it != -1 } ?: return)
     }
 
-    abstract fun solve(items: List<ItemStack>): List<Int>
+    abstract fun solve(slots: List<Slot>, updatedIndex: Int): List<Int>
 
     open fun click(slotIndex: Int, button: Int, simulateClick: Boolean) {
-        val screenHandler = (mc.screen as? ContainerScreen)?.menu ?: return
+        val screen = mc.screen ?: return
+        clickedSlots.add(slotIndex to button)
+        lastClickTime = System.currentTimeMillis()
         if (simulateClick) simulateClick(slotIndex, button)
-        isClicked = true
 
-        if (mc.screen is TermSimGUI) {
-            PacketEvent.Send(
-                ServerboundContainerClickPacket(
-                    -1, -1,
-                    Shorts.checkedCast(slotIndex.toLong()), SignedBytes.checkedCast(button.toLong()),
-                    if (button == GLFW.GLFW_MOUSE_BUTTON_3) ContainerInput.CLONE else ContainerInput.PICKUP,
-                    Int2ObjectOpenHashMap(), HashedStack.EMPTY
-                )
-            ).postAndCatch()
+        if (screen is TermSimGUI) {
+            screen.clickIndex(slotIndex, button)
             return
         }
-        mc.player?.clickSlot(screenHandler.containerId, slotIndex, button, if (button == GLFW.GLFW_MOUSE_BUTTON_3) ContainerInput.CLONE else ContainerInput.PICKUP)
+        mc.player?.clickSlot(slotIndex, button, if (button == GLFW.GLFW_MOUSE_BUTTON_3) ContainerInput.CLONE else ContainerInput.PICKUP)
     }
 
     open fun canClick(slotIndex: Int, button: Int): Boolean = slotIndex in solution
 
     fun shouldProtect(): Boolean =
-            !(TerminalSimulator.disableFirstClickProtection && mc.screen is TermSimGUI)
-            && (System.currentTimeMillis() - timeOpened < firstClickProt ||
-            (!LocationUtils.isCurrentArea(Island.SinglePlayer) && shouldFirstClickProtWithTicks && ticksOpened < firstClickProtTicks))
+        !(TerminalSimulator.disableFirstClickProtection && mc.screen is TermSimGUI)
+                && (System.currentTimeMillis() - timeOpened < firstClickProt ||
+                (!LocationUtils.isCurrentArea(Island.SinglePlayer) && shouldFirstClickProtWithTicks && ticksOpened < firstClickProtTicks))
 }

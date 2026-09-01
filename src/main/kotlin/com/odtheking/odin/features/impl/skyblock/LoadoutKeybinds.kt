@@ -68,7 +68,7 @@ object LoadoutKeybinds : Module(
             }
         }
 
-        mc.player?.clickSlot(screen.menu.containerId, index)
+        mc.player?.clickSlot(index)
         return true
     }
 }

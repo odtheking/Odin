@@ -20,7 +20,7 @@ object RubixSim : TermSimGUI(
     private val indices = listOf(12, 13, 14, 21, 22, 23, 30, 31, 32)
 
     override fun create() {
-        createNewGui {
+        setSlots  {
             if (floor(it.index / 9f) in 1f..3f && it.index % 9 in 3..5) getPane()
             else blackPane
         }
@@ -28,12 +28,7 @@ object RubixSim : TermSimGUI(
 
     override fun slotClick(slot: Slot, button: Int) {
         val current = order.find { it == ((slot.item.item as? BlockItem)?.block as? StainedGlassPaneBlock)?.color } ?: return
-        createNewGui {
-            if (it == slot) {
-                if (button == 1) genStack(order.indexOf(current) - 1)
-                else genStack((order.indexOf(current) + 1) % order.size)
-            } else it.item
-        }
+        slot.setSlot(if (button == 1) genStack(order.indexOf(current) - 1) else genStack((order.indexOf(current) + 1) % order.size))
 
         if (indices.all { guiInventorySlots[it]?.item?.item == guiInventorySlots[12]?.item?.item })
             TerminalUtils.lastTermOpened?.onComplete()

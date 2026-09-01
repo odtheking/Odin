@@ -20,6 +20,9 @@ import net.minecraft.world.InteractionHand
 import net.minecraft.world.InteractionResult
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.item.ItemEntity
+import net.minecraft.world.inventory.AbstractContainerMenu
+import net.minecraft.world.inventory.Slot
+import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.block.state.BlockState
 import net.minecraft.world.phys.BlockHitResult
 import net.minecraft.world.phys.Vec3
@@ -82,3 +85,5 @@ class CheckmarkUpdateEvent(val room: DungeonRoom, val checkmark: MapCheckmark) :
 class SecretsUpdateEvent(val room: DungeonRoom, val foundSecrets: Int) : Event
 
 object LocationChangeEvent : Event
+object ScreenCloseEvent : Event
+class SetSlotEvent(val slotIndex: Int, val itemStack: ItemStack, val slots: List<Slot>, val menu: AbstractContainerMenu) : Event

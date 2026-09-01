@@ -15,8 +15,10 @@ class StartsWithSim(private val letter: String = listOf("A", "B", "C", "G", "D",
     "What starts with: \'$letter\'?",
     TerminalTypes.STARTS_WITH.windowSize
 ) {
+    private val clickedOverrides = ArrayList<Int>()
+
     override fun create() {
-        createNewGui {
+        setSlots {
             when {
                 floor(it.index / 9f) !in 1f..3f || it.index % 9 !in 1..7 -> blackPane
                 it.index == (10..16).random() -> getLetterItemStack()
@@ -26,12 +28,14 @@ class StartsWithSim(private val letter: String = listOf("A", "B", "C", "G", "D",
         }
     }
 
-    override fun slotClick(slot: Slot, button: Int) = with(slot.item) {
-        if (!hoverName.string.startsWith(letter, true) || hasGlint()) return@with modMessage("§cThat item does not start with: \'$letter\'!")
+    override fun slotClick(slot: Slot, button: Int) {
+        if (!slot.item.hoverName.string.startsWith(letter, true)) return modMessage("§cThat item does not start with: \'$letter\'!")
+        if (slot.item.hasRealGlint() || slot.index in clickedOverrides) return modMessage("§cAlready selected!")
 
-        createNewGui { if (it == slot) apply { set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, false) } else it.item }
+        if (slot.item.item in enchantOverrides) clickedOverrides.add(slot.index)
+        slot.setSlot(slot.item.apply { set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true) })
 
-        if (guiInventorySlots.none { it.item.hoverName.string.startsWith(letter, true) && !it.item.hasGlint() })
+        if (guiInventorySlots.all { !it.item.hoverName.string.startsWith(letter, true) || it.item.hasRealGlint() || it.index in clickedOverrides })
             TerminalUtils.lastTermOpened?.onComplete()
 
         super.slotClick(slot, button)
@@ -45,5 +49,10 @@ class StartsWithSim(private val letter: String = listOf("A", "B", "C", "G", "D",
             }.randomOrNull() ?: return ItemStack.EMPTY
 
         return ItemStack(matchingItem)
+    }
+
+    private companion object {
+        fun ItemStack.hasRealGlint(): Boolean = hasGlint() && item !in enchantOverrides
+        val enchantOverrides = BuiltInRegistries.ITEM.filter { it.components().has(DataComponents.ENCHANTMENT_GLINT_OVERRIDE) } + Items.GOLDEN_APPLE
     }
 }

@@ -26,7 +26,7 @@ public class AbstractContainerScreenMixin {
 
     @Inject(method = "slotClicked", at = @At("HEAD"), cancellable = true)
     private void onMouseClickedSlot(Slot slot, int slotId, int buttonNum, ContainerInput containerInput, CallbackInfo ci) {
-        if (new GuiEvent.SlotClick((Screen) (Object) this, slot, slotId, buttonNum, containerInput).postAndCatch()) ci.cancel();
+        if (new GuiEvent.SlotClick((Screen) (Object) this, slotId, buttonNum).postAndCatch()) ci.cancel();
     }
 
     @Inject(method = "extractTooltip", at = @At("HEAD"), cancellable = true)

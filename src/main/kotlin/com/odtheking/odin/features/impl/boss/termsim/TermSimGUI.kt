@@ -2,7 +2,7 @@ package com.odtheking.odin.features.impl.boss.termsim
 
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.events.GuiEvent
-import com.odtheking.odin.events.PacketEvent
+import com.odtheking.odin.events.ScreenCloseEvent
 import com.odtheking.odin.events.TerminalEvent
 import com.odtheking.odin.features.impl.boss.TerminalSounds
 import com.odtheking.odin.utils.handlers.schedule
@@ -11,9 +11,6 @@ import com.odtheking.odin.utils.skyblock.dungeon.terminals.terminalhandler.Termi
 import net.minecraft.client.gui.screens.inventory.ContainerScreen
 import net.minecraft.core.component.DataComponents
 import net.minecraft.network.chat.Component
-import net.minecraft.network.protocol.game.ClientboundContainerClosePacket
-import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket
-import net.minecraft.network.protocol.game.ClientboundOpenScreenPacket
 import net.minecraft.sounds.SoundEvents
 import net.minecraft.world.SimpleContainer
 import net.minecraft.world.entity.player.Inventory
@@ -44,12 +41,10 @@ open class TermSimGUI(
 ) {
     val blackPane = ItemStack(Items.BLACK_STAINED_GLASS_PANE).apply { set(DataComponents.CUSTOM_NAME, Component.literal("")) }
     protected val guiInventorySlots get() = menu.slots.subList(0, size)
-    private var doesAcceptClick = true
     protected var ping = 0L
-    private var syncId = 0
 
     open fun create() {
-        guiInventorySlots.forEach { it.setSlot(blackPane) }
+        setSlots { blackPane }
     }
 
     fun open(terminalPing: Long = 0L) {
@@ -63,18 +58,17 @@ open class TermSimGUI(
     }
 
     internal fun TerminalHandler.onComplete() {
-        PacketEvent.Receive(ClientboundContainerClosePacket(-2)).postAndCatch()
+        ScreenCloseEvent.postAndCatch()
         TerminalEvent.Solve(this).postAndCatch()
         StartGUI.open(ping)
     }
 
     override fun onClose() {
-        doesAcceptClick = true
         super.onClose()
     }
 
     override fun slotClicked(slot: Slot, i: Int, j: Int, clickType: ContainerInput) {
-        if (GuiEvent.SlotClick(this, slot, i, j, clickType).postAndCatch()) return
+        if (GuiEvent.SlotClick(this, i, j).postAndCatch()) return
         slot?.let { delaySlotClick(it, j) }
     }
 
@@ -85,23 +79,19 @@ open class TermSimGUI(
 
     private fun delaySlotClick(slot: Slot, button: Int) {
         if (mc.screen == StartGUI) return slotClick(slot, button)
-        if (!doesAcceptClick || slot.container != inv || slot.item.item == Items.BLACK_STAINED_GLASS_PANE) return
+        if (slot.container != inv || slot.item.item == Items.BLACK_STAINED_GLASS_PANE) return
         if (ping <= 0L) return slotClick(slot, button)
-        doesAcceptClick = false
         schedule((ping / 50).toInt().coerceAtLeast(0)) {
-            doesAcceptClick = true
             if (mc.screen == this) slotClick(slot, button)
         }
     }
 
-    protected fun createNewGui(block: (Slot) -> ItemStack) {
-        PacketEvent.Receive(ClientboundOpenScreenPacket(syncId++, MenuType.GENERIC_9x3, Component.literal(name))).postAndCatch()
+    protected fun setSlots(block: (Slot) -> ItemStack) {
         guiInventorySlots.forEach { it.setSlot(block(it)) }
     }
 
     protected fun Slot.setSlot(stack: ItemStack) {
-        GuiEvent.SlotUpdate(mc.screen ?: return, ClientboundContainerSetSlotPacket(-2, 0, index, stack), menu).postAndCatch()
-        set(stack)
+        menu.setItem(index, menu.incrementStateId(), stack)
     }
 
     protected fun playTermSimSound() {

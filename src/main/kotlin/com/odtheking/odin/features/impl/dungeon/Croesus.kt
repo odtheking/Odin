@@ -9,6 +9,7 @@ import com.odtheking.odin.clickgui.settings.impl.NumberSetting
 import com.odtheking.odin.events.ChatMessageEvent
 import com.odtheking.odin.events.GuiEvent
 import com.odtheking.odin.events.ScreenEvent
+import com.odtheking.odin.events.SetSlotEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.features.Module
@@ -137,7 +138,7 @@ object Croesus : Module(
             }
         }
 
-        on<GuiEvent.SlotUpdate> {
+        on<SetSlotEvent> {
             val screenTitle = mc.screen?.title?.string ?: return@on
             val items = (mc.screen as? AbstractContainerScreen<*>)?.menu?.items ?: return@on
 
