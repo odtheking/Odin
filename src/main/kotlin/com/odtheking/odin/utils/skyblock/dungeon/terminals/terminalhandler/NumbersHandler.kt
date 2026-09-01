@@ -28,6 +28,6 @@ class NumbersHandler: TerminalHandler(TerminalTypes.NUMBERS) {
             1 -> TerminalSolver.orderColor2
             2 -> TerminalSolver.orderColor3
             else -> Colors.TRANSPARENT
-        } to if (TerminalSolver.showNumbers) (abs((solution.size - 10) - solutionIndex) + 1).toString() else null
+        } to if (TerminalSolver.showNumbers) (abs((solution.size - 14) - solutionIndex) + 1).toString() else null
     }
 }
