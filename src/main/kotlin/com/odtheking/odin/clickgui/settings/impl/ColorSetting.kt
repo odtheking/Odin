@@ -65,7 +65,7 @@ class ColorSetting(
     private var holding: Slider? = null
 
     private val hexInput by lazy {
-        HexEditBox(mc.font, hexBoxWidth - HEX_INSET * 2, HEX_FIELD_HEIGHT, Component.literal(name))
+        HexEditBox(mc.font, HEX_BOX_WIDTH - HEX_INSET * 2, HEX_FIELD_HEIGHT, Component.literal(name))
             .stripChrome(true)
             .apply {
                 setMaxLength(hexLength)
@@ -87,13 +87,12 @@ class ColorSetting(
     private val hueBarX get() = barX + squareWidth + GAP
     private val alphaBarX get() = hueBarX + BAR_THICKNESS + GAP
 
-    private val favoritesLeft get() = barX + barWidth - FAVORITE_SLOTS * FAVORITE_SIZE + (FAVORITE_SLOTS - 1) * GAP
+    private val favoritesLeft get() = barX + barWidth - FAVORITE_SLOTS * FAVORITE_SIZE - (FAVORITE_SLOTS - 1) * GAP
 
     private fun favoriteSlotX(index: Int) = favoritesLeft + index * (FAVORITE_SIZE + GAP)
 
     private val hexBoxLeft get() = barX
-    private val hexBoxRight get() = favoritesLeft - GAP
-    private val hexBoxWidth get() = hexBoxRight - hexBoxLeft
+    private val hexBoxRight get() = hexBoxLeft + HEX_BOX_WIDTH
 
     override fun children(): List<GuiEventListener> = if (expand.current) listOf(hexInput) else emptyList()
 
@@ -142,7 +141,7 @@ class ColorSetting(
         }
         if (!expand.current) return
 
-        if (isOver(mouseX, mouseY, hexBoxLeft, hexBoxY, hexBoxWidth, HEX_BOX_HEIGHT)) {
+        if (isOver(mouseX, mouseY, hexBoxLeft, hexBoxY, HEX_BOX_WIDTH, HEX_BOX_HEIGHT)) {
             setFocused(hexInput)
             hexInput.onClick(event, doubleClick)
             return
@@ -277,7 +276,7 @@ class ColorSetting(
     }
 
     private companion object {
-        val HUE_GRADIENT: Identifier = Identifier.fromNamespaceAndPath("odin", "textures/huegradient_vertical.png")
+        val HUE_GRADIENT: Identifier = Identifier.fromNamespaceAndPath("odin", "textures/huegradient.png")
 
         const val EXPAND_DURATION = 200L
         const val MARKER_DURATION = 100L
@@ -293,8 +292,9 @@ class ColorSetting(
         const val EXPANDED = 136
 
         const val HEX_BOX_HEIGHT = 16
+        const val HEX_BOX_WIDTH = 60
         const val HEX_BOTTOM_PAD = 18
-        const val HEX_INSET = 3
+        const val HEX_INSET = 5
         const val HEX_FIELD_HEIGHT = 8
 
         const val FAVORITE_SLOTS = 4
