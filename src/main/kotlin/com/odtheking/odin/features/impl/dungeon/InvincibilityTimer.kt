@@ -106,11 +106,11 @@ object InvincibilityTimer : Module(
         on<GuiEvent.RenderSlot> {
             if (!showOnItem) return@on
             val percent = when(slot.item.itemId) {
-                "BONZO_MASK","STARRED_BONZO_MASK"->InvincibilityType.BONZO.currentCooldown.toDouble()/(InvincibilityType.BONZO.maxCooldownTime*20)
-                "SPIRIT_MASK","STARRED_SPIRIT_MASK"->InvincibilityType.SPIRIT.currentCooldown.toDouble()/(InvincibilityType.SPIRIT.maxCooldownTime*20)
+                "BONZO_MASK","STARRED_BONZO_MASK" -> InvincibilityType.BONZO.currentCooldown.toDouble() / (InvincibilityType.BONZO.maxCooldownTime*20)
+                "SPIRIT_MASK","STARRED_SPIRIT_MASK" -> InvincibilityType.SPIRIT.currentCooldown.toDouble() / (InvincibilityType.SPIRIT.maxCooldownTime*20)
                 else->return@on
             }
-            if(percent<=0) return@on
+            if(percent <= 0) return@on
             if(durability) {
                 guiGraphics.fakeItem(slot.item, slot.x, slot.y)
                 guiGraphics.fill(slot.x + 2, slot.y + 13, slot.x + 14, slot.y + 15, Colors.BLACK.rgba)
