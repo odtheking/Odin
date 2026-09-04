@@ -3,7 +3,6 @@ package com.odtheking.odin.features.impl.boss
 import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.events.ChatMessageEvent
-import com.odtheking.odin.events.GuiEvent
 import com.odtheking.odin.events.TerminalEvent
 import com.odtheking.odin.events.core.EventPriority
 import com.odtheking.odin.events.core.on
@@ -38,12 +37,8 @@ object TerminalSounds : Module(
             else if (shouldReplaceSounds && completeSounds && !clickSounds) playSoundSettings(completeSoundSettings())
         }
 
-        on<GuiEvent.SlotClick> (EventPriority.HIGHEST) {
+        on<TerminalEvent.Click> (EventPriority.HIGHEST) {
             if (shouldReplaceSounds) playSoundForSlot(slotIndex, button)
-        }
-
-        on<GuiEvent.CustomTermGuiClick> (EventPriority.HIGHEST) {
-            if (shouldReplaceSounds) playSoundForSlot(slot, button)
         }
 
         onReceive<ClientboundSoundPacket> {

@@ -2,6 +2,7 @@ package com.odtheking.odin.utils.skyblock.dungeon.terminals.terminalhandler
 
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.events.SetSlotEvent
+import com.odtheking.odin.events.TerminalEvent
 import com.odtheking.odin.features.impl.boss.TerminalSimulator
 import com.odtheking.odin.features.impl.boss.TerminalSolver
 import com.odtheking.odin.features.impl.boss.TerminalSolver.firstClickProt
@@ -15,12 +16,10 @@ import com.odtheking.odin.utils.skyblock.LocationUtils
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalTypes
 import net.minecraft.world.inventory.ContainerInput
 import net.minecraft.world.inventory.Slot
-import net.minecraft.world.item.Item
 import net.minecraft.world.item.Items
 import org.lwjgl.glfw.GLFW
 
 abstract class TerminalHandler(val type: TerminalTypes) {
-    private val lastSeenItems = HashMap<Int, Item>()
     val clickedSlots = ArrayList<Pair<Int, Int>>()
     val timeOpened = System.currentTimeMillis()
     val solution = ArrayList<Int>()
@@ -30,10 +29,8 @@ abstract class TerminalHandler(val type: TerminalTypes) {
     open fun updateSlot(event: SetSlotEvent) {
         if (event.slots.isEmpty() || event.slotIndex !in 0 until type.windowSize - 9 || event.itemStack.item == Items.BLACK_STAINED_GLASS_PANE) return
 
-        if (lastSeenItems.put(event.slotIndex, event.itemStack.item) != event.itemStack.item) {
-            val index = clickedSlots.indexOfFirst { it.first == event.slotIndex }
-            if (index >= 0) clickedSlots.subList(0, index + 1).clear()
-        }
+        val index = clickedSlots.indexOfFirst { it.first == event.slotIndex }
+        if (index >= 0) clickedSlots.subList(0, index + 1).clear()
 
         solution.clear()
         solution.addAll(solve(event.slots.subList(0, type.windowSize - 9), event.slotIndex))
@@ -52,16 +49,22 @@ abstract class TerminalHandler(val type: TerminalTypes) {
     abstract fun solve(slots: List<Slot>, updatedIndex: Int): List<Int>
 
     open fun click(slotIndex: Int, button: Int, simulateClick: Boolean) {
-        val screen = mc.screen ?: return
+        if (!canClick(slotIndex, button) || shouldProtect()) return
+
+        val button = if (button == 1 && type == TerminalTypes.RUBIX) GLFW.GLFW_MOUSE_BUTTON_2 else GLFW.GLFW_MOUSE_BUTTON_3
         clickedSlots.add(slotIndex to button)
         lastClickTime = System.currentTimeMillis()
+
         if (simulateClick) simulateClick(slotIndex, button)
 
-        if (screen is TermSimGUI) {
-            screen.clickIndex(slotIndex, button)
-            return
+        mc.screen?.let { screen ->
+            if (screen is TermSimGUI) {
+                screen.clickIndex(slotIndex, button)
+                return
+            }
         }
         mc.player?.clickSlot(slotIndex, button, if (button == GLFW.GLFW_MOUSE_BUTTON_3) ContainerInput.CLONE else ContainerInput.PICKUP)
+        TerminalEvent.Click(this, slotIndex, button).postAndCatch()
     }
 
     open fun canClick(slotIndex: Int, button: Int): Boolean = slotIndex in solution

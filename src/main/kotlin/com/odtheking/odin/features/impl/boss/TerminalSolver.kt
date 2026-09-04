@@ -16,7 +16,6 @@ import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 import net.minecraft.network.chat.Component
 import net.minecraft.world.item.Items
-import org.lwjgl.glfw.GLFW
 
 object TerminalSolver : Module(
     name = "Terminal Solver",
@@ -28,17 +27,15 @@ object TerminalSolver : Module(
     val roundness by NumberSetting("Roundness", 5, 0f, 15f, 1f, desc = "The roundness of the custom terminal gui.").withDependency { renderType == 2 }
     val gap by NumberSetting("Slot gap", 2, 0, 8, 1, desc = "The gap between the slots in the custom terminal gui.").withDependency { renderType == 2 }
     private val solverSettings by DropdownSetting("Solver Functionality")
-    private val cancelToolTip by BooleanSetting("Stop Tooltips", true, desc = "Stops rendering tooltips in terminals.").withDependency { (renderType == 0 || renderType == 1) && solverSettings }
-    private val middleClickGUI by BooleanSetting("Middle Click GUI", true, desc = "Replaces right click with middle click in terminals.").withDependency { (renderType == 0 || renderType == 1) && solverSettings }
-    private val blockIncorrectClicks by BooleanSetting("Block Incorrect Clicks", true, desc = "Blocks incorrect clicks in terminals.").withDependency { (renderType == 0 || renderType == 1) && solverSettings }
     private val cancelMelodySolver by BooleanSetting("Stop Melody Solver", false, desc = "Stops rendering the melody solver.").withDependency { solverSettings }
     val melodyTermSize by NumberSetting("Melody Size", 1.5f, 1f, 3f, 0.1f, desc = "The size of the melody terminal GUI.").withDependency { !cancelMelodySolver && solverSettings && renderType == 2 }
     val showNumbers by BooleanSetting("Show Numbers", true, desc = "Shows numbers in the order terminal.").withDependency { solverSettings }
+    val rubixMode by SelectorSetting("Rubix Mode", "Left Clicks Only", arrayListOf("Fewest Clicks", "Left Clicks Only"), desc = "Whether the rubix solver should mix in right clicks for the fewest clicks overall, or stick to left clicks only.").withDependency { solverSettings }
     val hideClicked by BooleanSetting("Client Prediction", true, desc = "Visually predicts the server state before the gui update is sent to the client.").withDependency { solverSettings }
     val terminalReloadThreshold by NumberSetting("Resolve timeout", 600, 300, 1200, 10, unit = "ms", desc = "The amount of time before the terminal reloads after a click wasn't registered while using hide clicked.").withDependency { hideClicked && solverSettings }
     private val firstClickProtSettings by DropdownSetting("First Click Prot Dropdown")
     val firstClickProt by NumberSetting("First Click Prot", 500, 350, 800, 10, unit = "ms", desc = "The amount of time after opening a terminal where clicks are blocked to prevent bans (recommended value is 500 minus your ping).").withDependency { firstClickProtSettings }
-    val shouldFirstClickProtWithTicks by BooleanSetting("Account For Server Lag",  false, desc = "Prevents bans from clicking when the server lags after opening the terminal (disabled in singleplayer").withDependency { firstClickProtSettings }
+    val shouldFirstClickProtWithTicks by BooleanSetting("Account For Server Lag", false, desc = "Prevents bans from clicking when the server lags after opening the terminal (disabled in singleplayer").withDependency { firstClickProtSettings }
     val firstClickProtTicks by NumberSetting("Lag Protection Ticks", 8, 7, 16, unit = "ticks", desc = "Each tick = 50ms (recommended value is 8)").withDependency { shouldFirstClickProtWithTicks && firstClickProtSettings }
     private val showColors by DropdownSetting("Color Settings")
     val backgroundColor by ColorSetting("Background", Colors.gray26, true, desc = "Background color of the terminal solver.").withDependency { showColors }
@@ -68,23 +65,11 @@ object TerminalSolver : Module(
     private val renderMelody get() = !(cancelMelodySolver && TerminalUtils.currentTerm?.type == TerminalTypes.MELODY)
 
     init {
-        on<TickEvent.Server> {
-            TerminalUtils.currentTerm?.ticksOpened++
-        }
-
         on<GuiEvent.SlotClick> {
-            val term = TerminalUtils.currentTerm ?: return@on
-
-            if (blockIncorrectClicks && !term.canClick(slotIndex, button)) return@on cancel()
-
-            if (term.shouldProtect()) return@on cancel()
-
-            if (middleClickGUI) {
-                term.click(slotIndex, if (button == 0) GLFW.GLFW_MOUSE_BUTTON_3 else button, hideClicked)
-                return@on cancel()
+            TerminalUtils.currentTerm?.let {
+                it.click(slotIndex, button, hideClicked)
+                cancel()
             }
-
-            if (hideClicked) term.simulateClick(slotIndex, button)
         }
 
         on<GuiEvent.Render> {
@@ -109,7 +94,7 @@ object TerminalSolver : Module(
         }
 
         on<GuiEvent.DrawTooltip> {
-            if (cancelToolTip && TerminalUtils.currentTerm != null) cancel()
+            if (TerminalUtils.currentTerm != null) cancel()
             this.guiGraphics.renderDebug()
         }
 
@@ -119,6 +104,10 @@ object TerminalSolver : Module(
 
         on<TerminalEvent.Close> {
             if (renderType == 0 || renderType == 1) mc.execute { mc.resizeGui() }
+        }
+
+        on<TickEvent.Server> {
+            TerminalUtils.currentTerm?.ticksOpened++
         }
     }
 

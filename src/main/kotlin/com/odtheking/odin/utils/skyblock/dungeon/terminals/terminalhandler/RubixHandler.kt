@@ -8,61 +8,53 @@ import net.minecraft.world.item.BlockItem
 import net.minecraft.world.item.DyeColor
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.block.StainedGlassPaneBlock
+import kotlin.math.abs
 
 class RubixHandler : TerminalHandler(TerminalTypes.RUBIX) {
 
     private var lockedColor: DyeColor? = null
+
+    private val rightClickSlots = HashSet<Int>()
 
     override fun solve(slots: List<Slot>, updatedIndex: Int): List<Int> {
         val panes = slots.mapIndexedNotNull { index, slot ->
             slot.item.paneColor?.takeUnless { it == DyeColor.BLACK }?.let { index to it }
         }
 
-        return if (updatedIndex == LAST_PANE_SLOT && lockedColor == null) {
-            val (best, clicks) = rubixColorOrder
-                .map { it to clicksFor(it, panes) }
-                .minBy { (_, clicks) -> getRealSize(clicks) }
+        if (updatedIndex == LAST_PANE_SLOT && lockedColor == null)
+            lockedColor = rubixColorOrder.minBy { goal -> clicksFor(goal, panes).values.sumOf { abs(it) } }
 
-            lockedColor = best
-            clicks
-        } else lockedColor?.let { clicksFor(it, panes) } ?: emptyList()
+        val clicks = lockedColor?.let { clicksFor(it, panes) }.orEmpty()
+
+        rightClickSlots.clear()
+        clicks.forEach { (slotIndex, count) -> if (count < 0) rightClickSlots.add(slotIndex) }
+        return clicks.flatMap { (slotIndex, count) -> List(abs(count)) { slotIndex } }
     }
 
-    private fun clicksFor(goal: DyeColor, panes: List<Pair<Int, DyeColor>>): List<Int> {
+    private fun clicksFor(goal: DyeColor, panes: List<Pair<Int, DyeColor>>): Map<Int, Int> {
         val goalIndex = rubixColorOrder.indexOf(goal)
-        return panes.flatMap { (slotIndex, color) ->
-            List(dist(rubixColorOrder.indexOf(color), goalIndex)) { slotIndex }
-        }
+        return panes.associate { (slotIndex, color) ->
+            val forward = dist(rubixColorOrder.indexOf(color), goalIndex)
+            slotIndex to if (forward > 2 && TerminalSolver.rubixMode != 1) forward - rubixColorOrder.size else forward
+        }.filterValues { it != 0 }
     }
 
     private val ItemStack.paneColor: DyeColor?
         get() = ((item as? BlockItem)?.block as? StainedGlassPaneBlock)?.color
 
-    override fun simulateClick(slotIndex: Int, clickType: Int) {
-        if (clickType == 1) solution.add(slotIndex)
-        else solution.remove(slotIndex)
-        if (solution.count { it == slotIndex } >= 5) solution.removeAll { it == slotIndex }
-    }
-
-    override fun canClick(slotIndex: Int, button: Int): Boolean {
-        val needed = solution.count { it == slotIndex }
-        return (needed >= 3 && button == 1) || (needed in 1..<3 && button != 1)
-    }
-
-    private fun getRealSize(clicks: List<Int>): Int =
-        clicks.groupingBy { it }.eachCount().values.sumOf { if (it >= 3) 5 - it else it }
+    override fun canClick(slotIndex: Int, button: Int): Boolean =
+        slotIndex in solution && (button == 1) == (slotIndex in rightClickSlots)
 
     private fun dist(pane: Int, most: Int): Int =
         if (pane > most) (most + rubixColorOrder.size) - pane else most - pane
 
     override fun renderSlot(slotIndex: Int): Pair<Color, String?>? {
-        val amount = solution.count { it == slotIndex }
-        val clicksRequired = if (amount < 3) amount else amount - 5
-        if (clicksRequired == 0) return null
+        val remaining = solution.count { it == slotIndex }.takeIf { it > 0 } ?: return null
+        val clicksRequired = if (slotIndex in rightClickSlots) -remaining else remaining
         return when (clicksRequired) {
             1 -> TerminalSolver.rubixColor1
             2 -> TerminalSolver.rubixColor2
-            -1 -> TerminalSolver.oppositeRubixColor1
+            -1, 4 -> TerminalSolver.oppositeRubixColor1
             else -> TerminalSolver.oppositeRubixColor2
         } to clicksRequired.toString()
     }
