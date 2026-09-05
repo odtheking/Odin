@@ -28,6 +28,7 @@ object ChatCommands : Module(
     private val partyChatCommands by BooleanSetting("Party Commands", true, "Enables party chat commands.")
     private val guildChatCommands by BooleanSetting("Guild Commands", false, "Enables guild chat commands.")
     private val privateChatCommands by BooleanSetting("Private Commands", true, "Enables private chat commands.")
+    private val coopChatCommands by BooleanSetting("Co-op Commands", true, "Enables co-op chat commands.")
 
     private val showSettings by DropdownSetting("Show Settings", false)
     private val partyWarp by BooleanSetting("Warp", true, desc = "Executes the /party warp command.").withDependency { showSettings }
@@ -57,7 +58,7 @@ object ChatCommands : Module(
     private val holding by BooleanSetting("Holding", true, desc = "Sends the item you are holding.").withDependency { showSettings }
 
     // https://regex101.com/r/joY7dm/1
-    private val messageRegex = Regex("^(?:Party > (\\[[^]]*?])? ?(\\w{1,16})(?: [ቾ⚒])?: ?(.+)$|Guild > (\\[[^]]*?])? ?(\\w{1,16})(?: \\[([^]]*?)])?: ?(.+)$|From (\\[[^]]*?])? ?(\\w{1,16}): ?(.+)$)")
+    private val messageRegex = Regex("^(?:Party > (\\[[^]]*?])? ?(\\w{1,16})(?: [ቾ⚒])?: ?(.+)$|Guild > (\\[[^]]*?])? ?(\\w{1,16})(?: \\[([^]]*?)])?: ?(.+)$|From (\\[[^]]*?])? ?(\\w{1,16}): ?(.+)$|Co-op > (\\[[^]]*?])? ?(\\w{1,16})(?: [ቾ⚒])?: ?(.+)$)")
     private val endRunRegex = Regex(" {29}> EXTRA STATS <|^\\[NPC] Elle: Good job everyone. A hard fought battle come to an end. Let's get out of here before we run into any more trouble!$")
     private val dtReason = mutableListOf<Pair<String, String>>()
 
@@ -74,15 +75,18 @@ object ChatCommands : Module(
             }
 
             val result = messageRegex.find(value) ?: return@on
-            val channel = when(result.value.split(" ")[0]) {
+
+            val channelStr = result.value.split(" ")[0]
+            val channel = when(channelStr) {
                 "From" -> if (!privateChatCommands) return@on else ChatChannel.PRIVATE
                 "Party" -> if (!partyChatCommands)  return@on else ChatChannel.PARTY
                 "Guild" -> if (!guildChatCommands)  return@on else ChatChannel.GUILD
+                "Co-op" -> if (!coopChatCommands) return@on else ChatChannel.COOP
                 else -> return@on
             }
-
-            val ign = result.groups[2]?.value ?: result.groups[5]?.value ?: result.groups[9]?.value ?: return@on
-            val msg = result.groups[3]?.value ?: result.groups[7]?.value ?: result.groups[10]?.value ?: return@on
+            
+            val ign = result.groups[2]?.value ?: result.groups[5]?.value ?: result.groups[9]?.value ?: result.groups[12]?.value ?: return@on
+            val msg = result.groups[3]?.value ?: result.groups[7]?.value ?: result.groups[10]?.value ?: result.groups[13]?.value ?: return@on
 
             if (!msg.startsWith("!")) return@on
 
@@ -92,7 +96,7 @@ object ChatCommands : Module(
         }
 
         on<MessageSentEvent> {
-            if (!chatEmotes || (message.startsWith("/") && !listOf("/pc", "/ac", "/gc", "/msg", "/w", "/r").any { message.startsWith(it) })) return@on
+            if (!chatEmotes || (message.startsWith("/") && !listOf("/pc", "/ac", "/gc", "/cc", "/msg", "/w", "/r").any { message.startsWith(it) })) return@on
 
             var replaced = false
             val words = message.split(" ").toMutableList()
@@ -120,6 +124,7 @@ object ChatCommands : Module(
             )
             ChatChannel.GUILD -> mapOf("coords" to coords, "odin" to odin, "boop" to boop, "cf" to coinFlip, "8ball" to eightBall, "dice" to dice, "racism" to racism, "ping" to ping, "tps" to tps, "time" to time)
             ChatChannel.PRIVATE -> mapOf("coords" to coords, "odin" to odin, "boop" to boop, "cf" to coinFlip, "8ball" to eightBall, "dice" to dice, "racism" to racism, "ping" to ping, "tps" to tps, "invite" to invite, "time" to time)
+            ChatChannel.COOP -> mapOf("coords" to coords, "odin" to odin, "boop" to boop, "cf" to coinFlip, "8ball" to eightBall, "dice" to dice, "racism" to racism, "ping" to ping, "tps" to tps, "time" to time)
         }
 
         val words = message.drop(1).split(" ").map { it.lowercase() }
@@ -216,6 +221,7 @@ object ChatCommands : Module(
             ChatChannel.GUILD -> sendCommand("gc $message")
             ChatChannel.PARTY -> sendCommand("pc $message")
             ChatChannel.PRIVATE -> sendCommand("msg $name $message")
+            ChatChannel.COOP -> sendCommand("cc $message")
         }
     }
 
@@ -263,6 +269,6 @@ object ChatCommands : Module(
     )
 
     private enum class ChatChannel {
-        PARTY, GUILD, PRIVATE
+        PARTY, GUILD, PRIVATE, COOP
     }
 }
