@@ -1,8 +1,8 @@
 package com.odtheking.odin.features.impl.dungeon.map
 
 import com.odtheking.odin.OdinMod.mc
+import com.odtheking.odin.events.FloorEnterEvent
 import com.odtheking.odin.events.LevelEvent
-import com.odtheking.odin.events.LocationChangeEvent
 import com.odtheking.odin.events.RoomEnterEvent
 import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.core.on
@@ -70,19 +70,20 @@ object WorldScan {
         }
 
         ClientChunkEvents.CHUNK_LOAD.register { _, chunk ->
-            if (!DungeonUtils.inDungeons) chunksToScan.add(IVec2(chunk.pos.x, chunk.pos.z))
+            if (DungeonUtils.floor == null) chunksToScan.add(IVec2(chunk.pos.x, chunk.pos.z))
             else scanChunk(chunk)
         }
+
         ClientChunkEvents.CHUNK_UNLOAD.register { _, chunk ->
             if (!DungeonUtils.inDungeons) chunksToScan.remove(IVec2(chunk.pos.x, chunk.pos.z))
         }
 
-        on<LocationChangeEvent> {
-            if (DungeonUtils.inDungeons) {
-                val level = mc.level ?: return@on
+        on<FloorEnterEvent> {
+            mc.execute {
+                val level = mc.level ?: return@execute
                 for (position in chunksToScan) scanChunk(level.getChunk(position.x, position.z))
+                chunksToScan.clear()
             }
-            chunksToScan.clear()
         }
     }
 
