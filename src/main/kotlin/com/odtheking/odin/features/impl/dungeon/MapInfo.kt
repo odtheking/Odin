@@ -176,7 +176,10 @@ object MapInfo : Module(
         if ((!DungeonUtils.inClear) && !it) return@HUD 0 to 0
 
         val secrets = if (it) 0 to 2 else DungeonUtils.currentRoom?.foundSecrets?.let { found ->
-            DungeonUtils.currentRoom?.data?.maxSecrets?.let { max -> found to max }
+            DungeonUtils.currentRoom?.data?.maxSecrets?.let { max ->
+                if (max == 0) return@HUD 0 to 0
+                found to max
+            }
         } ?: return@HUD 0 to 0
         val color = when {
             secrets.first * 2 < secrets.second -> "§c"

@@ -20,7 +20,7 @@ class DungeonRoom(var type: RoomType, initialPosition: IVec2, var data: RoomData
     var walkedInto: Boolean = false
     var clayPos: BlockPos? = null
     var highestBlock: Int? = null
-    var waypoints: MutableSet<DungeonWaypoints.DungeonWaypoint> = mutableSetOf()
+    @Transient var waypoints: MutableSet<DungeonWaypoints.DungeonWaypoint> = mutableSetOf()
 
     var checkmark: MapCheckmark = MapCheckmark.UNDISCOVERED
 

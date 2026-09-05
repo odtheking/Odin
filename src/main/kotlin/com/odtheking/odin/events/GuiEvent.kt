@@ -13,7 +13,5 @@ abstract class GuiEvent(val screen: Screen) : CancellableEvent() {
 
     class RenderSlot(screen: Screen, val guiGraphics: GuiGraphicsExtractor, val slot: Slot) : GuiEvent(screen)
 
-    class CustomTermGuiClick(screen: Screen, val slot: Int, val button: Int) : GuiEvent(screen)
-
     class DrawTooltip(screen: Screen, val guiGraphics: GuiGraphicsExtractor, val mouseX: Int, val mouseY: Int) : GuiEvent(screen)
 }

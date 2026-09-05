@@ -71,6 +71,7 @@ fun GuiGraphicsExtractor.renderDoors(doors: Collection<DungeonDoor>) {
 
 fun GuiGraphicsExtractor.renderPathHints(pathHints: Collection<DungeonTile>) {
     for ((position, room) in pathHints) {
+        if (room?.walkedInto == true) continue
         val (x, y) = position.x * MAP_ROOM_GAP to position.z * MAP_ROOM_GAP
 
         val colors = if (room?.type == RoomType.BLOOD) arrayOf(DungeonMap.bloodRoomColor.darker(0.5f))

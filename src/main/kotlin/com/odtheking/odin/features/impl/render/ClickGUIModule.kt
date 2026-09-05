@@ -7,16 +7,19 @@ import com.odtheking.odin.clickgui.HudManager
 import com.odtheking.odin.clickgui.settings.AlwaysActive
 import com.odtheking.odin.clickgui.settings.impl.*
 import com.odtheking.odin.events.ChatMessageEvent
+import com.odtheking.odin.events.FloorEnterEvent
+import com.odtheking.odin.events.RoomEnterEvent
+import com.odtheking.odin.events.SecretsUpdateEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Category
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.features.ModuleManager
-import com.odtheking.odin.utils.Color
-import com.odtheking.odin.utils.alert
-import com.odtheking.odin.utils.getChatBreak
-import com.odtheking.odin.utils.modMessage
+import com.odtheking.odin.features.impl.dungeon.map.DungeonMap
+import com.odtheking.odin.utils.*
 import com.odtheking.odin.utils.network.WebUtils.fetchJson
+import com.odtheking.odin.utils.network.WebUtils.gson
 import com.odtheking.odin.utils.network.WebUtils.postData
+import com.odtheking.odin.utils.skyblock.LocationUtils
 import com.odtheking.odin.utils.ui.rendering.NVGRenderer
 import kotlinx.coroutines.launch
 import net.minecraft.network.chat.ClickEvent
@@ -35,13 +38,24 @@ object ClickGUIModule : Module(
 ) {
     val enableNotification by BooleanSetting("Chat notifications", true, desc = "Sends a message when you toggle a module with a keybind")
     val clickGUIColor by ColorSetting("Color", Color(50, 150, 220), desc = "The color of the Click GUI.")
-
-    val roundedPanelBottom by BooleanSetting("Rounded Panel Bottoms", true, desc = "Whether to extend panels to make them rounded at the bottom.")
+    private val action by ActionSetting("Open HUD Editor", desc = "Opens the HUD editor when clicked.") { mc.setScreen(HudManager) }
 
     val hypixelApiUrl by StringSetting("API URL", "https://api.odtheking.com/hypixel/", 128, "The Hypixel API server to connect to.").hide()
     val webSocketUrl by StringSetting("Socket URL", "wss://ws.odtheking.com/", 128, "The Websocket server to connect to.").hide()
 
-    private val action by ActionSetting("Open HUD Editor", desc = "Opens the HUD editor when clicked.") { mc.setScreen(HudManager) }
+    init {
+        on<SecretsUpdateEvent> { DungeonMap.syncSocket.send(gson.toJson(room)) }
+
+        on<FloorEnterEvent> {
+            LocationUtils.lobbyId?.let { DungeonMap.syncSocket.connect("${webSocketUrl}$it") } ?: devMessage("Failed to connect to dungeon websocket, lobbyId is null.")
+        }
+
+        on<RoomEnterEvent> {
+            if (room == null) DungeonMap.syncSocket.shutdown()
+            else DungeonMap.syncSocket.send(gson.toJson(room))
+        }
+    }
+
     val devMessage by BooleanSetting("Developer Message", false, desc = "Sends development related messages to the chat.")
     val dungeonCoresLogging by BooleanSetting("Core loggings", false, desc = "")
 
@@ -78,7 +92,7 @@ object ClickGUIModule : Module(
     init {
         OdinMod.scope.launch {
             latestVersionNumber = checkNewerVersion(OdinMod.version.toString())
-            val name = OdinMod.mc.user.name.takeIf { !it.matches(Regex("Player\\d{2,3}")) } ?: return@launch
+            val name = mc.user.name.takeIf { !it.matches(Regex("Player\\d{2,3}")) } ?: return@launch
             postData("https://api.odtheking.com/tele/", """{"username": "$name", "version": "Fabric ${OdinMod.version}"}""")
         }
 

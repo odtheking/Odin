@@ -208,6 +208,7 @@ object MapScan {
 
             if (newCheckmark != null && newCheckmark != room.checkmark) {
                 room.checkmark = newCheckmark
+                if (newCheckmark == MapCheckmark.GREEN) room.foundSecrets = room.data?.maxSecrets ?: room.foundSecrets
                 CheckmarkUpdateEvent(room, newCheckmark).postAndCatch()
             }
         }
