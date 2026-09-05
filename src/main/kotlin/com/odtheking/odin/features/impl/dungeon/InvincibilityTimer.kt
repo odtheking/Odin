@@ -87,8 +87,10 @@ object InvincibilityTimer : Module(
         on<ChatMessageEvent> {
             if (onlyInDungeons && !DungeonUtils.inDungeons) return@on
             InvincibilityType.entries.firstOrNull { type -> value.matches(type.regex) }?.let { type ->
-                val seconds = mc.player?.getItemBySlot(EquipmentSlot.HEAD)?.loreString?.reversed()
-                    ?.firstNotNullOfOrNull { cooldownRegex.matchEntire(it)?.groupValues?.get(1)?.toIntOrNull() }
+                val seconds = if (type == InvincibilityType.BONZO) {
+                    mc.player?.getItemBySlot(EquipmentSlot.HEAD)?.loreString?.reversed()
+                        ?.firstNotNullOfOrNull { cooldownRegex.matchEntire(it)?.groupValues?.get(1)?.toIntOrNull() }
+                } else null
                 type.proc(seconds)
                 val usedMasks = InvincibilityType.entries.count { it.currentCooldown > 0 }
                 if (invincibilityAnnounce) sendCommand("pc ${type.name.lowercase().capitalizeFirst()} Procced! ($usedMasks/${InvincibilityType.entries.size})")
