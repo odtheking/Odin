@@ -7,12 +7,15 @@ import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.MessageEvent
 import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.core.on
+import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.render.textDim
 import com.odtheking.odin.utils.skyblock.MORT_REGEX
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.toFixed
+import net.minecraft.core.particles.ParticleTypes
+import net.minecraft.network.protocol.game.ClientboundLevelParticlesPacket
 
 object TickTimers : Module(
     name = "Tick Timers",
@@ -28,6 +31,7 @@ object TickTimers : Module(
     private val stormEndRegex = Regex("^\\[BOSS] Storm: I should have known that I stood no chance\\.$")
     private val stormStartRegex = Regex("^\\[BOSS] Storm: Pathetic Maxor, just like expected\\.$")
     private val stormPyRegex = Regex("^\\[BOSS] Storm: (ENERGY HEED MY CALL|THUNDER LET ME BE YOUR CATALYST)!$")
+    private val professorFireFreezeRegex = Regex("^\\[BOSS] The Professor: Oh\\? You found my Guardians' one weakness\\?$")
 
     private var necronTime = -1
 
@@ -100,6 +104,17 @@ object TickTimers : Module(
         else 0 to 0
     }
 
+    private var fireFreezeTime = -1
+    private const val FIREFREEZEACTIVATIONTIME = 100 //"const should not contain lowercase characters" yeah yeah go fuck urself
+
+    private val fireFreezeHud by HUD("Fire Freeze Hud", "Displays a timer for when to use fire freeze."){
+        val timeTillFreeze = fireFreezeTime - FIREFREEZEACTIVATIONTIME
+        if (it)                         textDim(formatTimer(50, 106, "Fire Freeze:"), 0, 0, Colors.MINECRAFT_DARK_RED)
+        else if (timeTillFreeze > 0)    textDim(formatTimer(timeTillFreeze, 106, "Fire Freeze:"), 0, 0, Colors.MINECRAFT_DARK_RED)
+        else if (fireFreezeTime >= 0)   textDim("Use Fire Freeze", 0, 0, Colors.MINECRAFT_DARK_RED)
+        else 0 to 0
+    }
+
     init {
         on<MessageEvent.Chat> {
             when {
@@ -124,6 +139,7 @@ object TickTimers : Module(
                     pyTriggered = true
                     pyTickTime = 95
                 }
+                message.matches(professorFireFreezeRegex) -> fireFreezeTime = 206
             }
         }
 
@@ -140,6 +156,7 @@ object TickTimers : Module(
             if (pyTickTime >= 0) pyTickTime--
             if (necronTime >= 0) necronTime--
             if (stormTick >= 0) stormTick++
+            if (fireFreezeTime >= 0) fireFreezeTime--
         }
 
         on<LevelEvent.Load> {
@@ -152,6 +169,7 @@ object TickTimers : Module(
             necronTime = -1
             secretsCounter = 0
             stormTick = -1
+            fireFreezeTime = -1
         }
     }
 
