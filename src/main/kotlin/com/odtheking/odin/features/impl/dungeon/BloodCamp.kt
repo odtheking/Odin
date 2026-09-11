@@ -32,8 +32,6 @@ object BloodCamp : Module(
 ) {
     private val predictionDropdown by DropdownSetting("Prediction Dropdown", true)
     private val movePrediction by BooleanSetting("Move Prediction", true, desc = "Predicts when watcher will move after its initial spawns. Only works on f7.").withDependency { predictionDropdown }
-    private val sendMoveTime by BooleanSetting("Move Message", true, desc = "Sends a message indicating when the watcher will move.").withDependency { movePrediction && predictionDropdown }
-    private val partyMoveTime by BooleanSetting("Party Move Message", false, desc = "Sends a message indicating when the watcher will move to party members.").withDependency { movePrediction && predictionDropdown }
     private val killTitle by BooleanSetting("Kill Title", true, desc = "Shows a title for when to kill the initial spawns.").withDependency { movePrediction && predictionDropdown }
 
     private val moveTimer by HUD("Move HUD", "Displays the time until the watcher moves.") { example ->
@@ -98,28 +96,14 @@ object BloodCamp : Module(
 
         on<MessageEvent.Chat> {
             if (!DungeonUtils.inClear) return@on
-            if (BLOOD_START_REGEX.matches(message)) startTime = currentTickTime
-            else if (BLOOD_MOVE_REGEX.matches(message)) {
-                firstSpawns = false
-                val tickTime = startTime ?: return@on
-                val predTicks = when (val moveTicks = (currentTickTime - tickTime) / 20 / 50) {
-                    in 31..<34 -> 36
-                    in 28..<31 -> 33
-                    in 25..<28 -> 30
-                    in 22..<25 -> 27
-                    in 1..<22 -> 24
-                    else -> moveTicks + 3
-                }
+            if (BLOOD_START_REGEX.matches(message)) {
+                moveTimeSeconds = 20f
 
-                moveTimeSeconds = predTicks / 20f
-                if (partyMoveTime) sendCommand("pc Watcher will move in ${moveTimeSeconds?.toFixed()}s.")
-                if (sendMoveTime) modMessage("Watcher will move in ${moveTimeSeconds?.toFixed()}s.")
-
-                schedule(predTicks.toInt(), true) {
+                schedule(400, true) {
                     if (killTitle) alert("Kill Mobs")
                     moveTimeSeconds = null
                 }
-            }
+            } else if (BLOOD_MOVE_REGEX.matches(message)) firstSpawns = false
         }
 
         on<EntityEvent.SetItemSlot> {
@@ -144,7 +128,6 @@ object BloodCamp : Module(
             currentTickTime = 0
             firstSpawns = true
             moveTimeSeconds = null
-            startTime = null
         }
 
         on<RenderBossBarEvent> {
