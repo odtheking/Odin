@@ -1,9 +1,11 @@
 package com.odtheking.odin.features.impl.nether
 
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
+import com.odtheking.odin.clickgui.settings.impl.NumberSetting
 import com.odtheking.odin.events.GuiEvent
+import com.odtheking.odin.events.ScreenEvent
+import com.odtheking.odin.events.SetSlotEvent
 import com.odtheking.odin.events.core.on
-import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.features.impl.dungeon.Croesus.cachedPrices
 import com.odtheking.odin.utils.*
@@ -13,8 +15,6 @@ import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.Style
 import net.minecraft.network.chat.TextColor
-import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket
-import net.minecraft.network.protocol.game.ClientboundOpenScreenPacket
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.Items
 import java.util.*
@@ -26,6 +26,9 @@ object Vesuvius : Module(
     private val hideClaimed by BooleanSetting("Hide Claimed", true, desc = "Hides chests that have already been claimed.")
     private val useSalvagePrices by BooleanSetting("Use Salvaged", false, desc = "Uses the essence you would get by salvaging the piece instead.")
 
+    private val kuudraPetBonus by NumberSetting("Kuudra Pet Bonus", 0.0, 0.0, 20.0, 0.05, "The essence bonus from Kuudra pet.", unit = "%")
+    private val lavaLeechBonus by NumberSetting("Lava Leech Bonus", 0.0, 0.0, 13.0, 0.05, "The essence bonus from the Lava Leech Shard.", unit = "%")
+
     private val vesuviusHud by HUD("Croesus Chest HUD", "Displays all chest contents with prices, sorted by profit.") {
         if (!it) return@HUD 0 to 0
         drawOverlay(true)
@@ -36,15 +39,15 @@ object Vesuvius : Module(
     private val shardRegex = Regex("^([A-Za-z' ]+) Shard(?: x(\\d+))?$")
     private val teethRegex = Regex("^Kuudra Teeth x(\\d+)$")
     private val pearlRegex = Regex("^Heavy Pearl x(\\d+)$")
-    private val chestRegex = Regex("^((Free|Paid) Chest Chest)|(Kuudra - .+)|Vesuvius$")
+    private val chestRegex = Regex("^((Free|Paid) Chest)|(Kuudra - .+)$")
     private val uselessLinesRegex = Regex("^Contents|Cost|Click to open!|FREE|Already opened!|Can't open another chest!|Paid Chest|")
-    private val salvageItemsRegex = Regex("^Boots|Chestplate|Helmet|Cloak|Aurora Staff|Hollow Wand")
+    private val salvageItemsRegex = Regex("Boots|Leggings|Chestplate|Helmet|Cloak|Aurora Staff|Hollow Wand")
 
     private val ultimateEnchants = setOf(
         "Fatal Tempo", "Inferno"
     )
 
-    private data class Key(val type: String, val coins: Int, val quantity: Int)
+    data class Key(val type: String, val coins: Int, val quantity: Int, val tier: Int)
     private data class ChestItem(val name: Component, val price: Double)
     private data class ChestData(val items: List<ChestItem>, val cost: Double, val profit: Double)
 
@@ -53,7 +56,7 @@ object Vesuvius : Module(
     init {
         on<GuiEvent.DrawTooltip> {
             val title = screen.title.string
-            if (vesuviusHud.enabled && title.matches(chestRegex) && currentChest != null && title != "Vesuvius") {
+            if (vesuviusHud.enabled && title.matches(chestRegex) && currentChest != null) {
                 guiGraphics.pose().pushMatrix()
                 val sf = mc.window.guiScale
                 guiGraphics.pose().scale(1f / sf, 1f / sf)
@@ -67,27 +70,28 @@ object Vesuvius : Module(
         }
 
         on<GuiEvent.RenderSlot> {
-            if (screen.title.string.equalsOneOf("Vesuvius", "Croesus") && slot.item.hoverName.string == "Kuudra's Hollow") {
+            if (screen.title.string.containsOneOf("Vesuvius", "Croesus") && slot.item.hoverName.string == "Kuudra's Hollow") {
                 if (hideClaimed && slot.item.loreString.any { it == "No more chests to open!"}) cancel()
             }
         }
 
-        onReceive<ClientboundContainerSetSlotPacket> {
-            val title = mc.gui.screen()?.title?.string ?:return@onReceive
-            if (!title.matches(chestRegex)) return@onReceive
-            if (slot == 31 && item.item == Items.CHEST) handleKuudraChest(item)
-            if (slot == 14 && item.item == Items.PLAYER_HEAD) handleKuudraChest(item)
+        on<SetSlotEvent> {
+            if (mc.gui.screen()?.title?.string?.matches(chestRegex) != true) return@on
+
+            if (slotIndex == 31 && itemStack.item == Items.CHEST) handleKuudraChest(itemStack)
+            if (slotIndex.equalsOneOf(13, 14) && itemStack.item == Items.PLAYER_HEAD) handleKuudraChest(itemStack)
         }
 
-        onReceive<ClientboundOpenScreenPacket> {
+        on<ScreenEvent.Open> {
             currentChest = null
         }
     }
 
-    private fun parseItemValue(component: Component): Double? {
-
+    fun parseItemValue(component: Component): Double? {
         var starCount = 0
         val salvage = salvageItemsRegex.containsMatchIn(component.string)
+
+        val essenceBonus = (1 + kuudraPetBonus / 100.0) * (1 + lavaLeechBonus / 100.0)
 
         component.visit({ style, str ->
             val count = str.count { it == '✪' }
@@ -95,25 +99,27 @@ object Vesuvius : Module(
                 when (style.color) {
                     TextColor.fromLegacyFormat(ChatFormatting.GOLD) -> starCount += count
                     TextColor.fromLegacyFormat(ChatFormatting.LIGHT_PURPLE) -> starCount += count * 2
-                    }
                 }
+            }
             Optional.empty<Unit>()
-            }, Style.EMPTY)
+        }, Style.EMPTY)
 
         val item = component.string.replace("✪", "").trim()
 
         if (item.contains("Molten") && useSalvagePrices) {
-            return (cachedPrices["ESSENCE_CRIMSON"] ?: 0.0) * 600.0
+            return (cachedPrices["ESSENCE_CRIMSON"] ?: 0.0) * 600.0 * essenceBonus
         }
 
         previewEnchantedBookRegex.find(item)?.destructured?.let { (name, level) ->
             val ult = if (name in ultimateEnchants) "ULTIMATE_" else ""
+
+            enchantReplacements[name]?.let { itemId -> return cachedPrices["$itemId-${romanToInt(level)}"] }
             return cachedPrices["ENCHANTED_BOOK-$ult${name.uppercase().replace(" ", "_")}-${romanToInt(level)}"]
         }
 
         previewEssenceRegex.find(item)?.destructured?.let { (name, quantity) ->
             val price = cachedPrices["ESSENCE_${name.uppercase()}"] ?: return null
-            return price * quantity.toDouble()
+            return price * quantity.toDouble() * essenceBonus
         }
 
         shardRegex.find(item)?.let { shard ->
@@ -132,6 +138,7 @@ object Vesuvius : Module(
         }
 
         if (useSalvagePrices && salvage) {
+            modMessage("$component}")
             val price = cachedPrices["ESSENCE_CRIMSON"] ?: 0.0
             val quantity = starCountToEssence[starCount] ?: 0.0
             return price * quantity
@@ -142,7 +149,7 @@ object Vesuvius : Module(
         return cachedPrices[item.uppercase().replace(" ", "_")]
     }
 
-    private fun getPriceOfKey(key: String): Double {
+    fun getPriceOfKey(key: String): Double {
         keys.find { it.type == key }?.let {
             val material = minOf(cachedPrices["ENCHANTED_RED_SAND"] ?: 0.0, cachedPrices["ENCHANTED_MYCELIUM"] ?: 0.0)
             val star = (cachedPrices["CORRUPTED_NETHER_STAR"] ?: 0.0)
@@ -170,9 +177,9 @@ object Vesuvius : Module(
             if (string.matches(uselessLinesRegex)) return@forEach
 
             val price = parseItemValue(component) ?: 0.0
-                profit += price
-                chestItems.add(ChestItem(component, price))
-            }
+            profit += price
+            chestItems.add(ChestItem(component, price))
+        }
         currentChest = ChestData(chestItems, chestCost, (profit - chestCost))
     }
 
@@ -185,7 +192,7 @@ object Vesuvius : Module(
         val profit = "%,.0f".format(dataToDisplay?.profit)
 
         dataToDisplay?.items?.forEach { item ->
-            val price: String = "%,.0f".format(item.price)
+            val price = "%,.0f".format(item.price)
 
             text(mc.font,item.name, 0, yOffset, -1)
             text(price, maxWidth - mc.font.width(price), yOffset, Colors.MINECRAFT_GRAY)
@@ -204,17 +211,24 @@ object Vesuvius : Module(
         return maxWidth to yOffset
     }
 
-    private val keys = listOf<Key>(
-        Key("Kuudra Key", 155200, 2),
-        Key("Hot Kuudra Key", 310400, 4),
-        Key("Burning Kuudra Key", 582000, 16),
-        Key("Fiery Kuudra Key", 1164000, 40),
-        Key("Infernal Kuudra Key", 2328000, 80)
+    val keys = listOf<Key>(
+        Key("Kuudra Key", 155200, 2, 1),
+        Key("Hot Kuudra Key", 310400, 4, 2),
+        Key("Burning Kuudra Key", 582000, 16, 3),
+        Key("Fiery Kuudra Key", 1164000, 40, 4),
+        Key("Infernal Kuudra Key", 2328000, 80, 5)
     )
 
     private val itemReplacements = mapOf(
         "Hellstorm Wand" to "HELLSTORM_STAFF",
         "Aurora Staff" to "RUNIC_STAFF",
+    )
+
+    private val enchantReplacements = mapOf(
+        "Vivacious Vitality" to "ENCHANTED_BOOK-FEROCIOUS_MANA",
+        "Hardened Vitality" to "ENCHANTED_BOOK-HARDENED_MANA",
+        "Strong Vitality" to "ENCHANTED_BOOK-STRONG_MANA",
+        "Vampiric Vitality" to "ENCHANTED_BOOK-MANA_VAMPIRE",
     )
 
     private val starCountToEssence = mapOf(
@@ -243,7 +257,7 @@ object Vesuvius : Module(
             ),
             ChestItem(
                 Component.literal("Crimson Essence").withStyle(ChatFormatting.LIGHT_PURPLE)
-                        .append(Component.literal(" x2000").withStyle(ChatFormatting.DARK_GRAY)),
+                    .append(Component.literal(" x2000").withStyle(ChatFormatting.DARK_GRAY)),
                 2420000.0
             ),
             ChestItem(

@@ -1,5 +1,6 @@
 package com.odtheking.odin.features.impl.dungeon.dungeonwaypoints
 
+import com.mojang.blaze3d.platform.InputConstants
 import com.odtheking.odin.OdinMod
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.events.InputEvent
@@ -20,7 +21,6 @@ import net.minecraft.core.BlockPos
 import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.BlockHitResult
 import net.minecraft.world.phys.HitResult
-import org.lwjgl.glfw.GLFW
 
 internal fun DungeonWaypoints.renderWaypoints(event: RenderExtractEvent) {
     if (!DungeonUtils.inClear) return
@@ -40,7 +40,7 @@ internal fun DungeonWaypoints.renderWaypoints(event: RenderExtractEvent) {
 }
 
 internal fun DungeonWaypoints.handleEditorInput(event: InputEvent) {
-    if (event.key.value != GLFW.GLFW_MOUSE_BUTTON_RIGHT || mc.gui.screen() != null) return
+    if (event.key.value != InputConstants.MOUSE_BUTTON_RIGHT || mc.gui.screen() != null) return
     cacheEtherwarpTarget()
     if (!allowEdits) return
     val room = DungeonUtils.currentRoom ?: return
@@ -54,7 +54,7 @@ internal fun DungeonWaypoints.handleEditorInput(event: InputEvent) {
         return
     }
     if (allowTextEdit && mc.player?.isCrouching == true) {
-        openWaypointTitlePrompt(room, blockPos, relativeAabbAt(pos), editableWaypoints)
+        openWaypointTitlePrompt(room, blockPos, room.getRelativeAABB(relativeAabbAt(pos)), editableWaypoints)
         return
     }
     if (editableWaypoints.removeIf { it.blockPos == blockPos }) {
@@ -63,7 +63,7 @@ internal fun DungeonWaypoints.handleEditorInput(event: InputEvent) {
         OdinMod.scope.launch { saveWaypoints() }
         return
     }
-    editableWaypoints.add(createWaypoint(blockPos, relativeAabbAt(pos)))
+    editableWaypoints.add(createWaypoint(blockPos, room.getRelativeAABB(relativeAabbAt(pos))))
     devMessage("Added waypoint at $blockPos")
     syncRoomToActive(room)
     OdinMod.scope.launch { saveWaypoints() }

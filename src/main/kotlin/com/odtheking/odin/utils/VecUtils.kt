@@ -26,9 +26,9 @@ fun Vec3.addVec(x: Number = 0.0, y: Number = 0.0, z: Number = 0.0): Vec3 =
     Vec3(this.x + x.toDouble(), this.y + y.toDouble(), this.z + z.toDouble())
 
 /**
- * Rotates a Vec3 around the given rotation.
+ * Rotates a BlockPos around the given rotation.
  * @param rotation The rotation to rotate around
- * @return The rotated Vec3
+ * @return The rotated BlockPos
  */
 fun BlockPos.rotateAroundNorth(rotation: RoomRotation): BlockPos =
     when (rotation) {
@@ -38,10 +38,18 @@ fun BlockPos.rotateAroundNorth(rotation: RoomRotation): BlockPos =
         RoomRotation.EAST ->  BlockPos(this.z, this.y, -this.x)
     }
 
+fun Vec3.rotateAroundNorth(rotation: RoomRotation): Vec3 =
+    when (rotation) {
+        RoomRotation.NORTH -> Vec3(-this.x, this.y, -this.z)
+        RoomRotation.WEST ->  Vec3(-this.z, this.y, this.x)
+        RoomRotation.SOUTH -> Vec3(this.x, this.y, this.z)
+        RoomRotation.EAST ->  Vec3(this.z, this.y, -this.x)
+    }
+
 /**
- * Rotates a Vec3 to the given rotation.
+ * Rotates a BlockPos to the given rotation.
  * @param rotation The rotation to rotate to
- * @return The rotated Vec3
+ * @return The rotated BlockPos
  */
 fun BlockPos.rotateToNorth(rotation: RoomRotation): BlockPos =
     when (rotation) {
@@ -49,6 +57,14 @@ fun BlockPos.rotateToNorth(rotation: RoomRotation): BlockPos =
         RoomRotation.WEST ->  BlockPos(this.z, this.y, -this.x)
         RoomRotation.SOUTH -> BlockPos(this.x, this.y, this.z)
         RoomRotation.EAST ->  BlockPos(-this.z, this.y, this.x)
+    }
+
+fun Vec3.rotateToNorth(rotation: RoomRotation): Vec3 =
+    when (rotation) {
+        RoomRotation.NORTH -> Vec3(-this.x, this.y, -this.z)
+        RoomRotation.WEST ->  Vec3(this.z, this.y, -this.x)
+        RoomRotation.SOUTH -> Vec3(this.x, this.y, this.z)
+        RoomRotation.EAST ->  Vec3(-this.z, this.y, this.x)
     }
 
 fun isXZInterceptable(box: AABB, range: Double, pos: Vec3, yaw: Float, pitch: Float): Boolean {

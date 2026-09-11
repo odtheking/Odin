@@ -12,16 +12,14 @@ import com.odtheking.odin.utils.render.drawTracer
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.toFixed
 import net.minecraft.core.BlockPos
+import net.minecraft.resources.Identifier
 import net.minecraft.world.InteractionResult
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.phys.Vec3
 
 object WaterSolver {
 
-    private var waterSolutions: Map<String, Map<String, Map<String, Map<String, List<Double>>>>> = JsonResourceLoader.loadJson(
-        "/assets/odin/puzzles/waterSolutions.json", emptyMap()
-    )
-
+    private var waterSolutions: Map<String, Map<String, Map<String, Map<String, List<Double>>>>> = JsonResourceLoader.loadJson(Identifier.fromNamespaceAndPath("odin", "puzzles/water-solutions.json")) ?: emptyMap()
     private var solutions = HashMap<LeverBlock, Array<Double>>()
     private var patternIdentifier = -1
     private var openedWaterTicks = -1

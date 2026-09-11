@@ -6,42 +6,59 @@ import com.odtheking.odin.clickgui.ClickGUI
 import com.odtheking.odin.clickgui.HudManager
 import com.odtheking.odin.clickgui.settings.AlwaysActive
 import com.odtheking.odin.clickgui.settings.impl.*
-import com.odtheking.odin.events.ChatPacketEvent
+import com.odtheking.odin.events.FloorEnterEvent
+import com.odtheking.odin.events.MessageEvent
+import com.odtheking.odin.events.RoomEnterEvent
+import com.odtheking.odin.events.SecretsUpdateEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Category
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.features.ModuleManager
-import com.odtheking.odin.utils.Color
-import com.odtheking.odin.utils.alert
-import com.odtheking.odin.utils.getChatBreak
-import com.odtheking.odin.utils.modMessage
+import com.odtheking.odin.features.impl.dungeon.map.DungeonMap
+import com.odtheking.odin.utils.*
 import com.odtheking.odin.utils.network.WebUtils.fetchJson
+import com.odtheking.odin.utils.network.WebUtils.gson
 import com.odtheking.odin.utils.network.WebUtils.postData
+import com.odtheking.odin.utils.skyblock.LocationUtils
 import kotlinx.coroutines.launch
 import net.minecraft.network.chat.ClickEvent
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.HoverEvent
-import org.lwjgl.glfw.GLFW
 import java.net.URI
 
 @AlwaysActive
 object ClickGUIModule : Module(
     name = "Click GUI",
     description = "Allows you to customize the UI.",
-    key = GLFW.GLFW_KEY_RIGHT_SHIFT
+    key = InputConstants.KEY_RSHIFT
 ) {
     val clickGuiScale by NumberSetting("Click GUI Size", 2, 1..4, 1, desc = "GUI scale the Click GUI is drawn at, whatever the video setting says.")
     val enableNotification by BooleanSetting("Chat notifications", true, desc = "Sends a message when you toggle a module with a keybind")
     val clickGUIColor by ColorSetting("Color", Color(50, 150, 220), desc = "The color of the Click GUI.")
-    val favoriteColors by MapSetting("Favorite Colors", mutableMapOf<Int, Color>()).hide()
+    private val action by ActionSetting("Open HUD Editor", desc = "Opens the HUD editor when clicked.") { mc.setScreen(HudManager) }
 
     val hypixelApiUrl by StringSetting("API URL", "https://api.odtheking.com/hypixel/", 128, "The Hypixel API server to connect to.", placeholder = "https://api.odtheking.com/hypixel/").hide()
     val webSocketUrl by StringSetting("Socket URL", "wss://ws.odtheking.com/", 128, "The Websocket server to connect to.", placeholder = "wss://ws.odtheking.com/").hide()
 
-    private val action by ActionSetting("Open HUD Editor", desc = "Opens the HUD editor when clicked.") { mc.setScreenAndShow(HudManager) }
     val devMessage by BooleanSetting("Developer Message", false, desc = "Sends development related messages to the chat.")
 
+    init {
+        on<SecretsUpdateEvent> { DungeonMap.syncSocket.send(gson.toJson(room)) }
+
+        on<FloorEnterEvent> {
+            LocationUtils.lobbyId?.let { DungeonMap.syncSocket.connect("${webSocketUrl}$it") } ?: devMessage("Failed to connect to dungeon websocket, lobbyId is null.")
+        }
+
+        on<RoomEnterEvent> {
+            if (room == null) DungeonMap.syncSocket.shutdown()
+            else DungeonMap.syncSocket.send(gson.toJson(room))
+        }
+    }
+
+    val dungeonCoresLogging by BooleanSetting("Core loggings", false, desc = "")
+
     private var firstJoin by BooleanSetting("First join", true, "").hide()
+    val favoriteColors by MapSetting("Favorite Colors", mutableMapOf<Int, Color>()).hide()
 
     override fun onKeybind() {
         mc.setScreenAndShow(ClickGUI)
@@ -79,8 +96,8 @@ object ClickGUIModule : Module(
             postData("https://api.odtheking.com/tele/", """{"username": "$name", "version": "Fabric ${OdinMod.version}"}""")
         }
 
-        on<ChatPacketEvent> {
-            if (!profileRegex.matches(value)) return@on
+        on<MessageEvent.Chat> {
+            if (!profileRegex.matches(message)) return@on
 
             if (firstJoin) {
                 firstJoin = false
@@ -111,31 +128,33 @@ object ClickGUIModule : Module(
 
             modMessage(
                 Component.literal(getChatBreak())
-                    .append(Component.literal("§3Odin update available: §f$latestVersionNumber\n\n"))
+                    .append("\n")
+                    .append(Component.literal("§3Odin update available: §f$latestVersionNumber\n"))
+                    .append(Component.literal("§7Click the links below to download the latest version.\n\n"))
                     .append(
-                        Component.literal("§bGitHub link").withStyle {
-                            it.withClickEvent(ClickEvent.OpenUrl(URI(RELEASE_LINK))).withHoverEvent(
-                                HoverEvent.ShowText(Component.literal(RELEASE_LINK))
-                            )
-                        }
-                    )
-                    .append(Component.literal("\n"))
-                    .append(
-                        Component.literal("§bModrinth Link").withStyle {
+                        Component.literal("    §a§nModrinth Link").withStyle {
                             it.withClickEvent(ClickEvent.OpenUrl(URI(MODRINTH_LINK))).withHoverEvent(
                                 HoverEvent.ShowText(Component.literal(MODRINTH_LINK))
                             )
                         }
                     )
-                    .append(Component.literal("\n"))
+                    .append(Component.literal("        "))
                     .append(
-                        Component.literal("§9Discord link").withStyle {
+                        Component.literal("§b§nGitHub link").withStyle {
+                            it.withClickEvent(ClickEvent.OpenUrl(URI(RELEASE_LINK))).withHoverEvent(
+                                HoverEvent.ShowText(Component.literal(RELEASE_LINK))
+                            )
+                        }
+                    )
+                    .append(Component.literal("        "))
+                    .append(
+                        Component.literal("§9§nDiscord link").withStyle {
                             it.withClickEvent(ClickEvent.OpenUrl(URI("https://discord.gg/2nCbC9hkxT"))).withHoverEvent(
                                 HoverEvent.ShowText(Component.literal("https://discord.gg/2nCbC9hkxT"))
                             )
                         }
                     )
-                    .append(Component.literal("\n\n${getChatBreak()}§r")),
+                    .append(Component.literal("\n${getChatBreak()}§r")),
                 ""
             )
 

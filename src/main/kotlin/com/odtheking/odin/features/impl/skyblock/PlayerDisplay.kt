@@ -4,6 +4,8 @@ import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.ColorSetting
 import com.odtheking.odin.clickgui.settings.impl.DropdownSetting
+import com.odtheking.odin.events.MessageEvent
+import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.render.textDim
@@ -129,16 +131,17 @@ object PlayerDisplay : Module(
     private val DEFENSE_REGEX = Regex("[\\d|,]+(§.)?\\uE008( Defense)?")
     private val VITALITY_REGEX = Regex("[\\d.,]+/[\\d.,]+(§.)?\\uE028")
 
-    @JvmStatic
-    fun modifyText(text: Component): Component {
-        if (!enabled) return text
-        var toReturn = text.string
-        toReturn = if (hideHealth) toReturn.replace(HEALTH_REGEX, "") else toReturn
-        toReturn = if (hideMana) toReturn.replace(MANA_REGEX, "") else toReturn
-        toReturn = if (hideOverflow) toReturn.replace(OVERFLOW_MANA_REGEX, "") else toReturn
-        toReturn = if (hideDefense) toReturn.replace(DEFENSE_REGEX, "") else toReturn
-        toReturn = if (hideVitality) toReturn.replace(VITALITY_REGEX, "") else toReturn
-        return Component.literal(toReturn.trim())
+    init {
+        on<MessageEvent.ModifyOverlay> {
+            val toReturn = component.string
+                .let { if (hideHealth) it.replace(HEALTH_REGEX, "") else it }
+                .let { if (hideMana) it.replace(MANA_REGEX, "") else it }
+                .let { if (hideOverflow) it.replace(OVERFLOW_MANA_REGEX, "") else it }
+                .let { if (hideDefense) it.replace(DEFENSE_REGEX, "") else it }
+                .let { if (hideVitality) it.replace(VITALITY_REGEX, "") else it }
+
+            component = Component.literal(toReturn.trim())
+        }
     }
 
     private fun generateText(current: Int, max: Int, icon: String): String =
@@ -161,13 +164,11 @@ object PlayerDisplay : Module(
     }
 
     @JvmStatic
-    fun shouldCancelOverlay(type: OverlayType): Boolean {
-        if (!enabled || !LocationUtils.isInSkyblock) return false
-        return when (type) {
+    fun shouldCancelOverlay(type: OverlayType): Boolean =
+        !(!enabled || !LocationUtils.isInSkyblock) && when (type) {
             OverlayType.ARMOR -> hideArmor
             OverlayType.HEARTS -> hideHearts
             OverlayType.FOOD -> hideFood
             OverlayType.XP -> hideXP
         }
-    }
 }

@@ -3,7 +3,6 @@ package com.odtheking.odin.features.impl.boss
 import com.odtheking.odin.clickgui.settings.impl.ColorSetting
 import com.odtheking.odin.events.*
 import com.odtheking.odin.events.core.on
-import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.Colors
@@ -14,7 +13,6 @@ import com.odtheking.odin.utils.render.textDim
 import com.odtheking.odin.utils.renderBoundingBox
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.core.BlockPos
-import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket
 import net.minecraft.world.effect.MobEffects
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.item.DyeColor
@@ -43,9 +41,9 @@ object LividSolver : Module(
     private var invulnTime = 0
 
     init {
-        on<ChatPacketEvent> {
+        on<MessageEvent.Chat> {
             if (!DungeonUtils.inDungeons || !DungeonUtils.isFloor(5)) return@on
-            if (value.matches(lividStartRegex)) invulnTime = 390
+            if (message.matches(lividStartRegex)) invulnTime = 390
         }
 
         on<BlockUpdateEvent> {
@@ -54,9 +52,9 @@ object LividSolver : Module(
             modMessage("Found Livid: §${currentLivid.colorCode}${currentLivid.entityName}")
         }
 
-        onReceive<ClientboundSetEntityDataPacket> {
-            if (!DungeonUtils.inBoss || !DungeonUtils.isFloor(5)) return@onReceive
-            currentLivid.entity = (mc.level?.getEntity(id) as? Player)?.takeIf { it.name.string == "${currentLivid.entityName} Livid" } ?: return@onReceive
+        on<EntityEvent.SetData> {
+            if (!DungeonUtils.inBoss || !DungeonUtils.isFloor(5)) return@on
+            currentLivid.entity = (entity as? Player)?.takeIf { it.name.string == "${currentLivid.entityName} Livid" } ?: return@on
         }
 
         on<RenderExtractEvent> {

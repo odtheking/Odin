@@ -1,5 +1,6 @@
 package com.odtheking.odin.clickgui
 
+import com.mojang.blaze3d.platform.InputConstants
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.clickgui.settings.impl.HUDSetting
 import com.odtheking.odin.clickgui.settings.impl.HudElement
@@ -12,7 +13,6 @@ import net.minecraft.client.gui.screens.Screen
 import net.minecraft.client.input.KeyEvent
 import net.minecraft.client.input.MouseButtonEvent
 import net.minecraft.network.chat.Component
-import org.lwjgl.glfw.GLFW
 import kotlin.math.sign
 
 object HudManager : Screen(Component.literal("HUD Manager")) {
@@ -78,12 +78,12 @@ object HudManager : Screen(Component.literal("HUD Manager")) {
         hovered(mouseX, mouseY)?.let { setting ->
             val element = setting.hud
             when (keyEvent.key) {
-                GLFW.GLFW_KEY_EQUAL -> resize(element, KEY_STEP)
-                GLFW.GLFW_KEY_MINUS -> resize(element, -KEY_STEP)
-                GLFW.GLFW_KEY_RIGHT -> element.x += NUDGE
-                GLFW.GLFW_KEY_LEFT -> element.x -= NUDGE
-                GLFW.GLFW_KEY_UP -> element.y -= NUDGE
-                GLFW.GLFW_KEY_DOWN -> element.y += NUDGE
+                InputConstants.KEY_EQUALS -> resize(element, KEY_STEP)
+                InputConstants.KEY_MINUS -> resize(element, -KEY_STEP)
+                InputConstants.KEY_RIGHT -> element.x += NUDGE
+                InputConstants.KEY_LEFT -> element.x -= NUDGE
+                InputConstants.KEY_UP -> element.y -= NUDGE
+                InputConstants.KEY_DOWN -> element.y += NUDGE
                 else -> return super.keyPressed(keyEvent)
             }
             element.clampToScreen()

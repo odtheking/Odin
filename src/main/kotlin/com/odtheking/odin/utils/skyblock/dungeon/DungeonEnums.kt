@@ -36,20 +36,21 @@ data class DungeonPlayer(
  */
 enum class Puzzle(
     val displayName: String,
+    val timeToBeat: Int,
     var status: PuzzleStatus? = null,
     var player: String? = null
 ) {
-    UNKNOWN("???"),
-    BLAZE("Higher Or Lower"),
-    BEAMS("Creeper Beams"),
-    WEIRDOS("Three Weirdos"),
-    TTT("Tic Tac Toe"),
-    WATER_BOARD("Water Board"),
-    TP_MAZE("Teleport Maze"),
-    BOULDER("Boulder"),
-    ICE_FILL("Ice Fill"),
-    ICE_PATH("Ice Path"),
-    QUIZ("Quiz");
+    UNKNOWN("???", 0),
+    BLAZE("Higher Or Lower", 6),
+    BEAMS("Creeper Beams", 6),
+    WEIRDOS("Three Weirdos", 2),
+    TTT("Tic Tac Toe", 0),
+    WATER_BOARD("Water Board", 10),
+    TP_MAZE("Teleport Maze", 6),
+    BOULDER("Boulder", 6),
+    ICE_FILL("Ice Fill", 10),
+    ICE_PATH("Ice Path", 0),
+    QUIZ("Quiz", 10);
 }
 
 enum class PuzzleStatus {

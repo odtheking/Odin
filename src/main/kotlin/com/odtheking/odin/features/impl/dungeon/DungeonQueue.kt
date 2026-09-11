@@ -3,8 +3,8 @@ package com.odtheking.odin.features.impl.dungeon
 import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.NumberSetting
-import com.odtheking.odin.events.ChatPacketEvent
 import com.odtheking.odin.events.LevelEvent
+import com.odtheking.odin.events.MessageEvent
 import com.odtheking.odin.events.PartyEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
@@ -29,6 +29,7 @@ object DungeonQueue : Module(
     private val disablePartyLeave by BooleanSetting("Disable on leave/kick", true, desc = "Disables the requeue on party leave message.").withDependency { autoRequeue }
 
     private val enterRegex = Regex("^-*\\n\\[[^]]+] (\\w+) entered (?:MM )?\\w+ Catacombs, Floor (\\w+)!\\n-*$")
+    private val timeoutExeceptionRegex = Regex("^Exception Connecting:ReadTimeoutException : null$")
     private val kickedInstanceRegex = Regex("^You are no longer allowed to access this instance!$")
     private val kickedJoiningRegex = Regex("^You were kicked while joining that server!$")
     private val extraStatsRegex = Regex(" {29}> EXTRA STATS <")
@@ -37,11 +38,11 @@ object DungeonQueue : Module(
     var disableRequeue = false
 
     init {
-        on<ChatPacketEvent> {
+        on<MessageEvent.Chat> {
             when {
-                announceKick && (value.matches(kickedJoiningRegex) || value.matches(kickedInstanceRegex)) -> sendCommand("pc I was kicked!")
-                value.matches(enterRegex) -> warpTimer = System.currentTimeMillis() + 30_000L
-                autoRequeue && value.matches(extraStatsRegex) -> {
+                announceKick && (message.matches(kickedJoiningRegex) || message.matches(kickedInstanceRegex) || message.matches(timeoutExeceptionRegex)) -> sendCommand("pc I was kicked!")
+                message.matches(enterRegex) -> warpTimer = System.currentTimeMillis() + 30_000L
+                autoRequeue && message.matches(extraStatsRegex) -> {
                     if (disableRequeue.also { disableRequeue = false }) return@on
 
                     schedule(requeueDelay * 20) {

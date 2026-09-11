@@ -3,6 +3,7 @@ package com.odtheking.odin.clickgui.settings.impl
 import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
+import com.mojang.blaze3d.platform.InputConstants
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.clickgui.GuiTheme
 import com.odtheking.odin.clickgui.settings.RenderableSetting
@@ -18,7 +19,6 @@ import com.odtheking.odin.utils.ui.animations.Tween
 import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.input.KeyEvent
 import net.minecraft.client.input.MouseButtonEvent
-import org.lwjgl.glfw.GLFW
 import kotlin.math.round
 import kotlin.math.roundToInt
 
@@ -130,8 +130,8 @@ class NumberSetting<E>(
 
     override fun keyPressed(event: KeyEvent): Boolean {
         val steps = when (event.key) {
-            GLFW.GLFW_KEY_RIGHT, GLFW.GLFW_KEY_EQUAL -> 1
-            GLFW.GLFW_KEY_LEFT, GLFW.GLFW_KEY_MINUS -> -1
+            InputConstants.KEY_RIGHT, InputConstants.KEY_EQUALS -> 1
+            InputConstants.KEY_LEFT, InputConstants.KEY_MINUS -> -1
             else -> return false
         }
         nudge(steps)

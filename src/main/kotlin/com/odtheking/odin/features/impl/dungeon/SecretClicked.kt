@@ -2,8 +2,8 @@ package com.odtheking.odin.features.impl.dungeon
 
 import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.*
-import com.odtheking.odin.events.ChatPacketEvent
 import com.odtheking.odin.events.LevelEvent
+import com.odtheking.odin.events.MessageEvent
 import com.odtheking.odin.events.RenderExtractEvent
 import com.odtheking.odin.events.SecretPickupEvent
 import com.odtheking.odin.events.core.on
@@ -27,10 +27,10 @@ object SecretClicked : Module(
 ) {
     private val boxesDropdown by DropdownSetting("Secret Boxes Dropdown", desc = "Shows settings for the boxes drawn around clicked secrets.")
     private val boxes by BooleanSetting("Secret Boxes", true, desc = "Whether or not to render boxes around clicked secrets.").withDependency { boxesDropdown }
-    private val style by SelectorSetting("Style", BoxStyle.OUTLINE, desc = "The style of the box.").withDependency { boxesDropdown && boxes }
-    private val color by ColorSetting("Color", Colors.MINECRAFT_GOLD.withAlpha(.4f), true, desc = "The color of the box.").withDependency { boxesDropdown && boxes }
+    private val style by SelectorSetting("Box style", BoxStyle.FILLED_OUTLINE, desc = "The style of the box.").withDependency { boxesDropdown && boxes }
+    private val color by ColorSetting("Box color", Colors.MINECRAFT_GOLD.withAlpha(.8f), true, desc = "The color of the box.").withDependency { boxesDropdown && boxes }
     private val depthCheck by BooleanSetting("Depth check", false, desc = "Boxes show through walls.").withDependency { boxesDropdown && boxes }
-    private val lockedColor by ColorSetting("Locked Color", Colors.MINECRAFT_RED.withAlpha(.4f), true, desc = "The color of the box when the chest is locked.").withDependency { boxesDropdown && boxes }
+    private val lockedColor by ColorSetting("Locked Color", Colors.MINECRAFT_RED.withAlpha(.8f), true, desc = "The color of the box when the chest is locked.").withDependency { boxesDropdown && boxes }
     private val timeToStay by NumberSetting("Time To Stay", 7, 1..120, 0.5, desc = "The time the chests should remain highlighted.", unit = "s").withDependency { boxesDropdown && boxes }
     private val boxInBoss by BooleanSetting("Box In Boss", false, desc = "Highlight clicks in boss.").withDependency { boxesDropdown && boxes }
     private val toggleItems by BooleanSetting("Item Boxes", true, desc = "Render boxes for collected items.").withDependency { boxesDropdown && boxes }
@@ -60,8 +60,8 @@ object SecretClicked : Module(
             secretChime()
         }
 
-        on<ChatPacketEvent> {
-            if (value == "That chest is locked!") clickedSecretsList.lastOrNull()?.locked = true
+        on<MessageEvent.Chat> {
+            if (message == "That chest is locked!") clickedSecretsList.lastOrNull()?.locked = true
         }
 
         on<RenderExtractEvent> {

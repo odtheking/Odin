@@ -1,9 +1,8 @@
 package com.odtheking.odin.features.impl.dungeon
 
 import com.odtheking.odin.OdinMod.scope
-import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
-import com.odtheking.odin.events.ChatPacketEvent
 import com.odtheking.odin.events.LevelEvent
+import com.odtheking.odin.events.MessageEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.handlers.schedule
@@ -11,15 +10,12 @@ import com.odtheking.odin.utils.modMessage
 import com.odtheking.odin.utils.network.hypixelapi.RequestUtils
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonPlayer
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 object SecretsCounter : Module(
     name = "Secrets Counter",
     description = "Counts secrets for each player and shows results at the end of a dungeon run."
 ) {
-    private val secretsEnabled by BooleanSetting("Secrets Counter", true, desc = "Track and display secrets found per player.")
-
     private val secretsBaseline = mutableMapOf<String, Long>()
     private var snapshotDone = false
 
@@ -32,20 +28,16 @@ object SecretsCounter : Module(
             snapshotDone = false
         }
 
-        on<ChatPacketEvent> {
-            if (dungeonEndRegex.containsMatchIn(value)) schedule(30) { fetchAndDisplay() }
+        on<MessageEvent.Chat> {
+            if (dungeonEndRegex.containsMatchIn(message)) schedule(30) { fetchAndDisplay() }
 
-            if (!dungeonStartRegex.containsMatchIn(value) || !secretsEnabled || snapshotDone) return@on
-            val teammates = DungeonUtils.dungeonTeammatesNoSelf.toList()
-            if (teammates.isEmpty()) return@on
+            if (!dungeonStartRegex.containsMatchIn(message) || snapshotDone) return@on
+            val teammates = DungeonUtils.dungeonTeammatesNoSelf.toList().ifEmpty { return@on }
             snapshotDone = true
-            schedule(10) {
-                scope.launch(Dispatchers.IO) {
-                    for (player in teammates) {
-                        val name = player.name
-                        RequestUtils.pullSecrets(name).onSuccess { secrets ->
-                            mc.execute { secretsBaseline[name] = secrets }
-                        }
+            scope.launch {
+                for ((teammateName) in teammates) {
+                    RequestUtils.pullSecrets(teammateName).onSuccess { secrets ->
+                        secretsBaseline[teammateName] = secrets
                     }
                 }
             }
@@ -54,18 +46,17 @@ object SecretsCounter : Module(
 
     private fun fetchAndDisplay() {
         val teammates = DungeonUtils.dungeonTeammatesNoSelf.toList().ifEmpty { return }
-        if (!secretsEnabled) return
+        val secretsDelta = mutableMapOf<String, Long?>()
 
-        scope.launch(Dispatchers.IO) {
-            val secretsDelta = mutableMapOf<String, Long?>()
-            for (player in teammates) {
-                val baseline = secretsBaseline[player.name]
-                RequestUtils.pullSecrets(player.name).onSuccess { newSecrets ->
-                    secretsDelta[player.name] = if (baseline != null) (newSecrets - baseline).coerceAtLeast(0L)
+        scope.launch {
+            for ((teammateName) in teammates) {
+                val baseline = secretsBaseline[teammateName]
+                RequestUtils.pullSecrets(teammateName).onSuccess { newSecrets ->
+                    secretsDelta[teammateName] = if (baseline != null) (newSecrets - baseline).coerceAtLeast(0L)
                     else null
                 }
             }
-            mc.execute { display(teammates, secretsDelta) }
+            display(teammates, secretsDelta)
         }
     }
 

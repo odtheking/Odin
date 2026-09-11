@@ -7,20 +7,17 @@ import com.odtheking.odin.events.RenderExtractEvent
 import com.odtheking.odin.events.RoomEnterEvent
 import com.odtheking.odin.events.ScoreUpdateEvent
 import com.odtheking.odin.events.core.on
-import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Color.Companion.withAlpha
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.alert
 import com.odtheking.odin.utils.modMessage
-import com.odtheking.odin.utils.noControlCodes
 import com.odtheking.odin.utils.render.drawFilledBox
 import com.odtheking.odin.utils.render.getStringWidth
 import com.odtheking.odin.utils.render.text
 import com.odtheking.odin.utils.render.textDim
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.core.BlockPos
-import net.minecraft.network.protocol.game.ClientboundSystemChatPacket
 import net.minecraft.world.phys.AABB
 
 object MapInfo : Module(
@@ -74,9 +71,9 @@ object MapInfo : Module(
         }
 
         val mimicText = buildString {
-            append("${if (DungeonUtils.mimicKilled) "§a" else "§c"}\uD83D\uDCE6")
-            append(" §8| ${if (DungeonUtils.princeKilled) "§a" else "§c"}\uD83E\uDD34")
-            append(" §8| ${if (DungeonUtils.batKilled) "§a" else "§c"}\uD83E\uDD87")
+            append("${if (DungeonUtils.mimicKilled) "§a" else "§c"}M")
+            append(" §8| ${if (DungeonUtils.princeKilled) "§a" else "§c"}P")
+            append(" §8| ${if (DungeonUtils.batKilled) "§a" else "§c"}B")
         }
 
         val cryptText = buildString {
@@ -182,7 +179,12 @@ object MapInfo : Module(
     private val roomSecrets by HUD("Room Secrets", "Displays the number of secrets in the current room.") {
         if ((!DungeonUtils.inClear) && !it) return@HUD 0 to 0
 
-        val secrets = if (it) 0 to 2 else currentRoomSecrets ?: return@HUD 0 to 0
+        val secrets = if (it) 0 to 2 else DungeonUtils.currentRoom?.foundSecrets?.let { found ->
+            DungeonUtils.currentRoom?.data?.maxSecrets?.let { max ->
+                if (max == 0) return@HUD 0 to 0
+                found to max
+            }
+        } ?: return@HUD 0 to 0
         val color = when {
             secrets.first * 2 < secrets.second -> "§c"
             secrets.first * 4 < secrets.second * 3 -> "§e"
@@ -202,8 +204,6 @@ object MapInfo : Module(
     }
 
     private var portalAABB: AABB? = null
-    private var currentRoomSecrets: Pair<Int, Int>? = null
-    private val secretRegex = Regex("(\\d+)/(\\d+) Secrets")
     private var shownTitle = false
 
     init {
@@ -214,15 +214,7 @@ object MapInfo : Module(
             if (printWhenScore) modMessage("§b${DungeonUtils.score} §ascore reached in §6${DungeonUtils.dungeonTime} §8|| §e${DungeonUtils.floor?.name}.")
         }
 
-        onReceive<ClientboundSystemChatPacket> {
-            if (!overlay) return@onReceive
-            secretRegex.find(content.string.noControlCodes )?.destructured?.let { (found, total) ->
-                currentRoomSecrets = Pair(found.toIntOrNull() ?: 0, total.toIntOrNull() ?: 0)
-            }
-        }
-
         on<RoomEnterEvent> {
-            currentRoomSecrets = null
             if (room?.name == "Blood")
                 portalAABB = AABB.encapsulatingFullBlocks(room.getRealCoords(BlockPos(16, 69, 29)), room.getRealCoords(BlockPos(14, 69, 29))).inflate(0.0, 4.0, 0.0)
         }

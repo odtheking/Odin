@@ -17,7 +17,6 @@ import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.input.KeyEvent
 import net.minecraft.client.input.MouseButtonEvent
 import net.minecraft.resources.Identifier
-import org.lwjgl.glfw.GLFW
 
 class KeybindSetting(
     name: String,
@@ -96,8 +95,8 @@ class KeybindSetting(
     override fun keyPressed(event: KeyEvent): Boolean {
         if (!listening) return false
         when (event.key) {
-            GLFW.GLFW_KEY_ESCAPE, GLFW.GLFW_KEY_BACKSPACE -> value = InputConstants.UNKNOWN
-            GLFW.GLFW_KEY_ENTER -> Unit
+            InputConstants.KEY_ESCAPE, InputConstants.KEY_BACKSPACE -> value = InputConstants.UNKNOWN
+            InputConstants.KEY_RETURN -> Unit
             else -> value = InputConstants.getKey(event)
         }
         listening = false
@@ -137,11 +136,6 @@ class KeybindSetting(
             mc.options.save()
         }
 
-        fun InputConstants.Key.isDown(): Boolean = when {
-            this == InputConstants.UNKNOWN -> false
-            type == InputConstants.Type.MOUSE -> GLFW.glfwGetMouseButton(mc.window.handle(), value) == GLFW.GLFW_PRESS
-            value >= GLFW.GLFW_KEY_SPACE -> InputConstants.isKeyDown(mc.window, value)
-            else -> false
-        }
+        fun InputConstants.Key.isDown(): Boolean = InputConstants.isKeyDown(mc.window, value)
     }
 }

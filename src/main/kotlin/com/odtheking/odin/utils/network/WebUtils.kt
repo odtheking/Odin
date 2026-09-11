@@ -3,6 +3,7 @@ package com.odtheking.odin.utils.network
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
+import com.odtheking.odin.OdinMod
 import com.odtheking.odin.OdinMod.logger
 import kotlinx.coroutines.suspendCancellableCoroutine
 import java.io.InputStream
@@ -55,6 +56,7 @@ object WebUtils {
             .uri(URI.create(url))
             .header("Accept", "application/json")
             .header("User-Agent", USER_AGENT)
+            .header("X-Mod-Version", OdinMod.version.friendlyString)
             .GET()
             .timeout(Duration.ofSeconds(10))
             .build()
@@ -79,7 +81,10 @@ object WebUtils {
                 if (!cont.isActive) return@whenComplete
 
                 if (response.statusCode() in 200..299) cont.resume(Result.success(response))
-                else cont.resume(Result.failure(InputStreamException(response.body(), request.uri().toString())))
+                else {
+                    cont.resume(Result.failure(InputStreamException(response.body(), request.uri().toString())))
+                    logger.error("Request to ${request.uri()} failed with status code ${response.statusCode()}: $response")
+                }
             }
         }
     }

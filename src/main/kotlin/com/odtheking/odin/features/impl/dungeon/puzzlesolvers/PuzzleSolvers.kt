@@ -5,7 +5,6 @@ import com.odtheking.odin.clickgui.settings.impl.*
 import com.odtheking.odin.events.*
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
-import com.odtheking.odin.events.core.onSend
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.features.impl.dungeon.map.tile.RoomType
 import com.odtheking.odin.utils.*
@@ -14,6 +13,7 @@ import com.odtheking.odin.utils.handlers.TickTask
 import com.odtheking.odin.utils.render.BoxStyle
 import com.odtheking.odin.utils.render.textDim
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
+import com.odtheking.odin.utils.skyblock.dungeon.Puzzle
 import net.minecraft.core.BlockPos
 import net.minecraft.network.chat.ClickEvent
 import net.minecraft.network.chat.Component
@@ -21,7 +21,6 @@ import net.minecraft.network.chat.HoverEvent
 import net.minecraft.network.chat.Style
 import net.minecraft.network.protocol.game.ClientboundBlockEventPacket
 import net.minecraft.network.protocol.game.ClientboundPlayerPositionPacket
-import net.minecraft.network.protocol.game.ServerboundUseItemOnPacket
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.level.block.Blocks
 
@@ -150,15 +149,15 @@ object PuzzleSolvers : Module(
             if (tpMaze) TPMazeSolver.tpPacket(this)
         }
 
-        on<ChatPacketEvent> {
+        on<MessageEvent.Chat> {
             if (!DungeonUtils.inClear) return@on
-            if (draftPrompt && isInPuzzle) failRegex.find(value)?.destructured?.let {
+            if (draftPrompt && isInPuzzle) failRegex.find(message)?.destructured?.let {
                 modMessage("§7Click §ehere §7to fetch architect's draft", chatStyle = Style.EMPTY
                     .withClickEvent(ClickEvent.RunCommand("gfs architect's first draft 1"))
                     .withHoverEvent(HoverEvent.ShowText(Component.literal("Click to fetch the architect's draft"))))
             }
-            if (weirdosSolver) weirdosRegex.find(value)?.destructured?.let { (npc, message) -> WeirdosSolver.onNPCMessage(npc, message) }
-            if (quizSolver) QuizSolver.onMessage(value)
+            if (weirdosSolver) weirdosRegex.find(message)?.destructured?.let { (npc, message) -> WeirdosSolver.onNPCMessage(npc, message) }
+            if (quizSolver) QuizSolver.onMessage(message)
         }
 
         onReceive<ClientboundBlockEventPacket> {
@@ -175,14 +174,10 @@ object PuzzleSolvers : Module(
             }.takeIf { !it } ?: onPuzzleComplete(room.data?.name ?: return@onReceive)
         }
 
-        onSend<ServerboundUseItemOnPacket> {
-            if (!DungeonUtils.inClear || this.hand == InteractionHand.OFF_HAND) return@onSend
-            if (boulderSolver) BoulderSolver.playerInteract(this)
-       }
-
         on<UseItemOnPostEvent> {
             if (!DungeonUtils.inClear || this.hand == InteractionHand.OFF_HAND) return@on
             if (waterSolver) WaterSolver.waterInteract(this)
+            if (boulderSolver) BoulderSolver.playerInteract(this)
         }
 
         on<RenderExtractEvent> {
@@ -201,10 +196,14 @@ object PuzzleSolvers : Module(
     private val puzzlePBs = PersonalBest(this, "PuzzlePBs")
 
     fun onPuzzleComplete(puzzleName: String) {
-        puzzleTimersMap[puzzleName]?.let {
-            if (it.sentMessage) return
-            puzzlePBs.time(puzzleName, (System.currentTimeMillis() - it.timeEntered) / 1000f, "s§7!", "§a${puzzleName} §7solved in §6")
-            it.sentMessage = true
+        puzzleTimersMap[puzzleName]?.let { puzzleTimer ->
+            if (puzzleTimer.sentMessage) return
+
+            val puzzleTime = (System.currentTimeMillis() - puzzleTimer.timeEntered) / 1000f
+            if (puzzleTime < (Puzzle.entries.find { it.displayName == puzzleName }?.timeToBeat ?: 0)) return@onPuzzleComplete
+
+            puzzlePBs.time(puzzleName, puzzleTime, "s§7!", "§a${puzzleName} §7solved in §6")
+            puzzleTimer.sentMessage = true
         }
     }
 

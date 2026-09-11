@@ -1,11 +1,11 @@
 package com.odtheking.odin.utils.skyblock
 
 import com.odtheking.odin.OdinMod.mc
+import com.odtheking.odin.events.MessageEvent
+import com.odtheking.odin.events.SecretsUpdateEvent
 import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.core.on
-import com.odtheking.odin.events.core.onReceive
-import com.odtheking.odin.utils.noControlCodes
-import net.minecraft.network.protocol.game.ClientboundSystemChatPacket
+import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.world.entity.ai.attributes.Attributes
 import kotlin.math.floor
 
@@ -15,6 +15,7 @@ object ActionBarListener {
     private val OVERFLOW_MANA_REGEX = Regex("([\\d|,]+)\\uE017")
     private val DEFENSE_REGEX = Regex("([\\d|,]+)\\uE008( Defense)?")
     private val VITALITY_REGEX = Regex("([\\d.,]+)/([\\d.,]+)\\uE028")
+    private val SECRETS_REGEX = Regex("(\\d+)/(\\d+) Secrets")
 
     var currentHealth: Int = 0
         private set
@@ -45,28 +46,34 @@ object ActionBarListener {
             currentSpeed = floor((mc.player?.getAttribute(Attributes.MOVEMENT_SPEED)?.baseValue?.toFloat() ?: 0f) * 1000f).toInt()
         }
 
-        onReceive<ClientboundSystemChatPacket> {
-            if (!overlay) return@onReceive
-            val msg = content.string.noControlCodes
+        on<MessageEvent.Overlay> {
+            SECRETS_REGEX.find(message)?.destructured?.let { (found, max) ->
+                DungeonUtils.currentRoom?.let {
+                    val updatedFoundSecrets = found.toIntOrNull() ?: return@let
+                    if (it.data?.maxSecrets != max.toIntOrNull() || (it.foundSecrets ?: -1) >= updatedFoundSecrets) return@let
+                    it.foundSecrets = updatedFoundSecrets
+                    SecretsUpdateEvent(it, updatedFoundSecrets).postAndCatch()
+                }
+            }
 
-            HEALTH_REGEX.find(msg)?.destructured?.let { (_, maxHp) ->
+            HEALTH_REGEX.find(message)?.destructured?.let { (_, maxHp) ->
                 maxHealth = maxHp.replace(",", "").toIntOrNull() ?: maxHealth
             }
 
-            MANA_REGEX.find(msg)?.destructured?.let { (cMana, mMana) ->
+            MANA_REGEX.find(message)?.destructured?.let { (cMana, mMana) ->
                 currentMana = cMana.replace(",", "").toIntOrNull() ?: currentMana
                 maxMana = mMana.replace(",", "").toIntOrNull() ?: maxMana
             }
 
-            OVERFLOW_MANA_REGEX.find(msg)?.groupValues?.get(1)?.let {
+            OVERFLOW_MANA_REGEX.find(message)?.groupValues?.get(1)?.let {
                 overflowMana = it.replace(",", "").toIntOrNull() ?: overflowMana
             }
 
-            DEFENSE_REGEX.find(msg)?.groupValues?.get(1)?.let {
+            DEFENSE_REGEX.find(message)?.groupValues?.get(1)?.let {
                 currentDefense = it.replace(",", "").toIntOrNull() ?: currentDefense
             }
 
-            val vitalityMatch = VITALITY_REGEX.find(msg)
+            val vitalityMatch = VITALITY_REGEX.find(message)
             isVitalityShown = vitalityMatch != null
             vitalityMatch?.destructured?.let { (cVitality, mVitality) ->
                 currentVitality = cVitality.replace(",", "").toDoubleOrNull()?.toInt() ?: currentVitality

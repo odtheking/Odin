@@ -5,7 +5,7 @@ import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.ListSetting
 import com.odtheking.odin.clickgui.settings.impl.NumberSetting
 import com.odtheking.odin.events.LevelEvent
-import com.odtheking.odin.events.RenderExtractEvent
+import com.odtheking.odin.events.RenderEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onSend
 import com.odtheking.odin.features.Module
@@ -25,80 +25,75 @@ object PositionalMessages : Module(
     description = "Sends a message when you're near a certain position. /posmsg"
 ) {
     private val onlyDungeons by BooleanSetting("Only in Dungeons", true, desc = "Only sends messages when you're in a dungeon.")
-    private val oncePerWorld by BooleanSetting("Once Per World", false, desc = "Whether or not to only send each message once per world.")
     private val showPositions by BooleanSetting("Show Positions", true, desc = "Draws boxes/lines around the positions.")
-    private val cylinderHeight by NumberSetting("Height", 0.2, 0.1..5.0, 0.1, desc = "Height of the cylinder for in messages.").withDependency { showPositions }
-    private val depthCheck by BooleanSetting("Depth Check", true, desc = "Whether or not the boxes should be seen through walls. False = Through walls.").withDependency { showPositions }
+    private val cylinderHeight by NumberSetting("Height", 0.2f, 0.1..5.0, 0.1, desc = "Height of the cylinder for in messages.").withDependency { showPositions }
     private val displayMessage by BooleanSetting("Show Message", true, desc = "Whether or not to display the message in the box.").withDependency { showPositions }
-    private val messageSize by NumberSetting("Message Size", 1f, 0.1..4.0, 0.1f, desc = "Whether or not to display the message size in the box.").withDependency { showPositions && displayMessage }
+    private val messageSize by NumberSetting("Message Size", 1f, 0.1..4.0, 0.1f, desc = "The size at which to display the message in the box.").withDependency { showPositions && displayMessage }
 
-    data class PosMessage(val x: Double, val y: Double, val z: Double, val x2: Double?, val y2: Double?, val z2: Double?, val delay: Int, val distance: Double?, val color: Color, val message: String?)
+    data class PosMessage(val x: Double, val y: Double, val z: Double, val x2: Double?, val y2: Double?, val z2: Double?, val delay: Int, val distance: Double?, val color: Color, val message: String, val send: Boolean) {
+        @Transient
+        private var _center: Vec3? = null
+        val center: Vec3
+            get() = _center ?: Vec3((x + (x2 ?: x)) / 2, (y + (y2 ?: y)) / 2, (z + (z2 ?: z)) / 2).also { _center = it }
+
+        @Transient
+        private var _box: AABB? = null
+        val box: AABB?
+            get() {
+                if (_box == null && x2 != null && y2 != null && z2 != null) _box = AABB(x, y, z, x2, y2, z2)
+                return _box
+            }
+
+        @Transient
+        private var _radiusSquared: Double? = null
+        val radiusSquared: Double?
+            get() {
+                if (_radiusSquared == null) distance?.let { _radiusSquared = it * it }
+                return _radiusSquared
+            }
+    }
     val posMessageStrings by ListSetting("Pos Messages", mutableListOf<PosMessage>())
-    private val sentMessages = mutableMapOf<PosMessage, Boolean>()
+    private val sentMessages = mutableSetOf<PosMessage>()
 
     init {
         onSend<ServerboundMovePlayerPacket> {
-            posMessageSend()
+            if (onlyDungeons && !DungeonUtils.inBoss) return@onSend
+            posMessageStrings.forEach { posMessage ->
+                if (posMessage.send && posMessage !in sentMessages) posMessage.x2?.let { handleInString(posMessage) } ?: handleAtString(posMessage)
+            }
         }
 
         on<RenderExtractEvent> {
-            if (!showPositions || (onlyDungeons && !DungeonUtils.inDungeons)) return@on
-            val player = mc.player ?: return@on
+            if (!showPositions || (onlyDungeons && !DungeonUtils.inBoss)) return@on
             posMessageStrings.forEach { posMessage ->
-                val distanceToMessage = if (posMessage.distance != null)
-                    player.distanceToSqr(posMessage.x, posMessage.y, posMessage.z)
-                else {
-                    val centerX = (posMessage.x + (posMessage.x2 ?: posMessage.x)) / 2
-                    val centerY = (posMessage.y + (posMessage.y2 ?: posMessage.y)) / 2
-                    val centerZ = (posMessage.z + (posMessage.z2 ?: posMessage.z)) / 2
-                    player.distanceToSqr(centerX, centerY, centerZ)
-                }
-                if (distanceToMessage > 1024) return@forEach
-
                 if (posMessage.distance != null) {
-                    drawCylinder(Vec3(posMessage.x, posMessage.y, posMessage.z), posMessage.distance.toFloat(), cylinderHeight.toFloat(), color = posMessage.color, depth = depthCheck)
-                    if (displayMessage) posMessage.message?.let { drawText(it, Vec3(posMessage.x, posMessage.y + 1, posMessage.z), messageSize, depthCheck) }
+                    drawCylinder(posMessage.center, posMessage.distance.toFloat(), cylinderHeight, color = posMessage.color, depth = true)
+                    if (displayMessage) drawText(posMessage.message, Vec3(posMessage.x, posMessage.y + 1, posMessage.z), messageSize, true)
                 } else {
-                    val box = AABB(posMessage.x, posMessage.y, posMessage.z, posMessage.x2 ?: return@forEach, posMessage.y2 ?: return@forEach,posMessage.z2  ?: return@forEach)
-                    drawWireFrameBox(box, posMessage.color, depth = depthCheck)
-                    if (!displayMessage) return@forEach
-                    val center = Vec3((posMessage.x + posMessage.x2) / 2, (posMessage.y + posMessage.y2) / 2, (posMessage.z + posMessage.z2) / 2)
-                    posMessage.message?.let { drawText(it, center.add(0.0, 1.0, 0.0), messageSize, depthCheck) }
+                    drawWireFrameBox(posMessage.box ?: return@forEach, posMessage.color, depth = true)
+                    if (displayMessage) drawText(posMessage.message, posMessage.center.add(0.0, 1.0, 0.0), messageSize, true)
                 }
             }
         }
 
         on<LevelEvent.Load> {
-            if (oncePerWorld) sentMessages.forEach { (message) -> sentMessages[message] = false }
-        }
-    }
-
-    private fun posMessageSend() {
-        if (onlyDungeons && !DungeonUtils.inDungeons) return
-        posMessageStrings.forEach { message ->
-            message.x2?.let { handleInString(message) } ?: handleAtString(message)
+            sentMessages.clear()
         }
     }
 
     private fun handleAtString(posMessage: PosMessage) {
-        val msgSent = sentMessages.getOrDefault(posMessage, false)
         val player = mc.player ?: return
-        val radius = posMessage.distance ?: return
-        if (player.distanceToSqr(posMessage.x, posMessage.y, posMessage.z) <= radius * radius) {
-            if (!msgSent && player.distanceToSqr(posMessage.x, posMessage.y, posMessage.z) <= radius * radius)
-                schedule(posMessage.delay) { sendCommand("pc ${posMessage.message}") }
-            sentMessages[posMessage] = true
-        } else if (!oncePerWorld) sentMessages[posMessage] = false
+        val radiusSquared = posMessage.radiusSquared ?: return
+        if (player.distanceToSqr(posMessage.x, posMessage.y, posMessage.z) > radiusSquared) return
+        sentMessages.add(posMessage)
+        schedule(posMessage.delay) { sendCommand("pc ${posMessage.message}") }
     }
 
     private fun handleInString(posMessage: PosMessage) {
+        val aabb = posMessage.box ?: return
         val position = mc.player?.position() ?: return
-        val msgSent = sentMessages.getOrDefault(posMessage, false)
-        val aabb = AABB(posMessage.x, posMessage.y, posMessage.z, posMessage.x2 ?: return, posMessage.y2 ?: return, posMessage.z2 ?: return)
-        if (aabb.contains(position)) {
-            if (!msgSent && aabb.contains(position))
-                schedule(posMessage.delay) { sendCommand("pc ${posMessage.message}") }
-            sentMessages[posMessage] = true
-        } else if (!oncePerWorld) sentMessages[posMessage] = false
+        if (!aabb.contains(position)) return
+        sentMessages.add(posMessage)
+        schedule(posMessage.delay) { sendCommand("pc ${posMessage.message}") }
     }
 }

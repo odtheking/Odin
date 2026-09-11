@@ -4,17 +4,15 @@ import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.ColorSetting
 import com.odtheking.odin.events.LevelEvent
+import com.odtheking.odin.events.MessageEvent
 import com.odtheking.odin.events.RenderExtractEvent
 import com.odtheking.odin.events.core.on
-import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Color.Companion.withAlpha
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.itemId
-import com.odtheking.odin.utils.noControlCodes
 import com.odtheking.odin.utils.render.drawCylinder
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils.getAbilityCooldown
-import net.minecraft.network.protocol.game.ClientboundSystemChatPacket
 import net.minecraft.world.item.Items
 
 object GyroWand : Module(
@@ -30,9 +28,8 @@ object GyroWand : Module(
     private var cooldownTimer = 0L
 
     init {
-        onReceive<ClientboundSystemChatPacket> {
-            if (!overlay) return@onReceive
-            if (content.string.noControlCodes.matches(gravityStormRegex)) cooldownTimer = System.currentTimeMillis()
+        on<MessageEvent.ModifyOverlay> {
+            if (message.matches(gravityStormRegex)) cooldownTimer = System.currentTimeMillis()
         }
 
         on<RenderExtractEvent> {

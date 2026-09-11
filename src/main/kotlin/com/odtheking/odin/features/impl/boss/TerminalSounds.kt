@@ -2,8 +2,7 @@ package com.odtheking.odin.features.impl.boss
 
 import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
-import com.odtheking.odin.events.ChatPacketEvent
-import com.odtheking.odin.events.GuiEvent
+import com.odtheking.odin.events.MessageEvent
 import com.odtheking.odin.events.TerminalEvent
 import com.odtheking.odin.events.core.EventPriority
 import com.odtheking.odin.events.core.on
@@ -38,12 +37,8 @@ object TerminalSounds : Module(
             else if (shouldReplaceSounds && completeSounds && !clickSounds) playSoundSettings(completeSoundSettings())
         }
 
-        on<GuiEvent.SlotClick> (EventPriority.HIGHEST) {
-            if (shouldReplaceSounds) playSoundForSlot(slotId, button)
-        }
-
-        on<GuiEvent.CustomTermGuiClick> (EventPriority.HIGHEST) {
-            if (shouldReplaceSounds) playSoundForSlot(slot, button)
+        on<TerminalEvent.Click> (EventPriority.HIGHEST) {
+            if (shouldReplaceSounds) playSoundForSlot(slotIndex, button)
         }
 
         onReceive<ClientboundSoundPacket> {
@@ -51,11 +46,11 @@ object TerminalSounds : Module(
                 it.cancel()
         }
 
-        on<ChatPacketEvent> {
+        on<MessageEvent.Chat> {
             if (!DungeonUtils.inDungeons || !shouldReplaceSounds) return@on
             when {
-                value.matches(gateRegex) -> playSoundAtPlayer(SoundEvents.NOTE_BLOCK_PLING.value())
-                value.matches(coreRegex) -> playSoundAtPlayer(SoundEvents.NOTE_BLOCK_PLING.value())
+                message.matches(gateRegex) -> playSoundAtPlayer(SoundEvents.NOTE_BLOCK_PLING.value())
+                message.matches(coreRegex) -> playSoundAtPlayer(SoundEvents.NOTE_BLOCK_PLING.value())
             }
         }
     }
