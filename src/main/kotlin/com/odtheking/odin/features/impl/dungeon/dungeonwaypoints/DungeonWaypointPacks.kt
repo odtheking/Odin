@@ -84,7 +84,7 @@ fun DungeonRoom.setWaypoints() {
     val name = data?.name ?: return
     waypoints = DungeonWaypoints.allActiveWaypoints[name]
         ?.mapTo(mutableSetOf()) { waypoint ->
-            waypoint.copy(blockPos = getRealCoords(waypoint.blockPos))
+            waypoint.copy(blockPos = getRealCoords(waypoint.blockPos), aabb = getRealAABB(waypoint.aabb))
         } ?: mutableSetOf()
 }
 

@@ -56,7 +56,7 @@ internal fun DungeonWaypoints.handleEditorInput(event: InputEvent) {
         return
     }
     if (allowTextEdit && mc.player?.isCrouching == true) {
-        openWaypointTitlePrompt(room, blockPos, relativeAabbAt(pos), editableWaypoints)
+        openWaypointTitlePrompt(room, blockPos, room.getRelativeAABB(relativeAabbAt(pos)), editableWaypoints)
         return
     }
     if (editableWaypoints.removeIf { it.blockPos == blockPos }) {
@@ -65,7 +65,7 @@ internal fun DungeonWaypoints.handleEditorInput(event: InputEvent) {
         OdinMod.scope.launch { saveWaypoints() }
         return
     }
-    editableWaypoints.add(createWaypoint(blockPos, relativeAabbAt(pos)))
+    editableWaypoints.add(createWaypoint(blockPos, room.getRelativeAABB(relativeAabbAt(pos))))
     devMessage("Added waypoint at $blockPos")
     syncRoomToActive(room)
     OdinMod.scope.launch { saveWaypoints() }
