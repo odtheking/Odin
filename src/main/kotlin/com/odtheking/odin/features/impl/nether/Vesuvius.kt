@@ -75,13 +75,11 @@ object Vesuvius : Module(
             }
         }
 
-        on<GuiEvent.SlotUpdate> {
-            if (!screen.title.string.matches(chestRegex)) return@on
+        on<SetSlotEvent> {
+            if (mc.screen?.title?.string?.matches(chestRegex) != true) return@on
 
-            val item = packet.item
-
-            if (packet.slot == 31 && item.item == Items.CHEST) handleKuudraChest(item)
-            if (packet.slot.equalsOneOf(13, 14) && item.item == Items.PLAYER_HEAD) handleKuudraChest(item)
+            if (slotIndex == 31 && itemStack.item == Items.CHEST) handleKuudraChest(itemStack)
+            if (slotIndex.equalsOneOf(13, 14) && itemStack.item == Items.PLAYER_HEAD) handleKuudraChest(itemStack)
         }
 
         on<ScreenEvent.Open> {
@@ -90,7 +88,6 @@ object Vesuvius : Module(
     }
 
     fun parseItemValue(component: Component): Double? {
-
         var starCount = 0
         val salvage = salvageItemsRegex.containsMatchIn(component.string)
 

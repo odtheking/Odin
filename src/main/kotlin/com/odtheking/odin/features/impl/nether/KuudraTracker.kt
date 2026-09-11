@@ -4,8 +4,8 @@ import com.odtheking.odin.clickgui.settings.impl.ActionSetting
 import com.odtheking.odin.clickgui.settings.impl.ListSetting
 import com.odtheking.odin.clickgui.settings.impl.MapSetting
 import com.odtheking.odin.clickgui.settings.impl.NumberSetting
-import com.odtheking.odin.events.ChatPacketEvent
 import com.odtheking.odin.events.GuiEvent
+import com.odtheking.odin.events.MessageEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onSend
 import com.odtheking.odin.features.Module
@@ -22,7 +22,6 @@ import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.MutableComponent
 import net.minecraft.network.protocol.game.ServerboundContainerClickPacket
 import net.minecraft.world.item.Items
-import kotlin.let
 
 object KuudraTracker : Module(
     name = "Kuudra Tracker",
@@ -86,14 +85,14 @@ object KuudraTracker : Module(
             }
         }
 
-        on<ChatPacketEvent> {
+        on<MessageEvent.Chat> {
             val title = mc.screen?.title?.string ?: return@on
-            if (value.equalsOneOf("You cannot afford this!", "Whoa! Slow down there!") && title.matches(chestRegex)) {
+            if (message.equalsOneOf("You cannot afford this!", "Whoa! Slow down there!") && title.matches(chestRegex)) {
                 for (single in last.single) {
                     singleItems[single] = (singleItems.getOrDefault(single, 0) - 1).coerceAtLeast(0)
                 }
-                for (multi in last.multi) {
-                    multiItems[multi.component] = (multiItems.getOrDefault(multi.component, 0) - multi.amount).coerceAtLeast(0)
+                for ((itemComponent, amount) in last.multi) {
+                    multiItems[itemComponent] = (multiItems.getOrDefault(itemComponent, 0) - amount).coerceAtLeast(0)
                 }
                 totalKeys[last.key - 1]--
                 paid--
