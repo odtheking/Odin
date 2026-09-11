@@ -4,7 +4,7 @@ import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.ColorSetting
 import com.odtheking.odin.events.ChatPacketEvent
 import com.odtheking.odin.events.LevelEvent
-import com.odtheking.odin.events.RenderEvent
+import com.odtheking.odin.events.RenderExtractEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.features.Module
@@ -66,7 +66,7 @@ object DoorHighlight : Module(
             if (announceKeySpawn) alert("§${currentKey?.colorCode}${entity.name.string}§7 spawned!")
         }
 
-        on<RenderEvent.Extract> {
+        on<RenderExtractEvent> {
             if (!DungeonUtils.inClear) return@on
 
             DungeonScan.doors.forEach { (_, door) ->

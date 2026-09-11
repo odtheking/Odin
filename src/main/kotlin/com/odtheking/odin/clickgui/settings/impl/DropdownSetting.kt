@@ -7,7 +7,6 @@ import com.odtheking.odin.utils.ui.animations.Fade
 import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.input.MouseButtonEvent
 import net.minecraft.resources.Identifier
-import kotlin.String
 import kotlin.math.PI
 
 /**

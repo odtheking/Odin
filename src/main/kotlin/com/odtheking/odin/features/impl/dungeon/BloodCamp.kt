@@ -164,7 +164,7 @@ object BloodCamp : Module(
             bossBar.name = Component.literal(bossBar.progress.takeIf { it >= 0.05 }?.let { "${bossBar.name.string} ${(amount * it).roundToInt()}/$amount" } ?: return@on)
         }
 
-        on<RenderEvent.Extract> {
+        on<RenderExtractEvent> {
             if (!DungeonUtils.inClear || !bloodAssist) return@on
             val boxOffset = Vec3(boxSize / -2.0, 1.5, boxSize / -2.0)
             val partialTick = context.gameRenderer().mainCamera().getCameraEntityPartialTicks(mc.deltaTracker)

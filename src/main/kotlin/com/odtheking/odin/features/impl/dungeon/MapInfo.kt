@@ -3,7 +3,7 @@ package com.odtheking.odin.features.impl.dungeon
 import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.*
 import com.odtheking.odin.events.LevelEvent
-import com.odtheking.odin.events.RenderEvent
+import com.odtheking.odin.events.RenderExtractEvent
 import com.odtheking.odin.events.RoomEnterEvent
 import com.odtheking.odin.events.ScoreUpdateEvent
 import com.odtheking.odin.events.core.on
@@ -227,7 +227,7 @@ object MapInfo : Module(
                 portalAABB = AABB.encapsulatingFullBlocks(room.getRealCoords(BlockPos(16, 69, 29)), room.getRealCoords(BlockPos(14, 69, 29))).inflate(0.0, 4.0, 0.0)
         }
 
-        on<RenderEvent.Extract> {
+        on<RenderExtractEvent> {
             if (!highlightPortal || !DungeonUtils.inClear || DungeonUtils.score < 300) return@on
             portalAABB?.let { pos ->
                 drawFilledBox(pos, Colors.MINECRAFT_GREEN.withAlpha(0.5f), depth = true)

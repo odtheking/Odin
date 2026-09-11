@@ -1,7 +1,7 @@
 package com.odtheking.odin.features.impl.dungeon.puzzlesolvers
 
 import com.odtheking.odin.OdinMod.mc
-import com.odtheking.odin.events.RenderEvent
+import com.odtheking.odin.events.RenderExtractEvent
 import com.odtheking.odin.events.RoomEnterEvent
 import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.JsonResourceLoader
@@ -34,7 +34,7 @@ object BoulderSolver {
         }?.toMutableList() ?: return@with
     }
 
-    fun onRenderWorld(event: RenderEvent.Extract, showAllBoulderClicks: Boolean, boulderStyle: BoxStyle, boulderColor: Color) {
+    fun onRenderWorld(event: RenderExtractEvent, showAllBoulderClicks: Boolean, boulderStyle: BoxStyle, boulderColor: Color) {
         if (DungeonUtils.currentRoomName != "Boulder" || currentPositions.isEmpty()) return
         if (showAllBoulderClicks) currentPositions.forEach {
             event.drawStyledBox(it.render, boulderColor, boulderStyle, false)

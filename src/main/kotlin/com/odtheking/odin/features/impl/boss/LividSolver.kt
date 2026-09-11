@@ -8,8 +8,8 @@ import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.modMessage
-import com.odtheking.odin.utils.render.drawStyledBox
 import com.odtheking.odin.utils.render.BoxStyle
+import com.odtheking.odin.utils.render.drawStyledBox
 import com.odtheking.odin.utils.render.textDim
 import com.odtheking.odin.utils.renderBoundingBox
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
@@ -59,7 +59,7 @@ object LividSolver : Module(
             currentLivid.entity = (mc.level?.getEntity(id) as? Player)?.takeIf { it.name.string == "${currentLivid.entityName} Livid" } ?: return@onReceive
         }
 
-        on<RenderEvent.Extract> {
+        on<RenderExtractEvent> {
             if (!DungeonUtils.inBoss || !DungeonUtils.isFloor(5) || mc.player?.getEffect(MobEffects.BLINDNESS) != null) return@on
             currentLivid.entity?.let { entity ->
                 drawStyledBox(entity.renderBoundingBox, highlightColor, BoxStyle.FILLED_OUTLINE, true)

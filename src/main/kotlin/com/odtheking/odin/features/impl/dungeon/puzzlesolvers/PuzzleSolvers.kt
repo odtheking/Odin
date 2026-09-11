@@ -2,7 +2,6 @@ package com.odtheking.odin.features.impl.dungeon.puzzlesolvers
 
 import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.*
-import com.odtheking.odin.utils.render.BoxStyle
 import com.odtheking.odin.events.*
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
@@ -12,6 +11,7 @@ import com.odtheking.odin.features.impl.dungeon.map.tile.RoomType
 import com.odtheking.odin.utils.*
 import com.odtheking.odin.utils.Color.Companion.withAlpha
 import com.odtheking.odin.utils.handlers.TickTask
+import com.odtheking.odin.utils.render.BoxStyle
 import com.odtheking.odin.utils.render.textDim
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.core.BlockPos
@@ -185,7 +185,7 @@ object PuzzleSolvers : Module(
             if (waterSolver) WaterSolver.waterInteract(this)
         }
 
-        on<RenderEvent.Extract> {
+        on<RenderExtractEvent> {
             if (!DungeonUtils.inClear) return@on
             if (iceFillSolver) IceFillSolver.onRenderWorld(this, iceFillColor)
             if (weirdosSolver) WeirdosSolver.onRenderWorld(this, weirdosColor, weirdosWrongColor, weirdosStyle)

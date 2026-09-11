@@ -14,7 +14,6 @@ import com.odtheking.odin.utils.romanToInt
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import net.minecraft.network.protocol.game.*
-import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.EntityTypes
 import net.minecraft.world.entity.player.Player
 import kotlin.jvm.optionals.getOrNull

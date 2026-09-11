@@ -4,7 +4,7 @@ import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.ColorSetting
 import com.odtheking.odin.events.ChatPacketEvent
 import com.odtheking.odin.events.LevelEvent
-import com.odtheking.odin.events.RenderEvent
+import com.odtheking.odin.events.RenderExtractEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Color.Companion.withAlpha
@@ -111,7 +111,7 @@ object InactiveWaypoints : Module(
             resetState()
         }
 
-        on<RenderEvent.Extract> {
+        on<RenderExtractEvent> {
             if (inactiveList.isEmpty() || DungeonUtils.getF7Phase() != M7Phases.P3) return@on
             inactiveList.forEach {
                 val name = it.name.string

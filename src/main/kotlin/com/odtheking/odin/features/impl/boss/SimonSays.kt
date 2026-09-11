@@ -126,7 +126,7 @@ object SimonSays : Module(
             }
         }
 
-        on<RenderEvent.Extract> {
+        on<RenderExtractEvent> {
             if (DungeonUtils.getF7Phase() != M7Phases.P3 || clickNeeded >= clickInOrder.size) return@on
 
             for (index in clickNeeded until clickInOrder.size) {

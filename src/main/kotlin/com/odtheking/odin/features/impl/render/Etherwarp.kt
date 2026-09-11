@@ -5,7 +5,7 @@ import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.ColorSetting
 import com.odtheking.odin.clickgui.settings.impl.DropdownSetting
 import com.odtheking.odin.clickgui.settings.impl.SelectorSetting
-import com.odtheking.odin.events.RenderEvent
+import com.odtheking.odin.events.RenderExtractEvent
 import com.odtheking.odin.events.core.EventPriority
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
@@ -65,7 +65,7 @@ object Etherwarp : Module(
             it.cancel()
         }
 
-        on<RenderEvent.Extract> (EventPriority.LOW) {
+        on<RenderExtractEvent> (EventPriority.LOW) {
             if (mc.gui.screen() != null || !render) return@on
 
             val mainHandItem = mc.player?.mainHandItem ?: return@on

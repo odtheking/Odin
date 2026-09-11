@@ -4,7 +4,7 @@ import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.ColorSetting
 import com.odtheking.odin.clickgui.settings.impl.SelectorSetting
 import com.odtheking.odin.events.LevelEvent
-import com.odtheking.odin.events.RenderEvent
+import com.odtheking.odin.events.RenderExtractEvent
 import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
@@ -58,7 +58,7 @@ object Highlight : Module(
             entities.removeIf { entity -> !entity.isAlive }
         }
 
-        on<RenderEvent.Extract> {
+        on<RenderExtractEvent> {
             if (!highlightStar || !DungeonUtils.inClear) return@on
 
             entities.forEach { entity ->

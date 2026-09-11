@@ -3,7 +3,7 @@ package com.odtheking.odin.features.impl.nether
 import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.ColorSetting
-import com.odtheking.odin.events.RenderEvent
+import com.odtheking.odin.events.RenderExtractEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.*
@@ -27,7 +27,7 @@ object PearlWaypoints : Module(
     private val hideFarWaypoints by BooleanSetting("Hide Far Waypoints", true, desc = "Hides the waypoints that are not the closest to you.").withDependency { presetWaypoints }
 
     init {
-        on<RenderEvent.Extract> {
+        on<RenderExtractEvent> {
             if (!KuudraUtils.inKuudra || KuudraUtils.phase != 1) return@on
 
             var closest = true

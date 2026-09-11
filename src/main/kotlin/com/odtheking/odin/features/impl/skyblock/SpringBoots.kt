@@ -1,6 +1,6 @@
 package com.odtheking.odin.features.impl.skyblock
 
-import com.odtheking.odin.events.RenderEvent
+import com.odtheking.odin.events.RenderExtractEvent
 import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
@@ -62,7 +62,7 @@ object SpringBoots : Module(
             blockAmount = 0f
         }
 
-        on<RenderEvent.Extract> {
+        on<RenderExtractEvent> {
             if (!LocationUtils.isInSkyblock || blockAmount == 0f) return@on
             mc.player?.position()?.addVec(y = blockAmount)?.let { drawWireFrameBox(AABB.unitCubeFromLowerCorner(it), Colors.MINECRAFT_RED) }
         }

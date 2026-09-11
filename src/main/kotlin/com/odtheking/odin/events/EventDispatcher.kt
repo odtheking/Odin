@@ -32,7 +32,7 @@ object EventDispatcher {
         ClientTickEvents.START_LEVEL_TICK.register { world -> TickEvent.Start(world).postAndCatch() }
         ClientTickEvents.END_LEVEL_TICK.register { world -> TickEvent.End(world).postAndCatch() }
 
-        LevelRenderEvents.COLLECT_SUBMITS.register { context -> RenderEvent.Extract(context).postAndCatch() }
+        LevelRenderEvents.COLLECT_SUBMITS.register { context -> RenderExtractEvent(context).postAndCatch() }
 
         ScreenEvents.AFTER_INIT.register { _, screen, _, _ -> ScreenEvent.Open(screen).postAndCatch() }
         ScreenEvents.BEFORE_INIT.register { _, screen, _, _ ->

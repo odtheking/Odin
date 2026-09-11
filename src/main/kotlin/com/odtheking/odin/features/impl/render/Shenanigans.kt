@@ -1,7 +1,7 @@
 package com.odtheking.odin.features.impl.render
 
 import com.odtheking.odin.events.LevelEvent
-import com.odtheking.odin.events.RenderEvent
+import com.odtheking.odin.events.RenderExtractEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.utils.render.drawTexturedQuad
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
@@ -40,7 +40,7 @@ object Shenanigans {
     private var enabled = false
 
     init {
-        on<RenderEvent.Extract> {
+        on<RenderExtractEvent> {
             if (!enabled) return@on
             if (!DungeonUtils.isFloor(7) || !DungeonUtils.inBoss) return@on
 

@@ -42,7 +42,7 @@ class ColorSetting(
 
     fun applyHex(hex: String) {
         val digits = hex.filter { it.isHex() }
-        if (digits.length != hexLength) return
+        if (digits.length != hexLength || digits == this.hex) return
         value = Color(digits.padEnd(8, 'F'))
     }
 
@@ -175,7 +175,6 @@ class ColorSetting(
 
     override fun release() {
         holding = null
-        expand.progress(false)
         setFocused(null)
     }
 

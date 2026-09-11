@@ -4,7 +4,6 @@ import com.mojang.blaze3d.GpuFormat
 import com.mojang.blaze3d.pipeline.RenderPipeline
 import com.mojang.blaze3d.systems.RenderSystem
 import com.mojang.blaze3d.textures.FilterMode
-import com.mojang.blaze3d.textures.GpuTextureView
 import com.mojang.blaze3d.vertex.DefaultVertexFormat
 import com.mojang.blaze3d.vertex.VertexConsumer
 import com.mojang.blaze3d.vertex.VertexFormat
@@ -19,11 +18,7 @@ import net.minecraft.client.renderer.state.gui.GuiElementRenderState
 import net.minecraft.resources.Identifier
 import org.joml.Matrix3x2f
 import org.joml.Matrix3x2fc
-import kotlin.math.ceil
-import kotlin.math.floor
-import kotlin.math.max
-import kotlin.math.min
-import kotlin.math.roundToInt
+import kotlin.math.*
 
 object RoundedRectRenderer {
 

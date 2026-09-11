@@ -4,7 +4,7 @@ import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.ColorSetting
 import com.odtheking.odin.clickgui.settings.impl.NumberSetting
-import com.odtheking.odin.events.RenderEvent
+import com.odtheking.odin.events.RenderExtractEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Colors
@@ -30,7 +30,7 @@ object KuudraInfo : Module(
     }
 
     init {
-        on<RenderEvent.Extract> {
+        on<RenderExtractEvent> {
             if (!KuudraUtils.inKuudra) return@on
 
             KuudraUtils.kuudraEntity?.let {

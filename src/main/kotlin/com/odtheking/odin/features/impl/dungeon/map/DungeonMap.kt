@@ -12,7 +12,6 @@ import com.odtheking.odin.utils.Color.Companion.withAlpha
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.render.hollowFill
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
-import net.minecraft.client.gui.GuiGraphicsExtractor
 
 object DungeonMap : Module(
     name = "Dungeon Map",

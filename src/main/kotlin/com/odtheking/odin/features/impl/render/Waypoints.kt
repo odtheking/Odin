@@ -7,7 +7,7 @@ import com.odtheking.odin.clickgui.settings.impl.KeybindSetting
 import com.odtheking.odin.clickgui.settings.impl.NumberSetting
 import com.odtheking.odin.events.ChatPacketEvent
 import com.odtheking.odin.events.LevelEvent
-import com.odtheking.odin.events.RenderEvent
+import com.odtheking.odin.events.RenderExtractEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Color
@@ -61,7 +61,7 @@ object Waypoints : Module(
             addTempWaypoint("§6$name", x.toIntOrNull() ?: return@on, y.toIntOrNull() ?: return@on, z.toIntOrNull() ?: return@on)
         }
 
-        on<RenderEvent.Extract> {
+        on<RenderExtractEvent> {
             temporaryWaypoints.removeAll {
                 drawCustomBeacon(it.name, it.blockPos, it.color)
                 System.currentTimeMillis() > it.timeAdded + it.duration

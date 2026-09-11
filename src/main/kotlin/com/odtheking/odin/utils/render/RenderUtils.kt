@@ -4,7 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.blaze3d.vertex.VertexConsumer
 import com.odtheking.mixin.accessors.BeaconBeamAccessor
 import com.odtheking.odin.OdinMod.mc
-import com.odtheking.odin.events.RenderEvent
+import com.odtheking.odin.events.RenderExtractEvent
 import com.odtheking.odin.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints
 import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.Color.Companion.multiplyAlpha
@@ -48,7 +48,7 @@ private fun resolveQuadRenderType(depth: Boolean, fullyOpaque: Boolean) = when {
     else -> CustomRenderType.QUADS_TRANSLUCENT_ESP
 }
 
-private fun RenderEvent.Extract.cameraRelativePose(offset: Vec3 = Vec3.ZERO): PoseStack {
+private fun RenderExtractEvent.cameraRelativePose(offset: Vec3 = Vec3.ZERO): PoseStack {
     val camera = mc.gameRenderer.mainCamera().position()
     val poseStack = context.poseStack()
     poseStack.pushPose()
@@ -56,7 +56,7 @@ private fun RenderEvent.Extract.cameraRelativePose(offset: Vec3 = Vec3.ZERO): Po
     return poseStack
 }
 
-fun RenderEvent.Extract.drawTexturedQuad(
+fun RenderExtractEvent.drawTexturedQuad(
     texture: Identifier,
     pos: Vec3,
     width: Float,
@@ -89,16 +89,16 @@ fun RenderEvent.Extract.drawTexturedQuad(
     poseStack.popPose()
 }
 
-fun RenderEvent.Extract.drawTracer(to: Vec3, color: Color, depth: Boolean, thickness: Float = 3f) {
+fun RenderExtractEvent.drawTracer(to: Vec3, color: Color, depth: Boolean, thickness: Float = 3f) {
     val cam = mc.gameRenderer.gameRenderState().levelRenderState.cameraRenderState
     drawLine(listOf(cam.pos.add(Vec3.directionFromRotation(cam.xRot, cam.yRot)), to), color, depth, thickness)
 }
 
-fun RenderEvent.Extract.drawLine(points: Collection<Vec3>, color: Color, depth: Boolean, thickness: Float = 3f) {
+fun RenderExtractEvent.drawLine(points: Collection<Vec3>, color: Color, depth: Boolean, thickness: Float = 3f) {
     drawLine(points, color, color, depth, thickness)
 }
 
-fun RenderEvent.Extract.drawLine(points: Collection<Vec3>, color1: Color, color2: Color, depth: Boolean, thickness: Float = 3f) {
+fun RenderExtractEvent.drawLine(points: Collection<Vec3>, color1: Color, color2: Color, depth: Boolean, thickness: Float = 3f) {
     if (points.size < 2) return
 
     val rgba1 = color1.rgba
@@ -119,7 +119,7 @@ fun RenderEvent.Extract.drawLine(points: Collection<Vec3>, color1: Color, color2
     poseStack.popPose()
 }
 
-fun RenderEvent.Extract.drawWireFrameBox(aabb: AABB, color: Color, thickness: Float = 3f, depth: Boolean = false) {
+fun RenderExtractEvent.drawWireFrameBox(aabb: AABB, color: Color, thickness: Float = 3f, depth: Boolean = false) {
     val renderType = resolveLineRenderType(depth, color.alphaFloat >= 0.999f)
 
     val poseStack = cameraRelativePose()
@@ -129,7 +129,7 @@ fun RenderEvent.Extract.drawWireFrameBox(aabb: AABB, color: Color, thickness: Fl
     poseStack.popPose()
 }
 
-fun RenderEvent.Extract.drawFilledBox(aabb: AABB, color: Color, depth: Boolean = false) {
+fun RenderExtractEvent.drawFilledBox(aabb: AABB, color: Color, depth: Boolean = false) {
     val renderType = resolveQuadRenderType(depth, color.alphaFloat >= 0.999f)
 
     val poseStack = cameraRelativePose()
@@ -146,7 +146,7 @@ fun RenderEvent.Extract.drawFilledBox(aabb: AABB, color: Color, depth: Boolean =
 
 enum class BoxStyle { FILLED, OUTLINE, FILLED_OUTLINE }
 
-fun RenderEvent.Extract.drawStyledBox(
+fun RenderExtractEvent.drawStyledBox(
     aabb: AABB,
     color: Color,
     style: BoxStyle = BoxStyle.FILLED,
@@ -162,7 +162,7 @@ fun RenderEvent.Extract.drawStyledBox(
     }
 }
 
-fun RenderEvent.Extract.drawBeaconBeam(position: BlockPos, color: Color) {
+fun RenderExtractEvent.drawBeaconBeam(position: BlockPos, color: Color) {
     val isScoping = mc.player?.isScoping == true
     val gameTime = mc.level?.gameTime ?: 0L
     val camera = mc.gameRenderer.mainCamera().position()
@@ -182,7 +182,7 @@ fun RenderEvent.Extract.drawBeaconBeam(position: BlockPos, color: Color) {
     poseStack.popPose()
 }
 
-fun RenderEvent.Extract.drawText(text: String, pos: Vec3, scale: Float, depth: Boolean) {
+fun RenderExtractEvent.drawText(text: String, pos: Vec3, scale: Float, depth: Boolean) {
     val scaleFactor = scale * 0.025f
     val displayMode = if (depth) Font.DisplayMode.POLYGON_OFFSET else Font.DisplayMode.SEE_THROUGH
     val string = Language.getInstance().getVisualOrder(FormattedText.of(text))
@@ -207,7 +207,7 @@ fun RenderEvent.Extract.drawText(text: String, pos: Vec3, scale: Float, depth: B
     poseStack.popPose()
 }
 
-fun RenderEvent.Extract.drawCustomBeacon(title: String, position: BlockPos, color: Color, increase: Boolean = true, distance: Boolean = true) {
+fun RenderExtractEvent.drawCustomBeacon(title: String, position: BlockPos, color: Color, increase: Boolean = true, distance: Boolean = true) {
     val dist = mc.player?.blockPosition()?.distManhattan(position) ?: return
 
     drawWireFrameBox(AABB(position), color, depth = false)
@@ -220,7 +220,7 @@ fun RenderEvent.Extract.drawCustomBeacon(title: String, position: BlockPos, colo
     )
 }
 
-fun RenderEvent.Extract.drawCylinder(
+fun RenderExtractEvent.drawCylinder(
     center: Vec3,
     radius: Float,
     height: Float,
@@ -265,7 +265,7 @@ fun RenderEvent.Extract.drawCylinder(
     poseStack.popPose()
 }
 
-fun RenderEvent.Extract.drawBoxes(waypoints: Collection<DungeonWaypoints.DungeonWaypoint>, disableDepth: Boolean) {
+fun RenderExtractEvent.drawBoxes(waypoints: Collection<DungeonWaypoints.DungeonWaypoint>, disableDepth: Boolean) {
     if (waypoints.isEmpty()) return
 
     for ((blockPos, color, filled, depth1, aabb1, _, _, isClicked) in waypoints) {

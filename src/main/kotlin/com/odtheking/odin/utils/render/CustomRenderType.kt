@@ -29,12 +29,14 @@ object CustomRenderType {
     val QUADS_OPAQUE: RenderType = RenderType.create(
         "quads-opaque",
         RenderSetup.builder(CustomRenderPipelines.QUADS_OPAQUE)
+            .setLayeringTransform(LayeringTransform.VIEW_OFFSET_Z_LAYERING)
             .createRenderSetup()
     )
 
     val QUADS_TRANSLUCENT: RenderType = RenderType.create(
         "quads-translucent",
         RenderSetup.builder(CustomRenderPipelines.QUADS_TRANSLUCENT)
+            .setLayeringTransform(LayeringTransform.VIEW_OFFSET_Z_LAYERING)
             .sortOnUpload()
             .createRenderSetup()
     )

@@ -4,7 +4,7 @@ import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.*
 import com.odtheking.odin.events.ChatPacketEvent
 import com.odtheking.odin.events.LevelEvent
-import com.odtheking.odin.events.RenderEvent
+import com.odtheking.odin.events.RenderExtractEvent
 import com.odtheking.odin.events.SecretPickupEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
@@ -64,7 +64,7 @@ object SecretClicked : Module(
             if (value == "That chest is locked!") clickedSecretsList.lastOrNull()?.locked = true
         }
 
-        on<RenderEvent.Extract> {
+        on<RenderExtractEvent> {
             if (!boxes || !DungeonUtils.inDungeons || (DungeonUtils.inBoss && !boxInBoss) || clickedSecretsList.isEmpty()) return@on
 
             clickedSecretsList.forEach { secret ->

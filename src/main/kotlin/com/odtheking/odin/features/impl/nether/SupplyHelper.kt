@@ -4,15 +4,11 @@ import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.ColorSetting
 import com.odtheking.odin.events.ChatPacketEvent
-import com.odtheking.odin.events.RenderEvent
+import com.odtheking.odin.events.RenderExtractEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
+import com.odtheking.odin.utils.*
 import com.odtheking.odin.utils.ChatManager.hideMessage
-import com.odtheking.odin.utils.Colors
-import com.odtheking.odin.utils.center
-import com.odtheking.odin.utils.equalsOneOf
-import com.odtheking.odin.utils.formatTime
-import com.odtheking.odin.utils.modMessage
 import com.odtheking.odin.utils.render.drawCustomBeacon
 import com.odtheking.odin.utils.render.drawText
 import com.odtheking.odin.utils.skyblock.KuudraUtils
@@ -52,7 +48,7 @@ object SupplyHelper : Module(
             }
         }
 
-        on<RenderEvent.Extract> {
+        on<RenderExtractEvent> {
             if (!KuudraUtils.inKuudra || KuudraUtils.phase != 1) return@on
             if (supplyDropWaypoints) {
                 Supply.entries.forEach { type ->

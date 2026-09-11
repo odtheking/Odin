@@ -5,7 +5,7 @@ import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.ListSetting
 import com.odtheking.odin.clickgui.settings.impl.NumberSetting
 import com.odtheking.odin.events.LevelEvent
-import com.odtheking.odin.events.RenderEvent
+import com.odtheking.odin.events.RenderExtractEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onSend
 import com.odtheking.odin.features.Module
@@ -41,7 +41,7 @@ object PositionalMessages : Module(
             posMessageSend()
         }
 
-        on<RenderEvent.Extract> {
+        on<RenderExtractEvent> {
             if (!showPositions || (onlyDungeons && !DungeonUtils.inDungeons)) return@on
             val player = mc.player ?: return@on
             posMessageStrings.forEach { posMessage ->

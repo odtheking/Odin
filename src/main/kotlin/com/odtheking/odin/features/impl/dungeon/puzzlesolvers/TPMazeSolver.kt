@@ -1,14 +1,10 @@
 package com.odtheking.odin.features.impl.dungeon.puzzlesolvers
 
 import com.odtheking.odin.OdinMod.mc
-import com.odtheking.odin.events.RenderEvent
+import com.odtheking.odin.events.RenderExtractEvent
 import com.odtheking.odin.events.RoomEnterEvent
-import com.odtheking.odin.utils.Color
+import com.odtheking.odin.utils.*
 import com.odtheking.odin.utils.Color.Companion.withAlpha
-import com.odtheking.odin.utils.Colors
-import com.odtheking.odin.utils.center
-import com.odtheking.odin.utils.getBlockBounds
-import com.odtheking.odin.utils.isXZInterceptable
 import com.odtheking.odin.utils.render.drawFilledBox
 import com.odtheking.odin.utils.render.drawTracer
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
@@ -68,7 +64,7 @@ object TPMazeSolver {
         }
     }
 
-    fun onRenderWorld(event: RenderEvent.Extract, mazeColorOne: Color, mazeColorMultiple: Color, mazeColorVisited: Color, showTracer: Boolean, tracerColor: Color) {
+    fun onRenderWorld(event: RenderExtractEvent, mazeColorOne: Color, mazeColorMultiple: Color, mazeColorVisited: Color, showTracer: Boolean, tracerColor: Color) {
         if (DungeonUtils.currentRoomName != "Teleport Maze") return
         tpPads.forEach {
             val aabb = it.getBlockBounds()?.move(it) ?: AABB(it)

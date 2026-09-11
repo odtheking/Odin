@@ -3,17 +3,12 @@ package com.odtheking.odin.features.impl.render
 import com.odtheking.odin.clickgui.settings.DevModule
 import com.odtheking.odin.clickgui.settings.impl.NumberSetting
 import com.odtheking.odin.clickgui.settings.impl.SelectorSetting
-import com.odtheking.odin.events.RenderEvent
+import com.odtheking.odin.events.RenderExtractEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Category
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Color
-import com.odtheking.odin.utils.render.drawCylinder
-import com.odtheking.odin.utils.render.drawFilledBox
-import com.odtheking.odin.utils.render.drawLine
-import com.odtheking.odin.utils.render.BoxStyle
-import com.odtheking.odin.utils.render.drawStyledBox
-import com.odtheking.odin.utils.render.drawWireFrameBox
+import com.odtheking.odin.utils.render.*
 import net.minecraft.world.phys.AABB
 import kotlin.math.ceil
 import kotlin.math.sqrt
@@ -30,7 +25,7 @@ object RenderTest : Module(
     val boxLevels by NumberSetting("Box Levels", 4, 1..12, 1, desc = "Vertical layers for boxes")
 
     init {
-        on<RenderEvent.Extract> {
+        on<RenderExtractEvent> {
             val player = mc.player ?: return@on
 
             val frameDelta = mc.deltaTracker.realtimeDeltaTicks

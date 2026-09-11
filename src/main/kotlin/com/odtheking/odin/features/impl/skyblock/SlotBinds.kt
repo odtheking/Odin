@@ -1,7 +1,6 @@
 package com.odtheking.odin.features.impl.skyblock
 
 import com.odtheking.odin.clickgui.settings.impl.*
-import com.odtheking.odin.clickgui.settings.impl.label
 import com.odtheking.odin.events.GuiEvent
 import com.odtheking.odin.events.ScreenEvent
 import com.odtheking.odin.events.core.on

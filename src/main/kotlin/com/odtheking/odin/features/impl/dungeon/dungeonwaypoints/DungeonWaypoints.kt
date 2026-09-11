@@ -110,7 +110,7 @@ object DungeonWaypoints : Module(
             lastEtherTime = 0L
         }
 
-        on<RenderEvent.Extract> {
+        on<RenderExtractEvent> {
             renderWaypoints(this)
         }
 

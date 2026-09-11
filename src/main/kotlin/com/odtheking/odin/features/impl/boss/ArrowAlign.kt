@@ -5,14 +5,10 @@ import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.KeybindSetting
 import com.odtheking.odin.clickgui.settings.impl.KeybindSetting.Companion.isDown
 import com.odtheking.odin.events.EntityInteractEvent
-import com.odtheking.odin.events.RenderEvent
+import com.odtheking.odin.events.RenderExtractEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
-import com.odtheking.odin.utils.addVec
-import com.odtheking.odin.utils.center
-import com.odtheking.odin.utils.component1
-import com.odtheking.odin.utils.component2
-import com.odtheking.odin.utils.component3
+import com.odtheking.odin.utils.*
 import com.odtheking.odin.utils.handlers.TickTask
 import com.odtheking.odin.utils.render.drawText
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
@@ -83,7 +79,7 @@ object ArrowAlign : Module(
             if (calculateClicksNeeded(currentFrameRotations?.get(frameIndex) ?: return@on, targetSolution?.get(frameIndex) ?: return@on) == 0) clicksRemaining.remove(frameIndex)
         }
 
-        on<RenderEvent.Extract> {
+        on<RenderExtractEvent> {
             if (clicksRemaining.isEmpty() || DungeonUtils.getF7Phase() != M7Phases.P3) return@on
             clicksRemaining.forEach { (index, clickNeeded) ->
                 val colorCode = when {

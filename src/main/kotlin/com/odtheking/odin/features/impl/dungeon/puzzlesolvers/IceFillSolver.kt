@@ -1,7 +1,7 @@
 package com.odtheking.odin.features.impl.dungeon.puzzlesolvers
 
 import com.odtheking.odin.OdinMod.mc
-import com.odtheking.odin.events.RenderEvent
+import com.odtheking.odin.events.RenderExtractEvent
 import com.odtheking.odin.events.RoomEnterEvent
 import com.odtheking.odin.features.impl.dungeon.map.tile.DungeonRoom
 import com.odtheking.odin.utils.Color
@@ -21,7 +21,7 @@ object IceFillSolver {
     private var currentPatterns: ArrayList<Vec3> = ArrayList()
 
 
-    fun onRenderWorld(event: RenderEvent.Extract, color: Color) {
+    fun onRenderWorld(event: RenderExtractEvent, color: Color) {
         if (!currentPatterns.isEmpty() && DungeonUtils.currentRoomName == "Ice Fill")
             event.drawLine(currentPatterns, color, true)
     }

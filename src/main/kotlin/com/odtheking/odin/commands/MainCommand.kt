@@ -5,8 +5,8 @@ import com.github.stivais.commodore.parsers.CommandParsable
 import com.github.stivais.commodore.utils.GreedyString
 import com.github.stivais.commodore.utils.SyntaxException
 import com.odtheking.odin.OdinMod.mc
-import com.odtheking.odin.clickgui.HudManager
 import com.odtheking.odin.clickgui.ClickGUI
+import com.odtheking.odin.clickgui.HudManager
 import com.odtheking.odin.features.ModuleManager
 import com.odtheking.odin.features.impl.render.ClickGUIModule
 import com.odtheking.odin.utils.*

@@ -105,7 +105,7 @@ object WitherDragons : Module(
             currentTick++
         }
 
-        on<RenderEvent.Extract> {
+        on<RenderExtractEvent> {
             if (DungeonUtils.getF7Phase() != M7Phases.P5) return@on
 
             WitherDragonsEnum.entries.forEach { dragon ->

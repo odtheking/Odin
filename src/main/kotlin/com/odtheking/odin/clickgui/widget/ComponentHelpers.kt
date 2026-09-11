@@ -4,11 +4,7 @@ import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.clickgui.GuiTheme
 import com.odtheking.odin.clickgui.hoverTint
 import com.odtheking.odin.utils.Colors
-import com.odtheking.odin.utils.render.Corners
-import com.odtheking.odin.utils.render.circle
-import com.odtheking.odin.utils.render.roundedRectClipped
-import com.odtheking.odin.utils.render.roundedRectOutlined
-import com.odtheking.odin.utils.render.roundedTexture
+import com.odtheking.odin.utils.render.*
 import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.components.EditBox
 import net.minecraft.network.chat.Component

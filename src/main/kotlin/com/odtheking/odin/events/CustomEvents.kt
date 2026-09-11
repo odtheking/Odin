@@ -7,7 +7,6 @@ import com.odtheking.odin.features.impl.dungeon.map.tile.DungeonRoom
 import com.odtheking.odin.features.impl.dungeon.map.tile.MapCheckmark
 import com.odtheking.odin.utils.skyblock.dungeon.Floor
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.terminalhandler.TerminalHandler
-import net.fabricmc.fabric.api.client.rendering.v1.level.AbstractLevelRenderContext
 import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext
 import net.minecraft.client.multiplayer.ClientLevel
 import net.minecraft.core.BlockPos
@@ -59,9 +58,7 @@ interface LevelEvent : Event {
     object Unload : LevelEvent
 }
 
-abstract class RenderEvent(open val context: AbstractLevelRenderContext) : Event {
-    class Extract(override val context: LevelRenderContext) : RenderEvent(context)
-}
+class RenderExtractEvent(val context: LevelRenderContext) : Event
 
 abstract class PartyEvent(val members: List<String>) : Event {
     class Leave(members: List<String>) : PartyEvent(members)

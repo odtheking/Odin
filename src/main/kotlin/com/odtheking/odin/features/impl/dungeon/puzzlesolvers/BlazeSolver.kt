@@ -1,12 +1,12 @@
 package com.odtheking.odin.features.impl.dungeon.puzzlesolvers
 
 import com.odtheking.odin.OdinMod.mc
-import com.odtheking.odin.events.RenderEvent
+import com.odtheking.odin.events.RenderExtractEvent
 import com.odtheking.odin.features.impl.dungeon.puzzlesolvers.PuzzleSolvers.onPuzzleComplete
 import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.equalsOneOf
-import com.odtheking.odin.utils.render.drawLine
 import com.odtheking.odin.utils.render.BoxStyle
+import com.odtheking.odin.utils.render.drawLine
 import com.odtheking.odin.utils.render.drawStyledBox
 import com.odtheking.odin.utils.renderPos
 import com.odtheking.odin.utils.sendCommand
@@ -36,7 +36,7 @@ object BlazeSolver {
         else blazes.sortBy { hpMap[it] }
     }
 
-    fun onRenderWorld(event: RenderEvent.Extract, blazeLineNext: Boolean, blazeLineAmount: Int, blazeStyle: BoxStyle, blazeFirstColor: Color, blazeSecondColor: Color, blazeThirdColor: Color, blazeAllColor: Color, blazeSendComplete: Boolean, blazeLineWidth: Float) {
+    fun onRenderWorld(event: RenderExtractEvent, blazeLineNext: Boolean, blazeLineAmount: Int, blazeStyle: BoxStyle, blazeFirstColor: Color, blazeSecondColor: Color, blazeThirdColor: Color, blazeAllColor: Color, blazeSendComplete: Boolean, blazeLineWidth: Float) {
         if (!DungeonUtils.currentRoomName.equalsOneOf("Lower Blaze", "Higher Blaze")) return
         if (blazes.isEmpty()) return
         blazes.removeAll { mc.level?.getEntity(it.id) == null }
