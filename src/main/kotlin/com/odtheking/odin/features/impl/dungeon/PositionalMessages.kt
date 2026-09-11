@@ -31,9 +31,26 @@ object PositionalMessages : Module(
     private val messageSize by NumberSetting("Message Size", 1f, 0.1f, 4f, 0.1f, desc = "The size at which to display the message in the box.").withDependency { showPositions && displayMessage }
 
     data class PosMessage(val x: Double, val y: Double, val z: Double, val x2: Double?, val y2: Double?, val z2: Double?, val delay: Int, val distance: Double?, val color: Color, val message: String, val send: Boolean) {
-        val center: Vec3 get() = Vec3((x + (x2 ?: x)) / 2, (y + (y2 ?: y)) / 2, (z + (z2 ?: z)) / 2)
-        val box: AABB? get() = if (x2 != null && y2 != null && z2 != null) AABB(x, y, z, x2, y2, z2) else null
-        val radiusSquared: Double? get() = distance?.let { it * it }
+        @Transient
+        private var _center: Vec3? = null
+        val center: Vec3
+            get() = _center ?: Vec3((x + (x2 ?: x)) / 2, (y + (y2 ?: y)) / 2, (z + (z2 ?: z)) / 2).also { _center = it }
+
+        @Transient
+        private var _box: AABB? = null
+        val box: AABB?
+            get() {
+                if (_box == null && x2 != null && y2 != null && z2 != null) _box = AABB(x, y, z, x2, y2, z2)
+                return _box
+            }
+
+        @Transient
+        private var _radiusSquared: Double? = null
+        val radiusSquared: Double?
+            get() {
+                if (_radiusSquared == null) distance?.let { _radiusSquared = it * it }
+                return _radiusSquared
+            }
     }
     val posMessageStrings by ListSetting("Pos Messages", mutableListOf<PosMessage>())
     private val sentMessages = mutableSetOf<PosMessage>()
