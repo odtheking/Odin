@@ -77,7 +77,7 @@ class StringSetting(
     }
 
     private companion object {
-        const val EXTRA_HEIGHT = 18
+        const val EXTRA_HEIGHT = 16
         const val BOX_HEIGHT = 20
         const val BOX_INSET = 6
         const val TEXT_INSET = 4

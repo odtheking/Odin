@@ -123,7 +123,7 @@ class KeybindSetting(
         private const val PADDING = 6
         private const val RIGHT_PAD = 5
 
-        private val ALL_MOUSE_BUTTONS = IntArray(GLFW.GLFW_MOUSE_BUTTON_LAST + 1) { it }
+        private val ALL_MOUSE_BUTTONS = IntArray(InputConstants.MOUSE_BUTTON_8 + 1) { it }
 
         private val KEYBIND_CATEGORY: KeyMapping.Category =
             KeyMapping.Category.register(Identifier.fromNamespaceAndPath(OdinMod.MOD_ID, "keybinds"))

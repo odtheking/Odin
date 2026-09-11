@@ -14,7 +14,7 @@ import net.minecraft.network.chat.Component
 class SearchBarWidget(onSearch: (String) -> Unit) : OdinContainerWidget(0, 0, WIDTH, HEIGHT, Component.literal("Search")) {
 
     private val input = rowTextField(WIDTH - PADDING * 2, "Search", true).apply {
-        setMaxLength(32)
+        setMaxLength(18)
         setResponder(onSearch)
     }
 
@@ -48,12 +48,12 @@ class SearchBarWidget(onSearch: (String) -> Unit) : OdinContainerWidget(0, 0, WI
     }
 
     companion object {
-        const val WIDTH = 180
+        const val WIDTH = 120
         const val HEIGHT = 20
 
         private const val PLACEHOLDER = "Search..."
         private const val PADDING = 8
 
-        private const val RADIUS = HEIGHT / 2f
+        private const val RADIUS = 6f
     }
 }

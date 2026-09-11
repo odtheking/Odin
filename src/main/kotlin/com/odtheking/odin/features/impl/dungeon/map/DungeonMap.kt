@@ -21,7 +21,9 @@ object DungeonMap : Module(
 
     val backgroundOutline by ColorSetting("Background Outline", Colors.BLACK, true, desc = "The color of the background border.")
     val backgroundColor by ColorSetting("Background Color", Colors.BLACK.withAlpha(0.1f), true, desc = "Background color of the map.")
-    val roomText by SelectorSetting("Room Text", "Both", listOf("Both", "Room Name", "Room Secrets"), desc = "What to display on the rooms.")
+    val roomText by SelectorSetting("Room Text", RoomTextOption.BOTH, desc = "What to display on the rooms.")
+
+    enum class RoomTextOption { BOTH, ROOM_NAME, ROOM_SECRETS }
     val textScaling by NumberSetting("Text Scaling", 0.45f, 0.1..1.0, 0.05f, desc = "Scale of room name text.")
 
     private val playerDropdown by DropdownSetting("Player Settings", desc = "Shows settings for player name labels on the map.")

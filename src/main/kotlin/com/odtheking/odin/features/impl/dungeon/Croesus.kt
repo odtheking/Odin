@@ -138,7 +138,7 @@ object Croesus : Module(
         }
 
         on<SetSlotEvent> {
-            val screenTitle = mc.screen?.title?.string ?: return@on
+            val screenTitle = mc.gui.screen()?.title?.string ?: return@on
 
             when {
                 screenTitle.matches(chestNameRegex) -> handleChestContents(menu.items)

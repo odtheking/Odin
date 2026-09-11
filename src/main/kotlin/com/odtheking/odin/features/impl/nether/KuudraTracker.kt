@@ -27,7 +27,7 @@ object KuudraTracker : Module(
     name = "Kuudra Tracker",
     description = "Tracks your Kuudra runs."
 ) {
-    private val lineAmount by NumberSetting("Lines", 10, 0,40, 1, "The amount of items to display in the profit tracker.")
+    private val lineAmount by NumberSetting("Lines", 10, 0..40, 1, "The amount of items to display in the profit tracker.")
     private val reset by ActionSetting("Reset Profit", "Resets the Profit Tracker") {
         totalKeys = mutableListOf(0, 0, 0, 0, 0)
         singleItems.clear()
@@ -59,8 +59,8 @@ object KuudraTracker : Module(
     private var singleItems by MapSetting("Single Items",mutableMapOf<String, Int>())
     private var multiItems by MapSetting("Multi Items", mutableMapOf<String, Int>())
 
-    private var paid by NumberSetting("Paid Chests", 0, 0, Int.MAX_VALUE, 1, "Amount of Paid Chests opened.").hide()
-    private var free by NumberSetting("Free Chests", 0, 0, Int.MAX_VALUE, 1, "Amount of Paid Chests opened").hide()
+    private var paid by NumberSetting("Paid Chests", 0, 0..Int.MAX_VALUE, 1, "Amount of Paid Chests opened.").hide()
+    private var free by NumberSetting("Free Chests", 0, 0..Int.MAX_VALUE, 1, "Amount of Paid Chests opened").hide()
 
     private var toDisplay = mutableListOf<Pair<MutableComponent, Double>>()
     private var totalKeys by ListSetting("Total Keys", mutableListOf(0, 0, 0, 0, 0)).hide() //Tier 1-5
@@ -86,7 +86,7 @@ object KuudraTracker : Module(
         }
 
         on<MessageEvent.Chat> {
-            val title = mc.screen?.title?.string ?: return@on
+            val title = mc.gui.screen()?.title?.string ?: return@on
             if (message.equalsOneOf("You cannot afford this!", "Whoa! Slow down there!") && title.matches(chestRegex)) {
                 for (single in last.single) {
                     singleItems[single] = (singleItems.getOrDefault(single, 0) - 1).coerceAtLeast(0)
@@ -103,7 +103,7 @@ object KuudraTracker : Module(
         }
 
         onSend<ServerboundContainerClickPacket> {
-            val title = mc.screen?.title?.string ?: return@onSend
+            val title = mc.gui.screen()?.title?.string ?: return@onSend
             if (!title.matches(chestRegex)) return@onSend
 
             val cursorStack = mc.player?.containerMenu?.carried ?: return@onSend

@@ -25,12 +25,12 @@ object InvincibilityTimer : Module(
     private val invincibilityAnnounce by BooleanSetting("Announce Invincibility", true, desc = "Announces when you get invincibility.")
     private val onlyInDungeons by BooleanSetting("Only In Dungeons", true, "Only proc invincibility timers while in a dungeon")
 
-    private val maskCat by DropdownSetting("Displayed Items")
+    private val maskCat by DropdownSetting("Displayed Items", desc = "Which invincibility items are shown in the HUD.")
     private val showSpirit by BooleanSetting("Show Spirit Mask", true, desc = "Shows the Spirit Mask in the HUD.").withDependency { maskCat }
     private val showBonzo by BooleanSetting("Show Bonzo Mask", true, desc = "Shows the Bonzo Mask in the HUD.").withDependency { maskCat }
     private val showPhoenix by BooleanSetting("Show Phoenix Pet", true, desc = "Shows the Phoenix Pet in the HUD.").withDependency { maskCat }
 
-    private val hudCat by DropdownSetting("Invincibility Hud")
+    private val hudCat by DropdownSetting("Invincibility Hud", desc = "Options for the invincibility HUD element.")
     private val hud by HUD(name, "Shows the invincibility time in the HUD.") { example ->
         if(!example && (onlyInDungeons && !DungeonUtils.inDungeons) || (showOnlyInBoss && !DungeonUtils.inBoss)) return@HUD 0 to 0
 
@@ -76,7 +76,7 @@ object InvincibilityTimer : Module(
     private val equippedMaskColor by ColorSetting("Equipped Mask", Colors.MINECRAFT_DARK_PURPLE, desc = "Color of the equipped mask in the HUD. (Bonzo/Spirit)").withDependency { hudCat }
     private val cooldownRegex = Regex("^Cooldown: (\\d+)s$")
 
-    private val itemCat by DropdownSetting("Cooldown On Item", "Options to show cooldown on the item slot itself.")
+    private val itemCat by DropdownSetting("Cooldown On Item", desc = "Options to show cooldown on the item slot itself.")
     private val showOnItem by BooleanSetting("Show On Item", false, "Renders the cooldown on the spirit mask and bonzo mask items").withDependency { itemCat }
     private val durability by BooleanSetting("Display As Durability", false, "True: durability, False: colored vertical slide").withDependency { itemCat }
     private val cdColor by ColorSetting("Cooldown Color", Colors.gray38, false, "Color of the cooldown").withDependency { itemCat }
@@ -168,7 +168,7 @@ object InvincibilityTimer : Module(
             currentCooldown = 0
             activeTime = 0
         }
-
-        enum class ShowWhen { ALWAYS, ANY, WHEN_ACTIVE, ON_COOLDOWN }
     }
+
+    private enum class ShowWhen { ALWAYS, ANY, WHEN_ACTIVE, ON_COOLDOWN }
 }

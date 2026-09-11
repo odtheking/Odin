@@ -44,7 +44,7 @@ object TerminalUtils {
         }
 
         on<SetSlotEvent> {
-            if (menu !== (mc.screen as? AbstractContainerScreen<*>)?.menu) return@on
+            if (menu !== (mc.gui.screen() as? AbstractContainerScreen<*>)?.menu) return@on
             currentTerm?.updateSlot(this)
         }
 
@@ -52,7 +52,7 @@ object TerminalUtils {
             currentTerm?.let { term ->
                 if (term.clickedSlots.isNotEmpty() && System.currentTimeMillis() - term.lastClickTime >= TerminalSolver.terminalReloadThreshold) {
                     term.clickedSlots.clear()
-                    (mc.screen as? AbstractContainerScreen<*>)?.menu?.let { SetSlotEvent(0, ItemStack.EMPTY, it.slots, it).postAndCatch() }
+                    (mc.gui.screen() as? AbstractContainerScreen<*>)?.menu?.let { SetSlotEvent(0, ItemStack.EMPTY, it.slots, it).postAndCatch() }
                 }
             }
         }

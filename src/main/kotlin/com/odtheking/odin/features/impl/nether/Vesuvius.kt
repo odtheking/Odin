@@ -26,8 +26,8 @@ object Vesuvius : Module(
     private val hideClaimed by BooleanSetting("Hide Claimed", true, desc = "Hides chests that have already been claimed.")
     private val useSalvagePrices by BooleanSetting("Use Salvaged", false, desc = "Uses the essence you would get by salvaging the piece instead.")
 
-    private val kuudraPetBonus by NumberSetting("Kuudra Pet Bonus", 0.0, 0.0, 20.0, 0.05, "The essence bonus from Kuudra pet.", unit = "%")
-    private val lavaLeechBonus by NumberSetting("Lava Leech Bonus", 0.0, 0.0, 13.0, 0.05, "The essence bonus from the Lava Leech Shard.", unit = "%")
+    private val kuudraPetBonus by NumberSetting("Kuudra Pet Bonus", 0.0, 0.0..20.0, 0.05, desc = "The essence bonus from Kuudra pet.", unit = "%")
+    private val lavaLeechBonus by NumberSetting("Lava Leech Bonus", 0.0, 0.0..13.0, 0.05, desc = "The essence bonus from the Lava Leech Shard.", unit = "%")
 
     private val vesuviusHud by HUD("Croesus Chest HUD", "Displays all chest contents with prices, sorted by profit.") {
         if (!it) return@HUD 0 to 0

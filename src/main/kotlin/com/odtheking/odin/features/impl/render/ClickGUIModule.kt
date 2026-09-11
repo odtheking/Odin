@@ -1,6 +1,7 @@
 package com.odtheking.odin.features.impl.render
 
 import com.google.gson.annotations.SerializedName
+import com.mojang.blaze3d.platform.InputConstants
 import com.odtheking.odin.OdinMod
 import com.odtheking.odin.clickgui.ClickGUI
 import com.odtheking.odin.clickgui.HudManager
@@ -35,7 +36,7 @@ object ClickGUIModule : Module(
     val clickGuiScale by NumberSetting("Click GUI Size", 2, 1..4, 1, desc = "GUI scale the Click GUI is drawn at, whatever the video setting says.")
     val enableNotification by BooleanSetting("Chat notifications", true, desc = "Sends a message when you toggle a module with a keybind")
     val clickGUIColor by ColorSetting("Color", Color(50, 150, 220), desc = "The color of the Click GUI.")
-    private val action by ActionSetting("Open HUD Editor", desc = "Opens the HUD editor when clicked.") { mc.setScreen(HudManager) }
+    private val action by ActionSetting("Open HUD Editor", desc = "Opens the HUD editor when clicked.") { mc.setScreenAndShow(HudManager) }
 
     val hypixelApiUrl by StringSetting("API URL", "https://api.odtheking.com/hypixel/", 128, "The Hypixel API server to connect to.", placeholder = "https://api.odtheking.com/hypixel/").hide()
     val webSocketUrl by StringSetting("Socket URL", "wss://ws.odtheking.com/", 128, "The Websocket server to connect to.", placeholder = "wss://ws.odtheking.com/").hide()

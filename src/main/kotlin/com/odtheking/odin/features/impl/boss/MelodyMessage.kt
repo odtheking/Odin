@@ -58,7 +58,7 @@ object MelodyMessage : Module(
 
         if (broadcast && melodyWebSocket.connected) {
             melodies.entries.forEachIndexed { i, (name, data) ->
-                if (showPlayer == 0 && name == mc.user.name) return@forEachIndexed
+                if (showPlayer == ShowPlayer.NONE && name == mc.user.name) return@forEachIndexed
                 drawMelody(data, i, name)
                 track(data, i, name)
             }
@@ -67,7 +67,7 @@ object MelodyMessage : Module(
         (width * 5 + 2 + labelWidth) to (width * rows)
     }.withDependency { broadcast }
 
-    private val showPlayer by SelectorSetting("Show Player", "None", arrayListOf("None", "Class", "Name", "Class & Name"), desc = "How player details should be rendered in the Melody GUI.").withDependency { broadcast }
+    private val showPlayer by SelectorSetting("Show Player", ShowPlayer.NONE, desc = "How player details should be rendered in the Melody GUI.").withDependency { broadcast }
 
     val melodyWebSocket = webSocket {
         onMessage { message ->
@@ -173,9 +173,9 @@ object MelodyMessage : Module(
     private val width by lazy { getStringWidth("§d■") }
 
     private fun melodyLabel(data: MelodyData, playerName: String): String? = when (showPlayer) {
-        1 -> "§${data.dungeonClass.colorCode}${data.dungeonClass.name.lowercase()}"
-        2 -> "§6$playerName"
-        3 -> "§6$playerName §8(§${data.dungeonClass.colorCode}${data.dungeonClass.name.lowercase()}§8)"
+        ShowPlayer.CLASS -> "§${data.dungeonClass.colorCode}${data.dungeonClass.name.lowercase()}"
+        ShowPlayer.NAME -> "§6$playerName"
+        ShowPlayer.CLASS_AND_NAME -> "§6$playerName §8(§${data.dungeonClass.colorCode}${data.dungeonClass.name.lowercase()}§8)"
         else -> null
     }
 
@@ -197,4 +197,10 @@ object MelodyMessage : Module(
 
     private data class UpdateMessage(val username: String, val type: Int, val slot: Int)
     private data class MelodyData(var purple: Int?, var pane: Int?, var clay: Int?, val dungeonClass: DungeonClass)
+
+    private enum class ShowPlayer(private val label: String) {
+        NONE("None"), CLASS("Class"), NAME("Name"), CLASS_AND_NAME("Class & Name");
+
+        override fun toString(): String = label
+    }
 }

@@ -4,6 +4,7 @@ import com.odtheking.odin.features.impl.boss.TerminalSolver
 import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalTypes
 import net.minecraft.world.inventory.Slot
+import net.minecraft.world.item.DyeColor
 import net.minecraft.world.item.Items
 
 class PanesHandler: TerminalHandler(TerminalTypes.PANES) {

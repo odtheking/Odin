@@ -79,7 +79,7 @@ open class TermSimGUI(
     }
 
     private fun delaySlotClick(slot: Slot, button: Int) {
-        if (mc.screen == StartGUI) return slotClick(slot, button)
+        if (mc.gui.screen() == StartGUI) return slotClick(slot, button)
         if (slot.container != inv || slot.item.item == Items.STAINED_GLASS_PANE.pick(DyeColor.BLACK)) return
         if (ping <= 0L) return slotClick(slot, button)
         schedule((ping / 50).toInt().coerceAtLeast(0)) {
