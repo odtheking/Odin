@@ -78,9 +78,9 @@ object InvincibilityTimer : Module(
     private val cooldownRegex = Regex("^Cooldown: (\\d+)s$")
     
     private val itemCat by DropdownSetting("Cooldown On Item")
-    private val showOnItem by BooleanSetting("Show On Item", true, "Renders the cooldown on the spirit mask and bonzo mask items").withDependency { itemCat }
+    private val showOnItem by BooleanSetting("Show On Item", false, "Renders the cooldown on the spirit mask and bonzo mask items").withDependency { itemCat }
     private val durability by BooleanSetting("Display As Durability", false, "True: durability, False: colored vertical slide").withDependency { itemCat }
-    private val cdColor by ColorSetting("Cooldown Color", Colors.gray38, true, "Color of the cooldown").withDependency { itemCat }
+    private val cdColor by ColorSetting("Cooldown Color", Colors.gray38, false, "Color of the cooldown").withDependency { itemCat }
 
     init {
         on<TickEvent.Server> {
@@ -112,8 +112,8 @@ object InvincibilityTimer : Module(
                 "SPIRIT_MASK","STARRED_SPIRIT_MASK" -> InvincibilityType.SPIRIT.currentCooldown.toDouble() / (InvincibilityType.SPIRIT.maxCooldownTime * 20)
                 else -> return@on
             }
-            if(percent <= 0) return@on
-            if(durability) {
+            if (percent <= 0) return@on
+            if (durability) {
                 guiGraphics.fakeItem(slot.item, slot.x, slot.y)
                 guiGraphics.fill(slot.x + 2, slot.y + 13, slot.x + 14, slot.y + 15, Colors.BLACK.rgba)
                 guiGraphics.fill(slot.x + 2, slot.y + 13, slot.x + 14 - ((1 - percent) * 12).toInt(), slot.y + 14,cdColor.rgba)

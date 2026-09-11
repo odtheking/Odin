@@ -26,19 +26,22 @@ object TerminalSolver : Module(
     val customTermSize by NumberSetting("Term Size", 2f, 1f, 3f, 0.1f, desc = "The size of the custom terminal GUI.").withDependency { renderType == 2 }
     val roundness by NumberSetting("Roundness", 5, 0f, 15f, 1f, desc = "The roundness of the custom terminal gui.").withDependency { renderType == 2 }
     val gap by NumberSetting("Slot gap", 2, 0, 8, 1, desc = "The gap between the slots in the custom terminal gui.").withDependency { renderType == 2 }
+
     private val solverSettings by DropdownSetting("Solver Functionality")
+    val clickPrediction by BooleanSetting("Client Prediction", true, desc = "Visually predicts the server state before the gui update is sent to the client.").withDependency { solverSettings }
+    val terminalReloadThreshold by NumberSetting("Resolve timeout", 600, 300, 1200, 10, unit = "ms", desc = "The amount of time before the terminal reloads after a click wasn't registered while using click prediction.").withDependency { clickPrediction && solverSettings }
     private val cancelMelodySolver by BooleanSetting("Stop Melody Solver", false, desc = "Stops rendering the melody solver.").withDependency { solverSettings }
     val melodyTermSize by NumberSetting("Melody Size", 1.5f, 1f, 3f, 0.1f, desc = "The size of the melody terminal GUI.").withDependency { !cancelMelodySolver && solverSettings && renderType == 2 }
-    val showNumbers by BooleanSetting("Show Numbers", true, desc = "Shows numbers in the order terminal.").withDependency { solverSettings }
-    val rubixMode by SelectorSetting("Rubix Mode", "Left Clicks Only", arrayListOf("Fewest Clicks", "Left Clicks Only"), desc = "Whether the rubix solver should mix in right clicks for the fewest clicks overall, or stick to left clicks only.").withDependency { solverSettings }
-    val hideClicked by BooleanSetting("Client Prediction", true, desc = "Visually predicts the server state before the gui update is sent to the client.").withDependency { solverSettings }
-    val terminalReloadThreshold by NumberSetting("Resolve timeout", 600, 300, 1200, 10, unit = "ms", desc = "The amount of time before the terminal reloads after a click wasn't registered while using hide clicked.").withDependency { hideClicked && solverSettings }
+    val rubixMode by SelectorSetting("Rubix Mode", "Fewest Clicks", arrayListOf("Fewest Clicks", "Left Clicks Only"), desc = "Whether the rubix solver should mix in right clicks for the fewest clicks overall, or stick to left clicks only.").withDependency { solverSettings }
+
     private val firstClickProtSettings by DropdownSetting("First Click Prot Dropdown")
     val firstClickProt by NumberSetting("First Click Prot", 500, 350, 800, 10, unit = "ms", desc = "The amount of time after opening a terminal where clicks are blocked to prevent bans (recommended value is 500 minus your ping).").withDependency { firstClickProtSettings }
     val shouldFirstClickProtWithTicks by BooleanSetting("Account For Server Lag", false, desc = "Prevents bans from clicking when the server lags after opening the terminal (disabled in singleplayer").withDependency { firstClickProtSettings }
     val firstClickProtTicks by NumberSetting("Lag Protection Ticks", 8, 7, 16, unit = "ticks", desc = "Each tick = 50ms (recommended value is 8)").withDependency { shouldFirstClickProtWithTicks && firstClickProtSettings }
+
     private val showColors by DropdownSetting("Color Settings")
     val backgroundColor by ColorSetting("Background", Colors.gray26, true, desc = "Background color of the terminal solver.").withDependency { showColors }
+    val textColor by ColorSetting("Text", Colors.WHITE, true, desc = "Text color of the terminal solver.").withDependency { showColors }
 
     val panesColor by ColorSetting("Panes", Colors.MINECRAFT_GREEN, true, desc = "Color of the panes terminal solver.").withDependency { showColors }
 
@@ -67,7 +70,7 @@ object TerminalSolver : Module(
     init {
         on<GuiEvent.SlotClick> {
             TerminalUtils.currentTerm?.let {
-                it.click(slotIndex, button, hideClicked)
+                it.click(slotIndex, button, clickPrediction)
                 cancel()
             }
         }
@@ -86,7 +89,7 @@ object TerminalSolver : Module(
             if (slot.index <= currentTerm.type.windowSize - 1) {
                 currentTerm.getSlotRendering(slot.index)?.let { (color, text) ->
                     guiGraphics.fill(slot.x, slot.y, slot.x + 16, slot.y + 16, color.rgba)
-                    text?.let { guiGraphics.centeredText(screen.font, it, slot.x + 8, slot.y + 4, Colors.WHITE.rgba) }
+                    text?.let { guiGraphics.centeredText(screen.font, it, slot.x + 8, slot.y + 4, textColor.rgba) }
                     cancel()
                 }
                 if (renderType == 0) cancel()

@@ -63,7 +63,7 @@ object BloodCamp : Module(
 
     init {
         on<EntityEvent.Move> {
-            if (newPos == Vec3.ZERO || !DungeonUtils.inClear) return@on
+            if (newPos == Vec3.ZERO || newPos == entity.position() || !DungeonUtils.inClear) return@on
 
             val entity = entity as? ArmorStand ?: return@on
             if (currentWatcherEntity?.let {
