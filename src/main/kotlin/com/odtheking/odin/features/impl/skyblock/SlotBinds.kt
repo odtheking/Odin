@@ -1,5 +1,6 @@
 package com.odtheking.odin.features.impl.skyblock
 
+import com.mojang.blaze3d.platform.InputConstants
 import com.odtheking.odin.clickgui.settings.impl.*
 import com.odtheking.odin.events.GuiEvent
 import com.odtheking.odin.events.ScreenCloseEvent
@@ -13,14 +14,13 @@ import com.odtheking.odin.utils.modMessage
 import com.odtheking.odin.utils.render.drawLine
 import net.minecraft.client.gui.screens.inventory.InventoryScreen
 import net.minecraft.world.inventory.ContainerInput
-import org.lwjgl.glfw.GLFW
 
 object SlotBinds : Module(
     name = "Slot Binds",
     description = "Bind slots together for quick access.",
     key = null
 ) {
-    private val setNewSlotbind by KeybindSetting("Bind set key", GLFW.GLFW_KEY_UNKNOWN, desc = "Key to set new bindings.")
+    private val setNewSlotbind by KeybindSetting("Bind set key", InputConstants.UNKNOWN, desc = "Key to set new bindings.")
     private val lineColor by ColorSetting("Bind Color", Colors.MINECRAFT_GREEN, desc = "Color of the line drawn between slots (used in hover modes).")
     private val lineWidth by NumberSetting("Line Width", 0.5f, 0.1, 2f, 0.1, desc = "Width of the line drawn between slots.")
     private val displayModeOptions = listOf("Hover", "On Hover + Shift", "None")

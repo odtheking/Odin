@@ -1,5 +1,6 @@
 package com.odtheking.odin.features.impl.skyblock
 
+import com.mojang.blaze3d.platform.InputConstants
 import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.DropdownSetting
@@ -11,28 +12,27 @@ import com.odtheking.odin.utils.clickSlot
 import com.odtheking.odin.utils.loreString
 import com.odtheking.odin.utils.modMessage
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
-import org.lwjgl.glfw.GLFW
 
 object PetKeybinds : Module(
     name = "Pet Keybinds",
     description = "Keybinds for the pets menu."
 ) {
-    private val unequipKeybind by KeybindSetting("Unequip", GLFW.GLFW_KEY_UNKNOWN, "Unequips the current Pet.")
-    private val nextPageKeybind by KeybindSetting("Next Page", GLFW.GLFW_KEY_UNKNOWN, "Goes to the next page.")
-    private val previousPageKeybind by KeybindSetting("Previous Page", GLFW.GLFW_KEY_UNKNOWN, "Goes to the previous page.")
+    private val unequipKeybind by KeybindSetting("Unequip", InputConstants.UNKNOWN, "Unequips the current Pet.")
+    private val nextPageKeybind by KeybindSetting("Next Page", InputConstants.UNKNOWN, "Goes to the next page.")
+    private val previousPageKeybind by KeybindSetting("Previous Page", InputConstants.UNKNOWN, "Goes to the previous page.")
     private val nounequip by BooleanSetting("Disable Unequip", false, desc = "Prevents using a pets keybind to unequip a pet. Does not prevent unequip keybind or normal clicking.")
     private val closeIfAlreadyEquipped by BooleanSetting("Close If Already Equipped", false, "If the pet is already equipped, closes the Pets menu instead.")
     private val advanced by DropdownSetting("Show Settings", false)
 
-    private val pet1 by KeybindSetting("Pet 1", GLFW.GLFW_KEY_1, "Pet 1 on the list.").withDependency { advanced }
-    private val pet2 by KeybindSetting("Pet 2", GLFW.GLFW_KEY_2, "Pet 2 on the list.").withDependency { advanced }
-    private val pet3 by KeybindSetting("Pet 3", GLFW.GLFW_KEY_3, "Pet 3 on the list.").withDependency { advanced }
-    private val pet4 by KeybindSetting("Pet 4", GLFW.GLFW_KEY_4, "Pet 4 on the list.").withDependency { advanced }
-    private val pet5 by KeybindSetting("Pet 5", GLFW.GLFW_KEY_5, "Pet 5 on the list.").withDependency { advanced }
-    private val pet6 by KeybindSetting("Pet 6", GLFW.GLFW_KEY_6, "Pet 6 on the list.").withDependency { advanced }
-    private val pet7 by KeybindSetting("Pet 7", GLFW.GLFW_KEY_7, "Pet 7 on the list.").withDependency { advanced }
-    private val pet8 by KeybindSetting("Pet 8", GLFW.GLFW_KEY_8, "Pet 8 on the list.").withDependency { advanced }
-    private val pet9 by KeybindSetting("Pet 9", GLFW.GLFW_KEY_9, "Pet 9 on the list.").withDependency { advanced }
+    private val pet1 by KeybindSetting("Pet 1", InputConstants.KEY_1, "Pet 1 on the list.").withDependency { advanced }
+    private val pet2 by KeybindSetting("Pet 2", InputConstants.KEY_2, "Pet 2 on the list.").withDependency { advanced }
+    private val pet3 by KeybindSetting("Pet 3", InputConstants.KEY_3, "Pet 3 on the list.").withDependency { advanced }
+    private val pet4 by KeybindSetting("Pet 4", InputConstants.KEY_4, "Pet 4 on the list.").withDependency { advanced }
+    private val pet5 by KeybindSetting("Pet 5", InputConstants.KEY_5, "Pet 5 on the list.").withDependency { advanced }
+    private val pet6 by KeybindSetting("Pet 6", InputConstants.KEY_6, "Pet 6 on the list.").withDependency { advanced }
+    private val pet7 by KeybindSetting("Pet 7", InputConstants.KEY_7, "Pet 7 on the list.").withDependency { advanced }
+    private val pet8 by KeybindSetting("Pet 8", InputConstants.KEY_8, "Pet 8 on the list.").withDependency { advanced }
+    private val pet9 by KeybindSetting("Pet 9", InputConstants.KEY_9, "Pet 9 on the list.").withDependency { advanced }
 
     private val petSlots = intArrayOf(10, 11, 12, 13, 14, 15, 16, 19, 20)
     private val petsRegex = Regex("(?:\\((\\d)/(\\d)\\)\\s*)?Pets")

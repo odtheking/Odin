@@ -1,5 +1,6 @@
 package com.odtheking.odin.features
 
+import com.mojang.blaze3d.platform.InputConstants
 import com.odtheking.odin.OdinMod
 import com.odtheking.odin.clickgui.settings.AlwaysActive
 import com.odtheking.odin.clickgui.settings.DevModule
@@ -9,7 +10,6 @@ import com.odtheking.odin.events.core.EventBus
 import com.odtheking.odin.features.impl.render.ClickGUIModule
 import com.odtheking.odin.utils.modMessage
 import net.minecraft.client.gui.GuiGraphicsExtractor
-import org.lwjgl.glfw.GLFW
 import kotlin.reflect.full.hasAnnotation
 
 /**
@@ -18,7 +18,7 @@ import kotlin.reflect.full.hasAnnotation
  */
 abstract class Module(
     val name: String,
-    val key: Int? = GLFW.GLFW_KEY_UNKNOWN,
+    val key: Int? = InputConstants.UNKNOWN.value,
     category: Category? = null,
     @Transient var description: String,
     toggled: Boolean = false,

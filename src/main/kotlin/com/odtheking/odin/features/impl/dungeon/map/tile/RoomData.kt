@@ -3,6 +3,7 @@ package com.odtheking.odin.features.impl.dungeon.map.tile
 import com.google.gson.annotations.SerializedName
 import com.odtheking.odin.utils.IVec2
 import com.odtheking.odin.utils.JsonResourceLoader
+import net.minecraft.resources.Identifier
 
 @ConsistentCopyVisibility
 data class RoomData private constructor(
@@ -16,7 +17,7 @@ data class RoomData private constructor(
 ) {
     companion object {
         private val coreToRoomData: HashMap<Int, RoomData> = run {
-            val roomData: ArrayList<RoomData> = JsonResourceLoader.loadJson("/assets/odin/rooms.json", arrayListOf())
+            val roomData: ArrayList<RoomData> = JsonResourceLoader.loadJson(Identifier.fromNamespaceAndPath("odin", "rooms.json")) ?: arrayListOf()
             val map: HashMap<Int, RoomData> = hashMapOf()
             for (room in roomData) {
                 for (core in room.cores) {

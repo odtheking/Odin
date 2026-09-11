@@ -6,7 +6,7 @@ import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.itemId
-import com.odtheking.odin.utils.loreString
+import com.odtheking.odin.utils.lore
 import com.odtheking.odin.utils.render.textDim
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 
@@ -27,7 +27,7 @@ object BreakerDisplay : Module(
     init {
          on<SetSlotEvent> {
             if (!DungeonUtils.inDungeons || itemStack.itemId != "DUNGEONBREAKER") return@on
-            itemStack.loreString.firstNotNullOfOrNull { chargesRegex.find(it) }?.let { match ->
+            itemStack.lore.firstNotNullOfOrNull { chargesRegex.find(it.string) }?.let { match ->
                 charges = match.groupValues[1].toIntOrNull() ?: 0
                 maxCharges = match.groupValues[2].toIntOrNull() ?: 0
             }

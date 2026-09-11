@@ -3,8 +3,8 @@ package com.odtheking.odin.features.impl.boss
 import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.HudElement
-import com.odtheking.odin.events.ChatMessageEvent
 import com.odtheking.odin.events.LevelEvent
+import com.odtheking.odin.events.MessageEvent
 import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
@@ -78,31 +78,31 @@ object TickTimers : Module(
     private val stormTickHud by HUD("Storm Tick Hud", "Displays a timer for Storm's second phase, optionally counting down to the crush window.") {
         if (it) {
             val (time, max, prefix) = Triple(200, 620, "§bStorm:")
-            textDim(formatTimer(time, max, prefix), 0, 0, Colors.MINECRAFT_DARK_RED)
+            textDim(formatTimer(time, max, prefix, "§a"), 0, 0, Colors.MINECRAFT_DARK_RED)
         } else if (stormTick >= 0) textDim(formatTimer(stormTick, 620, "§bStorm:"), 0, 0, Colors.MINECRAFT_DARK_RED)
         else 0 to 0
     }
 
     init {
-        on<ChatMessageEvent> {
+        on<MessageEvent.Chat> {
             when {
-                value.matches(necronRegex) -> necronTime = 60
-                value.matches(goldorRegex) -> goldorTickTime = 60
-                value.matches(coreOpeningRegex) -> {
+                message.matches(necronRegex) -> necronTime = 60
+                message.matches(goldorRegex) -> goldorTickTime = 60
+                message.matches(coreOpeningRegex) -> {
                     goldorStartTime = -1
                     goldorTickTime = -1
                 }
-                value.matches(stormEndRegex) -> {
+                message.matches(stormEndRegex) -> {
                     goldorStartTime = 104
                     padTickTime = -1
                     stormTick = -1
                 }
-                value.matches(stormStartRegex) -> {
+                message.matches(stormStartRegex) -> {
                     padTickTime = 20
                     lightningTickTime = 560
                     stormTick = 0
                 }
-                !pyTriggered && value.matches(stormPyRegex) -> {
+                !pyTriggered && message.matches(stormPyRegex) -> {
                     pyTriggered = true
                     pyTickTime = 95
                 }

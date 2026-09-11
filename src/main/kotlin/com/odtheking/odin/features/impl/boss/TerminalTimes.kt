@@ -2,8 +2,8 @@ package com.odtheking.odin.features.impl.boss
 
 import com.odtheking.odin.clickgui.settings.impl.ActionSetting
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
-import com.odtheking.odin.events.ChatMessageEvent
 import com.odtheking.odin.events.LevelEvent
+import com.odtheking.odin.events.MessageEvent
 import com.odtheking.odin.events.TerminalEvent
 import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.core.on
@@ -11,6 +11,7 @@ import com.odtheking.odin.features.Module
 import com.odtheking.odin.features.impl.boss.termsim.TermSimGUI
 import com.odtheking.odin.utils.PersonalBest
 import com.odtheking.odin.utils.modMessage
+import net.minecraft.network.chat.Component
 
 object TerminalTimes : Module(
     name = "Terminal Times",
@@ -44,12 +45,10 @@ object TerminalTimes : Module(
             pbs.time(terminal.type.name, (System.currentTimeMillis() - terminal.timeOpened) / 1000f, "s§7!", "§a${terminal.type.termName}${if (mc.screen is TermSimGUI) " §7(termsim)" else ""} §7solved in §6", sendMessage = terminalTimes)
         }
 
-        on<ChatMessageEvent> {
+        on<MessageEvent.ModifyChat> {
             if (!terminalSplits) return@on
-            terminalCompleteRegex.find(value)?.destructured?.let { (name, activated, type, current, total) ->
-                cancel()
-
-                modMessage("§6$name §a$activated a $type! (§c${current}§a/${total}) §8(§7${sectionTimer.seconds}s §8| §7${phaseTimer.seconds}s§8)", "")
+            terminalCompleteRegex.find(message)?.destructured?.let { (name, activated, type, current, total) ->
+                component = Component.literal("§6$name §a$activated a $type! (§c${current}§a/${total}) §8(§7${sectionTimer.seconds}s §8| §7${phaseTimer.seconds}s§8)")
 
                 if ((current == total && gateBlown) || (current.toIntOrNull() ?: return@on) < completed.first) resetSection()
                 else completed = Pair(current.toIntOrNull() ?: return@on, total.toIntOrNull() ?: return@on)
@@ -57,11 +56,11 @@ object TerminalTimes : Module(
             }
 
             when {
-                gateDestroyedRegex.matches(value) -> if (completed.first == completed.second) resetSection() else gateBlown = true
+                gateDestroyedRegex.matches(message) -> if (completed.first == completed.second) resetSection() else gateBlown = true
 
-                goldorRegex.matches(value) -> resetSection(true)
+                goldorRegex.matches(message) -> resetSection(true)
 
-                coreOpeningRegex.matches(value) -> {
+                coreOpeningRegex.matches(message) -> {
                     resetSection()
                     modMessage("§bTimes: §a${times.joinToString(" §8| ") { "§a${it}s" }}§8, §bTotal: §a${phaseTimer.seconds}s")
                 }

@@ -8,6 +8,7 @@ import com.odtheking.odin.utils.PersonalBest
 import com.odtheking.odin.utils.formatTime
 import com.odtheking.odin.utils.render.getStringWidth
 import com.odtheking.odin.utils.render.text
+import com.odtheking.odin.utils.skyblock.SplitRow
 import com.odtheking.odin.utils.skyblock.SplitsManager.currentRows
 import com.odtheking.odin.utils.skyblock.floor7SplitGroup
 import com.odtheking.odin.utils.toFixed
@@ -40,34 +41,32 @@ object Splits : Module(
         val labelWidth = segments.maxOfOrNull { getStringWidth(it.name) } ?: 0
         val totalWidth = labelWidth + 4 + timeWidth + 2
 
+        val displayRows = mutableListOf<SplitRow>()
         segments.forEachIndexed { index, row ->
-            if (row.time == 0L && !show0Time) return@forEachIndexed
+            displayRows.add(row)
+            if (bossEntrySplit && index == 2 && rows.size > 3) {
+                val bossTime = segments.take(3).sumOf { it.time }
+                val bossTickTime = segments.take(3).sumOf { it.tickTime }
+                displayRows.add(SplitRow("§9Boss Entry", bossTime, bossTickTime, isCurrent = false))
+            }
+        }
+
+        var y = 0
+        displayRows.forEach { row ->
+            if (row.time == 0L && !show0Time) return@forEach
             val time = formatTime(row.time)
-            text(row.name, 0, index * 9, Colors.WHITE)
+            text(row.name, 0, y, Colors.WHITE)
 
             val displayText = if (showTickTime) "$time §8(§7${(row.tickTime / 20f).toFixed()}§8)" else time
 
             val timeX = if (fixedWidth) labelWidth + 4 + timeWidth - getStringWidth(displayText)
             else labelWidth + 4
 
-            text(displayText, timeX, index * 9, Colors.WHITE)
-        }
-
-        if (bossEntrySplit && rows.size > 3) {
-            val y = segments.size * 9
-            text("§9Boss Entry", 0, y, Colors.WHITE)
-
-            val totalTime = formatTime(segments.take(3).sumOf { it.time })
-            val displayText = if (showTickTime) "$totalTime §8(§7${(segments.take(3).sumOf { it.tickTime } / 20f).toFixed()}§8)"
-            else totalTime
-
-            val timeX = if (fixedWidth) labelWidth + 4 + timeWidth - getStringWidth(displayText)
-            else labelWidth + 4
-
             text(displayText, timeX, y, Colors.WHITE)
+            y += 9
         }
 
-        totalWidth to 9 * (rows.size + (if (bossEntrySplit) 1 else 0))
+        totalWidth to y
     }
 
     private val currentSplitHud by HUD("Current Split HUD", "Shows only the current split and its tick time.") { example ->

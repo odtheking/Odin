@@ -229,24 +229,12 @@ object DungeonUtils {
     private const val WITHER_ESSENCE_ID = "2865274b-3097-394e-8149-ec629c72d850"
     private const val REDSTONE_KEY = "fed95410-aba1-39df-9b95-1d4f361eb66e"
 
-    /**
-     * Determines whether a given block state and position represent a secret location.
-     *
-     * This function checks if the specified block state and position correspond to a secret location based on certain criteria.
-     * It considers blocks such as chests, trapped chests, and levers as well as player skulls with a specific player profile ID.
-     *
-     * @param state The block state to be evaluated for secrecy.
-     * @param pos The position (BlockPos) of the block in the world.
-     * @return `true` if the specified block state and position indicate a secret location, otherwise `false`.
-     */
-    fun isSecret(state: BlockState, pos: BlockPos): Boolean {
-        return when {
-            state.block.equalsOneOf(Blocks.CHEST, Blocks.TRAPPED_CHEST, Blocks.LEVER) -> true
-            state.block is SkullBlock ->
-                (mc.level?.getBlockEntity(pos) as? SkullBlockEntity)?.ownerProfile?.partialProfile()?.id
-                    ?.toString()?.equalsOneOf(WITHER_ESSENCE_ID, REDSTONE_KEY) ?: false
+    fun isSecret(state: BlockState, pos: BlockPos): Boolean = when {
+        state.block.equalsOneOf(Blocks.CHEST, Blocks.TRAPPED_CHEST, Blocks.LEVER) -> true
+        state.block is SkullBlock ->
+            (mc.level?.getBlockEntity(pos) as? SkullBlockEntity)?.ownerProfile?.partialProfile()?.id
+                ?.toString()?.equalsOneOf(WITHER_ESSENCE_ID, REDSTONE_KEY) ?: false
 
-            else -> false
-        }
+        else -> false
     }
 }

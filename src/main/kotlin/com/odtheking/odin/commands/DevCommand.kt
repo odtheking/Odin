@@ -4,7 +4,7 @@ import com.github.stivais.commodore.Commodore
 import com.github.stivais.commodore.utils.GreedyString
 import com.odtheking.odin.OdinMod
 import com.odtheking.odin.OdinMod.mc
-import com.odtheking.odin.events.ChatMessageEvent
+import com.odtheking.odin.events.MessageEvent
 import com.odtheking.odin.features.ModuleManager
 import com.odtheking.odin.features.impl.boss.MelodyMessage.melodyWebSocket
 import com.odtheking.odin.features.impl.boss.WitherDragonState
@@ -16,10 +16,7 @@ import com.odtheking.odin.features.impl.dungeon.map.WorldScan
 import com.odtheking.odin.features.impl.nether.NoPre
 import com.odtheking.odin.features.impl.render.ClickGUIModule.webSocketUrl
 import com.odtheking.odin.features.impl.render.PlayerSize
-import com.odtheking.odin.features.impl.render.PlayerSize.DEV_SERVER
-import com.odtheking.odin.features.impl.render.PlayerSize.buildDevBody
 import com.odtheking.odin.utils.*
-import com.odtheking.odin.utils.network.WebUtils.postData
 import com.odtheking.odin.utils.skyblock.KuudraUtils
 import com.odtheking.odin.utils.skyblock.LocationUtils
 import com.odtheking.odin.utils.skyblock.PartyUtils
@@ -53,7 +50,7 @@ val devCommand = Commodore("oddev") {
     }
 
     literal("simulate").runs { greedyString: GreedyString ->
-        ChatMessageEvent(greedyString.string, Component.literal(greedyString.string)).postAndCatch()
+        MessageEvent.Chat(greedyString.string, Component.literal(greedyString.string)).postAndCatch()
         modMessage("§8Simulated message: ${greedyString.string}")
     }
 
@@ -65,14 +62,6 @@ val devCommand = Commodore("oddev") {
 
     literal("deletedevs").runs {
         PlayerSize.clearCustomProperties()
-    }
-
-    literal("adddev").runs { name: String, password: String, xSize: Float?, ySize: Float?, zSize: Float? ->
-        val devBody = buildDevBody(name, xSize ?: 0.6f, ySize ?: 0.6f, zSize ?: 0.6f, " ", password)
-        modMessage("Sending $devBody")
-        OdinMod.scope.launch {
-            modMessage(postData(DEV_SERVER, devBody).getOrNull())
-        }
     }
 
     literal("generatefeaturelist").runs {

@@ -9,15 +9,14 @@ import com.odtheking.odin.utils.render.drawBeaconBeam
 import com.odtheking.odin.utils.render.drawFilledBox
 import com.odtheking.odin.utils.startsWithOneOf
 import net.minecraft.core.BlockPos
+import net.minecraft.resources.Identifier
 import net.minecraft.world.phys.AABB
 
 object QuizSolver {
     private const val START_DURATION = 220
     private const val QUESTION_DURATION = 100
 
-    private var answers: MutableMap<String, List<String>> = JsonResourceLoader.loadJson(
-        "/assets/odin/puzzles/quizAnswers.json", mutableMapOf()
-    )
+    private var answers: MutableMap<String, List<String>> = JsonResourceLoader.loadJson(Identifier.fromNamespaceAndPath("odin", "puzzles/quiz-answers.json")) ?: mutableMapOf()
     private var triviaAnswers: List<String>? = null
 
     private var triviaOptions: MutableList<TriviaAnswer> = MutableList(3) { TriviaAnswer(null, false) }

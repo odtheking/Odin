@@ -1,7 +1,7 @@
 package com.odtheking.odin.utils.skyblock
 
 import com.odtheking.odin.OdinMod.mc
-import com.odtheking.odin.events.ChatMessageEvent
+import com.odtheking.odin.events.MessageEvent
 import com.odtheking.odin.events.PartyEvent
 import com.odtheking.odin.events.core.on
 
@@ -45,70 +45,70 @@ object PartyUtils {
         private set
 
     init {
-        on<ChatMessageEvent> {
-            joinedOther.find(value)?.let { return@on addMember(it.groupValues[2]) }
+        on<MessageEvent.Chat> {
+            joinedOther.find(message)?.let { return@on addMember(it.groupValues[2]) }
 
-            joinedSelf.find(value)?.let {
+            joinedSelf.find(message)?.let {
                 addMember(it.groupValues[2])
                 partyLeader = it.groupValues[2]
                 addMember(mc.player?.gameProfile?.name ?: return@on)
                 return@on
             }
 
-            leftParty.find(value)?.let { return@on removeMember(it.groupValues[2]) }
+            leftParty.find(message)?.let { return@on removeMember(it.groupValues[2]) }
 
-            kickedParty.find(value)?.let { return@on removeMember(it.groupValues[2]) }
+            kickedParty.find(message)?.let { return@on removeMember(it.groupValues[2]) }
 
-            kickedOffline.find(value)?.let { return@on removeMember(it.groupValues[2]) }
+            kickedOffline.find(message)?.let { return@on removeMember(it.groupValues[2]) }
 
-            kickedDisconnected.find(value)?.let { return@on removeMember(it.groupValues[2]) }
+            kickedDisconnected.find(message)?.let { return@on removeMember(it.groupValues[2]) }
 
-            transferBy.find(value)?.let {
+            transferBy.find(message)?.let {
                 addMember(it.groupValues[2])
                 addMember(it.groupValues[4])
                 partyLeader = it.groupValues[2]
                 return@on
             }
 
-            transferLeave.find(value)?.let {
+            transferLeave.find(message)?.let {
                 addMember(it.groupValues[2])
                 partyLeader = it.groupValues[2]
                 removeMember(it.groupValues[4])
                 return@on
             }
 
-            leaderDisconnected.find(value)?.let {
+            leaderDisconnected.find(message)?.let {
                 partyLeader = it.groupValues[2]
                 return@on
             }
 
-            leaderRejoined.find(value)?.let {
+            leaderRejoined.find(message)?.let {
                 partyLeader = it.groupValues[2]
                 return@on
             }
 
-            partyChat.find(value)?.let {
+            partyChat.find(message)?.let {
                 addMember(it.groupValues[2])
                 return@on
             }
 
-            partyInvite.find(value)?.let {
+            partyInvite.find(message)?.let {
                 addMember(it.groupValues[2])
                 if (partyLeader == null) partyLeader = it.groupValues[2]
                 return@on
             }
 
-            queuedInFinder.find(value)?.let {
+            queuedInFinder.find(message)?.let {
                 addMember(mc.player?.gameProfile?.name ?: return@on)
                 if (partyLeader == null) partyLeader = mc.player?.gameProfile?.name
                 return@on
             }
 
             for (pattern in disbandPatterns) {
-                if (pattern.containsMatchIn(value)) return@on disband()
+                if (pattern.containsMatchIn(message)) return@on disband()
             }
 
-            membersList.find(value)?.let { match ->
+            membersList.find(message)?.let { match ->
                 val type = match.groupValues[1]
 
                 match.groupValues[2].split(" ●").forEach { segment ->
@@ -120,7 +120,7 @@ object PartyUtils {
                 }
             }
 
-            partyWith.find(value)?.let { match ->
+            partyWith.find(message)?.let { match ->
                 match.groupValues[1].split(", ").forEach { playerName ->
                     val memberMatch = memberFormat.find(playerName.trim()) ?: return@forEach
                     addMember(memberMatch.groupValues[2])
@@ -128,9 +128,9 @@ object PartyUtils {
                 return@on
             }
 
-            kuudraJoin.find(value)?.let { return@on addMember(it.groupValues[2]) }
+            kuudraJoin.find(message)?.let { return@on addMember(it.groupValues[2]) }
 
-            dungeonJoin.find(value)?.let { return@on addMember(it.groupValues[1]) }
+            dungeonJoin.find(message)?.let { return@on addMember(it.groupValues[1]) }
         }
     }
 

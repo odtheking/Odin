@@ -15,15 +15,14 @@ import com.odtheking.odin.utils.render.drawLine
 import com.odtheking.odin.utils.render.drawStyledBox
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.core.BlockPos
+import net.minecraft.resources.Identifier
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.phys.AABB
 import java.util.concurrent.ConcurrentHashMap
 
 object BeamsSolver {
     private var scanned = false
-    private var lanternPairs: List<List<Int>> = JsonResourceLoader.loadJson(
-        "/assets/odin/puzzles/creeperBeamsSolutions.json", emptyList()
-    )
+    private var lanternPairs: List<List<Int>> = JsonResourceLoader.loadJson(Identifier.fromNamespaceAndPath("odin", "puzzles/creeper-beams-solutions.json")) ?: emptyList()
 
     private var currentLanternPairs = ConcurrentHashMap<BlockPos, Pair<BlockPos, Color>>()
 

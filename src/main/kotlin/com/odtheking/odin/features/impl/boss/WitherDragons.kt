@@ -16,10 +16,7 @@ import com.odtheking.odin.utils.render.drawWireFrameBox
 import com.odtheking.odin.utils.render.textDim
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.skyblock.dungeon.M7Phases
-import net.minecraft.network.protocol.game.ClientboundAddEntityPacket
 import net.minecraft.network.protocol.game.ClientboundLevelParticlesPacket
-import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket
-import net.minecraft.network.protocol.game.ClientboundSetEquipmentPacket
 
 object WitherDragons : Module(
     name = "Wither Dragons",
@@ -70,15 +67,15 @@ object WitherDragons : Module(
             if (DungeonUtils.getF7Phase() == M7Phases.P5) handleSpawnPacket(this)
         }
 
-        onReceive<ClientboundSetEquipmentPacket> {
+        on<EntityEvent.SetItemSlot> {
             if (DungeonUtils.getF7Phase() == M7Phases.P5) DragonCheck.dragonSprayed(this)
         }
 
-        onReceive<ClientboundAddEntityPacket> {
+        on<EntityEvent.Add> {
             if (DungeonUtils.getF7Phase() == M7Phases.P5) DragonCheck.dragonSpawn(this)
         }
 
-        onReceive<ClientboundSetEntityDataPacket> {
+        on<EntityEvent.SetData> {
             if (DungeonUtils.getF7Phase() == M7Phases.P5) DragonCheck.dragonUpdate(this)
         }
 
@@ -87,8 +84,8 @@ object WitherDragons : Module(
                 WitherDragonsEnum.entries.find { it.statuePos == pos }?.setDead(false)
         }
 
-        on<ChatMessageEvent> {
-            if (DungeonUtils.getF7Phase() != M7Phases.P5 || !witherKingRegex.matches(value)) return@on
+        on<MessageEvent.Chat> {
+            if (DungeonUtils.getF7Phase() != M7Phases.P5 || !witherKingRegex.matches(message)) return@on
             (DragonCheck.lastDragonDeath ?: WitherDragonsEnum.entries.find { it.state != WitherDragonState.DEAD })
                 ?.apply {
                     if (sendNotification) modMessage("§${colorCode}${name} dragon counts.")

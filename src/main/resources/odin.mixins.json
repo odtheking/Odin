@@ -2,7 +2,7 @@
   "required": true,
   "minVersion": "0.8",
   "package": "com.odtheking.mixin",
-  "compatibilityLevel": "JAVA_21",
+  "compatibilityLevel": "JAVA_25",
   "injectors": {
     "defaultRequire": 1
   },
@@ -11,7 +11,6 @@
     "mixins.AbstractContainerScreenMixin",
     "mixins.AvatarRendererMixin",
     "mixins.BossBarHealthOverlayMixin",
-    "mixins.ChatListenerMixin",
     "mixins.ChatScreenMixin",
     "mixins.ClientPacketListenerMixin",
     "mixins.EntityRendererMixin",
@@ -31,6 +30,8 @@
     "mixins.ConnectionMixin",
     "mixins.EntityMixin",
     "mixins.LevelChunkMixin",
+    "mixins.LivingEntityMixin",
+    "mixins.SynchedEntityDataMixin",
     "mixins.YggdrasilSignatureIgnoreMixin"
   ]
 }

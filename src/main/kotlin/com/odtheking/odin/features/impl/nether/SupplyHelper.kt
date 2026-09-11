@@ -3,7 +3,7 @@ package com.odtheking.odin.features.impl.nether
 import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.ColorSetting
-import com.odtheking.odin.events.ChatMessageEvent
+import com.odtheking.odin.events.MessageEvent
 import com.odtheking.odin.events.RenderEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
@@ -35,15 +35,15 @@ object SupplyHelper : Module(
     private var startRun = 0L
 
     init {
-        on<ChatMessageEvent> {
+        on<MessageEvent.Chat> {
             if (!KuudraUtils.inKuudra || !sendSupplyTime) return@on
 
             when {
-                runStartRegex.matches(value) -> startRun = System.currentTimeMillis()
+                runStartRegex.matches(message) -> startRun = System.currentTimeMillis()
 
-                supplyPickUpRegex.matches(value) -> {
+                supplyPickUpRegex.matches(message) -> {
                     if (KuudraUtils.phase != 1) return@on
-                    val (name, current, total) = supplyPickUpRegex.find(value)?.destructured ?: return@on
+                    val (name, current, total) = supplyPickUpRegex.find(message)?.destructured ?: return@on
                     modMessage("§6$name §a§lrecovered a supply in ${formatTime(System.currentTimeMillis() - startRun)}! §r§8($current/$total)", "")
                     cancel()
                 }

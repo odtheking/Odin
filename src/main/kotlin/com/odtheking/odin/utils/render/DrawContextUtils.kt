@@ -14,13 +14,18 @@ fun GuiGraphicsExtractor.text(text: String, x: Int, y: Int, color: Color = Color
     text(mc.font, text, x, y, color.rgba, shadow)
 }
 
+fun GuiGraphicsExtractor.text(text: FormattedCharSequence, x: Int, y: Int, color: Color = Colors.WHITE, shadow: Boolean = true) {
+    text(mc.font, text, x, y, color.rgba, shadow)
+}
+
 fun GuiGraphicsExtractor.textDim(text: String, x: Int, y: Int, color: Color = Colors.WHITE, shadow: Boolean = true): Pair<Int, Int> {
     text(text, x, y, color, shadow)
     return mc.font.width(text) to mc.font.lineHeight
 }
 
-fun GuiGraphicsExtractor.text(text: FormattedCharSequence, x: Int, y: Int, color: Color = Colors.WHITE, shadow: Boolean = true) {
-    text(mc.font, text, x, y, color.rgba, shadow)
+fun GuiGraphicsExtractor.textDim(text: FormattedCharSequence, x: Int, y: Int, color: Color = Colors.WHITE, shadow: Boolean = true): Pair<Int, Int> {
+    text(text, x, y, color, shadow)
+    return mc.font.width(text) to mc.font.lineHeight
 }
 
 fun getStringWidth(text: String): Int = mc.font.width(text)

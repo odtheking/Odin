@@ -14,7 +14,6 @@ import com.odtheking.odin.utils.ui.isAreaHovered
 import com.odtheking.odin.utils.ui.rendering.NVGRenderer
 import net.minecraft.client.input.KeyEvent
 import net.minecraft.client.input.MouseButtonEvent
-import org.lwjgl.glfw.GLFW
 
 class KeybindSetting(
     name: String,
@@ -71,8 +70,8 @@ class KeybindSetting(
         if (!listening) return false
 
         when (input.key) {
-            GLFW.GLFW_KEY_ESCAPE, GLFW.GLFW_KEY_BACKSPACE -> key = InputConstants.UNKNOWN
-            GLFW.GLFW_KEY_ENTER -> listening = false
+            InputConstants.KEY_ESCAPE, InputConstants.KEY_BACKSPACE -> key = InputConstants.UNKNOWN
+            InputConstants.KEY_RETURN -> listening = false
             else -> key = InputConstants.getKey(input)
         }
 
@@ -84,8 +83,6 @@ class KeybindSetting(
         onPress = block
         return this
     }
-
-
 
     override val isHovered: Boolean
         get() =
@@ -102,10 +99,6 @@ class KeybindSetting(
     }
 
     companion object {
-        fun InputConstants.Key.isDown(): Boolean {
-            val window = mc.window
-            return if (value > 7) InputConstants.isKeyDown(window, value)
-            else GLFW.glfwGetMouseButton(window.handle(), value) == GLFW.GLFW_PRESS
-        }
+        fun InputConstants.Key.isDown(): Boolean = InputConstants.isKeyDown(mc.window, value)
     }
 }

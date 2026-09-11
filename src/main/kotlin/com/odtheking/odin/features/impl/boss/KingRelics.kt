@@ -2,13 +2,8 @@ package com.odtheking.odin.features.impl.boss
 
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.NumberSetting
-import com.odtheking.odin.events.ChatMessageEvent
-import com.odtheking.odin.events.LevelEvent
-import com.odtheking.odin.events.RenderEvent
-import com.odtheking.odin.events.TickEvent
+import com.odtheking.odin.events.*
 import com.odtheking.odin.events.core.on
-import com.odtheking.odin.events.core.onReceive
-import com.odtheking.odin.events.core.onSend
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.*
 import com.odtheking.odin.utils.render.drawCustomBeacon
@@ -16,9 +11,6 @@ import com.odtheking.odin.utils.render.textDim
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.skyblock.dungeon.M7Phases
 import net.minecraft.core.BlockPos
-import net.minecraft.network.protocol.game.ClientboundSetEquipmentPacket
-import net.minecraft.network.protocol.game.ServerboundUseItemOnPacket
-import net.minecraft.world.InteractionHand
 import net.minecraft.world.item.Items
 import net.minecraft.world.level.block.Blocks
 
@@ -47,18 +39,18 @@ object KingRelics : Module(
     private val relicPBs = PersonalBest(this, "Relics")
 
     init {
-        on<ChatMessageEvent> {
-            if (DungeonUtils.getF7Phase() != M7Phases.P5 || !relicPickupRegex.matches(value)) return@on
+        on<MessageEvent.Chat> {
+            if (DungeonUtils.getF7Phase() != M7Phases.P5 || !relicPickupRegex.matches(message)) return@on
             relicPlaceTick = serverTickCounter
             relicTicksToSpawn = relicSpawnTicks
             hasAnnouncedSpawn = false
         }
 
-        onSend<ServerboundUseItemOnPacket> {
-            if (DungeonUtils.getF7Phase() != M7Phases.P5 || relicPlaceTick == 0L || hand == InteractionHand.OFF_HAND) return@onSend
+        on<BlockInteractEvent> {
+            if (DungeonUtils.getF7Phase() != M7Phases.P5 || relicPlaceTick == 0L) return@on
 
-            val block = mc.level?.getBlockState(hitResult.blockPos)?.block
-            if (!block.equalsOneOf(Blocks.CAULDRON, Blocks.ANVIL)) return@onSend
+            val block = mc.level?.getBlockState(pos)?.block
+            if (!block.equalsOneOf(Blocks.CAULDRON, Blocks.ANVIL)) return@on
 
             Relic.entries.find { it.id == currentRelic?.id }?.let {
                 relicPBs.time(it.name, (serverTickCounter - relicPlaceTick) / 20f, message = "§${it.colorCode}${it.name} relic §7placed in §6", sendMessage = relicAnnounceTime)
@@ -66,12 +58,11 @@ object KingRelics : Module(
             }
         }
 
-        onReceive<ClientboundSetEquipmentPacket> {
-            if (DungeonUtils.getF7Phase() != M7Phases.P5 || currentRelic == null) return@onReceive
+        on<EntityEvent.SetItemSlot> {
+            if (DungeonUtils.getF7Phase() != M7Phases.P5 || currentRelic == null) return@on
 
-            val equipmentSlot = slots.find { it.second.item== Items.PLAYER_HEAD } ?: return@onReceive
-
-            Relic.entries.find { it.id == equipmentSlot.second.itemId }?.let { relic ->
+            if (stack.item != Items.PLAYER_HEAD) return@on
+            Relic.entries.find { it.id == stack.itemId }?.let { relic ->
                 if (relicPlaceTick > 0 && !hasAnnouncedSpawn) {
                     modMessage("§${relic.colorCode}${relic.name} relic §7spawned in §6${(serverTickCounter - relicPlaceTick) / 20f}s")
                     hasAnnouncedSpawn = true

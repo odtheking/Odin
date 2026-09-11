@@ -17,7 +17,6 @@ class MelodyHandler: TerminalHandler(TerminalTypes.MELODY) {
         return buildList {
             add(greenPane)
             add(magentaPane)
-            add(magentaPane + 36)
 
             if (greenPane % 9 == magentaPane % 9) add(greenClay)
         }

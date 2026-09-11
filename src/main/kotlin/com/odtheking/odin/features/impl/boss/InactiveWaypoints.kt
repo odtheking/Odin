@@ -2,8 +2,8 @@ package com.odtheking.odin.features.impl.boss
 
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.ColorSetting
-import com.odtheking.odin.events.ChatMessageEvent
 import com.odtheking.odin.events.LevelEvent
+import com.odtheking.odin.events.MessageEvent
 import com.odtheking.odin.events.RenderEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
@@ -67,12 +67,12 @@ object InactiveWaypoints : Module(
             }?.toSet().orEmpty()
         }
 
-        on<ChatMessageEvent> {
+        on<MessageEvent.Chat> {
             if (!DungeonUtils.inBoss) return@on
 
             when {
-                completedRegex.matches(value) -> {
-                    val it = completedRegex.find(value) ?: return@on
+                completedRegex.matches(message) -> {
+                    val it = completedRegex.find(message) ?: return@on
                     val completed = (it.groupValues[4].toIntOrNull() ?: 0).apply { if (this == 1) firstInSection = true }
 
                     if (completed == (it.groupValues[5].toIntOrNull() ?: 0)) {
@@ -88,18 +88,18 @@ object InactiveWaypoints : Module(
                     lastCompleted = completed
                 }
 
-                gateRegex.matches(value) -> {
+                gateRegex.matches(message) -> {
                     gate = true
                     if (isComplete) newSection()
                 }
 
-                goldorRegex.matches(value) -> {
+                goldorRegex.matches(message) -> {
                     shouldRender = true
                     resetState()
                     section = 1
                 }
 
-                coreOpeningRegex.matches(value) -> {
+                coreOpeningRegex.matches(message) -> {
                     shouldRender = false
                     resetState()
                 }

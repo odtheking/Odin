@@ -1,9 +1,11 @@
 package com.odtheking.odin.features.impl.dungeon.dungeonwaypoints
 
+import com.mojang.blaze3d.platform.InputConstants
 import com.odtheking.odin.OdinMod.scope
 import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.*
 import com.odtheking.odin.events.*
+import com.odtheking.odin.events.core.EventPriority
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.features.Module
@@ -17,7 +19,6 @@ import kotlinx.coroutines.launch
 import net.minecraft.core.BlockPos
 import net.minecraft.network.protocol.game.ClientboundPlayerPositionPacket
 import net.minecraft.world.phys.AABB
-import org.lwjgl.glfw.GLFW
 
 /**
  * Custom Waypoints for Dungeons
@@ -52,7 +53,7 @@ object DungeonWaypoints : Module(
     private var presetNormal by ColorSetting("Normal Color", Colors.MINECRAFT_RED, true, "Color for Normal Waypoints").withDependency { editModeSettings }
     private var presetSecret by ColorSetting("Secret Color", Colors.MINECRAFT_BLUE, true, "Color for cyclable preset 3.").withDependency { editModeSettings }
     private var presetEtherwarp by ColorSetting("Etherwarp Color", Colors.MINECRAFT_GOLD, true, "Color for cyclable preset 4.").withDependency { editModeSettings }
-    private var cycleWaypointType by KeybindSetting("Cycle Waypoint", GLFW.GLFW_KEY_UNKNOWN, "Keybind to cycle the waypoint type.").withDependency { editModeSettings }
+    private var cycleWaypointType by KeybindSetting("Cycle Waypoint", InputConstants.UNKNOWN, "Keybind to cycle the waypoint type.").withDependency { editModeSettings }
         .onPress {
             if (!allowEdits) return@onPress
             when (waypointType) {
@@ -125,7 +126,7 @@ object DungeonWaypoints : Module(
             lastEtherTime = 0L
         }
 
-        on<RenderEvent.Extract> {
+        on<RenderEvent.Extract> (EventPriority.HIGHEST) {
             renderWaypoints(this)
         }
 

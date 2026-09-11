@@ -7,7 +7,7 @@ import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.NumberSetting
 import com.odtheking.odin.clickgui.settings.impl.SelectorSetting
 import com.odtheking.odin.commands.fetchAndDisplayCataStats
-import com.odtheking.odin.events.ChatMessageEvent
+import com.odtheking.odin.events.MessageEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.formatNumber
@@ -47,9 +47,9 @@ object BetterPartyFinder : Module(
     private val kickedList = mutableSetOf<String>()
 
     init {
-        on<ChatMessageEvent> {
+        on<MessageEvent.Chat> {
             if (!statsDisplay && !autoKickToggle) return@on
-            val (name) = pfRegex.find(value)?.destructured ?: return@on
+            val (name) = pfRegex.find(message)?.destructured ?: return@on
             if (name == mc.player?.name?.string) return@on
 
             scope.launch {

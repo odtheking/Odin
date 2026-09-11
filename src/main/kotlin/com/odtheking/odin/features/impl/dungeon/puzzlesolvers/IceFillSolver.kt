@@ -10,19 +10,16 @@ import com.odtheking.odin.utils.modMessage
 import com.odtheking.odin.utils.render.drawLine
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.core.BlockPos
+import net.minecraft.resources.Identifier
 import net.minecraft.world.phys.Vec3
 
 object IceFillSolver {
 
-    private var iceFillFloors = JsonResourceLoader.loadJson(
-        "/assets/odin/puzzles/iceFillFloors.json",
-        IceFillData(emptyList(), emptyList(), emptyList())
-    )
-    private var currentPatterns: ArrayList<Vec3> = ArrayList()
-
+    private val iceFillFloors = JsonResourceLoader.loadJson(Identifier.fromNamespaceAndPath("odin", "puzzles/ice-fill-floors.json")) ?: IceFillData(emptyList(), emptyList(), emptyList())
+    private val currentPatterns: ArrayList<Vec3> = ArrayList()
 
     fun onRenderWorld(event: RenderEvent.Extract, color: Color) {
-        if (!currentPatterns.isEmpty() && DungeonUtils.currentRoomName == "Ice Fill")
+        if (currentPatterns.isNotEmpty() && DungeonUtils.currentRoomName == "Ice Fill")
             event.drawLine(currentPatterns, color, true)
     }
 

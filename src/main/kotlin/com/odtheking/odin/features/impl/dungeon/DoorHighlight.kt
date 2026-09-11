@@ -2,11 +2,11 @@ package com.odtheking.odin.features.impl.dungeon
 
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.ColorSetting
-import com.odtheking.odin.events.ChatMessageEvent
+import com.odtheking.odin.events.EntityEvent
 import com.odtheking.odin.events.LevelEvent
+import com.odtheking.odin.events.MessageEvent
 import com.odtheking.odin.events.RenderEvent
 import com.odtheking.odin.events.core.on
-import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.features.impl.dungeon.map.DungeonScan
 import com.odtheking.odin.features.impl.dungeon.map.tile.DoorType
@@ -17,7 +17,6 @@ import com.odtheking.odin.utils.alert
 import com.odtheking.odin.utils.equalsOneOf
 import com.odtheking.odin.utils.render.drawStyledBox
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
-import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.decoration.ArmorStand
 import net.minecraft.world.phys.AABB
@@ -45,21 +44,21 @@ object DoorHighlight : Module(
     private val bloodDoorOpenRegex = Regex("^The BLOOD DOOR has been opened!$")
 
     init {
-        on<ChatMessageEvent> {
+        on<MessageEvent.Chat> {
             if (!DungeonUtils.inClear) return@on
             when {
-                witherKeyObtainRegex.matches(value) || witherKeyPickedUpRegex.matches(value) -> witherKeys++
-                witherDoorOpenRegex.matches(value) -> witherKeys = (witherKeys - 1).coerceAtLeast(0)
-                bloodKeyObtainRegex.matches(value) || bloodKeyPickedUpRegex.matches(value) -> bloodKey = true
-                bloodDoorOpenRegex.matches(value) -> { bloodKey = false; bloodOpened = true }
+                witherKeyObtainRegex.matches(message) || witherKeyPickedUpRegex.matches(message) -> witherKeys++
+                witherDoorOpenRegex.matches(message) -> witherKeys = (witherKeys - 1).coerceAtLeast(0)
+                bloodKeyObtainRegex.matches(message) || bloodKeyPickedUpRegex.matches(message) -> bloodKey = true
+                bloodDoorOpenRegex.matches(message) -> { bloodKey = false; bloodOpened = true }
             }
         }
 
-        onReceive<ClientboundSetEntityDataPacket> {
-            if (!DungeonUtils.inClear) return@onReceive
-            val entity = mc.level?.getEntity(id) as? ArmorStand ?: return@onReceive
-            if (currentKey?.entity == entity) return@onReceive
-            currentKey = KeyType.entries.find { it.displayName == entity.name.string } ?: return@onReceive
+        on<EntityEvent.SetData> {
+            if (!DungeonUtils.inClear) return@on
+            val entity = entity as? ArmorStand ?: return@on
+            if (currentKey?.entity == entity) return@on
+            currentKey = KeyType.entries.find { it.displayName == entity.name.string } ?: return@on
             currentKey?.entity = entity
 
             if (announceKeySpawn) alert("§${currentKey?.colorCode}${entity.name.string}§7 spawned!")

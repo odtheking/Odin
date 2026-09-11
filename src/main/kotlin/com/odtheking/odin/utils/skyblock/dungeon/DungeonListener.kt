@@ -13,7 +13,9 @@ import com.odtheking.odin.utils.noControlCodes
 import com.odtheking.odin.utils.romanToInt
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import net.minecraft.network.protocol.game.*
+import net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket
+import net.minecraft.network.protocol.game.ClientboundSetPlayerTeamPacket
+import net.minecraft.network.protocol.game.ClientboundTabListPacket
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.player.Player
 import kotlin.jvm.optionals.getOrNull
@@ -102,16 +104,16 @@ object DungeonListener {
             }
         }
 
-        on<ChatMessageEvent> {
-            if (expectingBloodRegex.matches(value)) expectingBloodUpdate = true
-            doorOpenRegex.find(value)?.let { dungeonStats.doorOpener = it.groupValues[1] }
-            deathRegex.find(value)?.let { match ->
+        on<MessageEvent.Chat> {
+            if (expectingBloodRegex.matches(message)) expectingBloodUpdate = true
+            doorOpenRegex.find(message)?.let { dungeonStats.doorOpener = it.groupValues[1] }
+            deathRegex.find(message)?.let { match ->
                 dungeonTeammates.find { teammate ->
                     teammate.name == (match.groupValues[1].takeUnless { it == "You" } ?: mc.player?.name?.string)
                 }?.deaths?.inc()
             }
 
-            when (partyMessageRegex.find(value)?.groupValues?.get(1)?.lowercase() ?: return@on) {
+            when (partyMessageRegex.find(message)?.groupValues?.get(1)?.lowercase() ?: return@on) {
                 "mimic killed", "mimic slain", "mimic killed!", "mimic dead", "mimic dead!", ->
                     if (DungeonUtils.isFloor(6, 7)) dungeonStats.mimicKilled = true
 
@@ -129,17 +131,16 @@ object DungeonListener {
             DungeonUtils.updateScore()
         }
 
-        onReceive<ClientboundRemoveEntitiesPacket> {
+        on<EntityEvent.Remove> {
             DungeonUtils.dungeonTeammates.forEach {
                 val id = it.entity?.id ?: return@forEach
-                if (entityIds.contains(id)) it.entity = null
+                if (entity.id == id) it.entity = null
             }
         }
 
-        onReceive<ClientboundAddEntityPacket> {
-            if (type == EntityType.PLAYER)
-                DungeonUtils.dungeonTeammates.find { it.entity == null && it.name == mc.level?.getEntity(id)?.name?.string }?.entity =
-                    mc.level?.getEntity(id) as? Player
+        on<EntityEvent.Add> {
+            if (entity.type == EntityType.PLAYER && entity.uuid.version() != 4)
+                DungeonUtils.dungeonTeammates.find { it.entity == null && it.name == entity.name.string }?.entity = entity as? Player
         }
     }
 

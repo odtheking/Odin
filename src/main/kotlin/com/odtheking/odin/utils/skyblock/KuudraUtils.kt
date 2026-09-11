@@ -1,8 +1,8 @@
 package com.odtheking.odin.utils.skyblock
 
 import com.odtheking.odin.OdinMod.mc
-import com.odtheking.odin.events.ChatMessageEvent
 import com.odtheking.odin.events.LevelEvent
+import com.odtheking.odin.events.MessageEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.utils.handlers.TickTask
@@ -84,24 +84,24 @@ object KuudraUtils {
             }
         }
 
-        on<ChatMessageEvent> {
+        on<MessageEvent.Chat> {
             if (!inKuudra) return@on
 
-            when (value) {
+            when (message) {
                 "[NPC] Elle: Okay adventurers, I will go and fish up Kuudra!" -> phase = 1
                 "[NPC] Elle: OMG! Great work collecting my supplies!" -> phase = 2
                 "[NPC] Elle: Phew! The Ballista is finally ready! It should be strong enough to tank Kuudra's blows now!" -> phase = 3
                 "[NPC] Elle: POW! SURELY THAT'S IT! I don't think he has any more in him!" -> phase = 4
             }
 
-            partyFreshRegex.find(value)?.groupValues?.get(2)?.let { playerName ->
+            partyFreshRegex.find(message)?.groupValues?.get(2)?.let { playerName ->
                 freshers[playerName] = System.currentTimeMillis()
                 schedule(200, true) {
                     freshers[playerName] = null
                 }
             }
 
-            ownFreshRegex.find(value)?.let {
+            ownFreshRegex.find(message)?.let {
                 freshers[mc.player?.name?.string ?: "self"] = System.currentTimeMillis()
                 schedule(200, true) {
                     freshers[mc.player?.name?.string ?: "self"] = null

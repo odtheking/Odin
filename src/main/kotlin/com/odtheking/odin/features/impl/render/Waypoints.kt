@@ -1,12 +1,13 @@
 package com.odtheking.odin.features.impl.render
 
+import com.mojang.blaze3d.platform.InputConstants
 import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.DropdownSetting
 import com.odtheking.odin.clickgui.settings.impl.KeybindSetting
 import com.odtheking.odin.clickgui.settings.impl.NumberSetting
-import com.odtheking.odin.events.ChatMessageEvent
 import com.odtheking.odin.events.LevelEvent
+import com.odtheking.odin.events.MessageEvent
 import com.odtheking.odin.events.RenderEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
@@ -16,7 +17,6 @@ import com.odtheking.odin.utils.modMessage
 import com.odtheking.odin.utils.render.drawCustomBeacon
 import com.odtheking.odin.utils.sendChatMessage
 import net.minecraft.core.BlockPos
-import org.lwjgl.glfw.GLFW
 import kotlin.math.abs
 
 object Waypoints : Module(
@@ -30,7 +30,7 @@ object Waypoints : Module(
 
     private val pingLocationDropDown by DropdownSetting("Ping Location Dropdown", false)
     private val pingLocationToggle by BooleanSetting("Ping Waypoint", false, desc = "Adds a waypoint at the location you are looking at.").withDependency { pingLocationDropDown }
-    private val pingLocation by KeybindSetting("Ping Keybind", GLFW.GLFW_KEY_UNKNOWN, desc = "Sends the location you are looking at as coords in chat for waypoints.").onPress {
+    private val pingLocation by KeybindSetting("Ping Keybind", InputConstants.UNKNOWN, desc = "Sends the location you are looking at as coords in chat for waypoints.").onPress {
         if (!pingLocationToggle) return@onPress
         Etherwarp.getEtherPos(mc.player?.position(), pingDistance).pos?.let { pos ->
             addTempWaypoint("§fWaypoint", pos.x, pos.y, pos.z, pingWaypointTime)
@@ -49,10 +49,10 @@ object Waypoints : Module(
     private val temporaryWaypoints = mutableListOf<Waypoint>()
 
     init {
-        on<ChatMessageEvent> {
+        on<MessageEvent.Chat> {
             val (name, x, y, z) = when {
-                fromParty && partyRegex.matches(value) -> partyRegex.find(value)?.destructured
-                fromAll && allRegex.matches(value) -> allRegex.find(value)?.destructured
+                fromParty && partyRegex.matches(message) -> partyRegex.find(message)?.destructured
+                fromAll && allRegex.matches(message) -> allRegex.find(message)?.destructured
                 else -> null
             } ?: return@on
 

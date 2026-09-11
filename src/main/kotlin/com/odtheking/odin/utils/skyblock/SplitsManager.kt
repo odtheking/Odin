@@ -1,7 +1,7 @@
 package com.odtheking.odin.utils.skyblock
 
-import com.odtheking.odin.events.ChatMessageEvent
 import com.odtheking.odin.events.LevelEvent
+import com.odtheking.odin.events.MessageEvent
 import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.impl.skyblock.Splits
@@ -21,8 +21,8 @@ object SplitsManager {
     private var tickCounter: Long = 0L
 
     init {
-        on<ChatMessageEvent> {
-            if (value == "Starting in 1 second.") startRun() else onSplitMessage(value)
+        on<MessageEvent.Chat> {
+            if (message == "Starting in 1 second.") startRun() else onSplitMessage(message)
         }
 
         on<TickEvent.Server> {

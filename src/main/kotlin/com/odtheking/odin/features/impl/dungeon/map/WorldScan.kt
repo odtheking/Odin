@@ -73,6 +73,7 @@ object WorldScan {
             if (!DungeonUtils.inDungeons) chunksToScan.add(IVec2(chunk.pos.x, chunk.pos.z))
             else scanChunk(chunk)
         }
+
         ClientChunkEvents.CHUNK_UNLOAD.register { _, chunk ->
             if (!DungeonUtils.inDungeons) chunksToScan.remove(IVec2(chunk.pos.x, chunk.pos.z))
         }
@@ -107,7 +108,7 @@ object WorldScan {
             else return devMessage("Unknown room data for core: $core $chunkPosition")
         }
 
-        if (ClickGUIModule.dungeonCoresLogging) DungeonScan.recordRoomCore(data.name, core, getRoomCoreBlocks(chunk, (chunkPosition * 16) + 7))
+        if (ClickGUIModule.dungeonCoresLogging) mc.execute { DungeonScan.recordRoomCore(data.name, core, getRoomCoreBlocks(chunk, (chunkPosition * 16) + 7)) }
 
         val tilePosition = (chunkPosition / 2) + 6
         val tile = DungeonScan.tiles.getOrNull(tilePosition.x + (tilePosition.z * 6)) ?: return
