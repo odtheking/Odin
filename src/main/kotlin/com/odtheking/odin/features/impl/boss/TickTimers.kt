@@ -7,15 +7,12 @@ import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.MessageEvent
 import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.core.on
-import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.render.textDim
 import com.odtheking.odin.utils.skyblock.MORT_REGEX
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.toFixed
-import net.minecraft.core.particles.ParticleTypes
-import net.minecraft.network.protocol.game.ClientboundLevelParticlesPacket
 
 object TickTimers : Module(
     name = "Tick Timers",
@@ -105,9 +102,9 @@ object TickTimers : Module(
     }
 
     private var fireFreezeTime = -1
-    private const val FIREFREEZEACTIVATIONTIME = 100 //"const should not contain lowercase characters" yeah yeah go fuck urself
+    private const val FIREFREEZEACTIVATIONTIME = 100
 
-    private val fireFreezeHud by HUD("Fire Freeze Hud", "Displays a timer for when to use fire freeze."){
+    private val fireFreezeHud by HUD("Fire Freeze Hud", "Displays a timer for when to use fire freeze in M3."){
         val timeTillFreeze = fireFreezeTime - FIREFREEZEACTIVATIONTIME
         if (it)                         textDim(formatTimer(50, 106, "Fire Freeze:"), 0, 0, Colors.MINECRAFT_DARK_RED)
         else if (timeTillFreeze > 0)    textDim(formatTimer(timeTillFreeze, 106, "Fire Freeze:"), 0, 0, Colors.MINECRAFT_DARK_RED)
