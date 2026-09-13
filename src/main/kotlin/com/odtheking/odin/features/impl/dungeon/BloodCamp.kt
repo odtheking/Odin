@@ -7,7 +7,6 @@ import com.odtheking.odin.clickgui.settings.impl.DropdownSetting
 import com.odtheking.odin.clickgui.settings.impl.NumberSetting
 import com.odtheking.odin.events.*
 import com.odtheking.odin.events.core.on
-import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.*
 import com.odtheking.odin.utils.handlers.schedule
@@ -17,9 +16,6 @@ import com.odtheking.odin.utils.render.drawWireFrameBox
 import com.odtheking.odin.utils.render.textDim
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.network.chat.Component
-import net.minecraft.network.protocol.game.ClientboundMoveEntityPacket
-import net.minecraft.network.protocol.game.ClientboundRemoveEntitiesPacket
-import net.minecraft.network.protocol.game.ClientboundSetEquipmentPacket
 import net.minecraft.world.entity.EquipmentSlot
 import net.minecraft.world.entity.decoration.ArmorStand
 import net.minecraft.world.entity.monster.zombie.Zombie
@@ -66,19 +62,19 @@ object BloodCamp : Module(
     private var firstSpawns = true
 
     init {
-        onReceive<ClientboundMoveEntityPacket> {
-            if (xa == 0.toShort() && ya == 0.toShort() && za == 0.toShort()) return@onReceive
-            val level = mc.level ?: return@onReceive
-            if (!DungeonUtils.inClear) return@onReceive
+        on<EntityEvent.Move> {
+            if (newPos == Vec3.ZERO || newPos == entity.position() || !DungeonUtils.inClear) return@on
 
-            val entity = getEntity(level) as? ArmorStand ?: return@onReceive
-            if (currentWatcherEntity?.let { it.distanceTo(entity) <= 20 } != true || entity.getItemBySlot(EquipmentSlot.HEAD).item != Items.PLAYER_HEAD || entity.getItemBySlot(EquipmentSlot.HEAD).texture !in allowedMobSkulls) return@onReceive
+            val entity = entity as? ArmorStand ?: return@on
+            if (currentWatcherEntity?.let {
+                it.distanceTo(entity) <= 20 } != true ||
+                entity.getItemBySlot(EquipmentSlot.HEAD).item != Items.PLAYER_HEAD ||
+                entity.getItemBySlot(EquipmentSlot.HEAD).texture !in allowedMobSkulls
+            ) return@on
 
-            val packetVector = Vec3(entity.x + (xa / 4096), entity.y + (ya / 4096), entity.z + (za / 4096))
-
-            val data = entityDataMap.getOrPut(entity) { EntityData(packetVector, currentTickTime, firstSpawns, lastPosition = packetVector) }
-            val delta = packetVector.subtract(data.lastPosition)
-            data.lastPosition = packetVector
+            val data = entityDataMap.getOrPut(entity) { EntityData(newPos, currentTickTime, firstSpawns, lastPosition = newPos) }
+            val delta = newPos.subtract(data.lastPosition)
+            data.lastPosition = newPos
 
             if (delta.lengthSqr() > 0) data.deltaHistory.addLast(delta)
 
@@ -86,24 +82,24 @@ object BloodCamp : Module(
             val endpoint = data.startVector.add((if (totalDelta.lengthSqr() > 0) totalDelta.normalize() else Vec3.ZERO).scale(if (data.firstSpawns) 16.1 else 11.9))
             val timeTook = currentTickTime - data.started
             val speedVectors = Vec3(
-                (packetVector.x - data.startVector.x) / timeTook,
-                (packetVector.y - data.startVector.y) / timeTook,
-                (packetVector.z - data.startVector.z) / timeTook
+                (newPos.x - data.startVector.x) / timeTook,
+                (newPos.y - data.startVector.y) / timeTook,
+                (newPos.z - data.startVector.z) / timeTook
             )
 
-            renderDataMap.getOrPut(entity) { RenderEData(packetVector, endpoint, currentTickTime, speedVectors) }.apply {
+            renderDataMap.getOrPut(entity) { RenderEData(newPos, endpoint, currentTickTime, speedVectors) }.apply {
                 lastEndVector = endVector
                 endVecUpdated = currentTickTime
                 this.speedVectors = speedVectors
-                currVector = packetVector
+                currVector = newPos
                 endVector = endpoint
             }
         }
 
-        on<ChatPacketEvent> {
+        on<MessageEvent.Chat> {
             if (!DungeonUtils.inClear) return@on
-            if (BLOOD_START_REGEX.matches(value)) startTime = currentTickTime
-            else if (BLOOD_MOVE_REGEX.matches(value)) {
+            if (BLOOD_START_REGEX.matches(message)) startTime = currentTickTime
+            else if (BLOOD_MOVE_REGEX.matches(message)) {
                 firstSpawns = false
                 val tickTime = startTime ?: return@on
                 val predTicks = when (val moveTicks = (currentTickTime - tickTime) / 20 / 50) {
@@ -126,21 +122,14 @@ object BloodCamp : Module(
             }
         }
 
-        onReceive<ClientboundSetEquipmentPacket> {
-            if (!bloodAssist || currentWatcherEntity != null || !DungeonUtils.inClear) return@onReceive
-            slots.forEach { slot ->
-                if (slot.second.isEmpty) return@forEach
-                val texture = slot.second.texture ?: return@forEach
-                if ((slot.first == EquipmentSlot.HEAD && texture in watcherSkulls)) mc.execute {
-                    currentWatcherEntity = (mc.level?.getEntity(entity) as? Zombie)
-                    devMessage("Watcher found at ${currentWatcherEntity?.position()}")
-                }
-            }
+        on<EntityEvent.SetItemSlot> {
+            if (!bloodAssist || currentWatcherEntity != null || !DungeonUtils.inClear) return@on
+            if (!stack.isEmpty && slot == EquipmentSlot.HEAD && stack.texture in watcherSkulls) currentWatcherEntity = (entity as? Zombie)
         }
 
-        onReceive<ClientboundRemoveEntitiesPacket> {
-            if (currentWatcherEntity == null) return@onReceive
-            if (entityIds.any { it == currentWatcherEntity?.id }) currentWatcherEntity = null
+        on<EntityEvent.Remove> {
+            if (currentWatcherEntity == null) return@on
+            if (entity.id == currentWatcherEntity?.id) currentWatcherEntity = null
         }
 
         on<TickEvent.Server> {
@@ -271,7 +260,6 @@ object BloodCamp : Module(
         "ewogICJ0aW1lc3RhbXAiIDogMTU5NTQyODIyMDAyMCwKICAicHJvZmlsZUlkIiA6ICJkYTQ5OGFjNGU5Mzc0ZTVjYjYxMjdiMzgwODU1Nzk4MyIsCiAgInByb2ZpbGVOYW1lIiA6ICJOaXRyb2hvbGljXzIiLAogICJzaWduYXR1cmVSZXF1aXJlZCIgOiB0cnVlLAogICJ0ZXh0dXJlcyIgOiB7CiAgICAiU0tJTiIgOiB7CiAgICAgICJ1cmwiIDogImh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjJkOGZkM2FhNTYxN2IxZGFjMGFhZTljODFmNmRkNzBhZDkzYTU5OTQyZjQ2MGQyN2U0ZDU1YTVjYjg5MThlOCIKICAgIH0KICB9Cn0=",
         "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTZmYzg1NGJiODRjZjRiNzY5NzI5Nzk3M2UwMmI3OWJjMTA2OTg0NjBiNTFhNjM5YzYwZTVlNDE3NzM0ZTExIn19fQ==",
         "ewogICJ0aW1lc3RhbXAiIDogMTU4OTc5MzA2ODgzOSwKICAicHJvZmlsZUlkIiA6ICIyYzEwNjRmY2Q5MTc0MjgyODRlM2JmN2ZhYTdlM2UxYSIsCiAgInByb2ZpbGVOYW1lIiA6ICJOYWVtZSIsCiAgInNpZ25hdHVyZVJlcXVpcmVkIiA6IHRydWUsCiAgInRleHR1cmVzIiA6IHsKICAgICJTS0lOIiA6IHsKICAgICAgInVybCIgOiAiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS83ZGU3YmJiZGYyMmJmZTE3OTgwZDRlMjA2ODdlMzg2ZjExZDU5ZWUxZGI2ZjhiNDc2MjM5MWI3OWE1YWM1MzJkIgogICAgfQogIH0KfQ==",
-        "eyJ0aW1lc3RhbXAiOjE1NzQ0MTkzMTAxNjQsInByb2ZpbGVJZCI6Ijc1MTQ0NDgxOTFlNjQ1NDY4Yzk3MzlhNmUzOTU3YmViIiwicHJvZmlsZU5hbWUiOiJUaGFua3NNb2phbmciLCJzaWduYXR1cmVSZXF1aXJlZCI6dHJ1ZSwidGV4dHVyZXMiOnsiU0tJTiI6eyJ1cmwiOiJodHRwOi8vdGV4dHVyZXMubWluZWNyYWZ0Lm5ldC90ZXh0dXJlLzEyNzE2ZWNiZjViOGRhMDBiMDVmMzE2ZWM2YWY2MWU4YmQwMjgwNWIyMWViOGU0NDAxNTE0NjhkYzY1NjU0OWMifX19",
         "ewogICJ0aW1lc3RhbXAiIDogMTU5ODk3NzI1OTM1NywKICAicHJvZmlsZUlkIiA6ICJlNzkzYjJjYTdhMmY0MTI2YTA5ODA5MmQ3Yzk5NDE3YiIsCiAgInByb2ZpbGVOYW1lIiA6ICJUaGVfSG9zdGVyX01hbiIsCiAgInNpZ25hdHVyZVJlcXVpcmVkIiA6IHRydWUsCiAgInRleHR1cmVzIiA6IHsKICAgICJTS0lOIiA6IHsKICAgICAgInVybCIgOiAiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS9jMTAwN2M1YjcxMTRhYmVjNzM0MjA2ZDRmYzYxM2RhNGYzYTBlOTlmNzFmZjk0OWNlZGFkYzk5MDc5MTM1YTBiIgogICAgfQogIH0KfQ=="
     )
 

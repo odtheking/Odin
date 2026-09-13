@@ -14,7 +14,7 @@ import com.odtheking.odin.utils.network.WebUtils.postData
 import kotlinx.coroutines.launch
 import net.fabricmc.fabric.api.client.rendering.v1.RenderStateDataKey
 import net.minecraft.client.renderer.entity.state.AvatarRenderState
-import java.util.UUID
+import java.util.*
 
 object PlayerSize : Module(
     name = "Player Size",
@@ -65,7 +65,7 @@ object PlayerSize : Module(
         if (!randoms.containsKey(gameProfile.id)) return
         if (!devSize && gameProfile.name == mc.player?.gameProfile?.name) return
         val random = randoms[gameProfile.id] ?: return
-        if (random.scale[1] < 0) matrix.translate(0f, random.scale[1] * 2, 1f)
+        if (random.scale[1] < 0) matrix.translate(0f, random.scale[1] * 2, 0f)
         matrix.scale(random.scale[0], random.scale[1], random.scale[2])
     }
 

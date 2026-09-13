@@ -52,8 +52,8 @@ object SimonSays : Module(
             startClickCounter = 0
         }
 
-        on<ChatPacketEvent> {
-            if (value == "[BOSS] Goldor: Who dares trespass into my domain?") startClickCounter = 0
+        on<MessageEvent.Chat> {
+            if (message == "[BOSS] Goldor: Who dares trespass into my domain?") startClickCounter = 0
         }
 
         on<BlockUpdateEvent> {

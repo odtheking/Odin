@@ -7,7 +7,6 @@ import com.odtheking.odin.config.WaypointPackFileUtils
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.modMessage
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.components.Button
 import net.minecraft.client.gui.components.ScrollableLayout
@@ -25,14 +24,10 @@ class WaypointPackSelectorScreen(private val parent: Screen?) : Screen(Component
     private var deleteConfirmTime = 0L
     private val deleteButtons = mutableMapOf<String, Button>()
 
-    private fun packNames() = WaypointPackFileUtils.packsFolder
-        .listFiles { f -> f.extension == "json" }
-        ?.map { it.nameWithoutExtension }
-        ?.sorted() ?: emptyList()
+    private fun packNames() = WaypointPackFileUtils.listPackNames()
 
-    private fun packWaypointCount(packName: String): Int =
+    private fun packWaypointCount(packName: String): Int? =
         DungeonWaypoints.loadedPacks[packName]?.values?.sumOf { it.size }
-            ?: runCatching { runBlocking { WaypointPackFileUtils.loadPack(packName).values.sumOf { it.size } } }.getOrDefault(0)
 
     override fun init() {
         super.init()
@@ -89,7 +84,8 @@ class WaypointPackSelectorScreen(private val parent: Screen?) : Screen(Component
             .size(280, 24).tooltip(Tooltip.create(Component.literal(if (isEdit) "Currently editing" else "Click to edit"))).build())
 
         val count = packWaypointCount(packName)
-        row.addChild(StringWidget(Component.literal("§a$count §7wp"), font).apply { setWidth(70) })
+        val countText = if (count != null) "§a$count §7wp" else "§7? wp"
+        row.addChild(StringWidget(Component.literal(countText), font).apply { setWidth(70) })
 
         row.addChild(Button.builder(Component.literal("✎")) { showRenameDialog(packName) }
             .size(30, 24).tooltip(Tooltip.create(Component.literal("Rename"))).build())
@@ -204,7 +200,7 @@ class WaypointPackSelectorScreen(private val parent: Screen?) : Screen(Component
             if (name.isNotBlank()) {
                 loading = true
                 OdinMod.scope.launch {
-                    val ok = DungeonWaypointConfig.decodeWaypoints(clipboard, clipboard.startsWith("{"))
+                    val ok = DungeonWaypointConfig.decodeWaypoints(clipboard)
                         ?.takeIf { DungeonWaypoints.importPack(name, it) }
                         ?.let { modMessage("§aImported waypoints as pack '$name'!"); true }
                         ?: false

@@ -13,7 +13,9 @@ import com.odtheking.odin.utils.noControlCodes
 import com.odtheking.odin.utils.romanToInt
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import net.minecraft.network.protocol.game.*
+import net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket
+import net.minecraft.network.protocol.game.ClientboundSetPlayerTeamPacket
+import net.minecraft.network.protocol.game.ClientboundTabListPacket
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.player.Player
 import kotlin.jvm.optionals.getOrNull
@@ -44,7 +46,11 @@ object DungeonListener {
 
     init {
         on<TickEvent.End> {
-            if (DungeonUtils.inDungeons) inBoss = getBoss()
+            if (!DungeonUtils.inDungeons) return@on
+            val newInBoss = getBoss()
+            if (newInBoss == inBoss) return@on
+            inBoss = newInBoss
+            DungeonUtils.updateScore()
         }
 
         on<LevelEvent.Load> {
@@ -58,10 +64,11 @@ object DungeonListener {
             inBoss = false
             floor = null
             paul = false
+            DungeonUtils.updateScore()
         }
 
         on<RoomEnterEvent> {
-            dungeonStats.knownSecrets = DungeonScan.rooms.sumOf { if (it.walkedInto) it.data?.secrets ?: 0 else 0 }
+            dungeonStats.knownSecrets = DungeonScan.rooms.sumOf { if (it.walkedInto) it.data?.maxSecrets ?: 0 else 0 }
         }
 
         onReceive<ClientboundPlayerInfoUpdatePacket> {
@@ -69,6 +76,7 @@ object DungeonListener {
             updateDungeonTeammates(tabListEntries)
             updateDungeonStats(tabListEntries)
             getDungeonPuzzles(tabListEntries)
+            DungeonUtils.updateScore()
         }
 
         onReceive<ClientboundSetPlayerTeamPacket> {
@@ -86,6 +94,7 @@ object DungeonListener {
             clearedRegex.find(text)?.groupValues?.get(1)?.toIntOrNull()?.let {
                 if (dungeonStats.percentCleared != it && expectingBloodUpdate) dungeonStats.bloodDone = true
                 dungeonStats.percentCleared = it
+                DungeonUtils.updateScore()
             }
         }
 
@@ -95,16 +104,16 @@ object DungeonListener {
             }
         }
 
-        on<ChatPacketEvent> {
-            if (expectingBloodRegex.matches(value)) expectingBloodUpdate = true
-            doorOpenRegex.find(value)?.let { dungeonStats.doorOpener = it.groupValues[1] }
-            deathRegex.find(value)?.let { match ->
+        on<MessageEvent.Chat> {
+            if (expectingBloodRegex.matches(message)) expectingBloodUpdate = true
+            doorOpenRegex.find(message)?.let { dungeonStats.doorOpener = it.groupValues[1] }
+            deathRegex.find(message)?.let { match ->
                 dungeonTeammates.find { teammate ->
                     teammate.name == (match.groupValues[1].takeUnless { it == "You" } ?: mc.player?.name?.string)
                 }?.deaths?.inc()
             }
 
-            when (partyMessageRegex.find(value)?.groupValues?.get(1)?.lowercase() ?: return@on) {
+            when (partyMessageRegex.find(message)?.groupValues?.get(1)?.lowercase() ?: return@on) {
                 "mimic killed", "mimic slain", "mimic killed!", "mimic dead", "mimic dead!", ->
                     if (DungeonUtils.isFloor(6, 7)) dungeonStats.mimicKilled = true
 
@@ -116,20 +125,22 @@ object DungeonListener {
 
                 "blaze done!", "blaze done", "blaze puzzle solved!" ->
                     puzzles.find { it == Puzzle.BLAZE }.let { it?.status = PuzzleStatus.Completed }
+
+                else -> return@on
             }
+            DungeonUtils.updateScore()
         }
 
-        onReceive<ClientboundRemoveEntitiesPacket> {
+        on<EntityEvent.Remove> {
             DungeonUtils.dungeonTeammates.forEach {
                 val id = it.entity?.id ?: return@forEach
-                if (entityIds.contains(id)) it.entity = null
+                if (entity.id == id) it.entity = null
             }
         }
 
-        onReceive<ClientboundAddEntityPacket> {
-            if (type == EntityType.PLAYER)
-                DungeonUtils.dungeonTeammates.find { it.entity == null && it.name == mc.level?.getEntity(id)?.name?.string }?.entity =
-                    mc.level?.getEntity(id) as? Player
+        on<EntityEvent.Add> {
+            if (entity.type == EntityType.PLAYER && entity.uuid.version() != 4)
+                DungeonUtils.dungeonTeammates.find { it.entity == null && it.name == entity.name.string }?.entity = entity as? Player
         }
     }
 

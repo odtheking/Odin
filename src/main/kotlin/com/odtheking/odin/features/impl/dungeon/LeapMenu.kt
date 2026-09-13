@@ -1,9 +1,12 @@
 package com.odtheking.odin.features.impl.dungeon
 
+import com.mojang.blaze3d.platform.InputConstants
 import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.*
-import com.odtheking.odin.events.ChatPacketEvent
+import com.odtheking.odin.events.LevelEvent
+import com.odtheking.odin.events.MessageEvent
 import com.odtheking.odin.events.ScreenEvent
+import com.odtheking.odin.events.SetSlotEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.*
@@ -18,12 +21,12 @@ import com.odtheking.odin.utils.ui.HoverHandler
 import com.odtheking.odin.utils.ui.widget.CustomGUIImpl
 import net.minecraft.client.gui.components.PlayerFaceExtractor
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
-import org.lwjgl.glfw.GLFW
+import net.minecraft.world.item.Items
 
 object LeapMenu : Module(
     name = "Leap Menu",
     description = "Renders a custom leap menu when in the Spirit Leap gui.",
-    key = GLFW.GLFW_KEY_UNKNOWN
+    key = null
 ) {
     val type by SelectorSetting("Sorting", "Odin Sorting", arrayListOf("Odin Sorting", "A-Z Class", "A-Z Name", "Custom sorting", "No Sorting"), desc = "How to sort the leap menu. /od leaporder to configure custom sorting.")
     private val onRelease by BooleanSetting("On Key Release", false, desc = "Whether to trigger the leap on key release instead of key press.")
@@ -33,22 +36,24 @@ object LeapMenu : Module(
     private val scale by NumberSetting("Render Scale", 1f, 0.1f, 2f, 0.1f, desc = "Scale of the leap menu.", unit = "x")
     val keybindType by SelectorSetting("Mode", "Normal", arrayListOf("Corners", "Class"), desc = "How the keybinds should function.")
 
-    private val topLeftKeybind by KeybindSetting("Top Left", GLFW.GLFW_KEY_UNKNOWN, "Used to click on the first person in the leap menu.").withDependency { keybindType == 0 }
-    private val topRightKeybind by KeybindSetting("Top Right", GLFW.GLFW_KEY_UNKNOWN, "Used to click on the second person in the leap menu.").withDependency { keybindType == 0 }
-    private val bottomLeftKeybind by KeybindSetting("Bottom Left", GLFW.GLFW_KEY_UNKNOWN, "Used to click on the third person in the leap menu.").withDependency { keybindType == 0 }
-    private val bottomRightKeybind by KeybindSetting("Bottom Right", GLFW.GLFW_KEY_UNKNOWN, "Used to click on the fourth person in the leap menu.").withDependency { keybindType == 0 }
+    private val topLeftKeybind by KeybindSetting("Top Left", InputConstants.UNKNOWN, "Used to click on the first person in the leap menu.").withDependency { keybindType == 0 }
+    private val topRightKeybind by KeybindSetting("Top Right", InputConstants.UNKNOWN, "Used to click on the second person in the leap menu.").withDependency { keybindType == 0 }
+    private val bottomLeftKeybind by KeybindSetting("Bottom Left", InputConstants.UNKNOWN, "Used to click on the third person in the leap menu.").withDependency { keybindType == 0 }
+    private val bottomRightKeybind by KeybindSetting("Bottom Right", InputConstants.UNKNOWN, "Used to click on the fourth person in the leap menu.").withDependency { keybindType == 0 }
 
-    private val archerKeybind by KeybindSetting("Archer", GLFW.GLFW_KEY_UNKNOWN, "Used to leap to the Archer in the leap menu.").withDependency { keybindType == 1 }
-    private val berserkerKeybind by KeybindSetting("Berserker", GLFW.GLFW_KEY_UNKNOWN, "Used to leap to the Berserker in the leap menu.").withDependency { keybindType == 1 }
-    private val healerKeybind by KeybindSetting("Healer", GLFW.GLFW_KEY_UNKNOWN, "Used to leap to the Healer in the leap menu.").withDependency { keybindType == 1 }
-    private val mageKeybind by KeybindSetting("Mage", GLFW.GLFW_KEY_UNKNOWN, "Used to leap to the Mage in the leap menu.").withDependency { keybindType == 1 }
-    private val tankKeybind by KeybindSetting("Tank", GLFW.GLFW_KEY_UNKNOWN, "Used to leap to the Tank in the leap menu.").withDependency { keybindType == 1 }
+    private val archerKeybind by KeybindSetting("Archer", InputConstants.UNKNOWN, "Used to leap to the Archer in the leap menu.").withDependency { keybindType == 1 }
+    private val berserkerKeybind by KeybindSetting("Berserker", InputConstants.UNKNOWN, "Used to leap to the Berserker in the leap menu.").withDependency { keybindType == 1 }
+    private val healerKeybind by KeybindSetting("Healer", InputConstants.UNKNOWN, "Used to leap to the Healer in the leap menu.").withDependency { keybindType == 1 }
+    private val mageKeybind by KeybindSetting("Mage", InputConstants.UNKNOWN, "Used to leap to the Mage in the leap menu.").withDependency { keybindType == 1 }
+    private val tankKeybind by KeybindSetting("Tank", InputConstants.UNKNOWN, "Used to leap to the Tank in the leap menu.").withDependency { keybindType == 1 }
 
     private val leapAnnounce by BooleanSetting("Leap Announce", false, desc = "Announces when you leap to a player.")
     private val hoverHandler = List(4) { HoverHandler(200L) }
 
     private val EMPTY = DungeonPlayer("Empty", DungeonClass.EMPTY, 0, null)
-    private val leapedRegex = Regex("You have teleported to (\\w{1,16})!")
+    private val leapedRegex = Regex("^You have teleported to (\\w{1,16})!$")
+    private val playerNameRegex = Regex("^(?:\\[.+?] )?(\\w{1,16})$")
+    private val leapIndex = HashMap<String, Int>()
 
     const val BOX_WIDTH = 200
     const val BOX_HEIGHT = 75
@@ -162,9 +167,21 @@ object LeapMenu : Module(
             })
         )
 
-        on<ChatPacketEvent> {
+        on<MessageEvent.Chat> {
             if (leapAnnounce && DungeonUtils.inDungeons)
-                leapedRegex.find(value)?.groupValues?.get(1)?.let { sendCommand("pc Leaped to ${it}!") }
+                leapedRegex.find(message)?.groupValues?.get(1)?.let { sendCommand("pc Leaped to ${it}!") }
+        }
+
+        on<SetSlotEvent> {
+            currentLeapScreen()?.let {
+                if (itemStack.isEmpty || itemStack.item != Items.PLAYER_HEAD) return@on
+                val (name) = playerNameRegex.find(itemStack.hoverName.string)?.destructured ?: return@on
+                leapIndex[name] = slotIndex
+            }
+        }
+
+        on<LevelEvent.Load> {
+            leapIndex.clear()
         }
     }
 
@@ -181,7 +198,7 @@ object LeapMenu : Module(
         val index = screenHandler.menu.slots.subList(11, 16).firstOrNull {
             it.item.hoverName.string.substringAfter(' ').equals(name.noControlCodes, true)
         }?.index ?: return
-        mc.player?.clickSlot(screenHandler.menu.containerId, index)
+        mc.player?.clickSlot(index)
         modMessage("Teleporting to $name.")
     }
 

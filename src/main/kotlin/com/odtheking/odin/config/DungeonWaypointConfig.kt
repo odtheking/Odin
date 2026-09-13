@@ -15,7 +15,7 @@ import java.util.zip.GZIPOutputStream
 import kotlin.io.encoding.Base64
 
 object DungeonWaypointConfig {
-    private val gson = GsonBuilder()
+    val gson: Gson = GsonBuilder()
         .registerTypeAdapter(AABB::class.java, AABBSerializer())
         .registerTypeAdapter(DungeonWaypoint::class.java, DungeonWaypointDeserializer())
         .registerTypeAdapter(BlockPos::class.java, BlockPosSerializer())
@@ -39,10 +39,10 @@ object DungeonWaypointConfig {
         }
     }
 
-    fun decodeWaypoints(input: String, isJson: Boolean): MutableMap<String, MutableList<DungeonWaypoint>>? {
+    fun decodeWaypoints(input: String): MutableMap<String, MutableList<DungeonWaypoint>>? {
         return try {
             gson.fromJson(
-                if (isJson) input else decompress(Base64.decode(input)),
+                if (input.startsWith("{")) input else decompress(Base64.decode(input)),
                 object : TypeToken<MutableMap<String, MutableList<DungeonWaypoint>>>() {}.type
             )
         } catch (_: Exception) {

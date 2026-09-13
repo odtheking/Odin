@@ -1,7 +1,5 @@
 package com.odtheking.odin.features
 
-import com.odtheking.odin.features.Category.Companion.categories
-
 @ConsistentCopyVisibility
 data class Category private constructor(val name: String) {
     companion object {

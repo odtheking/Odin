@@ -46,25 +46,25 @@ enum class TerminalTypes(
         override fun getGUI() = gui
     };
 
-    fun openHandler(guiName: String): TerminalHandler? {
-        return when (this) {
+    companion object {
+        fun openHandler(guiName: String): TerminalHandler? = when (entries.find { it.regex.matches(guiName) }) {
             PANES -> PanesHandler()
             RUBIX -> RubixHandler()
             NUMBERS -> NumbersHandler()
-            STARTS_WITH -> StartsWithHandler(regex.find(guiName)?.groupValues?.get(1) ?: run {
+            STARTS_WITH -> StartsWithHandler(STARTS_WITH.regex.find(guiName)?.groupValues?.get(1) ?: run {
                 modMessage("Failed to find letter, please report this!")
                 return null
             })
             SELECT -> {
                 SelectAllHandler(DyeColor.entries.find {
-                    it.name.replace("_", " ")
-                        .equals(regex.find(guiName)?.groupValues?.get(1)?.replace("SILVER", "LIGHT GRAY"), true)
+                    it.name.replace("_", " ").equals(SELECT.regex.find(guiName)?.groupValues?.get(1)?.replace("SILVER", "LIGHT GRAY"), true)
                 } ?: run {
                     modMessage("Failed to find letter, please report this!")
                     return null
                 })
             }
             MELODY -> MelodyHandler()
+            null -> return null
         }
     }
 }

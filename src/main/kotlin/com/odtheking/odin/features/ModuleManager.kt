@@ -10,7 +10,6 @@ import com.odtheking.odin.clickgui.settings.impl.KeybindSetting
 import com.odtheking.odin.config.ModuleConfig
 import com.odtheking.odin.events.InputEvent
 import com.odtheking.odin.events.core.on
-import com.odtheking.odin.features.ModuleManager.configs
 import com.odtheking.odin.features.impl.boss.*
 import com.odtheking.odin.features.impl.dungeon.*
 import com.odtheking.odin.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints
@@ -74,10 +73,11 @@ object ModuleManager {
 
             //skyblock
             ChatCommands, NoCursorReset, Ragnarock, SpringBoots, WardrobeKeybinds, PetKeybinds, AutoSprint,
-            CommandKeybinds, SlotBinds, Splits, LoadoutKeybinds,
+            CommandKeybinds, SlotBinds, Splits, LoadoutKeybinds, QuiverDisplay,
 
             // nether
             SupplyHelper, BuildHelper, RemovePerks, NoPre, PearlWaypoints, FreshTools, KuudraInfo, Misc, Vesuvius,
+            KuudraTracker,
 
             RenderTest,
         )

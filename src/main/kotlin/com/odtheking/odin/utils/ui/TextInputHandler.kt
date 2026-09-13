@@ -1,5 +1,6 @@
 package com.odtheking.odin.utils.ui
 
+import com.mojang.blaze3d.platform.InputConstants
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.ui.rendering.NVGRenderer
@@ -7,7 +8,6 @@ import net.minecraft.client.input.CharacterEvent
 import net.minecraft.client.input.KeyEvent
 import net.minecraft.client.input.MouseButtonEvent
 import net.minecraft.util.StringUtil
-import org.lwjgl.glfw.GLFW
 import kotlin.math.max
 import kotlin.math.min
 
@@ -103,22 +103,22 @@ class TextInputHandler(
         if (!isActive) return false
 
         val handled = when (input.key) {
-            GLFW.GLFW_KEY_BACKSPACE -> handleBackspace(input)
-            GLFW.GLFW_KEY_DELETE    -> handleDelete(input)
-            GLFW.GLFW_KEY_LEFT      -> moveCaret(-1, input)
-            GLFW.GLFW_KEY_RIGHT     -> moveCaret(+1, input)
-            GLFW.GLFW_KEY_HOME      -> {
+            InputConstants.KEY_BACKSPACE -> handleBackspace(input)
+            InputConstants.KEY_DELETE    -> handleDelete(input)
+            InputConstants.KEY_LEFT      -> moveCaret(-1, input)
+            InputConstants.KEY_RIGHT     -> moveCaret(+1, input)
+            InputConstants.KEY_HOME      -> {
                 caret = 0
                 if (!input.hasShiftDown()) clearSelection()
                 true
             }
-            GLFW.GLFW_KEY_END       -> {
+            InputConstants.KEY_END       -> {
                 caret = text.length
                 if (!input.hasShiftDown()) clearSelection()
                 true
             }
-            GLFW.GLFW_KEY_ESCAPE,
-            GLFW.GLFW_KEY_ENTER     -> { isActive = false; true }
+            InputConstants.KEY_ESCAPE,
+            InputConstants.KEY_RETURN    -> { isActive = false; true }
             else                    -> handleCtrlShortcut(input)
         }
 
@@ -193,18 +193,16 @@ class TextInputHandler(
         return true
     }
 
-    private fun handleCtrlShortcut(input: KeyEvent): Boolean {
-        if (!input.hasControlDown() || input.hasShiftDown()) return false
-        return when (input.key) {
-            GLFW.GLFW_KEY_V -> { insert(mc.keyboardHandler.clipboard); true }
-            GLFW.GLFW_KEY_C -> if (hasSelection()) { mc.keyboardHandler.clipboard = selectedText(); true } else false
-            GLFW.GLFW_KEY_X -> if (hasSelection()) { mc.keyboardHandler.clipboard = selectedText(); deleteSelection(); true } else false
-            GLFW.GLFW_KEY_A -> { selectAll(); true }
-            GLFW.GLFW_KEY_Z -> { undo(); true }
-            GLFW.GLFW_KEY_Y -> { redo(); true }
+    private fun handleCtrlShortcut(input: KeyEvent): Boolean =
+        !(!input.hasControlDown() || input.hasShiftDown()) && when (input.key) {
+            InputConstants.KEY_V -> { insert(mc.keyboardHandler.clipboard); true }
+            InputConstants.KEY_C -> if (hasSelection()) { mc.keyboardHandler.clipboard = selectedText(); true } else false
+            InputConstants.KEY_X -> if (hasSelection()) { mc.keyboardHandler.clipboard = selectedText(); deleteSelection(); true } else false
+            InputConstants.KEY_A -> { selectAll(); true }
+            InputConstants.KEY_Z -> { undo(); true }
+            InputConstants.KEY_Y -> { redo(); true }
             else            -> false
         }
-    }
 
     private fun insert(string: String) {
         if (hasSelection()) {

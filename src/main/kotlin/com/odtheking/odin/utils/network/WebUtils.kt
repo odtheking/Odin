@@ -3,6 +3,7 @@ package com.odtheking.odin.utils.network
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
+import com.odtheking.odin.OdinMod
 import com.odtheking.odin.OdinMod.logger
 import kotlinx.coroutines.suspendCancellableCoroutine
 import java.io.InputStream
@@ -56,6 +57,7 @@ object WebUtils {
             .uri(URI.create(url))
             .header("Accept", "application/json")
             .header("User-Agent", USER_AGENT)
+            .header("X-Mod-Version", OdinMod.version.friendlyString)
             .GET()
             .timeout(Duration.ofSeconds(10))
             .build()

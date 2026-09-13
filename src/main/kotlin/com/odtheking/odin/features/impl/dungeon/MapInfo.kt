@@ -5,23 +5,19 @@ import com.odtheking.odin.clickgui.settings.impl.*
 import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.RenderEvent
 import com.odtheking.odin.events.RoomEnterEvent
+import com.odtheking.odin.events.ScoreUpdateEvent
 import com.odtheking.odin.events.core.on
-import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.features.Module
-import com.odtheking.odin.features.impl.dungeon.map.tile.RoomType
 import com.odtheking.odin.utils.Color.Companion.withAlpha
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.alert
-import com.odtheking.odin.utils.handlers.TickTask
 import com.odtheking.odin.utils.modMessage
-import com.odtheking.odin.utils.noControlCodes
 import com.odtheking.odin.utils.render.drawFilledBox
 import com.odtheking.odin.utils.render.getStringWidth
 import com.odtheking.odin.utils.render.text
 import com.odtheking.odin.utils.render.textDim
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.core.BlockPos
-import net.minecraft.network.protocol.game.ClientboundSystemChatPacket
 import net.minecraft.world.phys.AABB
 
 object MapInfo : Module(
@@ -34,71 +30,51 @@ object MapInfo : Module(
     private val printWhenScore by BooleanSetting("Print Score Time", true, desc = "Sends elapsed time in chat when 300 score is reached.")
     val togglePaul by SelectorSetting("Paul Settings", "Automatic", arrayListOf("Automatic", "Force Disable", "Force Enable"), desc = "Toggle Paul's settings.")
 
-    private var cachedScore = 0
-    private var cachedSecretCount = 0
-    private var cachedNeededSecrets = 0
-    private var cachedTotalSecrets = 0
-    private var cachedKnownSecrets = 0
-    private var cachedMimicKilled = false
-    private var cachedPrinceKilled = false
-    private var cachedBatKilled = false
-    private var cachedCryptCount = 0
-    private var cachedDeathCount = 0
-
     private val fullHud: HudElement by HUD("Full Hud", "Displays a full hud with score, secrets, crypts, and mimic info.") {
         if ((!DungeonUtils.inDungeons || (disableInBoss && DungeonUtils.inBoss)) && !it) return@HUD 0 to 0
-
-        val score = cachedScore
-        val secretCount = cachedSecretCount
-        val neededSecrets = cachedNeededSecrets
-        val totalSecrets = cachedTotalSecrets
-        val mimicKilled = cachedMimicKilled
-        val princeKilled = cachedPrinceKilled
-        val batKilled = cachedBatKilled
-        val cryptCount = cachedCryptCount
 
         val showRemaining = fullAddRemaining && alternate
         val useNeededSecrets = fullRemaining != 0 || showRemaining
 
         val scoreText = buildString {
             append("§7Score: ")
-            append(colorizeScore(score))
+            append(colorizeScore(DungeonUtils.score))
         }
 
         val secretText = buildString {
             append("§7Secrets: §b")
-            append(secretCount)
+            append(DungeonUtils.secretCount)
             if (showRemaining) {
                 append("§7-§d")
-                append((neededSecrets - secretCount).coerceAtLeast(0))
+                append((DungeonUtils.neededSecretsAmount - DungeonUtils.secretCount).coerceAtLeast(0))
             }
             append("§7-§e")
-            append(if (useNeededSecrets) neededSecrets else (neededSecrets - secretCount).coerceAtLeast(0))
+            append(if (useNeededSecrets) DungeonUtils.neededSecretsAmount else (DungeonUtils.neededSecretsAmount - DungeonUtils.secretCount).coerceAtLeast(0))
             append("§7-§c")
-            append(totalSecrets)
+            append(DungeonUtils.totalSecrets)
         }
 
         val unknownSecretsText = if (unknown == 0) {
             buildString {
                 append("§7Deaths: §c")
-                append(colorizeDeaths(cachedDeathCount))
+                append(colorizeDeaths(DungeonUtils.deathCount))
             }
         } else {
             buildString {
                 append("§7Unfound: §e")
-                append((totalSecrets - cachedKnownSecrets).coerceAtLeast(0))
+                append((DungeonUtils.totalSecrets - DungeonUtils.knownSecrets).coerceAtLeast(0))
             }
         }
 
         val mimicText = buildString {
-            append("${if (mimicKilled) "§a" else "§c"}\uD83D\uDCE6")
-            append(" §8| ${if (princeKilled) "§a" else "§c"}\uD83E\uDD34")
-            append(" §8| ${if (batKilled) "§a" else "§c"}\uD83E\uDD87")
+            append("${if (DungeonUtils.mimicKilled) "§a" else "§c"}M")
+            append(" §8| ${if (DungeonUtils.princeKilled) "§a" else "§c"}P")
+            append(" §8| ${if (DungeonUtils.batKilled) "§a" else "§c"}B")
         }
 
         val cryptText = buildString {
             append("§7Crypts: ")
-            append(colorizeCrypts(cryptCount))
+            append(colorizeCrypts(DungeonUtils.cryptCount.coerceAtMost(5)))
         }
 
         val trText = if (alternate) cryptText else scoreText
@@ -135,21 +111,17 @@ object MapInfo : Module(
     private val compactSecrets: HudElement by HUD("Compact Secrets", "Displays a compact secrets hud with score and secrets.") {
         if ((!DungeonUtils.inDungeons || (disableInBoss && DungeonUtils.inBoss)) && !it) return@HUD 0 to 0
 
-        val secretCount = cachedSecretCount
-        val neededSecrets = cachedNeededSecrets
-        val totalSecrets = cachedTotalSecrets
-
         val secretText = buildString {
             append("§7Secrets: §b")
-            append(secretCount)
+            append(DungeonUtils.secretCount)
             if (compactAddRemaining) {
                 append("§7-§d")
-                append((neededSecrets - secretCount).coerceAtLeast(0))
+                append((DungeonUtils.neededSecretsAmount - DungeonUtils.secretCount).coerceAtLeast(0))
             }
             append("§7-§e")
-            append(if (compactRemaining == 0 || fullAddRemaining) neededSecrets else (neededSecrets - secretCount).coerceAtLeast(0))
+            append(if (compactRemaining == 0 || fullAddRemaining) DungeonUtils.neededSecretsAmount else (DungeonUtils.neededSecretsAmount - DungeonUtils.secretCount).coerceAtLeast(0))
             append("§7-§c")
-            append(totalSecrets)
+            append(DungeonUtils.totalSecrets)
         }
 
         val width = getStringWidth(secretText)
@@ -170,10 +142,10 @@ object MapInfo : Module(
 
     private val compactScore: HudElement by HUD("Compact Score", "Displays a compact score hud with score info.") {
         if ((!DungeonUtils.inDungeons || (disableInBoss && DungeonUtils.inBoss)) && !it) return@HUD 0 to 0
-        val score = cachedScore
-        val mimicKilled = cachedMimicKilled
-        val princeKilled = cachedPrinceKilled
-        val batKilled = cachedBatKilled
+        val score = DungeonUtils.score
+        val mimicKilled = DungeonUtils.mimicKilled
+        val princeKilled = DungeonUtils.princeKilled
+        val batKilled = DungeonUtils.batKilled
 
         val missing = (if (mimicKilled) 0 else 2) + (if (princeKilled) 0 else 1) + (if (batKilled) 0 else 1)
 
@@ -203,7 +175,12 @@ object MapInfo : Module(
     private val roomSecrets by HUD("Room Secrets", "Displays the number of secrets in the current room.") {
         if ((!DungeonUtils.inClear) && !it) return@HUD 0 to 0
 
-        val secrets = if (it) 0 to 2 else currentRoomSecrets ?: return@HUD 0 to 0
+        val secrets = if (it) 0 to 2 else DungeonUtils.currentRoom?.foundSecrets?.let { found ->
+            DungeonUtils.currentRoom?.data?.maxSecrets?.let { max ->
+                if (max == 0) return@HUD 0 to 0
+                found to max
+            }
+        } ?: return@HUD 0 to 0
         val color = when {
             secrets.first * 2 < secrets.second -> "§c"
             secrets.first * 4 < secrets.second * 3 -> "§e"
@@ -223,47 +200,23 @@ object MapInfo : Module(
     }
 
     private var portalAABB: AABB? = null
-    private var currentRoomSecrets: Pair<Int, Int>? = null
-    private val secretRegex = Regex("(\\d+)/(\\d+) Secrets")
-    var shownTitle = false
+    private var shownTitle = false
 
     init {
-        TickTask(1) {
-            if (!enabled || !DungeonUtils.inDungeons) return@TickTask
-            cachedScore = DungeonUtils.score
-            cachedSecretCount = DungeonUtils.secretCount
-            cachedNeededSecrets = DungeonUtils.neededSecretsAmount
-            cachedTotalSecrets = DungeonUtils.totalSecrets
-            cachedKnownSecrets = DungeonUtils.knownSecrets
-            cachedMimicKilled = DungeonUtils.mimicKilled
-            cachedPrinceKilled = DungeonUtils.princeKilled
-            cachedBatKilled = DungeonUtils.batKilled
-            cachedCryptCount = DungeonUtils.cryptCount.coerceAtMost(5)
-            cachedDeathCount = DungeonUtils.deathCount
-        }
-
-        TickTask(10) {
-            if (!enabled || !DungeonUtils.inDungeons || shownTitle || (!scoreTitle && !printWhenScore) || DungeonUtils.score < 300) return@TickTask
-            if (scoreTitle) alert("§c300 Score!")
-            if (printWhenScore) modMessage("§b${DungeonUtils.score} §ascore reached in §6${DungeonUtils.dungeonTime} || ${DungeonUtils.floor?.name}.")
+        on<ScoreUpdateEvent> {
+            if (shownTitle || !DungeonUtils.inDungeons || (!scoreTitle && !printWhenScore) || score < 300) return@on
             shownTitle = true
-        }
-
-        onReceive<ClientboundSystemChatPacket> {
-            if (!overlay) return@onReceive
-            secretRegex.find(content.string.noControlCodes )?.destructured?.let { (found, total) ->
-                currentRoomSecrets = Pair(found.toIntOrNull() ?: 0, total.toIntOrNull() ?: 0)
-            }
+            if (scoreTitle) alert("§c300 Score!")
+            if (printWhenScore) modMessage("§b${DungeonUtils.score} §ascore reached in §6${DungeonUtils.dungeonTime} §8|| §e${DungeonUtils.floor?.name}.")
         }
 
         on<RoomEnterEvent> {
-            currentRoomSecrets = null
             if (room?.name == "Blood")
                 portalAABB = AABB.encapsulatingFullBlocks(room.getRealCoords(BlockPos(16, 69, 29)), room.getRealCoords(BlockPos(14, 69, 29))).inflate(0.0, 4.0, 0.0)
         }
 
         on<RenderEvent.Extract> {
-            if (!highlightPortal || !DungeonUtils.inClear || cachedScore < 300) return@on
+            if (!highlightPortal || !DungeonUtils.inClear || DungeonUtils.score < 300) return@on
             portalAABB?.let { pos ->
                 drawFilledBox(pos, Colors.MINECRAFT_GREEN.withAlpha(0.5f), depth = true)
             }

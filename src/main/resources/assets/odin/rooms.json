@@ -17,7 +17,7 @@
       -1927723170
     ],
     "crypts": 3,
-    "secrets": 6,
+    "maxSecrets": 6,
     "shape": "L"
   },
   {
@@ -26,7 +26,7 @@
     "cores": [
       -1701988142
     ],
-    "secrets": 2,
+    "maxSecrets": 2,
     "shape": "1x1"
   },
   {
@@ -37,7 +37,7 @@
       1440685825
     ],
     "crypts": 4,
-    "secrets": 3,
+    "maxSecrets": 3,
     "shape": "1x2"
   },
   {
@@ -47,7 +47,7 @@
       313879976
     ],
     "crypts": 1,
-    "secrets": 1,
+    "maxSecrets": 1,
     "shape": "1x1"
   },
   {
@@ -60,7 +60,7 @@
       -2080722918
     ],
     "crypts": 5,
-    "secrets": 6,
+    "maxSecrets": 6,
     "shape": "2x2"
   },
   {
@@ -70,7 +70,7 @@
       1765345183,
       2133731337
     ],
-    "secrets": 4,
+    "maxSecrets": 4,
     "shape": "1x2"
   },
   {
@@ -80,7 +80,7 @@
       -1092023380
     ],
     "crypts": 1,
-    "secrets": 1,
+    "maxSecrets": 1,
     "shape": "1x1"
   },
   {
@@ -89,7 +89,7 @@
     "cores": [
       1491050733
     ],
-    "secrets": 1,
+    "maxSecrets": 1,
     "shape": "1x1"
   },
   {
@@ -99,7 +99,7 @@
       -1764045332
     ],
     "crypts": 2,
-    "secrets": 2,
+    "maxSecrets": 2,
     "shape": "1x1"
   },
   {
@@ -109,7 +109,7 @@
       -807913351
     ],
     "crypts": 1,
-    "secrets": 2,
+    "maxSecrets": 2,
     "shape": "1x1"
   },
   {
@@ -119,7 +119,7 @@
       -1779299819
     ],
     "crypts": 1,
-    "secrets": 3,
+    "maxSecrets": 3,
     "shape": "1x1"
   },
   {
@@ -138,7 +138,7 @@
       -1410316771
     ],
     "crypts": 4,
-    "secrets": 1,
+    "maxSecrets": 1,
     "shape": "1x1"
   },
   {
@@ -160,7 +160,7 @@
       454887921
     ],
     "crypts": 6,
-    "secrets": 6,
+    "maxSecrets": 6,
     "shape": "1x2"
   },
   {
@@ -173,7 +173,7 @@
       112871973
     ],
     "crypts": 21,
-    "secrets": 5,
+    "maxSecrets": 5,
     "trappedChests": 1,
     "shape": "2x2"
   },
@@ -183,7 +183,7 @@
     "cores": [
       -407233803
     ],
-    "secrets": 1,
+    "maxSecrets": 1,
     "shape": "1x1"
   },
   {
@@ -192,7 +192,7 @@
     "cores": [
       -1164795630
     ],
-    "secrets": 2,
+    "maxSecrets": 2,
     "shape": "1x1"
   },
   {
@@ -203,7 +203,7 @@
       -76292695
     ],
     "crypts": 3,
-    "secrets": 1,
+    "maxSecrets": 1,
     "shape": "1x1"
   },
   {
@@ -216,7 +216,7 @@
       -508170344
     ],
     "crypts": 5,
-    "secrets": 8,
+    "maxSecrets": 8,
     "shape": "2x2"
   },
   {
@@ -228,7 +228,7 @@
       1179970013
     ],
     "crypts": 5,
-    "secrets": 6,
+    "maxSecrets": 6,
     "shape": "1x3"
   },
   {
@@ -237,7 +237,7 @@
     "cores": [
       1560740373
     ],
-    "secrets": 1,
+    "maxSecrets": 1,
     "shape": "1x1"
   },
   {
@@ -246,7 +246,7 @@
     "cores": [
       -448181487
     ],
-    "secrets": 2,
+    "maxSecrets": 2,
     "shape": "1x1"
   },
   {
@@ -258,7 +258,7 @@
       -546080393
     ],
     "crypts": 6,
-    "secrets": 5,
+    "maxSecrets": 5,
     "shape": "L"
   },
   {
@@ -268,7 +268,7 @@
       -170648742
     ],
     "crypts": 1,
-    "secrets": 2,
+    "maxSecrets": 2,
     "shape": "1x1"
   },
   {
@@ -288,7 +288,7 @@
       -1879625096
     ],
     "crypts": 6,
-    "secrets": 1,
+    "maxSecrets": 1,
     "shape": "1x1"
   },
   {
@@ -299,7 +299,7 @@
       1376295224
     ],
     "crypts": 2,
-    "secrets": 5,
+    "maxSecrets": 5,
     "shape": "1x2"
   },
   {
@@ -311,7 +311,7 @@
       -414187054
     ],
     "crypts": 4,
-    "secrets": 6,
+    "maxSecrets": 6,
     "shape": "1x3"
   },
   {
@@ -332,7 +332,7 @@
       -959823640
     ],
     "crypts": 3,
-    "secrets": 4,
+    "maxSecrets": 4,
     "shape": "1x3"
   },
   {
@@ -344,7 +344,7 @@
       1735273877
     ],
     "crypts": 4,
-    "secrets": 4,
+    "maxSecrets": 4,
     "shape": "L"
   },
   {
@@ -354,7 +354,7 @@
       -1373895553
     ],
     "crypts": 3,
-    "secrets": 2,
+    "maxSecrets": 2,
     "shape": "1x1"
   },
   {
@@ -365,7 +365,7 @@
       291108944
     ],
     "crypts": 2,
-    "secrets": 2,
+    "maxSecrets": 2,
     "shape": "1x1"
   },
   {
@@ -376,7 +376,7 @@
       551939185
     ],
     "crypts": 7,
-    "secrets": 5,
+    "maxSecrets": 5,
     "shape": "1x2"
   },
   {
@@ -385,7 +385,7 @@
     "cores": [
       1857926981
     ],
-    "secrets": 3,
+    "maxSecrets": 3,
     "shape": "1x1"
   },
   {
@@ -403,7 +403,7 @@
       -1779237820
     ],
     "crypts": 6,
-    "secrets": 2,
+    "maxSecrets": 2,
     "shape": "1x1"
   },
   {
@@ -413,7 +413,7 @@
       -697416341
     ],
     "crypts": 6,
-    "secrets": 3,
+    "maxSecrets": 3,
     "trappedChests": 1,
     "shape": "1x1"
   },
@@ -423,7 +423,7 @@
     "cores": [
       -1999038851
     ],
-    "secrets": 1,
+    "maxSecrets": 1,
     "shape": "1x1"
   },
   {
@@ -433,7 +433,7 @@
       -531914593
     ],
     "crypts": 1,
-    "secrets": 2,
+    "maxSecrets": 2,
     "shape": "1x1"
   },
   {
@@ -464,7 +464,7 @@
       908422074
     ],
     "crypts": 8,
-    "secrets": 7,
+    "maxSecrets": 7,
     "shape": "2x2"
   },
   {
@@ -474,7 +474,7 @@
       992885012,
       35550104
     ],
-    "secrets": 1,
+    "maxSecrets": 1,
     "shape": "1x2"
   },
   {
@@ -484,7 +484,7 @@
       178277726
     ],
     "crypts": 1,
-    "secrets": 1,
+    "maxSecrets": 1,
     "shape": "1x1"
   },
   {
@@ -495,7 +495,7 @@
       648931278
     ],
     "crypts": 2,
-    "secrets": 4,
+    "maxSecrets": 4,
     "shape": "1x2"
   },
   {
@@ -504,7 +504,7 @@
     "cores": [
       -41110951
     ],
-    "secrets": 2,
+    "maxSecrets": 2,
     "shape": "1x1"
   },
   {
@@ -517,7 +517,7 @@
       -1847986179
     ],
     "crypts": 4,
-    "secrets": 3,
+    "maxSecrets": 3,
     "shape": "1x2"
   },
   {
@@ -530,7 +530,7 @@
       244770880
     ],
     "crypts": 2,
-    "secrets": 6,
+    "maxSecrets": 6,
     "shape": "1x3"
   },
   {
@@ -551,7 +551,7 @@
       1020848351
     ],
     "crypts": 1,
-    "secrets": 3,
+    "maxSecrets": 3,
     "shape": "1x4"
   },
   {
@@ -561,7 +561,7 @@
       -1752027278,
       -1477567187
     ],
-    "secrets": 1,
+    "maxSecrets": 1,
     "shape": "1x1"
   },
   {
@@ -588,7 +588,7 @@
     "cores": [
       205151025
     ],
-    "secrets": 1,
+    "maxSecrets": 1,
     "shape": "1x1"
   },
   {
@@ -606,7 +606,7 @@
     "cores": [
       -1519890056
     ],
-    "secrets": 3,
+    "maxSecrets": 3,
     "shape": "1x1"
   },
   {
@@ -615,7 +615,7 @@
     "cores": [
       -695235565
     ],
-    "secrets": 3,
+    "maxSecrets": 3,
     "shape": "1x1"
   },
   {
@@ -627,7 +627,7 @@
       -854539536
     ],
     "crypts": 4,
-    "secrets": 6,
+    "maxSecrets": 6,
     "shape": "L"
   },
   {
@@ -639,7 +639,7 @@
       161195688,
       -91111782
     ],
-    "secrets": 8,
+    "maxSecrets": 8,
     "shape": "L"
   },
   {
@@ -649,7 +649,7 @@
       643669164
     ],
     "crypts": 1,
-    "secrets": 1,
+    "maxSecrets": 1,
     "shape": "1x1"
   },
   {
@@ -659,7 +659,7 @@
       706748439
     ],
     "crypts": 1,
-    "secrets": 1,
+    "maxSecrets": 1,
     "shape": "1x1"
   },
   {
@@ -668,7 +668,7 @@
     "cores": [
       1783642819
     ],
-    "secrets": 4,
+    "maxSecrets": 4,
     "shape": "1x1"
   },
   {
@@ -678,7 +678,7 @@
       587195362
     ],
     "crypts": 3,
-    "secrets": 3,
+    "maxSecrets": 3,
     "shape": "1x1"
   },
   {
@@ -688,7 +688,7 @@
       -1112550874
     ],
     "crypts": 1,
-    "secrets": 3,
+    "maxSecrets": 3,
     "shape": "1x1"
   },
   {
@@ -698,7 +698,7 @@
       -441650545,
       911747293
     ],
-    "secrets": 1,
+    "maxSecrets": 1,
     "shape": "1x1"
   },
   {
@@ -708,7 +708,7 @@
       1475692888,
       925853313
     ],
-    "secrets": 4,
+    "maxSecrets": 4,
     "shape": "1x2"
   },
   {
@@ -720,7 +720,7 @@
       300771790
     ],
     "crypts": 4,
-    "secrets": 5,
+    "maxSecrets": 5,
     "shape": "L"
   },
   {
@@ -732,7 +732,7 @@
       -1740446783
     ],
     "crypts": 4,
-    "secrets": 7,
+    "maxSecrets": 7,
     "shape": "L"
   },
   {
@@ -745,7 +745,7 @@
       -892257050
     ],
     "crypts": 11,
-    "secrets": 10,
+    "maxSecrets": 10,
     "shape": "2x2"
   },
   {
@@ -755,7 +755,7 @@
       302128578
     ],
     "crypts": 3,
-    "secrets": 4,
+    "maxSecrets": 4,
     "shape": "1x1"
   },
   {
@@ -764,7 +764,7 @@
     "cores": [
       76347246
     ],
-    "secrets": 1,
+    "maxSecrets": 1,
     "shape": "1x1"
   },
   {
@@ -777,7 +777,7 @@
       -408036566
     ],
     "crypts": 2,
-    "secrets": 4,
+    "maxSecrets": 4,
     "shape": "1x4"
   },
   {
@@ -786,7 +786,7 @@
     "cores": [
       -543960045
     ],
-    "secrets": 1,
+    "maxSecrets": 1,
     "shape": "1x1"
   },
   {
@@ -795,7 +795,7 @@
     "cores": [
       -743021993
     ],
-    "secrets": 1,
+    "maxSecrets": 1,
     "shape": "1x1"
   },
   {
@@ -808,7 +808,7 @@
       -95130049
     ],
     "crypts": 4,
-    "secrets": 5,
+    "maxSecrets": 5,
     "shape": "2x2"
   },
   {
@@ -817,7 +817,7 @@
     "cores": [
       1461632797
     ],
-    "secrets": 1,
+    "maxSecrets": 1,
     "shape": "1x1"
   },
   {
@@ -830,7 +830,7 @@
       1851993785
     ],
     "crypts": 1,
-    "secrets": 3,
+    "maxSecrets": 3,
     "trappedChests": 1,
     "shape": "1x1"
   },
@@ -842,7 +842,7 @@
       -85564220
     ],
     "crypts": 2,
-    "secrets": 4,
+    "maxSecrets": 4,
     "shape": "1x1"
   },
   {
@@ -851,7 +851,7 @@
     "cores": [
       -726297434
     ],
-    "secrets": 3,
+    "maxSecrets": 3,
     "shape": "1x1"
   },
   {
@@ -861,7 +861,7 @@
       95969553
     ],
     "crypts": 1,
-    "secrets": 2,
+    "maxSecrets": 2,
     "shape": "1x1"
   },
   {
@@ -870,7 +870,7 @@
     "cores": [
       -725718835
     ],
-    "secrets": 2,
+    "maxSecrets": 2,
     "shape": "1x1"
   },
   {
@@ -881,7 +881,7 @@
       1549240174
     ],
     "crypts": 1,
-    "secrets": 5,
+    "maxSecrets": 5,
     "shape": "1x2"
   },
   {
@@ -891,7 +891,7 @@
       -444976906
     ],
     "crypts": 1,
-    "secrets": 2,
+    "maxSecrets": 2,
     "shape": "1x1"
   },
   {
@@ -904,7 +904,7 @@
       1917735700
     ],
     "crypts": 9,
-    "secrets": 7,
+    "maxSecrets": 7,
     "shape": "1x4"
   },
   {
@@ -916,7 +916,7 @@
       2061161472
     ],
     "crypts": 2,
-    "secrets": 6,
+    "maxSecrets": 6,
     "shape": "L"
   },
   {
@@ -930,7 +930,7 @@
       634229450
     ],
     "crypts": 4,
-    "secrets": 5,
+    "maxSecrets": 5,
     "shape": "1x4"
   },
   {
@@ -942,7 +942,7 @@
       2023286596
     ],
     "crypts": 6,
-    "secrets": 6,
+    "maxSecrets": 6,
     "shape": "1x2"
   },
   {
@@ -952,7 +952,7 @@
       845343581
     ],
     "crypts": 1,
-    "secrets": 1,
+    "maxSecrets": 1,
     "shape": "1x1"
   },
   {
@@ -963,7 +963,7 @@
       664490773
     ],
     "crypts": 7,
-    "secrets": 5,
+    "maxSecrets": 5,
     "shape": "1x2"
   },
   {
@@ -972,7 +972,7 @@
     "cores": [
       1865354448
     ],
-    "secrets": 2,
+    "maxSecrets": 2,
     "shape": "1x1"
   },
   {
@@ -985,7 +985,7 @@
       -215394360
     ],
     "crypts": 9,
-    "secrets": 7,
+    "maxSecrets": 7,
     "shape": "1x4"
   },
   {
@@ -1004,7 +1004,7 @@
       -1723880923
     ],
     "crypts": 2,
-    "secrets": 4,
+    "maxSecrets": 4,
     "shape": "1x1"
   },
   {
@@ -1014,7 +1014,7 @@
       -1362847550
     ],
     "crypts": 3,
-    "secrets": 3,
+    "maxSecrets": 3,
     "shape": "1x1"
   },
   {
@@ -1027,7 +1027,7 @@
       -1882412922
     ],
     "crypts": 1,
-    "secrets": 9,
+    "maxSecrets": 9,
     "shape": "2x2"
   },
   {
@@ -1036,7 +1036,7 @@
     "cores": [
       1613728006
     ],
-    "secrets": 1,
+    "maxSecrets": 1,
     "shape": "1x1"
   },
   {
@@ -1045,7 +1045,7 @@
     "cores": [
       -1907291752
     ],
-    "secrets": 3,
+    "maxSecrets": 3,
     "shape": "1x1"
   },
   {
@@ -1054,7 +1054,7 @@
     "cores": [
       -609209015
     ],
-    "secrets": 1,
+    "maxSecrets": 1,
     "shape": "1x1"
   },
   {
@@ -1067,7 +1067,7 @@
       -608091458
     ],
     "crypts": 1,
-    "secrets": 4,
+    "maxSecrets": 4,
     "shape": "1x3"
   },
   {
@@ -1077,7 +1077,7 @@
       -1800029469
     ],
     "crypts": 2,
-    "secrets": 3,
+    "maxSecrets": 3,
     "shape": "1x1"
   },
   {
@@ -1089,7 +1089,7 @@
       -889320918,
       -1978791555
     ],
-    "secrets": 3,
+    "maxSecrets": 3,
     "shape": "1x1"
   },
   {
@@ -1100,7 +1100,7 @@
       -1986945620
     ],
     "crypts": 4,
-    "secrets": 3,
+    "maxSecrets": 3,
     "trappedChests": 1,
     "shape": "1x1"
   },
@@ -1112,7 +1112,7 @@
       -380862700
     ],
     "crypts": 4,
-    "secrets": 3,
+    "maxSecrets": 3,
     "shape": "1x2"
   },
   {
@@ -1122,7 +1122,7 @@
       -610787478
     ],
     "crypts": 1,
-    "secrets": 3,
+    "maxSecrets": 3,
     "shape": "1x1"
   },
   {
@@ -1132,7 +1132,7 @@
       1781758146
     ],
     "crypts": 1,
-    "secrets": 1,
+    "maxSecrets": 1,
     "shape": "1x1"
   },
   {
@@ -1143,7 +1143,7 @@
       -771559429
     ],
     "crypts": 1,
-    "secrets": 3,
+    "maxSecrets": 3,
     "shape": "1x1"
   },
   {
@@ -1153,7 +1153,7 @@
       -2146618657,
       -2091078305
     ],
-    "secrets": 2,
+    "maxSecrets": 2,
     "shape": "1x1"
   },
   {
@@ -1171,7 +1171,7 @@
     "cores": [
       -1899702429
     ],
-    "secrets": 1,
+    "maxSecrets": 1,
     "shape": "1x1"
   },
   {
@@ -1181,7 +1181,7 @@
       -1554372511,
       80464378
     ],
-    "secrets": 2,
+    "maxSecrets": 2,
     "shape": "1x2"
   },
   {
@@ -1191,7 +1191,7 @@
       568922940
     ],
     "crypts": 2,
-    "secrets": 2,
+    "maxSecrets": 2,
     "shape": "1x1"
   },
   {
@@ -1203,7 +1203,7 @@
       878407749
     ],
     "crypts": 1,
-    "secrets": 5,
+    "maxSecrets": 5,
     "trappedChests": 1,
     "shape": "1x3"
   },
@@ -1214,7 +1214,7 @@
       -566399217
     ],
     "crypts": 1,
-    "secrets": 1,
+    "maxSecrets": 1,
     "shape": "1x1"
   },
   {
@@ -1224,7 +1224,7 @@
       -998001944
     ],
     "crypts": 1,
-    "secrets": 2,
+    "maxSecrets": 2,
     "shape": "1x1"
   },
   {
@@ -1234,7 +1234,7 @@
       -1188349447
     ],
     "crypts": 5,
-    "secrets": 2,
+    "maxSecrets": 2,
     "shape": "1x1"
   },
   {
@@ -1246,7 +1246,7 @@
       -40178107
     ],
     "crypts": 3,
-    "secrets": 9,
+    "maxSecrets": 9,
     "shape": "L"
   },
   {
@@ -1256,7 +1256,7 @@
       1484939648
     ],
     "crypts": 2,
-    "secrets": 3,
+    "maxSecrets": 3,
     "shape": "1x1"
   },
   {
@@ -1266,7 +1266,7 @@
       -151940807
     ],
     "crypts": 2,
-    "secrets": 3,
+    "maxSecrets": 3,
     "shape": "1x1"
   },
   {
@@ -1279,7 +1279,7 @@
       -2033694003
     ],
     "crypts": 1,
-    "secrets": 4,
+    "maxSecrets": 4,
     "shape": "2x2"
   },
   {
@@ -1290,7 +1290,7 @@
       -340486787
     ],
     "crypts": 1,
-    "secrets": 1,
+    "maxSecrets": 1,
     "shape": "1x1"
   },
   {
@@ -1300,7 +1300,7 @@
       -1740718028
     ],
     "crypts": 1,
-    "secrets": 2,
+    "maxSecrets": 2,
     "shape": "1x1"
   },
   {
@@ -1313,7 +1313,7 @@
       -1867603567
     ],
     "crypts": 6,
-    "secrets": 6,
+    "maxSecrets": 6,
     "shape": "2x2"
   },
   {
@@ -1330,7 +1330,7 @@
     "cores": [
       1575914755
     ],
-    "secrets": 3,
+    "maxSecrets": 3,
     "shape": "1x1"
   },
   {
@@ -1339,7 +1339,7 @@
     "cores": [
       -1444508608
     ],
-    "secrets": 1,
+    "maxSecrets": 1,
     "shape": "1x1"
   },
   {
@@ -1357,7 +1357,7 @@
       -738945309,
       29612250
     ],
-    "secrets": 1,
+    "maxSecrets": 1,
     "shape": "1x1"
   },
   {
@@ -1366,7 +1366,7 @@
     "cores": [
       535698739
     ],
-    "secrets": 2,
+    "maxSecrets": 2,
     "shape": "1x1"
   },
   {
@@ -1383,7 +1383,7 @@
     "cores": [
       872815555
     ],
-    "secrets": 1,
+    "maxSecrets": 1,
     "shape": "1x1"
   },
   {
@@ -1392,7 +1392,7 @@
     "cores": [
       -333637832
     ],
-    "secrets": 2,
+    "maxSecrets": 2,
     "shape": "1x1"
   },
   {
@@ -1415,7 +1415,7 @@
       520419865
     ],
     "crypts": 3,
-    "secrets": 8,
+    "maxSecrets": 8,
     "shape": "1x4"
   },
   {
@@ -1427,7 +1427,7 @@
       1276013917
     ],
     "crypts": 5,
-    "secrets": 7,
+    "maxSecrets": 7,
     "shape": "L"
   },
   {
@@ -1439,7 +1439,7 @@
       1140917779
     ],
     "crypts": 6,
-    "secrets": 4,
+    "maxSecrets": 4,
     "shape": "L"
   },
   {
@@ -1451,7 +1451,7 @@
       926568393
     ],
     "crypts": 8,
-    "secrets": 4,
+    "maxSecrets": 4,
     "shape": "1x3"
   },
   {
@@ -1461,7 +1461,7 @@
       -1403940419
     ],
     "crypts": 1,
-    "secrets": 1,
+    "maxSecrets": 1,
     "shape": "1x1"
   }
 ]

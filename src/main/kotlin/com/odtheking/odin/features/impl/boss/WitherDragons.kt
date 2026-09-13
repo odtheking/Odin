@@ -16,10 +16,7 @@ import com.odtheking.odin.utils.render.drawWireFrameBox
 import com.odtheking.odin.utils.render.textDim
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.skyblock.dungeon.M7Phases
-import net.minecraft.network.protocol.game.ClientboundAddEntityPacket
 import net.minecraft.network.protocol.game.ClientboundLevelParticlesPacket
-import net.minecraft.network.protocol.game.ClientboundSetEntityDataPacket
-import net.minecraft.network.protocol.game.ClientboundSetEquipmentPacket
 
 object WitherDragons : Module(
     name = "Wither Dragons",
@@ -40,15 +37,12 @@ object WitherDragons : Module(
     }.withDependency { dragonTimerDropDown }
 
     private val dragonBoxes by BooleanSetting("Dragon Boxes", true, desc = "Displays boxes for where M7 dragons spawn.")
-
-    private val dragonTitleDropDown by DropdownSetting("Dragon Spawn Dropdown")
-    val dragonTitle by BooleanSetting("Dragon Title", true, desc = "Displays a title for spawning dragons.").withDependency { dragonTitleDropDown }
-    private val dragonTracers by BooleanSetting("Dragon Tracer", false, desc = "Draws a line to spawning dragons.").withDependency { dragonTitleDropDown }
+    private val dragonTracers by BooleanSetting("Target Tracer", true, desc = "Draws a line to priority spawning dragon.")
 
     private val dragonAlerts by DropdownSetting("Dragon Alerts Dropdown")
     private val sendNotification by BooleanSetting("Send Dragon Confirmation", true, desc = "Sends a confirmation message when a dragon dies.").withDependency { dragonAlerts }
+    val dragonTitle by BooleanSetting("Dragon Title", true, desc = "Displays a title for spawning dragons.").withDependency { dragonAlerts }
     val sendTime by BooleanSetting("Send Dragon Time Alive", true, desc = "Sends a message when a dragon dies with the time it was alive.").withDependency { dragonAlerts }
-    val sendSpawning by BooleanSetting("Send Dragon Spawning", true, desc = "Sends a message when a dragon is spawning.").withDependency { dragonAlerts }
     val sendSpawned by BooleanSetting("Send Dragon Spawned", true, desc = "Sends a message when a dragon has spawned.").withDependency { dragonAlerts }
     val sendSpray by BooleanSetting("Send Ice Sprayed", true, desc = "Sends a message when a dragon has been ice sprayed.").withDependency { dragonAlerts }
 
@@ -73,15 +67,15 @@ object WitherDragons : Module(
             if (DungeonUtils.getF7Phase() == M7Phases.P5) handleSpawnPacket(this)
         }
 
-        onReceive<ClientboundSetEquipmentPacket> {
+        on<EntityEvent.SetItemSlot> {
             if (DungeonUtils.getF7Phase() == M7Phases.P5) DragonCheck.dragonSprayed(this)
         }
 
-        onReceive<ClientboundAddEntityPacket> {
+        on<EntityEvent.Add> {
             if (DungeonUtils.getF7Phase() == M7Phases.P5) DragonCheck.dragonSpawn(this)
         }
 
-        onReceive<ClientboundSetEntityDataPacket> {
+        on<EntityEvent.SetData> {
             if (DungeonUtils.getF7Phase() == M7Phases.P5) DragonCheck.dragonUpdate(this)
         }
 
@@ -90,8 +84,8 @@ object WitherDragons : Module(
                 WitherDragonsEnum.entries.find { it.statuePos == pos }?.setDead(false)
         }
 
-        on<ChatPacketEvent> {
-            if (DungeonUtils.getF7Phase() != M7Phases.P5 || !witherKingRegex.matches(value)) return@on
+        on<MessageEvent.Chat> {
+            if (DungeonUtils.getF7Phase() != M7Phases.P5 || !witherKingRegex.matches(message)) return@on
             (DragonCheck.lastDragonDeath ?: WitherDragonsEnum.entries.find { it.state != WitherDragonState.DEAD })
                 ?.apply {
                     if (sendNotification) modMessage("§${colorCode}${name} dragon counts.")

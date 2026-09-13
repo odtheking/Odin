@@ -23,9 +23,8 @@ object PuzzleHud : Module(
         PuzzleEntry(Puzzle.UNKNOWN.displayName, "✦", "§6", null)
     )
 
-    private val hud by HUD("Puzzle HUD Position", "Displays dungeon puzzle statuses on the HUD.") { example ->
-        if (!DungeonUtils.inDungeons || DungeonUtils.inBoss && !example) return@HUD 0 to 0
-
+    private val hud by HUD("Puzzle HUD", "Displays dungeon puzzle statuses on the HUD.", false) { example ->
+        if (!DungeonUtils.inClear && !example) return@HUD 0 to 0
         if (!example && showOnlyPre && DungeonUtils.openRoomCount != 0) return@HUD 0 to 0
 
         val puzzleCount = if (example) 4 else DungeonUtils.puzzleCount
@@ -54,7 +53,7 @@ object PuzzleHud : Module(
         width = textDim(headerText, 0, 0, Colors.WHITE).first
 
         entries.forEachIndexed { index, entry ->
-            val playerText = if (showPlayerNames && entry.player != null) " §7(${entry.player})" else ""
+            val playerText = if (showPlayerNames && entry.player != null) " §7(§6${entry.player}§7)" else ""
             val newWidth = textDim("§e${entry.name}§8: [${entry.statusColor}${entry.statusIcon}§8]$playerText", 0, (index + 1) * lineHeight, Colors.WHITE).first
             if (newWidth > width) width = newWidth
         }

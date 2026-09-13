@@ -3,20 +3,19 @@ package com.odtheking.odin.features.impl.dungeon.puzzlesolvers
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.events.RenderEvent
 import com.odtheking.odin.events.RoomEnterEvent
+import com.odtheking.odin.events.UseItemOnPostEvent
 import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.JsonResourceLoader
 import com.odtheking.odin.utils.render.drawStyledBox
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.core.BlockPos
-import net.minecraft.network.protocol.game.ServerboundUseItemOnPacket
+import net.minecraft.resources.Identifier
 import net.minecraft.world.phys.AABB
 
 object BoulderSolver {
     private data class BoxPosition(val render: AABB, val click: BlockPos)
     private var currentPositions = mutableListOf<BoxPosition>()
-    private var solutions: Map<String, List<List<Int>>> = JsonResourceLoader.loadJson(
-        "/assets/odin/puzzles/boulderSolutions.json", emptyMap()
-    )
+    private var solutions: Map<String, List<List<Int>>> = JsonResourceLoader.loadJson(Identifier.fromNamespaceAndPath("odin", "puzzles/boulder-solutions.json")) ?: emptyMap()
 
     fun onRoomEnter(event: RoomEnterEvent) = with(event.room) {
         if (this?.data?.name != "Boulder") return@with reset()
@@ -42,7 +41,7 @@ object BoulderSolver {
         }
     }
 
-    fun playerInteract(event: ServerboundUseItemOnPacket) {
+    fun playerInteract(event: UseItemOnPostEvent) {
         currentPositions.remove(currentPositions.firstOrNull { it.click == event.hitResult.blockPos })
     }
 

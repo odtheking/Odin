@@ -1,7 +1,7 @@
 package com.odtheking.odin.features.impl.nether
 
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
-import com.odtheking.odin.events.ChatPacketEvent
+import com.odtheking.odin.events.MessageEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.render.text
@@ -43,8 +43,8 @@ object FreshTools : Module(
     private val ownFreshRegex = Regex("^Your Fresh Tools Perk bonus doubles your building speed for the next 10 seconds!$")
 
     init {
-        on<ChatPacketEvent> {
-            if (notifyFresh && KuudraUtils.inKuudra && ownFreshRegex.matches(value))
+        on<MessageEvent.Chat> {
+            if (notifyFresh && KuudraUtils.inKuudra && ownFreshRegex.matches(message))
                 sendCommand("pc FRESH")
         }
     }

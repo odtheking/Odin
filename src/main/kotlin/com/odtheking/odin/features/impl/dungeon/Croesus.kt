@@ -6,23 +6,23 @@ import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.ActionSetting
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.NumberSetting
-import com.odtheking.odin.events.ChatPacketEvent
 import com.odtheking.odin.events.GuiEvent
+import com.odtheking.odin.events.MessageEvent
+import com.odtheking.odin.events.ScreenEvent
+import com.odtheking.odin.events.SetSlotEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.*
 import com.odtheking.odin.utils.network.WebUtils.fetchJson
 import com.odtheking.odin.utils.render.getStringWidth
+import com.odtheking.odin.utils.render.roundedOutline
 import com.odtheking.odin.utils.render.text
 import com.odtheking.odin.utils.render.textDim
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import kotlinx.coroutines.launch
 import net.minecraft.client.gui.GuiGraphicsExtractor
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 import net.minecraft.network.chat.Component
-import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket
-import net.minecraft.network.protocol.game.ClientboundOpenScreenPacket
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.Items
@@ -72,6 +72,9 @@ object Croesus : Module(
     private val extraStatsRegex = Regex(" {29}> EXTRA STATS <")
     private val chestCostRegex = Regex("^([\\d,]+) Coins$")
     private val shardRegex = Regex("^([A-Za-z ]+) Shard$")
+    private val noMoreChestsRegex = Regex("^No more chests to open!$")
+
+    private const val KISMET_FEATHER_LABEL = "Kismet Feather"
 
     private val ultimateEnchants = setOf(
         "Soul Eater", "Combo", "Legion", "One For All", "Rend",
@@ -110,9 +113,19 @@ object Croesus : Module(
                 val loreString = slot.item.loreString
 
                 if (hideClaimed && loreString.any { it.matches(chestStatusRegex) } && (!includeKey || hasStrikeThrough("Dungeon Chest Key", slot.item.lore ))) cancel()
-                else if (highlightState)
-                    guiGraphics.fill(slot.x, slot.y, slot.x + 16, slot.y + 16,
-                        if (loreString.any { it.matches(chestOpenedRegex) }) Colors.MINECRAFT_GOLD.rgba else Colors.MINECRAFT_GREEN.rgba)
+                else {
+                    if (highlightState) {
+                        val color = when {
+                            loreString.any { it.matches(noMoreChestsRegex) } -> Colors.MINECRAFT_RED.rgba
+                            loreString.any { it.matches(chestOpenedRegex) } -> Colors.MINECRAFT_GOLD.rgba
+                            else -> Colors.MINECRAFT_GREEN.rgba
+                        }
+                        guiGraphics.fill(slot.x, slot.y, slot.x + 16, slot.y + 16, color)
+                    }
+
+                    if (hasStrikeThrough(KISMET_FEATHER_LABEL, slot.item.lore))
+                        guiGraphics.roundedOutline(slot.x, slot.y, slot.x + 16, slot.y + 16, Colors.MINECRAFT_AQUA.rgba, 1f)
+                }
 
             } else if (highlightProfitable && screen.title.string.matches(chestPreviewScreenRegex) && slot.index in mostProfitableSlots) {
                 val color = when (mostProfitableSlots.indexOf(slot.index)) {
@@ -124,9 +137,8 @@ object Croesus : Module(
             }
         }
 
-        onReceive<ClientboundContainerSetSlotPacket> {
-            val screenTitle = mc.screen?.title?.string ?: return@onReceive
-            val menu = (mc.screen as? AbstractContainerScreen<*>)?.menu ?: return@onReceive
+        on<SetSlotEvent> {
+            val screenTitle = mc.screen?.title?.string ?: return@on
 
             when {
                 screenTitle.matches(chestNameRegex) -> handleChestContents(menu.items)
@@ -134,7 +146,7 @@ object Croesus : Module(
             }
         }
 
-        onReceive<ClientboundOpenScreenPacket> {
+        on<ScreenEvent.Open> {
             mostProfitableSlots = emptySet()
             currentChestProfit = null
             chestData = emptyList()
@@ -150,8 +162,8 @@ object Croesus : Module(
             }
         }
 
-        on<ChatPacketEvent> {
-            if (DungeonUtils.inBoss && value.matches(extraStatsRegex)) {
+        on<MessageEvent.Chat> {
+            if (DungeonUtils.inBoss && message.matches(extraStatsRegex)) {
                 currentChestCount++
                 if (currentChestCount > chestWarning) alert("§cChest limit reached!")
             }

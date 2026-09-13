@@ -3,6 +3,7 @@ package com.odtheking.odin.clickgui.settings.impl
 import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
+import com.mojang.blaze3d.platform.InputConstants
 import com.odtheking.odin.clickgui.ClickGUI.gray38
 import com.odtheking.odin.clickgui.Panel
 import com.odtheking.odin.clickgui.settings.RenderableSetting
@@ -15,7 +16,6 @@ import com.odtheking.odin.utils.ui.isAreaHovered
 import com.odtheking.odin.utils.ui.rendering.NVGRenderer
 import net.minecraft.client.input.KeyEvent
 import net.minecraft.client.input.MouseButtonEvent
-import org.lwjgl.glfw.GLFW
 import kotlin.math.floor
 import kotlin.math.round
 import kotlin.math.roundToInt
@@ -136,8 +136,8 @@ class NumberSetting<E>(
         if (!isHovered) return false
 
         val amount = when (input.key) {
-            GLFW.GLFW_KEY_RIGHT, GLFW.GLFW_KEY_EQUAL -> incrementDouble
-            GLFW.GLFW_KEY_LEFT, GLFW.GLFW_KEY_MINUS -> -incrementDouble
+            InputConstants.KEY_RIGHT, InputConstants.KEY_EQUALS -> incrementDouble
+            InputConstants.KEY_LEFT, InputConstants.KEY_MINUS -> -incrementDouble
             else -> return false
         }
 

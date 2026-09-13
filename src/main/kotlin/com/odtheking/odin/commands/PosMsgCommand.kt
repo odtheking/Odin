@@ -12,6 +12,10 @@ import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.modMessage
 import kotlin.math.floor
 
+private val colorSuggestions = listOf("darkblue", "darkgreen", "darkaqua", "darkred", "darkpurple",
+    "gold", "gray", "darkgray", "blue", "green", "aqua", "red",
+    "lightpurple", "yellow", "white", "black")
+
 val posMsgCommand = Commodore("posmsg") {
     literal("add") {
         literal("at").executable {
@@ -25,17 +29,16 @@ val posMsgCommand = Commodore("posmsg") {
                 suggests { listOfNotNull(mc.player?.z?.let { floor(it).toString() }) }
             }
             param("color") {
-                suggests {
-                    listOf("darkblue", "darkgreen", "darkaqua", "darkred", "darkpurple",
-                        "gold", "gray", "darkgray", "blue", "green", "aqua", "red",
-                        "lightpurple", "yellow", "white", "black")
-                }
+                suggests { colorSuggestions }
+            }
+            param("send") {
+                suggests { listOf("true", "false") }
             }
 
-            runs { x: Double, y: Double, z: Double, delay: Int, distance: Double, color: String, message: GreedyString? ->
-                if (posMessageStrings.any { it.message == message?.string }) return@runs
+            runs { x: Double, y: Double, z: Double, delay: Int, distance: Double, color: String, send: Boolean, message: GreedyString ->
+                if (posMessageStrings.any { it.message == message.string }) return@runs
                 val color = getColorFromString(color) ?: return@runs modMessage("Unknown color $color")
-                posMessageStrings.add(PositionalMessages.PosMessage(x, y, z, null, null, null, delay, distance, color, message?.string))
+                posMessageStrings.add(PositionalMessages.PosMessage(x, y, z, null, null, null, delay, distance, color, message.string, send))
                 modMessage("Message \"${message}\" added at $x, $y, $z, with ${delay}t delay, triggered up to $distance blocks away.")
                 ModuleManager.saveConfigurations()
             }
@@ -43,17 +46,16 @@ val posMsgCommand = Commodore("posmsg") {
 
         literal("in").executable {
             param("color") {
-                suggests {
-                    listOf("darkblue", "darkgreen", "darkaqua", "darkred", "darkpurple",
-                        "gold", "gray", "darkgray", "blue", "green", "aqua", "red",
-                        "lightpurple", "yellow", "white", "black")
-                }
+                suggests { colorSuggestions }
+            }
+            param("send") {
+                suggests { listOf("true", "false") }
             }
 
-            runs { x: Double, y: Double, z: Double, x2: Double, y2: Double, z2: Double, delay: Int, color: String, message: GreedyString? ->
-                if (posMessageStrings.any { it.message == message?.string }) return@runs
+            runs { x: Double, y: Double, z: Double, x2: Double, y2: Double, z2: Double, delay: Int, color: String, send: Boolean, message: GreedyString ->
+                if (posMessageStrings.any { it.message == message.string }) return@runs
                 val color = getColorFromString(color) ?: return@runs modMessage("Unknown color $color")
-                posMessageStrings.add(PositionalMessages.PosMessage(x, y, z, x2, y2, z2, delay, null, color, message?.string))
+                posMessageStrings.add(PositionalMessages.PosMessage(x, y, z, x2, y2, z2, delay, null, color, message.string, send))
                 modMessage("Message \"${message}\" added in $x, $y, $z, $x2, $y2, $z2, with ${delay}t delay.")
                 ModuleManager.saveConfigurations()
             }
@@ -69,7 +71,7 @@ val posMsgCommand = Commodore("posmsg") {
                 input
             }
             suggests {
-                posMessageStrings.mapNotNull { it.message }.distinct()
+                posMessageStrings.map { it.message }.distinct()
             }
         }
 
@@ -88,8 +90,8 @@ val posMsgCommand = Commodore("posmsg") {
     }
 
     literal("list").runs {
-        val output = posMessageStrings.joinToString(separator = "\n") {
-            "${posMessageStrings.indexOf(it) + 1}: ${it.x}, ${it.y}, ${it.z}, ${it.x2}, ${it.y2}, ${it.z2}, ${it.delay}, ${it.distance}, ${it.color.hex()}, \"${it.message}\""
+        val output = posMessageStrings.withIndex().joinToString(separator = "\n") { (index, it) ->
+            "${index + 1}: ${it.x}, ${it.y}, ${it.z}, ${it.x2}, ${it.y2}, ${it.z2}, ${it.delay}, ${it.distance}, ${it.color.hex()}, send=${it.send}, \"${it.message}\""
         }
         modMessage(if (posMessageStrings.isEmpty()) "Positional Message list is empty!" else "Positonal Message list:\n$output")
     }

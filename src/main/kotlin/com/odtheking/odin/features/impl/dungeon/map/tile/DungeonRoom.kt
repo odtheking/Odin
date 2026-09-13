@@ -2,27 +2,26 @@ package com.odtheking.odin.features.impl.dungeon.map.tile
 
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints
-import com.odtheking.odin.features.impl.dungeon.map.DungeonScan
-import com.odtheking.odin.utils.IVec2
-import com.odtheking.odin.utils.modMessage
-import com.odtheking.odin.utils.rotateAroundNorth
-import com.odtheking.odin.utils.rotateToNorth
-import com.odtheking.odin.utils.sortKey
+import com.odtheking.odin.utils.*
 import net.minecraft.core.BlockPos
 import net.minecraft.world.level.block.Blocks
-import kotlin.math.roundToInt
+import net.minecraft.world.phys.AABB
 
 class DungeonRoom(var type: RoomType, initialPosition: IVec2, var data: RoomData? = null) {
     val tiles: ArrayList<IVec2> = ArrayList(4)
     var topLeft: IVec2 = initialPosition
     var rotation: RoomRotation? = null
+        set(value) {
+            field = value
+            recalculateCenter()
+        }
 
     var shape: RoomShape = RoomShape.OneByOne
 
     var walkedInto: Boolean = false
     var clayPos: BlockPos? = null
     var highestBlock: Int? = null
-    var waypoints: MutableSet<DungeonWaypoints.DungeonWaypoint> = mutableSetOf()
+    @Transient var waypoints: MutableSet<DungeonWaypoints.DungeonWaypoint> = mutableSetOf()
 
     var checkmark: MapCheckmark = MapCheckmark.UNDISCOVERED
 
@@ -30,6 +29,8 @@ class DungeonRoom(var type: RoomType, initialPosition: IVec2, var data: RoomData
 
     var center: IVec2? = null
         private set
+
+    var foundSecrets: Int? = null
 
     val isViewable: Boolean get() = walkedInto || checkmark != MapCheckmark.UNDISCOVERED
     val name: String? get() = data?.name
@@ -44,32 +45,21 @@ class DungeonRoom(var type: RoomType, initialPosition: IVec2, var data: RoomData
     }
 
     private fun recalculateCenter() {
-        if (tiles.isEmpty()) return
-        val rs = DungeonScan.roomSize.takeIf { it != -1 } ?: return
-
-        val rg = DungeonScan.roomGap
-        val half = rs / 2
-
-        fun tileCenter(tile: IVec2) = tile.x * rg + half to tile.z * rg + half
-
-        val rot = rotation
-        if (rot == null) {
-            val tile = tiles.minBy { it.sortKey }
-            val (x, z) = tileCenter(tile)
-            center = IVec2(x, z)
-            return
+        rotation?.let { rot ->
+            val (offX, offZ) = when (shape) {
+                RoomShape.OneByOne -> 0 to 0
+                RoomShape.TwoByTwo -> 10 to 10
+                RoomShape.L -> if (rot == RoomRotation.NORTH || rot == RoomRotation.WEST) 10 to 0 else 10 to 20
+                else -> {
+                    val span = (shape.tileAmount - 1) * 10
+                    if (rot == RoomRotation.SOUTH) span to 0 else 0 to span
+                }
+            }
+            center = IVec2(topLeft.x * 20 + 8 + offX, topLeft.z * 20 + 8 + offZ)
+        } ?: run {
+            val anchor = tiles.minByOrNull { it.sortKey } ?: return
+            center = IVec2(anchor.x * 20 + 8, anchor.z * 20 + 8)
         }
-
-        val centers = tiles.map { tileCenter(it) }
-        val x = (centers.minOf { it.first } + centers.maxOf { it.first }) / 2f
-        val z = when (shape) {
-            RoomShape.L ->
-                if (rot == RoomRotation.NORTH || rot == RoomRotation.WEST) centers.minOf { it.second }.toFloat()
-                else centers.maxOf { it.second }.toFloat()
-            else ->
-                (centers.minOf { it.second } + centers.maxOf { it.second }) / 2f
-        }
-        center = IVec2(x.roundToInt(), z.roundToInt())
     }
 
     fun inferLayoutFromMap() {
@@ -191,5 +181,19 @@ class DungeonRoom(var type: RoomType, initialPosition: IVec2, var data: RoomData
         val clay = clayPos ?: return BlockPos.ZERO
         val rot = rotation ?: return BlockPos.ZERO
         return pos.rotateAroundNorth(rot).offset(clay.x, 0, clay.z)
+    }
+
+    fun getRelativeAABB(aabb: AABB): AABB {
+        val rot = rotation ?: return aabb
+        val minPos = aabb.minPosition.add(-0.5, -0.5, -0.5).rotateToNorth(rot).add(0.5, 0.5, 0.5)
+        val maxPos = aabb.maxPosition.add(-0.5, -0.5, -0.5).rotateToNorth(rot).add(0.5, 0.5, 0.5)
+        return AABB(minPos, maxPos)
+    }
+
+    fun getRealAABB(aabb: AABB): AABB {
+        val rot = rotation ?: return aabb
+        val minPos = aabb.maxPosition.add(-0.5, -0.5, -0.5).rotateAroundNorth(rot).add(0.5, 0.5, 0.5)
+        val maxPos = aabb.minPosition.add(-0.5, -0.5, -0.5).rotateAroundNorth(rot).add(0.5, 0.5, 0.5)
+        return AABB(minPos, maxPos)
     }
 }

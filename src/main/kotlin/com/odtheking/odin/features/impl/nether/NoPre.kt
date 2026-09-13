@@ -2,8 +2,8 @@ package com.odtheking.odin.features.impl.nether
 
 import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
-import com.odtheking.odin.events.ChatPacketEvent
 import com.odtheking.odin.events.LevelEvent
+import com.odtheking.odin.events.MessageEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.alert
@@ -29,11 +29,11 @@ object NoPre : Module(
     var missing = Supply.None
 
     init {
-        on<ChatPacketEvent> {
+        on<MessageEvent.Chat> {
             if (!KuudraUtils.inKuudra) return@on
 
             when {
-                preRegex.matches(value) -> {
+                preRegex.matches(message) -> {
                     val playerLocation = mc.player?.blockPosition() ?: return@on
                     preSpot = when {
                         Supply.Triangle.pickUpSpot.closerThan(playerLocation, 15.0) -> Supply.Triangle
@@ -45,7 +45,7 @@ object NoPre : Module(
                     modMessage(if (preSpot == Supply.None) "§cDidn't register your pre-spot because you didn't get there in time." else "Pre-spot: ${preSpot.name}")
                 }
 
-                startRegex.matches(value) -> {
+                startRegex.matches(message) -> {
                     if (preSpot == Supply.None) return@on
                     var second = false
                     var pre = false
@@ -72,8 +72,8 @@ object NoPre : Module(
                     if (msg.isNotEmpty()) sendCommand("pc $msg")
                 }
 
-                partyRegex.matches(value) -> {
-                    val match = partyRegex.find(value)?.groupValues ?: return@on
+                partyRegex.matches(message) -> {
+                    val match = partyRegex.find(message)?.groupValues ?: return@on
                     missing = Supply.valueOf(match.lastOrNull() ?: return@on)
                     if (!showCratePriority) return@on
                     val cratePriority = cratePriority(missing).ifEmpty { return@on }
