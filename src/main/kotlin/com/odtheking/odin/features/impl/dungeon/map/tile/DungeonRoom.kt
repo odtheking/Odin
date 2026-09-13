@@ -5,6 +5,7 @@ import com.odtheking.odin.features.impl.dungeon.dungeonwaypoints.DungeonWaypoint
 import com.odtheking.odin.utils.*
 import net.minecraft.core.BlockPos
 import net.minecraft.world.level.block.Blocks
+import net.minecraft.world.phys.AABB
 
 class DungeonRoom(var type: RoomType, initialPosition: IVec2, var data: RoomData? = null) {
     val tiles: ArrayList<IVec2> = ArrayList(4)
@@ -180,5 +181,19 @@ class DungeonRoom(var type: RoomType, initialPosition: IVec2, var data: RoomData
         val clay = clayPos ?: return BlockPos.ZERO
         val rot = rotation ?: return BlockPos.ZERO
         return pos.rotateAroundNorth(rot).offset(clay.x, 0, clay.z)
+    }
+
+    fun getRelativeAABB(aabb: AABB): AABB {
+        val rot = rotation ?: return aabb
+        val minPos = aabb.minPosition.add(-0.5, -0.5, -0.5).rotateToNorth(rot).add(0.5, 0.5, 0.5)
+        val maxPos = aabb.maxPosition.add(-0.5, -0.5, -0.5).rotateToNorth(rot).add(0.5, 0.5, 0.5)
+        return AABB(minPos, maxPos)
+    }
+
+    fun getRealAABB(aabb: AABB): AABB {
+        val rot = rotation ?: return aabb
+        val minPos = aabb.maxPosition.add(-0.5, -0.5, -0.5).rotateAroundNorth(rot).add(0.5, 0.5, 0.5)
+        val maxPos = aabb.minPosition.add(-0.5, -0.5, -0.5).rotateAroundNorth(rot).add(0.5, 0.5, 0.5)
+        return AABB(minPos, maxPos)
     }
 }

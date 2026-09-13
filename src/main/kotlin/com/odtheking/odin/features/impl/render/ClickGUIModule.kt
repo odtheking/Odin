@@ -128,31 +128,33 @@ object ClickGUIModule : Module(
 
             modMessage(
                 Component.literal(getChatBreak())
-                    .append(Component.literal("§3Odin update available: §f$latestVersionNumber\n\n"))
+                    .append("\n")
+                    .append(Component.literal("§3Odin update available: §f$latestVersionNumber\n"))
+                    .append(Component.literal("§7Click the links below to download the latest version.\n\n"))
                     .append(
-                        Component.literal("§bGitHub link").withStyle {
-                            it.withClickEvent(ClickEvent.OpenUrl(URI(RELEASE_LINK))).withHoverEvent(
-                                HoverEvent.ShowText(Component.literal(RELEASE_LINK))
-                            )
-                        }
-                    )
-                    .append(Component.literal("\n"))
-                    .append(
-                        Component.literal("§bModrinth Link").withStyle {
+                        Component.literal("    §a§nModrinth Link").withStyle {
                             it.withClickEvent(ClickEvent.OpenUrl(URI(MODRINTH_LINK))).withHoverEvent(
                                 HoverEvent.ShowText(Component.literal(MODRINTH_LINK))
                             )
                         }
                     )
-                    .append(Component.literal("\n"))
+                    .append(Component.literal("        "))
                     .append(
-                        Component.literal("§9Discord link").withStyle {
+                        Component.literal("§b§nGitHub link").withStyle {
+                            it.withClickEvent(ClickEvent.OpenUrl(URI(RELEASE_LINK))).withHoverEvent(
+                                HoverEvent.ShowText(Component.literal(RELEASE_LINK))
+                            )
+                        }
+                    )
+                    .append(Component.literal("        "))
+                    .append(
+                        Component.literal("§9§nDiscord link").withStyle {
                             it.withClickEvent(ClickEvent.OpenUrl(URI("https://discord.gg/2nCbC9hkxT"))).withHoverEvent(
                                 HoverEvent.ShowText(Component.literal("https://discord.gg/2nCbC9hkxT"))
                             )
                         }
                     )
-                    .append(Component.literal("\n\n${getChatBreak()}§r")),
+                    .append(Component.literal("\n${getChatBreak()}§r")),
                 ""
             )
 

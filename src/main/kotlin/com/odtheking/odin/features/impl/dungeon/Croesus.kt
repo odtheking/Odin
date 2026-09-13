@@ -22,7 +22,6 @@ import com.odtheking.odin.utils.render.textDim
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import kotlinx.coroutines.launch
 import net.minecraft.client.gui.GuiGraphicsExtractor
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 import net.minecraft.network.chat.Component
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket
 import net.minecraft.world.item.ItemStack
@@ -140,11 +139,10 @@ object Croesus : Module(
 
         on<SetSlotEvent> {
             val screenTitle = mc.screen?.title?.string ?: return@on
-            val items = (mc.screen as? AbstractContainerScreen<*>)?.menu?.items ?: return@on
 
             when {
-                screenTitle.matches(chestNameRegex) -> handleChestContents(items)
-                screenTitle.matches(chestPreviewScreenRegex) -> handleCroesusScreen(items)
+                screenTitle.matches(chestNameRegex) -> handleChestContents(menu.items)
+                screenTitle.matches(chestPreviewScreenRegex) -> handleCroesusScreen(menu.items)
             }
         }
 

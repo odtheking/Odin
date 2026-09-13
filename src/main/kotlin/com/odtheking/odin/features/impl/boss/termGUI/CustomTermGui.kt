@@ -6,7 +6,6 @@ import com.odtheking.odin.events.ScreenEvent
 import com.odtheking.odin.features.impl.boss.TerminalSolver
 import com.odtheking.odin.features.impl.boss.TerminalSolver.renderDebug
 import com.odtheking.odin.utils.Color
-import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.render.roundedFill
 import com.odtheking.odin.utils.render.text
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalUtils
@@ -50,13 +49,13 @@ abstract class TermGui {
                 grid?.let { g ->
                     val (bx, by) = g.toBase(click.x(), click.y(), guiScale)
                     hoveredSlotIndex = g.slots.firstOrNull { it.containsBase(bx, by) }?.slotIndex
-                    hoveredSlotIndex?.let {  TerminalUtils.currentTerm?.click(it, click.button(), TerminalSolver.hideClicked) }
+                    hoveredSlotIndex?.let {  TerminalUtils.currentTerm?.click(it, click.button(), TerminalSolver.clickPrediction) }
                 }; return true
             },
             key = fun ScreenEvent.KeyPress.(): Any {
                 if (!isTerminalOverrideKey(input)) return false
                 hoveredSlotIndex?.let {
-                    TerminalUtils.currentTerm?.click(it, if (!input.hasControlDown()) InputConstants.MOUSE_BUTTON_LEFT else InputConstants.MOUSE_BUTTON_RIGHT, TerminalSolver.hideClicked)
+                    TerminalUtils.currentTerm?.click(it, if (!input.hasControlDown()) InputConstants.MOUSE_BUTTON_LEFT else InputConstants.MOUSE_BUTTON_RIGHT, TerminalSolver.clickPrediction)
                 }; return true
             })
         )
@@ -127,7 +126,7 @@ fun simpleTermGui(rows: Int, cols: Int, startRow: Int, startCol: Int): TermGui =
         override fun buildTerminal(screen: AbstractContainerScreen<*>) =
             buildTerminalGrid(screen, rows, cols, startRow, startCol) { slotIndex ->
                 SlotVisual({ TerminalUtils.currentTerm?.getSlotRendering(slotIndex) }) { x, y, w, h ->
-                    TerminalUtils.currentTerm?.getSlotRendering(slotIndex)?.second?.let { renderSlotText(it, x, y, w, h, Colors.WHITE) }
+                    TerminalUtils.currentTerm?.getSlotRendering(slotIndex)?.second?.let { renderSlotText(it, x, y, w, h, TerminalSolver.textColor) }
                 }
             }
     }
