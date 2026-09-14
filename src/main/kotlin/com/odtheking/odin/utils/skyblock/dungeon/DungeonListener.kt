@@ -72,7 +72,6 @@ object DungeonListener {
         }
 
         onReceive<ClientboundPlayerInfoUpdatePacket> {
-            if (!DungeonUtils.inDungeons) return@onReceive
             val tabListEntries = entries().mapNotNull { it.displayName?.string }.ifEmpty { return@onReceive }
             updateDungeonTeammates(tabListEntries)
             updateDungeonStats(tabListEntries)
@@ -81,7 +80,6 @@ object DungeonListener {
         }
 
         onReceive<ClientboundSetPlayerTeamPacket> {
-            if (!DungeonUtils.inDungeons) return@onReceive
             val text = parameters.getOrNull()?.let { it.playerPrefix.string.plus(it.playerSuffix.string).noControlCodes } ?: return@onReceive
 
             floorRegex.find(text)?.groupValues?.get(1)?.let {
