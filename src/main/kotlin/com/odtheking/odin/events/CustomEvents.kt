@@ -57,7 +57,7 @@ abstract class TerminalEvent(val terminal: TerminalHandler) : Event {
     class Open(terminal: TerminalHandler) : TerminalEvent(terminal)
     class Close(terminal: TerminalHandler) : TerminalEvent(terminal)
     class Solve(terminal: TerminalHandler) : TerminalEvent(terminal)
-    class Click(terminal: TerminalHandler, val slotIndex: Int, val button: Int) : TerminalEvent(terminal)
+    class Click(terminal: TerminalHandler, val slotIndex: Int, val button: Int, val solution: ArrayList<Int>) : TerminalEvent(terminal)
 }
 
 interface TickEvent : Event {

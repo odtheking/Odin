@@ -38,6 +38,8 @@ object TerminalTimes : Module(
     private var sectionTimer = 0L
     private var currentTick = 0L
     private var phaseTimer = 0L
+    private var lastSectionTime = 0f
+    private var lastPhaseTime = 0f
 
     init {
         on<TerminalEvent.Solve> {
@@ -45,10 +47,11 @@ object TerminalTimes : Module(
             pbs.time(terminal.type.name, (System.currentTimeMillis() - terminal.timeOpened) / 1000f, "s§7!", "§a${terminal.type.termName}${if (mc.screen is TermSimGUI) " §7(termsim)" else ""} §7solved in §6", sendMessage = terminalTimes)
         }
 
-        on<MessageEvent.ModifyChat> {
+        on<MessageEvent.Chat> {
             if (!terminalSplits) return@on
             terminalCompleteRegex.find(message)?.destructured?.let { (name, activated, type, current, total) ->
-                component = Component.literal("§6$name §a$activated a $type! (§c${current}§a/${total}) §8(§7${sectionTimer.seconds}s §8| §7${phaseTimer.seconds}s§8)")
+                lastSectionTime = sectionTimer.seconds
+                lastPhaseTime = phaseTimer.seconds
 
                 if ((current == total && gateBlown) || (current.toIntOrNull() ?: return@on) < completed.first) resetSection()
                 else completed = Pair(current.toIntOrNull() ?: return@on, total.toIntOrNull() ?: return@on)
@@ -64,6 +67,13 @@ object TerminalTimes : Module(
                     resetSection()
                     modMessage("§bTimes: §a${times.joinToString(" §8| ") { "§a${it}s" }}§8, §bTotal: §a${phaseTimer.seconds}s")
                 }
+            }
+        }
+
+        on<MessageEvent.ModifyChat> {
+            if (!terminalSplits) return@on
+            terminalCompleteRegex.find(message)?.destructured?.let { (name, activated, type, current, total) ->
+                component = Component.literal("§6$name §a$activated a $type! (§c${current}§a/${total}) §8(§7${lastSectionTime}s §8| §7${lastPhaseTime}s§8)")
             }
         }
 

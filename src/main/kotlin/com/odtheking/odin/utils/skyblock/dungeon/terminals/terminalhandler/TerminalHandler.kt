@@ -56,7 +56,7 @@ abstract class TerminalHandler(val type: TerminalTypes) {
         lastClickTime = System.currentTimeMillis()
 
         if (simulateClick) simulateClick(slotIndex, button)
-
+        TerminalEvent.Click(this, slotIndex, button, solution).postAndCatch()
         mc.screen?.let { screen ->
             if (screen is TermSimGUI) {
                 screen.clickIndex(slotIndex, button)
@@ -64,7 +64,6 @@ abstract class TerminalHandler(val type: TerminalTypes) {
             }
         }
         mc.player?.clickSlot(slotIndex, button, if (button == InputConstants.MOUSE_BUTTON_MIDDLE) ContainerInput.CLONE else ContainerInput.PICKUP)
-        TerminalEvent.Click(this, slotIndex, button).postAndCatch()
     }
 
     open fun canClick(slotIndex: Int, button: Int): Boolean = slotIndex in solution

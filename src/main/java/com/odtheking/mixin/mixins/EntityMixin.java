@@ -40,9 +40,4 @@ public abstract class EntityMixin {
         Entity entity = (Entity)(Object)this;
         new EntityEvent.Move(entity, Vec3.ZERO, 0f, 0f, onGround).postAndCatch();
     }
-
-    @Inject(method = "handleEntityEvent", at = @At("TAIL"))
-    private void onHandleEntityEvent(byte id, CallbackInfo ci) {
-        new EntityEvent.Event((Entity)(Object)this, id).postAndCatch();
-    }
 }
