@@ -74,8 +74,6 @@ object KuudraTracker : Module(
             val title = screen.title.string
             if (enabled && title.matches(hudRegex)) {
                 guiGraphics.pose().pushMatrix()
-                val sf = mc.window.guiScale
-                guiGraphics.pose().scale(1f / sf, 1f / sf)
                 guiGraphics.pose().translate(profitHud.x.toFloat(), profitHud.y.toFloat())
                 guiGraphics.pose().scale(profitHud.scale)
 

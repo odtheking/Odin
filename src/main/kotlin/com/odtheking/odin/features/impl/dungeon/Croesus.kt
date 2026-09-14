@@ -97,8 +97,6 @@ object Croesus : Module(
             val title = screen.title.string
             if (croesusHud.enabled && (title.matches(chestNameRegex) || title.matches(chestPreviewScreenRegex))) {
                 guiGraphics.pose().pushMatrix()
-                val sf = mc.window.guiScale
-                guiGraphics.pose().scale(1f / sf, 1f / sf)
                 guiGraphics.pose().translate(croesusHud.x.toFloat(), croesusHud.y.toFloat())
                 guiGraphics.pose().scale(croesusHud.scale)
 

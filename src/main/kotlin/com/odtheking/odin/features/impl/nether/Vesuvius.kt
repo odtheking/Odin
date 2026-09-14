@@ -56,8 +56,6 @@ object Vesuvius : Module(
             val title = screen.title.string
             if (vesuviusHud.enabled && title.matches(chestRegex) && currentChest != null) {
                 guiGraphics.pose().pushMatrix()
-                val sf = mc.window.guiScale
-                guiGraphics.pose().scale(1f / sf, 1f / sf)
                 guiGraphics.pose().translate(vesuviusHud.x.toFloat(), vesuviusHud.y.toFloat())
                 guiGraphics.pose().scale(vesuviusHud.scale)
 
