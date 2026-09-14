@@ -96,15 +96,19 @@ object DungeonListener {
                 dungeonStats.percentCleared = it
                 DungeonUtils.updateScore()
             }
+
+            dungeonStats.elapsedTime = timeRegex.find(text)?.groupValues?.get(1) ?: dungeonStats.elapsedTime
         }
 
         onReceive<ClientboundTabListPacket> {
+            if (!DungeonUtils.inDungeons) return@onReceive
             Blessing.entries.forEach { blessing ->
                 blessing.regex.find(footer.string)?.let { blessing.current = romanToInt(it.groupValues[1]) }
             }
         }
 
         on<MessageEvent.Chat> {
+            if (!DungeonUtils.inDungeons) return@on
             if (expectingBloodRegex.matches(message)) expectingBloodUpdate = true
             doorOpenRegex.find(message)?.let { dungeonStats.doorOpener = it.groupValues[1] }
             deathRegex.find(message)?.let { match ->
@@ -139,7 +143,7 @@ object DungeonListener {
         }
 
         on<EntityEvent.Add> {
-            if (entity.type == EntityTypes.PLAYER && entity.uuid.version() != 4)
+            if (entity.type == EntityTypes.PLAYER && entity.uuid.version() != 4 && DungeonUtils.inDungeons)
                 DungeonUtils.dungeonTeammates.find { it.entity == null && it.name == entity.name.string }?.entity = entity as? Player
         }
     }
@@ -181,11 +185,11 @@ object DungeonListener {
 
         leapTeammates =
             when (LeapMenu.type) {
-                LeapMenu.Sorting.ODIN -> odinSorting(dungeonTeammatesNoSelf.sortedBy { it.clazz.priority }).toList()
-                LeapMenu.Sorting.CLASS -> dungeonTeammatesNoSelf.sortedWith(compareBy({ it.clazz.ordinal }, { it.name }))
-                LeapMenu.Sorting.NAME -> dungeonTeammatesNoSelf.sortedBy { it.name }
-                LeapMenu.Sorting.CUSTOM -> dungeonTeammatesNoSelf.sortedBy { DungeonUtils.customLeapOrder.indexOf(it.name.lowercase()).takeIf { index -> index != -1 } ?: Int.MAX_VALUE }
-                LeapMenu.Sorting.NONE -> dungeonTeammatesNoSelf
+                0 -> odinSorting(dungeonTeammatesNoSelf.sortedBy { it.clazz.priority }).toList()
+                1 -> dungeonTeammatesNoSelf.sortedWith(compareBy({ it.clazz.ordinal }, { it.name }))
+                2 -> dungeonTeammatesNoSelf.sortedBy { it.name }
+                3 -> dungeonTeammatesNoSelf.sortedBy { DungeonUtils.customLeapOrder.indexOf(it.name.lowercase()).takeIf { index -> index != -1 } ?: Int.MAX_VALUE }
+                else -> dungeonTeammatesNoSelf
             }
     }
 

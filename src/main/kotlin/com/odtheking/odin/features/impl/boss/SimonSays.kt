@@ -84,7 +84,7 @@ object SimonSays : Module(
                 110 ->
                     if (updated.block == Blocks.AIR) {
                         if (grid.count { mc.level?.getBlockState(it)?.isAir == true } > 8) resetSolution()
-                    } else if (old.block == Blocks.STONE_BUTTON && updated.getValue(BlockStateProperties.POWERED)) {
+                    } else if (old.block == Blocks.STONE_BUTTON && updated.block == Blocks.STONE_BUTTON && updated.getValue(BlockStateProperties.POWERED)) {
                         clickNeeded = clickInOrder.indexOf(pos.east()) + 1
                         if (clickNeeded >= clickInOrder.size) {
                             resetSolution()

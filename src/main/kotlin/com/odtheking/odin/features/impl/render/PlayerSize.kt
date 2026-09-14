@@ -65,7 +65,7 @@ object PlayerSize : Module(
         if (!randoms.containsKey(gameProfile.id)) return
         if (!devSize && gameProfile.name == mc.player?.gameProfile?.name) return
         val random = randoms[gameProfile.id] ?: return
-        if (random.scale[1] < 0) matrix.translate(0f, random.scale[1] * 2, 1f)
+        if (random.scale[1] < 0) matrix.translate(0f, random.scale[1] * 2, 0f)
         matrix.scale(random.scale[0], random.scale[1], random.scale[2])
     }
 
