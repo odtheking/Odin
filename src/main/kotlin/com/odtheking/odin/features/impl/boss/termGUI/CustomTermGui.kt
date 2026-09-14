@@ -6,7 +6,6 @@ import com.odtheking.odin.events.ScreenEvent
 import com.odtheking.odin.features.impl.boss.TerminalSolver
 import com.odtheking.odin.features.impl.boss.TerminalSolver.renderDebug
 import com.odtheking.odin.utils.Color
-import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.render.roundedRect
 import com.odtheking.odin.utils.render.text
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalUtils
@@ -106,12 +105,12 @@ abstract class TermGui {
         guiGraphics.pose().translate(g.originX, g.originY)
         guiGraphics.pose().scale(scale)
 
-        guiGraphics.roundedRect(-padding, -padding, g.w + padding, g.h + padding, TerminalSolver.backgroundColor.rgba, radius.toFloat())
+        guiGraphics.roundedRect(-padding, -padding, g.w + padding, g.h + padding, TerminalSolver.backgroundColor.rgba, radius)
 
         g.slots.forEach { slot ->
             val (color, _) = slot.visual.resolve() ?: return@forEach
             if (slot.containsBase(baseMX, baseMY)) hoveredSlotIndex = slot.slotIndex
-            guiGraphics.roundedRect(slot.bx, slot.by, slot.bx + slot.size, slot.by + slot.size, color.rgba, radius.toFloat())
+            guiGraphics.roundedRect(slot.bx, slot.by, slot.bx + slot.size, slot.by + slot.size, color.rgba, radius)
             slot.visual.onRenderContent?.invoke(guiGraphics, slot.bx, slot.by, slot.size, slot.size)
         }
 
