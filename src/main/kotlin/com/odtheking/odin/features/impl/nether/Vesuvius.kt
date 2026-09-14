@@ -43,9 +43,7 @@ object Vesuvius : Module(
     private val uselessLinesRegex = Regex("^Contents|Cost|Click to open!|FREE|Already opened!|Can't open another chest!|Paid Chest|")
     private val salvageItemsRegex = Regex("Boots|Leggings|Chestplate|Helmet|Cloak|Aurora Staff|Hollow Wand")
 
-    private val ultimateEnchants = setOf(
-        "Fatal Tempo", "Inferno"
-    )
+    private val ultimateEnchants = setOf("Fatal Tempo", "Inferno")
 
     data class Key(val type: String, val coins: Int, val quantity: Int, val tier: Int)
     private data class ChestItem(val name: Component, val price: Double)
@@ -70,9 +68,8 @@ object Vesuvius : Module(
         }
 
         on<GuiEvent.RenderSlot> {
-            if (screen.title.string.containsOneOf("Vesuvius", "Croesus") && slot.item.hoverName.string == "Kuudra's Hollow") {
-                if (hideClaimed && slot.item.loreString.any { it == "No more chests to open!"}) cancel()
-            }
+            if (hideClaimed && screen.title.string.containsOneOf("Vesuvius", "Croesus") &&
+                slot.item.hoverName.string == "Kuudra's Hollow" && slot.item.loreString.any { it == "No more chests to open!"}) cancel()
         }
 
         on<SetSlotEvent> {
@@ -106,9 +103,7 @@ object Vesuvius : Module(
 
         val item = component.string.replace("✪", "").trim()
 
-        if (item.contains("Molten") && useSalvagePrices) {
-            return (cachedPrices["ESSENCE_CRIMSON"] ?: 0.0) * 600.0 * essenceBonus
-        }
+        if (item.contains("Molten") && useSalvagePrices) return (cachedPrices["ESSENCE_CRIMSON"] ?: 0.0) * 600.0 * essenceBonus
 
         previewEnchantedBookRegex.find(item)?.destructured?.let { (name, level) ->
             val ult = if (name in ultimateEnchants) "ULTIMATE_" else ""
@@ -138,7 +133,6 @@ object Vesuvius : Module(
         }
 
         if (useSalvagePrices && salvage) {
-            modMessage("$component}")
             val price = cachedPrices["ESSENCE_CRIMSON"] ?: 0.0
             val quantity = starCountToEssence[starCount] ?: 0.0
             return price * quantity
@@ -164,9 +158,7 @@ object Vesuvius : Module(
         var profit = 0.0
         var chestCost = 0.0
 
-        val lore = item.lore
-
-        lore.forEach { component ->
+        item.lore.forEach { component ->
             val string = component.string
 
             if (string.contains("Kuudra Key")) {

@@ -89,7 +89,7 @@ object EventDispatcher {
             val blockState = mc.level?.getBlockState(pos) ?: return@on
             if (blockState.block is SkullBlock) {
                 val distance = mc.player?.eyePosition?.distanceToSqr(Vec3(pos)) ?: return@on
-                if (distance > 20.25) return@on
+                if (distance > 21) return@on
             }
 
             if (isSecret(blockState, pos)) SecretPickupEvent.Interact(pos, blockState).postAndCatch()

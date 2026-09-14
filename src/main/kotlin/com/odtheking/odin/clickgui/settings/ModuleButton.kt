@@ -47,7 +47,7 @@ class ModuleButton(val module: Module, val panel: Panel) {
         if (hoverHandler.percent() >= 100 && y >= panel.panelSetting.y + Panel.HEIGHT)
             ClickGUI.setDescription(module.description, x + Panel.WIDTH + 10f, y, hoverHandler)
 
-       NVGRenderer.rect(x, y, Panel.WIDTH, Panel.HEIGHT, color.rgba)
+        NVGRenderer.rect(x, y, Panel.WIDTH, Panel.HEIGHT, color.rgba)
         NVGRenderer.text(module.name, x + Panel.WIDTH / 2 - nameWidth / 2, y + Panel.HEIGHT / 2 - 9f, 18f, Colors.WHITE.rgba, NVGRenderer.defaultFont)
 
         if (representableSettings.isEmpty()) return Panel.HEIGHT

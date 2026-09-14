@@ -72,6 +72,7 @@ object DungeonListener {
         }
 
         onReceive<ClientboundPlayerInfoUpdatePacket> {
+            if (!DungeonUtils.inDungeons) return@onReceive
             val tabListEntries = entries().mapNotNull { it.displayName?.string }.ifEmpty { return@onReceive }
             updateDungeonTeammates(tabListEntries)
             updateDungeonStats(tabListEntries)
@@ -80,6 +81,7 @@ object DungeonListener {
         }
 
         onReceive<ClientboundSetPlayerTeamPacket> {
+            if (!DungeonUtils.inDungeons) return@onReceive
             val text = parameters.getOrNull()?.let { it.playerPrefix.string.plus(it.playerSuffix.string).noControlCodes } ?: return@onReceive
 
             floorRegex.find(text)?.groupValues?.get(1)?.let {
@@ -96,15 +98,19 @@ object DungeonListener {
                 dungeonStats.percentCleared = it
                 DungeonUtils.updateScore()
             }
+
+            dungeonStats.elapsedTime = timeRegex.find(text)?.groupValues?.get(1) ?: dungeonStats.elapsedTime
         }
 
         onReceive<ClientboundTabListPacket> {
+            if (!DungeonUtils.inDungeons) return@onReceive
             Blessing.entries.forEach { blessing ->
                 blessing.regex.find(footer.string)?.let { blessing.current = romanToInt(it.groupValues[1]) }
             }
         }
 
         on<MessageEvent.Chat> {
+            if (!DungeonUtils.inDungeons) return@on
             if (expectingBloodRegex.matches(message)) expectingBloodUpdate = true
             doorOpenRegex.find(message)?.let { dungeonStats.doorOpener = it.groupValues[1] }
             deathRegex.find(message)?.let { match ->
@@ -139,7 +145,7 @@ object DungeonListener {
         }
 
         on<EntityEvent.Add> {
-            if (entity.type == EntityType.PLAYER && entity.uuid.version() != 4)
+            if (entity.type == EntityType.PLAYER && entity.uuid.version() != 4 && DungeonUtils.inDungeons)
                 DungeonUtils.dungeonTeammates.find { it.entity == null && it.name == entity.name.string }?.entity = entity as? Player
         }
     }
@@ -170,7 +176,6 @@ object DungeonListener {
                 puzzleCount = puzzleCountRegex.find(entry)?.groupValues?.get(1)?.toIntOrNull() ?: puzzleCount
                 deaths = deathsRegex.find(entry)?.groupValues?.get(1)?.toIntOrNull() ?: deaths
                 crypts = cryptRegex.find(entry)?.groupValues?.get(1)?.toIntOrNull() ?: crypts
-                elapsedTime = timeRegex.find(entry)?.groupValues?.get(1) ?: elapsedTime
             }
         }
     }
@@ -194,7 +199,7 @@ object DungeonListener {
     private val doorOpenRegex = Regex("^(?:\\[\\w+] )?(\\w+) opened a (?:WITHER|Blood) door!")
     private val secretPercentRegex = Regex("^ Secrets Found: ([\\d.]+)%$")
     private val deathRegex = Regex("☠ (\\w{1,16}) .* and became a ghost\\.")
-    private val timeRegex = Regex("^ Time: ((?:\\d+h ?)?(?:\\d+m ?)?\\d+s)$")
+    private val timeRegex = Regex("^Time Elapsed: ((?:\\d+h ?)?(?:\\d+m ?)?\\d+s)$")
     private val completedRoomsRegex = Regex("^ Completed Rooms: (\\d+)$")
     private val clearedRegex = Regex("^Cleared: (\\d+)% \\(\\d+\\)$")
     private val secretCountRegex = Regex("^ Secrets Found: (\\d+)$")
