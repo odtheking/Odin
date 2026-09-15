@@ -3,7 +3,7 @@ package com.odtheking.odin.features.impl.nether
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.NumberSetting
 import com.odtheking.odin.events.GuiEvent
-import com.odtheking.odin.events.ScreenEvent
+import com.odtheking.odin.events.ScreenCloseEvent
 import com.odtheking.odin.events.SetSlotEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
@@ -79,7 +79,7 @@ object Vesuvius : Module(
             if (slotIndex.equalsOneOf(13, 14) && itemStack.item == Items.PLAYER_HEAD) handleKuudraChest(itemStack)
         }
 
-        on<ScreenEvent.Open> {
+        on<ScreenCloseEvent> {
             currentChest = null
         }
     }
