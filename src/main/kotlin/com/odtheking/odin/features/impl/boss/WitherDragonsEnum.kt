@@ -38,8 +38,8 @@ enum class WitherDragonsEnum(
     Blue(BlockPos(84, 14, 94), BlockPos(79, 23, 94), AABB(71.5, 13.0, 82.5, 96.5, 26.0, 107.5), 'b', Colors.MINECRAFT_AQUA, 82.0..88.0, 91.0..97.0),
     Purple(BlockPos(56, 14, 125), BlockPos(56, 22, 120), AABB(45.5, 13.0, 113.5, 68.5, 23.0, 136.5), '5', Colors.MINECRAFT_DARK_PURPLE, 53.0..59.0, 122.0..128.0);
 
-    fun setAlive(entityId: UUID?) {
-        if (entityId != null) this.entityUUID = entityId
+    fun setAlive(entityUUID: UUID?) {
+        if (entityUUID != null) this.entityUUID = entityUUID
 
         if (state == WitherDragonState.ALIVE || state != WitherDragonState.SPAWNING) return
         state = WitherDragonState.ALIVE

@@ -2,6 +2,7 @@ package com.odtheking.odin.features.impl.dungeon.map
 
 import com.google.gson.reflect.TypeToken
 import com.odtheking.odin.OdinMod.mc
+import com.odtheking.odin.OdinMod.scope
 import com.odtheking.odin.events.FloorEnterEvent
 import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.MapUpdateEvent
@@ -14,6 +15,8 @@ import com.odtheking.odin.utils.Color.Companion.darker
 import com.odtheking.odin.utils.IVec2
 import com.odtheking.odin.utils.JsonResourceLoader.defaultGson
 import com.odtheking.odin.utils.skyblock.dungeon.Floor
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.io.File
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
@@ -43,10 +46,18 @@ object DungeonScan {
         defaultGson.fromJson<MutableMap<String, MutableList<Map<Int, List<String>>>>>(roomCoresFile.readText(), object : TypeToken<MutableMap<String, MutableList<Map<Int, List<String>>>>>() {}.type)
     }.getOrNull() ?: mutableMapOf()
 
+    private val roomCoresIODispatcher = Dispatchers.IO.limitedParallelism(1)
+
     fun recordRoomCore(name: String, core: Int, blocks: List<String>) {
-        roomCores.getOrPut(name) { mutableListOf() }.add(mapOf(core to blocks))
-        roomCoresFile.parentFile.mkdirs()
-        roomCoresFile.writeText(defaultGson.toJson(roomCores))
+        val cores = roomCores.getOrPut(name) { mutableListOf() }
+        if (cores.any { it.containsKey(core) }) return
+        cores.add(mapOf(core to blocks))
+
+        val json = defaultGson.toJson(roomCores)
+        scope.launch(roomCoresIODispatcher) {
+            roomCoresFile.parentFile.mkdirs()
+            roomCoresFile.writeText(json)
+        }
     }
 
     init {

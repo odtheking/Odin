@@ -17,6 +17,7 @@ import com.odtheking.odin.utils.render.textDim
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.skyblock.dungeon.M7Phases
 import net.minecraft.network.protocol.game.ClientboundLevelParticlesPacket
+import net.minecraft.world.entity.EntityType
 
 object WitherDragons : Module(
     name = "Wither Dragons",
@@ -72,7 +73,7 @@ object WitherDragons : Module(
         }
 
         on<EntityEvent.Add> {
-            if (DungeonUtils.getF7Phase() == M7Phases.P5) DragonCheck.dragonSpawn(this)
+            if (DungeonUtils.getF7Phase() == M7Phases.P5 && entity.type == EntityType.ENDER_DRAGON) DragonCheck.dragonSpawn(this)
         }
 
         on<EntityEvent.SetData> {

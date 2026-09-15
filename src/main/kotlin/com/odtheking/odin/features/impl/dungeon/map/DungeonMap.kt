@@ -80,19 +80,12 @@ object DungeonMap : Module(
 
     val syncSocket = webSocket {
         onMessage { message ->
-            if (!allowWebsocket) return@onMessage
+            if (!allowWebsocket || !DungeonUtils.inDungeons) return@onMessage
             val synced = try { gson.fromJson(message, DungeonRoom::class.java) } catch (_: Exception) { return@onMessage }
             if (synced.data == null) return@onMessage
 
-            val room = DungeonScan.rooms.find { it.topLeft == synced.topLeft } ?: synced.also { new ->
-                DungeonScan.rooms.add(new)
-                for ((x, z) in new.tiles) {
-                    if (x !in 0..5 || z !in 0..5) continue
-                    DungeonScan.tiles[x + z * 6].room = new
-                }
-            }
+            val room = DungeonScan.rooms.find { it.data == synced.data || it.tiles == synced.tiles } ?: return@onMessage
 
-            if (room.data == null) room.data = synced.data
             if ((room.foundSecrets ?: -1) < (synced.foundSecrets ?: -1)) room.foundSecrets = synced.foundSecrets
             room.walkedInto = true
         }
