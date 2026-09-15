@@ -82,7 +82,7 @@ object DungeonMap : Module(
             val synced = try { gson.fromJson(message, DungeonRoom::class.java) } catch (_: Exception) { return@onMessage }
             if (synced.data == null) return@onMessage
 
-            val room = DungeonScan.rooms.find { it.data == synced.data } ?: return@onMessage
+            val room = DungeonScan.rooms.find { it.data == synced.data || it.tiles == synced.tiles } ?: return@onMessage
 
             if ((room.foundSecrets ?: -1) < (synced.foundSecrets ?: -1)) room.foundSecrets = synced.foundSecrets
             room.walkedInto = true
