@@ -7,10 +7,7 @@ import com.odtheking.odin.clickgui.ClickGUI
 import com.odtheking.odin.clickgui.HudManager
 import com.odtheking.odin.clickgui.settings.AlwaysActive
 import com.odtheking.odin.clickgui.settings.impl.*
-import com.odtheking.odin.events.FloorEnterEvent
-import com.odtheking.odin.events.MessageEvent
-import com.odtheking.odin.events.RoomEnterEvent
-import com.odtheking.odin.events.SecretsUpdateEvent
+import com.odtheking.odin.events.*
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Category
 import com.odtheking.odin.features.Module
@@ -53,6 +50,10 @@ object ClickGUIModule : Module(
         on<RoomEnterEvent> {
             if (room == null) DungeonMap.syncSocket.shutdown()
             else DungeonMap.syncSocket.send(gson.toJson(room))
+        }
+
+        on<LevelEvent.Load> {
+            DungeonMap.syncSocket.shutdown()
         }
     }
 

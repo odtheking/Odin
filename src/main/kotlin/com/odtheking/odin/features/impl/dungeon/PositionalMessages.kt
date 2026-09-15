@@ -30,7 +30,7 @@ object PositionalMessages : Module(
     private val displayMessage by BooleanSetting("Show Message", true, desc = "Whether or not to display the message in the box.").withDependency { showPositions }
     private val messageSize by NumberSetting("Message Size", 1f, 0.1f, 4f, 0.1f, desc = "The size at which to display the message in the box.").withDependency { showPositions && displayMessage }
 
-    data class PosMessage(val x: Double, val y: Double, val z: Double, val x2: Double?, val y2: Double?, val z2: Double?, val delay: Int, val distance: Double?, val color: Color, val message: String, val send: Boolean) {
+    data class PosMessage(val x: Double, val y: Double, val z: Double, val x2: Double?, val y2: Double?, val z2: Double?, val delay: Int, val distance: Double?, val color: Color, val message: String?, val dontSend: Boolean) {
         @Transient
         private var _center: Vec3? = null
         val center: Vec3
@@ -59,7 +59,7 @@ object PositionalMessages : Module(
         onSend<ServerboundMovePlayerPacket> {
             if (onlyDungeons && !DungeonUtils.inBoss) return@onSend
             posMessageStrings.forEach { posMessage ->
-                if (posMessage.send && posMessage !in sentMessages) posMessage.x2?.let { handleInString(posMessage) } ?: handleAtString(posMessage)
+                if (!posMessage.dontSend && posMessage !in sentMessages) posMessage.x2?.let { handleInString(posMessage) } ?: handleAtString(posMessage)
             }
         }
 
@@ -68,10 +68,10 @@ object PositionalMessages : Module(
             posMessageStrings.forEach { posMessage ->
                 if (posMessage.distance != null) {
                     drawCylinder(posMessage.center, posMessage.distance.toFloat(), cylinderHeight, color = posMessage.color, depth = true)
-                    if (displayMessage) drawText(posMessage.message, Vec3(posMessage.x, posMessage.y + 1, posMessage.z), messageSize, true)
+                    if (displayMessage) posMessage.message?.let { drawText(it, Vec3(posMessage.x, posMessage.y + 1, posMessage.z), messageSize, true) }
                 } else {
                     drawWireFrameBox(posMessage.box ?: return@forEach, posMessage.color, depth = true)
-                    if (displayMessage) drawText(posMessage.message, posMessage.center.add(0.0, 1.0, 0.0), messageSize, true)
+                    if (displayMessage) posMessage.message?.let { drawText(it, posMessage.center.add(0.0, 1.0, 0.0), messageSize, true) }
                 }
             }
         }

@@ -3,7 +3,6 @@ package com.odtheking.odin.features.impl.boss
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.events.EntityEvent
 import com.odtheking.odin.utils.modMessage
-import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon
 import net.minecraft.world.entity.decoration.ArmorStand
 import net.minecraft.world.item.Items
@@ -25,12 +24,11 @@ object DragonCheck {
     }
 
     fun dragonSpawn(event: EntityEvent.Add) {
-        if (event.entity.type == EntityType.ENDER_DRAGON)
-            WitherDragonsEnum.entries.find { it.aabbDimensions.contains(event.entity.position()) }?.setAlive(event.entity.uuid)
+        WitherDragonsEnum.entries.find { it.aabbDimensions.contains(event.entity.position()) }?.setAlive(event.entity.uuid)
     }
 
     fun dragonSprayed(event: EntityEvent.SetItemSlot) {
-        if (event.stack.item == Items.PACKED_ICE ) return
+        if (event.stack.item == Items.PACKED_ICE) return
         val sprayedEntity = event.entity as? ArmorStand ?: return
 
         WitherDragonsEnum.entries.forEach { dragon ->

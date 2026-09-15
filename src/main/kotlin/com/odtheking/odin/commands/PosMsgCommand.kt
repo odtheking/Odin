@@ -35,10 +35,10 @@ val posMsgCommand = Commodore("posmsg") {
                 suggests { listOf("true", "false") }
             }
 
-            runs { x: Double, y: Double, z: Double, delay: Int, distance: Double, color: String, send: Boolean, message: GreedyString ->
+            runs { x: Double, y: Double, z: Double, delay: Int, distance: Double, color: String, dontSend: Boolean, message: GreedyString ->
                 if (posMessageStrings.any { it.message == message.string }) return@runs
                 val color = getColorFromString(color) ?: return@runs modMessage("Unknown color $color")
-                posMessageStrings.add(PositionalMessages.PosMessage(x, y, z, null, null, null, delay, distance, color, message.string, send))
+                posMessageStrings.add(PositionalMessages.PosMessage(x, y, z, null, null, null, delay, distance, color, message.string, dontSend))
                 modMessage("Message \"${message}\" added at $x, $y, $z, with ${delay}t delay, triggered up to $distance blocks away.")
                 ModuleManager.saveConfigurations()
             }
@@ -52,10 +52,10 @@ val posMsgCommand = Commodore("posmsg") {
                 suggests { listOf("true", "false") }
             }
 
-            runs { x: Double, y: Double, z: Double, x2: Double, y2: Double, z2: Double, delay: Int, color: String, send: Boolean, message: GreedyString ->
+            runs { x: Double, y: Double, z: Double, x2: Double, y2: Double, z2: Double, delay: Int, color: String, dontSend: Boolean, message: GreedyString ->
                 if (posMessageStrings.any { it.message == message.string }) return@runs
                 val color = getColorFromString(color) ?: return@runs modMessage("Unknown color $color")
-                posMessageStrings.add(PositionalMessages.PosMessage(x, y, z, x2, y2, z2, delay, null, color, message.string, send))
+                posMessageStrings.add(PositionalMessages.PosMessage(x, y, z, x2, y2, z2, delay, null, color, message.string, dontSend))
                 modMessage("Message \"${message}\" added in $x, $y, $z, $x2, $y2, $z2, with ${delay}t delay.")
                 ModuleManager.saveConfigurations()
             }
@@ -71,7 +71,7 @@ val posMsgCommand = Commodore("posmsg") {
                 input
             }
             suggests {
-                posMessageStrings.map { it.message }.distinct()
+                posMessageStrings.mapNotNull { it.message }.distinct()
             }
         }
 
@@ -91,7 +91,7 @@ val posMsgCommand = Commodore("posmsg") {
 
     literal("list").runs {
         val output = posMessageStrings.withIndex().joinToString(separator = "\n") { (index, it) ->
-            "${index + 1}: ${it.x}, ${it.y}, ${it.z}, ${it.x2}, ${it.y2}, ${it.z2}, ${it.delay}, ${it.distance}, ${it.color.hex()}, send=${it.send}, \"${it.message}\""
+            "${index + 1}: ${it.x}, ${it.y}, ${it.z}, ${it.x2}, ${it.y2}, ${it.z2}, ${it.delay}, ${it.distance}, ${it.color.hex()}, send=${it.dontSend}, \"${it.message}\""
         }
         modMessage(if (posMessageStrings.isEmpty()) "Positional Message list is empty!" else "Positonal Message list:\n$output")
     }
