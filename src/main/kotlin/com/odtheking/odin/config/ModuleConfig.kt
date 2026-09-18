@@ -9,20 +9,46 @@ import com.odtheking.odin.clickgui.settings.Saving
 import com.odtheking.odin.features.Module
 import java.io.File
 
+private const val ODIN_NAMESPACE = "odin"
+
+private fun validateAddonNamespace(namespace: String): String {
+    require(!namespace.equals(ODIN_NAMESPACE, ignoreCase = true)) {
+        "Namespace from an addon can't be ${ODIN_NAMESPACE}"
+    }
+    return namespace.lowercase()
+}
+
 /**
  * # ModuleConfig
  *
  * This class handles saving Modules, and their settings, into a JSON format.
  */
-class ModuleConfig internal constructor(file: File) {
+class ModuleConfig internal constructor(file: File, val namespace: String = ODIN_NAMESPACE) {
 
     /**
      * Main constructor for Addons. (config/odin/addons/{fileName})
+     *
+     * The module namespace will be the same name as the [fileName].
+     * Use the constructor taking two [String] to supply a custom namespace.
      */
-    constructor(fileName: String) : this(File(OdinMod.configFile, "addons/$fileName"))
+    constructor(fileName: String) : this(fileName, File(fileName).nameWithoutExtension)
+
+    /**
+     * Alternative constructor for Addons. (config/odin/addons/{fileName})
+     *
+     * The module namespace is what you supply as the second argument, [namespace].
+     *
+     * The namespace is used to distinguish between modules with the same name
+     * from Odin itself and various addons.
+     */
+    constructor(fileName: String, namespace: String) :
+        this(
+            File(OdinMod.configFile, "addons/$fileName"),
+            validateAddonNamespace(namespace)
+        )
 
     // key is module name in lowercase
-    internal val modules: HashMap<String, Module> = hashMapOf()
+    internal val modules: LinkedHashMap<String, Module> = linkedMapOf()
 
     private val file: File = file.apply {
         try {

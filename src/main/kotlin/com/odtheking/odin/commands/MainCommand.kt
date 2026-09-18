@@ -78,16 +78,23 @@ val mainCommand = Commodore("odin", "od") {
     literal("reset") {
         literal("module").executable {
             param("moduleName") {
-                // keys for modules are already lowercase
-                suggests { ModuleManager.modules.keys.map { it.replace(" ", "_") } }
+                suggests {
+                    // The returned list has all odin modules before any addon module, but either the client-side UI or the Commodore/Brigadier libraries seems to sort alphabetically.
+                    ModuleManager.getModuleIdentifiers()
+                }
             }
 
-            runs { moduleName: String ->
-                val module = ModuleManager.modules[moduleName.replace("_", " ")]
+            runs { moduleName: GreedyString ->
+                val module = ModuleManager.getModule(moduleName.string)
                     ?: throw SyntaxException("Module not found.")
 
-                module.settings.forEach { (_, setting) -> setting.reset() }
-                modMessage("§aSettings for module §f${module.name} §ahas been reset to default values.")
+                module.settings.forEach { (_, setting) ->
+                    setting.reset()
+                }
+
+                modMessage(
+                    "§aSettings for module §f${module.name} §ahas been reset to default values."
+                )
             }
         }
 

@@ -33,17 +33,15 @@ import java.io.File
  * This object stores all [Modules][Module] and provides functionality to [HUDs][Module.HUD]
  */
 object ModuleManager {
-
-    /**
-     * Map containing all modules in Odin,
-     * where the key is the modules name in lowercase.
-     */
-    val modules: HashMap<String, Module> = linkedMapOf()
-
     /**
      * Map containing all modules under their category.
      */
     val modulesByCategory: HashMap<Category, ArrayList<Module>> = hashMapOf()
+
+    /**
+     * The module config of the Odin itself.
+     */
+    val odinModuleConfig: ModuleConfig = ModuleConfig(file = File(OdinMod.configFile, "odin-config.json"))
 
     /**
      * List of all configurations handled by Odin.
@@ -56,7 +54,7 @@ object ModuleManager {
     private val HUD_LAYER: Identifier = fromNamespaceAndPath(OdinMod.MOD_ID, "odin_hud")
 
     init {
-        registerModules(config = ModuleConfig(file = File(OdinMod.configFile, "odin-config.json")),
+        registerModules(config = odinModuleConfig,
             // dungeon
             PuzzleSolvers, BlessingDisplay, LeapMenu, SecretClicked, MapInfo, Mimic, DungeonQueue,
             DoorHighlight, BloodCamp, PositionalMessages, TerracottaTimer, BreakerDisplay, LividSolver,
@@ -104,7 +102,6 @@ object ModuleManager {
 
             val lowercase = module.name.lowercase()
             config.modules[lowercase] = module
-            this.modules[lowercase] = module
             this.modulesByCategory.getOrPut(module.category) { arrayListOf() }.add(module)
 
             module.key?.let { keybind ->
@@ -117,7 +114,13 @@ object ModuleManager {
                 when (setting) {
                     is KeybindSetting -> {
                         keybindSettingsCache.add(setting)
-                        setting.registerKeyMapping(module.name)
+                        val keyMappingId = if (config == odinModuleConfig) {
+                            module.name
+                        } else {
+                            // Separate by . instead of :, as options.txt is a properties file where value comes after :
+                            "${config.namespace}.${module.name}"
+                        }
+                        setting.registerKeyMapping(keyMappingId)
                     }
                     is HUDSetting -> hudSettingsCache.add(setting)
                 }
@@ -125,6 +128,49 @@ object ModuleManager {
         }
         configs.add(config)
         config.load()
+    }
+
+    /**
+     * Gets a module by its name, or namespace and name (separated by :).
+     *
+     * If unspecified, namespace is assumed to be odin.
+     */
+    fun getModule(identifier: String): Module? {
+        val normalized = identifier.replace("_", " ").lowercase()
+
+        val separator = normalized.indexOf(':')
+        if (separator >= 0) {
+            val configId = normalized.substring(0, separator)
+            val moduleName = normalized.substring(separator + 1)
+
+            return configs
+                .firstOrNull { it.namespace == configId }
+                ?.modules
+                ?.get(moduleName)
+        }
+
+        return odinModuleConfig.modules[normalized]
+    }
+
+    /**
+     * Gets all module identifiers. Odin modules are ordered before any addon module in the returned list.
+     */
+    fun getModuleIdentifiers(): List<String> {
+        return buildList {
+            addAll(
+                odinModuleConfig.modules.keys.map { it.replace(" ", "_") }
+            )
+
+            addAll(
+                configs
+                    .filter { it !== odinModuleConfig }
+                    .flatMap { config ->
+                        config.modules.keys.map { module ->
+                            "${config.namespace}:${module.replace(" ", "_")}"
+                        }
+                    }
+            )
+        }
     }
 
     /**
