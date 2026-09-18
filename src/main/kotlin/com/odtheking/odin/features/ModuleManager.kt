@@ -117,8 +117,8 @@ object ModuleManager {
                         val keyMappingId = if (config == odinModuleConfig) {
                             module.name
                         } else {
-                            // Separate by . instead of :, as options.txt is a properties file where value comes after :
-                            "${config.namespace}.${module.name}"
+                            // This displayed in the controls UI unless translation keys are used, so show the addon name plus module name.
+                            "${config.addonName} ${module.name}"
                         }
                         setting.registerKeyMapping(keyMappingId)
                     }

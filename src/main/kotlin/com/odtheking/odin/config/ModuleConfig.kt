@@ -8,7 +8,9 @@ import com.odtheking.odin.OdinMod.logger
 import com.odtheking.odin.clickgui.settings.Saving
 import com.odtheking.odin.features.Module
 import java.io.File
+import java.util.Locale
 
+private const val ODIN_NAME = "Odin"
 private const val ODIN_NAMESPACE = "odin"
 
 private fun validateAddonNamespace(namespace: String): String {
@@ -23,27 +25,36 @@ private fun validateAddonNamespace(namespace: String): String {
  *
  * This class handles saving Modules, and their settings, into a JSON format.
  */
-class ModuleConfig internal constructor(file: File, val namespace: String = ODIN_NAMESPACE) {
+class ModuleConfig internal constructor(file: File, val addonName: String = ODIN_NAME, val namespace: String = ODIN_NAMESPACE) {
+
+    /**
+     * Legacy constructor for Addons. (config/odin/addons/{fileName})
+     *
+     * The module namespace is used to distinguish between modules with the same name
+     * from Odin itself and various addons. The namespace will be automatically converted to lowercase.
+     *
+     * The addon name is used to prefix name of the entries in the vanilla Controls menu.
+     *
+     * The module namespace will be the same name as the [fileName] in lowercase.
+     * The addon name will be the same as the file name, with first character turned to uppercase.
+     *
+     * @deprecated Use the constructor taking tree [String] to supply a custom namespace and an addon name instead.
+     */
+    @Deprecated("Use the constructor taking fileName, addonName, and namespace instead.")
+    constructor(fileName: String) : this(fileName, File(fileName).nameWithoutExtension.replaceFirstChar { it.titlecase(Locale.ROOT) }, File(fileName).nameWithoutExtension)
 
     /**
      * Main constructor for Addons. (config/odin/addons/{fileName})
      *
-     * The module namespace will be the same name as the [fileName].
-     * Use the constructor taking two [String] to supply a custom namespace.
-     */
-    constructor(fileName: String) : this(fileName, File(fileName).nameWithoutExtension)
-
-    /**
-     * Alternative constructor for Addons. (config/odin/addons/{fileName})
+     * The module namespace is used to distinguish between modules with the same name
+     * from Odin itself and various addons. The namespace will be automatically converted to lowercase.
      *
-     * The module namespace is what you supply as the second argument, [namespace].
-     *
-     * The namespace is used to distinguish between modules with the same name
-     * from Odin itself and various addons.
+     * The addon name is used to prefix name of the entries in the vanilla Controls menu.
      */
-    constructor(fileName: String, namespace: String) :
+    constructor(fileName: String, addonName: String, namespace: String) :
         this(
             File(OdinMod.configFile, "addons/$fileName"),
+            addonName,
             validateAddonNamespace(namespace)
         )
 
