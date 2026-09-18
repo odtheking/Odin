@@ -136,20 +136,21 @@ object ModuleManager {
      * If unspecified, namespace is assumed to be odin.
      */
     fun getModule(identifier: String): Module? {
-        val normalized = identifier.replace("_", " ").lowercase()
+        val separator = identifier.indexOf(':')
 
-        val separator = normalized.indexOf(':')
         if (separator >= 0) {
-            val configId = normalized.substring(0, separator)
-            val moduleName = normalized.substring(separator + 1)
+            val namespace = identifier.substring(0, separator).lowercase()
+            val moduleName = identifier.substring(separator + 1)
+                .replace("_", " ")
+                .lowercase()
 
             return configs
-                .firstOrNull { it.namespace == configId }
+                .firstOrNull { it.namespace == namespace }
                 ?.modules
                 ?.get(moduleName)
         }
 
-        return odinModuleConfig.modules[normalized]
+        return odinModuleConfig.modules[identifier.replace("_", " ").lowercase()]
     }
 
     /**

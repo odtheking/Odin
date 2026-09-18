@@ -14,10 +14,25 @@ private const val ODIN_NAME = "Odin"
 private const val ODIN_NAMESPACE = "odin"
 
 private fun validateAddonNamespace(namespace: String): String {
-    require(!namespace.equals(ODIN_NAMESPACE, ignoreCase = true)) {
+    val normalized = namespace.lowercase()
+
+    require(normalized.isNotBlank()) {
+        "Addon namespace can't be empty"
+    }
+
+    require(normalized != ODIN_NAMESPACE) {
         "Namespace from an addon can't be ${ODIN_NAMESPACE}"
     }
-    return namespace.lowercase()
+
+    require(':' !in normalized) {
+        "Addon namespace can't contain ':'"
+    }
+
+    require(normalized.none { it.isWhitespace() }) {
+        "Addon namespace can't contain whitespace"
+    }
+
+    return normalized
 }
 
 /**
