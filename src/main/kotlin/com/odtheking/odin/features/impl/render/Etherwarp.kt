@@ -245,7 +245,7 @@ object Etherwarp : Module(
                 is SugarCaneBlock -> true
                 is MushroomBlock -> true
                 is NetherWartBlock -> true
-                is RedStoneWireBlock, is ComparatorBlock, is RepeaterBlock -> true
+                is RedstoneWireBlock, is ComparatorBlock, is RepeaterBlock -> true
                 is SmallDripleafBlock, is BigDripleafStemBlock -> true
                 is DoublePlantBlock -> true
                 is LeverBlock -> true

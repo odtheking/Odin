@@ -1,5 +1,6 @@
 package com.odtheking.odin.clickgui
 
+import com.mojang.blaze3d.platform.InputConstants
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.clickgui.widget.PanelWidget
 import com.odtheking.odin.clickgui.widget.SearchBarWidget
@@ -17,7 +18,6 @@ import net.minecraft.client.input.KeyEvent
 import net.minecraft.client.input.MouseButtonEvent
 import net.minecraft.network.chat.Component
 import net.minecraft.util.FormattedCharSequence
-import org.lwjgl.glfw.GLFW
 
 object ClickGUI : Screen(Component.literal("Click GUI")) {
 
@@ -129,7 +129,7 @@ object ClickGUI : Screen(Component.literal("Click GUI")) {
     }
 
     override fun keyPressed(event: KeyEvent): Boolean {
-        if (event.key == GLFW.GLFW_KEY_F && event.hasControlDownWithQuirk()) {
+        if (event.key == InputConstants.KEY_F && event.hasControlDownWithQuirk()) {
             focusSearch()
             return true
         }

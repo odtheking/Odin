@@ -2,9 +2,8 @@ package com.odtheking.odin.utils.render
 
 import com.mojang.blaze3d.platform.Lighting
 import com.mojang.blaze3d.systems.RenderSystem
-import com.mojang.blaze3d.textures.FilterMode
-import com.mojang.blaze3d.textures.GpuTextureView
 import com.mojang.blaze3d.vertex.PoseStack
+import com.mojang.renderpearl.api.textures.FilterMode
 import com.odtheking.odin.OdinMod.mc
 import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.navigation.ScreenRectangle
@@ -27,11 +26,9 @@ import java.util.*
 class ItemStateRenderer
     : PictureInPictureRenderer<ItemStateRenderer.State>() {
 
-    private var textureView: GpuTextureView? = null
     private var lastState: State? = null
 
     override fun renderToTexture(renderState: State, poseStack: PoseStack, collector: SubmitNodeCollector) {
-        textureView = RenderSystem.outputColorTextureOverride
         lastState = renderState
         poseStack.scale(1f, -1f, -1f)
 

@@ -1,9 +1,9 @@
-in vec4 vertexColor;
-in vec2 localPos;
-flat in vec2 halfSize;
-flat in vec4 radii;
+layout(location = 0) in vec4 vertexColor;
+layout(location = 1) in vec2 localPos;
+layout(location = 2) flat in vec2 halfSize;
+layout(location = 3) flat in vec4 radii;
 
-flat in float edgeWidth;
+layout(location = 4) flat in float edgeWidth;
 
 float roundedBoxSDF(vec2 p, vec2 extent, float radius) {
     vec2 q = abs(p) - extent + radius;

@@ -24,7 +24,7 @@ class KeybindSetting(
     desc: String
 ) : RenderableSetting<InputConstants.Key>(name, desc), Saving {
 
-    constructor(name: String, defaultKeyCode: Int, desc: String = "") : this(name, InputConstants.Type.KEYSYM.getOrCreate(defaultKeyCode), desc)
+    constructor(name: String, defaultKeyCode: Int, desc: String = "") : this(name, InputConstants.Type.KEYBOARD.getOrCreate(defaultKeyCode), desc)
 
     override var value: InputConstants.Key
         get() = mapping?.let { KeyMappingHelper.getBoundKeyOf(it) } ?: pending
@@ -136,6 +136,6 @@ class KeybindSetting(
             mc.options.save()
         }
 
-        fun InputConstants.Key.isDown(): Boolean = InputConstants.isKeyDown(mc.window, value)
+        fun InputConstants.Key.isDown(): Boolean = InputConstants.isKeyDown(value)
     }
 }

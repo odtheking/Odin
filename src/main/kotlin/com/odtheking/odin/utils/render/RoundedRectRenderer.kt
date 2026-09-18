@@ -1,12 +1,12 @@
 package com.odtheking.odin.utils.render
 
-import com.mojang.blaze3d.GpuFormat
-import com.mojang.blaze3d.pipeline.RenderPipeline
 import com.mojang.blaze3d.systems.RenderSystem
-import com.mojang.blaze3d.textures.FilterMode
 import com.mojang.blaze3d.vertex.DefaultVertexFormat
 import com.mojang.blaze3d.vertex.VertexConsumer
-import com.mojang.blaze3d.vertex.VertexFormat
+import com.mojang.renderpearl.api.GpuFormat
+import com.mojang.renderpearl.api.pipeline.RenderPipeline
+import com.mojang.renderpearl.api.textures.FilterMode
+import com.mojang.renderpearl.api.vertex.VertexFormat
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.utils.render.CustomRenderPipelines.PIPELINE_ROUND_RECT
 import com.odtheking.odin.utils.render.CustomRenderPipelines.PIPELINE_ROUND_RECT_SHADOW

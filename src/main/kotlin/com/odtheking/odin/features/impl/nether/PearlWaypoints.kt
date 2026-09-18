@@ -46,7 +46,7 @@ object PearlWaypoints : Module(
                                 drawFilledBox(AABB.ofSize(result.upAngle, 0.12, 0.12, 0.12), dynamicWaypointsColor)
                                 drawFilledBox(AABB.ofSize(result.flatAngle, 0.12, 0.12, 0.12), dynamicWaypointsColor)
                             }
-                            drawWireFrameBox(AABB(BlockPos(lineup.supply.dropOffSpot.above())), dynamicWaypointsColor)
+                            drawWireFrameBox(AABB(lineup.supply.dropOffSpot.above()), dynamicWaypointsColor)
                         }
                     }
                 }

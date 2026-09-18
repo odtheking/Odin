@@ -1,5 +1,6 @@
 package com.odtheking.odin.clickgui.widget
 
+import com.mojang.blaze3d.platform.InputConstants
 import com.odtheking.odin.clickgui.ClickGUI
 import com.odtheking.odin.utils.ui.animations.Fade
 import net.minecraft.client.gui.ComponentPath
@@ -45,8 +46,8 @@ abstract class OdinWidget(x: Int, y: Int, width: Int, height: Int, message: Comp
     override fun updateWidgetNarration(output: NarrationElementOutput) = defaultButtonNarrationText(output)
 
     companion object {
-        const val LEFT = 0
-        const val RIGHT = 1
+        const val LEFT = InputConstants.MOUSE_BUTTON_LEFT
+        const val RIGHT = InputConstants.MOUSE_BUTTON_RIGHT
 
         val LEFT_ONLY = intArrayOf(LEFT)
         val BOTH_BUTTONS = intArrayOf(LEFT, RIGHT)

@@ -199,8 +199,8 @@ fun RenderExtractEvent.drawText(text: String, pos: Vec3, scale: Float, depth: Bo
     if (displayMode == Font.DisplayMode.SEE_THROUGH) {
         context.submitNodeCollector().submitCustom(SubmitRenderPhases.AFTER_TERRAIN,
             TextFeatureRenderer.Submit(
-                Matrix4f(poseStack.last().pose()), x, 0f, string,
-                true, displayMode, LightCoordsUtil.FULL_BRIGHT, -1, 0, 0
+                Matrix4f(poseStack.last().pose()), displayMode, LightCoordsUtil.FULL_BRIGHT,
+                TextFeatureRenderer.Content.Text(x, 0f, string, true, -1, 0, 0)
             )
         )
     } else context.submitNodeCollector().submitText(poseStack, x, 0f, string, true, displayMode, LightCoordsUtil.FULL_BRIGHT, -1, 0, 0)
