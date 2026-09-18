@@ -38,7 +38,7 @@ class ModuleConfig internal constructor(file: File, val addonName: String = ODIN
      * The module namespace will be the same name as the [fileName] in lowercase.
      * The addon name will be the same as the file name, with first character turned to uppercase.
      *
-     * @deprecated Use the constructor taking tree [String] to supply a custom namespace and an addon name instead.
+     * @deprecated Use the constructor taking three [String]s to supply a custom namespace and an addon name instead.
      */
     @Deprecated("Use the constructor taking fileName, addonName, and namespace instead.")
     constructor(fileName: String) : this(fileName, File(fileName).nameWithoutExtension.replaceFirstChar { it.titlecase(Locale.ROOT) }, File(fileName).nameWithoutExtension)
