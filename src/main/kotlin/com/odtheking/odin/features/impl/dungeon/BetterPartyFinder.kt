@@ -71,12 +71,12 @@ object BetterPartyFinder : Module(
                     val currentProfile = profile.getOrNull()?.memberData ?: return@launch modMessage("Could not find member data for $name")
 
                     val dungeon = if (!mmToggle) currentProfile.dungeons.dungeonTypes.catacombs else currentProfile.dungeons.dungeonTypes.mastermode
-                    dungeon.fastestTimeSPlus["$floor"]?.let {
+                    dungeon.fastestTimeSPlus["${floor.floorNumber}"]?.let {
                         if (maximumSeconds < it / 1000)
                             kickedReasons.add(
-                                "Did not meet time req for ${if (mmToggle) "m" else "f"}$floor: ${formatTime(it.toLong())}/${formatTime(maximumSeconds * 1000L, 0)}"
+                                "Did not meet time req for ${if (mmToggle) "m" else "f"}${floor.floorNumber}: ${formatTime(it.toLong())}/${formatTime(maximumSeconds * 1000L, 0)}"
                             )
-                    } ?: kickedReasons.add("Couldn't confirm completion status for ${if (mmToggle) "m" else "f"}$floor")
+                    } ?: kickedReasons.add("Couldn't confirm completion status for ${if (mmToggle) "m" else "f"}${floor.floorNumber}")
 
                     currentProfile.dungeons.secrets.let { currentProfile.playerStats.bloodMobKills / 4 + it }.let {
                         if (it < (secretsMin * 1000)) kickedReasons.add("Did not meet secret req: ${formatNumber(it.toString())}/${secretsMin}k")
