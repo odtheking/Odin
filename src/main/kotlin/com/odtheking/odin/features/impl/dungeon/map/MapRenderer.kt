@@ -106,7 +106,7 @@ fun GuiGraphicsExtractor.renderIcon(pos: IVec2, identifier: Identifier) {
 fun GuiGraphicsExtractor.renderRoomText(room: DungeonRoom) {
     if (room.type.equalsOneOf(RoomType.UNDISCOVERED, RoomType.FAIRY, RoomType.ENTRANCE, RoomType.BLOOD)) return
 
-    if (!room.walkedInto || (DungeonMap.roomText == DungeonMap.RoomTextOption.ROOM_SECRETS && (room.data?.maxSecrets ?: 0) == 0)) {
+    if (!room.shouldShowName || (DungeonMap.roomText == DungeonMap.RoomTextOption.ROOM_SECRETS && (room.data?.maxSecrets ?: 0) == 0)) {
         when (room.checkmark) {
             MapCheckmark.GREEN -> green
             MapCheckmark.WHITE -> white

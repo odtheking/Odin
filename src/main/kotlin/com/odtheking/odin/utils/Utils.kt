@@ -190,7 +190,7 @@ fun Module.createSoundSettings(name: String, default: String, dependencies: () -
     val pitch = +NumberSetting("$name Pitch", 1f, 0.1..2.0, 0.01f, desc = "Pitch of the sound to play.").withDependency { dependencies() }
     val volume = +NumberSetting("$name Volume", 1f, 0.1..1.0, 0.01f, desc = "Volume of the sound to play.").withDependency { dependencies() }
     val soundSettings = { Triple(customSound.value, volume.value, pitch.value) }
-    +ActionSetting("Play sound", desc = "Plays the selected sound.") { playSoundSettings(soundSettings()) }.withDependency { dependencies() }
+    +ActionSetting("Play $name", desc = "Plays the selected sound.") { playSoundSettings(soundSettings()) }.withDependency { dependencies() }
     return soundSettings
 }
 

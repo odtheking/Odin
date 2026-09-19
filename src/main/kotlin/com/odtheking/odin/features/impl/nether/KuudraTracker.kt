@@ -7,7 +7,6 @@ import com.odtheking.odin.clickgui.settings.impl.NumberSetting
 import com.odtheking.odin.events.GuiEvent
 import com.odtheking.odin.events.MessageEvent
 import com.odtheking.odin.events.core.on
-import com.odtheking.odin.events.core.onSend
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.features.ModuleManager
 import com.odtheking.odin.features.impl.nether.Vesuvius.getPriceOfKey
@@ -20,7 +19,6 @@ import net.minecraft.ChatFormatting
 import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.MutableComponent
-import net.minecraft.network.protocol.game.ServerboundContainerClickPacket
 import net.minecraft.world.item.Items
 
 object KuudraTracker : Module(
@@ -100,19 +98,16 @@ object KuudraTracker : Module(
             }
         }
 
-        onSend<ServerboundContainerClickPacket> {
-            val title = mc.gui.screen()?.title?.string ?: return@onSend
-            if (!title.matches(chestRegex)) return@onSend
+        on<GuiEvent.SlotClick> {
+            if (!screen.title.string.matches(chestRegex)) return@on
 
-            val cursorStack = mc.player?.containerMenu?.carried ?: return@onSend
-
-            if (!cursorStack.`is`(Items.CHEST)) return@onSend
+            val cursorStack = mc.player?.containerMenu?.carried ?: return@on
+            if (!cursorStack.`is`(Items.CHEST)) return@on
 
             val loreLines = cursorStack.lore
-
             updateDisplay()
 
-            if (loreLines.any { it.string.equalsOneOf("Already opened!", "Can't open another chest!")}) return@onSend
+            if (loreLines.any { it.string.equalsOneOf("Already opened!", "Can't open another chest!")}) return@on
 
             last = LastAdded(mutableListOf(), mutableListOf(), 0)
 
@@ -135,8 +130,8 @@ object KuudraTracker : Module(
                 singleItems[lore.string] = singleItems.getOrDefault(lore.string, 0) + 1
             }
 
-            if (title == "Paid Chest") paid++
-            if (title == "Free Chest") free++
+            if (screen.title.string == "Paid Chest") paid++
+            if (screen.title.string == "Free Chest") free++
 
             updateDisplay()
             ModuleManager.saveConfigurations()

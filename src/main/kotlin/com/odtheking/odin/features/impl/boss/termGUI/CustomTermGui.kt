@@ -8,6 +8,7 @@ import com.odtheking.odin.features.impl.boss.TerminalSolver.renderDebug
 import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.render.roundedRect
 import com.odtheking.odin.utils.render.text
+import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalTypes
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalUtils
 import com.odtheking.odin.utils.ui.widget.CustomGUIImpl
 import net.minecraft.client.gui.GuiGraphicsExtractor
@@ -126,7 +127,7 @@ fun simpleTermGui(rows: Int, cols: Int, startRow: Int, startCol: Int): TermGui =
         override fun buildTerminal(screen: AbstractContainerScreen<*>) =
             buildTerminalGrid(screen, rows, cols, startRow, startCol) { slotIndex ->
                 SlotVisual({ TerminalUtils.currentTerm?.getSlotRendering(slotIndex) }) { x, y, w, h ->
-                    TerminalUtils.currentTerm?.getSlotRendering(slotIndex)?.second?.let { renderSlotText(it, x, y, w, h, TerminalSolver.textColor) }
+                    TerminalUtils.currentTerm?.getSlotRendering(slotIndex)?.second?.let { renderSlotText(it, x, y, w, h, if (TerminalUtils.currentTerm?.type == TerminalTypes.NUMBERS) TerminalSolver.numbersText else TerminalSolver.rubixText) }
                 }
             }
     }

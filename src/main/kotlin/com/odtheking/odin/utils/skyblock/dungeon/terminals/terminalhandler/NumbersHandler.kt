@@ -27,9 +27,9 @@ class NumbersHandler: TerminalHandler(TerminalTypes.NUMBERS) {
     override fun renderSlot(slotIndex: Int): Pair<Color, String?> {
         val solutionIndex = solution.indexOf(slotIndex)
         return when (solutionIndex) {
-            0 -> TerminalSolver.orderColor
-            1 -> TerminalSolver.orderColor2
-            2 -> TerminalSolver.orderColor3
+            0 -> TerminalSolver.numbers1Color
+            1 -> TerminalSolver.numbers2Color
+            2 -> TerminalSolver.numbers3Color
             else -> Colors.TRANSPARENT
         } to (abs((solution.size - 14) - solutionIndex) + 1).toString()
     }

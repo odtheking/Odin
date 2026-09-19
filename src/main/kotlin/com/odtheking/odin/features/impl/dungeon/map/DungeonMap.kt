@@ -8,6 +8,7 @@ import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.Color.Companion.darker
 import com.odtheking.odin.utils.Color.Companion.withAlpha
 import com.odtheking.odin.utils.Colors
+import com.odtheking.odin.utils.IVec2
 import com.odtheking.odin.utils.network.WebUtils.gson
 import com.odtheking.odin.utils.network.webSocket
 import com.odtheking.odin.utils.render.hollowFill
@@ -64,8 +65,7 @@ object DungeonMap : Module(
         if (example) {
             pose().translate(5f, 5f)
             renderMap(exampleRooms, exampleDoors, emptyList())
-        }
-        else {
+        } else {
             pose().translate(DungeonScan.startX.toFloat(), DungeonScan.startY.toFloat())
             pose().scale(DungeonScan.roomSize / 16f)
 
@@ -78,16 +78,22 @@ object DungeonMap : Module(
         MAP_PX to MAP_PX
     }
 
+    private data class SyncPayload(val playerName: String, val roomName: String, val tiles: ArrayList<IVec2>, val foundSecrets: Int?)
+
     val syncSocket = webSocket {
         onMessage { message ->
             if (!allowWebsocket || !DungeonUtils.inDungeons) return@onMessage
-            val synced = try { gson.fromJson(message, DungeonRoom::class.java) } catch (_: Exception) { return@onMessage }
-            if (synced.data == null) return@onMessage
+            val payload = try { gson.fromJson(message, SyncPayload::class.java) } catch (_: Exception) { return@onMessage }
+            if (DungeonUtils.dungeonTeammatesNoSelf.none { it.name == payload.playerName }) return@onMessage
 
-            val room = DungeonScan.rooms.find { it.data == synced.data || it.tiles == synced.tiles } ?: return@onMessage
+            val room = DungeonScan.rooms.find { it.name == payload.roomName && it.tiles == payload.tiles } ?: return@onMessage
 
-            if ((room.foundSecrets ?: -1) < (synced.foundSecrets ?: -1)) room.foundSecrets = synced.foundSecrets
-            room.walkedInto = true
+            if ((room.foundSecrets ?: -1) < (payload.foundSecrets ?: -1)) room.foundSecrets = payload.foundSecrets
+            room.playerWalkedInto = true
         }
+    }
+
+    fun sendSync(room: DungeonRoom) {
+        room.name?.let { roomName -> syncSocket.send(gson.toJson(SyncPayload(mc.user.name, roomName, room.tiles, room.foundSecrets))) }
     }
 }

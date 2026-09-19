@@ -6,8 +6,8 @@ import com.odtheking.odin.clickgui.settings.impl.ListSetting
 import com.odtheking.odin.clickgui.settings.impl.NumberSetting
 import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.RenderExtractEvent
+import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.core.on
-import com.odtheking.odin.events.core.onSend
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.handlers.schedule
@@ -16,7 +16,6 @@ import com.odtheking.odin.utils.render.drawText
 import com.odtheking.odin.utils.render.drawWireFrameBox
 import com.odtheking.odin.utils.sendCommand
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
-import net.minecraft.network.protocol.game.ServerboundMovePlayerPacket
 import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.Vec3
 
@@ -56,8 +55,8 @@ object PositionalMessages : Module(
     private val sentMessages = mutableSetOf<PosMessage>()
 
     init {
-        onSend<ServerboundMovePlayerPacket> {
-            if (onlyDungeons && !DungeonUtils.inBoss) return@onSend
+        on<TickEvent.End> {
+            if (onlyDungeons && !DungeonUtils.inBoss) return@on
             posMessageStrings.forEach { posMessage ->
                 if (!posMessage.dontSend && posMessage !in sentMessages) posMessage.x2?.let { handleInString(posMessage) } ?: handleAtString(posMessage)
             }
