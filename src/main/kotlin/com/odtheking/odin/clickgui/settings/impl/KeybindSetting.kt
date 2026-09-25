@@ -133,7 +133,9 @@ class KeybindSetting(
         fun saveOptionsIfChanged() {
             if (!pendingOptionsSave) return
             pendingOptionsSave = false
-            mc.options.save()
+            mc.execute {
+                mc.options.save()
+            }
         }
 
         fun InputConstants.Key.isDown(): Boolean = InputConstants.isKeyDown(mc.window, value)
