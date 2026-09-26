@@ -5,21 +5,7 @@ import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.features.impl.render.Waypoints
 import com.odtheking.odin.utils.*
 
-val waypointCommand = Commodore("odwaypoint") {
-
-    literal("help").runs {
-        modMessage(
-            """
-                 Waypoint command help:
-                 §3- /waypoint » §8Main command.
-                 §3- /waypoint share » §8Used to send your location in party chat.
-                 §3- /waypoint share <x, y, z> » §8Used to send a specific location in party chat.
-                 §3- /waypoint addtemp » §8Used to add temporary waypoints.
-                 §3- /waypoint addtemp <x, y, z> » §8Used to add temporary waypoints.
-                 §3- /waypoint addtemp <name, x?, y?, z?> » §8Used to add temporary waypoints.
-            """.trimIndent()
-        )
-    }
+val waypointCommand = Commodore("odwaypoint", "odw") {
 
     literal("share") {
         runs {

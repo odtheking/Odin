@@ -50,7 +50,7 @@ object Etherwarp : Module(
     private val fullBlock by BooleanSetting("Full Block", false, desc = "Renders the the 1x1x1 block instead of it's actual size.").withDependency { render }
     private val depth by BooleanSetting("Depth", false, desc = "Renders the box through walls.").withDependency { render }
 
-    private val dropdown by DropdownSetting("Sounds", false, desc = "Shows settings for playing a custom sound when you etherwarp.")
+    private val dropdown by DropdownSetting("Sounds", desc = "Shows settings for playing a custom sound when you etherwarp.")
     private val sounds by BooleanSetting("Custom Sounds", false, desc = "Plays the selected custom sound when you etherwarp.").withDependency { dropdown }
     private val soundSettings = createSoundSettings("Etherwarp Sound", "entity.experience_orb.pickup") { sounds && dropdown }
     private var etherPos: EtherPos? = null

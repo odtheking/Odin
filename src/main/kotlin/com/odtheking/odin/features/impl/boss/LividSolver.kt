@@ -33,7 +33,7 @@ object LividSolver : Module(
         }
         textDim("${color}Livid: ${time}t ", 0, 0)
     }
-    private val highlightColor by ColorSetting("Highlight Color", Colors.MINECRAFT_RED, true, desc = "Color of the highlight box around Livid.")
+    private val highlightColor by ColorSetting("Highlight Color", Colors.MINECRAFT_LIGHT_PURPLE, true, desc = "Color of the highlight box around Livid.")
 
     private val lividStartRegex = Regex("^\\[BOSS] Livid: Welcome, you've arrived right on time\\. I am Livid, the Master of Shadows\\.$")
     private val woolLocation = BlockPos(5, 108, 43)

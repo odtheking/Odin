@@ -21,8 +21,8 @@ object PetKeybinds : Module(
     private val nextPageKeybind by KeybindSetting("Next Page", InputConstants.UNKNOWN, "Goes to the next page.")
     private val previousPageKeybind by KeybindSetting("Previous Page", InputConstants.UNKNOWN, "Goes to the previous page.")
     private val nounequip by BooleanSetting("Disable Unequip", false, desc = "Prevents using a pets keybind to unequip a pet. Does not prevent unequip keybind or normal clicking.")
-    private val closeIfAlreadyEquipped by BooleanSetting("Close If Already Equipped", false, "If the pet is already equipped, closes the Pets menu instead.")
-    private val advanced by DropdownSetting("Show Settings", false, desc = "Shows keybinds to equip each pet directly.")
+    private val closeIfAlreadyEquipped by BooleanSetting("Close If Equipped", false, "If the pet is already equipped, closes the Pets menu instead.")
+    private val advanced by DropdownSetting("Show Settings", desc = "Shows keybinds to equip each pet directly.")
 
     private val pet1 by KeybindSetting("Pet 1", InputConstants.KEY_1, "Pet 1 on the list.").withDependency { advanced }
     private val pet2 by KeybindSetting("Pet 2", InputConstants.KEY_2, "Pet 2 on the list.").withDependency { advanced }

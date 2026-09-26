@@ -37,7 +37,7 @@ object TerminalSolver : Module(
     val rubixMode by SelectorSetting("Rubix Mode", RubixMode.FEWEST_CLICKS, desc = "Whether the rubix solver should mix in right clicks for the fewest clicks overall, or stick to left clicks only.").withDependency { solverSettings }
 
     private val firstClickProtSettings by DropdownSetting("First Click Prot Dropdown", desc = "Options related to first click protection.")
-    val firstClickProt by NumberSetting("First Click Prot", 500, 350..800, 10, unit = "ms", desc = "The amount of time after opening a terminal where clicks are blocked to prevent bans (recommended value is 500 minus your ping).").withDependency { firstClickProtSettings }
+    val firstClickProt by NumberSetting("First Click Prot", 500, 0..800, 10, unit = "ms", desc = "The amount of time after opening a terminal where clicks are blocked to prevent bans (recommended value is 500 minus your ping).").withDependency { firstClickProtSettings }
     val shouldFirstClickProtWithTicks by BooleanSetting("Account For Server Lag", false, desc = "Prevents bans from clicking when the server lags after opening the terminal (disabled in singleplayer").withDependency { firstClickProtSettings }
     val firstClickProtTicks by NumberSetting("Lag Protection Ticks", 8, 7..16, unit = "ticks", desc = "Each tick = 50ms (recommended value is 8)").withDependency { shouldFirstClickProtWithTicks && firstClickProtSettings }
 
@@ -56,6 +56,7 @@ object TerminalSolver : Module(
     val numbers1Color by ColorSetting("Numbers 1", Colors.MINECRAFT_GREEN, true, desc = "Color of the order terminal solver for 1st item.").withDependency { showColors }
     val numbers2Color by ColorSetting("Numbers 2", Colors.MINECRAFT_GREEN.darker(0.5f), true, desc = "Color of the order terminal solver for 2nd item.").withDependency { showColors }
     val numbers3Color by ColorSetting("Numbers 3", Colors.MINECRAFT_GREEN.darker(0.5f).darker(0.5f), true, desc = "Color of the order terminal solver for 3rd item.").withDependency { showColors }
+    val numbers4Color by ColorSetting("Numbers 4", Colors.MINECRAFT_GREEN.darker(0.5f).darker(0.5f).darker(0.5f), true, desc = "Color of the order terminal solver for 3rd item.").withDependency { showColors }
 
     val startsWithColor by ColorSetting("Starts With", Colors.MINECRAFT_GREEN, true, desc = "Color of the starts with terminal solver.").withDependency { showColors }
 

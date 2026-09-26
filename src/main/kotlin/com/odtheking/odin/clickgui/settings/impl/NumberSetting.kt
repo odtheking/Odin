@@ -163,7 +163,7 @@ class NumberSetting<E>(
         const val TRACK_RADIUS = 3f
         const val KNOB_RADIUS = 4f
         const val KNOB_GROWTH = 1.5f
-        const val SLIDE_DURATION = 100L
+        const val SLIDE_DURATION = 200L
         const val GROW_DURATION = 150L
     }
 }

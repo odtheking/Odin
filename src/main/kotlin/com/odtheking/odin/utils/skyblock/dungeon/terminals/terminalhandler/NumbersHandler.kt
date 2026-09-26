@@ -30,6 +30,7 @@ class NumbersHandler: TerminalHandler(TerminalTypes.NUMBERS) {
             0 -> TerminalSolver.numbers1Color
             1 -> TerminalSolver.numbers2Color
             2 -> TerminalSolver.numbers3Color
+            3 -> TerminalSolver.numbers4Color
             else -> Colors.TRANSPARENT
         } to (abs((solution.size - 14) - solutionIndex) + 1).toString()
     }
