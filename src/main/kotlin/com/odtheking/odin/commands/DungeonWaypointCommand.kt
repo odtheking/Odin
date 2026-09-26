@@ -4,6 +4,7 @@ import com.github.stivais.commodore.Commodore
 import com.github.stivais.commodore.utils.GreedyString
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.OdinMod.scope
+import com.odtheking.odin.clickgui.settings.impl.label
 import com.odtheking.odin.config.DungeonWaypointConfig
 import com.odtheking.odin.features.impl.dungeon.dungeonwaypoints.*
 import com.odtheking.odin.utils.Color
@@ -14,7 +15,7 @@ import kotlinx.coroutines.launch
 
 val dungeonWaypointsCommand = Commodore("dwp", "dungeonwaypoints") {
     runs {
-        mc.schedule { mc.setScreen(WaypointPackSelectorScreen(mc.screen)) }
+        mc.schedule { mc.setScreenAndShow(WaypointPackSelectorScreen(mc.gui.screen())) }
     }
 
     literal("fill").runs {
@@ -38,8 +39,8 @@ val dungeonWaypointsCommand = Commodore("dwp", "dungeonwaypoints") {
 
     literal("type").runs { type: String ->
         DungeonWaypoints.WaypointType.getByName(type)?.let {
-            DungeonWaypoints.waypointType = it.ordinal
-            modMessage("Waypoint type changed to: ${it.displayName}")
+            DungeonWaypoints.waypointType = it
+            modMessage("Waypoint type changed to: ${it.label}")
         } ?: modMessage("§cInvalid waypoint type!")
     }
 

@@ -1,6 +1,7 @@
 package com.odtheking.odin.features.impl.dungeon.dungeonwaypoints
 
 import com.odtheking.odin.OdinMod.mc
+import com.odtheking.odin.clickgui.settings.impl.label
 import com.odtheking.odin.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.DungeonWaypoint
 import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.Colors
@@ -41,7 +42,7 @@ private fun GuiGraphicsExtractor.drawEditorHud(title: String, text: String, colo
 }
 
 private fun DungeonWaypoints.describeNextWaypoint(): String = buildString {
-    append("§fType: §5${DungeonWaypoints.WaypointType.getByInt(waypointType)?.displayName ?: "None"}")
+    append("§fType: §5${waypointType.label}")
     append("§7, §r#${color.hex()}§7")
     append(", ${if (filled) "§2Filled" else "§3Outline"}")
     append("§7, ${if (depthCheck) "§2Depth Check" else "§cThrough Walls"}")
@@ -49,7 +50,7 @@ private fun DungeonWaypoints.describeNextWaypoint(): String = buildString {
 }
 
 private fun DungeonWaypoint.describe(): String = buildString {
-    append("§fType: §5${type?.displayName ?: "None"}")
+    append("§fType: §5${type?.label ?: "None"}")
     append("§7, §r#${color.hex()}§7")
     title?.takeIf(String::isNotBlank)?.let { append(", §fTitle: §a$it§7") }
     append(", ${if (filled) "§2Filled" else "§3Outline"}")

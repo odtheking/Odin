@@ -5,7 +5,7 @@ import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.ColorSetting
 import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.MessageEvent
-import com.odtheking.odin.events.RenderEvent
+import com.odtheking.odin.events.RenderExtractEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Color.Companion.withAlpha
@@ -32,7 +32,7 @@ object GyroWand : Module(
             if (message.matches(gravityStormRegex)) cooldownTimer = System.currentTimeMillis()
         }
 
-        on<RenderEvent.Extract> {
+        on<RenderExtractEvent> {
             val mainHand = mc.player?.mainHandItem ?: return@on
             if (mainHand.item != Items.BLAZE_ROD || mainHand.itemId != "GYROKINETIC_WAND") return@on
             val position = Etherwarp.getEtherPos(mc.player?.position(), distance = 25.0, etherWarp = false).takeIf { it.state?.isAir == false }?: return@on

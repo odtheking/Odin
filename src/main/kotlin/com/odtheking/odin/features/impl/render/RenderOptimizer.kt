@@ -11,7 +11,7 @@ import com.odtheking.odin.utils.texture
 import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.network.protocol.game.ClientboundLevelParticlesPacket
 import net.minecraft.world.entity.Entity
-import net.minecraft.world.entity.EntityType
+import net.minecraft.world.entity.EntityTypes
 import net.minecraft.world.entity.EquipmentSlot
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.Items
@@ -42,9 +42,9 @@ object RenderOptimizer : Module(
     init {
         on<EntityEvent.Add> {
             when (entity.type) {
-                EntityType.EXPERIENCE_ORB if hideExperienceOrbs -> entity.remove(Entity.RemovalReason.DISCARDED)
-                EntityType.FALLING_BLOCK if hideFallingBlocks -> entity.remove(Entity.RemovalReason.DISCARDED)
-                EntityType.LIGHTNING_BOLT if hideLightning -> entity.remove(Entity.RemovalReason.DISCARDED)
+                EntityTypes.EXPERIENCE_ORB if hideExperienceOrbs -> entity.remove(Entity.RemovalReason.DISCARDED)
+                EntityTypes.FALLING_BLOCK if hideFallingBlocks -> entity.remove(Entity.RemovalReason.DISCARDED)
+                EntityTypes.LIGHTNING_BOLT if hideLightning -> entity.remove(Entity.RemovalReason.DISCARDED)
             }
         }
 

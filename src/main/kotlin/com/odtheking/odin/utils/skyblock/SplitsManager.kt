@@ -45,7 +45,7 @@ object SplitsManager {
     }
 
     private fun buildDungeonSplits(): SplitsGroup? {
-        if (Splits.splitLocation == 2) return null
+        if (Splits.splitLocation == Splits.SplitLocation.KUUDRA_ONLY) return null
         val floor = DungeonListener.floor ?: return null
 
         val splits = dungeonSplits[floor.floorNumber].toMutableList().apply {
@@ -60,7 +60,7 @@ object SplitsManager {
     }
 
     private fun buildKuudraSplits(): SplitsGroup? {
-        if (Splits.splitLocation == 1) return null
+        if (Splits.splitLocation == Splits.SplitLocation.DUNGEONS_ONLY) return null
         return when (KuudraUtils.kuudraTier) {
             5 -> SplitsGroup(kuudraT5SplitsGroup.map { it.copy() }, Splits.kuudraT5PBs)
             4 -> SplitsGroup(kuudraSplitsGroup.map { it.copy() }, Splits.kuudraT4PBs)

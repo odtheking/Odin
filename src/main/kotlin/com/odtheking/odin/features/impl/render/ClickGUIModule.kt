@@ -15,17 +15,13 @@ import com.odtheking.odin.features.ModuleManager
 import com.odtheking.odin.features.impl.dungeon.map.DungeonMap
 import com.odtheking.odin.utils.*
 import com.odtheking.odin.utils.network.WebUtils.fetchJson
-import com.odtheking.odin.utils.network.WebUtils.gson
 import com.odtheking.odin.utils.network.WebUtils.postData
 import com.odtheking.odin.utils.skyblock.LocationUtils
-import com.odtheking.odin.utils.ui.rendering.NVGRenderer
 import kotlinx.coroutines.launch
 import net.minecraft.network.chat.ClickEvent
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.HoverEvent
 import java.net.URI
-import kotlin.math.max
-import kotlin.math.round
 
 @AlwaysActive
 object ClickGUIModule : Module(
@@ -33,15 +29,18 @@ object ClickGUIModule : Module(
     description = "Allows you to customize the UI.",
     key = InputConstants.KEY_RSHIFT
 ) {
+    val clickGuiScale by NumberSetting("Click GUI Size", 2, 1..4, 1, desc = "GUI scale the Click GUI is drawn at, whatever the video setting says.")
     val enableNotification by BooleanSetting("Chat notifications", true, desc = "Sends a message when you toggle a module with a keybind")
     val clickGUIColor by ColorSetting("Color", Color(50, 150, 220), desc = "The color of the Click GUI.")
-    private val action by ActionSetting("Open HUD Editor", desc = "Opens the HUD editor when clicked.") { mc.setScreen(HudManager) }
+    private val action by ActionSetting("Open HUD Editor", desc = "Opens the HUD editor when clicked.") { mc.setScreenAndShow(HudManager) }
 
-    val hypixelApiUrl by StringSetting("API URL", "https://api.odtheking.com/hypixel/", 128, "The Hypixel API server to connect to.").hide()
-    val webSocketUrl by StringSetting("Socket URL", "wss://ws.odtheking.com/", 128, "The Websocket server to connect to.").hide()
+    val hypixelApiUrl by StringSetting("API URL", "https://api.odtheking.com/hypixel/", 128, "The Hypixel API server to connect to.", placeholder = "https://api.odtheking.com/hypixel/").hide()
+    val webSocketUrl by StringSetting("Socket URL", "wss://ws.odtheking.com/", 128, "The Websocket server to connect to.", placeholder = "wss://ws.odtheking.com/").hide()
+
+    val devMessage by BooleanSetting("Developer Message", false, desc = "Sends development related messages to the chat.")
 
     init {
-        on<SecretsUpdateEvent> { DungeonMap.syncSocket.send(gson.toJson(room)) }
+        on<SecretsUpdateEvent> { DungeonMap.sendSync(room) }
 
         on<FloorEnterEvent> {
             LocationUtils.lobbyId?.let { DungeonMap.syncSocket.connect("${webSocketUrl}$it") } ?: devMessage("Failed to connect to dungeon websocket, lobbyId is null.")
@@ -49,7 +48,7 @@ object ClickGUIModule : Module(
 
         on<RoomEnterEvent> {
             if (room == null) DungeonMap.syncSocket.shutdown()
-            else DungeonMap.syncSocket.send(gson.toJson(room))
+            else DungeonMap.sendSync(room)
         }
 
         on<LevelEvent.Load> {
@@ -57,30 +56,31 @@ object ClickGUIModule : Module(
         }
     }
 
-    val devMessage by BooleanSetting("Developer Message", false, desc = "Sends development related messages to the chat.")
     val dungeonCoresLogging by BooleanSetting("Core loggings", false, desc = "")
 
     private var firstJoin by BooleanSetting("First join", true, "").hide()
+    val favoriteColors by MapSetting("Favorite Colors", mutableMapOf<Int, Color>()).hide()
 
     override fun onKeybind() {
-        toggle()
+        mc.setScreenAndShow(ClickGUI)
     }
 
     override fun onEnable() {
-        mc.setScreen(ClickGUI)
+        mc.setScreenAndShow(ClickGUI)
         super.onEnable()
         toggle()
     }
 
-    val panelSetting by MapSetting("Panel Settings", mutableMapOf<String, PanelData>())
-    data class PanelData(var x: Float = 10f, var y: Float = 10f, var extended: Boolean = true)
+    val panelSetting by MapSetting("Panel Data", mutableMapOf<String, PanelData>())
+    data class PanelData(var x: Int, var y: Int, var extended: Boolean = true)
 
     fun resetPositions() {
-        Category.categories.entries.forEachIndexed { index, (categoryName, _) ->
-            val setting = panelSetting.getOrPut(categoryName) { PanelData() }
-            setting.x = 10f + 260f * index
-            setting.y = 10f
-            setting.extended = true
+        Category.categories.forEach { (categoryName, category) ->
+            panelSetting.getOrPut(categoryName) { PanelData(0, 0) }.apply {
+                x = category.x
+                y = category.y
+                extended = true
+            }
         }
     }
 
@@ -161,12 +161,6 @@ object ClickGUIModule : Module(
 
             alert("Odin Update Available")
         }
-    }
-
-    fun getStandardGuiScale(): Float {
-        val verticalScale = (mc.window.screenHeight.toFloat() / 1080f) / NVGRenderer.devicePixelRatio()
-        val horizontalScale = (mc.window.screenWidth.toFloat() / 1920f) / NVGRenderer.devicePixelRatio()
-        return round(max(verticalScale, horizontalScale).coerceIn(1f, 3f) * 10f) / 10f
     }
 
     private suspend fun checkNewerVersion(currentVersion: String): String? {

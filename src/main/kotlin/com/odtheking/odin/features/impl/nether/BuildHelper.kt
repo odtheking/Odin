@@ -3,7 +3,7 @@ package com.odtheking.odin.features.impl.nether
 import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.NumberSetting
-import com.odtheking.odin.events.RenderEvent
+import com.odtheking.odin.events.RenderExtractEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Colors
@@ -30,10 +30,10 @@ object BuildHelper : Module(
         width to mc.font.lineHeight * 3
     }
 
-    private val stunNotificationNumber by NumberSetting("Stun Percent", 93f, 0, 100, desc = "The build % to notify at (set to 0 to disable).", unit = "%")
+    private val stunNotificationNumber by NumberSetting("Stun Percent", 93f, 0..100, desc = "The build % to notify at (set to 0 to disable).", unit = "%")
 
     init {
-        on<RenderEvent.Extract> {
+        on<RenderExtractEvent> {
             if (!KuudraUtils.inKuudra || KuudraUtils.phase != 2) return@on
             if (stunNotificationNumber != 0f && KuudraUtils.kuudraTier >= 3 && KuudraUtils.buildDonePercentage >= stunNotificationNumber)
                 alert("§l§3Go to stun", false)

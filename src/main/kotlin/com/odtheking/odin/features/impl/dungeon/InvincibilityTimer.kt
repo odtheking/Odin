@@ -24,13 +24,12 @@ object InvincibilityTimer : Module(
     private val invincibilityAlert by BooleanSetting("Invincibility Alert", true, desc = "Plays a sound when you get invincibility.")
     private val invincibilityAnnounce by BooleanSetting("Announce Invincibility", true, desc = "Announces when you get invincibility.")
     private val onlyInDungeons by BooleanSetting("Only In Dungeons", true, "Only proc invincibility timers while in a dungeon")
-    
-    private val maskCat by DropdownSetting("Displayed Items")
+
+    private val maskCat by DropdownSetting("Displayed Items", desc = "Which invincibility items are shown in the HUD.")
     private val showSpirit by BooleanSetting("Show Spirit Mask", true, desc = "Shows the Spirit Mask in the HUD.").withDependency { maskCat }
     private val showBonzo by BooleanSetting("Show Bonzo Mask", true, desc = "Shows the Bonzo Mask in the HUD.").withDependency { maskCat }
     private val showPhoenix by BooleanSetting("Show Phoenix Pet", true, desc = "Shows the Phoenix Pet in the HUD.").withDependency { maskCat }
-    
-    private val hudCat by DropdownSetting("Invincibility Hud")
+
     private val hud by HUD(name, "Shows the invincibility time in the HUD.") { example ->
         if(!example && (onlyInDungeons && !DungeonUtils.inDungeons) || (showOnlyInBoss && !DungeonUtils.inBoss)) return@HUD 0 to 0
 
@@ -40,11 +39,10 @@ object InvincibilityTimer : Module(
                 InvincibilityType.BONZO -> showBonzo
                 InvincibilityType.PHOENIX -> showPhoenix
             } || example) && (when (showWhen) {
-                0 -> true
-                1 -> type.activeTime > 0 || type.currentCooldown > 0
-                2 -> type.activeTime > 0
-                3 -> type.currentCooldown > 0
-                else -> true
+                ShowWhen.ALWAYS -> true
+                ShowWhen.ANY -> type.activeTime > 0 || type.currentCooldown > 0
+                ShowWhen.WHEN_ACTIVE -> type.activeTime > 0
+                ShowWhen.ON_COOLDOWN -> type.currentCooldown > 0
             } || example)
         }.ifEmpty { return@HUD 0 to 0 }
 
@@ -71,14 +69,14 @@ object InvincibilityTimer : Module(
         }
 
         width + 20 to visibleTypes.size * 14
-    }.withDependency { hudCat }
-    private val showOnlyInBoss by BooleanSetting("Show In Boss", false, desc = "Only shows invincibility timers during dungeon boss fights.").withDependency { hudCat }
-    private val showWhen by SelectorSetting("Show", "Always", listOf("Always", "Any", "When Active", "On Cooldown"), "Controls when invincibility items are shown.").withDependency { hudCat }
-    private val equippedMaskColor by ColorSetting("Equipped Mask", Colors.MINECRAFT_DARK_PURPLE, desc = "Color of the equipped mask in the HUD. (Bonzo/Spirit)").withDependency { hudCat }
+    }
+    private val showOnlyInBoss by BooleanSetting("Show In Boss", false, desc = "Only shows invincibility timers during dungeon boss fights.")
+    private val showWhen by SelectorSetting("Show", ShowWhen.ALWAYS, "Controls when invincibility items are shown.")
+    private val equippedMaskColor by ColorSetting("Equipped Mask", Colors.MINECRAFT_DARK_PURPLE, desc = "Color of the equipped mask in the HUD. (Bonzo/Spirit)")
     private val cooldownRegex = Regex("^Cooldown: (\\d+)s$")
-    
-    private val itemCat by DropdownSetting("Cooldown On Item")
-    private val showOnItem by BooleanSetting("Show On Item", false, "Renders the cooldown on the spirit mask and bonzo mask items").withDependency { itemCat }
+
+    private val itemCat by DropdownSetting("Cooldown On Item", desc = "Options to show cooldown on the item slot itself.")
+    private val showOnItem by BooleanSetting("Show on Item", false, "Renders the cooldown on the spirit mask and bonzo mask items").withDependency { itemCat }
     private val durability by BooleanSetting("Display As Durability", false, "True: durability, False: colored vertical slide").withDependency { itemCat }
     private val cdColor by ColorSetting("Cooldown Color", Colors.gray38, false, "Color of the cooldown").withDependency { itemCat }
 
@@ -170,4 +168,6 @@ object InvincibilityTimer : Module(
             activeTime = 0
         }
     }
+
+    private enum class ShowWhen { ALWAYS, ANY, WHEN_ACTIVE, ON_COOLDOWN }
 }

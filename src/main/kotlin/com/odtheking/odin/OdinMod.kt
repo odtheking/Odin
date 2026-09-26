@@ -10,13 +10,10 @@ import com.odtheking.odin.utils.IrisCompatability
 import com.odtheking.odin.utils.ServerUtils
 import com.odtheking.odin.utils.handlers.TickTasks
 import com.odtheking.odin.utils.render.ItemStateRenderer
-import com.odtheking.odin.utils.render.RenderBatchManager
-import com.odtheking.odin.utils.render.RoundRectPIPRenderer
 import com.odtheking.odin.utils.skyblock.*
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonListener
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalUtils
-import com.odtheking.odin.utils.ui.rendering.NVGPIPRenderer
 import com.odtheking.odin.utils.ui.widget.CustomGUIImpl
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
@@ -72,20 +69,10 @@ object OdinMod : ClientModInitializer {
             ActionBarListener, ServerUtils, EventDispatcher,
             DungeonListener, PartyUtils, TerminalUtils,
             DungeonUtils, SplitsManager, DungeonScan,
-            IrisCompatability, RenderBatchManager,
+            IrisCompatability,
             ModuleManager, CustomGUIImpl, Shenanigans,
         ).forEach { EventBus.subscribe(it) }
 
-        PictureInPictureRendererRegistry.register { context ->
-            NVGPIPRenderer(context.bufferSource())
-        }
-
-        PictureInPictureRendererRegistry.register { context ->
-            RoundRectPIPRenderer(context.bufferSource())
-        }
-
-        PictureInPictureRendererRegistry.register { context ->
-            ItemStateRenderer(context.bufferSource())
-        }
+        PictureInPictureRendererRegistry.register { ItemStateRenderer() }
     }
 }

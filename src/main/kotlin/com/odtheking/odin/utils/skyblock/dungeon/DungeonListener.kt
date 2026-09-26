@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket
 import net.minecraft.network.protocol.game.ClientboundSetPlayerTeamPacket
 import net.minecraft.network.protocol.game.ClientboundTabListPacket
-import net.minecraft.world.entity.EntityType
+import net.minecraft.world.entity.EntityTypes
 import net.minecraft.world.entity.player.Player
 import kotlin.jvm.optionals.getOrNull
 
@@ -143,7 +143,7 @@ object DungeonListener {
         }
 
         on<EntityEvent.Add> {
-            if (entity.type == EntityType.PLAYER && entity.uuid.version() != 4 && DungeonUtils.inDungeons)
+            if (entity.type == EntityTypes.PLAYER && entity.uuid.version() != 4 && DungeonUtils.inDungeons)
                 DungeonUtils.dungeonTeammates.find { it.entity == null && it.name == entity.name.string }?.entity = entity as? Player
         }
     }
@@ -174,6 +174,7 @@ object DungeonListener {
                 puzzleCount = puzzleCountRegex.find(entry)?.groupValues?.get(1)?.toIntOrNull() ?: puzzleCount
                 deaths = deathsRegex.find(entry)?.groupValues?.get(1)?.toIntOrNull() ?: deaths
                 crypts = cryptRegex.find(entry)?.groupValues?.get(1)?.toIntOrNull() ?: crypts
+                elapsedTime = timeRegex.find(entry)?.groupValues?.get(1) ?: elapsedTime
             }
         }
     }
@@ -184,11 +185,11 @@ object DungeonListener {
 
         leapTeammates =
             when (LeapMenu.type) {
-                0 -> odinSorting(dungeonTeammatesNoSelf.sortedBy { it.clazz.priority }).toList()
-                1 -> dungeonTeammatesNoSelf.sortedWith(compareBy({ it.clazz.ordinal }, { it.name }))
-                2 -> dungeonTeammatesNoSelf.sortedBy { it.name }
-                3 -> dungeonTeammatesNoSelf.sortedBy { DungeonUtils.customLeapOrder.indexOf(it.name.lowercase()).takeIf { index -> index != -1 } ?: Int.MAX_VALUE }
-                else -> dungeonTeammatesNoSelf
+                LeapMenu.Sorting.ODIN -> odinSorting(dungeonTeammatesNoSelf.sortedBy { it.clazz.priority }).toList()
+                LeapMenu.Sorting.CLASS -> dungeonTeammatesNoSelf.sortedWith(compareBy({ it.clazz.ordinal }, { it.name }))
+                LeapMenu.Sorting.NAME -> dungeonTeammatesNoSelf.sortedBy { it.name }
+                LeapMenu.Sorting.CUSTOM -> dungeonTeammatesNoSelf.sortedBy { DungeonUtils.customLeapOrder.indexOf(it.name.lowercase()).takeIf { index -> index != -1 } ?: Int.MAX_VALUE }
+                LeapMenu.Sorting.NONE -> dungeonTeammatesNoSelf
             }
     }
 
@@ -197,7 +198,7 @@ object DungeonListener {
     private val doorOpenRegex = Regex("^(?:\\[\\w+] )?(\\w+) opened a (?:WITHER|Blood) door!")
     private val secretPercentRegex = Regex("^ Secrets Found: ([\\d.]+)%$")
     private val deathRegex = Regex("☠ (\\w{1,16}) .* and became a ghost\\.")
-    private val timeRegex = Regex("^Time Elapsed: ((?:\\d+h ?)?(?:\\d+m ?)?\\d+s)$")
+    private val timeRegex = Regex("^ Time: ((?:\\d+h ?)?(?:\\d+m ?)?\\d+s)$")
     private val completedRoomsRegex = Regex("^ Completed Rooms: (\\d+)$")
     private val clearedRegex = Regex("^Cleared: (\\d+)% \\(\\d+\\)$")
     private val secretCountRegex = Regex("^ Secrets Found: (\\d+)$")

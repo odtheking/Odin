@@ -25,7 +25,7 @@ object DungeonQueue : Module(
     private val announceKick by BooleanSetting("Announce Kick", false, desc = "Announce when you get kicked from skyblock.")
 
     private val autoRequeue by BooleanSetting("Auto Requeue", false, desc = "Automatically starts a new dungeon at the end of a dungeon.")
-    private val requeueDelay by NumberSetting("Requeue Delay", 2, 0, 30, 1, desc = "The delay in seconds before requeuing.", unit = "s").withDependency { autoRequeue }
+    private val requeueDelay by NumberSetting("Requeue Delay", 2, 0..30, 1, desc = "The delay in seconds before requeuing.", unit = "s").withDependency { autoRequeue }
     private val disablePartyLeave by BooleanSetting("Disable on leave/kick", true, desc = "Disables the requeue on party leave message.").withDependency { autoRequeue }
 
     private val enterRegex = Regex("^-*\\n\\[[^]]+] (\\w+) entered (?:MM )?\\w+ Catacombs, Floor (\\w+)!\\n-*$")

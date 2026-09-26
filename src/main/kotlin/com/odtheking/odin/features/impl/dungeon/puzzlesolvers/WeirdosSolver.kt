@@ -1,9 +1,10 @@
 package com.odtheking.odin.features.impl.dungeon.puzzlesolvers
 
 import com.odtheking.odin.OdinMod.mc
-import com.odtheking.odin.events.RenderEvent
+import com.odtheking.odin.events.RenderExtractEvent
 import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.playSoundAtPlayer
+import com.odtheking.odin.utils.render.BoxStyle
 import com.odtheking.odin.utils.render.drawStyledBox
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.core.BlockPos
@@ -29,7 +30,7 @@ object WeirdosSolver {
         } else wrongPositions.add(pos)
     }
 
-    fun onRenderWorld(event: RenderEvent.Extract, weirdosColor: Color, weirdosWrongColor: Color, weirdosStyle: Int) {
+    fun onRenderWorld(event: RenderExtractEvent, weirdosColor: Color, weirdosWrongColor: Color, weirdosStyle: BoxStyle) {
         if (DungeonUtils.currentRoomName != "Three Weirdos") return
         correctPos?.let { event.drawStyledBox(AABB(it), weirdosColor, weirdosStyle) }
         wrongPositions.forEach {

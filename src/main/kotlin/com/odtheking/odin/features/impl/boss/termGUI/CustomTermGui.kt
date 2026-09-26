@@ -6,8 +6,9 @@ import com.odtheking.odin.events.ScreenEvent
 import com.odtheking.odin.features.impl.boss.TerminalSolver
 import com.odtheking.odin.features.impl.boss.TerminalSolver.renderDebug
 import com.odtheking.odin.utils.Color
-import com.odtheking.odin.utils.render.roundedFill
+import com.odtheking.odin.utils.render.roundedRect
 import com.odtheking.odin.utils.render.text
+import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalTypes
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalUtils
 import com.odtheking.odin.utils.ui.widget.CustomGUIImpl
 import net.minecraft.client.gui.GuiGraphicsExtractor
@@ -61,7 +62,7 @@ abstract class TermGui {
         )
     }
 
-    private fun currentTermScreen() = mc.screen as? AbstractContainerScreen<*>
+    private fun currentTermScreen() = mc.gui.screen() as? AbstractContainerScreen<*>
 
     private fun isActiveTermScreen() =
         TerminalSolver.customGuiEnabled && TerminalUtils.currentTerm?.type?.getGUI() === this && currentTermScreen() != null
@@ -105,12 +106,12 @@ abstract class TermGui {
         guiGraphics.pose().translate(g.originX, g.originY)
         guiGraphics.pose().scale(scale)
 
-        guiGraphics.roundedFill(-padding, -padding, g.w + padding, g.h + padding, TerminalSolver.backgroundColor.rgba, radius)
+        guiGraphics.roundedRect(-padding, -padding, g.w + padding, g.h + padding, TerminalSolver.backgroundColor.rgba, radius)
 
         g.slots.forEach { slot ->
             val (color, _) = slot.visual.resolve() ?: return@forEach
             if (slot.containsBase(baseMX, baseMY)) hoveredSlotIndex = slot.slotIndex
-            guiGraphics.roundedFill(slot.bx, slot.by, slot.bx + slot.size, slot.by + slot.size, color.rgba, radius)
+            guiGraphics.roundedRect(slot.bx, slot.by, slot.bx + slot.size, slot.by + slot.size, color.rgba, radius)
             slot.visual.onRenderContent?.invoke(guiGraphics, slot.bx, slot.by, slot.size, slot.size)
         }
 
@@ -126,7 +127,7 @@ fun simpleTermGui(rows: Int, cols: Int, startRow: Int, startCol: Int): TermGui =
         override fun buildTerminal(screen: AbstractContainerScreen<*>) =
             buildTerminalGrid(screen, rows, cols, startRow, startCol) { slotIndex ->
                 SlotVisual({ TerminalUtils.currentTerm?.getSlotRendering(slotIndex) }) { x, y, w, h ->
-                    TerminalUtils.currentTerm?.getSlotRendering(slotIndex)?.second?.let { renderSlotText(it, x, y, w, h, TerminalSolver.textColor) }
+                    TerminalUtils.currentTerm?.getSlotRendering(slotIndex)?.second?.let { renderSlotText(it, x, y, w, h, if (TerminalUtils.currentTerm?.type == TerminalTypes.NUMBERS) TerminalSolver.numbersText else TerminalSolver.rubixText) }
                 }
             }
     }

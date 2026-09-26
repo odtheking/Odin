@@ -21,11 +21,11 @@ object PlayerSize : Module(
     description = "Changes the size of the player."
 ) {
     private val devSize by BooleanSetting("Dev Size", true, desc = "Toggles client side dev size for your own player.").withDependency { isRandom }
-    private val devSizeX by NumberSetting("Size X", 1f, -1, 3f, 0.1, desc = "X scale of the dev size.")
-    private val devSizeY by NumberSetting("Size Y", 1f, -1, 3f, 0.1, desc = "Y scale of the dev size.")
-    private val devSizeZ by NumberSetting("Size Z", 1f, -1, 3f, 0.1, desc = "Z scale of the dev size.")
-    private var showHidden by DropdownSetting("Show Hidden").withDependency { isRandom }
-    private val passcode by StringSetting("Passcode", "odin", desc = "Passcode for dev features.").withDependency { showHidden && isRandom }
+    private val devSizeX by NumberSetting("Size X", 1f, -1.0..3.0, 0.1, desc = "X scale of the dev size.")
+    private val devSizeY by NumberSetting("Size Y", 1f, -1.0..3.0, 0.1, desc = "Y scale of the dev size.")
+    private val devSizeZ by NumberSetting("Size Z", 1f, -1.0..3.0, 0.1, desc = "Z scale of the dev size.")
+    private var showHidden by DropdownSetting("Show Hidden", desc = "Shows the passcode field for dev features.").withDependency { isRandom }
+    private val passcode by StringSetting("Passcode", "odin", desc = "Passcode for dev features.", placeholder = "Enter passcode").withDependency { showHidden && isRandom }
 
     const val DEV_SERVER = "https://devs.odtheking.com"
 

@@ -120,7 +120,7 @@ abstract class Module(
         toggleable: Boolean = true,
         x: Int = 10,
         y: Int = 10,
-        scale: Float = 2f,
+        scale: Float = 1f,
         block: GuiGraphicsExtractor.(example: Boolean) -> Pair<Int, Int>
     ): HUDSetting = HUDSetting(name, x, y, scale, toggleable, desc, this, block)
 

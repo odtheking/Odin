@@ -25,9 +25,9 @@ public class FontMixin {
     }
 
     @ModifyVariable(method = "width(Ljava/lang/String;)I", at = @At("HEAD"), argsOnly = true, name = "str")
-    private String onWidthString(String str) {
-        if (!CustomNameReplacer.isEnabled()) return str;
-        return CustomNameReplacer.replaceStringIfNeeded(str);
+    private String onWidthString(String text) {
+        if (!CustomNameReplacer.isEnabled()) return text;
+        return CustomNameReplacer.replaceStringIfNeeded(text);
     }
 
     @ModifyVariable(method = "width(Lnet/minecraft/network/chat/FormattedText;)I", at = @At("HEAD"), argsOnly = true, name = "text")

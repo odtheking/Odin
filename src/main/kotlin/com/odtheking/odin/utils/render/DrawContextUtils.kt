@@ -58,26 +58,3 @@ fun GuiGraphicsExtractor.drawLine(
 
     pose().popMatrix()
 }
-
-fun GuiGraphicsExtractor.roundedFill(x0: Int, y0: Int, x1: Int, y1: Int, color: Int, radius: Int) {
-    DrawContextRenderer.roundedFill(this, x0, y0, x1, y1, color, radius.toFloat())
-}
-
-fun GuiGraphicsExtractor.roundedFill(
-    x0: Int, y0: Int, x1: Int, y1: Int,
-    color: Int, radius: Int, outlineColor: Int, outlineWidth: Float) {
-    DrawContextRenderer.roundedFill(
-        this, x0, y0, x1, y1, color,
-        radius.toFloat(), outlineColor, outlineWidth
-    )
-}
-
-fun GuiGraphicsExtractor.roundedOutline(
-    x0: Int, y0: Int, x1: Int, y1: Int, outlineColor: Int,
-    outlineWidth: Float, radius: Int = 0
-) {
-    DrawContextRenderer.roundedOutline(
-        this, x0, y0, x1, y1, outlineColor,
-        outlineWidth, radius.toFloat()
-    )
-}

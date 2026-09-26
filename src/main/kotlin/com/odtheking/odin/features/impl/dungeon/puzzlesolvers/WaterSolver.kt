@@ -1,7 +1,7 @@
 package com.odtheking.odin.features.impl.dungeon.puzzlesolvers
 
 import com.odtheking.odin.OdinMod.mc
-import com.odtheking.odin.events.RenderEvent
+import com.odtheking.odin.events.RenderExtractEvent
 import com.odtheking.odin.events.UseItemOnPostEvent
 import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.JsonResourceLoader
@@ -56,7 +56,7 @@ object WaterSolver {
         }
     }
 
-    fun onRenderWorld(event: RenderEvent.Extract, showTracer: Boolean, tracerColorFirst: Color, tracerColorSecond: Color) {
+    fun onRenderWorld(event: RenderExtractEvent, showTracer: Boolean, tracerColorFirst: Color, tracerColorSecond: Color) {
         if (patternIdentifier == -1 || solutions.isEmpty() || DungeonUtils.currentRoomName != "Water Board") return
 
         val solutionList = solutions

@@ -5,9 +5,9 @@ import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.ListSetting
 import com.odtheking.odin.clickgui.settings.impl.NumberSetting
 import com.odtheking.odin.events.LevelEvent
-import com.odtheking.odin.events.RenderEvent
+import com.odtheking.odin.events.RenderExtractEvent
+import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.core.on
-import com.odtheking.odin.events.core.onSend
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.handlers.schedule
@@ -16,7 +16,6 @@ import com.odtheking.odin.utils.render.drawText
 import com.odtheking.odin.utils.render.drawWireFrameBox
 import com.odtheking.odin.utils.sendCommand
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
-import net.minecraft.network.protocol.game.ServerboundMovePlayerPacket
 import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.Vec3
 
@@ -26,9 +25,9 @@ object PositionalMessages : Module(
 ) {
     private val onlyDungeons by BooleanSetting("Only in Dungeons", true, desc = "Only sends messages when you're in a dungeon.")
     private val showPositions by BooleanSetting("Show Positions", true, desc = "Draws boxes/lines around the positions.")
-    private val cylinderHeight by NumberSetting("Height", 0.2f, 0.1, 5.0, 0.1, desc = "Height of the cylinder for in messages.").withDependency { showPositions }
+    private val cylinderHeight by NumberSetting("Height", 0.2f, 0.1..5.0, 0.1, desc = "Height of the cylinder for in messages.").withDependency { showPositions }
     private val displayMessage by BooleanSetting("Show Message", true, desc = "Whether or not to display the message in the box.").withDependency { showPositions }
-    private val messageSize by NumberSetting("Message Size", 1f, 0.1f, 4f, 0.1f, desc = "The size at which to display the message in the box.").withDependency { showPositions && displayMessage }
+    private val messageSize by NumberSetting("Message Size", 1f, 0.1..4.0, 0.1f, desc = "The size at which to display the message in the box.").withDependency { showPositions && displayMessage }
 
     data class PosMessage(val x: Double, val y: Double, val z: Double, val x2: Double?, val y2: Double?, val z2: Double?, val delay: Int, val distance: Double?, val color: Color, val message: String?, val dontSend: Boolean) {
         @Transient
@@ -56,14 +55,14 @@ object PositionalMessages : Module(
     private val sentMessages = mutableSetOf<PosMessage>()
 
     init {
-        onSend<ServerboundMovePlayerPacket> {
-            if (onlyDungeons && !DungeonUtils.inBoss) return@onSend
+        on<TickEvent.End> {
+            if (onlyDungeons && !DungeonUtils.inBoss) return@on
             posMessageStrings.forEach { posMessage ->
                 if (!posMessage.dontSend && posMessage !in sentMessages) posMessage.x2?.let { handleInString(posMessage) } ?: handleAtString(posMessage)
             }
         }
 
-        on<RenderEvent.Extract> {
+        on<RenderExtractEvent> {
             if (!showPositions || (onlyDungeons && !DungeonUtils.inBoss)) return@on
             posMessageStrings.forEach { posMessage ->
                 if (posMessage.distance != null) {

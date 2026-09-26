@@ -26,8 +26,8 @@ object Vesuvius : Module(
     private val hideClaimed by BooleanSetting("Hide Claimed", true, desc = "Hides chests that have already been claimed.")
     private val useSalvagePrices by BooleanSetting("Use Salvaged", false, desc = "Uses the essence you would get by salvaging the piece instead.")
 
-    private val kuudraPetBonus by NumberSetting("Kuudra Pet Bonus", 0.0, 0.0, 20.0, 0.05, "The essence bonus from Kuudra pet.", unit = "%")
-    private val lavaLeechBonus by NumberSetting("Lava Leech Bonus", 0.0, 0.0, 13.0, 0.05, "The essence bonus from the Lava Leech Shard.", unit = "%")
+    private val kuudraPetBonus by NumberSetting("Kuudra Pet Bonus", 0.0, 0.0..20.0, 0.05, desc = "The essence bonus from Kuudra pet.", unit = "%")
+    private val lavaLeechBonus by NumberSetting("Lava Leech Bonus", 0.0, 0.0..13.0, 0.05, desc = "The essence bonus from the Lava Leech Shard.", unit = "%")
 
     private val vesuviusHud by HUD("Croesus Chest HUD", "Displays all chest contents with prices, sorted by profit.") {
         if (!it) return@HUD 0 to 0
@@ -56,8 +56,6 @@ object Vesuvius : Module(
             val title = screen.title.string
             if (vesuviusHud.enabled && title.matches(chestRegex) && currentChest != null) {
                 guiGraphics.pose().pushMatrix()
-                val sf = mc.window.guiScale
-                guiGraphics.pose().scale(1f / sf, 1f / sf)
                 guiGraphics.pose().translate(vesuviusHud.x.toFloat(), vesuviusHud.y.toFloat())
                 guiGraphics.pose().scale(vesuviusHud.scale)
 
@@ -73,7 +71,7 @@ object Vesuvius : Module(
         }
 
         on<SetSlotEvent> {
-            if (mc.screen?.title?.string?.matches(chestRegex) != true) return@on
+            if (mc.gui.screen()?.title?.string?.matches(chestRegex) != true) return@on
 
             if (slotIndex == 31 && itemStack.item == Items.CHEST) handleKuudraChest(itemStack)
             if (slotIndex.equalsOneOf(13, 14) && itemStack.item == Items.PLAYER_HEAD) handleKuudraChest(itemStack)

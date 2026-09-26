@@ -6,7 +6,6 @@ import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.utils.containsOneOf
 import com.odtheking.odin.utils.equalsOneOf
 import com.odtheking.odin.utils.noControlCodes
-import com.odtheking.odin.utils.render.RenderBatchManager
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils.isSecret
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents
@@ -32,10 +31,7 @@ object EventDispatcher {
 
         ClientTickEvents.END_LEVEL_TICK.register { world -> TickEvent.End(world).postAndCatch() }
 
-        LevelRenderEvents.AFTER_TRANSLUCENT_TERRAIN.register {
-            context -> RenderEvent.Extract(context, RenderBatchManager.renderConsumer).postAndCatch()
-            RenderEvent.Last(context).postAndCatch()
-        }
+        LevelRenderEvents.COLLECT_SUBMITS.register { context -> RenderExtractEvent(context).postAndCatch() }
 
         ScreenEvents.BEFORE_INIT.register { _, screen, _, _ ->
             ScreenMouseEvents.allowMouseClick(screen).register { screen, event ->
@@ -89,7 +85,7 @@ object EventDispatcher {
             val blockState = mc.level?.getBlockState(pos) ?: return@on
             if (blockState.block is SkullBlock) {
                 val distance = mc.player?.eyePosition?.distanceToSqr(Vec3(pos)) ?: return@on
-                if (distance > 21) return@on
+                if (distance > 22) return@on
             }
 
             if (isSecret(blockState, pos)) SecretPickupEvent.Interact(pos, blockState).postAndCatch()

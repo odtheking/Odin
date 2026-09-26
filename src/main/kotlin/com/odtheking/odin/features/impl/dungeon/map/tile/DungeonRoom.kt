@@ -4,6 +4,7 @@ import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints
 import com.odtheking.odin.utils.*
 import net.minecraft.core.BlockPos
+import net.minecraft.world.item.DyeColor
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.phys.AABB
 
@@ -31,8 +32,10 @@ class DungeonRoom(var type: RoomType, initialPosition: IVec2, var data: RoomData
         private set
 
     var foundSecrets: Int? = null
+    var playerWalkedInto = false
 
     val isViewable: Boolean get() = walkedInto || checkmark != MapCheckmark.UNDISCOVERED
+    val shouldShowName get() = walkedInto || playerWalkedInto
     val name: String? get() = data?.name
 
     fun addSegment(segment: DungeonTile) {
@@ -148,7 +151,7 @@ class DungeonRoom(var type: RoomType, initialPosition: IVec2, var data: RoomData
 
         for (rot in RoomRotation.entries) {
             val pos = clayProbePos(rot, y)
-            if (mc.level?.getBlockState(pos)?.block == Blocks.BLUE_TERRACOTTA) {
+            if (mc.level?.getBlockState(pos)?.block == Blocks.DYED_TERRACOTTA.pick(DyeColor.BLUE)) {
                 rotation = rot
                 clayPos = pos
                 return true

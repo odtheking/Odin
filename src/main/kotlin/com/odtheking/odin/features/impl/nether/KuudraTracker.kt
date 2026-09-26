@@ -7,7 +7,6 @@ import com.odtheking.odin.clickgui.settings.impl.NumberSetting
 import com.odtheking.odin.events.GuiEvent
 import com.odtheking.odin.events.MessageEvent
 import com.odtheking.odin.events.core.on
-import com.odtheking.odin.events.core.onSend
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.features.ModuleManager
 import com.odtheking.odin.features.impl.nether.Vesuvius.getPriceOfKey
@@ -20,14 +19,13 @@ import net.minecraft.ChatFormatting
 import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.MutableComponent
-import net.minecraft.network.protocol.game.ServerboundContainerClickPacket
 import net.minecraft.world.item.Items
 
 object KuudraTracker : Module(
     name = "Kuudra Tracker",
     description = "Tracks your Kuudra runs."
 ) {
-    private val lineAmount by NumberSetting("Lines", 10, 0,40, 1, "The amount of items to display in the profit tracker.")
+    private val lineAmount by NumberSetting("Lines", 10, 0..40, 1, "The amount of items to display in the profit tracker.")
     private val reset by ActionSetting("Reset Profit", "Resets the Profit Tracker") {
         totalKeys = mutableListOf(0, 0, 0, 0, 0)
         singleItems.clear()
@@ -59,8 +57,8 @@ object KuudraTracker : Module(
     private var singleItems by MapSetting("Single Items",mutableMapOf<String, Int>())
     private var multiItems by MapSetting("Multi Items", mutableMapOf<String, Int>())
 
-    private var paid by NumberSetting("Paid Chests", 0, 0, Int.MAX_VALUE, 1, "Amount of Paid Chests opened.").hide()
-    private var free by NumberSetting("Free Chests", 0, 0, Int.MAX_VALUE, 1, "Amount of Paid Chests opened").hide()
+    private var paid by NumberSetting("Paid Chests", 0, 0..Int.MAX_VALUE, 1, "Amount of Paid Chests opened.").hide()
+    private var free by NumberSetting("Free Chests", 0, 0..Int.MAX_VALUE, 1, "Amount of Paid Chests opened").hide()
 
     private var toDisplay = mutableListOf<Pair<MutableComponent, Double>>()
     private var totalKeys by ListSetting("Total Keys", mutableListOf(0, 0, 0, 0, 0)).hide() //Tier 1-5
@@ -74,8 +72,6 @@ object KuudraTracker : Module(
             val title = screen.title.string
             if (enabled && title.matches(hudRegex)) {
                 guiGraphics.pose().pushMatrix()
-                val sf = mc.window.guiScale
-                guiGraphics.pose().scale(1f / sf, 1f / sf)
                 guiGraphics.pose().translate(profitHud.x.toFloat(), profitHud.y.toFloat())
                 guiGraphics.pose().scale(profitHud.scale)
 
@@ -86,7 +82,7 @@ object KuudraTracker : Module(
         }
 
         on<MessageEvent.Chat> {
-            val title = mc.screen?.title?.string ?: return@on
+            val title = mc.gui.screen()?.title?.string ?: return@on
             if (message.equalsOneOf("You cannot afford this!", "Whoa! Slow down there!") && title.matches(chestRegex)) {
                 for (single in last.single) {
                     singleItems[single] = (singleItems.getOrDefault(single, 0) - 1).coerceAtLeast(0)
@@ -102,19 +98,16 @@ object KuudraTracker : Module(
             }
         }
 
-        onSend<ServerboundContainerClickPacket> {
-            val title = mc.screen?.title?.string ?: return@onSend
-            if (!title.matches(chestRegex)) return@onSend
+        on<GuiEvent.SlotClick> {
+            if (!screen.title.string.matches(chestRegex)) return@on
 
-            val cursorStack = mc.player?.containerMenu?.carried ?: return@onSend
-
-            if (!cursorStack.`is`(Items.CHEST)) return@onSend
+            val cursorStack = mc.player?.containerMenu?.carried ?: return@on
+            if (!cursorStack.`is`(Items.CHEST)) return@on
 
             val loreLines = cursorStack.lore
-
             updateDisplay()
 
-            if (loreLines.any { it.string.equalsOneOf("Already opened!", "Can't open another chest!")}) return@onSend
+            if (loreLines.any { it.string.equalsOneOf("Already opened!", "Can't open another chest!")}) return@on
 
             last = LastAdded(mutableListOf(), mutableListOf(), 0)
 
@@ -137,8 +130,8 @@ object KuudraTracker : Module(
                 singleItems[lore.string] = singleItems.getOrDefault(lore.string, 0) + 1
             }
 
-            if (title == "Paid Chest") paid++
-            if (title == "Free Chest") free++
+            if (screen.title.string == "Paid Chest") paid++
+            if (screen.title.string == "Free Chest") free++
 
             updateDisplay()
             ModuleManager.saveConfigurations()

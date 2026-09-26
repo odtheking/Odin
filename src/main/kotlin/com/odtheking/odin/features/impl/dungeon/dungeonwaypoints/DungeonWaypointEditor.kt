@@ -4,16 +4,14 @@ import com.mojang.blaze3d.platform.InputConstants
 import com.odtheking.odin.OdinMod
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.events.InputEvent
-import com.odtheking.odin.events.RenderEvent
+import com.odtheking.odin.events.RenderExtractEvent
 import com.odtheking.odin.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.DungeonWaypoint
 import com.odtheking.odin.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.WaypointType
 import com.odtheking.odin.features.impl.dungeon.map.tile.DungeonRoom
 import com.odtheking.odin.features.impl.render.Etherwarp
+import com.odtheking.odin.utils.*
 import com.odtheking.odin.utils.Color.Companion.withAlpha
-import com.odtheking.odin.utils.devMessage
-import com.odtheking.odin.utils.getBlockBounds
-import com.odtheking.odin.utils.isEtherwarpItem
-import com.odtheking.odin.utils.modMessage
+import com.odtheking.odin.utils.render.BoxStyle
 import com.odtheking.odin.utils.render.drawBoxes
 import com.odtheking.odin.utils.render.drawStyledBox
 import com.odtheking.odin.utils.render.drawText
@@ -24,7 +22,7 @@ import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.BlockHitResult
 import net.minecraft.world.phys.HitResult
 
-internal fun DungeonWaypoints.renderWaypoints(event: RenderEvent.Extract) {
+internal fun DungeonWaypoints.renderWaypoints(event: RenderExtractEvent) {
     if (!DungeonUtils.inClear) return
     val room = DungeonUtils.currentRoom ?: return
     event.drawBoxes(room.waypoints, disableDepth)
@@ -37,12 +35,12 @@ internal fun DungeonWaypoints.renderWaypoints(event: RenderEvent.Extract) {
     }
 
     reachPosition?.takeIf { allowEdits }?.let { pos ->
-        event.drawStyledBox(relativeAabbAt(pos).move(pos), color.withAlpha(0.3f), style = if (filled) 0 else 1, depthCheck)
+        event.drawStyledBox(relativeAabbAt(pos).move(pos), color.withAlpha(0.3f), style = if (filled) BoxStyle.FILLED else BoxStyle.OUTLINE, depthCheck)
     }
 }
 
 internal fun DungeonWaypoints.handleEditorInput(event: InputEvent) {
-    if (event.key.value != InputConstants.MOUSE_BUTTON_RIGHT || mc.screen != null) return
+    if (event.key.value != InputConstants.MOUSE_BUTTON_RIGHT || mc.gui.screen() != null) return
     cacheEtherwarpTarget()
     if (!allowEdits) return
     val room = DungeonUtils.currentRoom ?: return
@@ -98,12 +96,12 @@ private fun DungeonWaypoints.openWaypointTitlePrompt(
     aabb: AABB,
     editableWaypoints: MutableList<DungeonWaypoint>,
 ) {
-    mc.setScreen(TextPromptScreen("Waypoint Name").setCallback { text ->
+    mc.setScreenAndShow(TextPromptScreen("Waypoint Name").setCallback { text ->
         editableWaypoints.removeIf { it.blockPos == blockPos }
         editableWaypoints.add(createWaypoint(blockPos, aabb, text))
         devMessage("Added waypoint with $text at $blockPos")
         syncRoomToActive(room)
-        mc.setScreen(null)
+        mc.gui.setScreen(null)
         OdinMod.scope.launch { saveWaypoints() }
     })
 }
@@ -115,7 +113,7 @@ private fun DungeonWaypoints.createWaypoint(blockPos: BlockPos, aabb: AABB, titl
     depth = depthCheck,
     aabb = aabb,
     title = title,
-    type = WaypointType.getByInt(waypointType),
+    type = waypointType.takeIf { it != WaypointType.NONE },
 )
 
 internal fun DungeonWaypoints.relativeAabbAt(pos: BlockPos): AABB =

@@ -3,7 +3,6 @@ package com.odtheking.odin.features.impl.boss
 import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.SelectorSetting
-import com.odtheking.odin.clickgui.settings.impl.StringSetting
 import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.MessageEvent
 import com.odtheking.odin.events.SetSlotEvent
@@ -25,6 +24,7 @@ import com.odtheking.odin.utils.skyblock.dungeon.M7Phases
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalTypes
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalUtils
 import net.minecraft.client.gui.GuiGraphicsExtractor
+import net.minecraft.world.item.DyeColor
 import net.minecraft.world.item.Items
 import java.util.concurrent.ConcurrentHashMap
 
@@ -32,12 +32,9 @@ object MelodyMessage : Module(
     name = "Melody Message",
     description = "Helpful messages for the melody terminal in floor 7."
 ) {
-    private val sendMelodyMessage by BooleanSetting("Send Melody Message", true, desc = "Sends a message when the melody terminal opens.")
-    private val melodyMessage by StringSetting("Melody Message", "Melody Terminal start!", 128, desc = "Message sent when the melody terminal opens.").withDependency { sendMelodyMessage }
     private val melodyProgress by BooleanSetting("Melody Progress", false, desc = "Tells the party about melody terminal progress.")
     private val melodySendCoords by BooleanSetting("Melody Send Coords", false, desc = "Sends the coordinates of the melody terminal.").withDependency { melodyProgress }
 
-    private val broadcast by BooleanSetting("Broadcast Progress", true, desc = "Broadcasts melody progress to all other odin users in the party.")
     private val melodyGui by HUD("Progress GUI", "Shows a gui with the progress of broadcasting odin users in melody.", true) {
         var rows = 0
         var labelWidth = 0
@@ -55,18 +52,18 @@ object MelodyMessage : Module(
             track(example, 0, mc.user.name)
         }
 
-        if (broadcast && melodyWebSocket.connected) {
+        if (melodyWebSocket.connected) {
             melodies.entries.forEachIndexed { i, (name, data) ->
-                if (showPlayer == 0 && name == mc.user.name) return@forEachIndexed
+                if (showPlayer == ShowPlayer.NONE && name == mc.user.name) return@forEachIndexed
                 drawMelody(data, i, name)
                 track(data, i, name)
             }
         }
 
         (width * 5 + 2 + labelWidth) to (width * rows)
-    }.withDependency { broadcast }
+    }
 
-    private val showPlayer by SelectorSetting("Show Player", "None", arrayListOf("None", "Class", "Name", "Class & Name"), desc = "How player details should be rendered in the Melody GUI.").withDependency { broadcast }
+    private val showPlayer by SelectorSetting("Show Player", ShowPlayer.NONE, desc = "How player details should be rendered in the Melody GUI.")
 
     val melodyWebSocket = webSocket {
         onMessage { message ->
@@ -87,17 +84,16 @@ object MelodyMessage : Module(
 
     init {
         on<TerminalEvent.Open> {
-            if (DungeonUtils.getF7Phase() != M7Phases.P3 || terminal.type != TerminalTypes.MELODY || mc.screen is TermSimGUI) return@on
-            if (sendMelodyMessage) sendCommand("pc $melodyMessage")
+            if (DungeonUtils.getF7Phase() != M7Phases.P3 || terminal.type != TerminalTypes.MELODY || mc.gui.screen() is TermSimGUI) return@on
             if (melodySendCoords) sendCommand("od sendcoords")
         }
 
         on<MessageEvent.Chat> {
-            if (broadcast || melodyProgress) onChatMessage(message)
+            if (melodyProgress) onChatMessage(message)
         }
 
         on<SetSlotEvent> {
-            if (broadcast || melodyProgress) onSlotUpdate()
+            if (melodyProgress) onSlotUpdate()
         }
 
         on<LevelEvent.Load> {
@@ -127,26 +123,26 @@ object MelodyMessage : Module(
 
     private fun SetSlotEvent.onSlotUpdate() {
         val term = TerminalUtils.currentTerm ?: return
-        if (DungeonUtils.getF7Phase() != M7Phases.P3 || term.type != TerminalTypes.MELODY || mc.screen is TermSimGUI) return
+        if (DungeonUtils.getF7Phase() != M7Phases.P3 || term.type != TerminalTypes.MELODY || mc.gui.screen() is TermSimGUI) return
 
         val item = itemStack.item
-        if (item == Items.LIME_TERRACOTTA) {
+        if (item == Items.DYED_TERRACOTTA.pick(DyeColor.LIME)) {
             val position = slotIndex / 9
             if (lastSent.clay == position) return
-            if (broadcast) melodyWebSocket.send(update(1, position))
+            melodyWebSocket.send(update(1, position))
             if (melodyProgress) clayProgress[position]?.let { sendCommand("pc $it") }
             lastSent.clay = position
             return
         }
-        if (!broadcast || !item.equalsOneOf(Items.MAGENTA_STAINED_GLASS_PANE, Items.LIME_STAINED_GLASS_PANE)) return
+        if (!item.equalsOneOf(Items.STAINED_GLASS_PANE.pick(DyeColor.MAGENTA), Items.STAINED_GLASS_PANE.pick(DyeColor.LIME))) return
         val index = mapToRange(slotIndex) ?: return
         val meta = when (item) {
-            Items.MAGENTA_STAINED_GLASS_PANE -> {
+            Items.STAINED_GLASS_PANE.pick(DyeColor.MAGENTA) -> {
                 if (lastSent.purple == index) return
                 lastSent.purple = index
                 2
             }
-            Items.LIME_STAINED_GLASS_PANE -> {
+            Items.STAINED_GLASS_PANE.pick(DyeColor.LIME) -> {
                 if (lastSent.pane == index) return
                 lastSent.pane = index
                 5
@@ -172,9 +168,9 @@ object MelodyMessage : Module(
     private val width by lazy { getStringWidth("§d■") }
 
     private fun melodyLabel(data: MelodyData, playerName: String): String? = when (showPlayer) {
-        1 -> "§${data.dungeonClass.colorCode}${data.dungeonClass.name.lowercase()}"
-        2 -> "§6$playerName"
-        3 -> "§6$playerName §8(§${data.dungeonClass.colorCode}${data.dungeonClass.name.lowercase()}§8)"
+        ShowPlayer.CLASS -> "§${data.dungeonClass.colorCode}${data.dungeonClass.name.lowercase()}"
+        ShowPlayer.NAME -> "§6$playerName"
+        ShowPlayer.CLASS_AND_NAME -> "§6$playerName §8(§${data.dungeonClass.colorCode}${data.dungeonClass.name.lowercase()}§8)"
         else -> null
     }
 
@@ -196,4 +192,10 @@ object MelodyMessage : Module(
 
     private data class UpdateMessage(val username: String, val type: Int, val slot: Int)
     private data class MelodyData(var purple: Int?, var pane: Int?, var clay: Int?, val dungeonClass: DungeonClass)
+
+    private enum class ShowPlayer(private val label: String) {
+        NONE("None"), CLASS("Class"), NAME("Name"), CLASS_AND_NAME("Class & Name");
+
+        override fun toString(): String = label
+    }
 }

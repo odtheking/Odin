@@ -33,7 +33,6 @@ object Croesus : Module(
 ) {
     private val highlightState by BooleanSetting("Highlight State", true, desc = "Highlights chests in the Croesus menu based on their claim status.")
     private val highlightProfitable by BooleanSetting("Highlight Profitable", true, desc = "Highlights the most and 2nd most profitable chests.")
-    private val includeEssence by BooleanSetting("Include Essence", true, desc = "Includes essence value in profit calculations.")
     private val hideClaimed by BooleanSetting("Hide Claimed", true, desc = "Hides chests that have already been claimed.")
     private val includeKey by BooleanSetting("Include Key", desc = "Count Dungeon Chest Key as unclaimed.").withDependency { hideClaimed }
     private val minimized by BooleanSetting("Minimized", false, desc = "Only display profit for each chest instead of all items.")
@@ -48,7 +47,7 @@ object Croesus : Module(
         else 0 to 0
     }
 
-    private val chestWarning by NumberSetting("Chest Warning Threshold", 55, 0, 60, desc = "Displays a warning in the chest profit HUD if the profit is below this amount.")
+    private val chestWarning by NumberSetting("Chest Warning Threshold", 55, 0..60, desc = "Displays a warning in the chest profit HUD if the profit is below this amount.").withDependency { chestCount.enabled }
     private val refresh by ActionSetting("Refresh Prices", desc = "Manually refresh the cached prices used for profit calculations.") {
         scope.launch {
             cachedPrices = fetchJson<Map<String, Double>>("https://lb.odtheking.com/averages/7day").getOrElse { OdinMod.logger.error("Failed to fetch lowest bin prices for Croesus module.", it); emptyMap() }
@@ -101,8 +100,6 @@ object Croesus : Module(
             val title = screen.title.string
             if (croesusHud.enabled && (title.matches(chestNameRegex) || title.matches(chestPreviewScreenRegex))) {
                 guiGraphics.pose().pushMatrix()
-                val sf = mc.window.guiScale
-                guiGraphics.pose().scale(1f / sf, 1f / sf)
                 guiGraphics.pose().translate(croesusHud.x.toFloat(), croesusHud.y.toFloat())
                 guiGraphics.pose().scale(croesusHud.scale)
 
@@ -142,7 +139,7 @@ object Croesus : Module(
         }
 
         on<SetSlotEvent> {
-            val screenTitle = mc.screen?.title?.string ?: return@on
+            val screenTitle = mc.gui.screen()?.title?.string ?: return@on
 
             when {
                 screenTitle.matches(chestNameRegex) -> handleChestContents(slotIndex, itemStack)
@@ -217,7 +214,6 @@ object Croesus : Module(
         }
 
         previewEssenceRegex.find(item)?.destructured?.let { (name, quantity) ->
-            if (!includeEssence) return null
             val price = cachedPrices["ESSENCE_${name.uppercase()}"] ?: return null
             return price * quantity.toDouble()
         }
@@ -278,7 +274,6 @@ object Croesus : Module(
 
     private fun resolveChestItemContribution(stack: ItemStack): ChestItem? {
         previewEssenceRegex.find(stack.hoverName.string)?.destructured?.let { (name, quantity) ->
-            if (!includeEssence) return null
             val price = cachedPrices["ESSENCE_${name.uppercase()}"] ?: return null
             return ChestItem(stack.hoverName.string, price * quantity.toDouble())
         }

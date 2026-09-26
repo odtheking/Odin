@@ -1,18 +1,20 @@
 package com.odtheking.odin.features.impl.render
 
+import com.mojang.blaze3d.platform.InputConstants
 import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.ColorSetting
 import com.odtheking.odin.clickgui.settings.impl.DropdownSetting
 import com.odtheking.odin.clickgui.settings.impl.SelectorSetting
-import com.odtheking.odin.events.RenderEvent
+import com.odtheking.odin.events.InputEvent
+import com.odtheking.odin.events.RenderExtractEvent
 import com.odtheking.odin.events.core.EventPriority
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
-import com.odtheking.odin.events.core.onSend
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.*
 import com.odtheking.odin.utils.Color.Companion.withAlpha
+import com.odtheking.odin.utils.render.BoxStyle
 import com.odtheking.odin.utils.render.drawStyledBox
 import com.odtheking.odin.utils.skyblock.Island
 import com.odtheking.odin.utils.skyblock.LocationUtils
@@ -22,7 +24,6 @@ import net.minecraft.core.SectionPos
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.protocol.game.ClientboundSoundPacket
 import net.minecraft.network.protocol.game.ServerboundMovePlayerPacket
-import net.minecraft.network.protocol.game.ServerboundUseItemPacket
 import net.minecraft.sounds.SoundEvents
 import net.minecraft.world.entity.Pose
 import net.minecraft.world.item.ItemStack
@@ -44,12 +45,12 @@ object Etherwarp : Module(
     private val color by ColorSetting("Color", Colors.MINECRAFT_GOLD.withAlpha(.85f), true, desc = "Color of the box.").withDependency { render }
     private val renderFail by BooleanSetting("Show when failed", true, desc = "Shows the box even when the guess failed.").withDependency { render }
     private val failColor by ColorSetting("Fail Color", Colors.MINECRAFT_RED.withAlpha(.85f), true, desc = "Color of the box if guess failed.").withDependency { renderFail }
-    private val renderStyle by SelectorSetting("Render Style", "Outline", listOf("Filled", "Outline", "Filled Outline"), desc = "Style of the box.").withDependency { render }
+    private val renderStyle by SelectorSetting("Render Style", BoxStyle.FILLED_OUTLINE, desc = "Style of the box.").withDependency { render }
     private val useServerPosition by BooleanSetting("Use Server Position", false, desc = "Uses the server position for etherwarp instead of the client position.").withDependency { render }
     private val fullBlock by BooleanSetting("Full Block", false, desc = "Renders the the 1x1x1 block instead of it's actual size.").withDependency { render }
     private val depth by BooleanSetting("Depth", false, desc = "Renders the box through walls.").withDependency { render }
 
-    private val dropdown by DropdownSetting("Sounds", false)
+    private val dropdown by DropdownSetting("Sounds", desc = "Shows settings for playing a custom sound when you etherwarp.")
     private val sounds by BooleanSetting("Custom Sounds", false, desc = "Plays the selected custom sound when you etherwarp.").withDependency { dropdown }
     private val soundSettings = createSoundSettings("Etherwarp Sound", "entity.experience_orb.pickup") { sounds && dropdown }
     private var etherPos: EtherPos? = null
@@ -64,8 +65,8 @@ object Etherwarp : Module(
             it.cancel()
         }
 
-        on<RenderEvent.Extract> (EventPriority.LOW) {
-            if (mc.screen != null || !render) return@on
+        on<RenderExtractEvent> (EventPriority.LOW) {
+            if (mc.gui.screen() != null || !render) return@on
 
             val mainHandItem = mc.player?.mainHandItem ?: return@on
 
@@ -90,12 +91,12 @@ object Etherwarp : Module(
             }
         }
 
-        onSend<ServerboundUseItemPacket> {
-            if (!LocationUtils.isCurrentArea(Island.SinglePlayer)) return@onSend
-            if (cachedEtherData == null || (mc.player?.isShiftKeyDown == false && cachedEtherData?.itemId != "ETHERWARP_CONDUIT")) return@onSend
+        on<InputEvent> {
+            if (key.value != InputConstants.MOUSE_BUTTON_RIGHT || !LocationUtils.isCurrentArea(Island.SinglePlayer)) return@on
+            if (cachedEtherData == null || (mc.player?.isShiftKeyDown == false && cachedEtherData?.itemId != "ETHERWARP_CONDUIT")) return@on
 
             etherPos?.pos?.let {
-                if (etherPos?.succeeded == false) return@onSend
+                if (etherPos?.succeeded == false) return@on
                 mc.player?.connection?.send(
                     ServerboundMovePlayerPacket.PosRot(
                         it.x + 0.5, it.y + 1.05, it.z + 0.5, mc.player?.yRot ?: 0f,

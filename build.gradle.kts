@@ -32,16 +32,6 @@ dependencies {
 
     compileOnly("com.terraformersmc:modmenu:${property("modmenu_version")}")
 
-    property("minecraft_lwjgl_version").let { lwjglVersion ->
-        implementation("org.lwjgl:lwjgl-nanovg:$lwjglVersion")
-        include("org.lwjgl:lwjgl-nanovg:$lwjglVersion")
-
-        listOf("windows", "linux", "macos", "macos-arm64").forEach { os ->
-            implementation("org.lwjgl:lwjgl-nanovg:$lwjglVersion:natives-$os")
-            include("org.lwjgl:lwjgl-nanovg:$lwjglVersion:natives-$os")
-        }
-    }
-
     compileOnly("maven.modrinth:iris:${property("iris")}")
 }
 

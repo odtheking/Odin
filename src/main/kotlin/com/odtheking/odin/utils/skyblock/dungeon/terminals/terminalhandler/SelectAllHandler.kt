@@ -24,7 +24,7 @@ class SelectAllHandler(color: DyeColor) : TerminalHandler(TerminalTypes.SELECT) 
 
     override fun solve(slots: List<Slot>, updatedIndex: Int): List<Int> =
         slots.mapIndexedNotNull { index, slot ->
-            if (slot.item.item != Items.BLACK_STAINED_GLASS_PANE && !slot.item.hasGlint()
+            if (slot.item.item != Items.STAINED_GLASS_PANE.pick(DyeColor.BLACK) && !slot.item.hasGlint()
                 && validPrefixes.any(slot.item.hoverName.string.lowercase()::startsWith)) index else null
         }
 
