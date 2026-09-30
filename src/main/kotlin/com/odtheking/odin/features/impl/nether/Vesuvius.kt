@@ -2,6 +2,7 @@ package com.odtheking.odin.features.impl.nether
 
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.NumberSetting
+import com.odtheking.odin.clickgui.settings.impl.drawAtHud
 import com.odtheking.odin.events.GuiEvent
 import com.odtheking.odin.events.ScreenCloseEvent
 import com.odtheking.odin.events.SetSlotEvent
@@ -55,13 +56,7 @@ object Vesuvius : Module(
         on<GuiEvent.DrawTooltip> {
             val title = screen.title.string
             if (vesuviusHud.enabled && title.matches(chestRegex) && currentChest != null) {
-                guiGraphics.pose().pushMatrix()
-                guiGraphics.pose().translate(vesuviusHud.x.toFloat(), vesuviusHud.y.toFloat())
-                guiGraphics.pose().scale(vesuviusHud.scale)
-
-                guiGraphics.drawOverlay(false)
-
-                guiGraphics.pose().popMatrix()
+                guiGraphics.drawAtHud(vesuviusHud) { drawOverlay(false) }
             }
         }
 

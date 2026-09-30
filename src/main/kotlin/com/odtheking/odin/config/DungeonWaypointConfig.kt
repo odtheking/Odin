@@ -3,9 +3,11 @@ package com.odtheking.odin.config
 import com.google.gson.*
 import com.google.gson.reflect.TypeToken
 import com.odtheking.odin.OdinMod
+import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints
 import com.odtheking.odin.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.DungeonWaypoint
 import com.odtheking.odin.utils.Color
+import com.odtheking.odin.utils.network.WebUtils
 import net.minecraft.core.BlockPos
 import net.minecraft.world.phys.AABB
 import java.io.ByteArrayOutputStream
@@ -39,7 +41,12 @@ object DungeonWaypointConfig {
         }
     }
 
-    fun decodeWaypoints(input: String): MutableMap<String, MutableList<DungeonWaypoint>>? {
+    suspend fun decodeWaypoints(importString: String?): MutableMap<String, MutableList<DungeonWaypoint>>? {
+        val input = (importString?.let {
+            if (importString.startsWith("https://")) WebUtils.fetchString(importString).getOrNull()
+            else importString
+        } ?: mc.keyboardHandler.clipboard).trim().trim { it == '\n' }
+
         return try {
             gson.fromJson(
                 if (input.startsWith("{")) input else decompress(Base64.decode(input)),

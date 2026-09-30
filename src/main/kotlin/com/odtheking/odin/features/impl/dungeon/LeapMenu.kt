@@ -17,7 +17,8 @@ import com.odtheking.odin.utils.skyblock.dungeon.DungeonClass
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonPlayer
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils.leapTeammates
-import com.odtheking.odin.utils.ui.animations.Fade
+import com.odtheking.odin.utils.ui.compose.Animatable
+import com.odtheking.odin.utils.ui.compose.Motion
 import com.odtheking.odin.utils.ui.widget.CustomGUIImpl
 import net.minecraft.client.gui.components.PlayerFaceExtractor
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
@@ -48,7 +49,7 @@ object LeapMenu : Module(
     private val tankKeybind by KeybindSetting("Tank", InputConstants.UNKNOWN, "Used to leap to the Tank in the leap menu.").withDependency { keybindType == KeybindMode.CLASS }
 
     private val leapAnnounce by BooleanSetting("Leap Announce", false, desc = "Announces when you leap to a player.")
-    private val hoverFade = List(4) { Fade(HOVER_DURATION) }
+    private val hoverProgress = List(4) { Animatable(0f) }
 
     private val EMPTY = DungeonPlayer("Empty", DungeonClass.EMPTY, 0, null)
     private val leapedRegex = Regex("^You have teleported to (\\w{1,16})!$")
@@ -59,7 +60,7 @@ object LeapMenu : Module(
     const val BOX_HEIGHT = 75
 
     private const val GROW = 5f
-    private const val HOVER_DURATION = 200L
+    private const val HOVER_DURATION = 200
 
     private fun currentLeapScreen(): AbstractContainerScreen<*>? {
         if (!enabled) return null
@@ -110,6 +111,8 @@ object LeapMenu : Module(
                 return true
             },
             render = fun ScreenEvent.Render.(): Any {
+                Motion.frameNanos = System.nanoTime()
+
                 val halfW = mc.window.guiScaledWidth / 2
                 val halfH = mc.window.guiScaledHeight / 2
 
@@ -125,7 +128,8 @@ object LeapMenu : Module(
                     val localY = if (row == 0) -BOX_HEIGHT else 0
 
                     val hovered = (if (col == 0) mouseX < halfW else mouseX >= halfW) && (if (row == 0) mouseY < halfH else mouseY >= halfH)
-                    val grow = hoverFade[i].lerp(hovered, 0f, GROW)
+                    hoverProgress[i].animateTo(if (hovered) 1f else 0f, HOVER_DURATION)
+                    val grow = hoverProgress[i].value * GROW
 
                     guiGraphics.pose().pushMatrix()
                     guiGraphics.pose().translate(nearX.toFloat(), nearY.toFloat())

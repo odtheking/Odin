@@ -1,19 +1,21 @@
 package com.odtheking.odin.clickgui.settings
 
+import androidx.compose.runtime.Composable
 import com.odtheking.odin.features.Module
 import kotlin.properties.PropertyDelegateProvider
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
-interface Setting<T> : ReadWriteProperty<Module, T>, PropertyDelegateProvider<Module, ReadWriteProperty<Module, T>> {
-    val name: String
+abstract class Setting<T>(
+    val name: String,
     var description: String
+) : ReadWriteProperty<Module, T>, PropertyDelegateProvider<Module, ReadWriteProperty<Module, T>> {
 
-    val default: T
-    var value: T
+    abstract val default: T
+    abstract var value: T
 
-    var hidden: Boolean
-    var visibilityDependency: (() -> Boolean)?
+    var hidden: Boolean = false
+    var visibilityDependency: (() -> Boolean)? = null
 
     val isVisible: Boolean
         get() = !hidden && visibilityDependency?.invoke() != false
@@ -44,10 +46,7 @@ interface Setting<T> : ReadWriteProperty<Module, T>, PropertyDelegateProvider<Mo
     }
 }
 
-abstract class AbstractSetting<T>(
-    override val name: String,
-    override var description: String = ""
-) : Setting<T> {
-    override var hidden: Boolean = false
-    override var visibilityDependency: (() -> Boolean)? = null
+abstract class RenderableSetting<T>(name: String, description: String) : Setting<T>(name, description) {
+    @Composable
+    abstract fun Content()
 }

@@ -1,11 +1,14 @@
 package com.odtheking.odin.clickgui.settings.impl
 
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import com.odtheking.odin.clickgui.settings.RenderableSetting
-import com.odtheking.odin.clickgui.widget.drawIcon
+import com.odtheking.odin.clickgui.ui.Icon
+import com.odtheking.odin.clickgui.ui.SettingRow
+import com.odtheking.odin.clickgui.ui.animateProgress
 import com.odtheking.odin.utils.ui.animations.Easing
-import com.odtheking.odin.utils.ui.animations.Fade
-import net.minecraft.client.gui.GuiGraphicsExtractor
-import net.minecraft.client.input.MouseButtonEvent
 import net.minecraft.resources.Identifier
 import kotlin.math.PI
 
@@ -20,27 +23,20 @@ class DropdownSetting(
     desc: String
 ) : RenderableSetting<Boolean>(name, desc) {
 
-    override var value: Boolean = default
+    override var value: Boolean by mutableStateOf(default)
     private var enabled: Boolean by this::value
 
-    private val toggleAnimation = Fade(FLIP_DURATION, Easing.EASE_IN_OUT)
-
-    override fun render(graphics: GuiGraphicsExtractor, mouseX: Int, mouseY: Int) {
-        drawLabel(graphics)
-
-        val iconX = x + width - 12 - 8
-        val iconY = y + (height - 12) / 2
-
-        graphics.drawIcon(CHEVRON, iconX, iconY, 15, hover, toggleAnimation.progress(enabled) * QUARTER_TURN)
-    }
-
-    override fun onClick(event: MouseButtonEvent, doubleClick: Boolean) {
-        enabled = !enabled
+    @Composable
+    override fun Content() {
+        SettingRow { hovered ->
+            val turn = animateProgress(enabled, 200, Easing.EASE_IN_OUT)
+            Icon(CHEVRON, CHEVRON_SIZE, hovered = hovered, rotation = { turn.value * QUARTER_TURN }, onClick = { enabled = !enabled })
+        }
     }
 
     private companion object {
         val CHEVRON: Identifier = Identifier.fromNamespaceAndPath("odin", "textures/chevron.png")
         const val QUARTER_TURN = (PI / 2).toFloat()
-        const val FLIP_DURATION = 200L
+        const val CHEVRON_SIZE = 15
     }
 }

@@ -23,14 +23,6 @@ suspend fun DungeonWaypoints.saveWaypoints() {
     WaypointPackFileUtils.savePack(editPackId, copyWaypointMap(loadedPacks[editPackId] ?: mutableMapOf()))
 }
 
-internal suspend fun DungeonWaypoints.importEditableWaypoints(waypoints: MutableMap<String, MutableList<DungeonWaypoints.DungeonWaypoint>>) {
-    ensurePackState()
-    loadedPacks[editPackId] = copyWaypointMap(waypoints)
-    saveWaypoints()
-    allActiveWaypoints = rebuildVisibleWaypoints()
-    DungeonUtils.currentRoom?.setWaypoints()
-}
-
 internal suspend fun DungeonWaypoints.importPack(packName: String, waypoints: MutableMap<String, MutableList<DungeonWaypoints.DungeonWaypoint>>): Boolean {
     if (!WaypointPackFileUtils.createPack(packName)) return false
     WaypointPackFileUtils.savePack(packName, copyWaypointMap(waypoints))

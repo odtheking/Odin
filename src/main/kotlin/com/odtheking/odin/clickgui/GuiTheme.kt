@@ -13,10 +13,9 @@ object GuiTheme {
     const val RADIUS = 5f
     const val CAP = 5
     const val PADDING = 6
+    const val INNER_WIDTH = ROW_WIDTH - PADDING * 2
 
     const val PANEL_BLUR = 12f
-
-    fun textY(y: Int, height: Int): Int = y + (height - 8) / 2
 
     val background: Color get() = Colors.gray26
     val surface: Color get() = Colors.gray38

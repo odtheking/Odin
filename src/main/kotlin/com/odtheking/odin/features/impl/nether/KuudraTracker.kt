@@ -1,9 +1,6 @@
 package com.odtheking.odin.features.impl.nether
 
-import com.odtheking.odin.clickgui.settings.impl.ActionSetting
-import com.odtheking.odin.clickgui.settings.impl.ListSetting
-import com.odtheking.odin.clickgui.settings.impl.MapSetting
-import com.odtheking.odin.clickgui.settings.impl.NumberSetting
+import com.odtheking.odin.clickgui.settings.impl.*
 import com.odtheking.odin.events.GuiEvent
 import com.odtheking.odin.events.MessageEvent
 import com.odtheking.odin.events.core.on
@@ -70,15 +67,7 @@ object KuudraTracker : Module(
 
         on<GuiEvent.DrawTooltip> {
             val title = screen.title.string
-            if (enabled && title.matches(hudRegex)) {
-                guiGraphics.pose().pushMatrix()
-                guiGraphics.pose().translate(profitHud.x.toFloat(), profitHud.y.toFloat())
-                guiGraphics.pose().scale(profitHud.scale)
-
-                guiGraphics.drawOverlay(false)
-
-                guiGraphics.pose().popMatrix()
-            }
+            if (enabled && title.matches(hudRegex)) guiGraphics.drawAtHud(profitHud) { drawOverlay(false) }
         }
 
         on<MessageEvent.Chat> {
