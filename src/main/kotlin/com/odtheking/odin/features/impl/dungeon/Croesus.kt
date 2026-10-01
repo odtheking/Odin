@@ -2,7 +2,7 @@ package com.odtheking.odin.features.impl.dungeon
 
 import com.odtheking.odin.OdinMod
 import com.odtheking.odin.OdinMod.scope
-import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
+import com.odtheking.odin.clickgui.settings.RenderableSetting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.ActionSetting
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.NumberSetting

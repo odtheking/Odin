@@ -2,7 +2,7 @@ package com.odtheking.odin.features.impl.dungeon.dungeonwaypoints
 
 import com.mojang.blaze3d.platform.InputConstants
 import com.odtheking.odin.OdinMod.scope
-import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
+import com.odtheking.odin.clickgui.settings.RenderableSetting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.*
 import com.odtheking.odin.events.*
 import com.odtheking.odin.events.core.EventPriority
@@ -65,7 +65,7 @@ object DungeonWaypoints : Module(
             modMessage("§aWaypoint type changed to §c${waypointType.label}§a.")
         }
 
-    var selectedPackIds by ListSetting("Selected Waypoint Packs", mutableListOf<String>()).hide()
+    var selectedPackIds by ListSetting("Selected Waypoint Packs", mutableListOf<String>())
     var editPackId by StringSetting("Edit Waypoint Pack", "", length = 256, desc = "", placeholder = "").hide()
     var loadedPacks: MutableMap<String, MutableMap<String, MutableList<DungeonWaypoint>>> = mutableMapOf()
     var allActiveWaypoints: MutableMap<String, MutableList<DungeonWaypoint>> = mutableMapOf()

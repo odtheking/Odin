@@ -1,7 +1,7 @@
 package com.odtheking.odin.features.impl.dungeon
 
 import com.mojang.blaze3d.platform.InputConstants
-import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
+import com.odtheking.odin.clickgui.settings.RenderableSetting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.*
 import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.MessageEvent

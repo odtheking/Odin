@@ -58,7 +58,7 @@ object KuudraTracker : Module(
     private var free by NumberSetting("Free Chests", 0, 0..Int.MAX_VALUE, 1, "Amount of Paid Chests opened").hide()
 
     private var toDisplay = mutableListOf<Pair<MutableComponent, Double>>()
-    private var totalKeys by ListSetting("Total Keys", mutableListOf(0, 0, 0, 0, 0)).hide() //Tier 1-5
+    private var totalKeys by ListSetting("Total Keys", mutableListOf(0, 0, 0, 0, 0)) //Tier 1-5
 
     private var last = LastAdded(mutableListOf(), mutableListOf(), 0)
 

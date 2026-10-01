@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName
 import com.mojang.authlib.GameProfile
 import com.mojang.blaze3d.vertex.PoseStack
 import com.odtheking.odin.OdinMod
-import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
+import com.odtheking.odin.clickgui.settings.RenderableSetting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.*
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.modMessage

@@ -38,7 +38,6 @@ object HudLayer {
         CompositionLocalProvider(LocalTextShadow provides true) {
             Box {
                 val content = Box { setting.content(example) }
-                // scaling pivots on the center, so shift the content to keep its top-left corner on hud.x/hud.y
                 content.scale { hud.scale }
                     .offset({ ((hud.scale - 1f) * content.width / 2f).roundToInt() }, { ((hud.scale - 1f) * content.height / 2f).roundToInt() })
                 if (example) Handle(setting)
