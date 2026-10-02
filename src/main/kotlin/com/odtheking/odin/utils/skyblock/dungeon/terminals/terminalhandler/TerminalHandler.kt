@@ -52,7 +52,7 @@ abstract class TerminalHandler(val type: TerminalTypes) {
     open fun click(slotIndex: Int, button: Int, simulateClick: Boolean) {
         if (!canClick(slotIndex, button) || shouldProtect()) return
 
-        val button = if (button == 1 && type == TerminalTypes.RUBIX) InputConstants.MOUSE_BUTTON_RIGHT else InputConstants.MOUSE_BUTTON_MIDDLE
+        val button = if (button == InputConstants.MOUSE_BUTTON_RIGHT && type == TerminalTypes.RUBIX) 1 else InputConstants.MOUSE_BUTTON_MIDDLE
         clickedSlots.add(slotIndex to button)
         lastClickTime = System.currentTimeMillis()
 
