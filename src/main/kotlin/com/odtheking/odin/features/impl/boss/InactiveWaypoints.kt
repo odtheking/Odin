@@ -2,16 +2,16 @@ package com.odtheking.odin.features.impl.boss
 
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.ColorSetting
+import com.odtheking.odin.clickgui.settings.impl.SelectorSetting
+import com.odtheking.odin.events.EntityEvent
 import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.MessageEvent
 import com.odtheking.odin.events.RenderExtractEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
-import com.odtheking.odin.utils.Color.Companion.withAlpha
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.addVec
 import com.odtheking.odin.utils.containsOneOf
-import com.odtheking.odin.utils.handlers.TickTask
 import com.odtheking.odin.utils.render.*
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.skyblock.dungeon.M7Phases
@@ -22,15 +22,50 @@ object InactiveWaypoints : Module(
     name = "Inactive Waypoints",
     description = "Shows inactive terminals, devices and levers."
 ) {
-    private val showTerminals by BooleanSetting("Show Terminals", true, desc = "Shows inactive terminals.")
-    private val showDevices by BooleanSetting("Show Devices", true, desc = "Shows inactive devices.")
-    private val showLevers by BooleanSetting("Show Levers", true, desc = "Shows inactive levers.")
-    private val renderText by BooleanSetting("Render Text", true, desc = "Renders the name of the inactive waypoint.")
-    private val renderBeacon by BooleanSetting("Render Beacon", true, desc = "Renders a beacon beam on the inactive waypoint.")
-    private val renderBox by BooleanSetting("Render Box", true, desc = "Renders a box around the inactive waypoint.")
-    private val hideDefault by BooleanSetting("Hide Default", true, desc = "Hide the Hypixel names of Inactive Terminals.")
-    private val color by ColorSetting("Color", Colors.MINECRAFT_YELLOW.withAlpha(.4f), true, desc = "The color of the box.")
-    private val depthCheck by BooleanSetting("Depth check", false, desc = "Boxes show through walls.")
+    private val show by SelectorSetting("Show", Show.All, desc = "Which inactive waypoints to show.")
+    private val style by SelectorSetting("Style", Style.Full, desc = "How the inactive waypoints are rendered.")
+    private val color by ColorSetting("Waypoint color", Colors.MINECRAFT_YELLOW, true, desc = "The color of the waypoints.")
+    private val throughWalls by BooleanSetting("Through Walls", true, desc = "Waypoints show through walls.")
+    private val hideDefault by BooleanSetting("Hide Default", true, desc = "Hides Hypixel's floating names above inactive waypoints.")
+
+    private enum class Show(private val displayName: String, val terminals: Boolean, val devices: Boolean, val levers: Boolean) {
+        All("All", true, true, true),
+        TermsAndLevers("Terms & Levers", true, false, true),
+        Terminals("Terminals", true, false, false),
+        Devices("Devices", false, true, false),
+        Levers("Levers", false, false, true);
+
+        override fun toString() = displayName
+    }
+
+    private enum class Style(private val displayName: String, val box: Boolean, val text: Boolean, val beacon: Boolean) {
+        Full("Box, Text & Beacon", true, true, true),
+        BoxText("Box & Text", true, true, false),
+        Box("Box", true, false, false),
+        Text("Text", false, true, false);
+
+        override fun toString() = displayName
+    }
+
+    private enum class Kind(val label: String?) {
+        Terminal("Terminal"), Device("Device"), Lever("Lever"), Other(null);
+
+        val shown get() = when (this) {
+            Terminal -> show.terminals
+            Device -> show.devices
+            Lever -> show.levers
+            Other -> false
+        }
+
+        companion object {
+            fun of(name: String): Kind? = when (name) {
+                "Inactive Terminal" -> Terminal
+                "Inactive" -> Device
+                "Not Activated" -> Lever
+                else -> if (name.containsOneOf("Inactive", "Not Activated", "CLICK HERE", ignoreCase = true)) Other else null
+            }
+        }
+    }
 
     private val hud by HUD("Term Info", "Shows information about the terminals, levers and devices in the dungeon.") {
         if (!(DungeonUtils.inBoss && shouldRender) && !it) return@HUD 0 to 0
@@ -43,7 +78,7 @@ object InactiveWaypoints : Module(
         width to 36
     }
 
-    private var inactiveList = setOf<ArmorStand>()
+    private val inactive = hashMapOf<ArmorStand, Kind>()
     private var firstInSection = false
     private var shouldRender = false
     private var isComplete = false
@@ -60,11 +95,15 @@ object InactiveWaypoints : Module(
     private val gateRegex = Regex("^The gate has been destroyed!$")
 
     init {
-        TickTask(10) {
-            if (!enabled || DungeonUtils.getF7Phase() != M7Phases.P3) return@TickTask
-            inactiveList = mc.level?.entitiesForRendering()?.filterIsInstance<ArmorStand>()?.filter {
-                it.name.string.containsOneOf("Inactive", "Not Activated", "CLICK HERE", ignoreCase = true)
-            }?.toSet().orEmpty()
+        on<EntityEvent.SetData> {
+            if (DungeonUtils.getF7Phase() != M7Phases.P3) return@on
+            val stand = entity as? ArmorStand ?: return@on
+
+            Kind.of(stand.name.string)?.let { inactive[stand] = it } ?: inactive.remove(stand)
+        }
+
+        on<EntityEvent.Remove> {
+            (entity as? ArmorStand)?.let { inactive.remove(it) }
         }
 
         on<MessageEvent.Chat> {
@@ -100,6 +139,7 @@ object InactiveWaypoints : Module(
                 }
 
                 coreOpeningRegex.matches(message) -> {
+                    inactive.clear()
                     shouldRender = false
                     resetState()
                 }
@@ -107,30 +147,25 @@ object InactiveWaypoints : Module(
         }
 
         on<LevelEvent.Load> {
+            inactive.clear()
             shouldRender = false
             resetState()
         }
 
         on<RenderExtractEvent> {
-            if (inactiveList.isEmpty() || DungeonUtils.getF7Phase() != M7Phases.P3) return@on
-            inactiveList.forEach {
-                val name = it.name.string
-                if ((name == "Inactive Terminal" && showTerminals) || (name == "Inactive" && showDevices) || (name == "Not Activated" && showLevers)) {
-                    val customName = if (name == "Inactive Terminal") "Terminal" else if (name == "Inactive") "Device" else "Lever"
-                    if (renderBox)
-                        drawWireFrameBox(AABB.unitCubeFromLowerCorner(it.position().addVec(-0.5, z = -0.5)), color, depth = depthCheck)
-                    if (renderText)
-                        drawText(customName, it.position().addVec(y = 2.0), 1.5f, true)
-                    if (renderBeacon)
-                        drawBeaconBeam(it.blockPosition(), color)
-                }
-                it.isCustomNameVisible = !hideDefault
+            if (inactive.isEmpty() || DungeonUtils.getF7Phase() != M7Phases.P3) return@on
+            inactive.forEach { (stand, kind) ->
+                stand.isCustomNameVisible = !hideDefault
+                val label = kind.label?.takeIf { kind.shown } ?: return@forEach
+
+                if (style.box) drawWireFrameBox(AABB.unitCubeFromLowerCorner(stand.position().addVec(-0.5, z = -0.5)), color, depth = !throughWalls)
+                if (style.text) drawText(label, stand.position().addVec(y = 2.0), 1.5f, true)
+                if (style.beacon) drawBeaconBeam(stand.blockPosition(), color)
             }
         }
     }
 
     private fun resetState() {
-        inactiveList = emptySet()
         firstInSection = false
         lastCompleted = 0
         isComplete = false

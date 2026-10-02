@@ -32,8 +32,10 @@ class DungeonRoom(var type: RoomType, initialPosition: IVec2, var data: RoomData
         private set
 
     var foundSecrets: Int? = null
+    var playerWalkedInto = false
 
     val isViewable: Boolean get() = walkedInto || checkmark != MapCheckmark.UNDISCOVERED
+    val shouldShowName get() = walkedInto || playerWalkedInto
     val name: String? get() = data?.name
 
     fun addSegment(segment: DungeonTile) {

@@ -30,7 +30,7 @@ import kotlin.math.max
 import kotlin.math.sin
 import kotlin.math.sqrt
 
-private val BEAM_TEXTURE = Identifier.withDefaultNamespace("textures/entity/beacon_beam.png")
+private val BEAM_TEXTURE = Identifier.withDefaultNamespace("textures/entity/beacon/beacon_beam.png")
 
 private fun Int.isFullyOpaque(): Boolean = ((this ushr 24) and 0xFF) == 0xFF
 

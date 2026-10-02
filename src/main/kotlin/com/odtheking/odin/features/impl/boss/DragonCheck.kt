@@ -28,7 +28,7 @@ object DragonCheck {
     }
 
     fun dragonSprayed(event: EntityEvent.SetItemSlot) {
-        if (event.stack.item == Items.PACKED_ICE) return
+        if (event.stack.item != Items.PACKED_ICE) return
         val sprayedEntity = event.entity as? ArmorStand ?: return
 
         WitherDragonsEnum.entries.forEach { dragon ->

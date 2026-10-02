@@ -93,7 +93,7 @@ object PuzzleSolvers : Module(
     private val boulderSolver by BooleanSetting("Boulder Solver", true, desc = "Solver for the boulder puzzle.").withDependency { boulderDropDown }
     private val showAllBoulderClicks by BooleanSetting("Show All Boulder Clicks", false, desc = "Shows all the clicks or only the first.").withDependency { boulderDropDown && boulderSolver }
     private val boulderStyle by SelectorSetting("Boulder Style", BoxStyle.OUTLINE, desc = "Whether or not the box should be filled.").withDependency { boulderDropDown && boulderSolver }
-    private val boulderColor by ColorSetting("Boulder Color", Colors.MINECRAFT_GREEN.withAlpha(.5f), true, desc = "The color of the box.").withDependency { boulderDropDown && boulderSolver }
+    private val boulderColor by ColorSetting("Boulder Color", Colors.MINECRAFT_GREEN, true, desc = "The color of the box.").withDependency { boulderDropDown && boulderSolver }
 
     private val puzzleTimers by BooleanSetting("Puzzle Timers", true, desc = "Shows the time it took to solve each puzzle.")
     private val draftPrompt by BooleanSetting("Draft prompt", true, desc = "Automatically gets architect's draft when failing a puzzle room.")

@@ -125,6 +125,6 @@ class SelectorSetting<E : Enum<E>>(
         const val CLOSED_PADDING = 26
         const val PILL_HEIGHT = 17
         const val PILL_PADDING = 6
-        const val RIGHT_PAD = 8
+        const val RIGHT_PAD = 5
     }
 }

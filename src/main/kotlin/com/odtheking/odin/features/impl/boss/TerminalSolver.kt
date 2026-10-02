@@ -8,6 +8,7 @@ import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Color.Companion.darker
+import com.odtheking.odin.utils.Color.Companion.withAlpha
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalTypes
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalUtils
@@ -36,24 +37,26 @@ object TerminalSolver : Module(
     val rubixMode by SelectorSetting("Rubix Mode", RubixMode.FEWEST_CLICKS, desc = "Whether the rubix solver should mix in right clicks for the fewest clicks overall, or stick to left clicks only.").withDependency { solverSettings }
 
     private val firstClickProtSettings by DropdownSetting("First Click Prot Dropdown", desc = "Options related to first click protection.")
-    val firstClickProt by NumberSetting("First Click Prot", 500, 350..800, 10, unit = "ms", desc = "The amount of time after opening a terminal where clicks are blocked to prevent bans (recommended value is 500 minus your ping).").withDependency { firstClickProtSettings }
+    val firstClickProt by NumberSetting("First Click Prot", 500, 0..800, 10, unit = "ms", desc = "The amount of time after opening a terminal where clicks are blocked to prevent bans (recommended value is 500 minus your ping).").withDependency { firstClickProtSettings }
     val shouldFirstClickProtWithTicks by BooleanSetting("Account For Server Lag", false, desc = "Prevents bans from clicking when the server lags after opening the terminal (disabled in singleplayer").withDependency { firstClickProtSettings }
     val firstClickProtTicks by NumberSetting("Lag Protection Ticks", 8, 7..16, unit = "ticks", desc = "Each tick = 50ms (recommended value is 8)").withDependency { shouldFirstClickProtWithTicks && firstClickProtSettings }
 
     private val showColors by DropdownSetting("Color Settings", desc = "Color options for the terminal solver.")
-    val backgroundColor by ColorSetting("Background", Colors.gray26, true, desc = "Background color of the terminal solver.").withDependency { showColors }
-    val textColor by ColorSetting("Text", Colors.WHITE, true, desc = "Text color of the terminal solver.").withDependency { showColors }
+    val backgroundColor by ColorSetting("Background", Colors.gray26.withAlpha(0.5f), true, desc = "Background color of the terminal solver.").withDependency { showColors }
 
     val panesColor by ColorSetting("Panes", Colors.MINECRAFT_GREEN, true, desc = "Color of the panes terminal solver.").withDependency { showColors }
 
+    val rubixText by ColorSetting("Rubix Text", Colors.WHITE, true, desc = "Text color of the Rubix terminal solver.").withDependency { showColors }
     val rubixColor1 by ColorSetting("Rubix 1", Colors.MINECRAFT_GREEN, true, desc = "Color of the rubix terminal solver for 1 click.").withDependency { showColors }
     val rubixColor2 by ColorSetting("Rubix 2", Colors.MINECRAFT_GREEN.darker(0.5f), true, desc = "Color of the rubix terminal solver for 2 click.").withDependency { showColors }
     val oppositeRubixColor1 by ColorSetting("Rubix -1", Colors.MINECRAFT_DARK_RED, true, desc = "Color of the rubix terminal solver for -1 click.").withDependency { showColors }
     val oppositeRubixColor2 by ColorSetting("Rubix -2", Colors.MINECRAFT_DARK_RED.darker(0.5f), true, desc = "Color of the rubix terminal solver for -2 click.").withDependency { showColors }
 
-    val orderColor by ColorSetting("Order 1", Colors.MINECRAFT_GREEN, true, desc = "Color of the order terminal solver for 1st item.").withDependency { showColors }
-    val orderColor2 by ColorSetting("Order 2", Colors.MINECRAFT_GREEN.darker(0.5f), true, desc = "Color of the order terminal solver for 2nd item.").withDependency { showColors }
-    val orderColor3 by ColorSetting("Order 3", Colors.MINECRAFT_GREEN.darker(0.5f).darker(0.5f), true, desc = "Color of the order terminal solver for 3rd item.").withDependency { showColors }
+    val numbersText by ColorSetting("Numbers Text", Colors.WHITE, true, desc = "Text color of the Numbers terminal solver.").withDependency { showColors }
+    val numbers1Color by ColorSetting("Numbers 1", Colors.MINECRAFT_GREEN, true, desc = "Color of the order terminal solver for 1st item.").withDependency { showColors }
+    val numbers2Color by ColorSetting("Numbers 2", Colors.MINECRAFT_GREEN.darker(0.5f), true, desc = "Color of the order terminal solver for 2nd item.").withDependency { showColors }
+    val numbers3Color by ColorSetting("Numbers 3", Colors.MINECRAFT_GREEN.darker(0.5f).darker(0.5f), true, desc = "Color of the order terminal solver for 3rd item.").withDependency { showColors }
+    val numbers4Color by ColorSetting("Numbers 4", Colors.MINECRAFT_GREEN.darker(0.5f).darker(0.5f).darker(0.5f), true, desc = "Color of the order terminal solver for 3rd item.").withDependency { showColors }
 
     val startsWithColor by ColorSetting("Starts With", Colors.MINECRAFT_GREEN, true, desc = "Color of the starts with terminal solver.").withDependency { showColors }
 
@@ -90,7 +93,7 @@ object TerminalSolver : Module(
             if (slot.index <= currentTerm.type.windowSize - 1) {
                 currentTerm.getSlotRendering(slot.index)?.let { (color, text) ->
                     guiGraphics.fill(slot.x, slot.y, slot.x + 16, slot.y + 16, color.rgba)
-                    text?.let { guiGraphics.centeredText(screen.font, it, slot.x + 8, slot.y + 4, textColor.rgba) }
+                    text?.let { guiGraphics.centeredText(screen.font, it, slot.x + 8, slot.y + 4, if (currentTerm.type == TerminalTypes.NUMBERS) numbersText.rgba else rubixText.rgba) }
                     cancel()
                 }
                 if (renderType == RenderType.ODIN) cancel()

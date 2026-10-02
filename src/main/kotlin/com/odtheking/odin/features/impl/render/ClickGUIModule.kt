@@ -15,7 +15,6 @@ import com.odtheking.odin.features.ModuleManager
 import com.odtheking.odin.features.impl.dungeon.map.DungeonMap
 import com.odtheking.odin.utils.*
 import com.odtheking.odin.utils.network.WebUtils.fetchJson
-import com.odtheking.odin.utils.network.WebUtils.gson
 import com.odtheking.odin.utils.network.WebUtils.postData
 import com.odtheking.odin.utils.skyblock.LocationUtils
 import kotlinx.coroutines.launch
@@ -41,7 +40,7 @@ object ClickGUIModule : Module(
     val devMessage by BooleanSetting("Developer Message", false, desc = "Sends development related messages to the chat.")
 
     init {
-        on<SecretsUpdateEvent> { DungeonMap.syncSocket.send(gson.toJson(room)) }
+        on<SecretsUpdateEvent> { DungeonMap.sendSync(room) }
 
         on<FloorEnterEvent> {
             LocationUtils.lobbyId?.let { DungeonMap.syncSocket.connect("${webSocketUrl}$it") } ?: devMessage("Failed to connect to dungeon websocket, lobbyId is null.")
@@ -49,7 +48,7 @@ object ClickGUIModule : Module(
 
         on<RoomEnterEvent> {
             if (room == null) DungeonMap.syncSocket.shutdown()
-            else DungeonMap.syncSocket.send(gson.toJson(room))
+            else DungeonMap.sendSync(room)
         }
 
         on<LevelEvent.Load> {

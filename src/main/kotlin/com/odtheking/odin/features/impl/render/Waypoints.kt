@@ -1,11 +1,6 @@
 package com.odtheking.odin.features.impl.render
 
-import com.mojang.blaze3d.platform.InputConstants
-import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
-import com.odtheking.odin.clickgui.settings.impl.DropdownSetting
-import com.odtheking.odin.clickgui.settings.impl.KeybindSetting
-import com.odtheking.odin.clickgui.settings.impl.NumberSetting
 import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.MessageEvent
 import com.odtheking.odin.events.RenderExtractEvent
@@ -15,7 +10,6 @@ import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.modMessage
 import com.odtheking.odin.utils.render.drawCustomBeacon
-import com.odtheking.odin.utils.sendChatMessage
 import net.minecraft.core.BlockPos
 import kotlin.math.abs
 
@@ -25,21 +19,7 @@ object Waypoints : Module(
 ) {
     private val fromParty by BooleanSetting("From Party Chat", true, desc = "Adds waypoints from party chat.")
     private val fromAll by BooleanSetting("From All Chat", false, desc = "Adds waypoints from all chat.")
-
     private val personalWaypoint by BooleanSetting("Personal Waypoint", false, desc = "Makes waypoints you send also create for you.")
-
-    private val pingLocationDropDown by DropdownSetting("Ping Location Dropdown", false, desc = "Shows settings for placing a waypoint at the block you're looking at.")
-    private val pingLocationToggle by BooleanSetting("Ping Waypoint", false, desc = "Adds a waypoint at the location you are looking at.").withDependency { pingLocationDropDown }
-    private val pingLocation by KeybindSetting("Ping Keybind", InputConstants.UNKNOWN, desc = "Sends the location you are looking at as coords in chat for waypoints.").onPress {
-        if (!pingLocationToggle) return@onPress
-        Etherwarp.getEtherPos(mc.player?.position(), pingDistance).pos?.let { pos ->
-            addTempWaypoint("§fWaypoint", pos.x, pos.y, pos.z, pingWaypointTime)
-            if (sendPingedLocation) sendChatMessage("x: ${pos.x}, y: ${pos.y}, z: ${pos.z}")
-        }
-    }.withDependency { pingLocationToggle && pingLocationDropDown }
-    private val sendPingedLocation by BooleanSetting("Send Pinged Location", false, desc = "Sends the location you are looking at as coords in chat for waypoints.").withDependency { pingLocationToggle && pingLocationDropDown }
-    private val pingWaypointTime by NumberSetting("Ping Waypoint Time", 15000L, 0.0..128000.0, 1000L, unit = "ms", desc = "Time to wait before sending the waypoint command.").withDependency { pingLocationToggle && pingLocationDropDown }
-    private val pingDistance by NumberSetting("Ping Distance", 64.0, 1..128, 1, desc = "Distance to ping location.").withDependency { pingLocationToggle && pingLocationDropDown }
 
     private val partyRegex =
         Regex("^Party > (?:\\[[^]]*?])? ?(\\w{1,16})(?: [ቾ⚒])?: x: (-?\\d+), y: (-?\\d+), z: (-?\\d+).*") // https://regex101.com/r/8K26A1/1
@@ -74,11 +54,8 @@ object Waypoints : Module(
     }
 
     fun addTempWaypoint(name: String = "Waypoint", x: Int, y: Int, z: Int, duration: Long = 60_000) {
-        if (!enabled) return
         if (listOf(x, y, z).any { abs(it) > 5000 }) return modMessage("§cWaypoint out of bounds.")
-        if (temporaryWaypoints.any { it.blockPos.x == x && it.blockPos.y == y && it.blockPos.z == z }) return modMessage(
-            "§cWaypoint already exists at $x, $y, $z."
-        )
+        if (temporaryWaypoints.any { it.blockPos.x == x && it.blockPos.y == y && it.blockPos.z == z }) return modMessage("§cWaypoint already exists at $x, $y, $z.")
         modMessage("§aAdded temporary waypoint at §6$x§r, §3$y§r, §d$z§r.")
         temporaryWaypoints.add(Waypoint(name, BlockPos(x, y, z), colors.random(), duration))
     }
