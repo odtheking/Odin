@@ -8,7 +8,7 @@ import net.minecraft.client.gui.components.EditBox
 import net.minecraft.network.chat.Component
 
 @Composable
-internal fun Layout(policy: MeasurePolicy, content: Draw? = null, children: @Composable () -> Unit = {}): UiNode {
+private fun Layout(policy: MeasurePolicy, content: Draw? = null, children: @Composable () -> Unit = {}): UiNode {
     val node = remember { UiNode() }
     node.reset()
     node.policy = policy

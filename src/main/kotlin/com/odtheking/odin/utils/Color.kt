@@ -175,6 +175,13 @@ object Colors {
     @JvmField val BLACK = Color(0, 0, 0)
     @JvmField val TRANSPARENT = Color(0, 0, 0, 0f)
 
+    val minecraftColors = listOf(
+        MINECRAFT_DARK_BLUE, MINECRAFT_DARK_GREEN, MINECRAFT_DARK_AQUA, MINECRAFT_DARK_RED,
+        MINECRAFT_DARK_PURPLE, MINECRAFT_GOLD, MINECRAFT_GRAY, MINECRAFT_DARK_GRAY,
+        MINECRAFT_BLUE, MINECRAFT_GREEN, MINECRAFT_AQUA, MINECRAFT_RED,
+        MINECRAFT_LIGHT_PURPLE, MINECRAFT_YELLOW, WHITE
+    )
+
     @JvmField val gray38 = Color(38, 38, 38)
     @JvmField val gray26 = Color(26, 26, 26)
 }

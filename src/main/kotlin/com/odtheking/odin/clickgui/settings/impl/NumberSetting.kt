@@ -19,6 +19,7 @@ import com.odtheking.odin.utils.ui.compose.*
 import net.minecraft.client.input.MouseButtonEvent
 import kotlin.math.round
 import kotlin.math.roundToInt
+import kotlin.math.roundToLong
 
 /**
  * Setting that lets you pick a number between a range.
@@ -43,6 +44,13 @@ class NumberSetting<E>(
         unit: String = ""
     ) : this(name, default, range.first.toDouble()..range.last.toDouble(), increment, desc, unit)
 
+    private fun Double.asE(): E = when (default) {
+        is Int -> roundToInt()
+        is Long -> roundToLong()
+        is Float -> toFloat()
+        else -> this
+    } as E
+
     private val step = increment.toDouble()
     private val minimum = range.start
     private val maximum = range.endInclusive
@@ -52,7 +60,7 @@ class NumberSetting<E>(
     override var value: E
         get() = current
         set(value) {
-            current = (round(value.toDouble() / step) * step).coerceIn(minimum, maximum) as E
+            current = (round(value.toDouble() / step) * step).coerceIn(minimum, maximum).asE()
             display = format(current)
         }
 
@@ -66,7 +74,7 @@ class NumberSetting<E>(
     var percent: Float
         get() = ((value.toDouble() - minimum) / (maximum - minimum)).toFloat()
         set(percent) {
-            value = (minimum + percent.coerceIn(0f, 1f) * (maximum - minimum)) as E
+            value = (minimum + percent.coerceIn(0f, 1f) * (maximum - minimum)).asE()
         }
 
     private fun format(value: E): String {
@@ -76,7 +84,7 @@ class NumberSetting<E>(
     }
 
     fun nudge(steps: Int) {
-        value = (value.toDouble() + steps * step).coerceIn(minimum, maximum) as E
+        value = (value.toDouble() + steps * step).coerceIn(minimum, maximum).asE()
     }
 
     @Composable
@@ -99,7 +107,7 @@ class NumberSetting<E>(
     override fun write(gson: Gson): JsonElement = JsonPrimitive(value)
 
     override fun read(element: JsonElement, gson: Gson) {
-        element.asNumber?.let { value = it as E }
+        element.asNumber?.let { value = it.toDouble().asE() }
     }
 }
 

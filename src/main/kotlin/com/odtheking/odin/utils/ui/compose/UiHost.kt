@@ -8,7 +8,6 @@ import net.minecraft.client.input.CharacterEvent
 import net.minecraft.client.input.KeyEvent
 import net.minecraft.client.input.MouseButtonEvent
 import java.lang.Runnable
-import java.lang.System
 import java.util.concurrent.ConcurrentLinkedQueue
 import kotlin.coroutines.CoroutineContext
 
@@ -24,7 +23,7 @@ class UiHost(content: @Composable () -> Unit) {
     private var focused: UiNode? = null
     private var pressed: UiNode? = null
     private var settling = true
-    internal val dismissListeners = ArrayList<() -> Unit>()
+    val dismissListeners = ArrayList<() -> Unit>()
 
     init {
         scope.launch(start = CoroutineStart.UNDISPATCHED) { recomposer.runRecomposeAndApplyChanges() }
@@ -172,7 +171,7 @@ object Overlay {
         queue += draw
     }
 
-    internal fun flush(graphics: GuiGraphicsExtractor) {
+    fun flush(graphics: GuiGraphicsExtractor) {
         try {
             for (i in queue.indices) queue[i](graphics)
         } finally {
@@ -187,8 +186,8 @@ class InteractionSource {
 }
 
 class FocusRequester {
-    internal var node: UiNode? = null
-    internal var onRequest: (() -> Unit)? = null
+    var node: UiNode? = null
+    var onRequest: (() -> Unit)? = null
 }
 
 private class UiApplier(root: UiNode, private val onRemoved: (UiNode) -> Unit) : AbstractApplier<UiNode>(root) {

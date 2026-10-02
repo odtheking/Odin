@@ -45,4 +45,4 @@ internal object IrisCompatImpl : IrisCompatability {
 
 internal object IrisCompatNoOp : IrisCompatability
 
-internal fun resolve(): IrisCompatability = if (FabricLoader.getInstance().isModLoaded("iris")) IrisCompatImpl else IrisCompatNoOp
+fun resolve(): IrisCompatability = if (FabricLoader.getInstance().isModLoaded("iris")) IrisCompatImpl else IrisCompatNoOp

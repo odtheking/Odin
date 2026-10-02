@@ -63,10 +63,10 @@ internal suspend fun DungeonWaypoints.renamePack(oldName: String, newName: Strin
     return true
 }
 
-internal fun DungeonWaypoints.exportEditableWaypoints(): MutableMap<String, MutableList<DungeonWaypoints.DungeonWaypoint>> =
+fun DungeonWaypoints.exportEditableWaypoints(): MutableMap<String, MutableList<DungeonWaypoints.DungeonWaypoint>> =
     copyWaypointMap(loadedPacks[editPackId] ?: mutableMapOf())
 
-internal fun DungeonWaypoints.resetClickedWaypoints() {
+fun DungeonWaypoints.resetClickedWaypoints() {
     loadedPacks = loadedPacks.mapValuesTo(mutableMapOf()) { (_, packWaypoints) -> copyWaypointMap(packWaypoints) }
     allActiveWaypoints = rebuildVisibleWaypoints()
     DungeonUtils.currentRoom?.setWaypoints()

@@ -77,7 +77,7 @@ object HudLayer {
     }
 
     @Composable
-    internal fun DrawnHudContent(hud: HudElement, example: Boolean, block: GuiGraphicsExtractor.(example: Boolean) -> Pair<Int, Int>) {
+    fun DrawnHudContent(hud: HudElement, example: Boolean, block: GuiGraphicsExtractor.(example: Boolean) -> Pair<Int, Int>) {
         Canvas(size = { hud.width.coerceAtLeast(1) to hud.height.coerceAtLeast(1) }) { graphics ->
             graphics.pose().pushMatrix()
             graphics.pose().translate(x.toFloat(), y.toFloat())

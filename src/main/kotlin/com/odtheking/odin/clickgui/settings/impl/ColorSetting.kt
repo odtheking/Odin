@@ -25,7 +25,8 @@ class ColorSetting(
     name: String,
     override val default: Color,
     private val allowAlpha: Boolean = false,
-    desc: String
+    desc: String,
+    private val startExpanded: Boolean = false
 ) : RenderableSetting<Color>(name, desc), Saving {
 
     override var value: Color by mutableStateOf(default.copy())
@@ -42,7 +43,7 @@ class ColorSetting(
 
     @Composable
     override fun Content() {
-        var expanded by remember { mutableStateOf(false) }
+        var expanded by remember { mutableStateOf(startExpanded) }
         val color = value
 
         Column {

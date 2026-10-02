@@ -58,7 +58,7 @@ open class TermSimGUI(
         playTermSimSound()
     }
 
-    internal fun TerminalHandler.onComplete() {
+    fun TerminalHandler.onComplete() {
         ScreenCloseEvent.postAndCatch()
         TerminalEvent.Solve(this).postAndCatch()
         StartGUI.open(ping)

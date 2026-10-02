@@ -9,7 +9,7 @@ import net.minecraft.client.input.MouseButtonEvent
 
 typealias Draw = UiNode.(graphics: GuiGraphicsExtractor) -> Unit
 
-internal interface MeasurePolicy {
+interface MeasurePolicy {
     fun measure(node: UiNode)
     fun place(node: UiNode)
 }
@@ -17,7 +17,7 @@ internal interface MeasurePolicy {
 class UiNode {
     var parent: UiNode? = null
         internal set
-    internal val children = ArrayList<UiNode>(0)
+    val children = ArrayList<UiNode>(0)
 
     var x = 0
         internal set
@@ -29,29 +29,31 @@ class UiNode {
     val right: Int get() = x + width
     val bottom: Int get() = y + height
 
-    internal var policy: MeasurePolicy = BoxPolicy
-    internal var content: Draw? = null
+    var policy: MeasurePolicy = BoxPolicy
+    var content: Draw? = null
 
-    internal var widthOf: (UiNode.() -> Int)? = null
-    internal var heightOf: (UiNode.() -> Int)? = null
-    internal var clipWhen: (UiNode.() -> Boolean)? = null
-    internal var offsetX: (() -> Int)? = null
-    internal var offsetY: (() -> Int)? = null
-    internal var scale: (() -> Float)? = null
-    internal val layers = ArrayList<Draw>(0)
-    internal val hoverSources = ArrayList<InteractionSource>(0)
-    internal var onPress: (() -> Unit)? = null
-    internal var pointer: PointerInput? = null
-    internal var onScroll: (UiNode.(amount: Double) -> Boolean)? = null
-    internal var onKey: (UiNode.(event: KeyEvent) -> Boolean)? = null
-    internal var onChar: (UiNode.(event: CharacterEvent) -> Boolean)? = null
-    internal var onFocusChanged: ((focused: Boolean) -> Unit)? = null
+    var widthOf: (UiNode.() -> Int)? = null
+    var heightOf: (UiNode.() -> Int)? = null
+    var clipWhen: (UiNode.() -> Boolean)? = null
+    var inertWhen: (() -> Boolean)? = null
+    var offsetX: (() -> Int)? = null
+    var offsetY: (() -> Int)? = null
+    var scale: (() -> Float)? = null
+    val layers = ArrayList<Draw>(0)
+    val hoverSources = ArrayList<InteractionSource>(0)
+    var onPress: (() -> Unit)? = null
+    var pointer: PointerInput? = null
+    var onScroll: (UiNode.(amount: Double) -> Boolean)? = null
+    var onKey: (UiNode.(event: KeyEvent) -> Boolean)? = null
+    var onChar: (UiNode.(event: CharacterEvent) -> Boolean)? = null
+    var onFocusChanged: ((focused: Boolean) -> Unit)? = null
 
-    internal var tag: Any? = null
-    internal fun reset() {
+    var tag: Any? = null
+    fun reset() {
         widthOf = null
         heightOf = null
         clipWhen = null
+        inertWhen = null
         offsetX = null
         offsetY = null
         scale = null
@@ -78,8 +80,9 @@ class UiNode {
         policy.place(this)
     }
 
-    internal fun render(graphics: GuiGraphicsExtractor, pointerInside: Boolean) {
+    fun render(graphics: GuiGraphicsExtractor, parentPointerInside: Boolean) {
         if (width <= 0 || height <= 0) return
+        val pointerInside = parentPointerInside && inertWhen?.invoke() != true
         val over = pointerInside && Pointer.isOver(x, y, width, height)
         for (i in hoverSources.indices) hoverSources[i].hovered = over
 
@@ -110,7 +113,7 @@ class UiNode {
         }
     }
 
-    internal fun pick(pointX: Double, pointY: Double): UiNode? {
+    fun pick(pointX: Double, pointY: Double): UiNode? {
         if (width <= 0 || height <= 0) return null
         val inside = pointX >= x && pointX < right && pointY >= y && pointY < bottom
         if (clips && !inside) return null
@@ -150,6 +153,7 @@ fun UiNode.height(h: Int) = apply { heightOf = { h } }
 fun UiNode.width(compute: UiNode.() -> Int) = apply { widthOf = compute }
 fun UiNode.height(compute: UiNode.() -> Int) = apply { heightOf = compute }
 fun UiNode.clip(enabled: UiNode.() -> Boolean = { true }) = apply { clipWhen = enabled }
+fun UiNode.inert(inert: () -> Boolean) = apply { inertWhen = inert }
 fun UiNode.offset(x: () -> Int = { 0 }, y: () -> Int = { 0 }) = apply { offsetX = x; offsetY = y }
 fun UiNode.at(x: Int, y: Int) = offset({ x }, { y })
 fun UiNode.scale(factor: () -> Float) = apply { scale = factor }
