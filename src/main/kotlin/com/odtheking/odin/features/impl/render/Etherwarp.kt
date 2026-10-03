@@ -1,7 +1,7 @@
 package com.odtheking.odin.features.impl.render
 
 import com.mojang.blaze3d.platform.InputConstants
-import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
+import com.odtheking.odin.clickgui.settings.RenderableSetting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.ColorSetting
 import com.odtheking.odin.clickgui.settings.impl.DropdownSetting
@@ -245,7 +245,7 @@ object Etherwarp : Module(
                 is SugarCaneBlock -> true
                 is MushroomBlock -> true
                 is NetherWartBlock -> true
-                is RedstoneWireBlock, is ComparatorBlock, is RepeaterBlock -> true
+                is RedStoneWireBlock, is ComparatorBlock, is RepeaterBlock -> true
                 is SmallDripleafBlock, is BigDripleafStemBlock -> true
                 is DoublePlantBlock -> true
                 is LeverBlock -> true

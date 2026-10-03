@@ -1,6 +1,6 @@
 package com.odtheking.odin.features.impl.boss
 
-import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
+import com.odtheking.odin.clickgui.settings.RenderableSetting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.HudElement
 import com.odtheking.odin.events.LevelEvent
@@ -102,10 +102,9 @@ object TickTimers : Module(
     }
 
     private var fireFreezeTime = -1
-    private const val FIREFREEZEACTIVATIONTIME = 100
 
     private val fireFreezeHud by HUD("Fire Freeze Hud", "Displays a timer for when to use fire freeze in M3."){
-        val timeTillFreeze = fireFreezeTime - FIREFREEZEACTIVATIONTIME
+        val timeTillFreeze = fireFreezeTime - 100
         if (it)                         textDim(formatTimer(50, 106, "Fire Freeze:"), 0, 0, Colors.MINECRAFT_DARK_RED)
         else if (timeTillFreeze > 0)    textDim(formatTimer(timeTillFreeze, 106, "Fire Freeze:"), 0, 0, Colors.MINECRAFT_DARK_RED)
         else if (fireFreezeTime >= 0)   textDim("Use Fire Freeze", 0, 0, Colors.MINECRAFT_DARK_RED)

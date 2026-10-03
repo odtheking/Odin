@@ -192,7 +192,10 @@ fun GuiGraphicsExtractor.renderPlayers() {
             fill(-5, -5, 5, 5, DungeonUtils.currentDungeonPlayer.clazz.color.rgba)
             PlayerFaceExtractor.extractRenderState(this, skin, -4, -4, 8)
         }
-    } else blit(RenderPipelines.GUI_TEXTURED, marker, -2, -3, 2f, 0f, 5, 7, 8, 8)
+    } else {
+        pose().translate(-0.5f, -0.5f)
+        blit(RenderPipelines.GUI_TEXTURED, marker, -2, -4, 2f, 0f, 5, 7, 8, 8)
+    }
     pose().popMatrix()
 }
 

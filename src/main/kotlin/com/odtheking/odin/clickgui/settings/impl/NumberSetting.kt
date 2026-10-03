@@ -1,26 +1,25 @@
 package com.odtheking.odin.clickgui.settings.impl
 
+import androidx.compose.runtime.*
 import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
 import com.mojang.blaze3d.platform.InputConstants
-import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.clickgui.GuiTheme
 import com.odtheking.odin.clickgui.settings.RenderableSetting
 import com.odtheking.odin.clickgui.settings.Saving
-import com.odtheking.odin.clickgui.widget.isOver
+import com.odtheking.odin.clickgui.ui.SettingRow
+import com.odtheking.odin.clickgui.ui.animateProgress
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.render.Corners
 import com.odtheking.odin.utils.render.circle
 import com.odtheking.odin.utils.render.roundedRect
 import com.odtheking.odin.utils.render.roundedRectClipped
-import com.odtheking.odin.utils.ui.animations.Fade
-import com.odtheking.odin.utils.ui.animations.Tween
-import net.minecraft.client.gui.GuiGraphicsExtractor
-import net.minecraft.client.input.KeyEvent
+import com.odtheking.odin.utils.ui.compose.*
 import net.minecraft.client.input.MouseButtonEvent
 import kotlin.math.round
 import kotlin.math.roundToInt
+import kotlin.math.roundToLong
 
 /**
  * Setting that lets you pick a number between a range.
@@ -34,7 +33,7 @@ class NumberSetting<E>(
     increment: Number = 1,
     desc: String,
     private val unit: String = ""
-) : RenderableSetting<E>(name, desc, GuiTheme.ROW_HEIGHT + EXTRA_HEIGHT), Saving where E : Number, E : Comparable<E> {
+) : RenderableSetting<E>(name, desc), Saving where E : Number, E : Comparable<E> {
 
     constructor(
         name: String,
@@ -45,34 +44,37 @@ class NumberSetting<E>(
         unit: String = ""
     ) : this(name, default, range.first.toDouble()..range.last.toDouble(), increment, desc, unit)
 
+    private fun Double.asE(): E = when (default) {
+        is Int -> roundToInt()
+        is Long -> roundToLong()
+        is Float -> toFloat()
+        else -> this
+    } as E
+
     private val step = increment.toDouble()
     private val minimum = range.start
     private val maximum = range.endInclusive
 
-    override var value: E = default
+    private var current by mutableStateOf(default)
+
+    override var value: E
+        get() = current
         set(value) {
-            field = (round(value.toDouble() / step) * step).coerceIn(minimum, maximum) as E
-            display = format(field)
+            current = (round(value.toDouble() / step) * step).coerceIn(minimum, maximum).asE()
+            display = format(current)
         }
 
     var display: String = format(default)
         private set
 
-    private val sliderAnim = Tween(SLIDE_DURATION)
-    private val knobGrow = Fade(GROW_DURATION)
-    private var dragging = false
-
-    private var dragged = false
-
     init {
         value = default
-        sliderAnim.snap(percent)
     }
 
     var percent: Float
         get() = ((value.toDouble() - minimum) / (maximum - minimum)).toFloat()
         set(percent) {
-            value = (minimum + percent.coerceIn(0f, 1f) * (maximum - minimum)) as E
+            value = (minimum + percent.coerceIn(0f, 1f) * (maximum - minimum)).asE()
         }
 
     private fun format(value: E): String {
@@ -82,88 +84,61 @@ class NumberSetting<E>(
     }
 
     fun nudge(steps: Int) {
-        value = (value.toDouble() + steps * step).coerceIn(minimum, maximum) as E
+        value = (value.toDouble() + steps * step).coerceIn(minimum, maximum).asE()
     }
 
-    override fun render(graphics: GuiGraphicsExtractor, mouseX: Int, mouseY: Int) {
-        drawLabel(graphics)
-
-        graphics.text(mc.font, display, x + width - mc.font.width(display) - VALUE_PAD, GuiTheme.textY(y, GuiTheme.ROW_HEIGHT), Colors.WHITE.rgba, false)
-
-        val trackX = x + GuiTheme.PADDING
-        val trackY = y + TRACK_OFFSET
-        val trackWidth = width - GuiTheme.PADDING * 2
-        graphics.roundedRect(trackX, trackY, trackX + trackWidth, trackY + TRACK_HEIGHT, GuiTheme.surface.rgba, TRACK_RADIUS)
-
-        if (dragged) sliderAnim.snap(percent) else sliderAnim.target(percent)
-        val filled = (sliderAnim.value * trackWidth).roundToInt()
-        if (filled > 0) {
-            graphics.roundedRectClipped(
-                trackX, trackY, trackX + trackWidth, trackY + TRACK_HEIGHT,
-                trackX, trackY, trackX + filled, trackY + TRACK_HEIGHT,
-                GuiTheme.accent.rgba, Corners(TRACK_RADIUS)
-            )
+    @Composable
+    override fun Content() {
+        Column {
+            SettingRow(height = 18) { Text({ display }) }.clickable {}
+            Slider(percent, { percent = it }).size(GuiTheme.INNER_WIDTH, 11).offset({ GuiTheme.PADDING })
         }
-
-        val overSlider = dragging || isOver(mouseX, mouseY, x, y + height / 2, width, height / 2)
-        val radius = knobGrow.lerp(overSlider, KNOB_RADIUS, KNOB_RADIUS + KNOB_GROWTH)
-        graphics.circle(trackX + filled, trackY + TRACK_HEIGHT / 2, radius, Colors.WHITE.rgba)
-    }
-
-    override fun onClick(event: MouseButtonEvent, doubleClick: Boolean) {
-        if (event.y().toInt() < y + height / 2) return
-        dragging = true
-        dragged = false
-        seek(event.x().toInt())
-    }
-
-    override fun onDrag(event: MouseButtonEvent, dragX: Double, dragY: Double) {
-        if (!dragging) return
-        dragged = true
-        seek(event.x().toInt())
-    }
-
-    override fun onRelease(event: MouseButtonEvent) {
-        dragging = false
-        dragged = false
-    }
-
-    override fun keyPressed(event: KeyEvent): Boolean {
-        val steps = when (event.key) {
-            InputConstants.KEY_RIGHT, InputConstants.KEY_EQUALS -> 1
-            InputConstants.KEY_LEFT, InputConstants.KEY_MINUS -> -1
-            else -> return false
-        }
-        nudge(steps)
-        return true
-    }
-
-    override fun release() {
-        dragging = false
-        dragged = false
-    }
-
-    private fun seek(mouseX: Int) {
-        val trackX = x + GuiTheme.PADDING
-        val trackWidth = width - GuiTheme.PADDING * 2
-        percent = (mouseX - trackX).toFloat() / trackWidth
+            .onKey { event ->
+                val steps = when (event.key) {
+                    InputConstants.KEY_RIGHT, InputConstants.KEY_EQUALS -> 1
+                    InputConstants.KEY_LEFT, InputConstants.KEY_MINUS -> -1
+                    else -> return@onKey false
+                }
+                nudge(steps)
+                true
+            }
     }
 
     override fun write(gson: Gson): JsonElement = JsonPrimitive(value)
 
     override fun read(element: JsonElement, gson: Gson) {
-        element.asNumber?.let { value = it as E }
-    }
-
-    private companion object {
-        const val EXTRA_HEIGHT = 8
-        const val VALUE_PAD = 4
-        const val TRACK_OFFSET = 18
-        const val TRACK_HEIGHT = 6
-        const val TRACK_RADIUS = 3f
-        const val KNOB_RADIUS = 4f
-        const val KNOB_GROWTH = 1.5f
-        const val SLIDE_DURATION = 200L
-        const val GROW_DURATION = 150L
+        element.asNumber?.let { value = it.toDouble().asE() }
     }
 }
+
+@Composable
+private fun Slider(value: Float, onValueChange: (Float) -> Unit): UiNode {
+    val interaction = remember { InteractionSource() }
+    var dragging by remember { mutableStateOf(false) }
+    val fill = remember { Animatable(value) }
+    SideEffect { if (dragging) fill.snapTo(value) else fill.animateTo(value, 200) }
+    val knob = animateProgress { dragging || interaction.hovered }
+
+    val seek: UiNode.(MouseButtonEvent) -> Unit = { event -> onValueChange(((event.x() - x) / width).toFloat().coerceIn(0f, 1f)) }
+
+    return Canvas { graphics ->
+        val top = y + (height - TRACK_HEIGHT) / 2
+        graphics.roundedRect(x, top, right, top + TRACK_HEIGHT, GuiTheme.surface.rgba, TRACK_CORNERS)
+
+        val filled = (fill.value * width).roundToInt()
+        if (filled > 0) graphics.roundedRectClipped(x, top, right, top + TRACK_HEIGHT, x, top, x + filled, top + TRACK_HEIGHT, GuiTheme.accent.rgba, TRACK_CORNERS)
+        graphics.circle(x + filled, top + TRACK_HEIGHT / 2, 4f + 1.5f * knob.value, Colors.WHITE.rgba)
+    }
+        .hoverable(interaction)
+        .pointerInput(
+            onDrag = {
+                dragging = true
+                seek(it)
+            },
+            onRelease = { dragging = false },
+        ) { event -> (event.button() == InputConstants.MOUSE_BUTTON_LEFT).also { if (it) seek(event) } }
+        .onFocusChanged { if (!it) dragging = false }
+}
+
+private const val TRACK_HEIGHT = 6
+private val TRACK_CORNERS = Corners(3f)

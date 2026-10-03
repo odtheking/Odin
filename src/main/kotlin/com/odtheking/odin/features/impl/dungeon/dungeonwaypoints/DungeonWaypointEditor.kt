@@ -22,7 +22,7 @@ import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.BlockHitResult
 import net.minecraft.world.phys.HitResult
 
-internal fun DungeonWaypoints.renderWaypoints(event: RenderExtractEvent) {
+fun DungeonWaypoints.renderWaypoints(event: RenderExtractEvent) {
     if (!DungeonUtils.inClear) return
     val room = DungeonUtils.currentRoom ?: return
     event.drawBoxes(room.waypoints, disableDepth)
@@ -39,7 +39,7 @@ internal fun DungeonWaypoints.renderWaypoints(event: RenderExtractEvent) {
     }
 }
 
-internal fun DungeonWaypoints.handleEditorInput(event: InputEvent) {
+fun DungeonWaypoints.handleEditorInput(event: InputEvent) {
     if (event.key.value != InputConstants.MOUSE_BUTTON_RIGHT || mc.gui.screen() != null) return
     cacheEtherwarpTarget()
     if (!allowEdits) return
@@ -69,7 +69,7 @@ internal fun DungeonWaypoints.handleEditorInput(event: InputEvent) {
     OdinMod.scope.launch { saveWaypoints() }
 }
 
-internal val reachPosition: BlockPos?
+val reachPosition: BlockPos?
     get() {
         val hitResult = mc.hitResult
         return when {
@@ -116,6 +116,6 @@ private fun DungeonWaypoints.createWaypoint(blockPos: BlockPos, aabb: AABB, titl
     type = waypointType.takeIf { it != WaypointType.NONE },
 )
 
-internal fun DungeonWaypoints.relativeAabbAt(pos: BlockPos): AABB =
+fun DungeonWaypoints.relativeAabbAt(pos: BlockPos): AABB =
     if (!useBlockSize) AABB(BlockPos.ZERO).inflate((sizeX - 1.0) / 2.0, (sizeY - 1.0) / 2.0, (sizeZ - 1.0) / 2.0)
     else pos.getBlockBounds() ?: AABB(BlockPos.ZERO)

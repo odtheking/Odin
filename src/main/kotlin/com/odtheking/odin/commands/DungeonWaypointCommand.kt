@@ -6,10 +6,10 @@ import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.OdinMod.scope
 import com.odtheking.odin.clickgui.settings.impl.label
 import com.odtheking.odin.config.DungeonWaypointConfig
+import com.odtheking.odin.config.WaypointPackFileUtils
 import com.odtheking.odin.features.impl.dungeon.dungeonwaypoints.*
 import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.modMessage
-import com.odtheking.odin.utils.network.WebUtils
 import com.odtheking.odin.utils.setClipboardContent
 import kotlinx.coroutines.launch
 
@@ -72,15 +72,12 @@ val dungeonWaypointsCommand = Commodore("dwp", "dungeonwaypoints") {
 
     literal("import").runs { importString: GreedyString? ->
         scope.launch {
-            val input = (importString?.let {
-                if (importString.string.startsWith("https://")) WebUtils.fetchString(importString.string).getOrNull()
-                else importString.string
-            } ?: mc.keyboardHandler.clipboard)
+            val waypoints = DungeonWaypointConfig.decodeWaypoints(importString?.string) ?: return@launch modMessage("§cFailed to decode waypoints from clipboard. §fIs the data valid?")
 
-            val waypoints = DungeonWaypointConfig.decodeWaypoints(input.trim().trim { it == '\n' }) ?: return@launch modMessage("§cFailed to decode waypoints from clipboard. §fIs the data valid?")
-
-            DungeonWaypoints.importEditableWaypoints(waypoints)
-            modMessage("Imported waypoints from clipboard!${if (!DungeonWaypoints.enabled) "§7(Make sure to enable the DungeonWayPoints module)" else ""}")
+            val existing = WaypointPackFileUtils.listPackNames().toSet()
+            val name = generateSequence(1) { it + 1 }.map { if (it == 1) "Imported" else "Imported $it" }.first { it !in existing }
+            if (!DungeonWaypoints.importPack(name, waypoints)) return@launch modMessage("§cFailed to create pack '$name'.")
+            modMessage("Imported waypoints as new pack '$name'!${if (!DungeonWaypoints.enabled) " §7(Make sure to enable the DungeonWayPoints module)" else ""}")
         }
     }
 }

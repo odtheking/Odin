@@ -2,10 +2,11 @@ package com.odtheking.odin.features.impl.dungeon
 
 import com.odtheking.odin.OdinMod
 import com.odtheking.odin.OdinMod.scope
-import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
+import com.odtheking.odin.clickgui.settings.RenderableSetting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.ActionSetting
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.NumberSetting
+import com.odtheking.odin.clickgui.settings.impl.drawAtHud
 import com.odtheking.odin.events.GuiEvent
 import com.odtheking.odin.events.MessageEvent
 import com.odtheking.odin.events.ScreenCloseEvent
@@ -98,15 +99,8 @@ object Croesus : Module(
 
         on<GuiEvent.DrawTooltip> {
             val title = screen.title.string
-            if (croesusHud.enabled && (title.matches(chestNameRegex) || title.matches(chestPreviewScreenRegex))) {
-                guiGraphics.pose().pushMatrix()
-                guiGraphics.pose().translate(croesusHud.x.toFloat(), croesusHud.y.toFloat())
-                guiGraphics.pose().scale(croesusHud.scale)
-
-                guiGraphics.drawOverlay(false)
-
-                guiGraphics.pose().popMatrix()
-            }
+            if (croesusHud.enabled && (title.matches(chestNameRegex) || title.matches(chestPreviewScreenRegex)))
+                guiGraphics.drawAtHud(croesusHud) { drawOverlay(false) }
         }
 
         on<GuiEvent.RenderSlot> {

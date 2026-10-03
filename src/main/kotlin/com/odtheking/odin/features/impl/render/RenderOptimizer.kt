@@ -1,6 +1,6 @@
 package com.odtheking.odin.features.impl.render
 
-import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
+import com.odtheking.odin.clickgui.settings.RenderableSetting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.events.EntityEvent
 import com.odtheking.odin.events.core.on

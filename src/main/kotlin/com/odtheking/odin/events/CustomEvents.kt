@@ -32,6 +32,7 @@ class InputEvent(val key: InputConstants.Key) : CancellableEvent() // better mix
 class BlockUpdateEvent(val pos: BlockPos, val old: BlockState, val updated: BlockState) : Event
 
 class BlockInteractEvent(val pos: BlockPos) : CancellableEvent()
+class BlockClickEvent(val pos: BlockPos) : Event
 class EntityInteractEvent(val pos: Vec3, val entity: Entity) : CancellableEvent()
 class UseItemOnPostEvent(val hand: InteractionHand, val hitResult: BlockHitResult, val interactionResult: InteractionResult) : Event
 

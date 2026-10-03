@@ -13,8 +13,8 @@ import com.odtheking.odin.utils.render.drawCustomBeacon
 import net.minecraft.core.BlockPos
 import kotlin.math.abs
 
-object Waypoints : Module(
-    name = "Waypoints",
+object TemporaryWaypoints : Module(
+    name = "Temporary Waypoints",
     description = "Allows to render waypoints based on coordinates in chat."
 ) {
     private val fromParty by BooleanSetting("From Party Chat", true, desc = "Adds waypoints from party chat.")
@@ -69,7 +69,7 @@ object Waypoints : Module(
         Colors.MINECRAFT_LIGHT_PURPLE, Colors.MINECRAFT_DARK_GREEN,
     )
 
-    data class Waypoint(
+    private data class Waypoint(
         val name: String,
         val blockPos: BlockPos,
         val color: Color,

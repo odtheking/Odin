@@ -4,6 +4,7 @@ package com.odtheking.odin.features
 
 import com.odtheking.odin.OdinMod
 import com.odtheking.odin.OdinMod.mc
+import com.odtheking.odin.clickgui.HudLayer
 import com.odtheking.odin.clickgui.HudManager
 import com.odtheking.odin.clickgui.settings.impl.HUDSetting
 import com.odtheking.odin.clickgui.settings.impl.KeybindSetting
@@ -17,6 +18,7 @@ import com.odtheking.odin.features.impl.dungeon.map.DungeonMap
 import com.odtheking.odin.features.impl.dungeon.puzzlesolvers.PuzzleSolvers
 import com.odtheking.odin.features.impl.nether.*
 import com.odtheking.odin.features.impl.render.*
+import com.odtheking.odin.features.impl.render.waypoints.Waypoints
 import com.odtheking.odin.features.impl.skyblock.*
 import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry
 import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements
@@ -59,7 +61,7 @@ object ModuleManager {
         registerModules(config = ModuleConfig(file = File(OdinMod.configFile, "odin-config.json")),
             // dungeon
             PuzzleSolvers, BlessingDisplay, LeapMenu, SecretClicked, MapInfo, Mimic, DungeonQueue,
-            DoorHighlight, BloodCamp, PositionalMessages, TerracottaTimer, BreakerDisplay, LividSolver,
+            DoorHighlight, BloodCamp, TerracottaTimer, BreakerDisplay, LividSolver,
             InvincibilityTimer, SpiritBear, DungeonWaypoints, ExtraStats, BetterPartyFinder, Croesus, MageBeam,
             SecretsCounter, DungeonMap, PuzzleHud, RoomClear,
 
@@ -69,7 +71,7 @@ object ModuleManager {
 
             // render
             ClickGUIModule, Camera, Etherwarp, PlayerSize, PerformanceHUD, RenderOptimizer,
-            PlayerDisplay, Waypoints, HidePlayers, Highlight, GyroWand,
+            PlayerDisplay, TemporaryWaypoints, Waypoints, HidePlayers, Highlight, GyroWand,
 
             //skyblock
             ChatCommands, NoCursorReset, Ragnarock, SpringBoots, WardrobeKeybinds, PetKeybinds, AutoSprint,
@@ -85,7 +87,7 @@ object ModuleManager {
         // hashmap, but would need to keep track when setting values change
         on<InputEvent> {
             for (setting in keybindSettingsCache) {
-                if (setting.value == key) setting.onPress?.invoke()
+                if (setting.boundKey.value == key.value) setting.onPress?.invoke()
             }
         }
 
@@ -149,8 +151,6 @@ object ModuleManager {
     fun render(guiGraphics: GuiGraphicsExtractor, tickCounter: DeltaTracker) {
         if (mc.level == null || mc.player == null || mc.gui.screen() == HudManager) return
 
-        for (hudSetting in hudSettingsCache) {
-            if (hudSetting.isEnabled) hudSetting.hud.draw(guiGraphics, false)
-        }
+        HudLayer.render(guiGraphics, example = false, mouseX = -1, mouseY = -1)
     }
 }

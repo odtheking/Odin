@@ -11,7 +11,7 @@ import com.odtheking.odin.utils.toFixed
 import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.world.phys.AABB
 
-internal fun GuiGraphicsExtractor.drawWaypointEditorHud(example: Boolean): Pair<Int, Int> {
+fun GuiGraphicsExtractor.drawWaypointEditorHud(example: Boolean): Pair<Int, Int> {
     if (example) {
         return drawEditorHud(
             title = "§fEditing Waypoints §8|§f Placing",

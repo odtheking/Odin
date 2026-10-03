@@ -1,9 +1,6 @@
 package com.odtheking.odin.features.impl.nether
 
-import com.odtheking.odin.clickgui.settings.impl.ActionSetting
-import com.odtheking.odin.clickgui.settings.impl.ListSetting
-import com.odtheking.odin.clickgui.settings.impl.MapSetting
-import com.odtheking.odin.clickgui.settings.impl.NumberSetting
+import com.odtheking.odin.clickgui.settings.impl.*
 import com.odtheking.odin.events.GuiEvent
 import com.odtheking.odin.events.MessageEvent
 import com.odtheking.odin.events.core.on
@@ -61,7 +58,7 @@ object KuudraTracker : Module(
     private var free by NumberSetting("Free Chests", 0, 0..Int.MAX_VALUE, 1, "Amount of Paid Chests opened").hide()
 
     private var toDisplay = mutableListOf<Pair<MutableComponent, Double>>()
-    private var totalKeys by ListSetting("Total Keys", mutableListOf(0, 0, 0, 0, 0)).hide() //Tier 1-5
+    private var totalKeys by ListSetting("Total Keys", mutableListOf(0, 0, 0, 0, 0)) //Tier 1-5
 
     private var last = LastAdded(mutableListOf(), mutableListOf(), 0)
 
@@ -70,15 +67,7 @@ object KuudraTracker : Module(
 
         on<GuiEvent.DrawTooltip> {
             val title = screen.title.string
-            if (enabled && title.matches(hudRegex)) {
-                guiGraphics.pose().pushMatrix()
-                guiGraphics.pose().translate(profitHud.x.toFloat(), profitHud.y.toFloat())
-                guiGraphics.pose().scale(profitHud.scale)
-
-                guiGraphics.drawOverlay(false)
-
-                guiGraphics.pose().popMatrix()
-            }
+            if (enabled && title.matches(hudRegex)) guiGraphics.drawAtHud(profitHud) { drawOverlay(false) }
         }
 
         on<MessageEvent.Chat> {

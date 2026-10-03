@@ -59,7 +59,7 @@ object ClickGUIModule : Module(
     val dungeonCoresLogging by BooleanSetting("Core loggings", false, desc = "")
 
     private var firstJoin by BooleanSetting("First join", true, "").hide()
-    val favoriteColors by MapSetting("Favorite Colors", mutableMapOf<Int, Color>()).hide()
+    val favoriteColors by MapSetting("Favorite Colors", mutableMapOf<Int, Color>())
 
     override fun onKeybind() {
         mc.setScreenAndShow(ClickGUI)

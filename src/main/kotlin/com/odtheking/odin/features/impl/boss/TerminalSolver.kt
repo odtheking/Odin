@@ -1,6 +1,6 @@
 package com.odtheking.odin.features.impl.boss
 
-import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
+import com.odtheking.odin.clickgui.settings.RenderableSetting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.*
 import com.odtheking.odin.events.GuiEvent
 import com.odtheking.odin.events.TerminalEvent
@@ -36,9 +36,9 @@ object TerminalSolver : Module(
     val melodyTermSize by NumberSetting("Melody Size", 1.5f, 1.0..3.0, 0.1, desc = "The size of the melody terminal GUI.").withDependency { !cancelMelodySolver && solverSettings && renderType == RenderType.CUSTOM_GUI }
     val rubixMode by SelectorSetting("Rubix Mode", RubixMode.FEWEST_CLICKS, desc = "Whether the rubix solver should mix in right clicks for the fewest clicks overall, or stick to left clicks only.").withDependency { solverSettings }
 
-    private val firstClickProtSettings by DropdownSetting("First Click Prot Dropdown", desc = "Options related to first click protection.")
+    private val firstClickProtSettings by DropdownSetting("Click Prot Dropdown", desc = "Options related to first click protection.")
     val firstClickProt by NumberSetting("First Click Prot", 500, 0..800, 10, unit = "ms", desc = "The amount of time after opening a terminal where clicks are blocked to prevent bans (recommended value is 500 minus your ping).").withDependency { firstClickProtSettings }
-    val shouldFirstClickProtWithTicks by BooleanSetting("Account For Server Lag", false, desc = "Prevents bans from clicking when the server lags after opening the terminal (disabled in singleplayer").withDependency { firstClickProtSettings }
+    val shouldFirstClickProtWithTicks by BooleanSetting("Server Lag", false, desc = "Prevents bans from clicking when the server lags after opening the terminal (disabled in singleplayer").withDependency { firstClickProtSettings }
     val firstClickProtTicks by NumberSetting("Lag Protection Ticks", 8, 7..16, unit = "ticks", desc = "Each tick = 50ms (recommended value is 8)").withDependency { shouldFirstClickProtWithTicks && firstClickProtSettings }
 
     private val showColors by DropdownSetting("Color Settings", desc = "Color options for the terminal solver.")

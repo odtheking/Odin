@@ -22,16 +22,7 @@ inline fun GuiGraphicsExtractor.scissored(x0: Int, y0: Int, x1: Int, y1: Int, bl
     }
 }
 
-inline fun GuiGraphicsExtractor.clipped(clip: Boolean, x0: Int, y0: Int, x1: Int, y1: Int, block: () -> Unit) {
-    if (clip) scissored(x0, y0, x1, y1, block) else block()
-}
-
-inline fun GuiGraphicsExtractor.scissoredReveal(x0: Int, top: Int, x1: Int, revealed: Int, block: () -> Unit) {
-    if (revealed <= 0) return
-    scissored(x0, top, x1, top + revealed, block)
-}
-
-internal fun ScreenRectangle.transformOutward(pose: Matrix3x2fc): ScreenRectangle {
+fun ScreenRectangle.transformOutward(pose: Matrix3x2fc): ScreenRectangle {
     val corner = scratch
     val l = left().toFloat()
     val t = top().toFloat()
