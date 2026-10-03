@@ -84,6 +84,16 @@ object TickTimers : Module(
         else 0 to 0
     }
 
+    private var fireFreezeTime = -1
+
+    private val fireFreezeHud by HUD("Fire Freeze Hud", "Displays a timer for when to use fire freeze in M3."){
+        val timeTillFreeze = fireFreezeTime - 100
+        if (it)                         textDim(formatTimer(50, 106, "Fire Freeze:"), 0, 0, Colors.MINECRAFT_DARK_RED)
+        else if (timeTillFreeze > 0)    textDim(formatTimer(timeTillFreeze, 106, "Fire Freeze:"), 0, 0, Colors.MINECRAFT_DARK_RED)
+        else if (fireFreezeTime >= 0)   textDim("Use Fire Freeze", 0, 0, Colors.MINECRAFT_DARK_RED)
+        else 0 to 0
+    }
+
     init {
         on<MessageEvent.Chat> {
             when {
@@ -133,7 +143,6 @@ object TickTimers : Module(
             pyTickTime = -1
             pyTriggered = false
             necronTime = -1
-            secretsCounter = 0
             stormTick = -1
             fireFreezeTime = -1
         }

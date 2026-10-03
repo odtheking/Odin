@@ -40,7 +40,7 @@ enum class TerminalTypes(
         private val gui = simpleTermGui(rows = 4, cols = 7, startRow = 1, startCol = 1)
         override fun getGUI() = gui
     },
-    MELODY("Click the button on time!", Regex("^Click the button on time!$"), 45) {
+    MELODY("Click the button on time!", Regex("^Click the button on time!$"), 54) {
         override fun getSimulator() = MelodySim
         private val gui = MelodyGui
         override fun getGUI() = gui

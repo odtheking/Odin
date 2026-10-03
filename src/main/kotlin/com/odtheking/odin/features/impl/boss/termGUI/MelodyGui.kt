@@ -21,8 +21,7 @@ object MelodyGui : TermGui() {
                     else -> null
                 }
             }) { x, y, w, h ->
-                TerminalUtils.currentTerm?.getSlotRendering(index)?.second
-                    ?.let { renderSlotText(it, x, y, w, h, TerminalSolver.textColor) }
+                TerminalUtils.currentTerm?.getSlotRendering(index)?.second?.let { renderSlotText(it, x, y, w, h, TerminalSolver.rubixText) }
             }
         }
     }

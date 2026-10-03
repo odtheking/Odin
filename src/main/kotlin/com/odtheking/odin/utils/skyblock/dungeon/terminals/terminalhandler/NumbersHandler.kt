@@ -32,6 +32,6 @@ class NumbersHandler: TerminalHandler(TerminalTypes.NUMBERS) {
             2 -> TerminalSolver.numbers3Color
             3 -> TerminalSolver.numbers4Color
             else -> Colors.TRANSPARENT
-        } to (abs((solution.size - 14) - solutionIndex) + 1).toString()
+        } to (abs((solution.size - 10) - solutionIndex) + 1).toString()
     }
 }

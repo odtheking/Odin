@@ -31,7 +31,7 @@ object LividSolver : Module(
             time > 130 -> "§e"
             else -> "§c"
         }
-        textDim("${color}Livid: ${time}t ", 0, 0)
+        textDim("§bLivid: ${color}${time}t ", 0, 0)
     }
     private val highlightColor by ColorSetting("Highlight Color", Colors.MINECRAFT_LIGHT_PURPLE, true, desc = "Color of the highlight box around Livid.")
 
@@ -43,7 +43,7 @@ object LividSolver : Module(
     init {
         on<MessageEvent.Chat> {
             if (!DungeonUtils.inDungeons || !DungeonUtils.isFloor(5)) return@on
-            if (message.matches(lividStartRegex)) invulnTime = 390
+            if (message.matches(lividStartRegex)) invulnTime = 340
         }
 
         on<BlockUpdateEvent> {
@@ -58,16 +58,14 @@ object LividSolver : Module(
         }
 
         on<RenderExtractEvent> {
-            if (!DungeonUtils.inBoss || !DungeonUtils.isFloor(5) || mc.player?.getEffect(MobEffects.BLINDNESS) != null || invulnTime > 50) return@on
+            if (!DungeonUtils.inBoss || !DungeonUtils.isFloor(5) || mc.player?.getEffect(MobEffects.BLINDNESS) != null) return@on
             currentLivid.entity?.let { entity ->
                 drawStyledBox(entity.renderBoundingBox, highlightColor, BoxStyle.FILLED_OUTLINE, true)
             }
         }
 
         on<TickEvent.Server> {
-            if (!DungeonUtils.inBoss || !DungeonUtils.isFloor(5)) return@on
-            if (invulnTime >= 0) invulnTime--
-            if (invulnTime == 50) modMessage("§7Found Livid: §${currentLivid.colorCode}${currentLivid.entityName}")
+            if (DungeonUtils.isFloor(5) && invulnTime >= 0) invulnTime--
         }
 
         on<LevelEvent.Load> {

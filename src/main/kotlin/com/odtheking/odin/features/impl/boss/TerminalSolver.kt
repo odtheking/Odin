@@ -67,7 +67,8 @@ object TerminalSolver : Module(
     val melodyBackgroundColor by ColorSetting("Melody Background", Colors.gray38, true, desc = "Color of the background slot in melody.").withDependency { showColors && !cancelMelodySolver }
     private val debug by BooleanSetting("Debug", false, desc = "Shows debug terminals.").withDependency { showColors }
 
-    @JvmStatic val termSize get() = if (enabled && (renderType != RenderType.CUSTOM_GUI) && TerminalUtils.currentTerm != null) if (normalTermSize == 6) Options.AUTO_GUI_SCALE else normalTermSize else 1
+    @JvmStatic val overridesGuiScale get() = enabled && renderType != RenderType.CUSTOM_GUI && TerminalUtils.currentTerm != null
+    @JvmStatic val termSize get() = if (normalTermSize == 6) Options.AUTO_GUI_SCALE else normalTermSize
     val customGuiEnabled get() = enabled && renderType == RenderType.CUSTOM_GUI && renderMelody
     private val renderMelody get() = !(cancelMelodySolver && TerminalUtils.currentTerm?.type == TerminalTypes.MELODY)
 
