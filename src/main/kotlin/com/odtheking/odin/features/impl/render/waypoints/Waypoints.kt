@@ -41,7 +41,7 @@ class Waypoint(
     var enabled: Boolean = true,
 ) {
     @delegate:Transient
-    val id: String by lazy {
+    val id by lazy {
         val min = BlockPos(minOf(blockPos.x, endPos.x), minOf(blockPos.y, endPos.y), minOf(blockPos.z, endPos.z))
         val max = BlockPos(maxOf(blockPos.x, endPos.x), maxOf(blockPos.y, endPos.y), maxOf(blockPos.z, endPos.z))
         "$area:${trigger.ordinal}:${min.asLong().toString(36)}-${max.asLong().toString(36)}"
@@ -78,7 +78,7 @@ object Waypoints : Module(
     name = "Waypoints",
     description = "Place waypoints that only show in a specific dungeon phase, Kuudra tier or island and can run commands."
 ) {
-    private val titleScale by NumberSetting("Title Scale", 1f, 0.1..4.0, increment = 0.1f, desc = "The scale of the labels of waypoints.")
+    private val textScale by NumberSetting("Text Scale", 1f, 0.1..4.0, increment = 0.1f, desc = "The scale of the labels of waypoints.")
     private val showThroughWalls by BooleanSetting("Show Through Walls", false, desc = "Disables depth testing so all waypoints are visible through walls.")
 
     private val openManager by ActionSetting("Open Waypoint Manager", desc = "Opens the waypoint manager.") {
@@ -130,7 +130,7 @@ object Waypoints : Module(
 
                 if (wp.radius != null) drawCylinder(wp.cylinderBase, wp.radiusF, 0.2f, wp.color, depth = depth)
                 else drawWireFrameBox(box, wp.color, depth = depth)
-                if (wp.label.isNotEmpty()) drawText(wp.label, wp.labelPos, titleScale, depth)
+                if (wp.label.isNotEmpty()) drawText(wp.label, wp.labelPos, textScale, depth)
             }
         }
 

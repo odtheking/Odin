@@ -10,14 +10,14 @@ import net.minecraft.network.chat.contents.PlainTextContents
 import net.minecraft.util.FormattedCharSequence
 
 object CustomNameReplacer {
-    private data class CachedReplacement(val plainText: String, val component: Component)
+    private class Replacement(val plainText: String, val component: Component)
 
-    @Volatile private var nameRegex: Regex? = null
-    @Volatile private var cache: Map<String, CachedReplacement> = emptyMap()
-    @Volatile private var startChars: Set<Char> = emptySet()
+    private class State(val regex: Regex, val replacements: Map<String, Replacement>, val startChars: BooleanArray)
+
+    @Volatile private var state: State? = null
 
     @JvmStatic
-    fun isEnabled() = nameRegex != null
+    fun isEnabled() = state != null
 
     @JvmStatic
     fun rebuild(players: Collection<PlayerSize.RandomPlayer>) {
@@ -25,79 +25,92 @@ object CustomNameReplacer {
             val rawJson = player.customName?.trim()?.takeIf { it.isNotEmpty() } ?: return@mapNotNull null
             val element = runCatching { JsonParser.parseString(rawJson) }.getOrNull() ?: return@mapNotNull null
             val parsed = ComponentSerialization.CODEC.parse(JsonOps.INSTANCE, element).result().orElse(null) ?: return@mapNotNull null
-            player.name to CachedReplacement(parsed.string, parsed)
+            player.name to Replacement(parsed.string, parsed)
         }.sortedByDescending { it.first.length }
 
         if (entries.isEmpty()) { clear(); return }
 
-        nameRegex = Regex("(?<![A-Za-z0-9_])(${entries.joinToString("|") { Regex.escape(it.first) }})(?![A-Za-z0-9_])")
-        cache = entries.toMap()
-        startChars = entries.mapNotNull { it.first.firstOrNull() }.toSet()
+        val startChars = BooleanArray(128)
+        entries.forEach { (name, _) -> name.firstOrNull()?.takeIf { it.code < 128 }?.let { startChars[it.code] = true } }
+
+        state = State(
+            Regex("(?<![A-Za-z0-9_])(${entries.joinToString("|") { Regex.escape(it.first) }})(?![A-Za-z0-9_])"),
+            entries.toMap(),
+            startChars
+        )
     }
 
     @JvmStatic
     fun clear() {
-        nameRegex = null
-        cache = emptyMap()
-        startChars = emptySet()
+        state = null
     }
 
     @JvmStatic
     fun replaceStringIfNeeded(text: String): String {
-        val regex = nameRegex ?: return text
-        if (text.isBlank() || !regex.containsMatchIn(text)) return text
-        return regex.replace(text) { match ->
-            cache[match.groupValues[1]]?.plainText ?: match.value
-        }
+        val s = state ?: return text
+        if (!hasStartChar(text, s) || !s.regex.containsMatchIn(text)) return text
+        return s.regex.replace(text) { match -> s.replacements[match.groupValues[1]]?.plainText ?: match.value }
     }
 
     @JvmStatic
     fun replaceComponentIfNeeded(component: Component): Component? {
-        val regex = nameRegex ?: return null
-        if (!regex.containsMatchIn(component.string)) return null
-        return transformComponent(component)
+        val s = state ?: return null
+        val string = component.string
+        if (!hasStartChar(string, s) || !s.regex.containsMatchIn(string)) return null
+        return transform(component, s)
     }
 
     @JvmStatic
     fun replaceSequenceIfNeeded(text: FormattedCharSequence): FormattedCharSequence {
-        if (!hasStartChar(text)) return text
-        val regex = nameRegex ?: return text
-        val segments = mutableListOf<Pair<Style, String>>()
+        val s = state ?: return text
+
+        var found = false
+        text.accept { _, _, cp -> if (cp < 128 && s.startChars[cp]) { found = true; false } else true }
+        if (!found) return text
+
+        val styles = ArrayList<Style>()
+        val texts = ArrayList<String>()
         var curStyle: Style? = null
-        val curText = StringBuilder()
+        val cur = StringBuilder()
         text.accept { _, style, cp ->
-            if (curStyle != null && style != curStyle) { segments.add(curStyle!! to curText.toString()); curText.clear() }
-            curStyle = style; curText.appendCodePoint(cp); true
+            if (curStyle != null && style != curStyle) { styles.add(curStyle!!); texts.add(cur.toString()); cur.setLength(0) }
+            curStyle = style
+            cur.appendCodePoint(cp)
+            true
         }
-        if (curText.isNotEmpty()) segments.add((curStyle ?: Style.EMPTY) to curText.toString())
-        if (segments.none { regex.containsMatchIn(it.second) }) return text
+        if (cur.isNotEmpty()) { styles.add(curStyle ?: Style.EMPTY); texts.add(cur.toString()) }
+        if (texts.none { s.regex.containsMatchIn(it) }) return text
+
         val root = Component.empty()
-        segments.forEach { (style, seg) -> appendReplaced(root, seg, style, regex) }
+        for (i in texts.indices) {
+            val holder = Component.empty().setStyle(styles[i])
+            appendReplaced(holder, texts[i], s)
+            root.append(holder)
+        }
         return root.visualOrderText
     }
 
-    private fun transformComponent(component: Component): MutableComponent {
-        val out = if (component.contents is PlainTextContents && nameRegex?.containsMatchIn(component.contents.let { (it as PlainTextContents).text() }) == true)
-            Component.empty().also { appendReplaced(it, (component.contents as PlainTextContents).text(), component.style, nameRegex!!) }
+    private fun transform(component: Component, s: State): MutableComponent {
+        val text = (component.contents as? PlainTextContents)?.text()
+        val out = if (text != null && s.regex.containsMatchIn(text)) Component.empty().also { appendReplaced(it, text, s) }
         else component.plainCopy()
-        component.siblings.forEach { out.append(transformComponent(it)) }
+        out.setStyle(component.style)
+        component.siblings.forEach { out.append(transform(it, s)) }
         return out
     }
 
-    private fun appendReplaced(out: MutableComponent, text: String, style: Style, regex: Regex) {
+    private fun appendReplaced(out: MutableComponent, text: String, s: State) {
         var start = 0
-        for (match in regex.findAll(text)) {
-            if (match.range.first > start) out.append(Component.literal(text.substring(start, match.range.first)).withStyle(style))
-            out.append(cache[match.groupValues[1]]?.component?.copy() ?: Component.literal(match.value).withStyle(style))
+        for (match in s.regex.findAll(text)) {
+            if (match.range.first > start) out.append(Component.literal(text.substring(start, match.range.first)))
+            out.append(s.replacements[match.groupValues[1]]?.component ?: Component.literal(match.value))
             start = match.range.last + 1
         }
-        if (start < text.length) out.append(Component.literal(text.substring(start)).withStyle(style))
+        if (start < text.length) out.append(Component.literal(text.substring(start)))
     }
 
-    private fun hasStartChar(text: FormattedCharSequence): Boolean {
-        if (startChars.isEmpty()) return false
-        var found = false
-        text.accept { _, _, cp -> if (cp <= Char.MAX_VALUE.code && cp.toChar() in startChars) { found = true; false } else true }
-        return found
+    private fun hasStartChar(text: String, s: State): Boolean {
+        for (c in text) if (c.code < 128 && s.startChars[c.code]) return true
+        return false
     }
 }
