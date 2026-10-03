@@ -18,6 +18,7 @@ import com.odtheking.odin.utils.ui.compose.pointerInput
 import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper
 import net.minecraft.client.KeyMapping
 import net.minecraft.resources.Identifier
+import org.lwjgl.sdl.SDLMouse
 
 class KeybindSetting(
     name: String,
@@ -25,7 +26,7 @@ class KeybindSetting(
     desc: String
 ) : RenderableSetting<InputConstants.Key>(name, desc), Saving {
 
-    constructor(name: String, defaultKeyCode: Int, desc: String = "") : this(name, InputConstants.Type.KEYSYM.getOrCreate(defaultKeyCode), desc)
+    constructor(name: String, defaultKeyCode: Int, desc: String = "") : this(name, InputConstants.Type.KEYBOARD.getOrCreate(defaultKeyCode), desc)
 
     override var value: InputConstants.Key
         get() = mapping?.let { KeyMappingHelper.getBoundKeyOf(it) } ?: pending
@@ -40,7 +41,6 @@ class KeybindSetting(
 
     private var mapping: KeyMapping? = null
     private var pending: InputConstants.Key = default
-    val boundKey: InputConstants.Key get() = value
 
     var onPress: (() -> Unit)? = null
 
@@ -105,8 +105,7 @@ class KeybindSetting(
     override fun write(gson: Gson): JsonElement = JsonPrimitive(value.name)
 
     override fun read(element: JsonElement, gson: Gson) {
-        val saved = element.asString?.let(InputConstants::getKey) ?: return
-        if (mapping?.isDefault != false) value = saved
+        if (mapping?.isDefault != false) value = element.asString?.let(InputConstants::getKey) ?: return
     }
 
     companion object {
@@ -123,6 +122,9 @@ class KeybindSetting(
             }
         }
 
-        fun InputConstants.Key.isDown(): Boolean = InputConstants.isKeyDown(mc.window, value)
+        fun InputConstants.Key.isDown(): Boolean = when (type) {
+            InputConstants.Type.KEYBOARD -> InputConstants.isKeyDown(value)
+            InputConstants.Type.MOUSE -> SDLMouse.SDL_GetMouseState(null, null) and (1 shl (value - 1)) != 0
+        }
     }
 }

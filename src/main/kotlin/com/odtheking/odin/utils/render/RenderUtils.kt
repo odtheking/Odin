@@ -2,7 +2,6 @@ package com.odtheking.odin.utils.render
 
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.blaze3d.vertex.VertexConsumer
-import com.odtheking.mixin.accessors.BeaconBeamAccessor
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.events.RenderExtractEvent
 import com.odtheking.odin.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints
@@ -12,6 +11,7 @@ import com.odtheking.odin.utils.addVec
 import com.odtheking.odin.utils.center
 import net.fabricmc.fabric.api.client.rendering.v1.SubmitRenderPhases
 import net.minecraft.client.gui.Font
+import net.minecraft.client.renderer.blockentity.BeaconRenderer
 import net.minecraft.client.renderer.feature.TextFeatureRenderer
 import net.minecraft.client.renderer.rendertype.RenderTypes
 import net.minecraft.client.renderer.texture.OverlayTexture
@@ -28,9 +28,6 @@ import org.joml.unaryMinus
 import kotlin.math.cos
 import kotlin.math.max
 import kotlin.math.sin
-import kotlin.math.sqrt
-
-private val BEAM_TEXTURE = Identifier.withDefaultNamespace("textures/entity/beacon/beacon_beam.png")
 
 private fun Int.isFullyOpaque(): Boolean = ((this ushr 24) and 0xFF) == 0xFF
 
@@ -163,21 +160,15 @@ fun RenderExtractEvent.drawStyledBox(
 }
 
 fun RenderExtractEvent.drawBeaconBeam(position: BlockPos, color: Color) {
-    val isScoping = mc.player?.isScoping == true
-    val gameTime = mc.level?.gameTime ?: 0L
     val camera = mc.gameRenderer.mainCamera().position()
+    val animationTime = (mc.level?.gameTime ?: 0L).mod(40L) +  mc.deltaTracker.getGameTimeDeltaPartialTick(false)
+    val scale = if (mc.player?.isScoping == true) 1f else max(1f, camera.subtract(Vec3.atCenterOf(position)).horizontalDistance().toFloat() / 96f)
 
-    val centerX = position.x + 0.5
-    val centerZ = position.z + 0.5
-    val dx = camera.x - centerX
-    val dz = camera.z - centerZ
-    val length = sqrt(dx * dx + dz * dz).toFloat()
-    val scale = if (isScoping) 1.0f else maxOf(1.0f, length * 0.010416667f)
-
-    val poseStack = cameraRelativePose(Vec3(position.x.toDouble(), position.y.toDouble(), position.z.toDouble()))
-    BeaconBeamAccessor.invokeRenderBeam(
-        poseStack, context.submitNodeCollector(), BEAM_TEXTURE, 1f,
-        gameTime.toFloat(), 0, 319, color.rgba, 0.2f * scale, 0.25f * scale
+    val poseStack = cameraRelativePose(Vec3.atLowerCornerOf(position))
+    BeaconRenderer.submitBeaconBeam(
+        poseStack, context.submitNodeCollector(), BeaconRenderer.BEAM_LOCATION, 1f,
+        animationTime, 0, BeaconRenderer.MAX_RENDER_Y, color.rgba,
+        BeaconRenderer.SOLID_BEAM_RADIUS * scale, BeaconRenderer.BEAM_GLOW_RADIUS * scale
     )
     poseStack.popPose()
 }
