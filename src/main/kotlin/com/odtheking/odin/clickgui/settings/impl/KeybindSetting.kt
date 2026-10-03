@@ -17,6 +17,7 @@ import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.input.KeyEvent
 import net.minecraft.client.input.MouseButtonEvent
 import net.minecraft.resources.Identifier
+import org.lwjgl.sdl.SDLMouse
 
 class KeybindSetting(
     name: String,
@@ -39,7 +40,6 @@ class KeybindSetting(
 
     private var mapping: KeyMapping? = null
     private var pending: InputConstants.Key = default
-    val boundKey: InputConstants.Key get() = value
 
     var onPress: (() -> Unit)? = null
     private var listening = false
@@ -138,6 +138,9 @@ class KeybindSetting(
             }
         }
 
-        fun InputConstants.Key.isDown(): Boolean = InputConstants.isKeyDown(value)
+        fun InputConstants.Key.isDown(): Boolean = when (type) {
+            InputConstants.Type.KEYBOARD -> InputConstants.isKeyDown(value)
+            InputConstants.Type.MOUSE -> SDLMouse.SDL_GetMouseState(null, null) and (1 shl (value - 1)) != 0
+        }
     }
 }
