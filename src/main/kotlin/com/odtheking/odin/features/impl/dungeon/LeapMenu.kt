@@ -30,23 +30,25 @@ object LeapMenu : Module(
     key = null
 ) {
     val type by SelectorSetting("Sorting", Sorting.ODIN, desc = "How to sort the leap menu. /od leaporder to configure custom sorting.")
-    private val onRelease by BooleanSetting("On Key Release", false, desc = "Whether to trigger the leap on key release instead of key press.")
     private val onlyClass by BooleanSetting("Only Classes", false, desc = "Renders classes instead of names.")
     private val colorStyle by BooleanSetting("Color Style", false, desc = "Which color style to use.")
     private val backgroundColor by ColorSetting("Background Color", Colors.gray38.withAlpha(0.75f), true, desc = "Color of the background of the leap menu.").withDependency { !colorStyle }
     private val scale by NumberSetting("Render Scale", 1f, 0.1..2.0, 0.1f, desc = "Scale of the leap menu.", unit = "x")
-    val keybindType by SelectorSetting("Mode", KeybindMode.CORNERS, desc = "How the keybinds should function.")
+    private val onRelease by BooleanSetting("On Key Release", false, desc = "Whether to trigger the leap on key release instead of key press.")
 
-    private val topLeftKeybind by KeybindSetting("Top Left", InputConstants.UNKNOWN, "Used to click on the first person in the leap menu.").withDependency { keybindType == KeybindMode.CORNERS }
-    private val topRightKeybind by KeybindSetting("Top Right", InputConstants.UNKNOWN, "Used to click on the second person in the leap menu.").withDependency { keybindType == KeybindMode.CORNERS }
-    private val bottomLeftKeybind by KeybindSetting("Bottom Left", InputConstants.UNKNOWN, "Used to click on the third person in the leap menu.").withDependency { keybindType == KeybindMode.CORNERS }
-    private val bottomRightKeybind by KeybindSetting("Bottom Right", InputConstants.UNKNOWN, "Used to click on the fourth person in the leap menu.").withDependency { keybindType == KeybindMode.CORNERS }
+    private val keybindDropdown by DropdownSetting("Keybinds", desc = "Keybinds for the leap menu.").withDependency { type != Sorting.NONE }
+    val keybindType by SelectorSetting("Mode", KeybindMode.CORNERS, desc = "How the keybinds should function.").withDependency { keybindDropdown }
 
-    private val archerKeybind by KeybindSetting("Archer", InputConstants.UNKNOWN, "Used to leap to the Archer in the leap menu.").withDependency { keybindType == KeybindMode.CLASS }
-    private val berserkerKeybind by KeybindSetting("Berserker", InputConstants.UNKNOWN, "Used to leap to the Berserker in the leap menu.").withDependency { keybindType == KeybindMode.CLASS }
-    private val healerKeybind by KeybindSetting("Healer", InputConstants.UNKNOWN, "Used to leap to the Healer in the leap menu.").withDependency { keybindType == KeybindMode.CLASS }
-    private val mageKeybind by KeybindSetting("Mage", InputConstants.UNKNOWN, "Used to leap to the Mage in the leap menu.").withDependency { keybindType == KeybindMode.CLASS }
-    private val tankKeybind by KeybindSetting("Tank", InputConstants.UNKNOWN, "Used to leap to the Tank in the leap menu.").withDependency { keybindType == KeybindMode.CLASS }
+    private val topLeftKeybind by KeybindSetting("Top Left", InputConstants.KEY_1, "Used to click on the first person in the leap menu.").withDependency { keybindType == KeybindMode.CORNERS && keybindDropdown }
+    private val topRightKeybind by KeybindSetting("Top Right", InputConstants.KEY_2, "Used to click on the second person in the leap menu.").withDependency { keybindType == KeybindMode.CORNERS && keybindDropdown }
+    private val bottomLeftKeybind by KeybindSetting("Bottom Left", InputConstants.KEY_3, "Used to click on the third person in the leap menu.").withDependency { keybindType == KeybindMode.CORNERS && keybindDropdown }
+    private val bottomRightKeybind by KeybindSetting("Bottom Right", InputConstants.KEY_4, "Used to click on the fourth person in the leap menu.").withDependency { keybindType == KeybindMode.CORNERS && keybindDropdown }
+
+    private val archerKeybind by KeybindSetting("Archer", InputConstants.KEY_1, "Used to leap to the Archer in the leap menu.").withDependency { keybindType == KeybindMode.CLASS && keybindDropdown }
+    private val berserkerKeybind by KeybindSetting("Berserker", InputConstants.KEY_2, "Used to leap to the Berserker in the leap menu.").withDependency { keybindType == KeybindMode.CLASS && keybindDropdown }
+    private val healerKeybind by KeybindSetting("Healer", InputConstants.KEY_3, "Used to leap to the Healer in the leap menu.").withDependency { keybindType == KeybindMode.CLASS && keybindDropdown }
+    private val mageKeybind by KeybindSetting("Mage", InputConstants.KEY_4, "Used to leap to the Mage in the leap menu.").withDependency { keybindType == KeybindMode.CLASS && keybindDropdown }
+    private val tankKeybind by KeybindSetting("Tank", InputConstants.KEY_5, "Used to leap to the Tank in the leap menu.").withDependency { keybindType == KeybindMode.CLASS && keybindDropdown }
 
     private val leapAnnounce by BooleanSetting("Leap Announce", false, desc = "Announces when you leap to a player.")
     private val hoverProgress = List(4) { Animatable(0f) }

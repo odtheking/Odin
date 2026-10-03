@@ -45,7 +45,7 @@ object TerminalTimes : Module(
             pbs.time(terminal.type.name, (System.currentTimeMillis() - terminal.timeOpened) / 1000f, "s§7!", "§a${terminal.type.termName}${if (mc.gui.screen() is TermSimGUI) " §7(termsim)" else ""} §7solved in §6", sendMessage = terminalTimes)
         }
 
-        on<MessageEvent.ModifyChat> {
+        on<MessageEvent.Chat> {
             if (!terminalSplits) return@on
 
             when {
@@ -58,10 +58,14 @@ object TerminalTimes : Module(
             }
 
             terminalCompleteRegex.find(message)?.destructured?.let { (name, activated, type, current, total) ->
-                component = Component.literal("§6$name §a$activated a $type! (§c${current}§a/${total}) §8(§7${sectionTimer.seconds}s §8| §7${phaseTimer.seconds}s§8)")
-
                 if ((current == total && gateBlown) || (current.toIntOrNull() ?: return@on) < completed.first) resetSection()
                 else completed = Pair(current.toIntOrNull() ?: return@on, total.toIntOrNull() ?: return@on)
+            }
+        }
+
+        on<MessageEvent.ModifyChat> {
+            if (terminalSplits) terminalCompleteRegex.find(message)?.destructured?.let { (name, activated, type, current, total) ->
+                component = Component.literal("§6$name §a$activated a $type! (§c${current}§a/${total}) §8(§7${sectionTimer.seconds}s §8| §7${phaseTimer.seconds}s§8)")
             }
         }
 

@@ -67,7 +67,7 @@ object ModuleManager {
 
             // boss
             TerminalSimulator, TerminalSolver, TerminalTimes, TerminalSounds, TickTimers, ArrowAlign,
-            InactiveWaypoints, MelodyMessage, WitherDragons, SimonSays, KingRelics, ArrowsDevice, TerminalTitles,
+            TerminalsStatus, MelodyMessage, WitherDragons, SimonSays, KingRelics, ArrowsDevice, TerminalTitles,
 
             // render
             ClickGUIModule, Camera, Etherwarp, PlayerSize, PerformanceHUD, RenderOptimizer,
@@ -117,10 +117,7 @@ object ModuleManager {
 
             for ((_, setting) in module.settings) {
                 when (setting) {
-                    is KeybindSetting -> {
-                        keybindSettingsCache.add(setting)
-                        setting.registerKeyMapping(module.name)
-                    }
+                    is KeybindSetting -> keybindSettingsCache.add(setting)
                     is HUDSetting -> hudSettingsCache.add(setting)
                 }
             }
@@ -145,7 +142,6 @@ object ModuleManager {
         for (config in configs) {
             config.save()
         }
-        KeybindSetting.saveOptionsIfChanged()
     }
 
     fun render(guiGraphics: GuiGraphicsExtractor, tickCounter: DeltaTracker) {

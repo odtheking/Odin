@@ -76,7 +76,7 @@ class Waypoint(
 
 object Waypoints : Module(
     name = "Waypoints",
-    description = "Place waypoints that only show in a specific dungeon phase, Kuudra tier or island and can run commands."
+    description = "Add waypoints that only show in a specific dungeon phase, Kuudra tier or island and can run commands with various trigger types."
 ) {
     private val textScale by NumberSetting("Text Scale", 1f, 0.1..4.0, increment = 0.1f, desc = "The scale of the labels of waypoints.")
     private val showThroughWalls by BooleanSetting("Show Through Walls", false, desc = "Disables depth testing so all waypoints are visible through walls.")
