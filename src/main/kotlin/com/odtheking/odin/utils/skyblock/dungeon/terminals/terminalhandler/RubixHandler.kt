@@ -35,7 +35,7 @@ class RubixHandler : TerminalHandler(TerminalTypes.RUBIX) {
         val goalIndex = rubixColorOrder.indexOf(goal)
         return panes.associate { (slotIndex, color) ->
             val forward = dist(rubixColorOrder.indexOf(color), goalIndex)
-            slotIndex to if (forward > 2 && TerminalSolver.rubixMode != 1) forward - rubixColorOrder.size else forward
+            slotIndex to if (forward > 2 && TerminalSolver.rubixMode != TerminalSolver.RubixMode.LEFT_CLICKS_ONLY) forward - rubixColorOrder.size else forward
         }.filterValues { it != 0 }
     }
 

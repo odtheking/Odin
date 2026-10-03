@@ -10,7 +10,7 @@ open class TickTask(
     serverTick: Boolean = false,
     private val task: () -> Unit
 ) {
-    internal var ticks = 0
+    var ticks = 0
 
     init {
         if (serverTick) TickTasks.registerServerTask(this)

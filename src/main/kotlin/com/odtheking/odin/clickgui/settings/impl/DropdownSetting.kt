@@ -1,13 +1,16 @@
 package com.odtheking.odin.clickgui.settings.impl
 
-import com.odtheking.odin.clickgui.ClickGUI
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import com.odtheking.odin.clickgui.settings.RenderableSetting
-import com.odtheking.odin.utils.Colors
-import com.odtheking.odin.utils.ui.HoverHandler
-import com.odtheking.odin.utils.ui.animations.LinearAnimation
-import com.odtheking.odin.utils.ui.isAreaHovered
-import com.odtheking.odin.utils.ui.rendering.NVGRenderer
-import net.minecraft.client.input.MouseButtonEvent
+import com.odtheking.odin.clickgui.ui.Icon
+import com.odtheking.odin.clickgui.ui.SettingRow
+import com.odtheking.odin.clickgui.ui.animateProgress
+import com.odtheking.odin.utils.ui.animations.Easing
+import net.minecraft.resources.Identifier
+import kotlin.math.PI
 
 /**
  * A setting intended to show or hide other settings in the GUI.
@@ -17,42 +20,23 @@ import net.minecraft.client.input.MouseButtonEvent
 class DropdownSetting(
     name: String,
     override val default: Boolean = false,
-    desc: String = ""
+    desc: String
 ) : RenderableSetting<Boolean>(name, desc) {
 
-    override var value: Boolean = default
+    override var value: Boolean by mutableStateOf(default)
     private var enabled: Boolean by this::value
 
-    private val toggleAnimation = LinearAnimation<Float>(200)
-    private val hoverHandler = HoverHandler(150)
-
-    override fun render(x: Float, y: Float, mouseX: Float, mouseY: Float): Float {
-        super.render(x, y, mouseX, mouseY)
-        val height = getHeight()
-
-        NVGRenderer.text(name, x + 6f, y + height / 2f - 8f, 16f, Colors.WHITE.rgba, NVGRenderer.defaultFont)
-
-        hoverHandler.handle(lastX + width - 30f, lastY + getHeight() / 2f - 16f, 24f, 24f, true)
-
-        val imageSize = 24f + (6f * hoverHandler.percent() / 100f)
-        val offset = (imageSize - 24f) / 2f
-
-        NVGRenderer.push()
-        NVGRenderer.translate(x + width - 22f, y + height / 2f)
-        NVGRenderer.rotate(toggleAnimation.get(Math.PI.toFloat() / 2f, 0f, enabled))
-        NVGRenderer.translate(-(12f + offset), -(12f + offset))
-        NVGRenderer.image(ClickGUI.chevronImage, 0f, 0f, imageSize, imageSize)
-        NVGRenderer.pop()
-
-        return height
+    @Composable
+    override fun Content() {
+        SettingRow { hovered ->
+            val turn = animateProgress(enabled, 200, Easing.EASE_IN_OUT)
+            Icon(CHEVRON, CHEVRON_SIZE, hovered = hovered, rotation = { turn.value * QUARTER_TURN }, onClick = { enabled = !enabled })
+        }
     }
 
-    override fun mouseClicked(mouseX: Float, mouseY: Float, click: MouseButtonEvent): Boolean {
-        if (click.button() != 0 || !isHovered) return false
-        enabled = !enabled
-        toggleAnimation.start()
-        return true
+    private companion object {
+        val CHEVRON: Identifier = Identifier.fromNamespaceAndPath("odin", "textures/chevron.png")
+        const val QUARTER_TURN = (PI / 2).toFloat()
+        const val CHEVRON_SIZE = 15
     }
-
-    override val isHovered: Boolean get() = isAreaHovered(lastX + width - 30f, lastY + getHeight() / 2f - 16f, 24f, 24f, true)
 }

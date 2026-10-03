@@ -1,177 +1,82 @@
 package com.odtheking.odin.clickgui
 
+import androidx.compose.runtime.*
 import com.odtheking.odin.OdinMod.mc
-import com.odtheking.odin.clickgui.settings.impl.ColorSetting
+import com.odtheking.odin.clickgui.ui.Panel
+import com.odtheking.odin.clickgui.ui.TextBox
 import com.odtheking.odin.features.Category
-import com.odtheking.odin.features.ModuleManager
 import com.odtheking.odin.features.impl.render.ClickGUIModule
-import com.odtheking.odin.utils.Color
-import com.odtheking.odin.utils.Colors
-import com.odtheking.odin.utils.ui.HoverHandler
-import com.odtheking.odin.utils.ui.animations.EaseOutAnimation
-import com.odtheking.odin.utils.ui.rendering.NVGPIPRenderer
-import com.odtheking.odin.utils.ui.rendering.NVGRenderer
+import com.odtheking.odin.utils.ui.compose.FocusRequester
+import com.odtheking.odin.utils.ui.compose.UiHost
+import com.odtheking.odin.utils.ui.compose.offset
+import com.odtheking.odin.utils.ui.compose.size
 import net.minecraft.client.gui.GuiGraphicsExtractor
-import net.minecraft.client.gui.screens.Screen
-import net.minecraft.client.input.CharacterEvent
 import net.minecraft.client.input.KeyEvent
-import net.minecraft.client.input.MouseButtonEvent
 import net.minecraft.network.chat.Component
-import kotlin.math.sign
-import com.odtheking.odin.utils.ui.mouseX as odinMouseX
-import com.odtheking.odin.utils.ui.mouseY as odinMouseY
+import org.lwjgl.glfw.GLFW
 
-/**
- * Renders all the modules.
- */
-object ClickGUI : Screen(Component.literal("Click GUI")) {
+object ClickGUI : OdinScreen(Component.literal("Click GUI")) {
 
-    private val panels: ArrayList<Panel> = arrayListOf<Panel>().apply {
-        if (Category.categories.any { (category, _) -> ClickGUIModule.panelSetting[category] == null }) ClickGUIModule.resetPositions()
-        for ((_, category) in Category.categories) add(Panel(category))
-    }
+    var searchString by mutableStateOf("")
+        private set
 
-    private var openAnim = EaseOutAnimation(500)
-    val gray38 = Color(38, 38, 38)
-    val gray26 = Color(26, 26, 26)
+    private val searchFocus = FocusRequester()
+    private val panels = mutableStateListOf<Category>()
 
-    override fun extractRenderState(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, deltaTicks: Float) {
-        NVGPIPRenderer.draw(context, 0, 0, context.guiWidth(), context.guiHeight()) {
-            val scaledMouseX = odinMouseX / ClickGUIModule.getStandardGuiScale()
-            val scaledMouseY = odinMouseY / ClickGUIModule.getStandardGuiScale()
+    override val ui by lazy {
+        if (Category.categories.keys.any { ClickGUIModule.panelSetting[it] == null }) ClickGUIModule.resetPositions()
+        panels.addAll(Category.categories.values)
 
-            NVGRenderer.scale(ClickGUIModule.getStandardGuiScale(), ClickGUIModule.getStandardGuiScale())
-
-            SearchBar.draw(
-                mc.window.screenWidth / (2f * ClickGUIModule.getStandardGuiScale()) - 175f,
-                (mc.window.screenHeight - 110f) / ClickGUIModule.getStandardGuiScale() - 20f,
-                scaledMouseX,
-                scaledMouseY
-            )
-
-            if (openAnim.isAnimating()) {
-                val scale = openAnim.get(0f, 1f)
-
-                val centerX = context.guiWidth().toFloat()
-                val centerY = context.guiHeight().toFloat()
-                NVGRenderer.translate(centerX, centerY)
-                NVGRenderer.scale(scale, scale)
-                NVGRenderer.translate(-centerX, -centerY)
+        UiHost {
+            TextBox(
+                searchString, { searchString = it },
+                placeholder = "Search...", maxLength = 18, centered = true, radius = 6f, focusRequester = searchFocus,
+            ).size(SEARCH_WIDTH, SEARCH_HEIGHT).offset({ virtualWidth / 2 - SEARCH_WIDTH / 2 }, { virtualHeight - SEARCH_BOTTOM_MARGIN })
+            for (category in panels) key(category) {
+                Panel(category) { bringToFront(category) }
             }
-
-            val draggedPanel = panels.firstOrNull { it.dragging }
-            for (panel in panels) {
-                if (panel != draggedPanel) panel.draw(scaledMouseX, scaledMouseY)
-            }
-
-            draggedPanel?.draw(scaledMouseX, scaledMouseY)
-
-            desc.render()
         }
-        super.extractRenderState(context, mouseX, mouseY, deltaTicks)
     }
 
-    override fun mouseScrolled(
-        mouseX: Double,
-        mouseY: Double,
-        horizontalAmount: Double,
-        verticalAmount: Double
-    ): Boolean {
-        val actualAmount = (verticalAmount.sign * 16).toInt()
-        for (i in panels.size - 1 downTo 0) {
-            if (panels[i].handleScroll(actualAmount)) return true
-        }
-        return super.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount)
-    }
+    private var scale: Float = 1f
+    override val guiScale: Float get() = scale
 
-    override fun mouseClicked(
-        mouseButtonEvent: MouseButtonEvent,
-        bl: Boolean
-    ): Boolean {
-        val scaledMouseX = odinMouseX / ClickGUIModule.getStandardGuiScale()
-        val scaledMouseY = odinMouseY / ClickGUIModule.getStandardGuiScale()
-        SearchBar.mouseClicked(scaledMouseX, scaledMouseY, mouseButtonEvent)
-        for (i in panels.size - 1 downTo 0) {
-            if (panels[i].mouseClicked(scaledMouseX, scaledMouseY, mouseButtonEvent)) return true
-        }
-        return super.mouseClicked(mouseButtonEvent, bl)
-    }
+    val virtualWidth get() = (mc.window.guiScaledWidth / scale).toInt()
+    val virtualHeight get() = (mc.window.guiScaledHeight / scale).toInt()
 
-    override fun mouseReleased(mouseButtonEvent: MouseButtonEvent): Boolean {
-        SearchBar.mouseReleased()
-        for (i in panels.size - 1 downTo 0) {
-            panels[i].mouseReleased(mouseButtonEvent)
-        }
-        return super.mouseReleased(mouseButtonEvent)
-    }
+    override fun extractRenderState(graphics: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, partialTick: Float) {
+        graphics.pose().pushMatrix()
+        graphics.pose().scale(scale, scale)
 
-    override fun charTyped(characterEvent: CharacterEvent): Boolean {
-        SearchBar.keyTyped(characterEvent)
-        for (i in panels.size - 1 downTo 0) {
-            if (panels[i].keyTyped(characterEvent)) return true
-        }
-        return super.charTyped(characterEvent)
-    }
+        ui.render(graphics, virtualWidth, virtualHeight, (mouseX / scale).toInt(), (mouseY / scale).toInt())
 
-    override fun keyPressed(keyEvent: KeyEvent): Boolean {
-        SearchBar.keyPressed(keyEvent)
-        for (i in panels.size - 1 downTo 0) {
-            if (panels[i].keyPressed(keyEvent)) return true
-        }
-        return super.keyPressed(keyEvent)
+        graphics.pose().popMatrix()
+        super.extractRenderState(graphics, mouseX, mouseY, partialTick)
     }
 
     override fun init() {
-        openAnim.start()
         super.init()
+        scale = ClickGUIModule.clickGuiScale.toFloat() / mc.window.guiScale
+        focusSearch()
     }
 
-    override fun onClose() {
-        for (panel in panels.filter { it.panelSetting.extended }.reversed()) {
-            for (moduleButton in panel.moduleButtons.filter { it.extended }) {
-                for (setting in moduleButton.representableSettings) {
-                    if (setting is ColorSetting) setting.section = null
-                    setting.listening = false
-                }
-            }
+    override fun keyPressed(event: KeyEvent): Boolean {
+        if (event.key == GLFW.GLFW_KEY_F && event.hasControlDownWithQuirk()) {
+            focusSearch()
+            return true
         }
-
-        ModuleManager.saveConfigurations()
-        super.onClose()
+        return super.keyPressed(event)
     }
 
-    override fun isPauseScreen(): Boolean = false
+    private fun focusSearch() = ui.focus(searchFocus)
 
-    private var desc = Description("", 0f, 0f, HoverHandler(150))
-
-    /** Sets the description without creating a new data class which isn't optimal */
-    fun setDescription(text: String, x: Float, y: Float, hoverHandler: HoverHandler) {
-        desc.text = text
-        desc.x = x
-        desc.y = y
-        desc.hoverHandler = hoverHandler
+    private fun bringToFront(category: Category) {
+        if (panels.last() == category) return
+        panels.remove(category)
+        panels.add(category)
     }
 
-    data class Description(var text: String, var x: Float, var y: Float, var hoverHandler: HoverHandler) {
-
-        fun render() {
-            if (text.isEmpty() || hoverHandler.percent() < 100) return
-            val area = NVGRenderer.wrappedTextBounds(text, 300f, 16f, NVGRenderer.defaultFont)
-            NVGRenderer.rect(x, y, area[2] - area[0] + 16f, area[3] - area[1] + 16f, gray38.rgba, 5f)
-            NVGRenderer.hollowRect(
-                x,
-                y,
-                area[2] - area[0] + 16f,
-                area[3] - area[1] + 16f,
-                1.5f,
-                ClickGUIModule.clickGUIColor.rgba,
-                5f
-            )
-            NVGRenderer.drawWrappedString(text, x + 8f, y + 8f, 300f, 16f, Colors.WHITE.rgba, NVGRenderer.defaultFont)
-        }
-    }
-
-    val movementImage = NVGRenderer.createImage("/assets/odin/MovementIcon.svg")
-    val hueImage = NVGRenderer.createImage("/assets/odin/HueGradient.png")
-    val chevronImage = NVGRenderer.createImage("/assets/odin/chevron.svg")
+    private const val SEARCH_WIDTH = 120
+    private const val SEARCH_HEIGHT = 20
+    private const val SEARCH_BOTTOM_MARGIN = 45
 }

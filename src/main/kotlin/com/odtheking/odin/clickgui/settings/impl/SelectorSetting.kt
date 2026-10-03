@@ -1,127 +1,83 @@
 package com.odtheking.odin.clickgui.settings.impl
 
+import androidx.compose.runtime.*
 import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
-import com.odtheking.odin.clickgui.ClickGUI.gray38
-import com.odtheking.odin.clickgui.Panel
+import com.odtheking.odin.clickgui.GuiTheme
 import com.odtheking.odin.clickgui.settings.RenderableSetting
 import com.odtheking.odin.clickgui.settings.Saving
-import com.odtheking.odin.features.impl.render.ClickGUIModule
-import com.odtheking.odin.utils.Color
-import com.odtheking.odin.utils.Color.Companion.brighter
+import com.odtheking.odin.clickgui.ui.*
 import com.odtheking.odin.utils.Colors
-import com.odtheking.odin.utils.ui.HoverHandler
-import com.odtheking.odin.utils.ui.animations.EaseInOutAnimation
-import com.odtheking.odin.utils.ui.isAreaHovered
-import com.odtheking.odin.utils.ui.rendering.NVGRenderer
-import net.minecraft.client.input.MouseButtonEvent
+import com.odtheking.odin.utils.capitalizeFirst
+import com.odtheking.odin.utils.render.roundedOutline
+import com.odtheking.odin.utils.render.roundedRect
+import com.odtheking.odin.utils.ui.compose.*
 
-class SelectorSetting(
+val Enum<*>.label: String
+    get() = toString().takeIf { it != name }
+        ?: name.split('_').joinToString(" ") { it.lowercase().capitalizeFirst() }
+
+class SelectorSetting<E : Enum<E>>(
     name: String,
-    default: String,
-    private var options: List<String>,
-    desc: String
-) : RenderableSetting<Int>(name, desc), Saving {
+    override val default: E,
+    desc: String,
+    val options: List<E> = default.declaringJavaClass.enumConstants.asList()
+) : RenderableSetting<E>(name, desc), Saving {
 
-    override val default: Int = optionIndex(default)
+    override var value: E by mutableStateOf(default)
 
-    override var value: Int
-        get() = index
-        set(value) {
-            index = value
-        }
-
-    private var index: Int = optionIndex(default)
-        set(value) {
-            field = if (value > options.size - 1) 0 else if (value < 0) options.size - 1 else value
-        }
-
-    private var selected: String
-        get() = options[index]
-        set(value) {
-            index = optionIndex(value)
-        }
-
-    private val elementWidths by lazy { options.map { NVGRenderer.textWidth(it, 16f, NVGRenderer.defaultFont) } }
-    private val settingAnim = EaseInOutAnimation(200)
-    private val hover = HoverHandler(150)
-    private val defaultHeight = Panel.HEIGHT
-    private var extended = false
-
-    private val color: Color get() = gray38.brighter(1 + hover.percent() / 500f)
-
-    private fun isSettingHovered(index: Int): Boolean =
-        isAreaHovered(lastX, lastY + 38f + 32f * index, width, 32f, true)
-
-    override fun render(x: Float, y: Float, mouseX: Float, mouseY: Float): Float {
-        super.render(x, y, mouseX, mouseY)
-
-        val currentWidth = elementWidths[index]
-
-        hover.handle(x + width - 20f - currentWidth, y + defaultHeight / 2f - 10f, currentWidth + 12f, 22f, true)
-        NVGRenderer.rect(x + width - 20f - currentWidth, y + defaultHeight / 2f - 10f, currentWidth + 12f, 20f, color.rgba, 5f)
-        NVGRenderer.hollowRect(x + width - 20f - currentWidth, y + defaultHeight / 2f - 10f, currentWidth + 12f, 20f, 1.5f, ClickGUIModule.clickGUIColor.rgba, 5f)
-
-        NVGRenderer.text(name, x + 6f, y + defaultHeight / 2f - 8f, 16f, Colors.WHITE.rgba, NVGRenderer.defaultFont)
-        NVGRenderer.text(selected, x + width - 14f - currentWidth, y + defaultHeight / 2f - 8f, 16f, Colors.WHITE.rgba, NVGRenderer.defaultFont)
-
-        if (!extended && !settingAnim.isAnimating()) return defaultHeight
-
-        val displayHeight = getHeight()
-        if (settingAnim.isAnimating()) NVGRenderer.pushScissor(x, y, width, displayHeight)
-
-        NVGRenderer.rect(x + 6, y + 37f, width - 12f, options.size * 32f, gray38.rgba, 5f)
-
-        for (i in options.indices) {
-            val optionY = y + 38 + 32 * i
-            if (i != options.size - 1) NVGRenderer.line(x + 18f, optionY + 32, x + width - 12f, optionY + 32, 1.5f, Colors.MINECRAFT_DARK_GRAY.rgba)
-            NVGRenderer.text(options[i], x + width / 2f - elementWidths[i] / 2, optionY + 8f, 16f, Colors.WHITE.rgba, NVGRenderer.defaultFont)
-            if (isSettingHovered(i)) NVGRenderer.hollowRect(x + 6, optionY, width - 12f, 32f, 1.5f, ClickGUIModule.clickGUIColor.rgba, 4f)
-        }
-        if (settingAnim.isAnimating()) NVGRenderer.popScissor()
-
-        return displayHeight
+    fun cycle() {
+        value = options[(options.indexOf(value) + 1) % options.size]
     }
 
-    override fun mouseClicked(mouseX: Float, mouseY: Float, click: MouseButtonEvent): Boolean {
-        if (click.button() == 0) {
-            if (isHovered) {
-                settingAnim.start()
-                extended = !extended
-                return true
-            }
+    @Composable
+    override fun Content() {
+        var expanded by remember { mutableStateOf(false) }
+        OnDismiss { expanded = false }
 
-            if (!extended) return false
-
-            for (index in options.indices) {
-                if (isSettingHovered(index)) {
-                    settingAnim.start()
-                    selected = options[index]
-                    extended = false
-                    return true
-                }
-            }
-        } else if (click.button() == 1) {
-            if (isHovered) {
-                index++
-                return true
+        Column {
+            SettingRow { Pill(value.label, onClick = { expanded = !expanded }, onRightClick = ::cycle) }
+            AnimatedVisibility(expanded) {
+                Column {
+                    Gap(1)
+                    Column {
+                        options.forEachIndexed { index, option ->
+                            Option(option, last = index == options.lastIndex) {
+                                value = option
+                                expanded = false
+                            }
+                        }
+                    }
+                        .width(LIST_WIDTH).offset({ LIST_INSET })
+                        .drawBehind { graphics -> graphics.roundedRect(x, y, right, bottom, GuiTheme.surface.rgba, GuiTheme.RADIUS) }
+                    Gap(LIST_INSET)
+                }.width(GuiTheme.ROW_WIDTH)
             }
         }
-        return false
     }
 
-    private fun optionIndex(string: String): Int =
-        options.map { it.lowercase() }.indexOf(string.lowercase()).coerceIn(0, options.size - 1)
+    @Composable
+    private fun Option(option: E, last: Boolean, onClick: () -> Unit) = Box().size(LIST_WIDTH, OPTION_HEIGHT)
+        .clickable(onClick = onClick).drawBehind { graphics ->
+            if (!last) graphics.fill(x + SEPARATOR_INSET, bottom, right - SEPARATOR_INSET, bottom + 1, Colors.MINECRAFT_DARK_GRAY.rgba)
+            if (Pointer.isOver(x, y, width, height)) graphics.roundedOutline(x, y, right, bottom + 1, GuiTheme.accent.rgba, 1.5f, GuiTheme.RADIUS)
+            graphics.textCentered(option.label, x, y, right, bottom)
+        }
 
-    override val isHovered: Boolean get() = isAreaHovered(lastX, lastY, width, defaultHeight, true)
-
-    override fun getHeight(): Float =
-        settingAnim.get(defaultHeight, options.size * 32f + 44, !extended)
-
-    override fun write(gson: Gson): JsonElement = JsonPrimitive(selected)
+    override fun write(gson: Gson): JsonElement = JsonPrimitive(value.name)
 
     override fun read(element: JsonElement, gson: Gson) {
-        element.asString?.let { selected = it }
+        val saved = element.asString ?: return
+        value = options.firstOrNull { it.name == saved }
+            ?: options.firstOrNull { it.label.equals(saved, ignoreCase = true) }
+            ?: return
+    }
+
+    private companion object {
+        const val OPTION_HEIGHT = 16
+        const val LIST_INSET = 4
+        const val LIST_WIDTH = GuiTheme.ROW_WIDTH - LIST_INSET * 2
+        const val SEPARATOR_INSET = 10
     }
 }

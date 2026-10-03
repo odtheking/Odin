@@ -1,220 +1,168 @@
 package com.odtheking.odin.features.impl.dungeon.dungeonwaypoints
 
+import androidx.compose.runtime.*
 import com.odtheking.odin.OdinMod
 import com.odtheking.odin.OdinMod.mc
+import com.odtheking.odin.clickgui.GuiTheme
+import com.odtheking.odin.clickgui.OdinScreen
+import com.odtheking.odin.clickgui.ui.Button
+import com.odtheking.odin.clickgui.ui.SWITCH_HEIGHT
+import com.odtheking.odin.clickgui.ui.Switch
 import com.odtheking.odin.config.DungeonWaypointConfig
 import com.odtheking.odin.config.WaypointPackFileUtils
-import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.modMessage
+import com.odtheking.odin.utils.render.roundedRect
+import com.odtheking.odin.utils.render.roundedRectOutlined
+import com.odtheking.odin.utils.ui.compose.*
 import kotlinx.coroutines.launch
 import net.minecraft.client.gui.GuiGraphicsExtractor
-import net.minecraft.client.gui.components.Button
-import net.minecraft.client.gui.components.ScrollableLayout
-import net.minecraft.client.gui.components.StringWidget
-import net.minecraft.client.gui.components.Tooltip
-import net.minecraft.client.gui.layouts.LinearLayout
 import net.minecraft.client.gui.screens.Screen
 import net.minecraft.network.chat.Component
 
-class WaypointPackSelectorScreen(private val parent: Screen?) : Screen(Component.literal("Waypoint Pack Manager")) {
+class WaypointPackSelectorScreen(private val parent: Screen?) : OdinScreen(Component.literal("Waypoint Pack Manager")) {
 
-    private var loading = false
-    private var needsRefresh = false
-    private var deleteConfirmPack: String? = null
-    private var deleteConfirmTime = 0L
-    private val deleteButtons = mutableMapOf<String, Button>()
+    private class Prompt(val title: String, val onConfirm: (String) -> Unit)
 
-    private fun packNames() = WaypointPackFileUtils.listPackNames()
+    private var revision by mutableIntStateOf(0)
+    private var packs by mutableStateOf(WaypointPackFileUtils.listPackNames())
+    private var loading by mutableStateOf(false)
+    private var prompt by mutableStateOf<Prompt?>(null)
 
-    private fun packWaypointCount(packName: String): Int? =
-        DungeonWaypoints.loadedPacks[packName]?.values?.sumOf { it.size }
-
-    override fun init() {
-        super.init()
-        repositionElements()
-    }
-
-    override fun repositionElements() {
-        clearWidgets()
-        deleteButtons.clear()
-        if (loading) return
-
-        val headerLayout = LinearLayout.vertical().spacing(8)
-        headerLayout.defaultCellSetting().alignHorizontallyCenter()
-        headerLayout.addChild(StringWidget(Component.literal("§6§lWaypoint Pack Manager"), font))
-        val actionLayout = LinearLayout.horizontal().spacing(8)
-        actionLayout.addChild(Button.builder(Component.literal("Create Pack")) { showCreateDialog() }.width(100).build())
-        actionLayout.addChild(Button.builder(Component.literal("Import")) { importFromClipboard() }.width(80).build())
-        headerLayout.addChild(actionLayout)
-        headerLayout.arrangeElements()
-        headerLayout.setPosition(width / 2 - headerLayout.width / 2, 10)
-
-        val packListLayout = LinearLayout.vertical().spacing(4)
-        packListLayout.defaultCellSetting().alignHorizontallyCenter()
-        packNames().forEach { packListLayout.addChild(createPackRow(it)) }
-        packListLayout.arrangeElements()
-        val scrollTop = 10 + headerLayout.height + 10
-        val scrollBottom = height - 30 - 10
-        val scrollHeight = (scrollBottom - scrollTop).coerceAtLeast(40)
-        val scrollableLayout = ScrollableLayout(mc, packListLayout, scrollHeight)
-        scrollableLayout.setMinWidth(450)
-        scrollableLayout.setMaxHeight(scrollHeight)
-        scrollableLayout.arrangeElements()
-        scrollableLayout.setPosition(width / 2 - scrollableLayout.width / 2, scrollTop)
-
-        val footerLayout = LinearLayout.horizontal().spacing(8)
-        footerLayout.addChild(Button.builder(Component.literal("Done")) { mc.setScreen(parent) }.width(80).build())
-        footerLayout.arrangeElements()
-        footerLayout.setPosition(width / 2 - footerLayout.width / 2, height - 30)
-
-        headerLayout.visitWidgets(this::addRenderableWidget)
-        scrollableLayout.visitWidgets(this::addRenderableWidget)
-        footerLayout.visitWidgets(this::addRenderableWidget)
-    }
-
-    private fun createPackRow(packName: String): LinearLayout {
-        val row = LinearLayout.horizontal().spacing(4)
-        val isSelected = packName in DungeonWaypoints.selectedPackIds
-        val isEdit = packName == DungeonWaypoints.editPackId
-
-        row.addChild(Button.builder(Component.literal(if (isSelected) "§a☑" else "§7☐")) { togglePack(packName) }
-            .size(24, 24).tooltip(Tooltip.create(Component.literal(if (isSelected) "Enabled" else "Disabled"))).build())
-
-        row.addChild(Button.builder(Component.literal((if (isEdit) "§e★ " else "§7") + packName)) { setEditPack(packName) }
-            .size(280, 24).tooltip(Tooltip.create(Component.literal(if (isEdit) "Currently editing" else "Click to edit"))).build())
-
-        val count = packWaypointCount(packName)
-        val countText = if (count != null) "§a$count §7wp" else "§7? wp"
-        row.addChild(StringWidget(Component.literal(countText), font).apply { setWidth(70) })
-
-        row.addChild(Button.builder(Component.literal("✎")) { showRenameDialog(packName) }
-            .size(30, 24).tooltip(Tooltip.create(Component.literal("Rename"))).build())
-
-        val isConfirm = deleteConfirmPack == packName && (System.currentTimeMillis() - deleteConfirmTime) < 3000
-        val deleteBtn = Button.builder(Component.literal(if (isConfirm) "§c✓?" else "§c✕")) { handleDelete(packName) }
-            .size(30, 24).tooltip(Tooltip.create(Component.literal(if (isConfirm) "Confirm?" else "Delete"))).build()
-        if (packNames().size == 1) {
-            deleteBtn.active = false
-            deleteBtn.setTooltip(Tooltip.create(Component.literal("Cannot delete the only pack")))
+    override val ui = UiHost {
+        PackPanel()
+        prompt?.let { current ->
+            key(current) {
+                PromptDialog(current.title, { text -> prompt = null; current.onConfirm(text) }, { prompt = null })
+            }
         }
-        deleteButtons[packName] = deleteBtn
-        row.addChild(deleteBtn)
-        row.arrangeElements()
-        return row
     }
 
-    private fun togglePack(packName: String) {
-        if (packName in DungeonWaypoints.selectedPackIds) {
-            if (DungeonWaypoints.selectedPackIds.size == 1) return
-            if (packName == DungeonWaypoints.editPackId)
-                DungeonWaypoints.editPackId = DungeonWaypoints.selectedPackIds.first { it != packName }
-            DungeonWaypoints.selectedPackIds.remove(packName)
-        } else DungeonWaypoints.selectedPackIds.add(packName)
-        repositionElements()
-        backgroundSave()
+    override fun extractRenderState(graphics: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, partialTick: Float) {
+        super.extractRenderState(graphics, mouseX, mouseY, partialTick)
+        ui.render(graphics, width, height, mouseX, mouseY)
     }
 
-    private fun setEditPack(packName: String) {
-        if (packName !in DungeonWaypoints.selectedPackIds) DungeonWaypoints.selectedPackIds.add(packName)
-        DungeonWaypoints.editPackId = packName
-        repositionElements()
-        backgroundSave()
+    override fun removed() {
+        super.removed()
+        ui.dispose()
+    }
+
+    private fun listHeight() = 224.coerceAtMost((mc.window.guiScaledHeight - LIST_Y - DIALOG_BUTTON_HEIGHT - DIALOG_PADDING * 2 - 20).coerceAtLeast(48))
+
+    @Composable
+    private fun PackPanel() {
+        val footerY = { LIST_Y + listHeight() + DIALOG_PADDING }
+        Dialog(PANEL_WIDTH, { footerY() + DIALOG_BUTTON_HEIGHT + DIALOG_PADDING }) {
+            Text({ "§lWaypoint Pack Manager" }).centeredX(PANEL_WIDTH, DIALOG_PADDING)
+            Button("Create Pack", 100, DIALOG_BUTTON_HEIGHT) {
+                prompt = Prompt("Create Pack") { name ->
+                    if (name.isNotBlank()) refreshAfter { DungeonWaypoints.createPack(name) }
+                }
+            }.at(76, ACTIONS_Y)
+            Button("Import", 80, DIALOG_BUTTON_HEIGHT) {
+                prompt = Prompt("Import as New Pack") { name ->
+                    refreshAfter {
+                        DungeonWaypointConfig.decodeWaypoints(name)
+                            ?.takeIf { DungeonWaypoints.importPack(name, it) }
+                            ?.let { modMessage("§aImported waypoints as pack '$name'!") }
+                            ?: modMessage("§cFailed to decode waypoints from clipboard.")
+                    }
+                }
+            }.at(184, ACTIONS_Y)
+            if (loading) Text({ "§7Loading..." }).centeredX(PANEL_WIDTH, LIST_Y + listHeight() / 2 - 4) else PackList()
+            Button("Done", 80, DIALOG_BUTTON_HEIGHT) { if (parent != null) mc.setScreenAndShow(parent) else mc.gui.setScreen(null) }
+                .offset({ (PANEL_WIDTH - 80) / 2 }, footerY)
+        }
+    }
+
+    @Composable
+    private fun PackList() {
+        val selected = remember(revision) { DungeonWaypoints.selectedPackIds.toList() }
+        val edit = remember(revision) { DungeonWaypoints.editPackId }
+        val scroll = remember { ScrollState() }
+
+        Box {
+            Column(ROW_SPACING) {
+                for (name in packs) key(name) {
+                    PackRow(name, name in selected, name == edit, packs.size > 1)
+                }
+            }.offset(y = { scroll.offset })
+        }
+            .width(ROW_WIDTH)
+            .height {
+                val viewport = listHeight()
+                scroll.maxScroll = height - viewport
+                viewport
+            }
+            .clip()
+            .at(DIALOG_PADDING, LIST_Y)
+            .onScroll { amount -> scroll.by(amount); true }
+    }
+
+    @Composable
+    private fun PackRow(name: String, enabled: Boolean, editing: Boolean, canDelete: Boolean) {
+        val nameHover = remember { InteractionSource() }
+
+        Box {
+            Switch(enabled) {
+                if (name in DungeonWaypoints.selectedPackIds) {
+                    if (DungeonWaypoints.selectedPackIds.size == 1) return@Switch
+                    if (name == DungeonWaypoints.editPackId)
+                        DungeonWaypoints.editPackId = DungeonWaypoints.selectedPackIds.first { it != name }
+                    DungeonWaypoints.selectedPackIds.remove(name)
+                } else DungeonWaypoints.selectedPackIds.add(name)
+                revision++
+                backgroundSave()
+            }.at(GuiTheme.PADDING, (ROW_HEIGHT - SWITCH_HEIGHT) / 2)
+            Box {
+                Text({ (if (editing) "§e★ " else if (nameHover.hovered) "§f" else "§7") + name }).at(0, (ROW_HEIGHT - 8) / 2)
+            }.size(150, ROW_HEIGHT).clip().hoverable(nameHover).clickable(onClick = {
+                if (name !in DungeonWaypoints.selectedPackIds) DungeonWaypoints.selectedPackIds.add(name)
+                DungeonWaypoints.editPackId = name
+                revision++
+                backgroundSave()
+            }).at(36, 0)
+            Text({
+                val count = DungeonWaypoints.loadedPacks[name]?.values?.sumOf { it.size }
+                if (count != null) "§a$count §7wp" else "§7? wp"
+            }).at(190, (ROW_HEIGHT - 8) / 2)
+            Button("§7✎", 26, 18) {
+                prompt = Prompt("Rename Pack") { newName ->
+                    if (newName.isNotBlank() && newName != name) refreshAfter { DungeonWaypoints.renamePack(name, newName) }
+                }
+            }.at(260, (ROW_HEIGHT - 18) / 2)
+            Button(if (canDelete) "§cX" else "§8X", 26, 18) {
+                if (canDelete) refreshAfter { DungeonWaypoints.deletePack(name) }
+            }.at(292, (ROW_HEIGHT - 18) / 2)
+        }.size(ROW_WIDTH, ROW_HEIGHT).drawBehind { graphics ->
+            if (editing) graphics.roundedRectOutlined(x, y, right, bottom, GuiTheme.surface.rgba, GuiTheme.accent.rgba, 1f, GuiTheme.RADIUS)
+            else graphics.roundedRect(x, y, right, bottom, GuiTheme.surface.rgba, GuiTheme.RADIUS)
+        }
     }
 
     private fun backgroundSave() {
-        val selected = DungeonWaypoints.selectedPackIds.toList()
-        val edit = DungeonWaypoints.editPackId
-        OdinMod.scope.launch { DungeonWaypoints.savePackSelection(selected, edit) }
+        OdinMod.scope.launch { DungeonWaypoints.savePackSelection(DungeonWaypoints.selectedPackIds.toList(), DungeonWaypoints.editPackId) }
     }
 
-    override fun extractRenderState(context: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, delta: Float) {
-        if (loading) {
-            context.centeredText(font, "§7Loading...", width / 2, height / 2, Colors.WHITE.rgba)
-            return
-        }
-        super.extractRenderState(context, mouseX, mouseY, delta)
-    }
-
-    override fun tick() {
-        super.tick()
-        if (needsRefresh) {
-            needsRefresh = false
-            loading = false
-            repositionElements()
-        }
-        if (deleteConfirmPack != null && (System.currentTimeMillis() - deleteConfirmTime) >= 3000) {
-            deleteButtons[deleteConfirmPack]?.let { it.message = Component.literal("§c✕"); it.setTooltip(Tooltip.create(Component.literal("Delete"))) }
-            deleteConfirmPack = null
+    private fun refreshAfter(work: suspend () -> Unit) {
+        loading = true
+        OdinMod.scope.launch {
+            try {
+                work()
+            } finally {
+                packs = WaypointPackFileUtils.listPackNames()
+                revision++
+                loading = false
+            }
         }
     }
 
-    private fun showCreateDialog() {
-        mc.setScreen(TextPromptScreen("Create Pack").apply {
-            setCallback { name ->
-                if (name.isNotBlank()) {
-                    loading = true
-                    OdinMod.scope.launch {
-                        DungeonWaypoints.createPack(name)
-                        needsRefresh = true
-                    }
-                }
-                mc.setScreen(this@WaypointPackSelectorScreen)
-            }
-        })
+    private companion object {
+        const val PANEL_WIDTH = 340
+        const val ROW_WIDTH = PANEL_WIDTH - DIALOG_PADDING * 2
+        const val ROW_HEIGHT = 24
+        const val ROW_SPACING = 4
+        const val ACTIONS_Y = 24
+        const val LIST_Y = 52
     }
-
-    private fun showRenameDialog(oldName: String) {
-        mc.setScreen(TextPromptScreen("Rename Pack").apply {
-            setCallback { newName ->
-                if (newName.isNotBlank() && newName != oldName) {
-                    loading = true
-                    OdinMod.scope.launch {
-                        DungeonWaypoints.renamePack(oldName, newName)
-                        needsRefresh = true
-                    }
-                }
-                mc.setScreen(this@WaypointPackSelectorScreen)
-            }
-        })
-    }
-
-    private fun handleDelete(packName: String) {
-        if (deleteConfirmPack == packName && (System.currentTimeMillis() - deleteConfirmTime) < 3000) {
-            loading = true
-            deleteConfirmPack = null
-            OdinMod.scope.launch {
-                DungeonWaypoints.deletePack(packName)
-                needsRefresh = true
-            }
-        } else {
-            deleteConfirmPack = packName
-            deleteConfirmTime = System.currentTimeMillis()
-            deleteButtons[packName]?.let { it.message = Component.literal("§c✓?"); it.setTooltip(Tooltip.create(Component.literal("Confirm?"))) }
-        }
-    }
-
-    private fun importFromClipboard() {
-        val clipboard = mc.keyboardHandler.clipboard.trim().trim { it == '\n' }
-        if (clipboard.isBlank()) return modMessage("§cClipboard is empty!")
-        mc.setScreen(TextPromptScreen("Import as New Pack").setCallback { name ->
-            if (name.isNotBlank()) {
-                loading = true
-                OdinMod.scope.launch {
-                    val ok = DungeonWaypointConfig.decodeWaypoints(clipboard)
-                        ?.takeIf { DungeonWaypoints.importPack(name, it) }
-                        ?.let { modMessage("§aImported waypoints as pack '$name'!"); true }
-                        ?: false
-                    if (!ok) {
-                        modMessage("§cFailed to decode waypoints from clipboard.")
-                        needsRefresh = true
-                    } else {
-                        needsRefresh = true
-                    }
-                }
-            }
-            mc.setScreen(this@WaypointPackSelectorScreen)
-        })
-    }
-
-    override fun isPauseScreen() = false
 }

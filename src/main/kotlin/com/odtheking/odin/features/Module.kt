@@ -1,11 +1,16 @@
 package com.odtheking.odin.features
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import com.mojang.blaze3d.platform.InputConstants
 import com.odtheking.odin.OdinMod
+import com.odtheking.odin.clickgui.HudLayer
 import com.odtheking.odin.clickgui.settings.AlwaysActive
 import com.odtheking.odin.clickgui.settings.DevModule
 import com.odtheking.odin.clickgui.settings.Setting
 import com.odtheking.odin.clickgui.settings.impl.HUDSetting
+import com.odtheking.odin.clickgui.settings.impl.HudElement
 import com.odtheking.odin.events.core.EventBus
 import com.odtheking.odin.features.impl.render.ClickGUIModule
 import com.odtheking.odin.utils.modMessage
@@ -44,7 +49,7 @@ abstract class Module(
      * When true, it is registered to the [EventBus].
      * When false, it is unregistered, unless the module has the [AlwaysActive] annotation.
      */
-    var enabled: Boolean = toggled
+    var enabled: Boolean by mutableStateOf(toggled)
         private set
 
     protected inline val mc get() = OdinMod.mc
@@ -120,9 +125,12 @@ abstract class Module(
         toggleable: Boolean = true,
         x: Int = 10,
         y: Int = 10,
-        scale: Float = 2f,
+        scale: Float = 1f,
         block: GuiGraphicsExtractor.(example: Boolean) -> Pair<Int, Int>
-    ): HUDSetting = HUDSetting(name, x, y, scale, toggleable, desc, this, block)
+    ): HUDSetting {
+        val element = HudElement(x, y, scale, !toggleable)
+        return HUDSetting(name, element, toggleable, desc, this) { example -> HudLayer.DrawnHudContent(element, example, block) }
+    }
 
     private companion object {
         private fun getCategoryFromPackage(clazz: Class<out Module>): Category {

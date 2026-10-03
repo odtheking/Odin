@@ -1,24 +1,25 @@
 package com.odtheking.odin.clickgui.settings.impl
 
+import androidx.compose.runtime.*
 import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
 import com.mojang.blaze3d.platform.InputConstants
-import com.odtheking.odin.clickgui.ClickGUI.gray38
-import com.odtheking.odin.clickgui.Panel
+import com.odtheking.odin.clickgui.GuiTheme
 import com.odtheking.odin.clickgui.settings.RenderableSetting
 import com.odtheking.odin.clickgui.settings.Saving
-import com.odtheking.odin.features.impl.render.ClickGUIModule
+import com.odtheking.odin.clickgui.ui.SettingRow
+import com.odtheking.odin.clickgui.ui.animateProgress
 import com.odtheking.odin.utils.Colors
-import com.odtheking.odin.utils.ui.HoverHandler
-import com.odtheking.odin.utils.ui.animations.LinearAnimation
-import com.odtheking.odin.utils.ui.isAreaHovered
-import com.odtheking.odin.utils.ui.rendering.NVGRenderer
-import net.minecraft.client.input.KeyEvent
+import com.odtheking.odin.utils.render.Corners
+import com.odtheking.odin.utils.render.circle
+import com.odtheking.odin.utils.render.roundedRect
+import com.odtheking.odin.utils.render.roundedRectClipped
+import com.odtheking.odin.utils.ui.compose.*
 import net.minecraft.client.input.MouseButtonEvent
-import kotlin.math.floor
 import kotlin.math.round
 import kotlin.math.roundToInt
+import kotlin.math.roundToLong
 
 /**
  * Setting that lets you pick a number between a range.
@@ -28,143 +29,116 @@ import kotlin.math.roundToInt
 class NumberSetting<E>(
     name: String,
     override val default: E = 1.0 as E,
-    min: Number,
-    max: Number,
+    range: ClosedFloatingPointRange<Double>,
     increment: Number = 1,
     desc: String,
     private val unit: String = ""
 ) : RenderableSetting<E>(name, desc), Saving where E : Number, E : Comparable<E> {
 
-    private val incrementDouble = increment.toDouble()
-    private val minDouble = min.toDouble()
-    private var maxDouble = max.toDouble()
+    constructor(
+        name: String,
+        default: E,
+        range: IntRange,
+        increment: Number = 1,
+        desc: String,
+        unit: String = ""
+    ) : this(name, default, range.first.toDouble()..range.last.toDouble(), increment, desc, unit)
 
-    private val sliderAnim = LinearAnimation<Float>(100)
-    private val handler = HoverHandler(150)
+    private fun Double.asE(): E = when (default) {
+        is Int -> roundToInt()
+        is Long -> roundToLong()
+        is Float -> toFloat()
+        else -> this
+    } as E
 
-    private var displayValue = ""
-    private var prevLocation = 0f
-    private var valueWidth = -1f
-    private var isDragging = false
+    private val step = increment.toDouble()
+    private val minimum = range.start
+    private val maximum = range.endInclusive
 
-    private var sliderPercentage = 0f
+    private var current by mutableStateOf(default)
+
+    override var value: E
+        get() = current
         set(value) {
-            if (sliderPercentage != value) {
-                if (!isDragging) {
-                    prevLocation = sliderAnim.get(prevLocation, sliderPercentage, false)
-                    sliderAnim.start()
-                }
-                displayValue = getDisplay()
-                valueWidth = -1f
-            }
-            field = value
+            current = (round(value.toDouble() / step) * step).coerceIn(minimum, maximum).asE()
+            display = format(current)
         }
 
-    override var value: E = default
-        set(value) {
-            field = roundToIncrement(value).coerceIn(minDouble, maxDouble) as E
-            sliderPercentage = ((field.toDouble() - minDouble) / (maxDouble - minDouble)).toFloat()
-        }
+    var display: String = format(default)
+        private set
 
     init {
         value = default
-        displayValue = getDisplay()
     }
 
-    private var valueDouble
-        get() = value.toDouble()
-        set(value) {
-            this.value = value as E
+    var percent: Float
+        get() = ((value.toDouble() - minimum) / (maximum - minimum)).toFloat()
+        set(percent) {
+            value = (minimum + percent.coerceIn(0f, 1f) * (maximum - minimum)).asE()
         }
 
-    private var valueInt
-        get() = value.toInt()
-        set(value) {
-            this.value = value as E
-        }
-
-    override fun render(x: Float, y: Float, mouseX: Float, mouseY: Float): Float {
-        super.render(x, y, mouseX, mouseY)
-        val height = getHeight()
-
-        handler.handle(x, y + height / 2, width, height / 2, true)
-
-        if (listening) {
-            val newPercentage = ((mouseX - (x + 6f)) / (width - 12f)).coerceIn(0f, 1f)
-            valueDouble = minDouble + newPercentage * (maxDouble - minDouble)
-            sliderPercentage = newPercentage
-        }
-
-        if (valueWidth < 0) {
-            valueWidth = NVGRenderer.textWidth(displayValue, 16f, NVGRenderer.defaultFont)
-        }
-
-        NVGRenderer.text(name, x + 6f, y + height / 2f - 15f, 16f, Colors.WHITE.rgba, NVGRenderer.defaultFont)
-        NVGRenderer.text(displayValue, x + width - valueWidth - 4f, y + height / 2f - 15f, 16f, Colors.WHITE.rgba, NVGRenderer.defaultFont)
-
-        NVGRenderer.rect(x + 6f, y + 24f, width - 12f, 8f, gray38.rgba, 3f)
-
-        if (x + sliderPercentage * (width - 12f) > x + 6)
-            NVGRenderer.rect(x + 6f, y + 24f, sliderAnim.get(prevLocation, sliderPercentage, false) * (width - 12f), 8f, ClickGUIModule.clickGUIColor.rgba, 3f)
-
-        NVGRenderer.circle(x + 6f + sliderAnim.get(prevLocation, sliderPercentage, false) * (width - 12f), y + 28f, handler.anim.get(7f, 9f, !isHovered), Colors.WHITE.rgba)
-
-        return height
+    private fun format(value: E): String {
+        val current = value.toDouble()
+        return if (current % 1.0 == 0.0) "${current.toInt()}$unit"
+        else "${(current * 100).roundToInt() / 100.0}$unit"
     }
 
-    override fun mouseClicked(mouseX: Float, mouseY: Float, click: MouseButtonEvent): Boolean {
-        return if (click.button() != 0 || !isHovered) false
-        else {
-            listening = true
-            isDragging = true
-            prevLocation = sliderPercentage
-            sliderAnim.start()
-            true
-        }
+    fun nudge(steps: Int) {
+        value = (value.toDouble() + steps * step).coerceIn(minimum, maximum).asE()
     }
 
-    override fun mouseReleased(click: MouseButtonEvent) {
-        listening = false
-        if (isDragging) {
-            isDragging = false
-            prevLocation = sliderAnim.get(prevLocation, sliderPercentage, false)
-            sliderAnim.start()
+    @Composable
+    override fun Content() {
+        Column {
+            SettingRow(height = 18) { Text({ display }) }.clickable {}
+            Slider(percent, { percent = it }).size(GuiTheme.INNER_WIDTH, 11).offset({ GuiTheme.PADDING })
         }
+            .onKey { event ->
+                val steps = when (event.key) {
+                    InputConstants.KEY_RIGHT, InputConstants.KEY_EQUALS -> 1
+                    InputConstants.KEY_LEFT, InputConstants.KEY_MINUS -> -1
+                    else -> return@onKey false
+                }
+                nudge(steps)
+                true
+            }
     }
-
-    override fun keyPressed(input: KeyEvent): Boolean {
-        if (!isHovered) return false
-
-        val amount = when (input.key) {
-            InputConstants.KEY_RIGHT, InputConstants.KEY_EQUALS -> incrementDouble
-            InputConstants.KEY_LEFT, InputConstants.KEY_MINUS -> -incrementDouble
-            else -> return false
-        }
-
-        if (valueDouble !in minDouble..maxDouble) return false
-        valueDouble = (valueDouble + amount).coerceIn(minDouble, maxDouble)
-        sliderPercentage = ((valueDouble - minDouble) / (maxDouble - minDouble)).toFloat()
-        return true
-    }
-
-    override val isHovered: Boolean
-        get() =
-            isAreaHovered(lastX, lastY + getHeight() / 2, width, getHeight() / 2, true)
-
-    override fun getHeight(): Float = Panel.HEIGHT + 8f
 
     override fun write(gson: Gson): JsonElement = JsonPrimitive(value)
 
     override fun read(element: JsonElement, gson: Gson) {
-        element.asNumber?.let { value = it as E }
+        element.asNumber?.let { value = it.toDouble().asE() }
     }
-
-    private fun roundToIncrement(x: Number): Double =
-        round((x.toDouble() / incrementDouble)) * incrementDouble
-
-    private fun getDisplay(): String =
-        if (valueDouble - floor(valueDouble) == 0.0)
-            "${(valueInt * 100.0).roundToInt() / 100}${unit}"
-        else
-            "${(valueDouble * 100.0).roundToInt() / 100.0}${unit}"
 }
+
+@Composable
+private fun Slider(value: Float, onValueChange: (Float) -> Unit): UiNode {
+    val interaction = remember { InteractionSource() }
+    var dragging by remember { mutableStateOf(false) }
+    val fill = remember { Animatable(value) }
+    SideEffect { if (dragging) fill.snapTo(value) else fill.animateTo(value, 200) }
+    val knob = animateProgress { dragging || interaction.hovered }
+
+    val seek: UiNode.(MouseButtonEvent) -> Unit = { event -> onValueChange(((event.x() - x) / width).toFloat().coerceIn(0f, 1f)) }
+
+    return Canvas { graphics ->
+        val top = y + (height - TRACK_HEIGHT) / 2
+        graphics.roundedRect(x, top, right, top + TRACK_HEIGHT, GuiTheme.surface.rgba, TRACK_CORNERS)
+
+        val filled = (fill.value * width).roundToInt()
+        if (filled > 0) graphics.roundedRectClipped(x, top, right, top + TRACK_HEIGHT, x, top, x + filled, top + TRACK_HEIGHT, GuiTheme.accent.rgba, TRACK_CORNERS)
+        graphics.circle(x + filled, top + TRACK_HEIGHT / 2, 4f + 1.5f * knob.value, Colors.WHITE.rgba)
+    }
+        .hoverable(interaction)
+        .pointerInput(
+            onDrag = {
+                dragging = true
+                seek(it)
+            },
+            onRelease = { dragging = false },
+        ) { event -> (event.button() == InputConstants.MOUSE_BUTTON_LEFT).also { if (it) seek(event) } }
+        .onFocusChanged { if (!it) dragging = false }
+}
+
+private const val TRACK_HEIGHT = 6
+private val TRACK_CORNERS = Corners(3f)

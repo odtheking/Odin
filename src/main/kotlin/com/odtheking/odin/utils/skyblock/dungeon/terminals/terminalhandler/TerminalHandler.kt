@@ -17,6 +17,7 @@ import com.odtheking.odin.utils.skyblock.LocationUtils
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalTypes
 import net.minecraft.world.inventory.ContainerInput
 import net.minecraft.world.inventory.Slot
+import net.minecraft.world.item.DyeColor
 import net.minecraft.world.item.Items
 
 abstract class TerminalHandler(val type: TerminalTypes) {
@@ -27,7 +28,7 @@ abstract class TerminalHandler(val type: TerminalTypes) {
     var ticksOpened = -1
 
     open fun updateSlot(event: SetSlotEvent) {
-        if (event.slots.isEmpty() || event.slotIndex !in 0 until type.windowSize - 9 || event.itemStack.item == Items.BLACK_STAINED_GLASS_PANE) return
+        if (event.slots.isEmpty() || event.slotIndex !in 0 until type.windowSize - 9 || event.itemStack.item == Items.STAINED_GLASS_PANE.pick(DyeColor.BLACK)) return
 
         val index = clickedSlots.indexOfFirst { it.first == event.slotIndex }
         if (index >= 0) clickedSlots.subList(0, index + 1).clear()
@@ -56,21 +57,20 @@ abstract class TerminalHandler(val type: TerminalTypes) {
         lastClickTime = System.currentTimeMillis()
 
         if (simulateClick) simulateClick(slotIndex, button)
-
-        mc.screen?.let { screen ->
+        TerminalEvent.Click(this, slotIndex, button, solution).postAndCatch()
+        mc.gui.screen()?.let { screen ->
             if (screen is TermSimGUI) {
                 screen.clickIndex(slotIndex, button)
                 return
             }
         }
         mc.player?.clickSlot(slotIndex, button, if (button == InputConstants.MOUSE_BUTTON_MIDDLE) ContainerInput.CLONE else ContainerInput.PICKUP)
-        TerminalEvent.Click(this, slotIndex, button).postAndCatch()
     }
 
     open fun canClick(slotIndex: Int, button: Int): Boolean = slotIndex in solution
 
     fun shouldProtect(): Boolean =
-        !(TerminalSimulator.disableFirstClickProtection && mc.screen is TermSimGUI)
+        !(TerminalSimulator.disableFirstClickProtection && mc.gui.screen() is TermSimGUI)
                 && (System.currentTimeMillis() - timeOpened < firstClickProt ||
                 (!LocationUtils.isCurrentArea(Island.SinglePlayer) && shouldFirstClickProtWithTicks && ticksOpened < firstClickProtTicks))
 }

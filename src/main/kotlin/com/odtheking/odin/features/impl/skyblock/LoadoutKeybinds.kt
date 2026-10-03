@@ -1,7 +1,7 @@
 package com.odtheking.odin.features.impl.skyblock
 
 import com.mojang.blaze3d.platform.InputConstants
-import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
+import com.odtheking.odin.clickgui.settings.RenderableSetting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.DropdownSetting
 import com.odtheking.odin.clickgui.settings.impl.KeybindSetting
 import com.odtheking.odin.events.ScreenEvent
@@ -18,7 +18,7 @@ object LoadoutKeybinds : Module(
     private val nextPageKeybind by KeybindSetting("Next Page", InputConstants.KEY_RIGHT, desc = "Keybind to go to the next page in the loadout.")
     private val previousPageKeybind by KeybindSetting("Previous Page", InputConstants.KEY_LEFT, desc = "Keybind to go to the previous page in the loadout.")
 
-    private val advanced by DropdownSetting("Show Settings")
+    private val advanced by DropdownSetting("Show Settings", desc = "Shows keybinds to equip each loadout slot directly.")
     private val loadout1 by KeybindSetting("Loadout 1", InputConstants.KEY_1, desc = "Keybind to equip the first loadout slot.").withDependency { advanced }
     private val loadout2 by KeybindSetting("Loadout 2", InputConstants.KEY_2, desc = "Keybind to equip the second loadout slot.").withDependency { advanced }
     private val loadout3 by KeybindSetting("Loadout 3", InputConstants.KEY_3, desc = "Keybind to equip the third loadout slot.").withDependency { advanced }

@@ -106,7 +106,7 @@ fun GuiGraphicsExtractor.renderIcon(pos: IVec2, identifier: Identifier) {
 fun GuiGraphicsExtractor.renderRoomText(room: DungeonRoom) {
     if (room.type.equalsOneOf(RoomType.UNDISCOVERED, RoomType.FAIRY, RoomType.ENTRANCE, RoomType.BLOOD)) return
 
-    if (!room.walkedInto || (DungeonMap.roomText == 2 && (room.data?.maxSecrets ?: 0) == 0)) {
+    if (!room.shouldShowName || (DungeonMap.roomText == DungeonMap.RoomTextOption.ROOM_SECRETS && (room.data?.maxSecrets ?: 0) == 0)) {
         when (room.checkmark) {
             MapCheckmark.GREEN -> green
             MapCheckmark.WHITE -> white
@@ -128,9 +128,9 @@ fun GuiGraphicsExtractor.renderRoomText(room: DungeonRoom) {
 
     val secretsLine = if ((room.data?.maxSecrets ?: 0) > 0) " ${room.foundSecrets ?: "?"}/${room.data?.maxSecrets}" else ""
     val lines = when (DungeonMap.roomText) {
-        0 -> "${room.name}$secretsLine"
-        1 -> room.name
-        else -> secretsLine
+        DungeonMap.RoomTextOption.BOTH -> "${room.name}$secretsLine"
+        DungeonMap.RoomTextOption.ROOM_NAME -> room.name
+        DungeonMap.RoomTextOption.ROOM_SECRETS -> secretsLine
     }?.trim()?.split(" ") ?: return
     val totalH = (lines.size - 1) * fontH * DungeonMap.textScaling
 
@@ -192,7 +192,10 @@ fun GuiGraphicsExtractor.renderPlayers() {
             fill(-5, -5, 5, 5, DungeonUtils.currentDungeonPlayer.clazz.color.rgba)
             PlayerFaceExtractor.extractRenderState(this, skin, -4, -4, 8)
         }
-    } else blit(RenderPipelines.GUI_TEXTURED, marker, -2, -3, 2f, 0f, 5, 7, 8, 8)
+    } else {
+        pose().translate(-0.5f, -0.5f)
+        blit(RenderPipelines.GUI_TEXTURED, marker, -2, -4, 2f, 0f, 5, 7, 8, 8)
+    }
     pose().popMatrix()
 }
 

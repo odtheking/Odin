@@ -1,6 +1,6 @@
 package com.odtheking.odin.features.impl.boss
 
-import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
+import com.odtheking.odin.clickgui.settings.RenderableSetting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.HudElement
 import com.odtheking.odin.events.LevelEvent
@@ -27,6 +27,7 @@ object TickTimers : Module(
     private val stormEndRegex = Regex("^\\[BOSS] Storm: I should have known that I stood no chance\\.$")
     private val stormStartRegex = Regex("^\\[BOSS] Storm: Pathetic Maxor, just like expected\\.$")
     private val stormPyRegex = Regex("^\\[BOSS] Storm: (ENERGY HEED MY CALL|THUNDER LET ME BE YOUR CATALYST)!$")
+    private val professorFireFreezeRegex = Regex("^\\[BOSS] The Professor: Oh\\? You found my Guardians' one weakness\\?$")
 
     private var necronTime = -1
 
@@ -106,6 +107,7 @@ object TickTimers : Module(
                     pyTriggered = true
                     pyTickTime = 95
                 }
+                message.matches(professorFireFreezeRegex) -> fireFreezeTime = 206
             }
         }
 
@@ -120,6 +122,7 @@ object TickTimers : Module(
             if (pyTickTime >= 0) pyTickTime--
             if (necronTime >= 0) necronTime--
             if (stormTick >= 0) stormTick++
+            if (fireFreezeTime >= 0) fireFreezeTime--
         }
 
         on<LevelEvent.Load> {
@@ -130,7 +133,9 @@ object TickTimers : Module(
             pyTickTime = -1
             pyTriggered = false
             necronTime = -1
+            secretsCounter = 0
             stormTick = -1
+            fireFreezeTime = -1
         }
     }
 

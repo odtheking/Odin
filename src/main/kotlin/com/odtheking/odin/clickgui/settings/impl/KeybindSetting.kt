@@ -1,19 +1,23 @@
 package com.odtheking.odin.clickgui.settings.impl
 
+import androidx.compose.runtime.*
 import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
 import com.mojang.blaze3d.platform.InputConstants
+import com.odtheking.odin.OdinMod
 import com.odtheking.odin.OdinMod.mc
-import com.odtheking.odin.clickgui.ClickGUI.gray38
 import com.odtheking.odin.clickgui.settings.RenderableSetting
 import com.odtheking.odin.clickgui.settings.Saving
-import com.odtheking.odin.features.impl.render.ClickGUIModule
+import com.odtheking.odin.clickgui.ui.Pill
+import com.odtheking.odin.clickgui.ui.SettingRow
 import com.odtheking.odin.utils.Colors
-import com.odtheking.odin.utils.ui.isAreaHovered
-import com.odtheking.odin.utils.ui.rendering.NVGRenderer
-import net.minecraft.client.input.KeyEvent
-import net.minecraft.client.input.MouseButtonEvent
+import com.odtheking.odin.utils.ui.compose.onFocusChanged
+import com.odtheking.odin.utils.ui.compose.onKey
+import com.odtheking.odin.utils.ui.compose.pointerInput
+import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper
+import net.minecraft.client.KeyMapping
+import net.minecraft.resources.Identifier
 
 class KeybindSetting(
     name: String,
@@ -23,60 +27,40 @@ class KeybindSetting(
 
     constructor(name: String, defaultKeyCode: Int, desc: String = "") : this(name, InputConstants.Type.KEYSYM.getOrCreate(defaultKeyCode), desc)
 
-    override var value: InputConstants.Key = default
+    override var value: InputConstants.Key
+        get() = mapping?.let { KeyMappingHelper.getBoundKeyOf(it) } ?: pending
+        set(key) {
+            pending = key
+            val mapping = mapping ?: return
+            if (mapping.matches(key)) return
+            mapping.setKey(key)
+            KeyMapping.resetMapping()
+            pendingOptionsSave = true
+        }
+
+    private var mapping: KeyMapping? = null
+    private var pending: InputConstants.Key = default
+    val boundKey: InputConstants.Key get() = value
+
     var onPress: (() -> Unit)? = null
-    private var keyNameWidth = -1f
 
-    private var key: InputConstants.Key
-        get() = value
-        set(newKey) {
-            if (newKey == value) return
-            value = newKey
-            keyNameWidth = NVGRenderer.textWidth(value.displayName.string, 16f, NVGRenderer.defaultFont)
+    private var namedKey: InputConstants.Key? = null
+    private var keyName = ""
+
+    private val boundName: String
+        get() {
+            val key = value
+            if (key !== namedKey) {
+                namedKey = key
+                keyName = key.displayName.string
+            }
+            return keyName
         }
 
-    override fun render(x: Float, y: Float, mouseX: Float, mouseY: Float): Float {
-        super.render(x, y, mouseX, mouseY)
-        if (keyNameWidth < 0) keyNameWidth = NVGRenderer.textWidth(value.displayName.string, 16f, NVGRenderer.defaultFont)
-        val height = getHeight()
-
-        val rectX = x + width - 20 - keyNameWidth
-        val rectY = y + height / 2f - 10f
-        val rectWidth = keyNameWidth + 12f
-        val rectHeight = 20f
-
-        NVGRenderer.rect(rectX, rectY, rectWidth, rectHeight, gray38.rgba, 5f)
-        NVGRenderer.hollowRect(rectX - 1, rectY - 1, rectWidth + 2f, rectHeight + 2f, 1.5f, ClickGUIModule.clickGUIColor.rgba, 4f)
-
-        NVGRenderer.text(name, x + 6f, y + height / 2f - 8f, 16f, Colors.WHITE.rgba, NVGRenderer.defaultFont)
-        NVGRenderer.text(value.displayName.string, rectX + (rectWidth - keyNameWidth) / 2, rectY + rectHeight / 2 - 8f, 16f, if (listening) Colors.MINECRAFT_YELLOW.rgba else Colors.WHITE.rgba, NVGRenderer.defaultFont)
-
-        return height
-    }
-
-    override fun mouseClicked(mouseX: Float, mouseY: Float, click: MouseButtonEvent): Boolean {
-        if (listening) {
-            key = InputConstants.Type.MOUSE.getOrCreate(click.button())
-            listening = false
-            return true
-        } else if (click.button() == 0 && isHovered) {
-            listening = true
-            return true
-        }
-        return false
-    }
-
-    override fun keyPressed(input: KeyEvent): Boolean {
-        if (!listening) return false
-
-        when (input.key) {
-            InputConstants.KEY_ESCAPE, InputConstants.KEY_BACKSPACE -> key = InputConstants.UNKNOWN
-            InputConstants.KEY_RETURN -> listening = false
-            else -> key = InputConstants.getKey(input)
-        }
-
-        listening = false
-        return true
+    fun registerKeyMapping(owner: String) {
+        if (mapping != null) return
+        val label = if (name == "Keybind") owner else "$owner ($name)"
+        mapping = KeyMappingHelper.registerKeyMapping(KeyMapping(label, pending.type, pending.value, KEYBIND_CATEGORY))
     }
 
     fun onPress(block: () -> Unit): KeybindSetting {
@@ -84,21 +68,61 @@ class KeybindSetting(
         return this
     }
 
-    override val isHovered: Boolean
-        get() =
-            isAreaHovered(lastX + width - 20 - keyNameWidth, lastY + getHeight() / 2f - 10f, keyNameWidth + 12f, 22f, true)
+    @Composable
+    override fun Content() {
+        var listening by remember { mutableStateOf(false) }
+
+        SettingRow {
+            Pill(
+                { boundName },
+                color = { if (listening) Colors.MINECRAFT_YELLOW.rgba else Colors.WHITE.rgba },
+            )
+                .pointerInput { event ->
+                    when {
+                        listening -> {
+                            value = InputConstants.Type.MOUSE.getOrCreate(event.button())
+                            listening = false
+                        }
+                        event.button() == InputConstants.MOUSE_BUTTON_LEFT -> listening = true
+                        else -> return@pointerInput event.button() == InputConstants.MOUSE_BUTTON_RIGHT
+                    }
+                    true
+                }
+                .onKey { event ->
+                    if (!listening) return@onKey false
+                    when (event.key) {
+                        InputConstants.KEY_ESCAPE, InputConstants.KEY_BACKSPACE -> value = InputConstants.UNKNOWN
+                        InputConstants.KEY_RETURN -> Unit
+                        else -> value = InputConstants.getKey(event)
+                    }
+                    listening = false
+                    true
+                }
+                .onFocusChanged { if (!it) listening = false }
+        }
+    }
 
     override fun write(gson: Gson): JsonElement = JsonPrimitive(value.name)
 
     override fun read(element: JsonElement, gson: Gson) {
-        element.asString?.let { value = InputConstants.getKey(it) }
-    }
-
-    override fun reset() {
-        value = default
+        val saved = element.asString?.let(InputConstants::getKey) ?: return
+        if (mapping?.isDefault != false) value = saved
     }
 
     companion object {
+        private val KEYBIND_CATEGORY: KeyMapping.Category =
+            KeyMapping.Category.register(Identifier.fromNamespaceAndPath(OdinMod.MOD_ID, "keybinds"))
+
+        private var pendingOptionsSave = false
+
+        fun saveOptionsIfChanged() {
+            if (!pendingOptionsSave) return
+            pendingOptionsSave = false
+            mc.execute {
+                mc.options.save()
+            }
+        }
+
         fun InputConstants.Key.isDown(): Boolean = InputConstants.isKeyDown(mc.window, value)
     }
 }

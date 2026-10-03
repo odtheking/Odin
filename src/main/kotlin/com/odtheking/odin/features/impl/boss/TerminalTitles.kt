@@ -22,7 +22,8 @@ object TerminalTitles : Module(
     private val replaceDevice by BooleanSetting("Replace Device", true, desc = "Replace device completion titles.")
     private val customTitle by StringSetting(
         "Custom Title", "&6{name} &8[&c{current}&8/&a{total}&8]", 128,
-        "Use {name}, {action}, {type}, {current}, and {total}. Use & color codes (e.g. &a)."
+        "Use {name}, {action}, {type}, {current}, and {total}. Use & color codes (e.g. &a).",
+        placeholder = "&6{name} &8[&c{current}&8/&a{total}&8]"
     )
 
     private val titleRegex = Regex("^(.{1,16}) (activated|completed) a (terminal|lever|device)! \\((\\d+)\\/(\\d+)\\)$")

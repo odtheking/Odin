@@ -41,29 +41,27 @@ object TerminalTimes : Module(
 
     init {
         on<TerminalEvent.Solve> {
-            val pbs = if (mc.screen is TermSimGUI) TerminalSimulator.termSimPBs else terminalPBs
-            pbs.time(terminal.type.name, (System.currentTimeMillis() - terminal.timeOpened) / 1000f, "s§7!", "§a${terminal.type.termName}${if (mc.screen is TermSimGUI) " §7(termsim)" else ""} §7solved in §6", sendMessage = terminalTimes)
+            val pbs = if (mc.gui.screen() is TermSimGUI) TerminalSimulator.termSimPBs else terminalPBs
+            pbs.time(terminal.type.name, (System.currentTimeMillis() - terminal.timeOpened) / 1000f, "s§7!", "§a${terminal.type.termName}${if (mc.gui.screen() is TermSimGUI) " §7(termsim)" else ""} §7solved in §6", sendMessage = terminalTimes)
         }
 
         on<MessageEvent.ModifyChat> {
             if (!terminalSplits) return@on
+
+            when {
+                gateDestroyedRegex.matches(message) -> if (completed.first == completed.second) resetSection() else gateBlown = true
+                goldorRegex.matches(message) -> resetSection(true)
+                coreOpeningRegex.matches(message) -> {
+                    resetSection()
+                    modMessage("§bTimes: §a${times.joinToString(" §8| ") { "§a${it}s" }}§8, §bTotal: §a${phaseTimer.seconds}s")
+                }
+            }
+
             terminalCompleteRegex.find(message)?.destructured?.let { (name, activated, type, current, total) ->
                 component = Component.literal("§6$name §a$activated a $type! (§c${current}§a/${total}) §8(§7${sectionTimer.seconds}s §8| §7${phaseTimer.seconds}s§8)")
 
                 if ((current == total && gateBlown) || (current.toIntOrNull() ?: return@on) < completed.first) resetSection()
                 else completed = Pair(current.toIntOrNull() ?: return@on, total.toIntOrNull() ?: return@on)
-                return@on
-            }
-
-            when {
-                gateDestroyedRegex.matches(message) -> if (completed.first == completed.second) resetSection() else gateBlown = true
-
-                goldorRegex.matches(message) -> resetSection(true)
-
-                coreOpeningRegex.matches(message) -> {
-                    resetSection()
-                    modMessage("§bTimes: §a${times.joinToString(" §8| ") { "§a${it}s" }}§8, §bTotal: §a${phaseTimer.seconds}s")
-                }
             }
         }
 

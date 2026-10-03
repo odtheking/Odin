@@ -33,7 +33,7 @@ public class MouseHandlerMixin {
 
     @Inject(method = "releaseMouse", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;getWindow()Lcom/mojang/blaze3d/platform/Window;"))
     private void odin$correctCursorPosition(CallbackInfo ci) {
-        if (OdinMod.getMc().screen instanceof ContainerScreen && NoCursorReset.shouldHookMouse()) {
+        if (OdinMod.getMc().gui.screen() instanceof ContainerScreen && NoCursorReset.shouldHookMouse()) {
             InputConstants.grabOrReleaseMouse(OdinMod.getMc().getWindow(), InputConstants.CURSOR_NORMAL, this.beforeX, this.beforeY);
             this.xpos = this.beforeX;
             this.ypos = this.beforeY;

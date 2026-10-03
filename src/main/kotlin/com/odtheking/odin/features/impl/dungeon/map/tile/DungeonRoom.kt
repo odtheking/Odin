@@ -4,7 +4,9 @@ import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints
 import com.odtheking.odin.utils.*
 import net.minecraft.core.BlockPos
+import net.minecraft.world.item.DyeColor
 import net.minecraft.world.level.block.Blocks
+import net.minecraft.world.phys.AABB
 
 class DungeonRoom(var type: RoomType, initialPosition: IVec2, var data: RoomData? = null) {
     val tiles: ArrayList<IVec2> = ArrayList(4)
@@ -30,8 +32,10 @@ class DungeonRoom(var type: RoomType, initialPosition: IVec2, var data: RoomData
         private set
 
     var foundSecrets: Int? = null
+    var playerWalkedInto = false
 
     val isViewable: Boolean get() = walkedInto || checkmark != MapCheckmark.UNDISCOVERED
+    val shouldShowName get() = walkedInto || playerWalkedInto
     val name: String? get() = data?.name
 
     fun addSegment(segment: DungeonTile) {
@@ -147,7 +151,7 @@ class DungeonRoom(var type: RoomType, initialPosition: IVec2, var data: RoomData
 
         for (rot in RoomRotation.entries) {
             val pos = clayProbePos(rot, y)
-            if (mc.level?.getBlockState(pos)?.block == Blocks.BLUE_TERRACOTTA) {
+            if (mc.level?.getBlockState(pos)?.block == Blocks.DYED_TERRACOTTA.pick(DyeColor.BLUE)) {
                 rotation = rot
                 clayPos = pos
                 return true
@@ -180,5 +184,19 @@ class DungeonRoom(var type: RoomType, initialPosition: IVec2, var data: RoomData
         val clay = clayPos ?: return BlockPos.ZERO
         val rot = rotation ?: return BlockPos.ZERO
         return pos.rotateAroundNorth(rot).offset(clay.x, 0, clay.z)
+    }
+
+    fun getRelativeAABB(aabb: AABB): AABB {
+        val rot = rotation ?: return aabb
+        val minPos = aabb.minPosition.add(-0.5, -0.5, -0.5).rotateToNorth(rot).add(0.5, 0.5, 0.5)
+        val maxPos = aabb.maxPosition.add(-0.5, -0.5, -0.5).rotateToNorth(rot).add(0.5, 0.5, 0.5)
+        return AABB(minPos, maxPos)
+    }
+
+    fun getRealAABB(aabb: AABB): AABB {
+        val rot = rotation ?: return aabb
+        val minPos = aabb.maxPosition.add(-0.5, -0.5, -0.5).rotateAroundNorth(rot).add(0.5, 0.5, 0.5)
+        val maxPos = aabb.minPosition.add(-0.5, -0.5, -0.5).rotateAroundNorth(rot).add(0.5, 0.5, 0.5)
+        return AABB(minPos, maxPos)
     }
 }

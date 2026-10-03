@@ -2,13 +2,14 @@ package com.odtheking.odin.features.impl.dungeon
 
 import com.odtheking.odin.OdinMod
 import com.odtheking.odin.OdinMod.scope
-import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
+import com.odtheking.odin.clickgui.settings.RenderableSetting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.ActionSetting
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.NumberSetting
+import com.odtheking.odin.clickgui.settings.impl.drawAtHud
 import com.odtheking.odin.events.GuiEvent
 import com.odtheking.odin.events.MessageEvent
-import com.odtheking.odin.events.ScreenEvent
+import com.odtheking.odin.events.ScreenCloseEvent
 import com.odtheking.odin.events.SetSlotEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
@@ -22,7 +23,6 @@ import com.odtheking.odin.utils.render.textDim
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import kotlinx.coroutines.launch
 import net.minecraft.client.gui.GuiGraphicsExtractor
-import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
 import net.minecraft.network.chat.Component
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket
 import net.minecraft.world.item.ItemStack
@@ -34,7 +34,6 @@ object Croesus : Module(
 ) {
     private val highlightState by BooleanSetting("Highlight State", true, desc = "Highlights chests in the Croesus menu based on their claim status.")
     private val highlightProfitable by BooleanSetting("Highlight Profitable", true, desc = "Highlights the most and 2nd most profitable chests.")
-    private val includeEssence by BooleanSetting("Include Essence", true, desc = "Includes essence value in profit calculations.")
     private val hideClaimed by BooleanSetting("Hide Claimed", true, desc = "Hides chests that have already been claimed.")
     private val includeKey by BooleanSetting("Include Key", desc = "Count Dungeon Chest Key as unclaimed.").withDependency { hideClaimed }
     private val minimized by BooleanSetting("Minimized", false, desc = "Only display profit for each chest instead of all items.")
@@ -49,7 +48,7 @@ object Croesus : Module(
         else 0 to 0
     }
 
-    private val chestWarning by NumberSetting("Chest Warning Threshold", 55, 0, 60, desc = "Displays a warning in the chest profit HUD if the profit is below this amount.")
+    private val chestWarning by NumberSetting("Chest Warning Threshold", 55, 0..60, desc = "Displays a warning in the chest profit HUD if the profit is below this amount.").withDependency { chestCount.enabled }
     private val refresh by ActionSetting("Refresh Prices", desc = "Manually refresh the cached prices used for profit calculations.") {
         scope.launch {
             cachedPrices = fetchJson<Map<String, Double>>("https://lb.odtheking.com/averages/7day").getOrElse { OdinMod.logger.error("Failed to fetch lowest bin prices for Croesus module.", it); emptyMap() }
@@ -89,6 +88,10 @@ object Croesus : Module(
     private var currentChestProfit: Double? = null
     private var mostProfitableSlots = setOf<Int>()
 
+    private val chestSlotData = linkedMapOf<Int, ChestData>()
+    private val chestItemContributions = linkedMapOf<Int, ChestItem>()
+    private val chestCostContributions = linkedMapOf<Int, Double>()
+
     init {
         scope.launch {
             cachedPrices = fetchJson<Map<String, Double>>("https://lb.odtheking.com/averages/7day").getOrElse { OdinMod.logger.error("Failed to fetch lowest bin prices for Croesus module.", it); emptyMap() }
@@ -96,17 +99,8 @@ object Croesus : Module(
 
         on<GuiEvent.DrawTooltip> {
             val title = screen.title.string
-            if (croesusHud.enabled && (title.matches(chestNameRegex) || title.matches(chestPreviewScreenRegex))) {
-                guiGraphics.pose().pushMatrix()
-                val sf = mc.window.guiScale
-                guiGraphics.pose().scale(1f / sf, 1f / sf)
-                guiGraphics.pose().translate(croesusHud.x.toFloat(), croesusHud.y.toFloat())
-                guiGraphics.pose().scale(croesusHud.scale)
-
-                guiGraphics.drawOverlay(false)
-
-                guiGraphics.pose().popMatrix()
-            }
+            if (croesusHud.enabled && (title.matches(chestNameRegex) || title.matches(chestPreviewScreenRegex)))
+                guiGraphics.drawAtHud(croesusHud) { drawOverlay(false) }
         }
 
         on<GuiEvent.RenderSlot> {
@@ -139,19 +133,21 @@ object Croesus : Module(
         }
 
         on<SetSlotEvent> {
-            val screenTitle = mc.screen?.title?.string ?: return@on
-            val items = (mc.screen as? AbstractContainerScreen<*>)?.menu?.items ?: return@on
+            val screenTitle = mc.gui.screen()?.title?.string ?: return@on
 
             when {
-                screenTitle.matches(chestNameRegex) -> handleChestContents(items)
-                screenTitle.matches(chestPreviewScreenRegex) -> handleCroesusScreen(items)
+                screenTitle.matches(chestNameRegex) -> handleChestContents(slotIndex, itemStack)
+                screenTitle.matches(chestPreviewScreenRegex) -> handleCroesusScreen(slotIndex, itemStack)
             }
         }
 
-        on<ScreenEvent.Open> {
+        on<ScreenCloseEvent> {
             mostProfitableSlots = emptySet()
             currentChestProfit = null
             chestData = emptyList()
+            chestSlotData.clear()
+            chestItemContributions.clear()
+            chestCostContributions.clear()
         }
 
         onReceive<ClientboundPlayerInfoUpdatePacket> {
@@ -172,35 +168,36 @@ object Croesus : Module(
         }
     }
 
-    private fun handleCroesusScreen(items: List<ItemStack>) {
-        val chests = mutableListOf<ChestData>()
+    private fun handleCroesusScreen(index: Int, stack: ItemStack) {
+        if (index > 16) return
 
-        items.forEachIndexed { index, stack ->
-            if (stack.isEmpty || index > 16 || stack.item != Items.PLAYER_HEAD) return@forEachIndexed
-
+        if (stack.isEmpty || stack.item != Items.PLAYER_HEAD) chestSlotData.remove(index)
+        else {
             val lore = stack.loreString
             val loreStartIndex = lore.indexOfFirst { it == "Contents" } + 1
-            if (loreStartIndex == 0) return@forEachIndexed
 
-            val loreEndIndex = lore.indexOfFirst { it.isEmpty() }
+            if (loreStartIndex == 0) chestSlotData.remove(index)
+            else {
+                val loreEndIndex = lore.indexOfFirst { it.isEmpty() }
 
-            val chestCost = lore.getOrNull(loreEndIndex + 2)?.let { costLine ->
-                chestCostRegex.find(costLine)?.groupValues?.get(1)?.replace(",", "")?.toDoubleOrNull()
-            } ?: 0.0
+                val chestCost = lore.getOrNull(loreEndIndex + 2)?.let { costLine ->
+                    chestCostRegex.find(costLine)?.groupValues?.get(1)?.replace(",", "")?.toDoubleOrNull()
+                } ?: 0.0
 
-            val items = mutableListOf<ChestItem>()
-            var totalValue = 0.0
+                val items = mutableListOf<ChestItem>()
+                var totalValue = 0.0
 
-            lore.subList(loreStartIndex, loreEndIndex).forEach { item ->
-                val price = parseItemValue(item) ?: 0.0
-                totalValue += price
-                items.add(ChestItem(item, price))
+                lore.subList(loreStartIndex, loreEndIndex).forEach { item ->
+                    val price = parseItemValue(item) ?: 0.0
+                    totalValue += price
+                    items.add(ChestItem(item, price))
+                }
+
+                chestSlotData[index] = ChestData(stack.hoverName, items, totalValue - chestCost, index)
             }
-
-            chests.add(ChestData(stack.hoverName, items, totalValue - chestCost, index))
         }
 
-        chestData = chests.sortedByDescending { it.profit }
+        chestData = chestSlotData.values.sortedByDescending { it.profit }
         mostProfitableSlots = chestData.filter { it.profit > 0 }.take(2).map { it.slotIndex }.toSet()
     }
 
@@ -211,7 +208,6 @@ object Croesus : Module(
         }
 
         previewEssenceRegex.find(item)?.destructured?.let { (name, quantity) ->
-            if (!includeEssence) return null
             val price = cachedPrices["ESSENCE_${name.uppercase()}"] ?: return null
             return price * quantity.toDouble()
         }
@@ -224,58 +220,65 @@ object Croesus : Module(
         return cachedPrices[item.uppercase() .replace("'", "").replace(" -", "").replace(" ", "_")]
     }
 
-    private fun handleChestContents(items: List<ItemStack>) {
-        val chestItems = mutableListOf<ChestItem>()
-        var chestCost = 0.0
-        var profit = 0.0
+    private fun handleChestContents(index: Int, stack: ItemStack) {
+        if (index > 40) return
 
-        items.forEachIndexed { index, stack ->
-            if (stack.isEmpty || index > 40) return@forEachIndexed
+        when {
+            stack.isEmpty -> {
+                chestItemContributions.remove(index)
+                chestCostContributions.remove(index)
+            }
 
-            when (stack.item) {
-                Items.CHEST -> {
-                    stack.loreString.forEach { loreLine ->
-                        chestCostRegex.find(loreLine)?.groupValues?.get(1)?.let { cost ->
-                            chestCost = cost.replace(",", "").toDouble()
-                        }
-                    }
-                }
-
-                Items.ENCHANTED_BOOK -> {
-                    chestEnchantsRegex.find(stack.customData.get("enchantments").toString())?.destructured?.let { (name, level) ->
-                        cachedPrices["ENCHANTED_BOOK-${name.uppercase()}-$level"]?.let {
-                            chestItems += ChestItem(stack.hoverName.string, it)
-                            profit += it
-                        }
-                    }
-                }
-                else -> {
-                    previewEssenceRegex.find(stack.hoverName.string)?.destructured?.let { (name, quantity) ->
-                        if (!includeEssence) return@forEachIndexed
-                        val price = cachedPrices["ESSENCE_${name.uppercase()}"] ?: return@forEachIndexed
-                        chestItems += ChestItem(stack.hoverName.string, price * quantity.toDouble())
-                        profit += price * quantity.toDouble()
-                    } ?: previewShardRegex.find(stack.hoverName.string)?.destructured?.let { (shardName) ->
-                        cachedPrices["SHARD_${shardName.uppercase().replace(" ", "_").replace("'s", "")}"]?.let {
-                            chestItems += ChestItem(stack.hoverName.string, it)
-                            profit += it
-                        }
-                    } ?: cachedPrices[stack.itemId]?.let {
-                        chestItems += ChestItem(stack.hoverName.string, it)
-                        profit += it
+            stack.item == Items.CHEST -> {
+                chestItemContributions.remove(index)
+                chestCostContributions.remove(index)
+                stack.loreString.forEach { loreLine ->
+                    chestCostRegex.find(loreLine)?.groupValues?.get(1)?.let { cost ->
+                        chestCostContributions[index] = cost.replace(",", "").toDouble()
                     }
                 }
             }
+
+            stack.item == Items.ENCHANTED_BOOK -> {
+                chestCostContributions.remove(index)
+                val contribution = chestEnchantsRegex.find(stack.customData.get("enchantments").toString())?.destructured?.let { (name, level) ->
+                    cachedPrices["ENCHANTED_BOOK-${name.uppercase()}-$level"]?.let { ChestItem(stack.hoverName.string, it) }
+                }
+                if (contribution != null) chestItemContributions[index] = contribution else chestItemContributions.remove(index)
+            }
+
+            else -> {
+                chestCostContributions.remove(index)
+                val contribution = resolveChestItemContribution(stack)
+                if (contribution != null) chestItemContributions[index] = contribution else chestItemContributions.remove(index)
+            }
         }
-        currentChestProfit = profit - chestCost
+
+        val profit = chestItemContributions.values.sumOf { it.price }
+        currentChestProfit = profit - chestCostContributions.values.sum()
         chestData = listOf(
             ChestData(
                 Component.literal("§eChest"),
-                chestItems,
+                chestItemContributions.values.toList(),
                 currentChestProfit ?: 0.0,
                 -1
             )
         )
+    }
+
+    private fun resolveChestItemContribution(stack: ItemStack): ChestItem? {
+        previewEssenceRegex.find(stack.hoverName.string)?.destructured?.let { (name, quantity) ->
+            val price = cachedPrices["ESSENCE_${name.uppercase()}"] ?: return null
+            return ChestItem(stack.hoverName.string, price * quantity.toDouble())
+        }
+
+        previewShardRegex.find(stack.hoverName.string)?.destructured?.let { (shardName) ->
+            cachedPrices["SHARD_${shardName.uppercase().replace(" ", "_").replace("'s", "")}"]?.let {
+                return ChestItem(stack.hoverName.string, it)
+            }
+        }
+
+        return cachedPrices[stack.itemId]?.let { ChestItem(stack.hoverName.string, it) }
     }
 
     private fun hasStrikeThrough(itemName: String, loreComponents: List<Component>): Boolean =

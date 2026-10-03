@@ -8,13 +8,13 @@ import net.minecraft.util.profiling.ProfilerFiller
 object EventBus {
 
     @JvmField
-    internal val listenerArrays = mutableMapOf<Class<out Event>, Array<ListenerEntry<out Event>>>()
+    val listenerArrays = mutableMapOf<Class<out Event>, Array<ListenerEntry<out Event>>>()
     @JvmField
-    internal val activeSubscribers = mutableSetOf<Any>()
+    val activeSubscribers = mutableSetOf<Any>()
     @JvmField
-    internal val subscriberClasses = mutableMapOf<Any, Class<*>>()
+    val subscriberClasses = mutableMapOf<Any, Class<*>>()
     @JvmField
-    internal val invokers = HashMap<Class<out Event>, Invoker>()
+    val invokers = HashMap<Class<out Event>, Invoker>()
 
     private val profilerNameCache = HashMap<Class<out Event>, String>()
 

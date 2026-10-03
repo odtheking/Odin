@@ -17,7 +17,9 @@ object PerformanceHUD : Module(
 ) {
     private val nameColor by ColorSetting("Name Color", Color(50, 150, 220), desc = "The color of the stat information.")
     private val valueColor by ColorSetting("Value Color", Colors.WHITE, desc = "The color of the stat values.")
-    private val direction by SelectorSetting("Direction", "Horizontal", listOf("Horizontal", "Vertical"), "Direction the information is displayed.")
+    private val direction by SelectorSetting("Direction", Direction.HORIZONTAL, "Direction the information is displayed.")
+
+    enum class Direction { HORIZONTAL, VERTICAL }
     private val showFPS by BooleanSetting("Show FPS", true, desc = "Shows the FPS in the HUD.")
     private val showTPS by BooleanSetting("Show TPS", true, desc = "Shows the TPS in the HUD.")
     private val showPing by BooleanSetting("Show Ping", true, desc = "Shows the ping in the HUD.")
@@ -32,8 +34,8 @@ object PerformanceHUD : Module(
         val lineHeight = mc.font.lineHeight
 
         fun renderMetric(label: String, value: String) {
-            val w = drawText(label, value, if (direction == HORIZONTAL) width else 1, height)
-            if (direction == HORIZONTAL) width += w
+            val w = drawText(label, value, if (direction == Direction.HORIZONTAL) width else 1, height)
+            if (direction == Direction.HORIZONTAL) width += w
             else {
                 width = maxOf(width, w)
                 height += lineHeight
@@ -44,7 +46,7 @@ object PerformanceHUD : Module(
         if (showFPS) renderMetric("FPS: ", "${mc.fps} ")
         if (showPing) renderMetric("Ping: ", "${ServerUtils.averagePing}ms ")
 
-        width to if (direction == HORIZONTAL) lineHeight else height
+        width to if (direction == Direction.HORIZONTAL) lineHeight else height
     }
 
     private fun GuiGraphicsExtractor.drawText(name: String, value: String, x: Int, y: Int): Int {

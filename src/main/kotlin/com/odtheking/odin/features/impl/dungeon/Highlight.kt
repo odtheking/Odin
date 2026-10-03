@@ -4,11 +4,12 @@ import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.ColorSetting
 import com.odtheking.odin.clickgui.settings.impl.SelectorSetting
 import com.odtheking.odin.events.LevelEvent
-import com.odtheking.odin.events.RenderEvent
+import com.odtheking.odin.events.RenderExtractEvent
 import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Colors
+import com.odtheking.odin.utils.render.BoxStyle
 import com.odtheking.odin.utils.render.drawStyledBox
 import com.odtheking.odin.utils.renderBoundingBox
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
@@ -23,7 +24,7 @@ object Highlight : Module(
 ) {
     private val highlightStar by BooleanSetting("Highlight Starred Mobs", true, desc = "Highlights starred dungeon mobs.")
     private val color by ColorSetting("Highlight color", Colors.WHITE, true, desc = "The color of the highlight.")
-    private val renderStyle by SelectorSetting("Render Style", "Outline", listOf("Filled", "Outline", "Filled Outline"), desc = "Style of the box.")
+    private val renderStyle by SelectorSetting("Render Style", BoxStyle.OUTLINE, desc = "Style of the box.")
     private val hideNonNames by BooleanSetting("Hide non-starred names", true, desc = "Hides names of entities that are not starred.")
 
     private val teammateClassGlow by BooleanSetting("Teammate Class Glow", true, desc = "Highlights dungeon teammates based on their class color.")
@@ -56,7 +57,7 @@ object Highlight : Module(
             entities.removeIf { entity -> !entity.isAlive }
         }
 
-        on<RenderEvent.Extract> {
+        on<RenderExtractEvent> {
             if (!highlightStar || !DungeonUtils.inClear) return@on
 
             entities.forEach { entity ->

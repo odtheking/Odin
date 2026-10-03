@@ -5,10 +5,8 @@ import com.odtheking.odin.events.core.CancellableEvent
 import com.odtheking.odin.events.core.Event
 import com.odtheking.odin.features.impl.dungeon.map.tile.DungeonRoom
 import com.odtheking.odin.features.impl.dungeon.map.tile.MapCheckmark
-import com.odtheking.odin.utils.render.RenderConsumer
 import com.odtheking.odin.utils.skyblock.dungeon.Floor
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.terminalhandler.TerminalHandler
-import net.fabricmc.fabric.api.client.rendering.v1.level.AbstractLevelRenderContext
 import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext
 import net.minecraft.client.multiplayer.ClientLevel
 import net.minecraft.core.BlockPos
@@ -34,6 +32,7 @@ class InputEvent(val key: InputConstants.Key) : CancellableEvent() // better mix
 class BlockUpdateEvent(val pos: BlockPos, val old: BlockState, val updated: BlockState) : Event
 
 class BlockInteractEvent(val pos: BlockPos) : CancellableEvent()
+class BlockClickEvent(val pos: BlockPos) : Event
 class EntityInteractEvent(val pos: Vec3, val entity: Entity) : CancellableEvent()
 class UseItemOnPostEvent(val hand: InteractionHand, val hitResult: BlockHitResult, val interactionResult: InteractionResult) : Event
 
@@ -57,7 +56,7 @@ abstract class TerminalEvent(val terminal: TerminalHandler) : Event {
     class Open(terminal: TerminalHandler) : TerminalEvent(terminal)
     class Close(terminal: TerminalHandler) : TerminalEvent(terminal)
     class Solve(terminal: TerminalHandler) : TerminalEvent(terminal)
-    class Click(terminal: TerminalHandler, val slotIndex: Int, val button: Int) : TerminalEvent(terminal)
+    class Click(terminal: TerminalHandler, val slotIndex: Int, val button: Int, val solution: ArrayList<Int>) : TerminalEvent(terminal)
 }
 
 interface TickEvent : Event {
@@ -70,10 +69,7 @@ interface LevelEvent : Event {
     object Unload : LevelEvent
 }
 
-abstract class RenderEvent(open val context: AbstractLevelRenderContext) : Event {
-    class Extract(override val context: LevelRenderContext, val consumer: RenderConsumer) : RenderEvent(context)
-    class Last(override val context: LevelRenderContext) : RenderEvent(context)
-}
+class RenderExtractEvent(val context: LevelRenderContext) : Event
 
 abstract class PartyEvent(val members: List<String>) : Event {
     class Leave(members: List<String>) : PartyEvent(members)

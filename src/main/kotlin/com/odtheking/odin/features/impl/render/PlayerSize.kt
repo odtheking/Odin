@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName
 import com.mojang.authlib.GameProfile
 import com.mojang.blaze3d.vertex.PoseStack
 import com.odtheking.odin.OdinMod
-import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
+import com.odtheking.odin.clickgui.settings.RenderableSetting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.*
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.modMessage
@@ -21,25 +21,23 @@ object PlayerSize : Module(
     description = "Changes the size of the player."
 ) {
     private val devSize by BooleanSetting("Dev Size", true, desc = "Toggles client side dev size for your own player.").withDependency { isRandom }
-    private val devSizeX by NumberSetting("Size X", 1f, -1, 3f, 0.1, desc = "X scale of the dev size.")
-    private val devSizeY by NumberSetting("Size Y", 1f, -1, 3f, 0.1, desc = "Y scale of the dev size.")
-    private val devSizeZ by NumberSetting("Size Z", 1f, -1, 3f, 0.1, desc = "Z scale of the dev size.")
-    private var showHidden by DropdownSetting("Show Hidden").withDependency { isRandom }
-    private val passcode by StringSetting("Passcode", "odin", desc = "Passcode for dev features.").withDependency { showHidden && isRandom }
+    private val sizeX by NumberSetting("Size X", 1f, -1.0..3.0, 0.1, desc = "X scale of the dev size.")
+    private val sizeY by NumberSetting("Size Y", 1f, -1.0..3.0, 0.1, desc = "Y scale of the dev size.")
+    private val sizeZ by NumberSetting("Size Z", 1f, -1.0..3.0, 0.1, desc = "Z scale of the dev size.")
+    private var showHidden by DropdownSetting("Show Hidden", desc = "Shows the passcode field for dev features.").withDependency { isRandom }
+    private val passcode by StringSetting("Passcode", "odin", desc = "Passcode for dev features.", placeholder = "Enter passcode").withDependency { showHidden && isRandom }
 
     const val DEV_SERVER = "https://devs.odtheking.com"
 
     private val sendDevData by ActionSetting("Send Dev Data", desc = "Sends dev data to the server.") {
         showHidden = false
         fun valid(v: Float) = (v in 0.8f..1.6f) || (v in -1.0f..-0.8f)
-        if (!valid(devSizeX) || !valid(devSizeY) || !valid(devSizeZ)) {
+        if (!valid(sizeX) || !valid(sizeY) || !valid(sizeZ)) {
             modMessage("Global values must be between 0.8..1.6 or -1..-0.8")
             return@ActionSetting
         }
         OdinMod.scope.launch {
-            val body = buildDevBody(mc.user.name, devSizeX, devSizeY, devSizeZ, " ", passcode)
-
-            modMessage(postData(DEV_SERVER, body).getOrNull())
+            modMessage(postData(DEV_SERVER, buildDevBody(mc.user.name, sizeX, sizeY, sizeZ, " ", passcode)).getOrNull())
             updateCustomProperties()
         }
     }.withDependency { isRandom }
@@ -58,14 +56,16 @@ object PlayerSize : Module(
     @JvmStatic
     fun preRenderCallbackScaleHook(entityRenderer: AvatarRenderState, matrix: PoseStack) {
         val gameProfile = entityRenderer.getData(GAME_PROFILE_KEY) ?: return
-        if (enabled && gameProfile.name == mc.player?.gameProfile?.name && !randoms.containsKey(gameProfile.id)) {
-            if (devSizeY < 0) matrix.translate(0f, devSizeY * 2, 0f)
-            matrix.scale(devSizeX, devSizeY, devSizeZ)
+
+        if (gameProfile.name == mc.player?.gameProfile?.name && !devSize) {
+            if (sizeY < 0) matrix.translate(0f, sizeY * 2, 0f)
+            matrix.scale(sizeX, sizeY, sizeZ)
+            return
         }
-        if (!randoms.containsKey(gameProfile.id)) return
-        if (!devSize && gameProfile.name == mc.player?.gameProfile?.name) return
+
         val random = randoms[gameProfile.id] ?: return
-        if (random.scale[1] < 0) matrix.translate(0f, random.scale[1] * 2, 1f)
+
+        if (random.scale[1] < 0) matrix.translate(0f, random.scale[1] * 2, 0f)
         matrix.scale(random.scale[0], random.scale[1], random.scale[2])
     }
 

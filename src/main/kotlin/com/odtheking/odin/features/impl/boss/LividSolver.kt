@@ -7,6 +7,7 @@ import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.modMessage
+import com.odtheking.odin.utils.render.BoxStyle
 import com.odtheking.odin.utils.render.drawStyledBox
 import com.odtheking.odin.utils.render.textDim
 import com.odtheking.odin.utils.renderBoundingBox
@@ -14,6 +15,7 @@ import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.core.BlockPos
 import net.minecraft.world.effect.MobEffects
 import net.minecraft.world.entity.player.Player
+import net.minecraft.world.item.DyeColor
 import net.minecraft.world.level.block.Block
 import net.minecraft.world.level.block.Blocks
 
@@ -23,7 +25,7 @@ object LividSolver : Module(
 ) {
     private val hud by HUD("Invulnerability Timer", "Shows time remaining on Livid's invulnerability.") { example ->
         if (!example && (!DungeonUtils.inBoss || !DungeonUtils.isFloor(5) || invulnTime <= 0)) return@HUD 0 to 0
-        val time = if (example) 350 else invulnTime
+        val time = if (example) 340 else invulnTime
         val color = when {
             time > 260 -> "§a"
             time > 130 -> "§e"
@@ -31,7 +33,7 @@ object LividSolver : Module(
         }
         textDim("${color}Livid: ${time}t ", 0, 0)
     }
-    private val highlightColor by ColorSetting("Highlight Color", Colors.MINECRAFT_RED, true, desc = "Color of the highlight box around Livid.")
+    private val highlightColor by ColorSetting("Highlight Color", Colors.MINECRAFT_LIGHT_PURPLE, true, desc = "Color of the highlight box around Livid.")
 
     private val lividStartRegex = Regex("^\\[BOSS] Livid: Welcome, you've arrived right on time\\. I am Livid, the Master of Shadows\\.$")
     private val woolLocation = BlockPos(5, 108, 43)
@@ -47,6 +49,7 @@ object LividSolver : Module(
         on<BlockUpdateEvent> {
             if (!DungeonUtils.inBoss || !DungeonUtils.isFloor(5) || pos != woolLocation) return@on
             currentLivid = Livid.entries.find { livid -> livid.wool.defaultBlockState() == updated.block.defaultBlockState() } ?: return@on
+            modMessage("Found Livid: §${currentLivid.colorCode}${currentLivid.entityName}")
         }
 
         on<EntityEvent.SetData> {
@@ -54,10 +57,10 @@ object LividSolver : Module(
             currentLivid.entity = (entity as? Player)?.takeIf { it.name.string == "${currentLivid.entityName} Livid" } ?: return@on
         }
 
-        on<RenderEvent.Extract> {
+        on<RenderExtractEvent> {
             if (!DungeonUtils.inBoss || !DungeonUtils.isFloor(5) || mc.player?.getEffect(MobEffects.BLINDNESS) != null || invulnTime > 50) return@on
             currentLivid.entity?.let { entity ->
-                drawStyledBox(entity.renderBoundingBox, highlightColor, 2, true)
+                drawStyledBox(entity.renderBoundingBox, highlightColor, BoxStyle.FILLED_OUTLINE, true)
             }
         }
 
@@ -75,15 +78,15 @@ object LividSolver : Module(
     }
 
     private enum class Livid(val entityName: String, val colorCode: Char, val color: Color, val wool: Block) {
-        VENDETTA("Vendetta", 'f', Colors.WHITE, Blocks.WHITE_WOOL),
-        CROSSED("Crossed", 'd', Colors.MINECRAFT_DARK_PURPLE, Blocks.MAGENTA_WOOL),
-        ARCADE("Arcade", 'e', Colors.MINECRAFT_YELLOW, Blocks.YELLOW_WOOL),
-        SMILE("Smile", 'a', Colors.MINECRAFT_GREEN, Blocks.LIME_WOOL),
-        DOCTOR("Doctor", '7', Colors.MINECRAFT_GRAY, Blocks.GRAY_WOOL),
-        PURPLE("Purple", '5', Colors.MINECRAFT_DARK_PURPLE, Blocks.PURPLE_WOOL),
-        SCREAM("Scream", '9', Colors.MINECRAFT_BLUE, Blocks.BLUE_WOOL),
-        FROG("Frog", '2', Colors.MINECRAFT_DARK_GREEN, Blocks.GREEN_WOOL),
-        HOCKEY("Hockey", 'c', Colors.MINECRAFT_RED, Blocks.RED_WOOL);
+        VENDETTA("Vendetta", 'f', Colors.WHITE, Blocks.WOOL.pick(DyeColor.WHITE)),
+        CROSSED("Crossed", 'd', Colors.MINECRAFT_DARK_PURPLE, Blocks.WOOL.pick(DyeColor.MAGENTA)),
+        ARCADE("Arcade", 'e', Colors.MINECRAFT_YELLOW, Blocks.WOOL.pick(DyeColor.YELLOW)),
+        SMILE("Smile", 'a', Colors.MINECRAFT_GREEN, Blocks.WOOL.pick(DyeColor.LIME)),
+        DOCTOR("Doctor", '7', Colors.MINECRAFT_GRAY, Blocks.WOOL.pick(DyeColor.GRAY)),
+        PURPLE("Purple", '5', Colors.MINECRAFT_DARK_PURPLE, Blocks.WOOL.pick(DyeColor.PURPLE)),
+        SCREAM("Scream", '9', Colors.MINECRAFT_BLUE, Blocks.WOOL.pick(DyeColor.BLUE)),
+        FROG("Frog", '2', Colors.MINECRAFT_DARK_GREEN, Blocks.WOOL.pick(DyeColor.GREEN)),
+        HOCKEY("Hockey", 'c', Colors.MINECRAFT_RED, Blocks.WOOL.pick(DyeColor.RED));
 
         var entity: Player? = null
     }

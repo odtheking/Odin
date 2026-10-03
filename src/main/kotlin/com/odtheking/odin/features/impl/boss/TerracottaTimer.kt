@@ -1,10 +1,11 @@
 package com.odtheking.odin.features.impl.boss
 
 import com.odtheking.odin.events.BlockUpdateEvent
-import com.odtheking.odin.events.RenderEvent
+import com.odtheking.odin.events.RenderExtractEvent
 import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
+import com.odtheking.odin.utils.center
 import com.odtheking.odin.utils.render.drawText
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.toFixed
@@ -32,7 +33,7 @@ object TerracottaTimer : Module(
             }
         }
 
-        on<RenderEvent.Extract> {
+        on<RenderExtractEvent> {
             if (!DungeonUtils.inBoss || !DungeonUtils.isFloor(6) || terracottaSpawning.isEmpty()) return@on
             terracottaSpawning.forEach {
                 drawText("§${getColor(it.time)}${it.time.toFixed()}s", it.pos.center, 2f, false)

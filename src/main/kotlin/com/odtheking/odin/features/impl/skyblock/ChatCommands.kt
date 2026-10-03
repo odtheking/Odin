@@ -1,6 +1,6 @@
 package com.odtheking.odin.features.impl.skyblock
 
-import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
+import com.odtheking.odin.clickgui.settings.RenderableSetting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.DropdownSetting
 import com.odtheking.odin.events.MessageEvent
@@ -30,7 +30,7 @@ object ChatCommands : Module(
     private val privateChatCommands by BooleanSetting("Private Commands", true, "Enables private chat commands.")
     private val coopChatCommands by BooleanSetting("Co-op Commands", true, "Enables co-op chat commands.")
 
-    private val showSettings by DropdownSetting("Show Settings", false)
+    private val showSettings by DropdownSetting("Show Settings", desc = "Toggles which chat commands are enabled.")
     private val partyWarp by BooleanSetting("Warp", true, desc = "Executes the /party warp command.").withDependency { showSettings }
     private val coords by BooleanSetting("Coords (coords)", true, desc = "Sends your current coordinates.").withDependency { showSettings }
     private val partyAllInvite by BooleanSetting("Allinvite", true, desc = "Executes the /party settings allinvite command.").withDependency { showSettings }

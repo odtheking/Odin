@@ -49,7 +49,7 @@ class WebSocketConnection {
                 if (last) {
                     val message = messageBuilder.toString()
                     messageBuilder.clear()
-                    onMessageFunc(message)
+                    if (_webSocket.get() === webSocket) onMessageFunc(message)
                 }
                 webSocket.request(1)
                 return null
@@ -57,7 +57,7 @@ class WebSocketConnection {
 
             override fun onBinary(webSocket: WebSocket, data: ByteBuffer, last: Boolean): CompletionStage<*>? {
                 val text = StandardCharsets.UTF_8.decode(data).toString()
-                onMessageFunc(text)
+                if (_webSocket.get() === webSocket) onMessageFunc(text)
                 webSocket.request(1)
                 return null
             }

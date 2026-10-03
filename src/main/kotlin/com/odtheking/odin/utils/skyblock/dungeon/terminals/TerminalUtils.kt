@@ -44,7 +44,7 @@ object TerminalUtils {
         }
 
         on<SetSlotEvent> {
-            if (menu !== (mc.screen as? AbstractContainerScreen<*>)?.menu) return@on
+            if (menu !== (mc.gui.screen() as? AbstractContainerScreen<*>)?.menu) return@on
             currentTerm?.updateSlot(this)
         }
 
@@ -52,7 +52,7 @@ object TerminalUtils {
             currentTerm?.let { term ->
                 if (term.clickedSlots.isNotEmpty() && System.currentTimeMillis() - term.lastClickTime >= TerminalSolver.terminalReloadThreshold) {
                     term.clickedSlots.clear()
-                    (mc.screen as? AbstractContainerScreen<*>)?.menu?.let { SetSlotEvent(0, ItemStack.EMPTY, it.slots, it).postAndCatch() }
+                    (mc.gui.screen() as? AbstractContainerScreen<*>)?.menu?.let { SetSlotEvent(0, ItemStack.EMPTY, it.slots, it).postAndCatch() }
                 }
             }
         }
@@ -66,13 +66,13 @@ object TerminalUtils {
         }
 
         onSend<ServerboundContainerClickPacket> (EventPriority.LOW) {
-            val termSimScreen = mc.screen as? TermSimGUI ?: return@onSend
+            val termSimScreen = mc.gui.screen() as? TermSimGUI ?: return@onSend
             if (containerInput != ContainerInput.PICKUP_ALL) termSimScreen.clickIndex(slotNum.toInt(), buttonNum.toInt())
             it.cancel()
         }
 
         onReceive<ClientboundContainerSetSlotPacket> (EventPriority.HIGH) {
-            val termSimScreen = mc.screen as? TermSimGUI ?: return@onReceive
+            val termSimScreen = mc.gui.screen() as? TermSimGUI ?: return@onReceive
             if (slot !in 0 until termSimScreen.size) return@onReceive
             item.let { item -> mc.player?.inventoryMenu?.setItem(slot, stateId, item) }
             it.cancel()

@@ -45,7 +45,6 @@ object SplitsManager {
     }
 
     private fun buildDungeonSplits(): SplitsGroup? {
-        if (Splits.splitLocation == 2) return null
         val floor = DungeonListener.floor ?: return null
 
         val splits = dungeonSplits[floor.floorNumber].toMutableList().apply {
@@ -60,7 +59,6 @@ object SplitsManager {
     }
 
     private fun buildKuudraSplits(): SplitsGroup? {
-        if (Splits.splitLocation == 1) return null
         return when (KuudraUtils.kuudraTier) {
             5 -> SplitsGroup(kuudraT5SplitsGroup.map { it.copy() }, Splits.kuudraT5PBs)
             4 -> SplitsGroup(kuudraSplitsGroup.map { it.copy() }, Splits.kuudraT4PBs)
@@ -85,6 +83,7 @@ object SplitsManager {
         val previous = splits[index - 1]
         val segmentTime = (split.time - previous.time) / 1000f
 
+        if (!displayAllowed()) return
         if (index == splits.lastIndex) finishRun(index, segmentTime)
         else currentSplits.personalBest?.time(previous.name, segmentTime, "s§7!", "§6${previous.name} §7took §6", Splits.enabled)
     }
@@ -104,9 +103,21 @@ object SplitsManager {
         }
     }
 
+    private fun displayAllowed(): Boolean = when (LocationUtils.currentArea) {
+        Island.Dungeon -> Splits.splitLocation != Splits.SplitLocation.KUUDRA_ONLY
+        Island.Kuudra -> Splits.splitLocation != Splits.SplitLocation.DUNGEONS_ONLY
+        else -> true
+    }
+
+    fun currentSplitName(): String? {
+        val splits = currentSplits.splits
+        for (i in splits.size - 2 downTo 0) if (splits[i].time != 0L) return splits[i].name
+        return null
+    }
+
     fun currentRows(): List<SplitRow> {
         val splits = currentSplits.splits
-        if (splits.isEmpty()) return emptyList()
+        if (splits.isEmpty() || !displayAllowed()) return emptyList()
         if (splits[0].time == 0L) return splits.map { SplitRow(it.name, 0L, 0L, isCurrent = false) }
 
         val last = splits.last()

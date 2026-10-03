@@ -1,7 +1,7 @@
 package com.odtheking.odin.features.impl.skyblock
 
 import com.mojang.blaze3d.platform.InputConstants
-import com.odtheking.odin.clickgui.settings.Setting.Companion.withDependency
+import com.odtheking.odin.clickgui.settings.RenderableSetting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.DropdownSetting
 import com.odtheking.odin.clickgui.settings.impl.KeybindSetting
@@ -22,7 +22,7 @@ object WardrobeKeybinds : Module(
     private val unequipKeybind by KeybindSetting("Unequip", InputConstants.UNKNOWN, desc = "Keybind to unequip the currently equipped item in the wardrobe.")
     private val disallowUnequippingEquipped by BooleanSetting("Disable Unequip", desc = "Prevents unequipping equipped set.")
 
-    private val advanced by DropdownSetting("Show Settings")
+    private val advanced by DropdownSetting("Show Settings", desc = "Shows keybinds to equip each wardrobe slot directly.")
     private val wardrobe1 by KeybindSetting("Wardrobe 1", InputConstants.KEY_1, desc = "Keybind to equip the first wardrobe slot.").withDependency { advanced }
     private val wardrobe2 by KeybindSetting("Wardrobe 2", InputConstants.KEY_2, desc = "Keybind to equip the second wardrobe slot.").withDependency { advanced }
     private val wardrobe3 by KeybindSetting("Wardrobe 3", InputConstants.KEY_3, desc = "Keybind to equip the third wardrobe slot.").withDependency { advanced }

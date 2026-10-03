@@ -23,14 +23,6 @@ suspend fun DungeonWaypoints.saveWaypoints() {
     WaypointPackFileUtils.savePack(editPackId, copyWaypointMap(loadedPacks[editPackId] ?: mutableMapOf()))
 }
 
-internal suspend fun DungeonWaypoints.importEditableWaypoints(waypoints: MutableMap<String, MutableList<DungeonWaypoints.DungeonWaypoint>>) {
-    ensurePackState()
-    loadedPacks[editPackId] = copyWaypointMap(waypoints)
-    saveWaypoints()
-    allActiveWaypoints = rebuildVisibleWaypoints()
-    DungeonUtils.currentRoom?.setWaypoints()
-}
-
 internal suspend fun DungeonWaypoints.importPack(packName: String, waypoints: MutableMap<String, MutableList<DungeonWaypoints.DungeonWaypoint>>): Boolean {
     if (!WaypointPackFileUtils.createPack(packName)) return false
     WaypointPackFileUtils.savePack(packName, copyWaypointMap(waypoints))
@@ -71,10 +63,10 @@ internal suspend fun DungeonWaypoints.renamePack(oldName: String, newName: Strin
     return true
 }
 
-internal fun DungeonWaypoints.exportEditableWaypoints(): MutableMap<String, MutableList<DungeonWaypoints.DungeonWaypoint>> =
+fun DungeonWaypoints.exportEditableWaypoints(): MutableMap<String, MutableList<DungeonWaypoints.DungeonWaypoint>> =
     copyWaypointMap(loadedPacks[editPackId] ?: mutableMapOf())
 
-internal fun DungeonWaypoints.resetClickedWaypoints() {
+fun DungeonWaypoints.resetClickedWaypoints() {
     loadedPacks = loadedPacks.mapValuesTo(mutableMapOf()) { (_, packWaypoints) -> copyWaypointMap(packWaypoints) }
     allActiveWaypoints = rebuildVisibleWaypoints()
     DungeonUtils.currentRoom?.setWaypoints()
@@ -84,7 +76,7 @@ fun DungeonRoom.setWaypoints() {
     val name = data?.name ?: return
     waypoints = DungeonWaypoints.allActiveWaypoints[name]
         ?.mapTo(mutableSetOf()) { waypoint ->
-            waypoint.copy(blockPos = getRealCoords(waypoint.blockPos))
+            waypoint.copy(blockPos = getRealCoords(waypoint.blockPos), aabb = getRealAABB(waypoint.aabb))
         } ?: mutableSetOf()
 }
 
