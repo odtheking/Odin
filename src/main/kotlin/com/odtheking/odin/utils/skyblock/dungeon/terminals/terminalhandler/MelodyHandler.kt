@@ -19,13 +19,14 @@ class MelodyHandler: TerminalHandler(TerminalTypes.MELODY) {
         return buildList {
             add(greenPane)
             add(magentaPane)
+            add(magentaPane + 36)
 
             if (greenPane % 9 == magentaPane % 9) add(greenClay)
         }
     }
 
     override fun canClick(slotIndex: Int, button: Int): Boolean =
-        slotIndex.equalsOneOf(16, 25, 34, 43)
+        slotIndex.equalsOneOf(16, 25, 34)
 
     override fun renderSlot(slotIndex: Int): Pair<Color, String?> = when {
         (slotIndex / 9).equalsOneOf(0, 4) -> TerminalSolver.melodyColumColor

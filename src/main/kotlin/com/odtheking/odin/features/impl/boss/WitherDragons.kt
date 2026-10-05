@@ -3,7 +3,6 @@ package com.odtheking.odin.features.impl.boss
 import com.odtheking.odin.clickgui.settings.RenderableSetting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.DropdownSetting
-import com.odtheking.odin.clickgui.settings.impl.NumberSetting
 import com.odtheking.odin.clickgui.settings.impl.SelectorSetting
 import com.odtheking.odin.events.*
 import com.odtheking.odin.events.core.on
@@ -49,16 +48,9 @@ object WitherDragons : Module(
 
     private val dragonHealth by BooleanSetting("Dragon Health", true, desc = "Displays the health of M7 dragons.")
 
-    private val dragonPriorityDropDown by DropdownSetting("Dragon Priority Dropdown", desc = "Shows settings for dragon spawn priority.")
-    val dragonPriorityToggle by BooleanSetting("Dragon Priority", true, desc = "Displays the priority of dragons spawning.").withDependency { dragonPriorityDropDown }
-    val normalPower by NumberSetting("Normal Power", 0, 0..32, desc = "Power needed to split.").withDependency { dragonPriorityToggle && dragonPriorityDropDown }
-    val easyPower by NumberSetting("Easy Power", 0, 0..32, desc = "Power needed when its Purple and another dragon.").withDependency { dragonPriorityToggle && dragonPriorityDropDown }
-    val soloDebuff by SelectorSetting("Purple Solo Debuff", SoloDebuff.TANK, desc = "The class that solo debuffs purple, the other class helps b/m.").withDependency { dragonPriorityToggle && dragonPriorityDropDown }
-    val soloDebuffOnAll by BooleanSetting("Solo Debuff on All Splits", false, desc = "Same as Purple Solo Debuff but for all dragons (A will only have 1 debuff).").withDependency { dragonPriorityToggle && dragonPriorityDropDown }
-    val paulBuff by BooleanSetting("Paul Buff", false, desc = "Multiplies the power in your run by 1.25.").withDependency { dragonPriorityToggle && dragonPriorityDropDown }
-
     val witherKingRegex = Regex("^\\[BOSS] Wither King: (Oh, this one hurts!|I have more of those\\.|My soul is disposable\\.)$")
-    var priorityDragon: WitherDragonsEnum? = null
+    val spawnOrder = mutableListOf<WitherDragonsEnum>()
+    val priorityDragon: WitherDragonsEnum? get() = spawnOrder.firstOrNull()
     var currentTick = 0L
 
     val dragonPBs = PersonalBest(this, "DragonPBs")
@@ -147,7 +139,6 @@ object WitherDragons : Module(
     }
 
     enum class TimerStyle { MILLISECONDS, SECONDS, TICKS }
-    enum class SoloDebuff { TANK, HEALER }
 
     private fun colorHealth(health: Float): String {
         return when {

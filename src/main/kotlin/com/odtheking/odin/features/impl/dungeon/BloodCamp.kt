@@ -93,27 +93,15 @@ object BloodCamp : Module(
 
         on<MessageEvent.Chat> {
             if (!DungeonUtils.inClear) return@on
-            if (BLOOD_START_REGEX.matches(message)) startTime = currentTickTime
-            else if (BLOOD_MOVE_REGEX.matches(message)) {
-                firstSpawns = false
-                val tickTime = startTime ?: return@on
-                val predTicks = when (val moveTicks = (currentTickTime - tickTime) / 20 / 50) {
-                    in 31..<34 -> 36
-                    in 28..<31 -> 33
-                    in 25..<28 -> 30
-                    in 22..<25 -> 27
-                    in 1..<22 -> 24
-                    else -> moveTicks + 3
-                }
-
-                moveTimeSeconds = predTicks / 20f
+            if (BLOOD_START_REGEX.matches(message)) {
+                moveTimeSeconds = 20f
                 if (sendMoveTime) modMessage("Watcher will move in ${moveTimeSeconds?.toFixed()}s.")
 
-                schedule(predTicks.toInt(), true) {
+                schedule(400, true) {
                     if (sendMoveTime) alert("Kill Mobs")
                     moveTimeSeconds = null
                 }
-            }
+            } else if (BLOOD_MOVE_REGEX.matches(message)) firstSpawns = false
         }
 
         on<EntityEvent.SetItemSlot> {
@@ -138,12 +126,11 @@ object BloodCamp : Module(
             currentTickTime = 0
             firstSpawns = true
             moveTimeSeconds = null
-            startTime = null
         }
 
         on<RenderBossBarEvent> {
             if (!watcherBar || !DungeonUtils.inClear || bossBar.name.string != "§c§lThe Watcher") return@on
-            val amount = 12 + (DungeonUtils.floor?.floorNumber ?: 0)
+            val amount = 8 + (DungeonUtils.floor?.floorNumber ?: 0)
             bossBar.name = Component.literal(bossBar.progress.takeIf { it >= 0.05 }?.let { "${bossBar.name.string} ${(amount * it).roundToInt()}/$amount" } ?: return@on)
         }
 
@@ -192,7 +179,6 @@ object BloodCamp : Module(
 
     private var moveTimeSeconds: Float? = null
     private var currentTickTime = 0L
-    private var startTime: Long? = null
 
     private val renderDataMap = ConcurrentHashMap<ArmorStand, RenderEData>()
     private data class RenderEData(
@@ -257,6 +243,6 @@ object BloodCamp : Module(
         "ewogICJ0aW1lc3RhbXAiIDogMTU5ODk3NzI1OTM1NywKICAicHJvZmlsZUlkIiA6ICJlNzkzYjJjYTdhMmY0MTI2YTA5ODA5MmQ3Yzk5NDE3YiIsCiAgInByb2ZpbGVOYW1lIiA6ICJUaGVfSG9zdGVyX01hbiIsCiAgInNpZ25hdHVyZVJlcXVpcmVkIiA6IHRydWUsCiAgInRleHR1cmVzIiA6IHsKICAgICJTS0lOIiA6IHsKICAgICAgInVybCIgOiAiaHR0cDovL3RleHR1cmVzLm1pbmVjcmFmdC5uZXQvdGV4dHVyZS9jMTAwN2M1YjcxMTRhYmVjNzM0MjA2ZDRmYzYxM2RhNGYzYTBlOTlmNzFmZjk0OWNlZGFkYzk5MDc5MTM1YTBiIgogICAgfQogIH0KfQ=="
     )
 
-    private val BLOOD_START_REGEX = Regex("^\\[BOSS] The Watcher: (Congratulations, you made it through the Entrance\\.|Ah, you've finally arrived\\.|Ah, we meet again\\.\\.\\.|So you made it this far\\.\\.\\. interesting\\.|You've managed to scratch and claw your way here, eh\\?|I'm starting to get tired of seeing you around here\\.\\.\\.|Oh\\.\\. hello\\?|Things feel a little more roomy now, eh\\?)$")
+    private val BLOOD_START_REGEX = Regex("^\\[BOSS] The Watcher: (Congratulations, you made it through the Entrance\\.|Ah, you've finally arrived\\.|Ah, we meet again\\.\\.\\.|So you made it this far\\.\\.\\. interesting\\.|You've managed to scratch and claw your way here, eh\\?|I'm starting to get tired of seeing you around here\\.\\.\\.|Oh\\.\\. hello\\?|Things feel a little more roomy now, eh\\?|Ah, we meet again\\. As I foresaw\\.\\.\\.)$")
     private val BLOOD_MOVE_REGEX = Regex("^\\[BOSS] The Watcher: Let's see how you can handle this\\.$")
 }

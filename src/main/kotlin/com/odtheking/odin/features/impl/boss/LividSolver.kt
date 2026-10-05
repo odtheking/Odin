@@ -25,13 +25,13 @@ object LividSolver : Module(
 ) {
     private val hud by HUD("Invulnerability Timer", "Shows time remaining on Livid's invulnerability.") { example ->
         if (!example && (!DungeonUtils.inBoss || !DungeonUtils.isFloor(5) || invulnTime <= 0)) return@HUD 0 to 0
-        val time = if (example) 390 else invulnTime
+        val time = if (example) 340 else invulnTime
         val color = when {
             time > 260 -> "§a"
             time > 130 -> "§e"
             else -> "§c"
         }
-        textDim("${color}Livid: ${time}t ", 0, 0)
+        textDim("§bLivid: ${color}${time}t ", 0, 0)
     }
     private val highlightColor by ColorSetting("Highlight Color", Colors.MINECRAFT_LIGHT_PURPLE, true, desc = "Color of the highlight box around Livid.")
 
@@ -43,7 +43,7 @@ object LividSolver : Module(
     init {
         on<MessageEvent.Chat> {
             if (!DungeonUtils.inDungeons || !DungeonUtils.isFloor(5)) return@on
-            if (message.matches(lividStartRegex)) invulnTime = 390
+            if (message.matches(lividStartRegex)) invulnTime = 340
         }
 
         on<BlockUpdateEvent> {
@@ -65,8 +65,7 @@ object LividSolver : Module(
         }
 
         on<TickEvent.Server> {
-            if (!DungeonUtils.inBoss || !DungeonUtils.isFloor(5)) return@on
-            if (invulnTime > 0) invulnTime--
+            if (DungeonUtils.isFloor(5) && invulnTime >= 0) invulnTime--
         }
 
         on<LevelEvent.Load> {

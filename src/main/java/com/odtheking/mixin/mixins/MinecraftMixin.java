@@ -5,7 +5,6 @@ import com.odtheking.odin.events.BlockClickEvent;
 import com.odtheking.odin.events.BlockInteractEvent;
 import com.odtheking.odin.events.EntityInteractEvent;
 import com.odtheking.odin.features.impl.boss.TerminalSolver;
-import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
@@ -48,7 +47,6 @@ public abstract class MinecraftMixin {
 
     @ModifyExpressionValue(method = "resizeGui", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/OptionInstance;get()Ljava/lang/Object;"))
     private Object modifyGuiScaleValue(Object original) {
-        if (TerminalUtils.getCurrentTerm() != null && TerminalSolver.getTermSize() != (Integer) original) return TerminalSolver.getTermSize();
-        return original;
+        return TerminalSolver.getOverridesGuiScale() ? TerminalSolver.getTermSize() : original;
     }
 }

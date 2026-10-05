@@ -10,7 +10,6 @@ import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.render.textDim
-import com.odtheking.odin.utils.skyblock.MORT_REGEX
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.toFixed
 
@@ -85,22 +84,6 @@ object TickTimers : Module(
         else 0 to 0
     }
 
-    private var secretsCounter = 0
-
-    private val secretsHud by HUD("Secrets Hud", "Displays a timer for secret spawn ticks.") {
-        if (it) textDim(formatTimer(15, 20, "§7Secret:", overrideColor = "§c"), 0, 0, Colors.MINECRAFT_DARK_RED)
-        else if (DungeonUtils.openRoomCount != 0 && !DungeonUtils.inBoss) {
-            val time = 20 - secretsCounter % 20
-            val color = when {
-                time < 5 -> "§a"
-                time < 10 -> "§6"
-                else -> "§c"
-            }
-            textDim(formatTimer(time, 20, "§7Secret:", overrideColor = color), 0, 0, Colors.MINECRAFT_DARK_RED)
-        }
-        else 0 to 0
-    }
-
     private var fireFreezeTime = -1
 
     private val fireFreezeHud by HUD("Fire Freeze Hud", "Displays a timer for when to use fire freeze in M3."){
@@ -114,7 +97,6 @@ object TickTimers : Module(
     init {
         on<MessageEvent.Chat> {
             when {
-                message.matches(MORT_REGEX) -> secretsCounter = 0
                 message.matches(necronRegex) -> necronTime = 60
                 message.matches(goldorRegex) -> goldorTickTime = 60
                 message.matches(coreOpeningRegex) -> {
@@ -140,8 +122,6 @@ object TickTimers : Module(
         }
 
         on<TickEvent.Server> {
-            if (!DungeonUtils.inDungeons) return@on
-            secretsCounter++
             if (!DungeonUtils.inBoss) return@on
             if (goldorTickTime == 0 && goldorStartTime <= 0 && goldorHud.enabled) goldorTickTime = 60
             if (goldorStartTime >= 0) goldorStartTime--
@@ -163,7 +143,6 @@ object TickTimers : Module(
             pyTickTime = -1
             pyTriggered = false
             necronTime = -1
-            secretsCounter = 0
             stormTick = -1
             fireFreezeTime = -1
         }

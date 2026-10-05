@@ -75,10 +75,23 @@ val mainCommand = Commodore("odin", "od") {
         }
     }
 
+    literal("toggle") {
+        literal("module").executable {
+            param("moduleName") {
+                suggests { ModuleManager.modules.keys.map { it.replace(" ", "_") } }
+            }
+
+            runs { moduleName: String ->
+                val module = ModuleManager.modules[moduleName.replace("_", " ")] ?: throw SyntaxException("Module not found.")
+                module.toggle()
+                modMessage("§aModule §f${module.name} §ahas been ${if (module.enabled) "enabled" else "disabled"}.")
+            }
+        }
+    }
+
     literal("reset") {
         literal("module").executable {
             param("moduleName") {
-                // keys for modules are already lowercase
                 suggests { ModuleManager.modules.keys.map { it.replace(" ", "_") } }
             }
 

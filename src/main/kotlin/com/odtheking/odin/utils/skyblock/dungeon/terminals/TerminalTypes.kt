@@ -27,7 +27,7 @@ enum class TerminalTypes(
     },
     NUMBERS("Click in order!", Regex("^Click in order!$"), 36) {
         override fun getSimulator() = NumbersSim
-        private val gui = simpleTermGui(rows = 2, cols = 7, startRow = 1, startCol = 1)
+        private val gui = simpleTermGui(rows = 2, cols = 5, startRow = 1, startCol = 2)
         override fun getGUI() = gui
     },
     STARTS_WITH("What starts with: \"*\"?", Regex("^What starts with: '(\\w)'\\?$"), 45) {

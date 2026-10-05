@@ -14,9 +14,9 @@ object NumbersSim : TermSimGUI(
     TerminalTypes.NUMBERS.termName, TerminalTypes.NUMBERS.windowSize
 ) {
     override fun create() {
-        val used = (1..14).shuffled().toMutableList()
+        val used = (1..10).shuffled().toMutableList()
         setSlots {
-            if (floor(it.index / 9f) in 1f..2f && it.index % 9 in 1..7) ItemStack(Items.STAINED_GLASS_PANE.pick(DyeColor.RED), used.first()).apply { set(DataComponents.CUSTOM_NAME, Component.literal("§a${used.removeFirst()}")) }
+            if (floor(it.index / 9f) in 1f..2f && it.index % 9 in 2..6) ItemStack(Items.STAINED_GLASS_PANE.pick(DyeColor.RED), used.first()).apply { set(DataComponents.CUSTOM_NAME, Component.literal("§a${used.removeFirst()}")) }
             else blackPane
         }
     }
