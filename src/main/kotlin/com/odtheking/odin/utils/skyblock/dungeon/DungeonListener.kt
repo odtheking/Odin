@@ -117,7 +117,8 @@ object DungeonListener {
                 }?.deaths?.inc()
             }
 
-            when (partyMessageRegex.find(message)?.groupValues?.get(1)?.lowercase() ?: return@on) {
+            val partyMatch = partyMessageRegex.find(message) ?: return@on
+            when (partyMatch.groupValues[2].lowercase()) {
                 "mimic killed", "mimic slain", "mimic killed!", "mimic dead", "mimic dead!", ->
                     if (DungeonUtils.isFloor(6, 7)) dungeonStats.mimicKilled = true
 
@@ -125,7 +126,7 @@ object DungeonListener {
                     dungeonStats.princeKilled = true
 
                 "bat killed", "bat slain", "bat killed!", "bat dead", "bat dead!" ->
-                    dungeonStats.batKilled = true
+                    dungeonStats.batKillers.add(partyMatch.groupValues[1])
 
                 "blaze done!", "blaze done", "blaze puzzle solved!" ->
                     puzzles.find { it == Puzzle.BLAZE }.let { it?.status = PuzzleStatus.Completed }
@@ -204,7 +205,7 @@ object DungeonListener {
     private val secretCountRegex = Regex("^ Secrets Found: (\\d+)$")
     private val openedRoomsRegex = Regex("^ Opened Rooms: (\\d+)$")
     private val floorRegex = Regex("The Catacombs \\((\\w+)\\)$")
-    private val partyMessageRegex = Regex("^Party > .*?: (.+)$")
+    private val partyMessageRegex = Regex("^Party > (?:\\[[^]]+] )*(\\w{1,16}): (.+)$")
     private val puzzleCountRegex = Regex("^Puzzles: \\((\\d+)\\)$")
     private val deathsRegex = Regex("^Team Deaths: (\\d+)$")
     private val cryptRegex = Regex("^ Crypts: (\\d+)$")
@@ -221,11 +222,13 @@ object DungeonListener {
         var elapsedTime: String = "0s",
         private var _mimicKilled: Boolean = false,
         var princeKilled: Boolean = false,
-        var batKilled: Boolean = false,
+        val batKillers: MutableSet<String> = mutableSetOf(),
         var doorOpener: String = "Unknown",
         var bloodDone: Boolean = false,
         var puzzleCount: Int = 0,
     ) {
+        val batKilled: Int get() = batKillers.size
+
         var mimicKilled: Boolean
             get() = _mimicKilled
             set(value) {

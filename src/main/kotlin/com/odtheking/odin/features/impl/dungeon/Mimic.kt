@@ -37,9 +37,10 @@ object Mimic : Module(
                     DungeonListener.dungeonStats.princeKilled = true
                 }
 
-                !DungeonUtils.batKilled && message.matches(batRegex) -> {
+                message.matches(batRegex) -> {
                     if (batMessageToggle) sendCommand("pc Bat Killed!")
-                    DungeonListener.dungeonStats.batKilled = true
+                    mc.player?.name?.string?.let { DungeonListener.dungeonStats.batKillers.add(it) }
+                    DungeonUtils.updateScore()
                 }
             }
         }
