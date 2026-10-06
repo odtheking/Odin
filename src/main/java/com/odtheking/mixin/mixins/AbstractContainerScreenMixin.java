@@ -24,7 +24,7 @@ public class AbstractContainerScreenMixin {
         if (new GuiEvent.RenderSlot((Screen) (Object) this, graphics, slot).postAndCatch()) ci.cancel();
     }
 
-    @Inject(method = "slotClicked", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "slotClicked(Lnet/minecraft/world/inventory/Slot;IILnet/minecraft/world/inventory/ContainerInput;)V", at = @At("HEAD"), cancellable = true)
     private void onMouseClickedSlot(Slot slot, int slotId, int buttonNum, ContainerInput containerInput, CallbackInfo ci) {
         if (new GuiEvent.SlotClick((Screen) (Object) this, slotId, buttonNum).postAndCatch()) ci.cancel();
     }

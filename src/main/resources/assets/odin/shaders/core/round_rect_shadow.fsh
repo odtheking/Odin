@@ -1,9 +1,10 @@
 #version 330
+#extension GL_ARB_separate_shader_objects : require
 
-#moj_import <minecraft:dynamictransforms.glsl>
-#moj_import <odin:round_rect.glsl>
+#include <minecraft:dynamictransforms.glsl>
+#include <odin:round_rect.glsl>
 
-out vec4 fragColor;
+layout(location = 0) out vec4 fragColor;
 
 void main() {
     float coverage = shadowCoverage();
