@@ -49,6 +49,7 @@ open class HudElement(
             val guiScale = mc.window.guiScale.coerceAtLeast(1)
             x /= guiScale
             y /= guiScale
+            scale = (scale / guiScale).coerceIn(MIN_SCALE, MAX_SCALE)
         }
 
         x = x.coerceIn(0, (mc.window.guiScaledWidth - scaledWidth).coerceAtLeast(0))
