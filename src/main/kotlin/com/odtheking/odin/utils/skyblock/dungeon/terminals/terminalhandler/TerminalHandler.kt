@@ -12,6 +12,7 @@ import com.odtheking.odin.features.impl.boss.TerminalSolver.shouldFirstClickProt
 import com.odtheking.odin.features.impl.boss.termsim.TermSimGUI
 import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.clickSlot
+import com.odtheking.odin.utils.modMessage
 import com.odtheking.odin.utils.skyblock.Island
 import com.odtheking.odin.utils.skyblock.LocationUtils
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalTypes
@@ -51,20 +52,20 @@ abstract class TerminalHandler(val type: TerminalTypes) {
 
     open fun click(slotIndex: Int, button: Int, simulateClick: Boolean) {
         if (!canClick(slotIndex, button) || shouldProtect()) return
-
-        val button = if (button == InputConstants.MOUSE_BUTTON_RIGHT && type == TerminalTypes.RUBIX) 1 else InputConstants.MOUSE_BUTTON_MIDDLE
-        clickedSlots.add(slotIndex to button)
+        //TODO better impl
+        val mappedButton = if (button == 1 && type == TerminalTypes.RUBIX) 1 else InputConstants.MOUSE_BUTTON_MIDDLE
+        clickedSlots.add(slotIndex to mappedButton)
         lastClickTime = System.currentTimeMillis()
 
-        if (simulateClick) simulateClick(slotIndex, button)
-        TerminalEvent.Click(this, slotIndex, button, solution).postAndCatch()
+        if (simulateClick) simulateClick(slotIndex, mappedButton)
+        TerminalEvent.Click(this, slotIndex, mappedButton, solution).postAndCatch()
         mc.gui.screen()?.let { screen ->
             if (screen is TermSimGUI) {
-                screen.clickIndex(slotIndex, button)
+                screen.clickIndex(slotIndex, mappedButton)
                 return
             }
         }
-        mc.player?.clickSlot(slotIndex, button, if (button == InputConstants.MOUSE_BUTTON_MIDDLE) ContainerInput.CLONE else ContainerInput.PICKUP)
+        mc.player?.clickSlot(slotIndex, mappedButton, if (mappedButton == InputConstants.MOUSE_BUTTON_MIDDLE) ContainerInput.CLONE else ContainerInput.PICKUP)
     }
 
     open fun canClick(slotIndex: Int, button: Int): Boolean = slotIndex in solution

@@ -44,7 +44,8 @@ class RubixHandler : TerminalHandler(TerminalTypes.RUBIX) {
         get() = ((item as? BlockItem)?.block as? StainedGlassPaneBlock)?.color
 
     override fun canClick(slotIndex: Int, button: Int): Boolean =
-        slotIndex in solution && (button == InputConstants.MOUSE_BUTTON_RIGHT) == (slotIndex in rightClickSlots)
+        //TODO better impl
+        slotIndex in solution && (button == 1) == (slotIndex in rightClickSlots)
 
     private fun dist(pane: Int, most: Int): Int =
         if (pane > most) (most + rubixColorOrder.size) - pane else most - pane
