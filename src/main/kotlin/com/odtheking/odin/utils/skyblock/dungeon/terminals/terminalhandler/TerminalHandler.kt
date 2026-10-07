@@ -12,7 +12,6 @@ import com.odtheking.odin.features.impl.boss.TerminalSolver.shouldFirstClickProt
 import com.odtheking.odin.features.impl.boss.termsim.TermSimGUI
 import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.clickSlot
-import com.odtheking.odin.utils.modMessage
 import com.odtheking.odin.utils.skyblock.Island
 import com.odtheking.odin.utils.skyblock.LocationUtils
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalTypes
