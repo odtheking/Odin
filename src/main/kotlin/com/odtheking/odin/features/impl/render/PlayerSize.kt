@@ -20,7 +20,6 @@ object PlayerSize : Module(
     name = "Player Size",
     description = "Changes the size of the player."
 ) {
-    private val devSize by BooleanSetting("Dev Size", true, desc = "Toggles client side dev size for your own player.").withDependency { isRandom }
     private val sizeX by NumberSetting("Size X", 1f, -1.0..3.0, 0.1, desc = "X scale of the dev size.")
     private val sizeY by NumberSetting("Size Y", 1f, -1.0..3.0, 0.1, desc = "Y scale of the dev size.")
     private val sizeZ by NumberSetting("Size Z", 1f, -1.0..3.0, 0.1, desc = "Z scale of the dev size.")
@@ -54,19 +53,18 @@ object PlayerSize : Module(
     )
 
     @JvmStatic
-    fun preRenderCallbackScaleHook(entityRenderer: AvatarRenderState, matrix: PoseStack) {
-        val gameProfile = entityRenderer.getData(GAME_PROFILE_KEY) ?: return
-
-        if (gameProfile.name == mc.player?.gameProfile?.name && !devSize) {
-            if (sizeY < 0) matrix.translate(0f, sizeY * 2, 0f)
-            matrix.scale(sizeX, sizeY, sizeZ)
+    fun preRenderCallbackScaleHook(avatarRenderState: AvatarRenderState,poseStack: PoseStack) {
+        val gameProfile = avatarRenderState.getData(GAME_PROFILE_KEY) ?: return
+        if (gameProfile.name == mc.player?.gameProfile?.name && enabled) {
+            if (sizeY < 0) poseStack.translate(0f, sizeY * 2, 0f)
+            poseStack.scale(sizeX, sizeY, sizeZ)
             return
         }
 
         val random = randoms[gameProfile.id] ?: return
 
-        if (random.scale[1] < 0) matrix.translate(0f, random.scale[1] * 2, 0f)
-        matrix.scale(random.scale[0], random.scale[1], random.scale[2])
+        if (random.scale[1] < 0) poseStack.translate(0f, random.scale[1] * 2, 0f)
+        poseStack.scale(random.scale[0], random.scale[1], random.scale[2])
     }
 
     suspend fun updateCustomProperties(): String {
