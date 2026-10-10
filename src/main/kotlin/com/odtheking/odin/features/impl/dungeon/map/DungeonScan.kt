@@ -98,6 +98,11 @@ object DungeonScan {
         }
     }
 
+    fun refresh() {
+        updateViewableDoors()
+        SpecialColumn.update()
+    }
+
     fun updateViewableDoors() {
         pathHints.clear()
         for ((_, door) in doors) {

@@ -5,6 +5,7 @@ import com.odtheking.odin.events.MapUpdateEvent
 import com.odtheking.odin.events.RoomEnterEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.impl.dungeon.map.tile.DungeonRoom
+import com.odtheking.odin.features.impl.dungeon.map.tile.RoomShape
 import com.odtheking.odin.features.impl.dungeon.map.tile.RoomType
 import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.equalsOneOf
@@ -34,18 +35,18 @@ object SpecialColumn {
     fun update() {
         val size = if (DungeonScan.startX == 5) 6 else 5
 
-        for (tile in DungeonScan.pathHints) {
-            if (tile.position.x == column) {
-                if (tile.room?.isKnown1x1 == false) {
-                    tile.room?.isKnown1x1 = true
-                    discovered1x1s++
-                    columnRoomCount++
-                }
-            } else if (isVisibleFromAllSides(tile.position.x, tile.position.z, size)) {
-                if (tile.room?.isKnown1x1 == false) {
-                    tile.room?.isKnown1x1 = true
-                    discovered1x1s++
-                }
+        for ((position, room) in DungeonScan.tiles) {
+            if (room == null || room.isKnown1x1 || room.isViewable) continue
+            if (room.data?.shape.let { it != null && it != RoomShape.OneByOne }) continue
+            if (!touchesViewableRoom(position.x, position.z, room)) continue
+
+            if (position.x == column) {
+                room.isKnown1x1 = true
+                discovered1x1s++
+                columnRoomCount++
+            } else if (isVisibleFromAllSides(position.x, position.z, size, room)) {
+                room.isKnown1x1 = true
+                discovered1x1s++
             }
         }
         DungeonScan.rooms.filter { it.type.equalsOneOf(RoomType.CHAMPION, RoomType.TRAP, RoomType.PUZZLE) && it.isViewable }.forEach { openedSpecialRooms.add(it) }
@@ -55,19 +56,25 @@ object SpecialColumn {
             else if (column != -1) countDiscoveredInColumn(size) else 0
     }
 
-    private fun checkSide(nx: Int, nz: Int, gridSize: Int): Boolean {
+    private fun touchesViewableRoom(x: Int, z: Int, self: DungeonRoom): Boolean =
+        DungeonScan.directions.any { (dx, dz) ->
+            val nx = x + dx
+            val nz = z + dz
+            nx in 0..5 && nz in 0..5 && DungeonScan.tiles[nx + nz * 6].room?.let { it !== self && it.isViewable } == true
+        }
+
+    private fun checkSide(nx: Int, nz: Int, gridSize: Int, self: DungeonRoom): Boolean {
         if (nx !in 0 until gridSize || nz !in 0 until 6) return true
 
         val room = DungeonScan.tiles.getOrNull(nx + nz * 6)?.room ?: return false
-
-        return room.isViewable || DungeonScan.pathHints.any { it.position.x == nx && it.position.z == nz }
+        return room !== self && room.isViewable
     }
 
-    private fun isVisibleFromAllSides(x: Int, z: Int, gridSize: Int): Boolean {
-        val right = checkSide(x + 1, z, gridSize)
-        val left = checkSide(x - 1, z, gridSize)
-        val bottom = checkSide(x, z + 1, gridSize)
-        val top = checkSide(x, z - 1, gridSize)
+    private fun isVisibleFromAllSides(x: Int, z: Int, gridSize: Int, self: DungeonRoom): Boolean {
+        val right = checkSide(x + 1, z, gridSize, self)
+        val left = checkSide(x - 1, z, gridSize, self)
+        val bottom = checkSide(x, z + 1, gridSize, self)
+        val top = checkSide(x, z - 1, gridSize, self)
 
         val allKnown = right && left && bottom && top
 

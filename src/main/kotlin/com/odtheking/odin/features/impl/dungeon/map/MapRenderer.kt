@@ -69,33 +69,46 @@ fun GuiGraphicsExtractor.renderDoors(doors: Collection<DungeonDoor>) {
     }
 }
 
-fun GuiGraphicsExtractor.renderPathHints(pathHints: Collection<DungeonTile>) {
+fun GuiGraphicsExtractor.renderPathHints(pathHints: Collection<DungeonTile>, rooms: Collection<DungeonRoom>) {
     for ((position, room) in pathHints) {
         if (room?.walkedInto == true) continue
-        val (x, y) = position.x * MAP_ROOM_GAP to position.z * MAP_ROOM_GAP
 
         val colors = if (room?.type == RoomType.BLOOD) arrayOf(DungeonMap.bloodRoomColor.darker(0.5f))
         else if (!DungeonMap.disablePred && room?.isKnown1x1 == true) SpecialColumn.colorGuessForUnknown(position.x)
         else arrayOf(DungeonMap.unknownRoomColor)
 
-        when (colors.size) {
-            1 -> fill(x, y, x + MAP_ROOM_SIZE, y + MAP_ROOM_SIZE, colors[0].rgba)
-
-            2 -> {
-                val half = MAP_ROOM_SIZE / 2
-                fill(x, y, x + half, y + MAP_ROOM_SIZE, colors[0].darker(0.5f).rgba)
-                fill(x + half, y, x + MAP_ROOM_SIZE, y + MAP_ROOM_SIZE, colors[1].darker(0.5f).rgba)
-            }
-
-            3 -> {
-                val third = MAP_ROOM_SIZE / 3
-                fill(x, y, x + third, y + MAP_ROOM_SIZE, colors[0].darker(0.5f).rgba)
-                fill(x + third, y, x + third * 2, y + MAP_ROOM_SIZE, colors[1].darker(0.5f).rgba)
-                fill(x + third * 2, y, x + MAP_ROOM_SIZE, y + MAP_ROOM_SIZE, colors[2].darker(0.5f).rgba)
-            }
-        }
-        renderIcon(IVec2(x, y), question)
+        renderGuess(position, colors)
     }
+
+    if (DungeonMap.disablePred) return
+    for (room in rooms) {
+        if (!room.isKnown1x1 || room.isViewable) continue
+        for (position in room.tiles) {
+            if (pathHints.any { it.position == position }) continue
+            renderGuess(position, SpecialColumn.colorGuessForUnknown(position.x))
+        }
+    }
+}
+
+private fun GuiGraphicsExtractor.renderGuess(position: IVec2, colors: Array<Color>) {
+    val (x, y) = position.x * MAP_ROOM_GAP to position.z * MAP_ROOM_GAP
+    when (colors.size) {
+        1 -> fill(x, y, x + MAP_ROOM_SIZE, y + MAP_ROOM_SIZE, colors[0].rgba)
+
+        2 -> {
+            val half = MAP_ROOM_SIZE / 2
+            fill(x, y, x + half, y + MAP_ROOM_SIZE, colors[0].darker(0.5f).rgba)
+            fill(x + half, y, x + MAP_ROOM_SIZE, y + MAP_ROOM_SIZE, colors[1].darker(0.5f).rgba)
+        }
+
+        3 -> {
+            val third = MAP_ROOM_SIZE / 3
+            fill(x, y, x + third, y + MAP_ROOM_SIZE, colors[0].darker(0.5f).rgba)
+            fill(x + third, y, x + third * 2, y + MAP_ROOM_SIZE, colors[1].darker(0.5f).rgba)
+            fill(x + third * 2, y, x + MAP_ROOM_SIZE, y + MAP_ROOM_SIZE, colors[2].darker(0.5f).rgba)
+        }
+    }
+    renderIcon(IVec2(x, y), question)
 }
 
 fun GuiGraphicsExtractor.renderIcon(pos: IVec2, identifier: Identifier) {
@@ -201,9 +214,9 @@ fun GuiGraphicsExtractor.renderPlayers() {
 
 fun GuiGraphicsExtractor.renderMap(rooms: Collection<DungeonRoom>, doors: Collection<DungeonDoor>, pathHints: Collection<DungeonTile>) {
     renderDoors(doors)
-    for (room in rooms) if (room.isViewable) fillRoom(room, roomTypeColor(room.type).rgba)
+    for (room in rooms) if (room.isViewable) fillRoom(room, (if (room.mapSeen && room.type != RoomType.ENTRANCE) roomTypeColor(room.type) else DungeonMap.pendingRoomColor).rgba)
     for (room in rooms) renderRoomText(room)
-    renderPathHints(pathHints)
+    renderPathHints(pathHints, rooms)
 }
 
 fun buildExampleRooms(): List<DungeonRoom> {
@@ -213,6 +226,7 @@ fun buildExampleRooms(): List<DungeonRoom> {
             this.rotation = rotation
             this.checkmark = checkmark
             this.walkedInto = walkedInto
+            this.mapSeen = true
         }
 
     return listOf(

@@ -22,45 +22,56 @@ import com.odtheking.odin.utils.render.drawText
 import com.odtheking.odin.utils.render.drawWireFrameBox
 import com.odtheking.odin.utils.sendCommand
 import com.odtheking.odin.utils.setClipboardContent
-import net.minecraft.core.BlockPos
 import net.minecraft.util.Mth
 import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.Vec3
+import kotlin.math.round
+import kotlin.math.roundToInt
 
 enum class Trigger { VISUAL, PROXIMITY, CLICK }
 
+fun Double.prettyCoord(): String {
+    val rounded = (this * 100).roundToInt() / 100.0
+    return if (rounded == round(rounded)) rounded.toLong().toString() else rounded.toString()
+}
+
 class Waypoint(
     val area: String = "",
-    val blockPos: BlockPos = BlockPos.ZERO,
-    val endPos: BlockPos = blockPos,
+    val blockPos: Vec3 = Vec3.ZERO,
+    val endPos: Vec3 = blockPos,
     val label: String = "",
     val color: Color = Colors.minecraftColors.random().copy(),
     val trigger: Trigger = Trigger.VISUAL,
     val command: String? = null,
-    val radius: Int? = null,
+    val radius: Float? = null,
     var enabled: Boolean = true,
 ) {
     @delegate:Transient
     val id by lazy {
-        val min = BlockPos(minOf(blockPos.x, endPos.x), minOf(blockPos.y, endPos.y), minOf(blockPos.z, endPos.z))
-        val max = BlockPos(maxOf(blockPos.x, endPos.x), maxOf(blockPos.y, endPos.y), maxOf(blockPos.z, endPos.z))
-        "$area:${trigger.ordinal}:${min.asLong().toString(36)}-${max.asLong().toString(36)}"
+        val min = Vec3(minOf(blockPos.x, endPos.x), minOf(blockPos.y, endPos.y), minOf(blockPos.z, endPos.z))
+        val max = Vec3(maxOf(blockPos.x, endPos.x), maxOf(blockPos.y, endPos.y), maxOf(blockPos.z, endPos.z))
+        "$area:${trigger.ordinal}:${min.x.prettyCoord()},${min.y.prettyCoord()},${min.z.prettyCoord()}-${max.x.prettyCoord()},${max.y.prettyCoord()},${max.z.prettyCoord()}"
     }
 
     @delegate:Transient
     val box by lazy {
-        radius?.let { AABB(blockPos).inflate(it.toDouble(), 0.0, it.toDouble()) } ?: AABB.encapsulatingFullBlocks(blockPos, endPos)
+        val pad = if (radius != null) 1.0 else 0.0
+        val base = AABB(
+            minOf(blockPos.x, endPos.x), minOf(blockPos.y, endPos.y), minOf(blockPos.z, endPos.z),
+            maxOf(blockPos.x, endPos.x) + pad, maxOf(blockPos.y, endPos.y) + pad, maxOf(blockPos.z, endPos.z) + pad,
+        )
+        radius?.let { base.inflate(it.toDouble(), 0.0, it.toDouble()) } ?: base
     }
 
     @delegate:Transient val center by lazy { box.center }
-    @delegate:Transient val radiusF by lazy { (radius ?: 0).toFloat() }
-    @delegate:Transient private val radiusSq by lazy { Mth.square((radius ?: 0).toDouble()) }
-    @delegate:Transient val cylinderBase by lazy { Vec3(center.x, blockPos.y.toDouble(), center.z) }
+    @delegate:Transient val radiusF by lazy { radius ?: 0f }
+    @delegate:Transient private val radiusSq by lazy { Mth.square((radius ?: 0f).toDouble()) }
+    @delegate:Transient val cylinderBase by lazy { Vec3(center.x, box.minY, center.z) }
     @delegate:Transient val labelPos by lazy { Vec3(center.x, box.maxY + 0.5, center.z) }
 
     fun intersects(hitbox: AABB): Boolean {
         if (radius == null) return box.intersects(hitbox)
-        if (Mth.floor(hitbox.minY) != blockPos.y) return false
+        if (hitbox.minY < box.minY || hitbox.minY >= box.maxY) return false
         val dx = Mth.clamp(center.x, hitbox.minX, hitbox.maxX) - center.x
         val dz = Mth.clamp(center.z, hitbox.minZ, hitbox.maxZ) - center.z
         return Mth.lengthSquared(dx, dz) <= radiusSq
@@ -179,6 +190,14 @@ object Waypoints : Module(
     fun remove(wp: Waypoint) {
         waypoints.remove(wp)
         changed()
+    }
+
+    fun clear(area: String? = null): Int {
+        val removed = waypoints.count { area == null || it.area == area }
+        if (removed == 0) return 0
+        waypoints.removeAll { area == null || it.area == area }
+        changed()
+        return removed
     }
 
     fun exportToClipboard(): String {
