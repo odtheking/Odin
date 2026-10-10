@@ -62,8 +62,7 @@ object TerminalTimes : Module(
                 else completed = Pair(current.toIntOrNull() ?: return@on, total.toIntOrNull() ?: return@on)
             }
         }
-        
-        
+
         on<MessageEvent.ModifyChat> {
             if (terminalSplits) terminalCompleteRegex.find(message)?.destructured?.let { (name, activated, type, current, total) ->
                 component = Component.literal("§6$name §a$activated a $type! (§c${current}§a/${total}) §8(§7${sectionTimer.seconds}s §8| §7${phaseTimer.seconds}s§8)")
