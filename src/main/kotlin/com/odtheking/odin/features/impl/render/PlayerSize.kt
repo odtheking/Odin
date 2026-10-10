@@ -53,7 +53,7 @@ object PlayerSize : Module(
     )
 
     @JvmStatic
-    fun preRenderCallbackScaleHook(avatarRenderState: AvatarRenderState,poseStack: PoseStack) {
+    fun preRenderCallbackScaleHook(avatarRenderState: AvatarRenderState, poseStack: PoseStack) {
         val gameProfile = avatarRenderState.getData(GAME_PROFILE_KEY) ?: return
         if (gameProfile.name == mc.player?.gameProfile?.name && enabled) {
             if (sizeY < 0) poseStack.translate(0f, sizeY * 2, 0f)
