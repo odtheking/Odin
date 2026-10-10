@@ -40,7 +40,6 @@ object WitherDragons : Module(
     private val dragonTracers by BooleanSetting("Target Tracer", true, desc = "Draws a line to priority spawning dragon.")
 
     private val dragonAlerts by DropdownSetting("Dragon Alerts Dropdown", desc = "Shows chat alert settings for dragon deaths and spawns.")
-    private val sendNotification by BooleanSetting("Send Dragon Confirmation", true, desc = "Sends a confirmation message when a dragon dies.").withDependency { dragonAlerts }
     val dragonTitle by BooleanSetting("Dragon Title", true, desc = "Displays a title for spawning dragons.").withDependency { dragonAlerts }
     val sendTime by BooleanSetting("Send Dragon Time Alive", true, desc = "Sends a message when a dragon dies with the time it was alive.").withDependency { dragonAlerts }
     val sendSpawned by BooleanSetting("Send Dragon Spawned", true, desc = "Sends a message when a dragon has spawned.").withDependency { dragonAlerts }
@@ -48,7 +47,6 @@ object WitherDragons : Module(
 
     private val dragonHealth by BooleanSetting("Dragon Health", true, desc = "Displays the health of M7 dragons.")
 
-    val witherKingRegex = Regex("^\\[BOSS] Wither King: (Oh, this one hurts!|I have more of those\\.|My soul is disposable\\.)$")
     val spawnOrder = mutableListOf<WitherDragonsEnum>()
     val priorityDragon: WitherDragonsEnum? get() = spawnOrder.firstOrNull()
     var currentTick = 0L
@@ -75,16 +73,6 @@ object WitherDragons : Module(
         on<BlockUpdateEvent> {
             if (DungeonUtils.getF7Phase() == M7Phases.P5 && updated.isAir)
                 WitherDragonsEnum.entries.find { it.statuePos == pos }?.setDead(false)
-        }
-
-        on<MessageEvent.Chat> {
-            if (DungeonUtils.getF7Phase() != M7Phases.P5 || !witherKingRegex.matches(message)) return@on
-            (DragonCheck.lastDragonDeath ?: WitherDragonsEnum.entries.find { it.state != WitherDragonState.DEAD })
-                ?.apply {
-                    if (sendNotification) modMessage("§${colorCode}${name} dragon counts.")
-                    if (state != WitherDragonState.DEAD) setDead(false)
-                    DragonCheck.lastDragonDeath = null
-                }
         }
 
         on<TickEvent.Server> {

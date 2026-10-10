@@ -11,7 +11,6 @@ import java.util.*
 object DragonCheck {
 
     val dragonHealthMap = mutableMapOf<UUID, Pair<EnderDragon, Float>>()
-    var lastDragonDeath: WitherDragonsEnum? = null
 
     fun dragonUpdate(event: EntityEvent.SetData) {
         val entity = event.entity as? EnderDragon ?: return

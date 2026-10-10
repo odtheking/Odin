@@ -1,6 +1,5 @@
 package com.odtheking.odin.features.impl.boss
 
-import com.odtheking.odin.features.impl.boss.DragonCheck.lastDragonDeath
 import com.odtheking.odin.features.impl.boss.WitherDragons.currentTick
 import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.Colors
@@ -50,7 +49,6 @@ enum class WitherDragonsEnum(
     fun setDead(realTime: Boolean) {
         state = WitherDragonState.DEAD
         entityUUID = null
-        lastDragonDeath = this
 
         WitherDragons.spawnOrder.remove(this)
 
@@ -78,7 +76,6 @@ enum class WitherDragonsEnum(
                 it.spawnedTime = 0
             }
             WitherDragons.spawnOrder.clear()
-            lastDragonDeath = null
         }
     }
 }
