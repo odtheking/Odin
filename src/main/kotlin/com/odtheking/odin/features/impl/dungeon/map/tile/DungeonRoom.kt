@@ -27,6 +27,7 @@ class DungeonRoom(var type: RoomType, initialPosition: IVec2, var data: RoomData
     var checkmark: MapCheckmark = MapCheckmark.UNDISCOVERED
 
     var isKnown1x1: Boolean = false
+    var mapSeen: Boolean = false
 
     var center: IVec2? = null
         private set

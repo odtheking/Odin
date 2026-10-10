@@ -197,6 +197,8 @@ object MapScan {
             }
         }
 
+        room.mapSeen = true
+
         for (index in segments) {
             val roomColor = roomColors[index]
             val centerColor = centerColors[index]

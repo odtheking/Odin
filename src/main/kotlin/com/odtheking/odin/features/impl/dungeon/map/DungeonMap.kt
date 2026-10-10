@@ -40,6 +40,7 @@ object DungeonMap : Module(
     val entranceRoomColor by ColorSetting("Entrance Room", Color(20, 133, 0), true, desc = "Color of entrance rooms.").withDependency { roomDropdown }
     val fairyRoomColor by ColorSetting("Fairy Room", Color(224, 0, 255), true, desc = "Color of fairy rooms.").withDependency { roomDropdown }
     val championRoomColor by ColorSetting("Champion Room", Color(254, 223, 0), true, desc = "Color of champion rooms.").withDependency { roomDropdown }
+    val pendingRoomColor by ColorSetting("Pending Room", Color(55, 65, 90), true, desc = "Color of rooms you have entered that the map scan has not reported yet (no doors or map info).").withDependency { roomDropdown }
     val unknownRoomColor by ColorSetting("Unknown Room", Color(40, 40, 40), true, desc = "Color of unknown rooms hinted by a door with no discovered room on the other side.").withDependency { roomDropdown }
 
     private val doorDropdown by DropdownSetting("Door Settings", desc = "Shows color settings for the different door types.")

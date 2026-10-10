@@ -132,6 +132,8 @@ object WorldScan {
             room.data = data
             room.type = data.type
         }
+
+        mc.execute { DungeonScan.refresh() }
     }
 
     private val stringBuilder = StringBuilder(1024)
