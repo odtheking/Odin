@@ -39,36 +39,36 @@ object PetKeybinds : Module(
 
     init {
         on<ScreenEvent.MouseClick> {
-            if (screen is AbstractContainerScreen<*> && onClick(screen, click.button())) cancel()
+            if (screen is AbstractContainerScreen<*> && onClick(screen, InputConstants.Type.MOUSE.getOrCreate(click.button()))) cancel()
         }
 
         on<ScreenEvent.KeyPress> {
-            if (screen is AbstractContainerScreen<*> && onClick(screen, input.key)) cancel()
+            if (screen is AbstractContainerScreen<*> && onClick(screen, InputConstants.getKey(input))) cancel()
         }
     }
 
-    private fun onClick(screen: AbstractContainerScreen<*>, keyCode: Int): Boolean {
+    private fun onClick(screen: AbstractContainerScreen<*>, key: InputConstants.Key): Boolean {
         val (current, total) = petsRegex.find(screen.title.string)?.destructured?.let {
             (it.component1().toIntOrNull() ?: 1) to (it.component2().toIntOrNull() ?: 1)
         } ?: return false
 
-        var index = when (keyCode) {
-            nextPageKeybind.value -> if (current < total) 53 else return false.also { modMessage("§cYou are already on the last page.") }
-            previousPageKeybind.value -> if (current > 1) 45 else return false.also { modMessage("§cYou are already on the first page.") }
-            unequipKeybind.value ->
+        var index = when (key) {
+            nextPageKeybind -> if (current < total) 53 else return false.also { modMessage("§cYou are already on the last page.") }
+            previousPageKeybind -> if (current > 1) 45 else return false.also { modMessage("§cYou are already on the first page.") }
+            unequipKeybind ->
                 screen.menu.slots.subList(10, 43)
                     .indexOfFirst { it.item.loreString.contains("Click to despawn!") }
                     .takeIf { it != -1 }?.plus(10) ?: return false.also { modMessage("§cCouldn't find equipped pet") }
 
             else -> {
-                val petIndex = arrayOf(pet1, pet2, pet3, pet4, pet5, pet6, pet7, pet8, pet9).indexOfFirst { it.value == keyCode }
+                val petIndex = arrayOf(pet1, pet2, pet3, pet4, pet5, pet6, pet7, pet8, pet9).indexOf(key)
                 if (petIndex == -1) return false
 
                 petSlots.getOrNull(petIndex) ?: return false
             }
         }
 
-        if (screen.menu.slots[index].item.loreString.contains("Click to despawn!") && unequipKeybind.value != keyCode) {
+        if (screen.menu.slots[index].item.loreString.contains("Click to despawn!") && key != unequipKeybind) {
             modMessage("§cThat pet is already equipped!")
             if (closeIfAlreadyEquipped) index = 49
             else if (nounequip) return false

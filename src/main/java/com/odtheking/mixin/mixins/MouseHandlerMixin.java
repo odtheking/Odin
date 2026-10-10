@@ -26,15 +26,15 @@ public class MouseHandlerMixin {
     private double beforeY;
 
     @Inject(method = "grabMouse", at = @At(value = "FIELD", target = "Lnet/minecraft/client/MouseHandler;xpos:D", ordinal = 0, opcode = Opcodes.PUTFIELD))
-    private void odin$lockXPos(CallbackInfo ci) {
+    private void cacheCursorPosition(CallbackInfo ci) {
         this.beforeX = this.xpos;
         this.beforeY = this.ypos;
     }
 
     @Inject(method = "releaseMouse", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;getWindow()Lcom/mojang/blaze3d/platform/Window;"))
-    private void odin$correctCursorPosition(CallbackInfo ci) {
+    private void correctCursorPosition(CallbackInfo ci) {
         if (OdinMod.getMc().gui.screen() instanceof ContainerScreen && NoCursorReset.shouldHookMouse()) {
-            InputConstants.grabOrReleaseMouse(OdinMod.getMc().getWindow(), InputConstants.CURSOR_NORMAL, this.beforeX, this.beforeY);
+            InputConstants.releaseMouse(OdinMod.getMc().getWindow(), this.beforeX, this.beforeY);
             this.xpos = this.beforeX;
             this.ypos = this.beforeY;
         }

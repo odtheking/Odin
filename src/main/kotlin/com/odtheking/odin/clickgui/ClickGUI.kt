@@ -1,6 +1,7 @@
 package com.odtheking.odin.clickgui
 
 import androidx.compose.runtime.*
+import com.mojang.blaze3d.platform.InputConstants
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.clickgui.ui.Panel
 import com.odtheking.odin.clickgui.ui.TextBox
@@ -13,7 +14,6 @@ import com.odtheking.odin.utils.ui.compose.size
 import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.input.KeyEvent
 import net.minecraft.network.chat.Component
-import org.lwjgl.glfw.GLFW
 
 object ClickGUI : OdinScreen(Component.literal("Click GUI")) {
 
@@ -61,7 +61,7 @@ object ClickGUI : OdinScreen(Component.literal("Click GUI")) {
     }
 
     override fun keyPressed(event: KeyEvent): Boolean {
-        if (event.key == GLFW.GLFW_KEY_F && event.hasControlDownWithQuirk()) {
+        if (event.key == InputConstants.KEYCODE_F && event.hasControlDownWithQuirk()) {
             focusSearch()
             return true
         }
