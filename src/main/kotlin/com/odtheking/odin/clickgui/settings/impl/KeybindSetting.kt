@@ -14,6 +14,7 @@ import com.odtheking.odin.utils.ui.compose.onFocusChanged
 import com.odtheking.odin.utils.ui.compose.onKey
 import com.odtheking.odin.utils.ui.compose.pointerInput
 import net.minecraft.client.KeyMapping
+import org.lwjgl.sdl.SDLMouse
 
 class KeybindSetting(
     name: String,
@@ -89,6 +90,9 @@ class KeybindSetting(
     }
 
     companion object {
-        fun InputConstants.Key.isDown(): Boolean = InputConstants.isKeyDown(value)
+        fun InputConstants.Key.isDown(): Boolean = when (type) {
+            InputConstants.Type.KEYBOARD -> InputConstants.isKeyDown(value)
+            InputConstants.Type.MOUSE -> SDLMouse.SDL_GetMouseState(null, null) and (1 shl (value - 1)) != 0
+        }
     }
 }
