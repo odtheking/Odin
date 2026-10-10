@@ -94,10 +94,10 @@ object BloodCamp : Module(
         on<MessageEvent.Chat> {
             if (!DungeonUtils.inClear) return@on
             if (BLOOD_START_REGEX.matches(message)) {
-                moveTimeSeconds = 20f
+                moveTimeSeconds = 20.5f
                 if (sendMoveTime) modMessage("Watcher will move in ${moveTimeSeconds?.toFixed()}s.")
 
-                schedule(400, true) {
+                schedule(410, true) {
                     if (sendMoveTime) alert("Kill Mobs")
                     moveTimeSeconds = null
                 }
@@ -245,4 +245,4 @@ object BloodCamp : Module(
 
     private val BLOOD_START_REGEX = Regex("^\\[BOSS] The Watcher: (Congratulations, you made it through the Entrance\\.|Ah, you've finally arrived\\.|Ah, we meet again\\.\\.\\.|So you made it this far\\.\\.\\. interesting\\.|You've managed to scratch and claw your way here, eh\\?|I'm starting to get tired of seeing you around here\\.\\.\\.|Oh\\.\\. hello\\?|Things feel a little more roomy now, eh\\?|Ah, we meet again\\. As I foresaw\\.\\.\\.)$")
     private val BLOOD_MOVE_REGEX = Regex("^\\[BOSS] The Watcher: Let's see how you can handle this\\.$")
-}
+}
