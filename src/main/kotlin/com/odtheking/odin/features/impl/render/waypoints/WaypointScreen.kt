@@ -23,25 +23,33 @@ import com.odtheking.odin.utils.ui.compose.*
 import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.screens.Screen
 import net.minecraft.client.input.KeyEvent
-import net.minecraft.core.BlockPos
 import net.minecraft.network.chat.Component
+import net.minecraft.world.phys.Vec3
+import kotlin.math.roundToInt
 
 class WaypointScreen(private val parent: Screen?) : OdinScreen(Component.literal("Waypoints")) {
 
     private class Form(val edit: Waypoint?)
 
-    private class Corner(pos: BlockPos?) {
-        var x by mutableStateOf((pos?.x ?: 0).toString())
-        var y by mutableStateOf((pos?.y ?: 0).toString())
-        var z by mutableStateOf((pos?.z ?: 0).toString())
+    private fun Vec3.prettyString(separator: String) = "${x.prettyCoord()}$separator${y.prettyCoord()}$separator${z.prettyCoord()}"
 
-        fun set(pos: BlockPos) {
-            x = pos.x.toString()
-            y = pos.y.toString()
-            z = pos.z.toString()
+    private class Corner(pos: Vec3?) {
+        var x by mutableStateOf((pos?.x ?: 0.0).prettyCoord())
+        var y by mutableStateOf((pos?.y ?: 0.0).prettyCoord())
+        var z by mutableStateOf((pos?.z ?: 0.0).prettyCoord())
+
+        fun set(pos: Vec3) {
+            x = pos.x.prettyCoord()
+            y = pos.y.prettyCoord()
+            z = pos.z.prettyCoord()
         }
 
-        fun toPos(): BlockPos? = BlockPos(x.trim().toIntOrNull() ?: return null, y.trim().toIntOrNull() ?: return null, z.trim().toIntOrNull() ?: return null)
+        fun toPos(): Vec3? {
+            val px = x.trim().toDoubleOrNull()?.takeIf { it.isFinite() } ?: return null
+            val py = y.trim().toDoubleOrNull()?.takeIf { it.isFinite() } ?: return null
+            val pz = z.trim().toDoubleOrNull()?.takeIf { it.isFinite() } ?: return null
+            return Vec3((px * 100).roundToInt() / 100.0, (py * 100).roundToInt() / 100.0, Math.round(pz * 100) / 100.0)
+        }
     }
 
     private var selectedArea by mutableStateOf(WaypointAreas.current()?.key ?: WaypointAreas.all.first().key)
@@ -136,8 +144,8 @@ class WaypointScreen(private val parent: Screen?) : OdinScreen(Component.literal
                 for (wp in list) key(wp.id) {
                     val hover = remember { InteractionSource() }
                     var enabled by remember(wp) { mutableStateOf(wp.enabled) }
-                    val info = "${wp.trigger.label} at ${wp.blockPos.x}, ${wp.blockPos.y}, ${wp.blockPos.z}" +
-                            (if (wp.endPos != wp.blockPos) " | to ${wp.endPos.x}, ${wp.endPos.y}, ${wp.endPos.z}" else "") +
+                    val info = "${wp.trigger.label} at ${wp.blockPos.prettyString(", ")}" +
+                            (if (wp.endPos != wp.blockPos) " | to ${wp.endPos.prettyString(", ")}" else "") +
                             (if (wp.radius != null) " | radius ${wp.radius}" else "") +
                             (if (wp.command != null) " | /${wp.command}" else "")
 
@@ -148,7 +156,7 @@ class WaypointScreen(private val parent: Screen?) : OdinScreen(Component.literal
                         }.at(GuiTheme.PADDING, (ROW_HEIGHT - SWITCH_HEIGHT) / 2)
                         Canvas { graphics ->
                             val centerY = y + height / 2
-                            val secondary = "${wp.blockPos.x} ${wp.blockPos.y} ${wp.blockPos.z}"
+                            val secondary = wp.blockPos.prettyString(" ")
                             val color = if (!enabled) Colors.MINECRAFT_DARK_GRAY else if (hover.hovered) GuiTheme.accent else Colors.WHITE
 
                             graphics.circle(x + 6, centerY, 3.5f, (if (enabled) wp.color else Colors.MINECRAFT_DARK_GRAY).rgba)
@@ -189,7 +197,7 @@ class WaypointScreen(private val parent: Screen?) : OdinScreen(Component.literal
 
     @Composable
     private fun FormDialog(edit: Waypoint?) {
-        val start = remember { mc.player?.blockPosition() }
+        val start = remember { mc.player?.blockPosition()?.let(Vec3::atLowerCornerOf) }
         val from = remember { Corner(edit?.blockPos ?: start) }
         val to = remember { Corner(edit?.endPos ?: start) }
         var inArea by remember { mutableStateOf(edit != null && edit.endPos != edit.blockPos) }
@@ -198,13 +206,13 @@ class WaypointScreen(private val parent: Screen?) : OdinScreen(Component.literal
         var trigger by remember { mutableStateOf(edit?.trigger ?: Trigger.VISUAL) }
         var message by remember { mutableStateOf("") }
         val color = remember { ColorSetting("Color", (edit?.color ?: Colors.MINECRAFT_GREEN).copy(), true, "", true) }
-        val radius = remember { NumberSetting("Radius", (edit?.radius ?: 1), 1..12, 1, "", " blocks") }
+        val radius = remember { NumberSetting("Radius", (edit?.radius ?: 0.1f), 0.1..10.0, 0.1, "", " blocks") }
         val areaKey = edit?.area ?: selectedArea
 
         fun submit() {
             val first = from.toPos()
             val second = if (inArea) to.toPos() else first
-            if (first == null || second == null) return run { message = "§cCoordinates must be whole numbers." }
+            if (first == null || second == null) return run { message = "§cCoordinates must be numbers." }
 
             val waypoint = Waypoint(
                 area = areaKey, blockPos = first, endPos = second, label = label.trim(), color = color.value.copy(),
@@ -219,7 +227,7 @@ class WaypointScreen(private val parent: Screen?) : OdinScreen(Component.literal
             }
             message = "§aWaypoint added."
             label = ""
-            mc.player?.blockPosition()?.let {
+            start?.let {
                 from.set(it)
                 to.set(it)
             }
@@ -290,7 +298,7 @@ class WaypointScreen(private val parent: Screen?) : OdinScreen(Component.literal
             Triple("§9Z", corner.z) { corner.z = it },
         )) Row(2) {
             Text({ axis }).offset(y = { 4 })
-            TextBox(value, onChange, "0", 4, true, filter = { text -> text.filter { it.isDigit() || it == '-' } }).size((LEFT_W - 6 * 2 - 10 * 3) / 3, FIELD_HEIGHT)
+            TextBox(value, onChange, "0", 7, true, filter = { text -> text.filter { it.isDigit() || it == '-' || it == '.' } }).size((LEFT_W - 6 * 2 - 10 * 3) / 3, FIELD_HEIGHT)
         }
     }
 
