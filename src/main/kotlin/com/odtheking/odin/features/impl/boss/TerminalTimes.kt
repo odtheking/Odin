@@ -64,16 +64,8 @@ object TerminalTimes : Module(
         }
         
         
-//        on<MessageEvent.ModifyChat> {
-//            if (terminalSplits) terminalCompleteRegex.find(message)?.destructured?.let { (name, activated, type, current, total) ->
-//                component = Component.literal("§6$name §a$activated a $type! (§c${current}§a/${total}) §8(§7${sectionTimer.seconds}s §8| §7${phaseTimer.seconds}s§8)")
-//            }
-//        }
-        
         on<MessageEvent.ModifyChat> {
-            if (!terminalSplits) return@on
-
-            terminalCompleteRegex.find(message)?.destructured?.let { (name, activated, type, current, total) ->
+            if (terminalSplits) terminalCompleteRegex.find(message)?.destructured?.let { (name, activated, type, current, total) ->
                 component = Component.literal("§6$name §a$activated a $type! (§c${current}§a/${total}) §8(§7${sectionTimer.seconds}s §8| §7${phaseTimer.seconds}s§8)")
             }
         }

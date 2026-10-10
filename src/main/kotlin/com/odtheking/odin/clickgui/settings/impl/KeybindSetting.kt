@@ -22,10 +22,10 @@ class KeybindSetting(
 ) : RenderableSetting<InputConstants.Key>(name, desc), Saving {
 
     constructor(name: String, defaultKeyCode: Int, desc: String = "") : this(name, InputConstants.Type.KEYBOARD.getOrCreate(defaultKeyCode), desc)
-    
+
     override var value: InputConstants.Key = default
     val boundKey: InputConstants.Key get() = value
-    
+
     var onPress: (() -> Unit)? = null
 
     private var namedKey: InputConstants.Key? = null
@@ -40,7 +40,7 @@ class KeybindSetting(
             }
             return keyName
         }
-    
+
     fun onPress(block: () -> Unit): KeybindSetting {
         onPress = block
         return this

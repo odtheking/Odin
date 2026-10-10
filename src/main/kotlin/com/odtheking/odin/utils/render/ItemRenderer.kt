@@ -23,9 +23,7 @@ import net.minecraft.world.item.ItemStack
 import org.joml.Matrix3x2f
 import java.util.*
 
-class ItemStateRenderer
-    : PictureInPictureRenderer<ItemStateRenderer.State>() {
-
+class ItemStateRenderer : PictureInPictureRenderer<ItemStateRenderer.State>() {
     private var lastState: State? = null
 
     override fun renderToTexture(renderState: State, poseStack: PoseStack, collector: SubmitNodeCollector) {
