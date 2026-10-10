@@ -1,5 +1,6 @@
 package com.odtheking.odin.features.impl.dungeon.dungeonwaypoints
 
+import com.github.stivais.commodore.parsers.CommandParsable
 import com.mojang.blaze3d.platform.InputConstants
 import com.odtheking.odin.OdinMod.scope
 import com.odtheking.odin.clickgui.settings.RenderableSetting.Companion.withDependency
@@ -120,13 +121,9 @@ object DungeonWaypoints : Module(
         }
     }
 
+    @CommandParsable
     enum class WaypointType {
-        NONE, NORMAL, SECRET, ETHERWARP;
-
-
-        companion object {
-            fun getByName(name: String): WaypointType? = entries.find { it.name == name.uppercase() }
-        }
+        NONE, NORMAL, SECRET, ETHERWARP
     }
 
     data class DungeonWaypoint(

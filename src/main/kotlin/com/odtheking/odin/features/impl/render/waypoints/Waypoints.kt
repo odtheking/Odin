@@ -55,9 +55,10 @@ class Waypoint(
 
     @delegate:Transient
     val box by lazy {
+        val pad = if (radius != null) 1.0 else 0.0
         val base = AABB(
             minOf(blockPos.x, endPos.x), minOf(blockPos.y, endPos.y), minOf(blockPos.z, endPos.z),
-            maxOf(blockPos.x, endPos.x) + 1, maxOf(blockPos.y, endPos.y) + 1, maxOf(blockPos.z, endPos.z) + 1,
+            maxOf(blockPos.x, endPos.x) + pad, maxOf(blockPos.y, endPos.y) + pad, maxOf(blockPos.z, endPos.z) + pad,
         )
         radius?.let { base.inflate(it.toDouble(), 0.0, it.toDouble()) } ?: base
     }
@@ -189,6 +190,14 @@ object Waypoints : Module(
     fun remove(wp: Waypoint) {
         waypoints.remove(wp)
         changed()
+    }
+
+    fun clear(area: String? = null): Int {
+        val removed = waypoints.count { area == null || it.area == area }
+        if (removed == 0) return 0
+        waypoints.removeAll { area == null || it.area == area }
+        changed()
+        return removed
     }
 
     fun exportToClipboard(): String {

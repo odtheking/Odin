@@ -2,6 +2,7 @@ package com.odtheking.odin.commands
 
 import com.github.stivais.commodore.Commodore
 import com.github.stivais.commodore.utils.GreedyString
+import com.github.stivais.commodore.utils.SyntaxException
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.OdinMod.scope
 import com.odtheking.odin.clickgui.settings.impl.label
@@ -37,11 +38,9 @@ val dungeonWaypointsCommand = Commodore("dwp", "dungeonwaypoints") {
         modMessage("§aSecrets have been reset!")
     }
 
-    literal("type").runs { type: String ->
-        DungeonWaypoints.WaypointType.getByName(type)?.let {
-            DungeonWaypoints.waypointType = it
-            modMessage("Waypoint type changed to: ${it.label}")
-        } ?: modMessage("§cInvalid waypoint type!")
+    literal("type").runs { type: DungeonWaypoints.WaypointType ->
+        DungeonWaypoints.waypointType = type
+        modMessage("Waypoint type changed to: ${type.label}")
     }
 
     literal("useblocksize").runs {
@@ -54,10 +53,16 @@ val dungeonWaypointsCommand = Commodore("dwp", "dungeonwaypoints") {
         modMessage("Next waypoint will be added with depth check: ${DungeonWaypoints.depthCheck}")
     }
 
-    literal("color").runs { hex: String ->
-        if (!hex.matches(Regex("[0-9A-Fa-f]{8}"))) return@runs modMessage("Color hex not properly formatted! Use format RRGGBBAA")
-        DungeonWaypoints.color = Color(hex)
-        modMessage("Color changed to: $hex")
+    literal("color").executable {
+        param("hex").parser { hex: String ->
+            if (!hex.matches(Regex("[0-9A-Fa-f]{8}"))) throw SyntaxException("Color hex not properly formatted! Use format RRGGBBAA")
+            Color(hex)
+        }
+
+        runs { hex: Color ->
+            DungeonWaypoints.color = hex
+            modMessage("Color changed to: ${hex.hex()}")
+        }
     }
 
     literal("export").runs {
