@@ -87,7 +87,7 @@ object ModuleManager {
         // hashmap, but would need to keep track when setting values change
         on<InputEvent> {
             for (setting in keybindSettingsCache) {
-                if (setting.boundKey.value == key.value) setting.onPress?.invoke()
+                if (setting.boundKey == key) setting.onPress?.invoke()
             }
         }
 

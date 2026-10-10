@@ -13,7 +13,6 @@ import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.ui.compose.onFocusChanged
 import com.odtheking.odin.utils.ui.compose.onKey
 import com.odtheking.odin.utils.ui.compose.pointerInput
-import net.minecraft.client.KeyMapping
 import org.lwjgl.sdl.SDLMouse
 
 class KeybindSetting(
@@ -26,8 +25,6 @@ class KeybindSetting(
     
     override var value: InputConstants.Key = default
     val boundKey: InputConstants.Key get() = value
-
-    private var mapping: KeyMapping? = null
     
     var onPress: (() -> Unit)? = null
 
@@ -86,7 +83,7 @@ class KeybindSetting(
     override fun write(gson: Gson): JsonElement = JsonPrimitive(value.name)
 
     override fun read(element: JsonElement, gson: Gson) {
-        if (mapping?.isDefault != false) value = element.asString?.let(InputConstants::getKey) ?: return
+        value = element.asString?.let(InputConstants::getKey) ?: return
     }
 
     companion object {
