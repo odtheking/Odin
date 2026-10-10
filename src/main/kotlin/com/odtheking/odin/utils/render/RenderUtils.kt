@@ -33,7 +33,7 @@ private fun Int.isFullyOpaque(): Boolean = ((this ushr 24) and 0xFF) == 0xFF
 
 private fun resolveLineRenderType(depth: Boolean, fullyOpaque: Boolean) = when {
     depth && fullyOpaque -> RenderTypes.LINES
-    depth -> RenderTypes.LINES_TRANSLUCENT
+    depth -> CustomRenderType.LINES_TRANSLUCENT_DEPTH
     fullyOpaque -> CustomRenderType.LINES_ESP
     else -> CustomRenderType.LINES_TRANSLUCENT_ESP
 }

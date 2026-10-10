@@ -59,11 +59,6 @@ object RenderTest : Module(
                 style = boxStyle,
             )
 
-            drawFilledBox(
-                aabb = playerBB.inflate(0.5, 0.5, 0.5),
-                color = Color(0x7eb4c7ff),
-            )
-
             try {
                 run {
                     val desiredCount = boxCount.coerceAtLeast(0)
