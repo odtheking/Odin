@@ -5,8 +5,6 @@ import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
 import com.mojang.blaze3d.platform.InputConstants
-import com.odtheking.odin.OdinMod
-import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.clickgui.settings.RenderableSetting
 import com.odtheking.odin.clickgui.settings.Saving
 import com.odtheking.odin.clickgui.ui.Pill
@@ -15,10 +13,7 @@ import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.ui.compose.onFocusChanged
 import com.odtheking.odin.utils.ui.compose.onKey
 import com.odtheking.odin.utils.ui.compose.pointerInput
-import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper
 import net.minecraft.client.KeyMapping
-import net.minecraft.resources.Identifier
-import org.lwjgl.sdl.SDLMouse
 
 class KeybindSetting(
     name: String,
@@ -26,23 +21,13 @@ class KeybindSetting(
     desc: String
 ) : RenderableSetting<InputConstants.Key>(name, desc), Saving {
 
-    //constructor(name: String, defaultKeyCode: Int, desc: String = "") : this(name, InputConstants.Type.KEYSYM.getOrCreate(defaultKeyCode), desc)
     constructor(name: String, defaultKeyCode: Int, desc: String = "") : this(name, InputConstants.Type.KEYBOARD.getOrCreate(defaultKeyCode), desc)
-
-    override var value: InputConstants.Key
-        get() = mapping?.let { KeyMappingHelper.getBoundKeyOf(it) } ?: pending
-        set(key) {
-            pending = key
-            val mapping = mapping ?: return
-            if (mapping.matches(key)) return
-            mapping.setKey(key)
-            KeyMapping.resetMapping()
-            pendingOptionsSave = true
-        }
+    
+    override var value: InputConstants.Key = default
+    val boundKey: InputConstants.Key get() = value
 
     private var mapping: KeyMapping? = null
-    private var pending: InputConstants.Key = default
-
+    
     var onPress: (() -> Unit)? = null
 
     private var namedKey: InputConstants.Key? = null
@@ -57,13 +42,7 @@ class KeybindSetting(
             }
             return keyName
         }
-
-    fun registerKeyMapping(owner: String) {
-        if (mapping != null) return
-        val label = if (name == "Keybind") owner else "$owner ($name)"
-        mapping = KeyMappingHelper.registerKeyMapping(KeyMapping(label, pending.type, pending.value, KEYBIND_CATEGORY))
-    }
-
+    
     fun onPress(block: () -> Unit): KeybindSetting {
         onPress = block
         return this
@@ -110,22 +89,6 @@ class KeybindSetting(
     }
 
     companion object {
-        private val KEYBIND_CATEGORY: KeyMapping.Category =
-            KeyMapping.Category.register(Identifier.fromNamespaceAndPath(OdinMod.MOD_ID, "keybinds"))
-
-        private var pendingOptionsSave = false
-
-        fun saveOptionsIfChanged() {
-            if (!pendingOptionsSave) return
-            pendingOptionsSave = false
-            mc.execute {
-                mc.options.save()
-            }
-        }
-
-        fun InputConstants.Key.isDown(): Boolean = when (type) {
-            InputConstants.Type.KEYBOARD -> InputConstants.isKeyDown(value)
-            InputConstants.Type.MOUSE -> SDLMouse.SDL_GetMouseState(null, null) and (1 shl (value - 1)) != 0
-        }
+        fun InputConstants.Key.isDown(): Boolean = InputConstants.isKeyDown(value)
     }
 }

@@ -31,7 +31,7 @@ object EventDispatcher {
 
         ClientTickEvents.END_LEVEL_TICK.register { world -> TickEvent.End(world).postAndCatch() }
 
-        LevelRenderEvents.COLLECT_SUBMITS.register { context -> RenderExtractEvent(context).postAndCatch() }
+        LevelRenderEvents.AFTER_TRANSLUCENT_TERRAIN.register { context -> RenderExtractEvent(context).postAndCatch() }
 
         ScreenEvents.BEFORE_INIT.register { _, screen, _, _ ->
             ScreenMouseEvents.allowMouseClick(screen).register { screen, event ->

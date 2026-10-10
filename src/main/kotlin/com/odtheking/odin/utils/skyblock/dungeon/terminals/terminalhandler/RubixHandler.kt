@@ -1,6 +1,5 @@
 package com.odtheking.odin.utils.skyblock.dungeon.terminals.terminalhandler
 
-import com.mojang.blaze3d.platform.InputConstants
 import com.odtheking.odin.features.impl.boss.TerminalSolver
 import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalTypes
@@ -44,7 +43,6 @@ class RubixHandler : TerminalHandler(TerminalTypes.RUBIX) {
         get() = ((item as? BlockItem)?.block as? StainedGlassPaneBlock)?.color
 
     override fun canClick(slotIndex: Int, button: Int): Boolean =
-        //TODO better impl
         slotIndex in solution && (button == 1) == (slotIndex in rightClickSlots)
 
     private fun dist(pane: Int, most: Int): Int =

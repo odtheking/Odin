@@ -3,6 +3,7 @@ package com.odtheking.odin.features.impl.skyblock
 import com.odtheking.odin.clickgui.settings.RenderableSetting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.DropdownSetting
+import com.odtheking.odin.clickgui.settings.impl.NumberSetting
 import com.odtheking.odin.events.MessageEvent
 import com.odtheking.odin.events.MessageSentEvent
 import com.odtheking.odin.events.core.on
@@ -29,7 +30,8 @@ object ChatCommands : Module(
     private val guildChatCommands by BooleanSetting("Guild Commands", false, "Enables guild chat commands.")
     private val privateChatCommands by BooleanSetting("Private Commands", true, "Enables private chat commands.")
     private val coopChatCommands by BooleanSetting("Co-op Commands", true, "Enables co-op chat commands.")
-
+    private val delay by NumberSetting("Delay",4,0..20,1,"Delay before executing the command. If your getting 'Woah slow down' messages, try increasing this.")
+    
     private val showSettings by DropdownSetting("Show Settings", desc = "Toggles which chat commands are enabled.")
     private val partyWarp by BooleanSetting("Warp", true, desc = "Executes the /party warp command.").withDependency { showSettings }
     private val coords by BooleanSetting("Coords (coords)", true, desc = "Sends your current coordinates.").withDependency { showSettings }
@@ -90,7 +92,7 @@ object ChatCommands : Module(
 
             if (!msg.startsWith("!")) return@on
 
-            schedule(4) {
+            schedule(delay) {
                 handleChatCommands(msg, ign, channel)
             }
         }
