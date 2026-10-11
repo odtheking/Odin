@@ -11,12 +11,13 @@ import com.odtheking.odin.utils.network.hypixelapi.RequestUtils
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonPlayer
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import kotlinx.coroutines.launch
+import java.util.concurrent.ConcurrentHashMap
 
 object SecretsCounter : Module(
     name = "Secrets Counter",
     description = "Counts secrets for each player and shows results at the end of a dungeon run."
 ) {
-    private val secretsBaseline = mutableMapOf<String, Long>()
+    private val secretsBaseline = ConcurrentHashMap<String, Long>()
     private var snapshotDone = false
 
     private val dungeonStartRegex = Regex("^\\[NPC] Mort: Good luck\\.$")
@@ -24,7 +25,6 @@ object SecretsCounter : Module(
 
     init {
         on<LevelEvent.Load> {
-            secretsBaseline.clear()
             snapshotDone = false
         }
 
@@ -36,6 +36,7 @@ object SecretsCounter : Module(
             snapshotDone = true
             scope.launch {
                 for ((teammateName) in teammates) {
+                    if (secretsBaseline.containsKey(teammateName)) continue
                     RequestUtils.pullSecrets(teammateName).onSuccess { secrets ->
                         secretsBaseline[teammateName] = secrets
                     }
@@ -48,12 +49,15 @@ object SecretsCounter : Module(
         val teammates = DungeonUtils.dungeonTeammatesNoSelf.toList().ifEmpty { return }
         val secretsDelta = mutableMapOf<String, Long?>()
 
+        secretsBaseline.keys.retainAll(teammates.map { it.name }.toSet())
+
         scope.launch {
             for ((teammateName) in teammates) {
                 val baseline = secretsBaseline[teammateName]
                 RequestUtils.pullSecrets(teammateName).onSuccess { newSecrets ->
                     secretsDelta[teammateName] = if (baseline != null) (newSecrets - baseline).coerceAtLeast(0L)
                     else null
+                    secretsBaseline[teammateName] = newSecrets
                 }
             }
             display(teammates, secretsDelta)
