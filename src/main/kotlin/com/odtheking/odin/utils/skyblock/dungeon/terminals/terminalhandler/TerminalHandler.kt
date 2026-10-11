@@ -52,7 +52,7 @@ abstract class TerminalHandler(val type: TerminalTypes) {
     open fun click(slotIndex: Int, button: Int, simulateClick: Boolean) {
         if (!canClick(slotIndex, button) || shouldProtect()) return
 
-        val mappedButton = if (button == 1 && type == TerminalTypes.RUBIX) 1 else InputConstants.MOUSE_BUTTON_MIDDLE
+        val mappedButton = if (button == RIGHT_CLICK && type == TerminalTypes.RUBIX) RIGHT_CLICK else InputConstants.MOUSE_BUTTON_MIDDLE
         clickedSlots.add(slotIndex to mappedButton)
         lastClickTime = System.currentTimeMillis()
 
@@ -67,10 +67,24 @@ abstract class TerminalHandler(val type: TerminalTypes) {
         mc.player?.clickSlot(slotIndex, mappedButton, if (mappedButton == InputConstants.MOUSE_BUTTON_MIDDLE) ContainerInput.CLONE else ContainerInput.PICKUP)
     }
 
+    fun clickMouse(slotIndex: Int, mouseButton: Int, simulateClick: Boolean) =
+        click(slotIndex, toContainerButton(mouseButton), simulateClick)
+
     open fun canClick(slotIndex: Int, button: Int): Boolean = slotIndex in solution
 
     fun shouldProtect(): Boolean =
         !(TerminalSimulator.disableFirstClickProtection && mc.gui.screen() is TermSimGUI)
                 && (System.currentTimeMillis() - timeOpened < firstClickProt ||
                 (!LocationUtils.isCurrentArea(Island.SinglePlayer) && shouldFirstClickProtWithTicks && ticksOpened < firstClickProtTicks))
+
+    companion object {
+        const val LEFT_CLICK = 0
+        const val RIGHT_CLICK = 1
+
+        fun toContainerButton(mouseButton: Int): Int = when (mouseButton) {
+            InputConstants.MOUSE_BUTTON_LEFT -> LEFT_CLICK
+            InputConstants.MOUSE_BUTTON_RIGHT -> RIGHT_CLICK
+            else -> mouseButton
+        }
+    }
 }
