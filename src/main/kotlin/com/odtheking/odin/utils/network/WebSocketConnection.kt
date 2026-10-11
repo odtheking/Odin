@@ -1,5 +1,6 @@
 package com.odtheking.odin.utils.network
 
+import com.odtheking.odin.OdinMod
 import com.odtheking.odin.OdinMod.logger
 import java.net.URI
 import java.net.http.HttpClient
@@ -75,6 +76,7 @@ class WebSocketConnection {
         }
 
         httpClient.newWebSocketBuilder()
+            .header("X-Mod-Version", OdinMod.version.friendlyString)
             .buildAsync(URI.create(url), listener)
             .exceptionally { error ->
                 logger.error("Failed to connect WebSocket: ${error.message}", error)

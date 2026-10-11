@@ -208,7 +208,7 @@ val floor7SplitGroup = mutableListOf(
     Split(Regex("\\[BOSS] Goldor: Who dares trespass into my domain\\?"), "§6Terminals"),
     Split(Regex("The Core entrance is opening!"), "§7Goldor"),
     Split(Regex("\\[BOSS] Necron: You went further than any human before, congratulations\\."), "§cNecron"),
-    Split(Regex("^\\[BOSS] The Wither King: You\\.\\.\\. again\\?$"), "§4Cleared"),
+    Split(Regex("^\\[BOSS] Wither King: You\\.\\.\\. again\\?$"), "§4Cleared"),
 )
 
 private val dungeonSplits = listOf(
