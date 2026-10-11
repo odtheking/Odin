@@ -214,7 +214,7 @@ fun GuiGraphicsExtractor.renderPlayers() {
 
 fun GuiGraphicsExtractor.renderMap(rooms: Collection<DungeonRoom>, doors: Collection<DungeonDoor>, pathHints: Collection<DungeonTile>) {
     renderDoors(doors)
-    for (room in rooms) if (room.isViewable) fillRoom(room, (if (room.mapSeen && room.type != RoomType.ENTRANCE) roomTypeColor(room.type) else DungeonMap.pendingRoomColor).rgba)
+    for (room in rooms) if (room.isViewable) fillRoom(room, (if (room.mapSeen && room.type == RoomType.ENTRANCE) roomTypeColor(room.type) else DungeonMap.pendingRoomColor).rgba)
     for (room in rooms) renderRoomText(room)
     renderPathHints(pathHints, rooms)
 }
