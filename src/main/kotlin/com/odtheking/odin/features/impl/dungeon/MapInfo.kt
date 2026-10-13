@@ -17,6 +17,7 @@ import com.odtheking.odin.utils.render.drawFilledBox
 import com.odtheking.odin.utils.render.getStringWidth
 import com.odtheking.odin.utils.render.text
 import com.odtheking.odin.utils.render.textDim
+import com.odtheking.odin.utils.skyblock.dungeon.DungeonListener
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.core.BlockPos
 import net.minecraft.world.phys.AABB
@@ -93,7 +94,7 @@ object MapInfo : Module(
         val mimicText = buildString {
             if (DungeonUtils.isFloor(6, 7)) append("${if (DungeonUtils.mimicKilled) "§a" else "§c"}M §8| ")
             append("${if (DungeonUtils.princeKilled) "§a" else "§c"}P §8| ")
-            append("${if (DungeonUtils.batKilled > 0) "§a" else "§c"}B")
+            append("${if (DungeonUtils.batKilled) "§a" else "§c"}B")
         }
 
         val cryptText = buildString {
