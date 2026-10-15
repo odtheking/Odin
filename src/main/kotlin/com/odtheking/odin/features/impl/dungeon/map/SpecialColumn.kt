@@ -63,18 +63,21 @@ object SpecialColumn {
             nx in 0..5 && nz in 0..5 && DungeonScan.tiles[nx + nz * 6].room?.let { it !== self && it.isViewable } == true
         }
 
-    private fun checkSide(nx: Int, nz: Int, gridSize: Int, self: DungeonRoom): Boolean {
+    private fun isPathHint(x: Int, z: Int) = DungeonScan.pathHints.any { it.position.x == x && it.position.z == z }
+
+    private fun checkSide(nx: Int, nz: Int, gridSize: Int, self: DungeonRoom, selfIsHint: Boolean): Boolean {
         if (nx !in 0 until gridSize || nz !in 0 until 6) return true
 
         val room = DungeonScan.tiles.getOrNull(nx + nz * 6)?.room ?: return false
-        return room !== self && room.isViewable
+        return room !== self && (room.isViewable || (selfIsHint && isPathHint(nx, nz)))
     }
 
     private fun isVisibleFromAllSides(x: Int, z: Int, gridSize: Int, self: DungeonRoom): Boolean {
-        val right = checkSide(x + 1, z, gridSize, self)
-        val left = checkSide(x - 1, z, gridSize, self)
-        val bottom = checkSide(x, z + 1, gridSize, self)
-        val top = checkSide(x, z - 1, gridSize, self)
+        val selfIsHint = isPathHint(x, z)
+        val right = checkSide(x + 1, z, gridSize, self, selfIsHint)
+        val left = checkSide(x - 1, z, gridSize, self, selfIsHint)
+        val bottom = checkSide(x, z + 1, gridSize, self, selfIsHint)
+        val top = checkSide(x, z - 1, gridSize, self, selfIsHint)
 
         val allKnown = right && left && bottom && top
 
@@ -100,58 +103,50 @@ object SpecialColumn {
         else guessNonSpecialTileColor(specialColumnRoomCount)
     }
 
+    private val championPossible get() = openedSpecialRooms.none { it.type == RoomType.CHAMPION }
+    private val trapPossible get() = openedSpecialRooms.none { it.type == RoomType.TRAP }
+    private val puzzlePossible get() = openedSpecialRooms.count { it.type == RoomType.PUZZLE } < DungeonUtils.puzzleCount
+
+    private fun possible(vararg guesses: Color): Array<Color> {
+        val allowed = { color: Color ->
+            when (color) {
+                DungeonMap.championRoomColor -> championPossible
+                DungeonMap.trapRoomColor -> trapPossible
+                else -> puzzlePossible
+            }
+        }
+        return guesses.filter(allowed).ifEmpty { listOf(DungeonMap.championRoomColor, DungeonMap.trapRoomColor, DungeonMap.puzzleRoomColor).filter(allowed) }
+            .ifEmpty { listOf(DungeonMap.puzzleRoomColor) }.toTypedArray()
+    }
+
     private fun guessSpecialTileColor(specialColumnRoomCount: Int, mapSizeZ: Int): Array<Color> {
         val specialSize = mapSizeZ - discoveredFullSpecialColumn + specialColumnRoomCount
 
         return when {
             specialSize <= DungeonUtils.puzzleCount || discovered1x1s - specialColumnRoomCount >= 2 ->
-                arrayOf(DungeonMap.puzzleRoomColor)
+                possible(DungeonMap.puzzleRoomColor)
 
             openedSpecialRooms.any { it.type == RoomType.TRAP && it.topLeft.x != column } ->
-                arrayOf(DungeonMap.puzzleRoomColor)
+                possible(DungeonMap.puzzleRoomColor)
 
-            specialSize == DungeonUtils.puzzleCount + 1 ->
-                arrayOf(DungeonMap.trapRoomColor, DungeonMap.puzzleRoomColor)
+            specialSize == DungeonUtils.puzzleCount + 1 || discovered1x1s - specialColumnRoomCount == 1 ->
+                possible(DungeonMap.trapRoomColor, DungeonMap.puzzleRoomColor)
 
-            discovered1x1s - specialColumnRoomCount == 1 ->
-                arrayOf(DungeonMap.trapRoomColor, DungeonMap.puzzleRoomColor)
-
-            else -> arrayOf(DungeonMap.championRoomColor, DungeonMap.trapRoomColor, DungeonMap.puzzleRoomColor)
+            else -> possible(DungeonMap.championRoomColor, DungeonMap.trapRoomColor, DungeonMap.puzzleRoomColor)
         }
     }
 
     private fun guessNonSpecialTileColor(specialColumnRoomCount: Int): Array<Color> {
         val nonSpecialPuzzles = openedSpecialRooms.count { it.type == RoomType.PUZZLE && it.topLeft.x != column }
-        val totalPuzzles = specialColumnRoomCount + nonSpecialPuzzles
 
-        if (totalPuzzles == DungeonUtils.puzzleCount) {
-            return when {
-                openedSpecialRooms.any { it.type == RoomType.TRAP } ->
-                    arrayOf(DungeonMap.championRoomColor)
-                openedSpecialRooms.any { it.type == RoomType.CHAMPION } ->
-                    arrayOf(DungeonMap.trapRoomColor)
-                else -> arrayOf(DungeonMap.championRoomColor, DungeonMap.trapRoomColor)
-            }
+        return when {
+            specialColumnRoomCount + nonSpecialPuzzles == DungeonUtils.puzzleCount ->
+                possible(DungeonMap.championRoomColor, DungeonMap.trapRoomColor)
+
+            specialColumnRoomCount == DungeonUtils.puzzleCount + 1 ->
+                possible(DungeonMap.championRoomColor)
+
+            else -> possible(DungeonMap.puzzleRoomColor, DungeonMap.trapRoomColor, DungeonMap.championRoomColor)
         }
-
-        if (specialColumnRoomCount == DungeonUtils.puzzleCount + 1)
-            return arrayOf(DungeonMap.championRoomColor)
-
-        if (openedSpecialRooms.count { it.type in setOf(RoomType.CHAMPION, RoomType.TRAP) } == 2)
-            return arrayOf(DungeonMap.puzzleRoomColor)
-
-        if (openedSpecialRooms.size == DungeonUtils.puzzleCount + 1) {
-            return when {
-                openedSpecialRooms.none { it.type == RoomType.TRAP } -> arrayOf(DungeonMap.trapRoomColor)
-                openedSpecialRooms.none { it.type == RoomType.CHAMPION } -> arrayOf(DungeonMap.championRoomColor)
-                else -> arrayOf(DungeonMap.puzzleRoomColor)
-            }
-        }
-
-        val result = mutableListOf(DungeonMap.puzzleRoomColor)
-        if (openedSpecialRooms.none { it.type == RoomType.TRAP }) result.add(DungeonMap.trapRoomColor)
-        if (openedSpecialRooms.none { it.type == RoomType.CHAMPION }) result.add(DungeonMap.championRoomColor)
-
-        return result.toTypedArray()
     }
 }

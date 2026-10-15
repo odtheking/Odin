@@ -223,11 +223,12 @@ object DungeonListener {
         private var _mimicKilled: Boolean = false,
         var princeKilled: Boolean = false,
         val batKillers: MutableSet<String> = mutableSetOf(),
+        var batKilled: Boolean = false,
         var doorOpener: String = "Unknown",
         var bloodDone: Boolean = false,
         var puzzleCount: Int = 0,
     ) {
-        val batKilled: Int get() = batKillers.size
+        val numBatsKilled: Int get() = batKillers.size
 
         var mimicKilled: Boolean
             get() = _mimicKilled

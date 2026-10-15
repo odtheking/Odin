@@ -68,22 +68,24 @@ object BetterPartyFinder : Module(
 
                     val kickedReasons = mutableListOf<String>()
 
-                    val currentProfile = profile.getOrNull()?.memberData ?: return@launch modMessage("Could not find member data for $name")
+                    val member = profile.getOrNull()?.memberData ?: return@launch modMessage("Could not find member data for $name")
 
-                    val dungeon = if (!mmToggle) currentProfile.dungeons.dungeonTypes.catacombs else currentProfile.dungeons.dungeonTypes.mastermode
+                    val dungeons = member.dungeons
+                    val floorName = "${if (mmToggle) "m" else "f"}${floor.floorNumber}"
+                    val dungeon = if (mmToggle) dungeons.dungeonTypes.mastermode else dungeons.dungeonTypes.catacombs
                     dungeon.fastestTimeSPlus["${floor.floorNumber}"]?.let {
                         if (maximumSeconds < it / 1000)
                             kickedReasons.add(
-                                "Did not meet time req for ${if (mmToggle) "m" else "f"}${floor.floorNumber}: ${formatTime(it.toLong())}/${formatTime(maximumSeconds * 1000L, 0)}"
+                                "Did not meet time req for $floorName: ${formatTime(it.toLong())}/${formatTime(maximumSeconds * 1000L, 0)}"
                             )
-                    } ?: kickedReasons.add("Couldn't confirm completion status for ${if (mmToggle) "m" else "f"}${floor.floorNumber}")
+                    } ?: kickedReasons.add("Couldn't confirm completion status for $floorName")
 
-                    currentProfile.dungeons.secrets.let { currentProfile.playerStats.bloodMobKills / 4 + it }.let {
+                    (dungeons.secrets + member.playerStats.bloodMobKills / 4).let {
                         if (it < (secretsMin * 1000)) kickedReasons.add("Did not meet secret req: ${formatNumber(it.toString())}/${secretsMin}k")
                     }
 
-                    if (currentProfile.inventoryApi) {
-                        val mp = currentProfile.magicalPower
+                    if (member.inventoryApi) {
+                        val mp = member.magicalPower
                         if (mp < magicalPowerReq) kickedReasons.add("Did not meet mp req: ${mp}/$magicalPowerReq")
                     } else if (apiOffKick) kickedReasons.add("Inventory API is off")
 
