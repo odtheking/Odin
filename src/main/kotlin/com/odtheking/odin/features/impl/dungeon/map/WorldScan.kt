@@ -59,7 +59,7 @@ object WorldScan {
             if (tileX !in 0..5 || tileZ !in 0..5) return@on
 
             DungeonScan.tiles[tileX + tileZ * 6].room?.let { room ->
-                if (room == currentRoom || room.rotation == null || room.highestBlock == null) return@on
+                if (room == currentRoom || room.rotation == null || room.clayPos == null || room.highestBlock == null) return@on
                 if (player.blockY > room.highestBlock!! - 10 && !LocationUtils.isCurrentArea(Island.SinglePlayer)) return@on
 
                 currentRoom = room
@@ -126,6 +126,9 @@ object WorldScan {
             room.highestBlock = highestBlock
             tile.room = room
             room.addSegment(tile)
+        } else if (room.highestBlock == null) {
+            room.highestBlock = highestBlock
+            if (room.tiles.size == data.shape.tileAmount) room.inferLayout(highestBlock)
         }
 
         if (room.data == null) {
@@ -183,4 +186,4 @@ object WorldScan {
         }
         return Blocks.AIR.defaultBlockState()
     }
-}
+}
