@@ -60,11 +60,6 @@ object MapInfo : Module(
     private val fullHud: HudElement by HUD("Full Hud", "Displays a full hud with score, secrets, crypts, and mimic info.") {
         if ((!DungeonUtils.inDungeons || (disableInBoss && DungeonUtils.inBoss)) && !it) return@HUD 0 to 0
 
-        val scoreText = buildString {
-            append("§7Score: ")
-            append(colorizeScore(DungeonUtils.score))
-        }
-
         val secretText = buildString {
             append("§7Secrets: §b")
             append(DungeonUtils.secretCount)
@@ -78,16 +73,12 @@ object MapInfo : Module(
             append(DungeonUtils.totalSecrets)
         }
 
-        val unknownSecretsText = if (unknown == DeathDisplay.DEATHS) {
-            buildString {
-                append("§7Deaths: §c")
-                append(colorizeDeaths(DungeonUtils.deathCount))
-            }
-        } else {
-            buildString {
-                append("§7Unfound: §e")
-                append((DungeonUtils.totalSecrets - DungeonUtils.knownSecrets).coerceAtLeast(0))
-            }
+        val unknownSecretsText = if (unknown == DeathDisplay.DEATHS) buildString {
+            append("§7Deaths: §c")
+            append(colorizeDeaths(DungeonUtils.deathCount))
+        } else buildString {
+            append("§7Unfound: §e")
+            append((DungeonUtils.totalSecrets - DungeonUtils.knownSecrets).coerceAtLeast(0))
         }
 
         val mimicText = buildString {
@@ -101,23 +92,26 @@ object MapInfo : Module(
             append(colorizeCrypts(DungeonUtils.cryptCount.coerceAtMost(5)))
         }
 
+        val scoreText = "§7Score: ${colorizeScore(DungeonUtils.score)}"
         val brWidth = getStringWidth(scoreText)
         val trWidth = getStringWidth(cryptText)
         val mimicWidth = getStringWidth(mimicText)
 
         fill(0, 0, fullWidth, 19, fullColor.rgba)
 
-        text(secretText, 0, 0, Colors.WHITE)
-        text(cryptText , fullWidth - 1 - trWidth, 1, Colors.WHITE)
+        text(secretText, 1, 0, Colors.WHITE)
+        text(scoreText, fullWidth - 1 - brWidth, 0, Colors.WHITE)
         val unknownWidth = textDim(unknownSecretsText, 1, 10, Colors.WHITE).first
-        text(mimicText, (unknownWidth + 1 + (fullWidth - 1 - unknownWidth - brWidth) / 2) - mimicWidth / 2, 10, Colors.WHITE)
-        text(scoreText, fullWidth - 1 - brWidth, 10, Colors.WHITE)
-        fullWidth to 18
+        val gapStart = 1 + unknownWidth
+        val gapEnd = fullWidth - 1 - trWidth
+        text(mimicText, (gapStart + (gapEnd - gapStart - mimicWidth) / 2), 10, Colors.WHITE)
+        text(cryptText, gapEnd, 10, Colors.WHITE)
+        fullWidth to 19
     }
 
     private val fullAddRemaining by BooleanSetting("Include Remaining", false, desc = "Adds remaining to the secrets display.").withDependency { fullHud.enabled }
     private val fullRemaining by SelectorSetting("Remaining Secrets", SecretCount.MINIMUM, desc = "Display minimum secrets or secrets until s+.").withDependency { !fullAddRemaining && fullHud.enabled }
-    private val fullWidth by NumberSetting("Width", 160, 160..200, 1, desc = "The width of the hud.").withDependency { fullHud.enabled }
+    private val fullWidth by NumberSetting("Width", 150, 140..200, 1, desc = "The width of the hud.").withDependency { fullHud.enabled }
     private val unknown by SelectorSetting("Deaths", DeathDisplay.DEATHS, desc = "Display deaths or unfound secrets. (Unknown secrets are secrets in rooms that haven't been discovered yet. May not be helpful in full party runs.)").withDependency { fullHud.enabled }
     private val fullColor by ColorSetting("Background Color", Colors.MINECRAFT_DARK_GRAY.withAlpha(0f), true, desc = "The color of the background.").withDependency { fullHud.enabled }
 
