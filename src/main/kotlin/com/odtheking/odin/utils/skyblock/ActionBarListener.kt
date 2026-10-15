@@ -2,6 +2,7 @@ package com.odtheking.odin.utils.skyblock
 
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.events.MessageEvent
+import com.odtheking.odin.events.RoomEnterEvent
 import com.odtheking.odin.events.SecretsUpdateEvent
 import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.core.on
@@ -40,7 +41,12 @@ object ActionBarListener {
     var isVitalityShown: Boolean = false
         private set
 
+    private var skipNextSecrets = false
+    private var lastSecretsMax: Int? = null
+
     init {
+        on<RoomEnterEvent> { skipNextSecrets = true }
+
         on<TickEvent.End> {
             currentHealth = (mc.player?.let { player -> (maxHealth * player.health / player.maxHealth).toInt() } ?: 0)
             currentSpeed = floor((mc.player?.getAttribute(Attributes.MOVEMENT_SPEED)?.baseValue?.toFloat() ?: 0f) * 1000f).toInt()
@@ -48,12 +54,19 @@ object ActionBarListener {
 
         on<MessageEvent.Overlay> {
             SECRETS_REGEX.find(message)?.destructured?.let { (found, max) ->
-                DungeonUtils.currentRoom?.let {
-                    val updatedFoundSecrets = found.toIntOrNull() ?: return@let
-                    if (it.data?.maxSecrets != max.toIntOrNull() || (it.foundSecrets ?: -1) >= updatedFoundSecrets) return@let
-                    it.foundSecrets = updatedFoundSecrets
-                    SecretsUpdateEvent(it, updatedFoundSecrets).postAndCatch()
+                val maxSecrets = max.toIntOrNull() ?: return@let
+                val sameMax = maxSecrets == lastSecretsMax
+                lastSecretsMax = maxSecrets
+                if (skipNextSecrets && sameMax) {
+                    skipNextSecrets = false
+                    return@let
                 }
+                skipNextSecrets = false
+                val room = DungeonUtils.currentRoom ?: return@let
+                val updated = found.toIntOrNull() ?: return@let
+                if (room.data?.maxSecrets != maxSecrets || (room.foundSecrets ?: -1) >= updated) return@let
+                room.foundSecrets = updated
+                SecretsUpdateEvent(room, updated).postAndCatch()
             }
 
             HEALTH_REGEX.find(message)?.destructured?.let { (_, maxHp) ->

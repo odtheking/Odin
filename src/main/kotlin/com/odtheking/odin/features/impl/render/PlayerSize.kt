@@ -21,11 +21,11 @@ object PlayerSize : Module(
     description = "Changes the size of the player."
 ) {
     private val useClientSize by BooleanSetting("Use Client Size", false, desc = "Uses your client side size values below on yourself instead of your random size.").withDependency { isRandom }
-    private val sizeX by NumberSetting("Size X", 1f, -1.0..3.0, 0.1, desc = "X scale of your client side size.")
-    private val sizeY by NumberSetting("Size Y", 1f, -1.0..3.0, 0.1, desc = "Y scale of your client side size.")
-    private val sizeZ by NumberSetting("Size Z", 1f, -1.0..3.0, 0.1, desc = "Z scale of your client side size.")
-    private var showHidden by DropdownSetting("Show Hidden", desc = "Shows the passcode field for dev features.").withDependency { isRandom }
-    private val passcode by StringSetting("Passcode", "odin", desc = "Passcode for dev features.", placeholder = "Enter passcode").withDependency { showHidden && isRandom }
+    private val sizeX by NumberSetting("Size X", 1f, -1.0..3.0, 0.1, desc = "X scale of your client side size.").withDependency { useClientSize }
+    private val sizeY by NumberSetting("Size Y", 1f, -1.0..3.0, 0.1, desc = "Y scale of your client side size.").withDependency { useClientSize}
+    private val sizeZ by NumberSetting("Size Z", 1f, -1.0..3.0, 0.1, desc = "Z scale of your client side size.").withDependency { useClientSize}
+    private var showHidden by DropdownSetting("Show Hidden", desc = "Shows the passcode field for dev features.").withDependency { isRandom && !useClientSize}
+    private val passcode by StringSetting("Passcode", "odin", desc = "Passcode for dev features.", placeholder = "Enter passcode").withDependency { showHidden && isRandom && !useClientSize }
 
     const val DEV_SERVER = "https://devs.odtheking.com"
 
@@ -37,17 +37,15 @@ object PlayerSize : Module(
             return@ActionSetting
         }
         OdinMod.scope.launch {
-            modMessage(postData(DEV_SERVER, Gson().toJson(
-                mapOf(
-                    "DevName" to mc.user.name,
-                    "Size" to listOf(sizeX, sizeY, sizeZ),
-                    "CustomName" to " ",
-                    "Password" to passcode
-                )
-            )).getOrNull())
+            modMessage(postData(DEV_SERVER, Gson().toJson(mapOf(
+                "DevName" to mc.user.name,
+                "Size" to listOf(sizeX, sizeY, sizeZ),
+                "CustomName" to " ",
+                "Password" to passcode
+            ))).getOrNull())
             updateCustomProperties()
         }
-    }.withDependency { isRandom }
+    }.withDependency { isRandom && !useClientSize }
 
 
     var randoms: HashMap<UUID, RandomPlayer> = HashMap()
@@ -62,19 +60,12 @@ object PlayerSize : Module(
 
     @JvmStatic
     fun preRenderCallbackScaleHook(entityRenderer: AvatarRenderState, matrix: PoseStack) {
-        if (!enabled) return
         val gameProfile = entityRenderer.getData(GAME_PROFILE_KEY) ?: return
 
-        if (gameProfile.name == mc.player?.gameProfile?.name && (!isRandom || useClientSize)) {
-            if (sizeY < 0) matrix.translate(0f, sizeY * 2, 0f)
-            matrix.scale(sizeX, sizeY, sizeZ)
-            return
-        }
-
-        val random = randoms[gameProfile.id] ?: return
-
-        if (random.scale[1] < 0) matrix.translate(0f, random.scale[1] * 2, 0f)
-        matrix.scale(random.scale[0], random.scale[1], random.scale[2])
+        val (x, y, z) = if (gameProfile.name == mc.player?.gameProfile?.name && (!isRandom || useClientSize) && enabled) Triple(sizeX, sizeY, sizeZ)
+        else randoms[gameProfile.id]?.let { Triple(it.scale[0], it.scale[1], it.scale[2]) } ?: return
+        if (y < 0) matrix.translate(0f, y * 2, 0f)
+        matrix.scale(x, y, z)
     }
 
     suspend fun updateCustomProperties(): String {
