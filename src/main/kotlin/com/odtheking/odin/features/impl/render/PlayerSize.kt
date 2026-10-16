@@ -21,9 +21,9 @@ object PlayerSize : Module(
     description = "Changes the size of the player."
 ) {
     private val useClientSize by BooleanSetting("Use Client Size", false, desc = "Uses your client side size values below on yourself instead of your random size.").withDependency { isRandom }
-    private val sizeX by NumberSetting("Size X", 1f, -1.0..3.0, 0.1, desc = "X scale of your client side size.").withDependency { useClientSize }
-    private val sizeY by NumberSetting("Size Y", 1f, -1.0..3.0, 0.1, desc = "Y scale of your client side size.").withDependency { useClientSize}
-    private val sizeZ by NumberSetting("Size Z", 1f, -1.0..3.0, 0.1, desc = "Z scale of your client side size.").withDependency { useClientSize}
+    private val sizeX by NumberSetting("Size X", 1f, -1.0..3.0, 0.1, desc = "X scale of your client side size.").withDependency { useClientSize || !isRandom }
+    private val sizeY by NumberSetting("Size Y", 1f, -1.0..3.0, 0.1, desc = "Y scale of your client side size.").withDependency { useClientSize || !isRandom}
+    private val sizeZ by NumberSetting("Size Z", 1f, -1.0..3.0, 0.1, desc = "Z scale of your client side size.").withDependency { useClientSize || !isRandom}
     private var showHidden by DropdownSetting("Show Hidden", desc = "Shows the passcode field for dev features.").withDependency { isRandom && !useClientSize}
     private val passcode by StringSetting("Passcode", "odin", desc = "Passcode for dev features.", placeholder = "Enter passcode").withDependency { showHidden && isRandom && !useClientSize }
 
