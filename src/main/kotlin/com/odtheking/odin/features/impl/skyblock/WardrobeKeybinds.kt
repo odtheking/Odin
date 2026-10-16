@@ -38,15 +38,15 @@ object WardrobeKeybinds : Module(
 
     init {
         on<ScreenEvent.MouseClick> {
-            if (screen is AbstractContainerScreen<*> && onClick(screen, click.button())) cancel()
+            if (screen is AbstractContainerScreen<*> && onClick(screen, InputConstants.Type.MOUSE.getOrCreate(click.button()))) cancel()
         }
 
         on<ScreenEvent.KeyPress> {
-            if (screen is AbstractContainerScreen<*> && onClick(screen, input.key)) cancel()
+            if (screen is AbstractContainerScreen<*> && onClick(screen, InputConstants.getKey(input))) cancel()
         }
     }
 
-    private fun onClick(screen: AbstractContainerScreen<*>, keyCode: Int): Boolean {
+    private fun onClick(screen: AbstractContainerScreen<*>, key: InputConstants.Key): Boolean {
         val (current, total) = wardrobeRegex.find(screen.title.string)?.destructured?.let {
             it.component1().toIntOrNull() to it.component2().toIntOrNull()
         } ?: return false
@@ -54,13 +54,13 @@ object WardrobeKeybinds : Module(
 
         val equippedIndex = screen.menu.slots.find { equippedRegex.matches(it.item.hoverName.string) }?.index
 
-        val index = when (keyCode) {
-            nextPageKeybind.value -> if (current < total) 53 else return false
-            previousPageKeybind.value -> if (current > 1) 45 else return false
-            unequipKeybind.value -> equippedIndex ?: return false
+        val index = when (key) {
+            nextPageKeybind -> if (current < total) 53 else return false
+            previousPageKeybind -> if (current > 1) 45 else return false
+            unequipKeybind -> equippedIndex ?: return false
             else -> {
                 val keyIndex = arrayOf(wardrobe1, wardrobe2, wardrobe3, wardrobe4, wardrobe5, wardrobe6, wardrobe7, wardrobe8, wardrobe9)
-                    .indexOfFirst { it.value == keyCode }.takeIf { it != -1 } ?: return false
+                    .indexOf(key).takeIf { it != -1 } ?: return false
 
                 if (equippedIndex == keyIndex + 36 && disallowUnequippingEquipped) return modMessage("§cSet already equipped.").let { false }
                 keyIndex + 36

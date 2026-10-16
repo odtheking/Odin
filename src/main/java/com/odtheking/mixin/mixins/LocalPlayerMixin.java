@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.At;
 public abstract class LocalPlayerMixin {
 
     @ModifyExpressionValue(method = "aiStep", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Input;sprint()Z"))
-    private boolean odin$autoSprint(boolean original) {
+    private boolean autoSprint(boolean original) {
         return original || AutoSprint.INSTANCE.getEnabled();
     }
 }

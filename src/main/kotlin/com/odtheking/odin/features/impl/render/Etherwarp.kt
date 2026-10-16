@@ -92,7 +92,7 @@ object Etherwarp : Module(
         }
 
         on<InputEvent> {
-            if (key.value != InputConstants.MOUSE_BUTTON_RIGHT || !LocationUtils.isCurrentArea(Island.SinglePlayer)) return@on
+            if (key.type != InputConstants.Type.MOUSE || key.value != InputConstants.MOUSE_BUTTON_RIGHT || !LocationUtils.isCurrentArea(Island.SinglePlayer)) return@on
             if (cachedEtherData == null || (mc.player?.isShiftKeyDown == false && cachedEtherData?.itemId != "ETHERWARP_CONDUIT")) return@on
 
             etherPos?.pos?.let {
@@ -245,7 +245,7 @@ object Etherwarp : Module(
                 is SugarCaneBlock -> true
                 is MushroomBlock -> true
                 is NetherWartBlock -> true
-                is RedStoneWireBlock, is ComparatorBlock, is RepeaterBlock -> true
+                is RedstoneWireBlock, is ComparatorBlock, is RepeaterBlock -> true
                 is SmallDripleafBlock, is BigDripleafStemBlock -> true
                 is DoublePlantBlock -> true
                 is LeverBlock -> true

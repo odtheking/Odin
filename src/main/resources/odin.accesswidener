@@ -5,5 +5,6 @@ accessible field net/minecraft/client/gui/screens/inventory/AbstractContainerScr
 accessible field net/minecraft/client/gui/screens/inventory/AbstractContainerScreen topPos I
 accessible field net/minecraft/client/gui/screens/inventory/AbstractContainerScreen imageWidth I
 accessible field net/minecraft/client/gui/screens/inventory/AbstractContainerScreen imageHeight I
-accessible class com/mojang/blaze3d/opengl/GlDevice
-accessible field com/mojang/blaze3d/systems/GpuDevice backend Lcom/mojang/blaze3d/systems/GpuDeviceBackend;
+accessible class com/mojang/renderpearl/backend/opengl/GlDevice
+accessible field com/mojang/renderpearl/frontend/FrontendGpuDevice backend Lcom/mojang/renderpearl/backend/api/GpuDeviceBackend;
+accessible field net/minecraft/client/gui/render/pip/PictureInPictureRenderer textureView Lcom/mojang/renderpearl/api/textures/GpuTextureView;

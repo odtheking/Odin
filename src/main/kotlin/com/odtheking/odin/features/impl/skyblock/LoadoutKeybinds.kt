@@ -42,26 +42,26 @@ object LoadoutKeybinds : Module(
 
     init {
         on<ScreenEvent.MouseClick> {
-            if (screen is AbstractContainerScreen<*> && onClick(screen, click.button())) cancel()
+            if (screen is AbstractContainerScreen<*> && onClick(screen, InputConstants.Type.MOUSE.getOrCreate(click.button()))) cancel()
         }
 
         on<ScreenEvent.KeyPress> {
-            if (screen is AbstractContainerScreen<*> && onClick(screen, input.key)) cancel()
+            if (screen is AbstractContainerScreen<*> && onClick(screen, InputConstants.getKey(input))) cancel()
         }
     }
 
-    private fun onClick(screen: AbstractContainerScreen<*>, keyCode: Int): Boolean {
+    private fun onClick(screen: AbstractContainerScreen<*>, key: InputConstants.Key): Boolean {
         val (current, total) = loadoutRegex.find(screen.title.string)?.destructured?.let {
             it.component1().toIntOrNull() to it.component2().toIntOrNull()
         } ?: return false
         if (current == null || total == null) return false
 
-        val index = when (keyCode) {
-            nextPageKeybind.value -> if (current < total) 44 else return false
-            previousPageKeybind.value -> if (current > 1) 17 else return false
+        val index = when (key) {
+            nextPageKeybind -> if (current < total) 44 else return false
+            previousPageKeybind -> if (current > 1) 17 else return false
             else -> {
                 val keyIndex = arrayOf(loadout1, loadout2, loadout3, loadout4, loadout5, loadout6, loadout7, loadout8, loadout9, loadout10, loadout11, loadout12)
-                    .indexOfFirst { it.value == keyCode }
+                    .indexOf(key)
                 if (keyIndex == -1) return false
 
                 loadoutSlots.getOrNull(keyIndex) ?: return false

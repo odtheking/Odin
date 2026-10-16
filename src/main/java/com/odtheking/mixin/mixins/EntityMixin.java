@@ -6,6 +6,7 @@ import com.odtheking.odin.events.EntityEvent;
 import com.odtheking.odin.features.impl.dungeon.Highlight;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.InterpolationHandler;
+import net.minecraft.world.entity.PositionPath;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -25,14 +26,17 @@ public abstract class EntityMixin {
     }
 
     @WrapOperation(
-            method = "moveOrInterpolateTo(Ljava/util/Optional;Ljava/util/Optional;Ljava/util/Optional;)V",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/InterpolationHandler;interpolateTo(Lnet/minecraft/world/phys/Vec3;FF)V")
+            method = "moveOrInterpolateTo(Lnet/minecraft/world/entity/PositionPath;FFZ)V",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/InterpolationHandler;interpolateTo(Lnet/minecraft/world/entity/PositionPath;FFZ)Z")
     )
-     private void onMoveOrInterpolateTo(InterpolationHandler instance, Vec3 position, float yRot, float xRot, Operation<Void> original) {
-        original.call(instance, position, yRot, xRot);
+     private boolean onMoveOrInterpolateTo(InterpolationHandler instance, PositionPath position, float yRot, float xRot, boolean hasRotation, Operation<Boolean> original) {
+        boolean result = original.call(instance, position, yRot, xRot, hasRotation);
 
         Entity entity = (Entity)(Object)this;
-        new EntityEvent.Move(entity, position, yRot, xRot, entity.onGround()).postAndCatch();
+        Vec3 newPos = position != null ? position.endPosition() : Vec3.ZERO;
+        new EntityEvent.Move(entity, newPos, yRot, xRot, entity.onGround()).postAndCatch();
+
+        return result;
     }
 
     @Inject(method = "setOnGround", at = @At("TAIL"))
