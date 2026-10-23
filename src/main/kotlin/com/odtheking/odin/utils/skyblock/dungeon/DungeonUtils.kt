@@ -2,6 +2,7 @@ package com.odtheking.odin.utils.skyblock.dungeon
 
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.events.ScoreUpdateEvent
+import com.odtheking.odin.features.impl.dungeon.MapInfo
 import com.odtheking.odin.features.impl.dungeon.map.WorldScan
 import com.odtheking.odin.features.impl.dungeon.map.tile.DungeonRoom
 import com.odtheking.odin.utils.equalsOneOf
@@ -111,7 +112,10 @@ object DungeonUtils {
             if (mimicKilled) score += 2
             if (princeKilled) score += 1
             score += numBatsKilled
-            if (isPaul) score += 10
+            if (
+                MapInfo.forcePaul == MapInfo.PaulType.Always ||
+                MapInfo.forcePaul==MapInfo.PaulType.Normal && isPaul
+            ) score += 10
             return score
         }
 
