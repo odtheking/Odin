@@ -14,6 +14,7 @@ import com.odtheking.odin.utils.skyblock.dungeon.DungeonListener
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.skyblock.dungeon.Puzzle
 import com.odtheking.odin.utils.skyblock.dungeon.PuzzleStatus
+import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.decoration.ArmorStand
 import net.minecraft.world.entity.monster.Blaze
 
@@ -24,6 +25,9 @@ object BlazeSolver {
     private val blazeHealthRegex = Regex("^\\[Lv+\\d+]  Blaze [\\d,]+/([\\d,]+)❤$")
 
     inline val inBlazeRoom get() = DungeonUtils.currentRoomName.equalsOneOf("Lower Blaze", "Higher Blaze")
+
+    fun isBlazeTag(entity: Entity): Boolean =
+        entity is ArmorStand && inBlazeRoom && blazes.any { it.entity.id == entity.id }
 
     fun onEntityData(event: EntityEvent.SetData) {
         if (!DungeonUtils.inClear) return
