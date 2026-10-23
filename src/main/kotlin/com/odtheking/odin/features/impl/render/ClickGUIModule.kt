@@ -34,7 +34,7 @@ object ClickGUIModule : Module(
     val clickGUIColor by ColorSetting("Color", Color(50, 150, 220), desc = "The color of the Click GUI.")
     private val action by ActionSetting("Open HUD Editor", desc = "Opens the HUD editor when clicked.") { mc.setScreenAndShow(HudManager) }
 
-    val hypixelApiUrl by StringSetting("API URL", "https://api.odtheking.com/hypixel/", 128, "The Hypixel API server to connect to.", placeholder = "https://api.odtheking.com/hypixel/").hide()
+    val hypixelApiUrl by StringSetting("API url", "https://hypixel.odtheking.com/", 128, "The Hypixel API server to connect to.", placeholder = "https://hypixel.odtheking.com/").hide()
     val webSocketUrl by StringSetting("Socket URL", "wss://ws.odtheking.com/", 128, "The Websocket server to connect to.", placeholder = "wss://ws.odtheking.com/").hide()
 
     val devMessage by BooleanSetting("Developer Message", false, desc = "Sends development related messages to the chat.")
