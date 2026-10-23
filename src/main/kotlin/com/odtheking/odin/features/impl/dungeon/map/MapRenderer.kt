@@ -170,8 +170,7 @@ private fun playerRenderPosition(entity: Player?, mapPos: IVec2): Pair<Float, Fl
 
 fun GuiGraphicsExtractor.renderPlayers() {
     val showNames = mc.player?.mainHandItem?.itemId?.equalsOneOf("INFINITE_SPIRIT_LEAP", "SPIRIT_LEAP") == true
-    val headSize=DungeonMap.playerHeadScale
-    val bgSize=headSize+DungeonMap.playerHeadBackgroundScale
+    val bgSize=4+DungeonMap.playerHeadBackgroundScale
     
     for (player in DungeonUtils.dungeonTeammatesNoSelf) {
         if (player.isDead) continue
@@ -190,8 +189,9 @@ fun GuiGraphicsExtractor.renderPlayers() {
         pose().rotate(Math.toRadians(180.0 + player.renderYaw).toFloat())
 
         player.playerSkin?.let { skin ->
+            pose().scale(DungeonMap.playerHeadScale)
             fill(-bgSize, -bgSize, bgSize, bgSize, player.clazz.color.rgba)
-            PlayerFaceExtractor.extractRenderState(this, skin, -headSize, -headSize, headSize * 2)
+            PlayerFaceExtractor.extractRenderState(this, skin, -4, -4, 8)
         }
 
         pose().popMatrix()
@@ -204,12 +204,13 @@ fun GuiGraphicsExtractor.renderPlayers() {
 
     if (DungeonMap.playerHead) {
         mc.player?.skin?.let { skin ->
+            pose().scale(DungeonMap.playerHeadScale)
             fill(-bgSize, -bgSize, bgSize, bgSize, DungeonUtils.currentDungeonPlayer.clazz.color.rgba)
-            PlayerFaceExtractor.extractRenderState(this, skin, -headSize, -headSize, headSize * 2)
+            PlayerFaceExtractor.extractRenderState(this, skin, -4, -4, 8)
         }
     } else {
-        pose().translate(-0.5f, -0.5f)
-        blit(RenderPipelines.GUI_TEXTURED, marker, -2, -4, 2f, 0f, 5, 7, 8, 8)
+        pose().translate(-0.5f, -0.5f).scale(DungeonMap.playerPointerScale)
+        blit(RenderPipelines.GUI_TEXTURED, marker,-2, -4, 2f, 0f, 5, 7, 8, 8)
     }
     pose().popMatrix()
 }
