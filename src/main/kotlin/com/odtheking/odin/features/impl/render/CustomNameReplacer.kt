@@ -2,115 +2,171 @@ package com.odtheking.odin.features.impl.render
 
 import com.google.gson.JsonParser
 import com.mojang.serialization.JsonOps
+import net.minecraft.locale.Language
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.ComponentSerialization
-import net.minecraft.network.chat.MutableComponent
+import net.minecraft.network.chat.FormattedText
 import net.minecraft.network.chat.Style
-import net.minecraft.network.chat.contents.PlainTextContents
 import net.minecraft.util.FormattedCharSequence
+import net.minecraft.util.FormattedCharSink
+import java.util.*
 
 object CustomNameReplacer {
-    private class Replacement(val plainText: String, val component: Component)
+    private class Replacement(val plainText: String, val component: Component) {
+        fun sequence(outer: Style) = FormattedCharSequence { sink ->
+            component.visualOrderText.accept { index, style, codePoint -> sink.accept(index, style.applyTo(outer), codePoint) }
+        }
+    }
 
-    private class State(val regex: Regex, val replacements: Map<String, Replacement>, val startChars: BooleanArray)
+    private class Node {
+        private var chars = CharArray(0)
+        private var children = emptyArray<Node>()
+        var replacement: Replacement? = null
 
-    @Volatile private var state: State? = null
+        fun child(c: Char): Node? {
+            for (i in chars.indices) if (chars[i] == c) return children[i]
+            return null
+        }
 
-    @JvmStatic
-    fun isEnabled() = state != null
+        fun getOrAdd(c: Char): Node = child(c) ?: Node().also {
+            chars += c
+            children += it
+        }
+    }
+
+    @Volatile private var root: Node? = null
 
     @JvmStatic
     fun rebuild(players: Collection<PlayerSize.RandomPlayer>) {
-        val entries = players.mapNotNull { player ->
-            val rawJson = player.customName?.trim()?.takeIf { it.isNotEmpty() } ?: return@mapNotNull null
-            val element = runCatching { JsonParser.parseString(rawJson) }.getOrNull() ?: return@mapNotNull null
-            val parsed = ComponentSerialization.CODEC.parse(JsonOps.INSTANCE, element).result().orElse(null) ?: return@mapNotNull null
-            player.name to Replacement(parsed.string, parsed)
-        }.sortedByDescending { it.first.length }
-
-        if (entries.isEmpty()) { clear(); return }
-
-        val startChars = BooleanArray(128)
-        entries.forEach { (name, _) -> name.firstOrNull()?.takeIf { it.code < 128 }?.let { startChars[it.code] = true } }
-
-        state = State(
-            Regex("(?<![A-Za-z0-9_])(${entries.joinToString("|") { Regex.escape(it.first) }})(?![A-Za-z0-9_])"),
-            entries.toMap(),
-            startChars
-        )
+        val newRoot = Node()
+        var hasNames = false
+        for ((customName, name) in players) {
+            if (name.isEmpty() || !name.all { isWordChar(it.code) }) continue
+            val rawJson = customName?.trim()?.takeIf { it.isNotEmpty() } ?: continue
+            val element = runCatching { JsonParser.parseString(rawJson) }.getOrNull() ?: continue
+            val parsed = ComponentSerialization.CODEC.parse(JsonOps.INSTANCE, element).result().orElse(null) ?: continue
+            name.fold(newRoot) { node, c -> node.getOrAdd(c) }.replacement = Replacement(parsed.string, parsed)
+            hasNames = true
+        }
+        root = if (hasNames) newRoot else null
     }
 
     @JvmStatic
     fun clear() {
-        state = null
+        root = null
     }
 
     @JvmStatic
     fun replaceStringIfNeeded(text: String): String {
-        val s = state ?: return text
-        if (!hasStartChar(text, s) || !s.regex.containsMatchIn(text)) return text
-        return s.regex.replace(text) { match -> s.replacements[match.groupValues[1]]?.plainText ?: match.value }
-    }
-
-    @JvmStatic
-    fun replaceComponentIfNeeded(component: Component): Component? {
-        val s = state ?: return null
-        val string = component.string
-        if (!hasStartChar(string, s) || !s.regex.containsMatchIn(string)) return null
-        return transform(component, s)
+        val root = root ?: return text
+        var out: StringBuilder? = null
+        var last = 0
+        forEachName(text, root) { start, end, replacement ->
+            val builder = out ?: StringBuilder(text.length + 16).also { out = it }
+            builder.append(text, last, start).append(replacement.plainText)
+            last = end
+            true
+        }
+        return out?.append(text, last, text.length)?.toString() ?: text
     }
 
     @JvmStatic
     fun replaceSequenceIfNeeded(text: FormattedCharSequence): FormattedCharSequence {
-        val s = state ?: return text
+        val root = root ?: return text
+        val finder = NameFinder(root)
+        text.accept(finder)
+        if (!finder.endWord()) return text
 
-        var found = false
-        text.accept { _, _, cp -> if (cp < 128 && s.startChars[cp]) { found = true; false } else true }
-        if (!found) return text
-
-        val styles = ArrayList<Style>()
-        val texts = ArrayList<String>()
-        var curStyle: Style? = null
-        val cur = StringBuilder()
-        text.accept { _, style, cp ->
-            if (curStyle != null && style != curStyle) { styles.add(curStyle!!); texts.add(cur.toString()); cur.setLength(0) }
-            curStyle = style
-            cur.appendCodePoint(cp)
-            true
+        val parts = ArrayList<FormattedCharSequence>()
+        text.forEachRun { style, run ->
+            var last = 0
+            forEachName(run, root) { start, end, replacement ->
+                if (start > last) parts.add(FormattedCharSequence.forward(run.substring(last, start), style))
+                parts.add(replacement.sequence(style))
+                last = end
+                true
+            }
+            if (last < run.length) parts.add(FormattedCharSequence.forward(run.substring(last), style))
         }
-        if (cur.isNotEmpty()) { styles.add(curStyle ?: Style.EMPTY); texts.add(cur.toString()) }
-        if (texts.none { s.regex.containsMatchIn(it) }) return text
-
-        val root = Component.empty()
-        for (i in texts.indices) {
-            val holder = Component.empty().setStyle(styles[i])
-            appendReplaced(holder, texts[i], s)
-            root.append(holder)
-        }
-        return root.visualOrderText
+        return FormattedCharSequence.composite(parts)
     }
 
-    private fun transform(component: Component, s: State): MutableComponent {
-        val text = (component.contents as? PlainTextContents)?.text()
-        val out = if (text != null && s.regex.containsMatchIn(text)) Component.empty().also { appendReplaced(it, text, s) }
-        else component.plainCopy()
-        out.setStyle(component.style)
-        component.siblings.forEach { out.append(transform(it, s)) }
-        return out
+    @JvmStatic
+    fun replaceTextIfNeeded(text: FormattedText): FormattedText {
+        val root = root ?: return text
+        val hasName = text.visit { if (containsName(it, root)) FormattedText.STOP_ITERATION else Optional.empty() }.isPresent
+        if (!hasName) return text
+
+        val parts = ArrayList<FormattedText>()
+        replaceSequenceIfNeeded(Language.getInstance().getVisualOrder(text)).forEachRun { style, run -> parts.add(FormattedText.of(run, style)) }
+        return FormattedText.composite(parts)
     }
 
-    private fun appendReplaced(out: MutableComponent, text: String, s: State) {
-        var start = 0
-        for (match in s.regex.findAll(text)) {
-            if (match.range.first > start) out.append(Component.literal(text.substring(start, match.range.first)))
-            out.append(s.replacements[match.groupValues[1]]?.component ?: Component.literal(match.value))
-            start = match.range.last + 1
+    private class NameFinder(private val root: Node) : FormattedCharSink {
+        private var node: Node? = null
+        private var inWord = false
+        private var style: Style? = null
+        private var found = false
+
+        override fun accept(index: Int, style: Style, codePoint: Int): Boolean {
+            if (style != this.style) {
+                this.style = style
+                if (endWord()) return false
+            }
+            if (isWordChar(codePoint)) {
+                node = (if (inWord) node else root)?.child(codePoint.toChar())
+                inWord = true
+            } else if (endWord()) return false
+            return true
         }
-        if (start < text.length) out.append(Component.literal(text.substring(start)))
+
+        fun endWord(): Boolean {
+            if (inWord && node?.replacement != null) found = true
+            inWord = false
+            return found
+        }
     }
 
-    private fun hasStartChar(text: String, s: State): Boolean {
-        for (c in text) if (c.code < 128 && s.startChars[c.code]) return true
+    private inline fun forEachName(text: String, root: Node, action: (start: Int, end: Int, replacement: Replacement) -> Boolean) {
+        var i = 0
+        while (i < text.length) {
+            val c = text[i]
+            when {
+                c == '§' -> i += 2
+                !isWordChar(c.code) -> i++
+                else -> {
+                    val start = i
+                    var node: Node? = root
+                    while (i < text.length && isWordChar(text[i].code)) {
+                        node = node?.child(text[i])
+                        i++
+                    }
+                    val replacement = node?.replacement
+                    if (replacement != null && !action(start, i, replacement)) return
+                }
+            }
+        }
+    }
+
+    private fun containsName(text: String, root: Node): Boolean {
+        forEachName(text, root) { _, _, _ -> return true }
         return false
     }
+
+    private fun FormattedCharSequence.forEachRun(action: (Style, String) -> Unit) {
+        val builder = StringBuilder()
+        var current: Style? = null
+        accept { _, style, codePoint ->
+            if (style != current) {
+                current?.let { action(it, builder.toString()) }
+                builder.setLength(0)
+                current = style
+            }
+            builder.appendCodePoint(codePoint)
+            true
+        }
+        current?.let { action(it, builder.toString()) }
+    }
+
+    private fun isWordChar(c: Int) = c in 'a'.code..'z'.code || c in 'A'.code..'Z'.code || c in '0'.code..'9'.code || c == '_'.code
 }
