@@ -201,10 +201,9 @@ object MapScan {
 
         for (index in segments) {
             val roomColor = roomColors[index]
-            val centerColor = centerColors[index]
-
-            val newCheckmark = when {
-                centerColor == roomColor && room.checkmark.equalsOneOf(MapCheckmark.UNDISCOVERED, MapCheckmark.QUESTION_MARK) -> MapCheckmark.NONE
+            val newCheckmark = when (val centerColor = centerColors[index]) {
+                roomColor if room.checkmark.equalsOneOf(MapCheckmark.UNDISCOVERED, MapCheckmark.QUESTION_MARK) -> MapCheckmark.NONE
+                roomColor if room.type == RoomType.PUZZLE && room.checkmark == MapCheckmark.RED -> MapCheckmark.NONE
                 else -> MapCheckmark.fromMapColor(centerColor)
             }
 
