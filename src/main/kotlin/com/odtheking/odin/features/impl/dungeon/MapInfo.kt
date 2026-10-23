@@ -28,7 +28,7 @@ object MapInfo : Module(
     private val printWhenScore by BooleanSetting("300 Score Alert", true, desc = "Sends elapsed time in chat when 300 score is reached and a title.")
     private val highlightPortal by BooleanSetting("Highlight Portal", true, desc = "Highlights the blood room portal when 300 score is reached.")
     private val disableInBoss by BooleanSetting("Disable in boss", true, desc = "Disables the information display when you're in boss.")
-    val forcePaul by SelectorSetting("Force Paul",PaulType.Normal,"Controls How Paul's +10 score is handled")
+    val forcePaul by SelectorSetting("Force Paul", PaulType.Normal, desc = "Controls How Paul's +10 score is handled")
     
     enum class SecretCount { MINIMUM, REMAINING }
     enum class DeathDisplay { DEATHS, UNFOUND }

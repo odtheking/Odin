@@ -114,7 +114,7 @@ object DungeonUtils {
             score += numBatsKilled
             if (
                 MapInfo.forcePaul == MapInfo.PaulType.Always ||
-                MapInfo.forcePaul==MapInfo.PaulType.Normal && isPaul
+                MapInfo.forcePaul == MapInfo.PaulType.Normal && isPaul
             ) score += 10
             return score
         }
