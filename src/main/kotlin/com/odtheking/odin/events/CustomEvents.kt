@@ -32,7 +32,10 @@ class InputEvent(val key: InputConstants.Key) : CancellableEvent() // better mix
 
 class BlockUpdateEvent(val pos: BlockPos, val old: BlockState, val updated: BlockState) : Event
 
-class ParticleEvent(val particle: ParticleOptions, val x: Double, val y: Double, val z: Double) : CancellableEvent()
+class ParticleEvent(
+    val particle: ParticleOptions, val overrideLimiter: Boolean, val alwaysShowParticles: Boolean,
+    val x: Double, val y: Double, val z: Double, val xd: Double, val yd: Double, val zd: Double
+) : CancellableEvent()
 
 class BlockInteractEvent(val pos: BlockPos) : CancellableEvent()
 class BlockClickEvent(val pos: BlockPos) : Event
