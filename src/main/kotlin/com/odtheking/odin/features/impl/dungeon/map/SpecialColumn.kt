@@ -41,6 +41,7 @@ object SpecialColumn {
             if (!touchesViewableRoom(position.x, position.z, room)) continue
 
             if (position.x == column) {
+                if (!hasDoorToViewableRoom(position.x + position.z * 6, room)) continue
                 room.isKnown1x1 = true
                 discovered1x1s++
                 columnRoomCount++
@@ -61,6 +62,16 @@ object SpecialColumn {
             val nx = x + dx
             val nz = z + dz
             nx in 0..5 && nz in 0..5 && DungeonScan.tiles[nx + nz * 6].room?.let { it !== self && it.isViewable } == true
+        }
+
+    private fun hasDoorToViewableRoom(index: Int, self: DungeonRoom): Boolean =
+        DungeonScan.doors.values.any { door ->
+            val other = when (index) {
+                door.originTileIndex -> door.destinationTileIndex
+                door.destinationTileIndex -> door.originTileIndex
+                else -> return@any false
+            }
+            DungeonScan.tiles.getOrNull(other)?.room?.let { it !== self && it.isViewable } == true
         }
 
     private fun isPathHint(x: Int, z: Int) = DungeonScan.pathHints.any { it.position.x == x && it.position.z == z }
