@@ -13,7 +13,6 @@ import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.*
-import com.odtheking.odin.utils.Color.Companion.withAlpha
 import com.odtheking.odin.utils.render.BoxStyle
 import com.odtheking.odin.utils.render.drawStyledBox
 import com.odtheking.odin.utils.skyblock.Island
@@ -42,10 +41,10 @@ object Etherwarp : Module(
     description = "Provides configurable visual feedback for Etherwarp."
 ) {
     private val render by BooleanSetting("Show Guess", true, desc = "Shows where Etherwarp will take you.")
-    private val color by ColorSetting("Color", Colors.MINECRAFT_GOLD.withAlpha(.85f), true, desc = "Color of the box.").withDependency { render }
+    private val color by ColorSetting("Success Color", Colors.MINECRAFT_GREEN, true, desc = "Color of the box.").withDependency { render }
     private val renderFail by BooleanSetting("Show when failed", true, desc = "Shows the box even when the guess failed.").withDependency { render }
-    private val failColor by ColorSetting("Fail Color", Colors.MINECRAFT_RED.withAlpha(.85f), true, desc = "Color of the box if guess failed.").withDependency { renderFail }
-    private val renderStyle by SelectorSetting("Render Style", BoxStyle.FILLED_OUTLINE, desc = "Style of the box.").withDependency { render }
+    private val failColor by ColorSetting("Fail Color", Colors.MINECRAFT_RED, true, desc = "Color of the box if guess failed.").withDependency { renderFail }
+    private val renderStyle by SelectorSetting("Box Style", BoxStyle.FILLED_OUTLINE, desc = "Style of the box.").withDependency { render }
     private val useServerPosition by BooleanSetting("Use Server Position", false, desc = "Uses the server position for etherwarp instead of the client position.").withDependency { render }
     private val fullBlock by BooleanSetting("Full Block", false, desc = "Renders the the 1x1x1 block instead of it's actual size.").withDependency { render }
     private val depth by BooleanSetting("Depth", false, desc = "Renders the box through walls.").withDependency { render }
