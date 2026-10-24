@@ -8,3 +8,6 @@ accessible field net/minecraft/client/gui/screens/inventory/AbstractContainerScr
 accessible class com/mojang/renderpearl/backend/opengl/GlDevice
 accessible field com/mojang/renderpearl/frontend/FrontendGpuDevice backend Lcom/mojang/renderpearl/backend/api/GpuDeviceBackend;
 accessible field net/minecraft/client/gui/render/pip/PictureInPictureRenderer textureView Lcom/mojang/renderpearl/api/textures/GpuTextureView;
+accessible field net/minecraft/client/player/LocalPlayer xLast D
+accessible field net/minecraft/client/player/LocalPlayer yLast D
+accessible field net/minecraft/client/player/LocalPlayer zLast D

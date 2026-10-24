@@ -19,22 +19,20 @@ import com.odtheking.odin.utils.skyblock.Island
 import com.odtheking.odin.utils.skyblock.LocationUtils
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
-import net.minecraft.core.SectionPos
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.protocol.game.ClientboundSoundPacket
 import net.minecraft.network.protocol.game.ServerboundMovePlayerPacket
 import net.minecraft.sounds.SoundEvents
 import net.minecraft.world.entity.Pose
 import net.minecraft.world.item.ItemStack
+import net.minecraft.world.level.EmptyBlockGetter
 import net.minecraft.world.level.block.*
 import net.minecraft.world.level.block.piston.PistonHeadBlock
 import net.minecraft.world.level.block.state.BlockState
+import net.minecraft.world.level.chunk.LevelChunk
 import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.Vec3
-import kotlin.math.abs
-import kotlin.math.ceil
-import kotlin.math.max
-import kotlin.math.sign
+import kotlin.math.*
 
 object Etherwarp : Module(
     name = "Etherwarp",
@@ -55,7 +53,8 @@ object Etherwarp : Module(
     private var etherPos: EtherPos? = null
 
     private var cachedMainHandItem: ItemStack? = null
-    private var cachedEtherData: CompoundTag? = null
+    private var cachedEtherDistance: Double? = null
+    private var cachedIsConduit = false
 
     init {
         onReceive<ClientboundSoundPacket> {
@@ -66,33 +65,33 @@ object Etherwarp : Module(
 
         on<RenderExtractEvent> (EventPriority.LOW) {
             if (mc.gui.screen() != null || !render) return@on
+            val player = mc.player ?: return@on
 
-            val mainHandItem = mc.player?.mainHandItem ?: return@on
-
+            val mainHandItem = player.mainHandItem
             if (cachedMainHandItem !== mainHandItem) {
                 cachedMainHandItem = mainHandItem
-                cachedEtherData = mainHandItem.isEtherwarpItem()
+                val data = mainHandItem.isEtherwarpItem()
+                cachedEtherDistance = data?.let(::getEtherwarpDistance)
+                cachedIsConduit = data?.itemId == "ETHERWARP_CONDUIT"
             }
 
-            if (cachedEtherData == null || (mc.player?.isShiftKeyDown == false && cachedEtherData?.itemId != "ETHERWARP_CONDUIT")) return@on
+            val distance = cachedEtherDistance ?: return@on
+            if (!player.isShiftKeyDown && !cachedIsConduit) return@on
 
-            etherPos = getEtherPos(
-                if (useServerPosition) mc.player?.oldPosition() else mc.player?.position(),
-                57.0 + (cachedEtherData?.getInt("tuned_transmission")?.orElse(0) ?: 0),
-                etherWarp = true
-            )
-            if (etherPos?.succeeded != true && !renderFail) return@on
-            val color = if (etherPos?.succeeded == true) color else failColor
-            etherPos?.pos?.let { pos ->
-                val box = if (fullBlock) AABB(pos) else pos.getBlockBounds()?.move(pos) ?: AABB(pos)
+            val etherPos = (
+                if (useServerPosition) getEtherPos(Vec3(player.xLast, player.yLast, player.zLast), distance, etherWarp = true, sneaking = player.lastSentInput.shift())
+                else getEtherPos(player.position(), distance, etherWarp = true)
+            ).also { etherPos = it }
+            if (!etherPos.succeeded && !renderFail) return@on
+            val pos = etherPos.pos ?: return@on
 
-                drawStyledBox(box, color, renderStyle, depth)
-            }
+            val box = if (fullBlock) AABB(pos) else pos.getBlockBounds()?.move(pos) ?: AABB(pos)
+            drawStyledBox(box, if (etherPos.succeeded) color else failColor, renderStyle, depth)
         }
 
         on<InputEvent> {
             if (key.type != InputConstants.Type.MOUSE || key.value != InputConstants.MOUSE_BUTTON_RIGHT || !LocationUtils.isCurrentArea(Island.SinglePlayer)) return@on
-            if (cachedEtherData == null || (mc.player?.isShiftKeyDown == false && cachedEtherData?.itemId != "ETHERWARP_CONDUIT")) return@on
+            if (cachedEtherDistance == null || (mc.player?.isShiftKeyDown == false && !cachedIsConduit)) return@on
 
             etherPos?.pos?.let {
                 if (etherPos?.succeeded == false) return@on
@@ -111,28 +110,35 @@ object Etherwarp : Module(
     }
 
     data class EtherPos(val succeeded: Boolean, val pos: BlockPos?, val state: BlockState?) {
-        val vec3: Vec3 by lazy { Vec3(pos ?: BlockPos.ZERO)  }
+        val vec3: Vec3 get() = Vec3(pos ?: BlockPos.ZERO)
 
         companion object {
             val NONE = EtherPos(false, null, null)
         }
     }
 
+    fun getEtherwarpDistance(data: CompoundTag): Double =
+        57.0 + data.getInt("tuned_transmission").orElse(0)
+
     fun getEtherPos(
         position: Vec3?,
         distance: Double,
         returnEnd: Boolean = false,
-        etherWarp: Boolean = false
+        etherWarp: Boolean = false,
+        sneaking: Boolean = mc.player?.isCrouching == true
     ): EtherPos {
         val player = mc.player ?: return EtherPos.NONE
         if (position == null) return EtherPos.NONE
-        val eyeHeight = if (player.pose == Pose.SWIMMING) 0.4
-        else if (player.isCrouching) 1.27
-        else 1.62
+        val eyeHeight = when {
+            player.pose == Pose.SWIMMING -> 0.4
+            sneaking -> 1.27
+            else -> 1.62
+        }
 
         val startPos = position.addVec(y = eyeHeight)
-        val endPos = player.lookAngle.multiply(distance, distance, distance).add(startPos)
-        return traverseVoxels(startPos, endPos, etherWarp).takeUnless { it == EtherPos.NONE && returnEnd } ?: EtherPos(true, BlockPos.containing(endPos), null)
+        val endPos = startPos.add(player.lookAngle.scale(distance))
+        val result = traverseVoxels(startPos, endPos, etherWarp)
+        return if (result === EtherPos.NONE && returnEnd) EtherPos(true, BlockPos.containing(endPos), null) else result
     }
 
     /**
@@ -140,143 +146,88 @@ object Etherwarp : Module(
      * @author Bloom
      */
     private fun traverseVoxels(start: Vec3, end: Vec3, etherWarp: Boolean): EtherPos {
+        val level = mc.level ?: return EtherPos.NONE
         val (x0, y0, z0) = start
-        val (x1, y1, z1) = end
+        val (dirX, dirY, dirZ) = end.subtract(start)
 
-        var (x, y, z) = start.floorVec()
-        val (endX, endY, endZ) = end.floorVec()
-
-        val dirX = x1 - x0
-        val dirY = y1 - y0
-        val dirZ = z1 - z0
+        var x = floor(x0).toInt()
+        var y = floor(y0).toInt()
+        var z = floor(z0).toInt()
 
         val stepX = sign(dirX).toInt()
         val stepY = sign(dirY).toInt()
         val stepZ = sign(dirZ).toInt()
 
-        val invDirX = if (dirX != 0.0) 1.0 / dirX else Double.MAX_VALUE
-        val invDirY = if (dirY != 0.0) 1.0 / dirY else Double.MAX_VALUE
-        val invDirZ = if (dirZ != 0.0) 1.0 / dirZ else Double.MAX_VALUE
+        val tDeltaX = abs(1.0 / dirX)
+        val tDeltaY = abs(1.0 / dirY)
+        val tDeltaZ = abs(1.0 / dirZ)
 
-        val tDeltaX = abs(invDirX * stepX)
-        val tDeltaY = abs(invDirY * stepY)
-        val tDeltaZ = abs(invDirZ * stepZ)
+        var tMaxX = (if (stepX < 0) x0 - x else x + 1 - x0) * tDeltaX
+        var tMaxY = (if (stepY < 0) y0 - y else y + 1 - y0) * tDeltaY
+        var tMaxZ = (if (stepZ < 0) z0 - z else z + 1 - z0) * tDeltaZ
 
-        var tMaxX = abs((x + max(stepX, 0) - x0) * invDirX)
-        var tMaxY = abs((y + max(stepY, 0) - y0) * invDirY)
-        var tMaxZ = abs((z + max(stepZ, 0) - z0) * invDirZ)
+        var remaining = abs(floor(end.x).toInt() - x) + abs(floor(end.y).toInt() - y) + abs(floor(end.z).toInt() - z)
 
-        repeat(1000) {
-            val blockPos = BlockPos(x.toInt(), y.toInt(), z.toInt())
-            val level = mc.level ?: return EtherPos.NONE
-            val chunk = level.getChunk(SectionPos.blockToSectionCoord(blockPos.x), SectionPos.blockToSectionCoord(blockPos.z))
+        val pos = BlockPos.MutableBlockPos()
+        while (true) {
+            val chunk = level.chunkSource.getChunkNow(x shr 4, z shr 4) ?: return EtherPos.NONE
+            val state = chunk.getBlockState(pos.set(x, y, z))
+            val flags = flagsOf(state)
 
-            val state = chunk.getBlockState(blockPos)
-            val id = Block.getId(state)
+            if (if (etherWarp) flags and PASSABLE == 0 else flags and AIR == 0) {
+                if (flags and PASSABLE != 0) return EtherPos(false, pos.immutable(), state)
 
-            val isPassable = (blockFlags[id] and PASSABLE) != 0
-            val isSolid = !isPassable
-
-            if ((etherWarp && isSolid) || (!etherWarp && id != 0)) {
-
-                if (!etherWarp && isPassable) return EtherPos(false, blockPos, state)
-
-                val collisionTop = state.getCollisionShape(level, blockPos).max(Direction.Axis.Y)
-                val clearanceBaseY = blockPos.y + max(1, ceil(collisionTop).toInt())
-
-                val feetState = chunk.getBlockState(BlockPos(blockPos.x, clearanceBaseY, blockPos.z))
-                val feetFlags = blockFlags[Block.getId(feetState)]
-
-                if ((feetFlags and PASSABLE) == 0 || (feetFlags and BLOCKS_FEET) != 0)
-                    return EtherPos(false, blockPos, state)
-
-                val headState = chunk.getBlockState(BlockPos(blockPos.x, clearanceBaseY + 1, blockPos.z))
-                val headFlags = blockFlags[Block.getId(headState)]
-
-                if ((headFlags and PASSABLE) == 0 || (headFlags and BLOCKS_FEET) != 0)
-                    return EtherPos(false, blockPos, state)
-
-                return EtherPos(true, blockPos, state)
+                val feetY = y + (flags ushr STAND_OFFSET_SHIFT)
+                return EtherPos(!chunk.obstructs(BlockPos(x, feetY, z)) && !chunk.obstructs(BlockPos(x, feetY + 1, z)), pos.immutable(), state)
             }
 
-            if (x == endX && y == endY && z == endZ) return EtherPos.NONE
+            if (remaining-- == 0) return if (flags and AIR != 0) EtherPos.NONE else EtherPos(false, pos.immutable(), state)
 
-            when {
-                tMaxX <= tMaxY && tMaxX <= tMaxZ -> {
-                    tMaxX += tDeltaX
-                    x += stepX
-                }
-                tMaxY <= tMaxZ -> {
-                    tMaxY += tDeltaY
-                    y += stepY
-                }
-                else -> {
-                    tMaxZ += tDeltaZ
-                    z += stepZ
-                }
+            if (tMaxX <= tMaxY && tMaxX <= tMaxZ) {
+                tMaxX += tDeltaX
+                x += stepX
+            } else if (tMaxY <= tMaxZ) {
+                tMaxY += tDeltaY
+                y += stepY
+            } else {
+                tMaxZ += tDeltaZ
+                z += stepZ
             }
         }
-
-        return EtherPos.NONE
     }
 
-    private const val PASSABLE = 1        // ray passes through
-    private const val BLOCKS_FEET = 2     // cannot stand inside
+    private fun LevelChunk.obstructs(pos: BlockPos): Boolean = flagsOf(getBlockState(pos)) and OBSTRUCTS != 0
+    private fun flagsOf(state: BlockState): Int = blockFlags[Block.getId(state)]
 
-    private val blockFlags: IntArray = IntArray(Block.BLOCK_STATE_REGISTRY.size()).apply {
-        Block.BLOCK_STATE_REGISTRY.forEach { state ->
-            val block = state.block
-            val id = Block.getId(state)
+    private const val STAND_OFFSET_SHIFT = 3
+    private const val OBSTRUCTS = 4
+    private const val PASSABLE = 2
+    private const val AIR = 1
 
-            val passable = when (block) {
-                is AirBlock -> true
+    private fun computeFlags(state: BlockState): Int {
+        val block = state.block
+        val collision = state.getCollisionShape(EmptyBlockGetter.INSTANCE, BlockPos.ZERO)
 
-                is FlowerBlock, is TallGrassBlock, is BushBlock, is TallFlowerBlock, is ShortDryGrassBlock -> true
-                is TorchBlock, is RedstoneTorchBlock -> true
-                is TripWireBlock, is TripWireHookBlock -> true
-                is RailBlock -> true
-                is FireBlock -> true
-                is VineBlock -> true
-                is LiquidBlock -> true
-                is SaplingBlock -> true
-                is CropBlock, is StemBlock -> true
-                is SeagrassBlock, is TallSeagrassBlock -> true
-                is SugarCaneBlock -> true
-                is MushroomBlock -> true
-                is NetherWartBlock -> true
-                is RedstoneWireBlock, is ComparatorBlock, is RepeaterBlock -> true
-                is SmallDripleafBlock, is BigDripleafStemBlock -> true
-                is DoublePlantBlock -> true
-                is LeverBlock -> true
-                is SnowLayerBlock -> true
-                is BubbleColumnBlock -> true
-                is GrowingPlantBlock -> true
-                is PistonHeadBlock -> true
-                is DryVegetationBlock -> true
-                is ButtonBlock -> true
-                is LanternBlock -> true
-                is SkullBlock, is WallSkullBlock -> true
-                is LadderBlock -> true
-                is FlowerPotBlock -> true
-                is WebBlock -> true
-                is NetherPortalBlock -> true
-
-                else -> false
-            }
-
-            val blocksFeet = when (block) {
-                is SkullBlock, is WallSkullBlock -> true
-                is FlowerPotBlock -> true
-                is LadderBlock -> true
-                is VineBlock -> true
-                else -> false
-            }
-
-            var flags = 0
-            if (passable) flags = flags or PASSABLE
-            if (blocksFeet) flags = flags or BLOCKS_FEET
-
-            this[id] = flags
+        val noHitbox = block is SignBlock || block is AbstractBannerBlock || block is TripWireHookBlock || block is BasePressurePlateBlock
+        val passable = !noHitbox && when (block) {
+            is ButtonBlock, is SkullBlock, is WallSkullBlock, is LadderBlock,
+            is BubbleColumnBlock, is FlowerPotBlock, is PistonHeadBlock, is LeverBlock,
+            is NetherWartBlock, is ComparatorBlock, is RedstoneTorchBlock, is RepeaterBlock -> true
+            else -> collision.isEmpty
         }
+        val blocksFeet = when (block) {
+            is SkullBlock, is WallSkullBlock, is ComparatorBlock, is RepeaterBlock, is FlowerPotBlock, is LadderBlock -> true
+            else -> false
+        }
+        val standOffset = max(1, ceil(collision.max(Direction.Axis.Y)).toInt())
+
+        return (standOffset shl STAND_OFFSET_SHIFT) or
+            (if (state.isAir) AIR else 0) or
+            (if (passable) PASSABLE else 0) or
+            (if ((!passable && !noHitbox) || blocksFeet) OBSTRUCTS else 0)
+    }
+
+    private val blockFlags = IntArray(Block.BLOCK_STATE_REGISTRY.size()) { id ->
+        Block.BLOCK_STATE_REGISTRY.byId(id)?.let(::computeFlags) ?: 0
     }
 }
