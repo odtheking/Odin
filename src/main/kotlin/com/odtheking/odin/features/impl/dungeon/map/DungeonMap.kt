@@ -31,6 +31,9 @@ object DungeonMap : Module(
     val playerNamesScaling by NumberSetting("Player Names Scaling", 0.75f, 0.1..2.0, 0.05f, desc = "Scale of player name labels.").withDependency { playerDropdown }
     val playerNameColor by ColorSetting("Player Name Color", Color(70, 70, 70), true, desc = "Color of player name labels.").withDependency { playerDropdown }
     val playerHead by BooleanSetting("Own Player Head", desc = "Shows the player head on the map.").withDependency { playerDropdown }
+    val playerHeadScale by NumberSetting("Player Head Scale",1f,0.5..2.0,0.1, desc = "Scale of rendered player heads").withDependency { playerDropdown && playerHead }
+    val playerHeadBackgroundScale by NumberSetting("Player Head Background Scale",1,0..2, desc = "Scale of rendered player head background").withDependency { playerDropdown && playerHead }
+    val playerPointerScale by NumberSetting("Player Pointer Scale",1f,0.5..2.0,0.1, desc = "Scale of rendered player head background").withDependency { playerDropdown && !playerHead }
 
     private val roomDropdown by DropdownSetting("Room Settings", desc = "Shows color settings for the different room types.")
     val normalRoomColor by ColorSetting("Normal Room", Color(107, 58, 17), true, desc = "Color of normal rooms.").withDependency { roomDropdown }
