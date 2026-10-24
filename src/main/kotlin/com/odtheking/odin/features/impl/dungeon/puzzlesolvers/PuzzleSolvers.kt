@@ -212,7 +212,7 @@ object PuzzleSolvers : Module(
 
     private val puzzlePBs = PersonalBest(this, "PuzzlePBs")
 
-    @JvmStatic fun shouldHideBlaze(entity: Entity) = entity is Blaze && enabled && blazeSolver && hideBlazes && DungeonUtils.inClear
+    @JvmStatic fun shouldHideBlaze(entity: Entity) = enabled && blazeSolver && hideBlazes && DungeonUtils.inClear && (entity is Blaze || BlazeSolver.isBlazeTag(entity))
 
     fun onPuzzleComplete(puzzleName: String) {
         puzzleTimersMap[puzzleName]?.let { puzzleTimer ->
