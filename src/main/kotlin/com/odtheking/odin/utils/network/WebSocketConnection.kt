@@ -8,13 +8,16 @@ import java.net.http.WebSocket
 import java.nio.ByteBuffer
 import java.nio.charset.StandardCharsets
 import java.util.concurrent.CompletionStage
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicReference
 
 fun webSocket(func: WebSocketConnection.() -> Unit) = WebSocketConnection().apply(func)
 
 class WebSocketConnection {
     private val _webSocket = AtomicReference<WebSocket?>(null)
-    private val httpClient = HttpClient.newHttpClient()
+    private val httpClient by lazy { HttpClient.newHttpClient() }
+    private val executor = Executors.newSingleThreadExecutor { Thread(it, "Odin-WebSocket").apply { isDaemon = true } }
     private var onMessageFunc: (String) -> Unit = { }
 
     fun onMessage(func: (String) -> Unit) {
@@ -29,11 +32,17 @@ class WebSocketConnection {
             logger.warn("Cannot send message: WebSocket not connected")
             return false
         }
-        ws.sendText(message, true)
+        executor.execute {
+            try {
+                ws.sendText(message, true).get(10, TimeUnit.SECONDS)
+            } catch (e: Exception) {
+                logger.error("Failed to send WebSocket message: ${e.message}", e)
+            }
+        }
         return true
     }
 
-    fun connect(url: String) {
+    fun connect(url: String) = executor.execute {
         _webSocket.getAndSet(null)?.sendClose(1000, "Reconnecting")
 
         val listener = object : WebSocket.Listener {
@@ -85,6 +94,7 @@ class WebSocketConnection {
     }
 
     fun shutdown() {
-        _webSocket.getAndSet(null)?.sendClose(1000, "Client shutdown")
+        val ws = _webSocket.getAndSet(null) ?: return
+        executor.execute { ws.sendClose(1000, "Client shutdown") }
     }
 }
