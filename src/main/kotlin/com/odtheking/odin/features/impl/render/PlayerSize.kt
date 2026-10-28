@@ -47,7 +47,6 @@ object PlayerSize : Module(
         }
     }.withDependency { isRandom && !useClientSize }
 
-
     var randoms: HashMap<UUID, RandomPlayer> = HashMap()
     val isRandom get() = randoms.containsKey(mc.user.profileId)
 

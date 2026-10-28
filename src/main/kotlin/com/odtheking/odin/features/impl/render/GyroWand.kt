@@ -4,7 +4,7 @@ import com.odtheking.odin.clickgui.settings.RenderableSetting.Companion.withDepe
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.clickgui.settings.impl.ColorSetting
 import com.odtheking.odin.events.LevelEvent
-import com.odtheking.odin.events.MessageEvent
+import com.odtheking.odin.events.ParticleEvent
 import com.odtheking.odin.events.RenderExtractEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
@@ -13,7 +13,9 @@ import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.itemId
 import com.odtheking.odin.utils.render.drawCylinder
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils.getAbilityCooldown
+import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.world.item.Items
+import kotlin.math.abs
 
 object GyroWand : Module(
     name = "Gyro Wand",
@@ -24,26 +26,43 @@ object GyroWand : Module(
     private val cooldownColor by ColorSetting("Cooldown Color", Colors.MINECRAFT_RED.withAlpha(0.5f), true, desc = "The color of the cooldown of the Gyrokinetic Wand.").withDependency { showCooldown }
     private val depthCheck by BooleanSetting("Depth Check", true, desc = "Whether or not the cylinder should have a depth check.")
 
-    private val gravityStormRegex = Regex("(?s)(.*(-\\d+ Mana \\(Gravity Storm\\)).*)")
-    private var cooldownTimer = 0L
+    private data class Burst(val start: Long = 0L, val y: Double = 0.0, val count: Int = 0)
+
+    private var burst = Burst()
+    private var lastUse = 0L
+
+    private val onCooldown get() =
+        System.currentTimeMillis() - lastUse < getAbilityCooldown(30_000L)
 
     init {
-        on<MessageEvent.ModifyOverlay> {
-            if (message.matches(gravityStormRegex)) cooldownTimer = System.currentTimeMillis()
+        on<ParticleEvent> {
+            if (particle != ParticleTypes.WITCH || xd != 0.0 || yd != 0.0 || zd != 0.0 || onCooldown) return@on
+            val now = System.currentTimeMillis()
+
+            burst = if (now - burst.start > 120L || abs(y - burst.y) > 0.02) Burst(now, y, 1)
+            else burst.copy(count = burst.count + 1)
+
+            if (burst.count >= 5) {
+                lastUse = now
+                burst = Burst()
+            }
         }
 
         on<RenderExtractEvent> {
-            val mainHand = mc.player?.mainHandItem ?: return@on
-            if (mainHand.item != Items.BLAZE_ROD || mainHand.itemId != "GYROKINETIC_WAND") return@on
-            val position = Etherwarp.getEtherPos(mc.player?.position(), distance = 25.0, etherWarp = false).takeIf { it.state?.isAir == false }?: return@on
+            val player = mc.player ?: return@on
+            player.mainHandItem.takeIf { it.item == Items.BLAZE_ROD && it.itemId == "GYROKINETIC_WAND" } ?: return@on
+            val position = Etherwarp.getEtherPos(player.position(), distance = 25.0, etherWarp = false).takeIf { it.state?.isAir == false } ?: return@on
+
             drawCylinder(
                 position.vec3.add(0.5, 1.0, 0.5), 10f, 0.3f,
-                if (showCooldown && System.currentTimeMillis() - cooldownTimer < getAbilityCooldown(30_000L)) cooldownColor else color, 64, depth = depthCheck
+                if (showCooldown && onCooldown) cooldownColor else color,
+                64, depth = depthCheck
             )
         }
 
         on<LevelEvent.Load> {
-            cooldownTimer = 0L
+            lastUse = 0L
+            burst = Burst()
         }
     }
 }

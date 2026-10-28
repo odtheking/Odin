@@ -43,7 +43,8 @@ object RequestUtils {
     suspend fun getUuid(name: String): Result<UuidData> {
         uuidCache[name]?.let { return Result.success(it) }
 
-        return fetchJson<UuidData>("https://api.minecraftservices.com/minecraft/profile/lookup/name/$name")
+        return (fetchJson<UuidData>("https://mowojang.seraph.si/users/profiles/minecraft/$name").takeIf { it.isSuccess }
+            ?: fetchJson<UuidData>("https://api.minecraftservices.com/minecraft/profile/lookup/name/$name"))
             .onSuccess { uuidCache[name] = it }
     }
 

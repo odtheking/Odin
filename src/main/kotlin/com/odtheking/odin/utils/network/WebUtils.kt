@@ -11,7 +11,10 @@ import java.net.URI
 import java.net.http.HttpClient
 import java.net.http.HttpRequest
 import java.net.http.HttpResponse
+import java.net.http.HttpResponse.BodyHandler
+import java.net.http.HttpResponse.BodySubscribers
 import java.time.Duration
+import java.util.zip.GZIPInputStream
 import kotlin.coroutines.resume
 
 object WebUtils {
@@ -22,6 +25,13 @@ object WebUtils {
         .connectTimeout(Duration.ofSeconds(5))
         .followRedirects(HttpClient.Redirect.NORMAL)
         .build()
+
+    private val gzipAwareString = BodyHandler { info ->
+        val gzipped = info.headers().firstValue("Content-Encoding").orElse("").equals("gzip", ignoreCase = true)
+        BodySubscribers.mapping(BodySubscribers.ofByteArray()) { bytes ->
+            (if (gzipped) GZIPInputStream(bytes.inputStream()).use { it.readBytes() } else bytes).toString(Charsets.UTF_8)
+        }
+    }
 
     suspend inline fun <reified T> fetchJson(url: String, json: Gson = gson): Result<T> = runCatching {
         json.fromJson<T>(fetchString(url).getOrElse { return Result.failure(it) }, T::class.java)
@@ -57,6 +67,7 @@ object WebUtils {
             .header("Accept", "application/json")
             .header("User-Agent", USER_AGENT)
             .header("X-Mod-Version", OdinMod.version.friendlyString)
+            .header("Accept-Encoding", "gzip")
             .GET()
             .timeout(Duration.ofSeconds(10))
             .build()
@@ -64,7 +75,7 @@ object WebUtils {
     private suspend fun executeRequest(request: HttpRequest): Result<HttpResponse<String>> = suspendCancellableCoroutine { cont ->
         logger.info("Making request to ${request.uri()}")
 
-        val future = httpClient.sendAsync(request, HttpResponse.BodyHandlers.ofString())
+        val future = httpClient.sendAsync(request, gzipAwareString)
 
         cont.invokeOnCancellation {
             logger.info("Cancelling request to ${request.uri()}")

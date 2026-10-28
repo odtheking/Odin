@@ -79,8 +79,8 @@ object TickTimers : Module(
 
     private val fireFreezeHud by HUD("Fire Freeze Hud", "Displays a timer for when to use fire freeze in M3."){
         val timeTillFreeze = fireFreezeTime - 100
-        if (it)                         textDim(formatTimer(50, 106, "Fire Freeze:"), 0, 0, Colors.MINECRAFT_DARK_RED)
-        else if (timeTillFreeze > 0)    textDim(formatTimer(timeTillFreeze, 106, "Fire Freeze:"), 0, 0, Colors.MINECRAFT_DARK_RED)
+        if (it)                         textDim(formatTimer(50, 60, "Fire Freeze:"), 0, 0, Colors.MINECRAFT_DARK_RED)
+        else if (timeTillFreeze > 0)    textDim(formatTimer(timeTillFreeze, 60, "Fire Freeze:"), 0, 0, Colors.MINECRAFT_DARK_RED)
         else if (fireFreezeTime >= 0)   textDim("Use Fire Freeze", 0, 0, Colors.MINECRAFT_DARK_RED)
         else 0 to 0
     }
@@ -107,7 +107,7 @@ object TickTimers : Module(
                     pyTriggered = true
                     pyTickTime = 55
                 }
-                message.matches(professorFireFreezeRegex) -> fireFreezeTime = 206
+                message.matches(professorFireFreezeRegex) -> fireFreezeTime = 160
             }
         }
 

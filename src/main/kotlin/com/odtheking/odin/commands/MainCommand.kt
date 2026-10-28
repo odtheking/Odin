@@ -75,6 +75,21 @@ val mainCommand = Commodore("odin", "od") {
         }
     }
 
+    literal("paul") {
+        literal("auto").runs {
+            DungeonUtils.paulOverride = null
+            modMessage("§aPaul bonus set to §fauto§a.")
+        }
+        literal("on").runs {
+            DungeonUtils.paulOverride = true
+            modMessage("§aPaul bonus forced §fon§a.")
+        }
+        literal("off").runs {
+            DungeonUtils.paulOverride = false
+            modMessage("§aPaul bonus forced §foff§a.")
+        }
+    }
+
     literal("toggle") {
         literal("module").executable {
             param("moduleName") {

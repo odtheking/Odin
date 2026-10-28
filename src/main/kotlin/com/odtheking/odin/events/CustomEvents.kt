@@ -10,6 +10,7 @@ import com.odtheking.odin.utils.skyblock.dungeon.terminals.terminalhandler.Termi
 import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderContext
 import net.minecraft.client.multiplayer.ClientLevel
 import net.minecraft.core.BlockPos
+import net.minecraft.core.particles.ParticleOptions
 import net.minecraft.network.chat.Component
 import net.minecraft.network.protocol.Packet
 import net.minecraft.network.protocol.game.ClientboundSoundPacket
@@ -30,6 +31,11 @@ import net.minecraft.world.phys.Vec3
 class InputEvent(val key: InputConstants.Key) : CancellableEvent() // better mixin is prob ideal no need for cancellable
 
 class BlockUpdateEvent(val pos: BlockPos, val old: BlockState, val updated: BlockState) : Event
+
+class ParticleEvent(
+    val particle: ParticleOptions, val overrideLimiter: Boolean, val alwaysShowParticles: Boolean,
+    val x: Double, val y: Double, val z: Double, val xd: Double, val yd: Double, val zd: Double
+) : CancellableEvent()
 
 class BlockInteractEvent(val pos: BlockPos) : CancellableEvent()
 class BlockClickEvent(val pos: BlockPos) : Event

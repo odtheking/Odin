@@ -7,10 +7,10 @@ import com.odtheking.odin.clickgui.settings.impl.KeybindSetting
 import com.odtheking.odin.clickgui.settings.impl.KeybindSetting.Companion.isDown
 import com.odtheking.odin.events.EntityInteractEvent
 import com.odtheking.odin.events.RenderExtractEvent
+import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.*
-import com.odtheking.odin.utils.handlers.TickTask
 import com.odtheking.odin.utils.render.drawText
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.skyblock.dungeon.M7Phases
@@ -34,26 +34,28 @@ object ArrowAlign : Module(
     private val centerBlock = BlockPos(0, 120, 77)
 
     init {
-        TickTask(1) {
-            if (!enabled || DungeonUtils.getF7Phase() != M7Phases.P3) return@TickTask
-            clicksRemaining.clear()
-            if ((mc.player?.blockPosition()?.distSqr(centerBlock) ?: return@TickTask) > 200) {
-                currentFrameRotations = null
-                targetSolution = null
-                return@TickTask
-            }
-
-            currentFrameRotations = getFrames()
-
-            possibleSolutions.forEach { arr ->
-                for (i in arr.indices) {
-                    if ((arr[i] == -1 || currentFrameRotations?.get(i) == -1) && arr[i] != currentFrameRotations?.get(i)) return@forEach
+        on<TickEvent.Server> {
+            mc.execute {
+                if (DungeonUtils.getF7Phase() != M7Phases.P3) return@execute
+                clicksRemaining.clear()
+                if ((mc.player?.blockPosition()?.distSqr(centerBlock) ?: return@execute) > 200) {
+                    currentFrameRotations = null
+                    targetSolution = null
+                    return@execute
                 }
 
-                targetSolution = arr
+                currentFrameRotations = getFrames()
 
-                for (i in arr.indices) {
-                    clicksRemaining[i] = calculateClicksNeeded(currentFrameRotations?.get(i) ?: return@forEach, arr[i]).takeIf { it != 0 } ?: continue
+                possibleSolutions.forEach { arr ->
+                    for (i in arr.indices) {
+                        if ((arr[i] == -1 || currentFrameRotations?.get(i) == -1) && arr[i] != currentFrameRotations?.get(i)) return@forEach
+                    }
+
+                    targetSolution = arr
+
+                    for (i in arr.indices) {
+                        clicksRemaining[i] = calculateClicksNeeded(currentFrameRotations?.get(i) ?: return@forEach, arr[i]).takeIf { it != 0 } ?: continue
+                    }
                 }
             }
         }

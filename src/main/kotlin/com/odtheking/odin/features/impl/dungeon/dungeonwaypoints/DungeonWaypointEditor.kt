@@ -9,6 +9,7 @@ import com.odtheking.odin.features.impl.dungeon.dungeonwaypoints.DungeonWaypoint
 import com.odtheking.odin.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.WaypointType
 import com.odtheking.odin.features.impl.dungeon.map.tile.DungeonRoom
 import com.odtheking.odin.features.impl.render.Etherwarp
+import com.odtheking.odin.features.impl.render.Etherwarp.getEtherwarpDistance
 import com.odtheking.odin.utils.*
 import com.odtheking.odin.utils.Color.Companion.withAlpha
 import com.odtheking.odin.utils.render.BoxStyle
@@ -36,6 +37,17 @@ fun DungeonWaypoints.renderWaypoints(event: RenderExtractEvent) {
 
     reachPosition?.takeIf { allowEdits }?.let { pos ->
         event.drawStyledBox(relativeAabbAt(pos).move(pos), color.withAlpha(0.3f), style = if (filled) BoxStyle.FILLED else BoxStyle.OUTLINE, depthCheck)
+    }
+}
+
+private fun DungeonWaypoints.cacheEtherwarpTarget() {
+    mc.player?.mainHandItem?.isEtherwarpItem()?.let { item ->
+        Etherwarp.getEtherPos(mc.player?.position(), getEtherwarpDistance(item))
+            .takeIf { it.succeeded && it.pos != null }
+            ?.also {
+                lastEtherTime = System.currentTimeMillis()
+                lastEtherPos = it.pos
+            }
     }
 }
 
@@ -78,17 +90,6 @@ val reachPosition: BlockPos?
             else -> null
         }
     }
-
-private fun DungeonWaypoints.cacheEtherwarpTarget() {
-    mc.player?.mainHandItem?.isEtherwarpItem()?.let { item ->
-        Etherwarp.getEtherPos(mc.player?.position(), 56.0 + item.getInt("tuned_transmission").orElse(0))
-            .takeIf { it.succeeded && it.pos != null }
-            ?.also {
-                lastEtherTime = System.currentTimeMillis()
-                lastEtherPos = it.pos
-            }
-    }
-}
 
 private fun DungeonWaypoints.openWaypointTitlePrompt(
     room: DungeonRoom,

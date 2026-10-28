@@ -103,8 +103,10 @@ object DungeonUtils {
     inline val currentRoom: DungeonRoom?
         get() = WorldScan.currentRoom
 
+    var paulOverride: Boolean? = null
+
     inline val isPaul: Boolean
-        get() = DungeonListener.paul
+        get() = paulOverride ?: DungeonListener.paul
 
     inline val getBonusScore: Int
         get() {

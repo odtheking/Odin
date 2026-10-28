@@ -9,12 +9,12 @@ import com.odtheking.odin.features.Module
 import com.odtheking.odin.features.impl.dungeon.map.tile.RoomType
 import com.odtheking.odin.utils.*
 import com.odtheking.odin.utils.Color.Companion.withAlpha
-import com.odtheking.odin.utils.handlers.TickTask
 import com.odtheking.odin.utils.render.BoxStyle
 import com.odtheking.odin.utils.render.textDim
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.skyblock.dungeon.Puzzle
 import net.minecraft.core.BlockPos
+import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.network.chat.ClickEvent
 import net.minecraft.network.chat.Component
 import net.minecraft.network.chat.HoverEvent
@@ -22,6 +22,8 @@ import net.minecraft.network.chat.Style
 import net.minecraft.network.protocol.game.ClientboundBlockEventPacket
 import net.minecraft.network.protocol.game.ClientboundPlayerPositionPacket
 import net.minecraft.world.InteractionHand
+import net.minecraft.world.entity.Entity
+import net.minecraft.world.entity.monster.Blaze
 import net.minecraft.world.level.block.Blocks
 
 object PuzzleSolvers : Module(
@@ -55,7 +57,7 @@ object PuzzleSolvers : Module(
     private val blazeDropDown by DropdownSetting("Blaze", desc = "Shows settings for the Blaze puzzle solver.")
     private val blazeSolver by BooleanSetting("Blaze Solver", true, desc = "Shows you the solution for the Blaze puzzle").withDependency { blazeDropDown }
     private val blazeLineNext by BooleanSetting("Blaze Solver Next Line", true, desc = "Shows the next line to click.").withDependency { blazeSolver && blazeDropDown }
-    private val blazeLineAmount by NumberSetting("Blaze Solver Lines", 1, 1..10, 1, desc = "Amount of lines to show.").withDependency { blazeSolver && blazeDropDown }
+    private val blazeLineAmount by NumberSetting("Blaze Solver Line", 2, 1..10, 1, desc = "Amount of lines to show.").withDependency { blazeSolver && blazeDropDown }
     private val blazeLineWidth by NumberSetting("Blaze Solver Lines Width", 2f, 0.5..5.0, 0.1, desc = "Width for blaze lines.").withDependency { blazeSolver && blazeDropDown }
     private val blazeStyle by SelectorSetting("Blaze Style", BoxStyle.FILLED_OUTLINE, desc = "Whether or not the box should be filled.").withDependency { blazeSolver && blazeDropDown }
     private val blazeFirstColor by ColorSetting("First Color", Colors.MINECRAFT_GREEN.withAlpha(.75f), true, desc = "Color for the first blaze.").withDependency { blazeSolver && blazeDropDown }
@@ -63,6 +65,7 @@ object PuzzleSolvers : Module(
     private val blazeThirdColor by ColorSetting("Third Color", Colors.MINECRAFT_RED.withAlpha(.75f), true, desc = "Color for the third blaze.").withDependency { blazeSolver && blazeDropDown }
     private val blazeAllColor by ColorSetting("Other Color", Colors.WHITE.withAlpha(.3f), true, desc = "Color for the other blazes.").withDependency { blazeSolver && blazeDropDown }
     private val blazeSendComplete by BooleanSetting("Send Complete", false, desc = "Send complete message.").withDependency { blazeSolver && blazeDropDown }
+    private val hideBlazes by BooleanSetting("Hide Blazes", true, desc = "Hides the blazes while the solver is active.").withDependency { blazeSolver && blazeDropDown }
     private val blazeReset by ActionSetting("Reset Blaze", desc = "Resets the solver.") { BlazeSolver.reset() }.withDependency { blazeSolver && blazeDropDown }
 
     private val beamsDropDown by DropdownSetting("Creeper Beams", desc = "Shows settings for the Creeper Beams puzzle solver.")
@@ -105,15 +108,12 @@ object PuzzleSolvers : Module(
     private inline val isInPuzzle get() = DungeonUtils.currentRoom?.data?.type == RoomType.PUZZLE
 
     init {
-        TickTask(5) {
-            if (!enabled || !isInPuzzle) return@TickTask
-            if (blazeSolver) BlazeSolver.getBlaze()
-            if (waterSolver) WaterSolver.scan(optimizedSolutions)
-        }
-
         on<TickEvent.Server> {
             if (!DungeonUtils.inClear) return@on
-            if (waterSolver) WaterSolver.onServerTick()
+            if (waterSolver) {
+                WaterSolver.scan(optimizedSolutions)
+                WaterSolver.onServerTick()
+            }
             QuizSolver.onServerTick()
         }
 
@@ -135,13 +135,30 @@ object PuzzleSolvers : Module(
             TPMazeSolver.onRoomEnter(this)
             BeamsSolver.onRoomEnter(this)
             QuizSolver.onRoomEnter(this)
+            BlazeSolver.onRoomEnter(this)
             val name = room?.data?.name ?: return@on
             if (puzzleTimers && room.data?.type == RoomType.PUZZLE && puzzleTimersMap.none { it.key == name }) puzzleTimersMap[name] = PuzzleTimer()
+        }
+
+        on<EntityEvent.SetData> {
+            if (blazeSolver) BlazeSolver.onEntityData(this)
+        }
+
+        on<EntityEvent.Remove> {
+            if (blazeSolver) BlazeSolver.onEntityRemove(this)
+        }
+
+        on<EntityEvent.Event> {
+            if (blazeSolver) BlazeSolver.onEntityDeath(this, blazeSendComplete)
         }
 
         on<BlockUpdateEvent> {
             if (!DungeonUtils.inClear) return@on
             if (beamsSolver) BeamsSolver.onBlockChange(this)
+        }
+
+        on<ParticleEvent> {
+            if (blazeSolver && hideBlazes && particle == ParticleTypes.LARGE_SMOKE && BlazeSolver.inBlazeRoom) cancel()
         }
 
         onReceive<ClientboundPlayerPositionPacket> {
@@ -185,7 +202,7 @@ object PuzzleSolvers : Module(
             if (iceFillSolver) IceFillSolver.onRenderWorld(this, iceFillColor)
             if (weirdosSolver) WeirdosSolver.onRenderWorld(this, weirdosColor, weirdosWrongColor, weirdosStyle)
             if (boulderSolver) BoulderSolver.onRenderWorld(this, showAllBoulderClicks, boulderStyle, boulderColor)
-            if (blazeSolver)   BlazeSolver.onRenderWorld(this, blazeLineNext, blazeLineAmount, blazeStyle, blazeFirstColor, blazeSecondColor, blazeThirdColor, blazeAllColor, blazeSendComplete, blazeLineWidth)
+            if (blazeSolver)   BlazeSolver.onRenderWorld(this, blazeLineNext, blazeLineAmount, blazeStyle, blazeFirstColor, blazeSecondColor, blazeThirdColor, blazeAllColor, blazeLineWidth)
             if (beamsSolver)   BeamsSolver.onRenderWorld(this, beamStyle, beamsTracer, beamsAlpha)
             if (waterSolver)   WaterSolver.onRenderWorld(this, showTracer, tracerColorFirst, tracerColorSecond)
             if (quizSolver)    QuizSolver.onRenderWorld(this, quizColor, quizDepth)
@@ -194,6 +211,8 @@ object PuzzleSolvers : Module(
     }
 
     private val puzzlePBs = PersonalBest(this, "PuzzlePBs")
+
+    @JvmStatic fun shouldHideBlaze(entity: Entity) = enabled && blazeSolver && hideBlazes && DungeonUtils.inClear && (entity is Blaze || BlazeSolver.isBlazeTag(entity))
 
     fun onPuzzleComplete(puzzleName: String) {
         puzzleTimersMap[puzzleName]?.let { puzzleTimer ->
