@@ -65,7 +65,7 @@ fun RenderExtractEvent.drawTexturedQuad(
     val hh = height * 0.5
 
     val poseStack = cameraRelativePose()
-    context.submitNodeCollector().submitCustomGeometry(poseStack, RenderTypes.entityCutout(texture)) { pose, buffer ->
+    context.submitNodeCollector().submitCustomGeometry(poseStack, RenderTypes.entityCutoutZOffset(texture)) { pose, buffer ->
         fun vertex(p: Vec3, u: Float, v: Float) {
             buffer.addVertex(pose, p.x.toFloat(), p.y.toFloat(), p.z.toFloat())
                 .setColor(color.rgba)

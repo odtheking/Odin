@@ -3,6 +3,7 @@ package com.odtheking.odin.utils.render
 import com.mojang.blaze3d.vertex.DefaultVertexFormat
 import com.mojang.renderpearl.api.pipeline.*
 import net.minecraft.client.renderer.RenderPipelines
+import net.minecraft.client.renderer.oit.OitPipelineSet
 import net.minecraft.resources.Identifier
 
 object CustomRenderPipelines {
@@ -67,6 +68,18 @@ object CustomRenderPipelines {
             .withColorTargetState(TRANSLUCENT)
             .withCull(false)
             .withLocation("odin/quads_translucent_esp")
+            .build()
+    )
+
+    val OIT_LINES_ESP: OitPipelineSet = RenderPipelines.register(
+        OitPipelineSet.builder("odin_lines_esp", RenderPipeline.builder(RenderPipelines.OIT_LINES_SNIPPET))
+            .withoutDepthTest()
+            .build()
+    )
+
+    val OIT_QUADS_ESP: OitPipelineSet = RenderPipelines.register(
+        OitPipelineSet.builder("odin_quads_esp", RenderPipeline.builder(RenderPipelines.OIT_DEBUG_FILLED_SNIPPET))
+            .withoutDepthTest()
             .build()
     )
 

@@ -1,5 +1,6 @@
 package com.odtheking.odin.utils.render
 
+import net.minecraft.client.renderer.RenderPipelines
 import net.minecraft.client.renderer.rendertype.LayeringTransform
 import net.minecraft.client.renderer.rendertype.RenderSetup
 import net.minecraft.client.renderer.rendertype.RenderType
@@ -18,6 +19,7 @@ object CustomRenderType {
     val LINES_TRANSLUCENT_DEPTH: RenderType = RenderType.create(
         "lines-translucent-depth",
         RenderSetup.builder(CustomRenderPipelines.LINES_TRANSLUCENT_DEPTH)
+            .setOitPipelines(RenderPipelines.OIT_LINES_TRANSLUCENT)
             .setLayeringTransform(LayeringTransform.VIEW_OFFSET_Z_LAYERING)
             .createRenderSetup()
     )
@@ -25,6 +27,7 @@ object CustomRenderType {
     val LINES_TRANSLUCENT_ESP: RenderType = RenderType.create(
         "lines-translucent-esp",
         RenderSetup.builder(CustomRenderPipelines.LINES_TRANSLUCENT_ESP)
+            .setOitPipelines(CustomRenderPipelines.OIT_LINES_ESP)
             .createRenderSetup()
     )
 
@@ -33,6 +36,7 @@ object CustomRenderType {
     val QUADS_OPAQUE: RenderType = RenderType.create(
         "quads-opaque",
         RenderSetup.builder(CustomRenderPipelines.QUADS_OPAQUE)
+            .setOitPipelines(RenderPipelines.OIT_DEBUG_FILLED_BOX)
             .setLayeringTransform(LayeringTransform.VIEW_OFFSET_Z_LAYERING)
             .sortOnUpload()
             .createRenderSetup()
@@ -41,6 +45,7 @@ object CustomRenderType {
     val QUADS_TRANSLUCENT: RenderType = RenderType.create(
         "quads-translucent",
         RenderSetup.builder(CustomRenderPipelines.QUADS_TRANSLUCENT)
+            .setOitPipelines(RenderPipelines.OIT_DEBUG_FILLED_BOX)
             .setLayeringTransform(LayeringTransform.VIEW_OFFSET_Z_LAYERING)
             .sortOnUpload()
             .createRenderSetup()
@@ -49,6 +54,7 @@ object CustomRenderType {
     val QUADS_ESP: RenderType = RenderType.create(
         "quads-esp",
         RenderSetup.builder(CustomRenderPipelines.QUADS_ESP)
+            .setOitPipelines(CustomRenderPipelines.OIT_QUADS_ESP)
             .sortOnUpload()
             .createRenderSetup()
     )
@@ -56,6 +62,7 @@ object CustomRenderType {
     val QUADS_TRANSLUCENT_ESP: RenderType = RenderType.create(
         "quads-translucent-esp",
         RenderSetup.builder(CustomRenderPipelines.QUADS_TRANSLUCENT_ESP)
+            .setOitPipelines(CustomRenderPipelines.OIT_QUADS_ESP)
             .sortOnUpload()
             .createRenderSetup()
     )
