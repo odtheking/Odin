@@ -87,9 +87,10 @@ class KeybindSetting(
     }
 
     companion object {
-        fun InputConstants.Key.isDown(): Boolean = when (type) {
-            InputConstants.Type.KEYBOARD -> InputConstants.isKeyDown(value)
-            InputConstants.Type.MOUSE -> SDLMouse.SDL_GetMouseState(null, null) and (1 shl (value - 1)) != 0
-        }
+        fun InputConstants.Key.isDown(): Boolean =
+            this != InputConstants.UNKNOWN && when (type) {
+                InputConstants.Type.KEYBOARD -> InputConstants.isKeyDown(value)
+                InputConstants.Type.MOUSE -> SDLMouse.SDL_GetMouseState(null, null) and (1 shl (value - 1)) != 0
+            }
     }
 }

@@ -2,6 +2,7 @@
 
 package com.odtheking.odin.features
 
+import com.mojang.blaze3d.platform.InputConstants
 import com.odtheking.odin.OdinMod
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.clickgui.HudLayer
@@ -87,7 +88,7 @@ object ModuleManager {
         // hashmap, but would need to keep track when setting values change
         on<InputEvent> {
             for (setting in keybindSettingsCache) {
-                if (setting.boundKey == key) setting.onPress?.invoke()
+                if (setting.boundKey != InputConstants.UNKNOWN && setting.boundKey == key) setting.onPress?.invoke()
             }
         }
 
