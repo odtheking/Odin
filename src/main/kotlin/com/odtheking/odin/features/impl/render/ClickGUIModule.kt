@@ -84,7 +84,7 @@ object ClickGUIModule : Module(
         }
     }
 
-    private const val RELEASE_LINK = "https://github.com/odtheking/OdinFabric/releases/latest"
+    private const val RELEASE_LINK = "https://github.com/odtheking/Odin/releases/latest"
     private const val MODRINTH_LINK = "https://modrinth.com/mod/odin/versions"
     private val profileRegex = Regex("Profile ID:\\s*(.{36})")
     private var latestVersionNumber: String? = null
@@ -164,7 +164,7 @@ object ClickGUIModule : Module(
     }
 
     private suspend fun checkNewerVersion(currentVersion: String): String? {
-        val newest = fetchJson<Release>("https://api.github.com/repos/odtheking/OdinFabric/releases/latest").getOrElse { return null }
+        val newest = fetchJson<Release>("https://api.github.com/repos/odtheking/Odin/releases/latest").getOrElse { return null }
 
         return if (isSecondNewer(currentVersion, newest.tagName)) newest.tagName else null
     }

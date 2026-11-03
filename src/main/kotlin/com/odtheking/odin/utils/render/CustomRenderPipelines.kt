@@ -7,7 +7,7 @@ import net.minecraft.client.renderer.oit.OitPipelineSet
 import net.minecraft.resources.Identifier
 
 object CustomRenderPipelines {
-    private val NO_DEPTH = DepthStencilState(CompareOp.ALWAYS_PASS, true, 1f, 1f)
+    private val NO_DEPTH = DepthStencilState(CompareOp.ALWAYS_PASS, false)
     private val DEPTH_WRITE = DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, true)
     private val TRANSLUCENT = ColorTargetState(BlendFunction.TRANSLUCENT)
 

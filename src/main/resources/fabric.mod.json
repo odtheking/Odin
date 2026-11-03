@@ -7,8 +7,8 @@
   "authors": ["Odtheking"],
   "contact": {
     "homepage": "https://modrinth.com/mod/odin",
-    "sources": "https://github.com/odtheking/OdinFabric",
-    "issues": "https://github.com/odtheking/OdinFabric/issues"
+    "sources": "https://github.com/odtheking/Odin",
+    "issues": "https://github.com/odtheking/Odin/issues"
   },
   "icon": "assets/odin/icon.png",
   "license": "BSD 3-Clause",
