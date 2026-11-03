@@ -31,22 +31,19 @@ object KingRelics : Module(
 
         on<BlockInteractEvent> {
             if (DungeonUtils.getF7Phase() != M7Phases.P5 || relicPlaceTick < 0) return@on
+            val relic = currentRelic ?: return@on
+            if (pos != relic.cauldronPosition) return@on
 
             val block = mc.level?.getBlockState(pos)?.block
             if (!block.equalsOneOf(Blocks.CAULDRON, Blocks.ANVIL)) return@on
 
-            Relic.entries.find { it.id == currentRelic?.id }?.let {
-                relicPBs.time(it.name, relicPlaceTick / 20f, message = "§${it.colorCode}${it.name} relic §7placed in §6")
-                relicPlaceTick = -2
-            }
+            relicPBs.time(relic.name, relicPlaceTick / 20f, message = "§${relic.colorCode}${relic.name} relic §7placed in §6")
+            relicPlaceTick = -2
         }
 
         on<RenderExtractEvent> {
             if (DungeonUtils.getF7Phase() != M7Phases.P5 || !relicBeacon) return@on
-
-            Relic.entries.forEach {
-                if (currentRelic?.id == it.id) drawCustomBeacon("", it.cauldronPosition, it.color, distance = false)
-            }
+            currentRelic?.let { drawCustomBeacon("", it.cauldronPosition, it.color, distance = false) }
         }
 
         on<LevelEvent.Load> {
