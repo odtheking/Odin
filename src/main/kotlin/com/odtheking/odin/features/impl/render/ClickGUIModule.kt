@@ -29,7 +29,7 @@ object ClickGUIModule : Module(
     description = "Allows you to customize the UI.",
     key = InputConstants.KEY_RSHIFT
 ) {
-    val clickGuiScale by NumberSetting("Click GUI Size", 2, 1..4, 1, desc = "GUI scale the Click GUI is drawn at, whatever the video setting says.")
+    val clickGuiScale by NumberSetting("Click GUI Size", 2f, 1.0..4.0, 0.25, desc = "GUI scale the Click GUI is drawn at, whatever the video setting says.")
     val enableNotification by BooleanSetting("Chat notifications", true, desc = "Sends a message when you toggle a module with a keybind")
     val clickGUIColor by ColorSetting("Color", Color(50, 150, 220), desc = "The color of the Click GUI.")
     private val action by ActionSetting("Open HUD Editor", desc = "Opens the HUD editor when clicked.") { mc.setScreenAndShow(HudManager) }

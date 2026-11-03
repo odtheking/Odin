@@ -1,6 +1,7 @@
 package com.odtheking.odin.utils.ui.compose
 
 import com.mojang.blaze3d.platform.InputConstants
+import com.odtheking.odin.utils.render.pushPixelSnap
 import com.odtheking.odin.utils.render.scissored
 import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.input.CharacterEvent
@@ -86,6 +87,8 @@ class UiNode {
         val over = pointerInside && Pointer.isOver(x, y, width, height)
         for (i in hoverSources.indices) hoverSources[i].hovered = over
 
+        val snapped = graphics.pushPixelSnap(x, y, width, height)
+
         val factor = scale?.invoke() ?: 1f
         if (factor != 1f) {
             val pivotX = x + width / 2f
@@ -100,6 +103,7 @@ class UiNode {
         else draw(graphics, pointerInside)
 
         if (factor != 1f) graphics.pose().popMatrix()
+        if (snapped) graphics.pose().popMatrix()
     }
 
     private val clips: Boolean get() = clipWhen?.invoke(this) == true

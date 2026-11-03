@@ -56,7 +56,7 @@ object ClickGUI : OdinScreen(Component.literal("Click GUI")) {
 
     override fun init() {
         super.init()
-        scale = ClickGUIModule.clickGuiScale.toFloat() / mc.window.guiScale
+        scale = ClickGUIModule.clickGuiScale / mc.window.guiScale
         focusSearch()
     }
 
