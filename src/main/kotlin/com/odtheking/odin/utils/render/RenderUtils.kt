@@ -9,8 +9,11 @@ import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.Color.Companion.multiplyAlpha
 import com.odtheking.odin.utils.addVec
 import com.odtheking.odin.utils.center
+import net.fabricmc.fabric.api.client.rendering.v1.SubmitRenderPhases
 import net.minecraft.client.gui.Font
+import net.minecraft.client.renderer.SubmitNodeCollector
 import net.minecraft.client.renderer.blockentity.BeaconRenderer
+import net.minecraft.client.renderer.rendertype.RenderType
 import net.minecraft.client.renderer.rendertype.RenderTypes
 import net.minecraft.client.renderer.texture.OverlayTexture
 import net.minecraft.core.BlockPos
@@ -40,6 +43,12 @@ private fun resolveQuadRenderType(depth: Boolean, fullyOpaque: Boolean) = when {
     depth -> CustomRenderType.QUADS_TRANSLUCENT
     fullyOpaque -> CustomRenderType.QUADS_ESP
     else -> CustomRenderType.QUADS_TRANSLUCENT_ESP
+}
+
+private fun RenderExtractEvent.submitGeometry(poseStack: PoseStack, renderType: RenderType, depth: Boolean, renderer: SubmitNodeCollector.CustomGeometryRenderer) {
+    val collector = context.submitNodeCollector()
+    if (depth) return collector.submitCustomGeometry(poseStack, renderType, renderer)
+    collector.submitCustom(SubmitRenderPhases.SEE_THROUGH_NAME_TAGS, NoDepthSubmit(poseStack.last().copy(), renderType, renderer))
 }
 
 private fun RenderExtractEvent.cameraRelativePose(offset: Vec3 = Vec3.ZERO): PoseStack {
@@ -101,7 +110,7 @@ fun RenderExtractEvent.drawLine(points: Collection<Vec3>, color1: Color, color2:
     val segments = points.zipWithNext()
 
     val poseStack = cameraRelativePose()
-    context.submitNodeCollector().submitCustomGeometry(poseStack, renderType) { pose, buffer ->
+    submitGeometry(poseStack, renderType, depth) { pose, buffer ->
         for ((from, to) in segments) {
             PrimitiveRenderer.renderVector(
                 pose, buffer,
@@ -117,7 +126,7 @@ fun RenderExtractEvent.drawWireFrameBox(aabb: AABB, color: Color, thickness: Flo
     val renderType = resolveLineRenderType(depth, color.alphaFloat >= 0.999f)
 
     val poseStack = cameraRelativePose()
-    context.submitNodeCollector().submitCustomGeometry(poseStack, renderType) { pose, buffer ->
+    submitGeometry(poseStack, renderType, depth) { pose, buffer ->
         PrimitiveRenderer.renderLineBox(pose, buffer, aabb, color.redFloat, color.greenFloat, color.blueFloat, color.alphaFloat, thickness)
     }
     poseStack.popPose()
@@ -127,7 +136,7 @@ fun RenderExtractEvent.drawFilledBox(aabb: AABB, color: Color, depth: Boolean = 
     val renderType = resolveQuadRenderType(depth, color.alphaFloat >= 0.999f)
 
     val poseStack = cameraRelativePose()
-    context.submitNodeCollector().submitCustomGeometry(poseStack, renderType) { pose, buffer ->
+    submitGeometry(poseStack, renderType, depth) { pose, buffer ->
         PrimitiveRenderer.addChainedFilledBoxVertices(
             pose, buffer,
             aabb.minX.toFloat(), aabb.minY.toFloat(), aabb.minZ.toFloat(),
@@ -215,7 +224,7 @@ fun RenderExtractEvent.drawCylinder(
     val angleStep = 2.0 * Math.PI / segments
 
     val poseStack = cameraRelativePose()
-    context.submitNodeCollector().submitCustomGeometry(poseStack, renderType) { pose, buffer ->
+    submitGeometry(poseStack, renderType, depth) { pose, buffer ->
         fun segment(from: Vec3, to: Vec3) {
             PrimitiveRenderer.renderVector(
                 pose, buffer,

@@ -5,9 +5,10 @@ import com.mojang.renderpearl.api.pipeline.*
 import net.minecraft.client.renderer.RenderPipelines
 import net.minecraft.client.renderer.oit.OitPipelineSet
 import net.minecraft.resources.Identifier
+import java.util.*
 
 object CustomRenderPipelines {
-    private val NO_DEPTH = DepthStencilState(CompareOp.ALWAYS_PASS, false)
+    private val NO_DEPTH = Optional.empty<DepthStencilState>()
     private val DEPTH_WRITE = DepthStencilState(CompareOp.GREATER_THAN_OR_EQUAL, true)
     private val TRANSLUCENT = ColorTargetState(BlendFunction.TRANSLUCENT)
 
