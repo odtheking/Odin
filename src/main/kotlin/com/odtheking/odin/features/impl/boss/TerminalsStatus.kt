@@ -16,6 +16,7 @@ import com.odtheking.odin.utils.render.*
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.skyblock.dungeon.M7Phases
 import net.minecraft.world.entity.decoration.ArmorStand
+import net.minecraft.world.phys.AABB
 
 object TerminalsStatus : Module(
     name = "Terminals Status",
@@ -156,7 +157,10 @@ object TerminalsStatus : Module(
                 stand.isCustomNameVisible = !hideDefault
                 val label = kind.label?.takeIf { kind.shown } ?: return@forEach
 
-                if (style.box) drawWireFrameBox(stand.boundingBox, color, depth = !throughWalls)
+                if (style.box) {
+                    val box = if (kind == Kind.Lever) AABB.unitCubeFromLowerCorner(stand.position().addVec(-0.5, z = -0.5)) else stand.boundingBox
+                    drawWireFrameBox(box, color, depth = !throughWalls)
+                }
                 if (style.text) drawText(label, stand.position().addVec(y = 2.0), 1.5f, true)
                 if (style.beacon) drawBeaconBeam(stand.blockPosition(), color)
             }
