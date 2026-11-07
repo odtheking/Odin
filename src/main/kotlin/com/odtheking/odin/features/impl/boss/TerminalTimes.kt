@@ -38,6 +38,7 @@ object TerminalTimes : Module(
     private var sectionTimer = 0L
     private var currentTick = 0L
     private var phaseTimer = 0L
+    private var lastSplit = ""
 
     init {
         on<TerminalEvent.Solve> {
@@ -58,6 +59,7 @@ object TerminalTimes : Module(
             }
 
             terminalCompleteRegex.find(message)?.destructured?.let { (name, activated, type, current, total) ->
+                lastSplit = "§8(§7${sectionTimer.seconds}s §8| §7${phaseTimer.seconds}s§8)"
                 if ((current == total && gateBlown) || (current.toIntOrNull() ?: return@on) < completed.first) resetSection()
                 else completed = Pair(current.toIntOrNull() ?: return@on, total.toIntOrNull() ?: return@on)
             }
@@ -65,7 +67,7 @@ object TerminalTimes : Module(
 
         on<MessageEvent.ModifyChat> {
             if (terminalSplits) terminalCompleteRegex.find(message)?.destructured?.let { (name, activated, type, current, total) ->
-                component = Component.literal("§6$name §a$activated a $type! (§c${current}§a/${total}) §8(§7${sectionTimer.seconds}s §8| §7${phaseTimer.seconds}s§8)")
+                component = Component.literal("§6$name §a$activated a $type! (§c${current}§a/${total}) $lastSplit")
             }
         }
 
