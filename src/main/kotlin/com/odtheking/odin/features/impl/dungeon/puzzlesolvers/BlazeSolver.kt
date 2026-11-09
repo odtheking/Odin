@@ -17,44 +17,39 @@ import com.odtheking.odin.utils.skyblock.dungeon.PuzzleStatus
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.decoration.ArmorStand
 import net.minecraft.world.entity.monster.Blaze
+import java.util.*
 
 object BlazeSolver {
-    private class BlazeTag(val entity: ArmorStand, val maxHealth: Int)
-
-    private val blazes = ArrayList<BlazeTag>(10)
+    private val blazes = TreeMap<Int, ArmorStand>()
+    private var descending = false
     private val blazeHealthRegex = Regex("^\\[Lv+\\d+]  Blaze [\\d,]+/([\\d,]+)❤$")
 
     inline val inBlazeRoom get() = DungeonUtils.currentRoomName.equalsOneOf("Lower Blaze", "Higher Blaze")
 
     fun isBlazeTag(entity: Entity): Boolean =
-        entity is ArmorStand && inBlazeRoom && blazes.any { it.entity.id == entity.id }
+        entity is ArmorStand && inBlazeRoom && entity in blazes.values
 
     fun onEntityData(event: EntityEvent.SetData) {
         if (!DungeonUtils.inClear) return
-        val entity = (event.entity as? ArmorStand)?.takeIf { !it.isDeadOrDying } ?: return
-        if (blazes.any { it.entity.uuid == entity.uuid }) return
+        val entity = event.entity as? ArmorStand ?: return
         val name = entity.name.string.takeIf { it.endsWith('❤') } ?: return
         val maxHealth = blazeHealthRegex.find(name)?.groupValues?.get(1)?.replace(",", "")?.toIntOrNull() ?: return
-        blazes.add(BlazeTag(entity, maxHealth))
-        sort(DungeonUtils.currentRoomName)
-    }
-
-    private fun sort(roomName: String?) {
-        if (roomName == "Lower Blaze") blazes.sortByDescending { it.maxHealth }
-        else blazes.sortBy { it.maxHealth }
+        if (blazes[maxHealth] == entity) return
+        blazes.values.remove(entity)
+        blazes[maxHealth] = entity
     }
 
     fun onRoomEnter(event: RoomEnterEvent) {
-        sort(event.room?.data?.name)
+        descending = event.room?.data?.name == "Lower Blaze"
     }
 
     fun onEntityRemove(event: EntityEvent.Remove) {
-        blazes.removeAll { it.entity.id == event.entity.id }
+        blazes.values.remove(event.entity)
     }
 
     fun onEntityDeath(event: EntityEvent.Event, sendComplete: Boolean) {
         if (event.id != 3.toByte() || event.entity !is Blaze) return
-        if (!blazes.removeAll { it.entity.id == event.entity.id + 1 } || blazes.isNotEmpty() || !inBlazeRoom) return
+        if (!blazes.values.removeIf { it.id == event.entity.id + 1 } || blazes.isNotEmpty() || !inBlazeRoom) return
 
         DungeonListener.puzzles.find { it == Puzzle.BLAZE }?.status = PuzzleStatus.Completed
         onPuzzleComplete(DungeonUtils.currentRoomName)
@@ -64,19 +59,22 @@ object BlazeSolver {
     fun onRenderWorld(event: RenderExtractEvent, blazeLineNext: Boolean, blazeLineAmount: Int, blazeStyle: BoxStyle, blazeFirstColor: Color, blazeSecondColor: Color, blazeThirdColor: Color, blazeAllColor: Color, blazeLineWidth: Float) {
         if (blazes.isEmpty() || !inBlazeRoom) return
 
-        blazes.forEachIndexed { index, tag ->
+        var previous: ArmorStand? = null
+        (if (descending) blazes.descendingMap().values else blazes.values).forEachIndexed { index, stand ->
             val color = when (index) {
                 0 -> blazeFirstColor
                 1 -> blazeSecondColor
                 2 -> blazeThirdColor
                 else -> blazeAllColor
             }
-            val aabb = tag.entity.boundingBox.inflate(0.5, 1.0, 0.5).move(0.0, -1.0, 0.0)
+            val aabb = stand.boundingBox.inflate(0.5, 1.0, 0.5).move(0.0, -1.0, 0.0)
 
             event.drawStyledBox(aabb, color, blazeStyle, depth = true)
 
-            if (blazeLineNext && index > 0 && index <= blazeLineAmount)
-                event.drawLine(listOf(blazes[index - 1].entity.boundingBox.center, aabb.center), color = color, thickness = blazeLineWidth, depth = true)
+            if (blazeLineNext && index <= blazeLineAmount) previous?.let {
+                event.drawLine(listOf(it.boundingBox.center, aabb.center), color = color, thickness = blazeLineWidth, depth = true)
+            }
+            previous = stand
         }
     }
 
