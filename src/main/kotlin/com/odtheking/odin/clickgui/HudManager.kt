@@ -17,13 +17,14 @@ object HudManager : OdinScreen(Component.literal("HUD Manager")) {
     override fun init() {
         super.init()
         HudLayer.settle()
-        for (setting in hudSettingsCache) if (setting.isEnabled) setting.hud.clampToScreen()
     }
 
     override fun extractRenderState(guiGraphics: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, deltaTicks: Float) {
         super.extractRenderState(guiGraphics, mouseX, mouseY, deltaTicks)
 
         HudLayer.render(guiGraphics, example = true, mouseX, mouseY)
+
+        for (setting in hudSettingsCache) if (setting.isEnabled) setting.hud.clampToScreen()
 
         HudLayer.hovered(mouseX, mouseY)?.let { setting ->
             val element = setting.hud
