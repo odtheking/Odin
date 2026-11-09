@@ -7,11 +7,11 @@ import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.MessageEvent
 import com.odtheking.odin.events.SetSlotEvent
 import com.odtheking.odin.events.TerminalEvent
+import com.odtheking.odin.events.core.EventPriority
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.features.impl.boss.termsim.TermSimGUI
 import com.odtheking.odin.features.impl.render.ClickGUIModule
-import com.odtheking.odin.utils.equalsOneOf
 import com.odtheking.odin.utils.network.WebUtils.gson
 import com.odtheking.odin.utils.network.webSocket
 import com.odtheking.odin.utils.render.getStringWidth
@@ -24,8 +24,6 @@ import com.odtheking.odin.utils.skyblock.dungeon.M7Phases
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalTypes
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalUtils
 import net.minecraft.client.gui.GuiGraphicsExtractor
-import net.minecraft.world.item.DyeColor
-import net.minecraft.world.item.Items
 import java.util.concurrent.ConcurrentHashMap
 
 object MelodyMessage : Module(
@@ -41,9 +39,8 @@ object MelodyMessage : Module(
 
         fun track(data: MelodyData, index: Int, name: String) {
             rows = maxOf(rows, index + 1)
-            val clay = data.clay ?: return
             val label = melodyLabel(data, name) ?: ""
-            labelWidth = maxOf(labelWidth, getStringWidth("$clay $label"))
+            labelWidth = maxOf(labelWidth, getStringWidth("${data.clay ?: 1} $label"))
         }
 
         if (it) {
@@ -85,6 +82,9 @@ object MelodyMessage : Module(
     init {
         on<TerminalEvent.Open> {
             if (DungeonUtils.getF7Phase() != M7Phases.P3 || terminal.type != TerminalTypes.MELODY || mc.gui.screen() is TermSimGUI) return@on
+            lastSent.clay = null
+            lastSent.purple = null
+            lastSent.pane = null
             if (melodySendCoords) sendCommand("od sendcoords")
         }
 
@@ -92,7 +92,7 @@ object MelodyMessage : Module(
             if (melodyProgress) onChatMessage(message)
         }
 
-        on<SetSlotEvent> {
+        on<SetSlotEvent> (EventPriority.LOW) {
             if (melodyProgress) onSlotUpdate()
         }
 
@@ -121,49 +121,36 @@ object MelodyMessage : Module(
         }
     }
 
-    private fun SetSlotEvent.onSlotUpdate() {
+    private fun onSlotUpdate() {
         val term = TerminalUtils.currentTerm ?: return
         if (DungeonUtils.getF7Phase() != M7Phases.P3 || term.type != TerminalTypes.MELODY || mc.gui.screen() is TermSimGUI) return
 
-        val item = itemStack.item
-        if (item == Items.DYED_TERRACOTTA.pick(DyeColor.LIME)) {
-            val position = slotIndex / 9
-            if (lastSent.clay == position) return
-            melodyWebSocket.send(update(1, position))
-            if (melodyProgress) clayProgress[position]?.let { sendCommand("pc $it") }
-            lastSent.clay = position
-            return
-        }
-        if (!item.equalsOneOf(Items.STAINED_GLASS_PANE.pick(DyeColor.MAGENTA), Items.STAINED_GLASS_PANE.pick(DyeColor.LIME))) return
-        val index = mapToRange(slotIndex) ?: return
-        val meta = when (item) {
-            Items.STAINED_GLASS_PANE.pick(DyeColor.MAGENTA) -> {
-                if (lastSent.purple == index) return
-                lastSent.purple = index
-                2
-            }
-            Items.STAINED_GLASS_PANE.pick(DyeColor.LIME) -> {
-                if (lastSent.pane == index) return
-                lastSent.pane = index
-                5
-            }
-            else -> return
+        val greenPane = term.solution.getOrNull(0)?.takeIf { it >= 0 } ?: return
+        val magentaPane = term.solution.getOrNull(1)?.takeIf { it >= 0 } ?: return
+
+        val row = greenPane / 9
+        if (lastSent.clay != row) {
+            lastSent.clay = row
+            melodyWebSocket.send(update(1, row))
+            clayProgress[row]?.let { sendCommand("pc $it") }
         }
 
-        melodyWebSocket.send(update(meta, index))
+        val purple = magentaPane % 9 - 1
+        if (lastSent.purple != purple) {
+            lastSent.purple = purple
+            melodyWebSocket.send(update(2, purple))
+        }
+
+        val pane = greenPane % 9 - 1
+        if (lastSent.pane != pane) {
+            lastSent.pane = pane
+            melodyWebSocket.send(update(5, pane))
+        }
     }
 
     private fun update(type: Int, slot: Int): String = gson.toJson(UpdateMessage(mc.user.name, type, slot))
 
     private val clayProgress = hashMapOf(2 to "Melody 33%", 3 to "Melody 67%")
-    private val ranges = listOf(1..5, 10..14, 19..23, 28..32)
-
-    private fun mapToRange(value: Int): Int? {
-        for (r in ranges) {
-            if (value in r) return (value - r.first) % 5
-        }
-        return null
-    }
 
     private val width by lazy { getStringWidth("§d■") }
 
@@ -187,7 +174,7 @@ object MelodyMessage : Module(
         }
 
         val label = melodyLabel(data, playerName) ?: ""
-        data.clay?.let { text("$it $label", width * 5 + 2, y) }
+        text("${data.clay ?: 1} $label", width * 5 + 2, y)
     }
 
     private data class UpdateMessage(val username: String, val type: Int, val slot: Int)
