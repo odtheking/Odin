@@ -49,7 +49,8 @@ object BlazeSolver {
 
     fun onEntityDeath(event: EntityEvent.Event, sendComplete: Boolean) {
         if (event.id != 3.toByte() || event.entity !is Blaze) return
-        if (!blazes.values.removeIf { it.id == event.entity.id + 1 } || blazes.isNotEmpty() || !inBlazeRoom) return
+        blazes.values.removeIf { it.id == event.entity.id + 1 }
+        if (blazes.isNotEmpty() || !inBlazeRoom) return
 
         DungeonListener.puzzles.find { it == Puzzle.BLAZE }?.status = PuzzleStatus.Completed
         onPuzzleComplete(DungeonUtils.currentRoomName)

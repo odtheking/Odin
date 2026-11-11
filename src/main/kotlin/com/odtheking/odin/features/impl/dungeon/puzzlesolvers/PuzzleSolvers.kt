@@ -178,7 +178,7 @@ object PuzzleSolvers : Module(
         }
 
         onReceive<ClientboundBlockEventPacket> {
-            if (!DungeonUtils.inClear || block != Blocks.CHERRY_LOG) return@onReceive
+            if (!DungeonUtils.inClear || block != Blocks.JUNGLE_LOG) return@onReceive
             val room = DungeonUtils.currentRoom?.takeIf { room -> room.data?.type == RoomType.PUZZLE } ?: return@onReceive
 
             when (room.data?.name) {
