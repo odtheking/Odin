@@ -17,6 +17,8 @@ import com.odtheking.odin.utils.skyblock.dungeon.DungeonClass
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonPlayer
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils.leapTeammates
+import com.odtheking.odin.utils.skyblock.dungeon.terminals.terminalhandler.TerminalHandler.Companion.RIGHT_CLICK
+import com.odtheking.odin.utils.skyblock.dungeon.terminals.terminalhandler.TerminalHandler.Companion.toContainerButton
 import com.odtheking.odin.utils.ui.compose.Animatable
 import com.odtheking.odin.utils.ui.compose.Motion
 import com.odtheking.odin.utils.ui.widget.CustomGUIImpl
@@ -51,6 +53,7 @@ object LeapMenu : Module(
     private val tankKeybind by KeybindSetting("Tank", InputConstants.KEY_5, "Used to leap to the Tank in the leap menu.").withDependency { keybindType == KeybindMode.CLASS && keybindDropdown }
 
     private val leapAnnounce by BooleanSetting("Leap Announce", false, desc = "Announces when you leap to a player.")
+    private val onlyLeft by BooleanSetting("Only Left Click", false, desc = "Prevents Leaping With Right Click")
     private val hoverProgress = List(4) { Animatable(0f) }
 
     private val EMPTY = DungeonPlayer("Empty", DungeonClass.EMPTY, 0, null)
@@ -82,13 +85,13 @@ object LeapMenu : Module(
             CustomGUIImpl.HandlerSet(enabled = { currentLeapScreen() != null },
             click = fun ScreenEvent.MouseClick.(): Any {
                 val chest = currentLeapScreen() ?: return false
-                if (onRelease) return true
+                if (onRelease || onlyLeft && RIGHT_CLICK == toContainerButton(click.button())) return true
                 triggerMouseQuadrant(chest, click.x().toInt(), click.y().toInt())
                 return true
             },
             release = fun ScreenEvent.MouseRelease.(): Any {
                 val chest = currentLeapScreen() ?: return false
-                if (!onRelease) return true
+                if (!onRelease || onlyLeft && RIGHT_CLICK == toContainerButton(click.button())) return true
                 triggerMouseQuadrant(chest, click.x().toInt(), click.y().toInt())
                 return true
             },
