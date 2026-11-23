@@ -3,7 +3,6 @@ package com.odtheking.odin.features.impl.render
 import com.google.gson.annotations.SerializedName
 import com.mojang.blaze3d.platform.InputConstants
 import com.odtheking.odin.OdinMod
-import com.odtheking.odin.clickgui.ClickGUI
 import com.odtheking.odin.clickgui.HudManager
 import com.odtheking.odin.clickgui.settings.AlwaysActive
 import com.odtheking.odin.clickgui.settings.impl.*
@@ -11,7 +10,6 @@ import com.odtheking.odin.events.*
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Category
 import com.odtheking.odin.features.Module
-import com.odtheking.odin.features.ModuleManager
 import com.odtheking.odin.features.impl.dungeon.map.DungeonMap
 import com.odtheking.odin.utils.*
 import com.odtheking.odin.utils.network.WebUtils.fetchJson
@@ -62,11 +60,11 @@ object ClickGUIModule : Module(
     val favoriteColors by MapSetting("Favorite Colors", mutableMapOf<Int, Color>())
 
     override fun onKeybind() {
-        mc.setScreenAndShow(ClickGUI)
+        mc.setScreenAndShow(OdinMod.clickGUI)
     }
 
     override fun onEnable() {
-        mc.setScreenAndShow(ClickGUI)
+        mc.setScreenAndShow(OdinMod.clickGUI)
         super.onEnable()
         toggle()
     }
@@ -82,6 +80,7 @@ object ClickGUIModule : Module(
                 extended = true
             }
         }
+        config?.save()
     }
 
     private const val RELEASE_LINK = "https://github.com/odtheking/Odin/releases/latest"
@@ -102,7 +101,7 @@ object ClickGUIModule : Module(
 
             if (firstJoin) {
                 firstJoin = false
-                ModuleManager.saveConfigurations()
+                config?.save()
                 modMessage(
                     Component.literal(getChatBreak()).append(Component.literal("""
                         §7Thanks for installing §3Odin ${OdinMod.version}§7!

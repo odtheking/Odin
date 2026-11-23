@@ -58,8 +58,10 @@ object ModuleManager {
 
     private val HUD_LAYER: Identifier = fromNamespaceAndPath(OdinMod.MOD_ID, "odin_hud")
 
+    val odinConfig = ModuleConfig(file = File(OdinMod.configFile, "odin-config.json"))
+
     init {
-        registerModules(config = ModuleConfig(file = File(OdinMod.configFile, "odin-config.json")),
+        registerModules(odinConfig,
             // dungeon
             PuzzleSolvers, BlessingDisplay, LeapMenu, SecretClicked, MapInfo, Mimic, DungeonQueue,
             DoorHighlight, BloodCamp, TerracottaTimer, BreakerDisplay, LividSolver,
@@ -107,6 +109,7 @@ object ModuleManager {
 
             val lowercase = module.name.lowercase()
             config.modules[lowercase] = module
+            module.config = config
             this.modules[lowercase] = module
             this.modulesByCategory.getOrPut(module.category) { arrayListOf() }.add(module)
 
@@ -125,24 +128,6 @@ object ModuleManager {
         }
         configs.add(config)
         config.load()
-    }
-
-    /**
-     * Loads all [configs] from disk, into the respective modules.
-     */
-    fun loadConfigurations() {
-        for (config in configs) {
-            config.load()
-        }
-    }
-
-    /**
-     * Saves all [configs] to disk, from the respective modules.
-     */
-    fun saveConfigurations() {
-        for (config in configs) {
-            config.save()
-        }
     }
 
     fun render(guiGraphics: GuiGraphicsExtractor, tickCounter: DeltaTracker) {

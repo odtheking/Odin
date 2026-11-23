@@ -2,9 +2,8 @@ package com.odtheking.odin.utils
 
 import com.odtheking.odin.clickgui.settings.impl.MapSetting
 import com.odtheking.odin.features.Module
-import com.odtheking.odin.features.ModuleManager
 
-class PersonalBest(module: Module, name: String) {
+class PersonalBest(private val module: Module, name: String) {
 
     private val mapSetting = module.registerSetting(MapSetting(name, mutableMapOf<String, Float>()))
     /**
@@ -29,11 +28,11 @@ class PersonalBest(module: Module, name: String) {
 
     fun set(index: String, time: Float) {
         mapSetting.value[index] = time
-        ModuleManager.saveConfigurations()
+        module.config?.save()
     }
 
     fun reset() {
         mapSetting.value.clear()
-        ModuleManager.saveConfigurations()
+        module.config?.save()
     }
 }

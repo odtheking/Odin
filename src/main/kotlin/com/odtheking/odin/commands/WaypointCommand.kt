@@ -17,6 +17,7 @@ val waypointCommand = Commodore("odwaypoint", "odw", "waypoints") {
     literal("clear") {
         runs {
             modMessage("§aCleared §f${Waypoints.clear()} §awaypoints.")
+            Waypoints.config?.save()
         }
 
         literal("area").executable {
@@ -29,6 +30,7 @@ val waypointCommand = Commodore("odwaypoint", "odw", "waypoints") {
 
             runs { area: String ->
                 modMessage("§aCleared §f${Waypoints.clear(area)} §awaypoints in §f${WaypointAreas.label(area)}§a.")
+                Waypoints.config?.save()
             }
         }
     }

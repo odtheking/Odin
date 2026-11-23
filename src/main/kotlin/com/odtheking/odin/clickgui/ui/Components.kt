@@ -2,7 +2,6 @@ package com.odtheking.odin.clickgui.ui
 
 import androidx.compose.runtime.*
 import com.odtheking.odin.OdinMod.mc
-import com.odtheking.odin.clickgui.ClickGUI
 import com.odtheking.odin.clickgui.GuiTheme
 import com.odtheking.odin.clickgui.hoverTint
 import com.odtheking.odin.clickgui.settings.RenderableSetting
@@ -41,6 +40,7 @@ fun GuiGraphicsExtractor.textCentered(value: String, left: Int, top: Int, right:
 @Composable
 fun UiNode.tooltip(text: String): UiNode {
     if (text.isEmpty()) return this
+    val host = LocalHost.current
     val interaction = remember { InteractionSource() }
     val rest = animateProgress(600) { interaction.hovered }
     val lines = remember(text) { mc.font.split(Component.literal(text), 200) }
@@ -48,8 +48,8 @@ fun UiNode.tooltip(text: String): UiNode {
     val boxHeight = remember(lines) { lines.size * mc.font.lineHeight + 8 * 2 }
     return hoverable(interaction).drawBehind {
         if (!interaction.hovered || rest.value < 1f) return@drawBehind
-        val boxX = (right + 10).coerceIn(0, (ClickGUI.virtualWidth - boxWidth).coerceAtLeast(0))
-        val boxY = y.coerceIn(0, (ClickGUI.virtualHeight - boxHeight).coerceAtLeast(0))
+        val boxX = (right + 10).coerceIn(0, (host.width - boxWidth).coerceAtLeast(0))
+        val boxY = y.coerceIn(0, (host.height - boxHeight).coerceAtLeast(0))
         Overlay.defer { overlay ->
             overlay.roundedRectOutlined(boxX, boxY, boxX + boxWidth, boxY + boxHeight, GuiTheme.surface.rgba, GuiTheme.accent.hsbMax().rgba, 1.5f, GuiTheme.RADIUS)
             lines.forEachIndexed { index, line ->

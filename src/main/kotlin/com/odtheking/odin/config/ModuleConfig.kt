@@ -4,10 +4,16 @@ package com.odtheking.odin.config
 
 import com.google.gson.*
 import com.odtheking.odin.OdinMod
+import com.odtheking.odin.OdinMod.ioDispatcher
 import com.odtheking.odin.OdinMod.logger
+import com.odtheking.odin.OdinMod.scope
 import com.odtheking.odin.clickgui.settings.Saving
 import com.odtheking.odin.features.Module
+import kotlinx.coroutines.launch
 import java.io.File
+import java.nio.file.AtomicMoveNotSupportedException
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
 
 /**
  * # ModuleConfig
@@ -24,48 +30,40 @@ class ModuleConfig internal constructor(file: File) {
     // key is module name in lowercase
     internal val modules: HashMap<String, Module> = hashMapOf()
 
-    private val file: File = file.apply {
-        try {
-            parentFile.mkdirs()
-            createNewFile()
-        } catch (e: Exception) {
-            logger.error("Error initializing module config", e)
-        }
-    }
+    private val file: File = file
 
-    /**
-     * Loads configuration from file, into [modules].
-     */
     fun load() {
-        try {
-            with(file.bufferedReader().use { it.readText() }) {
-                if (isEmpty()) return
-
-                val jsonArray = JsonParser.parseString(this).asJsonArray ?: return
+        scope.launch(ioDispatcher) {
+            try {
+                val text = if (file.isFile) file.readText() else ""
+                if (text.isBlank()) null else JsonParser.parseString(text).asJsonArray
+            } catch (e: Exception) {
+                logger.error("Error loading module config $file", e)
+                null
+            }?.let { jsonArray ->
                 for (modules in jsonArray) {
-                    val moduleObj = modules?.asJsonObject ?: continue
-                    val module = this@ModuleConfig.modules[moduleObj.get("name").asString.lowercase()] ?: continue
-                    if (moduleObj.get("enabled").asBoolean != module.enabled) module.toggle()
-                    val settingObj = moduleObj.get("settings")?.takeIf { it.isJsonObject }?.asJsonObject?.entrySet() ?: continue
-                    for ((key, value) in settingObj) {
-                        (module.settings[key] as? Saving)?.apply { read(value ?: continue, gson) }
+                    try {
+                        val moduleObj = modules?.asJsonObject ?: continue
+                        val module = this@ModuleConfig.modules[moduleObj.get("name").asString.lowercase()] ?: continue
+                        if (moduleObj.get("enabled").asBoolean != module.enabled) module.toggle()
+                        val settingObj = moduleObj.get("settings")?.takeIf { it.isJsonObject }?.asJsonObject?.entrySet() ?: continue
+                        for ((key, value) in settingObj) {
+                            (module.settings[key] as? Saving)?.apply { read(value ?: continue, gson) }
+                        }
+                    } catch (e: Exception) {
+                        logger.error("Error loading module from config $file", e)
                     }
                 }
             }
-        } catch (e: Exception) {
-            logger.error("Error initializing module config", e)
         }
     }
 
-    /**
-     * Saves configuration to files, from [modules].
-     */
     fun save() {
-        try {
+        val json = try {
             // reason doing this is better is that
             // using like a custom serializer leaves 'null' in settings that don't save
             // code looks hideous tho, but it fully works
-            val jsonArray = JsonArray().apply {
+            gson.toJson(JsonArray().apply {
                 for ((_, module) in modules) {
                     add(JsonObject().apply {
                         add("name", JsonPrimitive(module.name))
@@ -77,10 +75,24 @@ class ModuleConfig internal constructor(file: File) {
                         })
                     })
                 }
-            }
-            file.bufferedWriter().use { it.write(gson.toJson(jsonArray)) }
+            })
         } catch (e: Exception) {
-            logger.error("Error saving module config.", e)
+            return logger.error("Error saving module config $file", e)
+        }
+
+        scope.launch(ioDispatcher) {
+            try {
+                file.parentFile?.mkdirs()
+                val temp = File(file.parentFile, "${file.name}.tmp")
+                temp.writeText(json)
+                try {
+                    Files.move(temp.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE)
+                } catch (_: AtomicMoveNotSupportedException) {
+                    Files.move(temp.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING)
+                }
+            } catch (e: Exception) {
+                logger.error("Error saving module config $file", e)
+            }
         }
     }
 

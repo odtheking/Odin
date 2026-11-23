@@ -4,8 +4,8 @@ import com.github.stivais.commodore.Commodore
 import com.github.stivais.commodore.parsers.CommandParsable
 import com.github.stivais.commodore.utils.GreedyString
 import com.github.stivais.commodore.utils.SyntaxException
+import com.odtheking.odin.OdinMod
 import com.odtheking.odin.OdinMod.mc
-import com.odtheking.odin.clickgui.ClickGUI
 import com.odtheking.odin.clickgui.HudManager
 import com.odtheking.odin.features.ModuleManager
 import com.odtheking.odin.features.impl.render.ClickGUIModule
@@ -15,7 +15,7 @@ import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 
 val mainCommand = Commodore("odin", "od") {
     runs {
-        mc.schedule { mc.setScreenAndShow(ClickGUI) }
+        mc.schedule { mc.setScreenAndShow(OdinMod.clickGUI) }
     }
 
     literal("edithud").runs {
@@ -99,6 +99,7 @@ val mainCommand = Commodore("odin", "od") {
             runs { moduleName: String ->
                 val module = ModuleManager.modules[moduleName.replace("_", " ")] ?: throw SyntaxException("Module not found.")
                 module.toggle()
+                module.config?.save()
                 modMessage("§aModule §f${module.name} §ahas been ${if (module.enabled) "enabled" else "disabled"}.")
             }
         }
@@ -115,6 +116,7 @@ val mainCommand = Commodore("odin", "od") {
                     ?: throw SyntaxException("Module not found.")
 
                 module.settings.forEach { (_, setting) -> setting.reset() }
+                module.config?.save()
                 modMessage("§aSettings for module §f${module.name} §ahas been reset to default values.")
             }
         }

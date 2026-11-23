@@ -7,7 +7,6 @@ import com.odtheking.odin.events.ScreenCloseEvent
 import com.odtheking.odin.events.ScreenEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
-import com.odtheking.odin.features.ModuleManager
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.clickSlot
 import com.odtheking.odin.utils.modMessage
@@ -72,12 +71,12 @@ object SlotBinds : Module(
                 modMessage("§aAdded bind from slot §b$slot §ato §d${clickedSlot} §7($currentProfileName).")
 
                 slotBinds[slot] = clickedSlot
-                ModuleManager.saveConfigurations()
+                config?.save()
                 previousSlot = null
             } ?: run {
                 slotBinds.entries.firstOrNull { it.key == clickedSlot }?.let {
                     slotBinds.remove(it.key)
-                    ModuleManager.saveConfigurations()
+                    config?.save()
                     return@on modMessage("§cRemoved bind from slot §b${it.key} §cto §d${it.value} §7($currentProfileName).")
                 }
                 previousSlot = clickedSlot

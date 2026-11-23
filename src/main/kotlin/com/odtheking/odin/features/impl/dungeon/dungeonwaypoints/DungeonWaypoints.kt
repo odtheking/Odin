@@ -63,6 +63,7 @@ object DungeonWaypoints : Module(
                 WaypointType.SECRET -> presetSecret
                 WaypointType.ETHERWARP -> presetEtherwarp
             }
+            config?.save()
             modMessage("§aWaypoint type changed to §c${waypointType.label}§a.")
         }
 
@@ -83,6 +84,8 @@ object DungeonWaypoints : Module(
 
     var lastEtherPos: BlockPos? = null
     var lastEtherTime = 0L
+
+    private var packsLoaded = false
 
     init {
         onReceive<ClientboundPlayerPositionPacket> {
@@ -106,7 +109,10 @@ object DungeonWaypoints : Module(
         }
 
         on<LevelEvent.Load> {
-            scope.launch(Dispatchers.IO) { loadWaypoints() }
+            if (!packsLoaded) {
+                packsLoaded = true
+                scope.launch(Dispatchers.IO) { loadWaypoints() }
+            }
             resetClickedWaypoints()
             lastEtherPos = null
             lastEtherTime = 0L
@@ -136,6 +142,7 @@ object DungeonWaypoints : Module(
 
     override fun onKeybind() {
         allowEdits = !allowEdits
+        config?.save()
         modMessage("Dungeon Waypoint editing ${if (allowEdits) "§aenabled" else "§cdisabled"}§r!")
     }
 }

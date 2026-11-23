@@ -1,6 +1,7 @@
 package com.odtheking.odin.features.impl.dungeon.map
 
 import com.google.gson.reflect.TypeToken
+import com.odtheking.odin.OdinMod.ioDispatcher
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.OdinMod.scope
 import com.odtheking.odin.events.FloorEnterEvent
@@ -15,7 +16,6 @@ import com.odtheking.odin.utils.Color.Companion.darker
 import com.odtheking.odin.utils.IVec2
 import com.odtheking.odin.utils.JsonResourceLoader.defaultGson
 import com.odtheking.odin.utils.skyblock.dungeon.Floor
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
 import java.util.concurrent.ConcurrentHashMap
@@ -42,11 +42,18 @@ object DungeonScan {
     val directions = arrayOf(1 to 0, -1 to 0, 0 to 1, 0 to -1)
 
     private val roomCoresFile = File(mc.gameDirectory, "config/odin/room-cores.json")
-    val roomCores: MutableMap<String, MutableList<Map<Int, List<String>>>> = runCatching {
-        defaultGson.fromJson<MutableMap<String, MutableList<Map<Int, List<String>>>>>(roomCoresFile.readText(), object : TypeToken<MutableMap<String, MutableList<Map<Int, List<String>>>>>() {}.type)
-    }.getOrNull() ?: mutableMapOf()
+    val roomCores: MutableMap<String, MutableList<Map<Int, List<String>>>> = mutableMapOf()
 
-    private val roomCoresIODispatcher = Dispatchers.IO.limitedParallelism(1)
+    init {
+        scope.launch(ioDispatcher) {
+            val loaded = runCatching {
+                defaultGson.fromJson<MutableMap<String, MutableList<Map<Int, List<String>>>>>(roomCoresFile.readText(), object : TypeToken<MutableMap<String, MutableList<Map<Int, List<String>>>>>() {}.type)
+            }.getOrNull() ?: return@launch
+            mc.execute {
+                for ((name, cores) in loaded) roomCores.getOrPut(name) { mutableListOf() }.addAll(0, cores)
+            }
+        }
+    }
 
     fun recordRoomCore(name: String, core: Int, blocks: List<String>) {
         val cores = roomCores.getOrPut(name) { mutableListOf() }
@@ -54,7 +61,7 @@ object DungeonScan {
         cores.add(mapOf(core to blocks))
 
         val json = defaultGson.toJson(roomCores)
-        scope.launch(roomCoresIODispatcher) {
+        scope.launch(ioDispatcher) {
             roomCoresFile.parentFile.mkdirs()
             roomCoresFile.writeText(json)
         }

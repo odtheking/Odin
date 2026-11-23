@@ -1,6 +1,5 @@
 package com.odtheking.odin.clickgui
 
-import com.odtheking.odin.features.ModuleManager
 import com.odtheking.odin.utils.ui.compose.UiHost
 import net.minecraft.client.gui.screens.Screen
 import net.minecraft.client.input.CharacterEvent
@@ -37,7 +36,6 @@ abstract class OdinScreen(title: Component) : Screen(title) {
 
     override fun onClose() {
         ui.dismiss()
-        ModuleManager.saveConfigurations()
         super.onClose()
     }
 

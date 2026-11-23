@@ -1,7 +1,6 @@
 package com.odtheking.odin.clickgui.ui
 
 import androidx.compose.runtime.*
-import com.odtheking.odin.clickgui.ClickGUI
 import com.odtheking.odin.clickgui.GuiTheme
 import com.odtheking.odin.clickgui.blend
 import com.odtheking.odin.clickgui.settings.RenderableSetting
@@ -11,11 +10,11 @@ import com.odtheking.odin.utils.Color.Companion.darker
 import com.odtheking.odin.utils.ui.compose.*
 
 @Composable
-fun ModuleView(module: Module) {
+fun ModuleView(module: Module, search: () -> String) {
     val settings = remember { module.settings.values.filterIsInstance<RenderableSetting<*>>() }
     var expanded by remember { mutableStateOf(false) }
 
-    AnimatedVisibility({ module.name.contains(ClickGUI.searchString, true) }, durationMillis = 150) {
+    AnimatedVisibility({ module.name.contains(search(), true) }, durationMillis = 150) {
         ModuleHeader(module) { if (settings.isNotEmpty()) expanded = !expanded }
         AnimatedVisibility(expanded, durationMillis = 250) {
             for (setting in settings) AnimatedVisibility(setting.isVisible) { setting.Content() }

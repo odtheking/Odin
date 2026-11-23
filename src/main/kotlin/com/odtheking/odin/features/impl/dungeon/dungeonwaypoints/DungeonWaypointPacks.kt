@@ -3,12 +3,9 @@ package com.odtheking.odin.features.impl.dungeon.dungeonwaypoints
 import com.odtheking.odin.config.WaypointPackFileUtils
 import com.odtheking.odin.config.WaypointPackState
 import com.odtheking.odin.config.normalized
-import com.odtheking.odin.features.ModuleManager
 import com.odtheking.odin.features.impl.dungeon.map.tile.DungeonRoom
 import com.odtheking.odin.utils.modMessage
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import net.minecraft.world.phys.AABB
 
 suspend fun DungeonWaypoints.loadWaypoints() {
@@ -44,7 +41,7 @@ internal suspend fun DungeonWaypoints.createPack(packName: String): Boolean {
 }
 
 internal suspend fun DungeonWaypoints.deletePack(packName: String): Boolean {
-    if (withContext(Dispatchers.IO) { WaypointPackFileUtils.listPackNames().size } <= 1) {
+    if (WaypointPackFileUtils.listPackNames().size <= 1) {
         modMessage("§cCannot delete the only pack!")
         return false
     }
@@ -98,7 +95,7 @@ private suspend fun DungeonWaypoints.ensurePackState(
     requestedSelection: List<String> = selectedPackIds,
     requestedEditPackId: String = editPackId,
 ): WaypointPackState {
-    val availablePackIds = withContext(Dispatchers.IO) { WaypointPackFileUtils.listPackNames() }
+    val availablePackIds = WaypointPackFileUtils.listPackNames()
 
     val normalizedState = WaypointPackState(
         selectedPackIds = requestedSelection.ifEmpty { selectedPackIds }.toMutableList(),
@@ -107,7 +104,7 @@ private suspend fun DungeonWaypoints.ensurePackState(
 
     selectedPackIds = normalizedState.selectedPackIds.toMutableList()
     editPackId = normalizedState.editPackId
-    ModuleManager.saveConfigurations()
+    config?.save()
     return normalizedState
 }
 

@@ -1,10 +1,10 @@
 package com.odtheking.odin.config
 
 import com.google.gson.reflect.TypeToken
+import com.odtheking.odin.OdinMod.ioDispatcher
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints.DungeonWaypoint
 import com.odtheking.odin.utils.modMessage
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import net.minecraft.util.FileUtil
 import java.io.File
@@ -14,34 +14,46 @@ private typealias PackMap = MutableMap<String, MutableList<DungeonWaypoint>>
 object WaypointPackFileUtils {
 
     private val legacyConfigFile = File(mc.gameDirectory, "config/odin/dungeon-waypoint-config.json")
-    val packsFolder = File(mc.gameDirectory, "config/odin/dungeon-waypoints").apply { mkdirs() }
+    val packsFolder = File(mc.gameDirectory, "config/odin/dungeon-waypoints")
     private val packType = object : TypeToken<PackMap>() {}.type
 
-    init {
-        if (listPackNames().isEmpty()) runCatching {
+    private var prepared = false
+
+    private fun prepare() {
+        if (prepared) return
+        prepared = true
+        packsFolder.mkdirs()
+        if (packNames().isEmpty()) runCatching {
             val content = legacyConfigFile.takeIf(File::exists)?.readText() ?: DungeonWaypointConfig.gson.toJson(emptyPack())
             packFile("default").writeText(content)
         }.onFailure { it.printStackTrace() }
     }
 
+    private suspend fun <T> io(block: () -> T): T = withContext(ioDispatcher) {
+        prepare()
+        block()
+    }
+
     private fun packFile(name: String) = File(packsFolder, "$name.json")
     private fun emptyPack(): PackMap = mutableMapOf()
 
-    fun listPackNames(): List<String> =
+    private fun packNames(): List<String> =
         packsFolder.listFiles { f -> f.extension == "json" }?.map { it.nameWithoutExtension }?.sorted() ?: emptyList()
 
-    suspend fun loadPack(packName: String): PackMap = withContext(Dispatchers.IO) {
+    suspend fun listPackNames(): List<String> = io { packNames() }
+
+    suspend fun loadPack(packName: String): PackMap = io {
         runCatching {
             packFile(packName).takeIf(File::exists)?.readText()
                 ?.let { DungeonWaypointConfig.gson.fromJson<PackMap>(it, packType) } ?: emptyPack()
         }.getOrElse { it.printStackTrace(); emptyPack() }
     }
 
-    suspend fun savePack(packName: String, waypoints: PackMap) = withContext(Dispatchers.IO) {
+    suspend fun savePack(packName: String, waypoints: PackMap) = io {
         runCatching { packFile(packName).writeText(DungeonWaypointConfig.gson.toJson(waypoints)) }.onFailure { it.printStackTrace() }
     }
 
-    suspend fun createPack(packName: String): Boolean = withContext(Dispatchers.IO) {
+    suspend fun createPack(packName: String): Boolean = io {
         val file = packFile(packName)
         when {
             !isValidPackName(packName) -> fail("Invalid pack name!")
@@ -52,7 +64,7 @@ object WaypointPackFileUtils {
         }
     }
 
-    suspend fun deletePack(packName: String): Boolean = withContext(Dispatchers.IO) {
+    suspend fun deletePack(packName: String): Boolean = io {
         val file = packFile(packName)
         when {
             !file.exists() -> fail("Pack '$packName' does not exist!")
@@ -62,7 +74,7 @@ object WaypointPackFileUtils {
         }
     }
 
-    suspend fun renamePack(oldName: String, newName: String): Boolean = withContext(Dispatchers.IO) {
+    suspend fun renamePack(oldName: String, newName: String): Boolean = io {
         val oldFile = packFile(oldName)
         val newFile = packFile(newName)
         when {

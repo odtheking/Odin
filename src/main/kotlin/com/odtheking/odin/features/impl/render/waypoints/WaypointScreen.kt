@@ -10,7 +10,6 @@ import com.odtheking.odin.clickgui.settings.impl.ColorSetting
 import com.odtheking.odin.clickgui.settings.impl.NumberSetting
 import com.odtheking.odin.clickgui.settings.impl.label
 import com.odtheking.odin.clickgui.ui.*
-import com.odtheking.odin.features.ModuleManager
 import com.odtheking.odin.features.impl.dungeon.dungeonwaypoints.DIALOG_BUTTON_HEIGHT
 import com.odtheking.odin.features.impl.dungeon.dungeonwaypoints.DIALOG_PADDING
 import com.odtheking.odin.features.impl.dungeon.dungeonwaypoints.Dialog
@@ -82,7 +81,7 @@ class WaypointScreen(private val parent: Screen?) : OdinScreen(Component.literal
 
     override fun removed() {
         super.removed()
-        ModuleManager.saveConfigurations()
+        Waypoints.config?.save()
         ui.dispose()
     }
 

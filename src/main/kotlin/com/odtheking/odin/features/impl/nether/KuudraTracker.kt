@@ -5,7 +5,6 @@ import com.odtheking.odin.events.GuiEvent
 import com.odtheking.odin.events.MessageEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
-import com.odtheking.odin.features.ModuleManager
 import com.odtheking.odin.features.impl.nether.Vesuvius.getPriceOfKey
 import com.odtheking.odin.features.impl.nether.Vesuvius.keys
 import com.odtheking.odin.utils.Colors
@@ -32,7 +31,7 @@ object KuudraTracker : Module(
         last = LastAdded(mutableListOf(), mutableListOf(), 0)
 
         updateDisplay()
-        ModuleManager.saveConfigurations()
+        config?.save()
     }
 
     private val chestRegex = Regex("(Free|Paid) Chest")
@@ -83,7 +82,7 @@ object KuudraTracker : Module(
                 paid--
 
                 updateDisplay()
-                ModuleManager.saveConfigurations()
+                config?.save()
             }
         }
 
@@ -123,7 +122,7 @@ object KuudraTracker : Module(
             if (screen.title.string == "Free Chest") free++
 
             updateDisplay()
-            ModuleManager.saveConfigurations()
+            config?.save()
         }
     }
 

@@ -56,12 +56,22 @@ object HudManager : OdinScreen(Component.literal("HUD Manager")) {
         return super.keyPressed(event)
     }
 
+    override fun removed() {
+        super.removed()
+        saveConfigs()
+    }
+
     fun resetHUDS() {
         for (setting in hudSettingsCache) {
             setting.hud.x = 10
             setting.hud.y = 10
             setting.hud.scale = 1f
         }
+        saveConfigs()
+    }
+
+    private fun saveConfigs() {
+        hudSettingsCache.forEach { it.module.config?.save() }
     }
 
     private fun resize(element: HudElement, amount: Float) {

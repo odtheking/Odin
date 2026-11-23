@@ -21,6 +21,7 @@ val dungeonWaypointsCommand = Commodore("dwp", "dungeonwaypoints") {
 
     literal("fill").runs {
         DungeonWaypoints.filled = !DungeonWaypoints.filled
+        DungeonWaypoints.config?.save()
         modMessage("Fill status changed to: ${DungeonWaypoints.filled}")
     }
 
@@ -30,6 +31,7 @@ val dungeonWaypointsCommand = Commodore("dwp", "dungeonwaypoints") {
         DungeonWaypoints.sizeX = sizeX
         DungeonWaypoints.sizeY = sizeY
         DungeonWaypoints.sizeZ = sizeZ
+        DungeonWaypoints.config?.save()
         modMessage("Size changed to: ${sizeX}, ${sizeY}, $sizeZ")
     }
 
@@ -40,16 +42,19 @@ val dungeonWaypointsCommand = Commodore("dwp", "dungeonwaypoints") {
 
     literal("type").runs { type: DungeonWaypoints.WaypointType ->
         DungeonWaypoints.waypointType = type
+        DungeonWaypoints.config?.save()
         modMessage("Waypoint type changed to: ${type.label}")
     }
 
     literal("useblocksize").runs {
         DungeonWaypoints.useBlockSize = !DungeonWaypoints.useBlockSize
+        DungeonWaypoints.config?.save()
         modMessage("Use block size status changed to: ${DungeonWaypoints.useBlockSize}")
     }
 
     literal("depth").runs {
         DungeonWaypoints.depthCheck = !DungeonWaypoints.depthCheck
+        DungeonWaypoints.config?.save()
         modMessage("Next waypoint will be added with depth check: ${DungeonWaypoints.depthCheck}")
     }
 
@@ -61,6 +66,7 @@ val dungeonWaypointsCommand = Commodore("dwp", "dungeonwaypoints") {
 
         runs { hex: Color ->
             DungeonWaypoints.color = hex
+            DungeonWaypoints.config?.save()
             modMessage("Color changed to: ${hex.hex()}")
         }
     }

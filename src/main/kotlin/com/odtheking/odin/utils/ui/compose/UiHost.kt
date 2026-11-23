@@ -25,6 +25,9 @@ class UiHost(content: @Composable () -> Unit) {
     private var settling = true
     val dismissListeners = ArrayList<() -> Unit>()
 
+    val width: Int get() = root.width
+    val height: Int get() = root.height
+
     init {
         scope.launch(start = CoroutineStart.UNDISPATCHED) { recomposer.runRecomposeAndApplyChanges() }
         composition.setContent {

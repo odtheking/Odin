@@ -24,9 +24,13 @@ class WaypointPackSelectorScreen(private val parent: Screen?) : OdinScreen(Compo
     private class Prompt(val title: String, val onConfirm: (String) -> Unit)
 
     private var revision by mutableIntStateOf(0)
-    private var packs by mutableStateOf(WaypointPackFileUtils.listPackNames())
+    private var packs by mutableStateOf(emptyList<String>())
     private var loading by mutableStateOf(false)
     private var prompt by mutableStateOf<Prompt?>(null)
+
+    init {
+        refreshAfter {}
+    }
 
     override val ui = UiHost {
         PackPanel()

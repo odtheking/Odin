@@ -11,6 +11,7 @@ import com.odtheking.odin.clickgui.settings.DevModule
 import com.odtheking.odin.clickgui.settings.Setting
 import com.odtheking.odin.clickgui.settings.impl.HUDSetting
 import com.odtheking.odin.clickgui.settings.impl.HudElement
+import com.odtheking.odin.config.ModuleConfig
 import com.odtheking.odin.events.core.EventBus
 import com.odtheking.odin.features.impl.render.ClickGUIModule
 import com.odtheking.odin.utils.modMessage
@@ -51,6 +52,9 @@ abstract class Module(
      */
     var enabled: Boolean by mutableStateOf(toggled)
         private set
+
+    @Transient
+    var config: ModuleConfig? = null
 
     protected inline val mc get() = OdinMod.mc
 
@@ -96,6 +100,7 @@ abstract class Module(
      */
     open fun onKeybind() {
         toggle()
+        config?.save()
         if (ClickGUIModule.enableNotification) modMessage("$name ${if (enabled) "§aenabled" else "§cdisabled"}.")
     }
 

@@ -1,10 +1,14 @@
 package com.odtheking.odin
 
+import com.odtheking.odin.clickgui.ClickGUI
+import com.odtheking.odin.clickgui.ui.Panel
 import com.odtheking.odin.commands.*
 import com.odtheking.odin.events.EventDispatcher
 import com.odtheking.odin.events.core.EventBus
+import com.odtheking.odin.features.Category
 import com.odtheking.odin.features.ModuleManager
 import com.odtheking.odin.features.impl.dungeon.map.DungeonScan
+import com.odtheking.odin.features.impl.render.ClickGUIModule
 import com.odtheking.odin.features.impl.render.Shenanigans
 import com.odtheking.odin.utils.IrisCompatability
 import com.odtheking.odin.utils.ServerUtils
@@ -16,8 +20,7 @@ import com.odtheking.odin.utils.skyblock.dungeon.DungeonListener
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalUtils
 import com.odtheking.odin.utils.ui.widget.CustomGUIImpl
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.*
 import net.fabricmc.api.ClientModInitializer
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback
 import net.fabricmc.fabric.api.client.rendering.v1.FeatureRendererRegistry
@@ -37,25 +40,31 @@ object OdinMod : ClientModInitializer {
     @JvmStatic
     val mc: Minecraft = Minecraft.getInstance()
 
-    /**
-     * Main config file location.
-     * @see com.odtheking.odin.config.ModuleConfig
-     * @see com.odtheking.odin.config.DungeonWaypointConfig
-     */
-    val configFile: File = File(mc.gameDirectory, "config/odin/").apply {
-        try {
-            if (isFile) delete() // Delete old bugged files that prevent creating the directory
-            if (!exists()) mkdirs()
-        } catch (e: Exception) {
-            println("Error initializing module config\n${e.message}")
-            logger.error("Error initializing module config", e)
+    val scope = CoroutineScope(SupervisorJob() + EmptyCoroutineContext)
+    val ioDispatcher: CoroutineDispatcher = Dispatchers.IO.limitedParallelism(1)
+
+    val configFile: File = File(mc.gameDirectory, "config/odin/").also { dir ->
+        scope.launch(ioDispatcher) {
+            try {
+                if (dir.isFile) dir.delete() // Delete old bugged files that prevent creating the directory
+                if (!dir.exists()) dir.mkdirs()
+            } catch (e: Exception) {
+                logger.error("Error initializing module config", e)
+            }
         }
     }
 
     const val MOD_ID = "odin"
 
     val version: Version by lazy { FabricLoader.getInstance().getModContainer(MOD_ID).orElseThrow().metadata.version }
-    val scope = CoroutineScope(SupervisorJob() + EmptyCoroutineContext)
+
+    val clickGUI: ClickGUI by lazy {
+        ClickGUI(Category.categories.values.mapNotNull { category ->
+            val modules = ModuleManager.odinConfig.modules.values.filter { it.category == category }.ifEmpty { return@mapNotNull null }
+            val data = ClickGUIModule.panelSetting.getOrPut(category.name) { ClickGUIModule.PanelData(category.x, category.y) }
+            Panel(category, modules, data)
+        })
+    }
 
     override fun onInitializeClient() {
         FeatureRendererRegistry.register(NoDepthFeatureRenderer.TYPE) { NoDepthFeatureRenderer() }

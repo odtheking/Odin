@@ -6,7 +6,7 @@ import com.google.gson.JsonElement
 /**
  * Used for settings that you want to save/load.
  */
-internal interface Saving {
+interface Saving {
     /**
      * Used to update the setting from the json.
      */
