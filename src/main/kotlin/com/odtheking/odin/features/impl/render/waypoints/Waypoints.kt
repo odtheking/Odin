@@ -40,7 +40,7 @@ class Waypoint(
     val blockPos: Vec3 = Vec3.ZERO,
     val endPos: Vec3 = blockPos,
     val label: String = "",
-    val color: Color = Colors.minecraftColors.random().copy(),
+    val color: Color = Colors.minecraftColors.random(),
     val trigger: Trigger = Trigger.VISUAL,
     val command: String? = null,
     val radius: Float? = null,

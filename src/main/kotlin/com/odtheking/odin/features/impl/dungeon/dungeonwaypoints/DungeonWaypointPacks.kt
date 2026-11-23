@@ -127,7 +127,7 @@ private fun copyWaypointMap(source: Map<String, List<DungeonWaypoints.DungeonWay
     }
 
 private fun DungeonWaypoints.DungeonWaypoint.resetRuntimeState() = copy(
-    color = color.copy(),
+    color = color,
     aabb = AABB(aabb.minX, aabb.minY, aabb.minZ, aabb.maxX, aabb.maxY, aabb.maxZ),
     isClicked = false,
 )

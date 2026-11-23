@@ -204,7 +204,7 @@ class WaypointScreen(private val parent: Screen?) : OdinScreen(Component.literal
         var command by remember { mutableStateOf(edit?.command.orEmpty()) }
         var trigger by remember { mutableStateOf(edit?.trigger ?: Trigger.VISUAL) }
         var message by remember { mutableStateOf("") }
-        val color = remember { ColorSetting("Color", (edit?.color ?: Colors.MINECRAFT_GREEN).copy(), true, "", true) }
+        val color = remember { ColorSetting("Color", edit?.color ?: Colors.MINECRAFT_GREEN, true, "", true) }
         val radius = remember { NumberSetting("Radius", (edit?.radius ?: 0.1f), 0.1..10.0, 0.1, "", " blocks") }
         val areaKey = edit?.area ?: selectedArea
 
@@ -214,7 +214,7 @@ class WaypointScreen(private val parent: Screen?) : OdinScreen(Component.literal
             if (first == null || second == null) return run { message = "§cCoordinates must be numbers." }
 
             val waypoint = Waypoint(
-                area = areaKey, blockPos = first, endPos = second, label = label.trim(), color = color.value.copy(),
+                area = areaKey, blockPos = first, endPos = second, label = label.trim(), color = color.value,
                 trigger = trigger, command = command.trim().removePrefix("/").takeIf { trigger != Trigger.VISUAL && it.isNotEmpty() },
                 radius = if (inArea) null else radius.value.takeIf { it > 0 }, enabled = edit?.enabled ?: true,
             )

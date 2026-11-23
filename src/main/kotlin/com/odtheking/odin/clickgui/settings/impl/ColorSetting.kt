@@ -29,7 +29,7 @@ class ColorSetting(
     private val startExpanded: Boolean = false
 ) : RenderableSetting<Color>(name, desc), Saving {
 
-    override var value: Color by mutableStateOf(default.copy())
+    override var value: Color by mutableStateOf(default)
 
     private val hexLength = if (allowAlpha) 8 else 6
 
@@ -76,8 +76,8 @@ class ColorSetting(
                                 Canvas { graphics ->
                                     val fill = ClickGUIModule.favoriteColors[slot]?.rgba ?: GuiTheme.background.withAlpha(0.4f).rgba
                                     graphics.roundedRectOutlined(x, y, right, bottom, fill, GuiTheme.surface.rgba, 1f, FAVORITE_RADIUS)
-                                }.size(FIELD_HEIGHT).clickable(onRightClick = { ClickGUIModule.favoriteColors[slot] = value.copy() }) {
-                                    ClickGUIModule.favoriteColors[slot]?.let { value = it.copy() }
+                                }.size(FIELD_HEIGHT).clickable(onRightClick = { ClickGUIModule.favoriteColors[slot] = value }) {
+                                    ClickGUIModule.favoriteColors[slot]?.let { value = it }
                                 }
                             }
                         }.offset({ PICKER_WIDTH - FAVORITES_WIDTH })
@@ -113,7 +113,7 @@ class ColorSetting(
     override fun write(gson: Gson): JsonElement = gson.toJsonTree(value, Color::class.java)
 
     override fun read(element: JsonElement, gson: Gson) {
-        value = gson.fromJson(element, Color::class.java) ?: default.copy()
+        value = gson.fromJson(element, Color::class.java) ?: default
     }
 
     private companion object {

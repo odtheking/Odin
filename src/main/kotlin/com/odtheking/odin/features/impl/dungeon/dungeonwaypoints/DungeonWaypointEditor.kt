@@ -109,7 +109,7 @@ private fun DungeonWaypoints.openWaypointTitlePrompt(
 
 private fun DungeonWaypoints.createWaypoint(blockPos: BlockPos, aabb: AABB, title: String? = null) = DungeonWaypoint(
     blockPos = blockPos,
-    color = color.copy(),
+    color = color,
     filled = filled,
     depth = depthCheck,
     aabb = aabb,
