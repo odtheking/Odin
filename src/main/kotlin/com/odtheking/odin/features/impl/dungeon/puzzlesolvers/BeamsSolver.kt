@@ -16,13 +16,12 @@ import net.minecraft.core.BlockPos
 import net.minecraft.resources.Identifier
 import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.phys.AABB
-import java.util.concurrent.ConcurrentHashMap
 
 object BeamsSolver {
     private var scanned = false
     private var lanternPairs: List<List<Int>> = JsonResourceLoader.loadJson(Identifier.fromNamespaceAndPath("odin", "puzzles/creeper-beams-solutions.json")) ?: emptyList()
 
-    private var currentLanternPairs = ConcurrentHashMap<BlockPos, Pair<BlockPos, Color>>()
+    private var currentLanternPairs = HashMap<BlockPos, Pair<BlockPos, Color>>()
 
     fun onRoomEnter(event: RoomEnterEvent) = with(event.room) {
         if (this?.data?.name != "Creeper Beams") return@with reset()

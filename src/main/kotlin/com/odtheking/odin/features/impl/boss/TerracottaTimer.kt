@@ -11,14 +11,13 @@ import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.toFixed
 import net.minecraft.core.BlockPos
 import net.minecraft.world.level.block.FlowerPotBlock
-import java.util.concurrent.CopyOnWriteArrayList
 
 object TerracottaTimer : Module(
     name = "Terracotta Timer",
     description = "Displays the time until the terracotta respawns."
 ) {
-    private var terracottaSpawning = CopyOnWriteArrayList<Terracotta>()
     private data class Terracotta(val pos: BlockPos, var time: Float)
+    private val terracottaSpawning = ArrayList<Terracotta>()
 
     init {
         on<BlockUpdateEvent> {
