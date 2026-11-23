@@ -86,13 +86,13 @@ object WitherDragons : Module(
         on<RenderExtractEvent> {
             if (DungeonUtils.getF7Phase() != M7Phases.P5) return@on
 
-            WitherDragonsEnum.entries.forEach { dragon ->
-                if (dragonHealth) {
-                    DragonCheck.dragonHealthMap.toList().forEach { (_, data) ->
-                        if (data.second > 0) drawText(colorHealth(data.second), data.first.renderPos, 5f, false)
-                    }
+            if (dragonHealth) {
+                DragonCheck.dragonHealthMap.forEach { (_, data) ->
+                    if (data.second > 0) drawText(colorHealth(data.second), data.first.renderPos, 5f, false)
                 }
+            }
 
+            WitherDragonsEnum.entries.forEach { dragon ->
                 if (dragonTimer && dragon.timeToSpawn > 0) {
                     drawText(
                         "§${dragon.colorCode}${dragon.name.first()}: ${getDragonTimer(dragon.timeToSpawn)}",
