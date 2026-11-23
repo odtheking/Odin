@@ -46,12 +46,16 @@ object WitherDragons : Module(
     val sendSpray by BooleanSetting("Send Ice Sprayed", true, desc = "Sends a message when a dragon has been ice sprayed.").withDependency { dragonAlerts }
 
     private val dragonHealth by BooleanSetting("Dragon Health", true, desc = "Displays the health of M7 dragons.")
+    private val noHitTint by BooleanSetting("No Hit Tint", true, desc = "Removes the red flash dragons get when hit while in floor 7.")
 
     val spawnOrder = mutableListOf<WitherDragonsEnum>()
     val priorityDragon: WitherDragonsEnum? get() = spawnOrder.firstOrNull()
     var currentTick = 0L
 
     val dragonPBs = PersonalBest(this, "DragonPBs")
+
+    @JvmStatic
+    fun shouldHideHitTint(): Boolean = enabled && noHitTint && DungeonUtils.isFloor(7)
 
     init {
         onReceive<ClientboundLevelParticlesPacket> {

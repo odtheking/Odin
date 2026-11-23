@@ -13,6 +13,7 @@
     "mixins.ChatScreenMixin",
     "mixins.ClientLevelMixin",
     "mixins.ClientPacketListenerMixin",
+    "mixins.EnderDragonRendererMixin",
     "mixins.EntityRendererMixin",
     "mixins.ExperienceBarRendererMixin",
     "mixins.FontMixin",
