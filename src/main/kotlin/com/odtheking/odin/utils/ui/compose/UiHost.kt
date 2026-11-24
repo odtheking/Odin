@@ -25,8 +25,12 @@ class UiHost(content: @Composable () -> Unit) {
     private var settling = true
     val dismissListeners = ArrayList<() -> Unit>()
 
-    val width: Int get() = root.width
-    val height: Int get() = root.height
+    var scale = 1f
+
+    var width = 0
+        private set
+    var height = 0
+        private set
 
     init {
         scope.launch(start = CoroutineStart.UNDISPATCHED) { recomposer.runRecomposeAndApplyChanges() }
@@ -46,14 +50,20 @@ class UiHost(content: @Composable () -> Unit) {
             drain()
         }
 
-        Pointer.x = mouseX
-        Pointer.y = mouseY
+        this.width = (width / scale).toInt()
+        this.height = (height / scale).toInt()
+        Pointer.x = (mouseX / scale).toInt()
+        Pointer.y = (mouseY / scale).toInt()
         root.measure()
-        root.width = width
-        root.height = height
+        root.width = this.width
+        root.height = this.height
         root.place(0, 0)
+
+        graphics.pose().pushMatrix()
+        graphics.pose().scale(scale, scale)
         root.render(graphics, true)
         Overlay.flush(graphics)
+        graphics.pose().popMatrix()
 
         Motion.settling = false
         settling = false
@@ -69,7 +79,8 @@ class UiHost(content: @Composable () -> Unit) {
         settling = true
     }
 
-    fun click(event: MouseButtonEvent, doubleClick: Boolean): Boolean {
+    fun click(screenEvent: MouseButtonEvent, doubleClick: Boolean): Boolean {
+        val event = screenEvent.scaled()
         val target = root.pick(event.x(), event.y())
         ancestry(target) { it.onPress?.invoke(); false }
 
@@ -82,22 +93,24 @@ class UiHost(content: @Composable () -> Unit) {
 
     fun drag(event: MouseButtonEvent): Boolean {
         val node = pressed ?: return false
-        node.pointer?.onDrag?.invoke(node, event)
+        node.pointer?.onDrag?.invoke(node, event.scaled())
         return true
     }
 
     fun release(event: MouseButtonEvent): Boolean {
         val node = pressed ?: return false
         pressed = null
-        node.pointer?.onRelease?.invoke(node, event)
+        node.pointer?.onRelease?.invoke(node, event.scaled())
         return true
     }
 
     fun scroll(mouseX: Double, mouseY: Double, amount: Double): Boolean =
-        ancestry(root.pick(mouseX, mouseY)) { it.onScroll?.invoke(it, amount) == true } != null
+        ancestry(root.pick(mouseX / scale, mouseY / scale)) { it.onScroll?.invoke(it, amount) == true } != null
 
-    fun hitTest(x: Int, y: Int): Any? {
-        var node = root.pick(x.toDouble(), y.toDouble())
+    fun hitTest(x: Int, y: Int): Any? = hitTest(x.toDouble(), y.toDouble())
+
+    fun hitTest(x: Double, y: Double): Any? {
+        var node = root.pick(x / scale, y / scale)
         while (node != null) {
             node.tag?.let { return it }
             node = node.parent
@@ -124,6 +137,9 @@ class UiHost(content: @Composable () -> Unit) {
         if (focused?.isWithin(node) == true) setFocused(null)
         if (pressed?.isWithin(node) == true) pressed = null
     }
+
+    private fun MouseButtonEvent.scaled(): MouseButtonEvent =
+        if (scale == 1f) this else MouseButtonEvent(x() / scale, y() / scale, buttonInfo())
 
     private fun UiNode.isWithin(ancestor: UiNode) = ancestry(this) { it === ancestor } != null
 

@@ -13,8 +13,10 @@ import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.*
 import com.odtheking.odin.utils.render.ItemStateRenderer.Companion.drawItemStack
-import com.odtheking.odin.utils.render.textDim
+import com.odtheking.odin.utils.render.getStringWidth
+import com.odtheking.odin.utils.render.text
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.world.entity.EquipmentSlot
 
 object InvincibilityTimer : Module(
@@ -30,10 +32,13 @@ object InvincibilityTimer : Module(
     private val showBonzo by BooleanSetting("Show Bonzo Mask", true, desc = "Shows the Bonzo Mask in the HUD.").withDependency { maskCat }
     private val showPhoenix by BooleanSetting("Show Phoenix Pet", true, desc = "Shows the Phoenix Pet in the HUD.").withDependency { maskCat }
 
-    private val hud by HUD(name, "Shows the invincibility time in the HUD.") { example ->
-        if (!example && ((onlyInDungeons && !DungeonUtils.inDungeons) || (showOnlyInBoss && !DungeonUtils.inBoss))) return@HUD 0 to 0
+    private val hud by HUD(name, "Shows the invincibility time in the HUD.", example = {
+        drawInvincibility(InvincibilityType.entries)
+        20 + InvincibilityType.entries.maxOf { getStringWidth(it.timerText) } to InvincibilityType.entries.size * 14
+    }) {
+        if ((onlyInDungeons && !DungeonUtils.inDungeons) || (showOnlyInBoss && !DungeonUtils.inBoss)) return@HUD
 
-        val visibleTypes = if (example) InvincibilityType.entries else InvincibilityType.entries.filter { type ->
+        drawInvincibility(InvincibilityType.entries.filter { type ->
             when (type) {
                 InvincibilityType.SPIRIT -> showSpirit
                 InvincibilityType.BONZO -> showBonzo
@@ -44,32 +49,33 @@ object InvincibilityTimer : Module(
                 ShowWhen.WHEN_ACTIVE -> type.activeTime > 0
                 ShowWhen.ON_COOLDOWN -> type.currentCooldown > 0
             }
-        }.ifEmpty { return@HUD 0 to 0 }
+        })
+    }
 
-        var width = 0
-
-        visibleTypes.forEachIndexed { index, type ->
+    private fun GuiGraphicsExtractor.drawInvincibility(types: List<InvincibilityType>) {
+        val helmet = mc.player?.getItemBySlot(EquipmentSlot.HEAD)?.itemId
+        types.forEachIndexed { index, type ->
             drawItemStack(type.itemStack, 0, -1 + index * 14)
             val y = index * 14 + 3
 
-            if (type == InvincibilityType.BONZO && mc.player?.getItemBySlot(EquipmentSlot.HEAD)?.itemId?.equalsOneOf("BONZO_MASK", "STARRED_BONZO_MASK") == true ||
-                type == InvincibilityType.SPIRIT && mc.player?.getItemBySlot(EquipmentSlot.HEAD)?.itemId?.equalsOneOf("SPIRIT_MASK", "STARRED_SPIRIT_MASK") == true) {
+            if (type == InvincibilityType.BONZO && helmet?.equalsOneOf("BONZO_MASK", "STARRED_BONZO_MASK") == true ||
+                type == InvincibilityType.SPIRIT && helmet?.equalsOneOf("SPIRIT_MASK", "STARRED_SPIRIT_MASK") == true) {
                 fill(14, y, 15, y + 9, equippedMaskColor.rgba)
             }
-            textDim(
-                text = when {
-                    type.activeTime > 0 -> "${(type.activeTime / 20f).toFixed()}s"
-                    type.currentCooldown > 0 -> "${(type.currentCooldown / 20f).toFixed()}s"
-                    else -> "✔"
-                },
-                16, y,
+            text(
+                type.timerText, 16, y,
                 if (type.activeTime == 0 && type.currentCooldown == 0) Colors.MINECRAFT_GREEN
                 else if (type.activeTime > 0) Colors.MINECRAFT_GOLD else Colors.MINECRAFT_RED
-            ).first.let { if (it > width) width = it }
+            )
         }
-
-        width + 20 to visibleTypes.size * 14
     }
+
+    private val InvincibilityType.timerText: String
+        get() = when {
+            activeTime > 0 -> "${(activeTime / 20f).toFixed()}s"
+            currentCooldown > 0 -> "${(currentCooldown / 20f).toFixed()}s"
+            else -> "✔"
+        }
     private val showOnlyInBoss by BooleanSetting("Show In Boss", false, desc = "Only shows invincibility timers during dungeon boss fights.")
     private val showWhen by SelectorSetting("Show", ShowWhen.ALWAYS, "Controls when invincibility items are shown.")
     private val equippedMaskColor by ColorSetting("Equipped Mask", Colors.MINECRAFT_DARK_PURPLE, desc = "Color of the equipped mask in the HUD. (Bonzo/Spirit)")

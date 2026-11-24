@@ -3,10 +3,12 @@ package com.odtheking.odin.features.impl.dungeon
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Colors
-import com.odtheking.odin.utils.render.textDim
+import com.odtheking.odin.utils.render.getStringWidth
+import com.odtheking.odin.utils.render.text
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.skyblock.dungeon.Puzzle
 import com.odtheking.odin.utils.skyblock.dungeon.PuzzleStatus
+import net.minecraft.client.gui.GuiGraphicsExtractor
 
 object PuzzleHud : Module(
     name = "Puzzle HUD",
@@ -23,42 +25,40 @@ object PuzzleHud : Module(
         PuzzleEntry(Puzzle.UNKNOWN.displayName, "✦", "§6", null)
     )
 
-    private val hud by HUD("Puzzle HUD", "Displays dungeon puzzle statuses on the HUD.", false) { example ->
-        if (!DungeonUtils.inClear && !example) return@HUD 0 to 0
-        if (!example && showOnlyPre && DungeonUtils.openRoomCount != 0) return@HUD 0 to 0
+    private val hud by HUD("Puzzle HUD", "Displays dungeon puzzle statuses on the HUD.", false, example = {
+        drawPuzzles(examplePuzzles.size, examplePuzzles)
+        maxOf(getStringWidth(headerText(examplePuzzles.size)), examplePuzzles.maxOf { getStringWidth(entryText(it)) }) to (examplePuzzles.size + 1) * LINE_HEIGHT
+    }) {
+        if (!DungeonUtils.inClear || (showOnlyPre && DungeonUtils.openRoomCount != 0)) return@HUD
 
-        val puzzleCount = if (example) 4 else DungeonUtils.puzzleCount
-        if (puzzleCount == 0) return@HUD 0 to 0
+        val puzzleCount = DungeonUtils.puzzleCount
+        if (puzzleCount == 0) return@HUD
 
-        val entries = if (example) examplePuzzles
-        else {
-            val discovered = DungeonUtils.puzzles.map { puzzle ->
-                val (icon, color) = when (puzzle.status) {
-                    PuzzleStatus.Completed -> "✔" to "§a"
-                    PuzzleStatus.Failed -> "✖" to "§c"
-                    PuzzleStatus.Incomplete -> "✦" to "§6"
-                    null -> "✦" to "§6"
-                }
-                PuzzleEntry(puzzle.displayName, icon, color, puzzle.player)
+        val discovered = DungeonUtils.puzzles.map { puzzle ->
+            val (icon, color) = when (puzzle.status) {
+                PuzzleStatus.Completed -> "✔" to "§a"
+                PuzzleStatus.Failed -> "✖" to "§c"
+                PuzzleStatus.Incomplete -> "✦" to "§6"
+                null -> "✦" to "§6"
             }
-            val undiscoveredCount = (puzzleCount - discovered.size).coerceAtLeast(0)
-            val undiscovered = (1..undiscoveredCount).map { PuzzleEntry("???", "✦", "§6", null) }
-            discovered + undiscovered
+            PuzzleEntry(puzzle.displayName, icon, color, puzzle.player)
         }
+        val undiscoveredCount = (puzzleCount - discovered.size).coerceAtLeast(0)
+        val undiscovered = (1..undiscoveredCount).map { PuzzleEntry("???", "✦", "§6", null) }
+        drawPuzzles(puzzleCount, discovered + undiscovered)
+    }
 
-        var width = 0
-        val lineHeight = 12
+    private const val LINE_HEIGHT = 12
 
-        val headerText = "§5Puzzles §8(§3$puzzleCount§8)"
-        width = textDim(headerText, 0, 0, Colors.WHITE).first
+    private fun headerText(puzzleCount: Int) = "§5Puzzles §8(§3$puzzleCount§8)"
 
-        entries.forEachIndexed { index, entry ->
-            val playerText = if (showPlayerNames && entry.player != null) " §7(§6${entry.player}§7)" else ""
-            val newWidth = textDim("§e${entry.name}§8: [${entry.statusColor}${entry.statusIcon}§8]$playerText", 0, (index + 1) * lineHeight, Colors.WHITE).first
-            if (newWidth > width) width = newWidth
-        }
+    private fun entryText(entry: PuzzleEntry): String {
+        val playerText = if (showPlayerNames && entry.player != null) " §7(§6${entry.player}§7)" else ""
+        return "§e${entry.name}§8: [${entry.statusColor}${entry.statusIcon}§8]$playerText"
+    }
 
-        val totalLines = entries.size + 1
-        width to totalLines * lineHeight
+    private fun GuiGraphicsExtractor.drawPuzzles(puzzleCount: Int, entries: List<PuzzleEntry>) {
+        text(headerText(puzzleCount), 0, 0, Colors.WHITE)
+        entries.forEachIndexed { index, entry -> text(entryText(entry), 0, (index + 1) * LINE_HEIGHT, Colors.WHITE) }
     }
 }

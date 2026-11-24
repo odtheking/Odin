@@ -33,40 +33,40 @@ object Highlight : Module(
     // https://regex101.com/r/QQf502/2
     private val starredRegex = Regex("^.*✯ .*\\d{1,3}(?:,\\d{3})*(?:\\.\\d+)?.?❤$")
 
-    private val entities = mutableSetOf<Entity>()
+    private val highlighted = HashMap<ArmorStand, Entity>()
+    private val toRemove = ArrayList<Entity>()
 
     init {
         on<TickEvent.End> {
             if ((!highlightStar && !hideNonNames) || !DungeonUtils.inClear) return@on
 
-            val entitiesToRemove = mutableListOf<Entity>()
-            level.entitiesForRendering().forEach { e ->
-                if (!e.isAlive || e !is ArmorStand) return@forEach
+            for (e in level.entitiesForRendering()) {
+                if (e !is ArmorStand || !e.isAlive || e in highlighted) continue
+                val name = e.customName?.string ?: continue
 
-                val entityName = e.name.string
-                if (!dungeonMobSpawns.any { it in entityName }) return@forEach
+                val isStarred = '✯' in name && starredRegex.matches(name)
+                val hide = hideNonNames && e.isInvisible && !isStarred
+                if (!hide && !(highlightStar && isStarred)) continue
+                if (dungeonMobSpawns.none { it in name }) continue
 
-                val isStarred = starredRegex.matches(entityName)
-
-                if (hideNonNames && e.isInvisible && !isStarred) entitiesToRemove.add(e)
-
-                if (highlightStar && isStarred)
-                    level.getEntities(e, e.boundingBox.move(0.0, -1.0, 0.0)) { isValidEntity(it) }.firstOrNull()?.let { entities.add(it) }
+                if (hide) toRemove.add(e)
+                else level.getEntities(e, e.boundingBox.move(0.0, -1.0, 0.0)) { isValidEntity(it) }.firstOrNull()?.let { highlighted[e] = it }
             }
-            entitiesToRemove.forEach { it.remove(Entity.RemovalReason.DISCARDED) }
-            entities.removeIf { entity -> !entity.isAlive }
+            toRemove.forEach { it.remove(Entity.RemovalReason.DISCARDED) }
+            toRemove.clear()
+            highlighted.values.removeIf { !it.isAlive }
         }
 
         on<RenderExtractEvent> {
             if (!highlightStar || !DungeonUtils.inClear) return@on
 
-            entities.forEach { entity ->
+            highlighted.values.forEach { entity ->
                 if (entity.isAlive) drawStyledBox(entity.renderBoundingBox, color, renderStyle, true)
             }
         }
 
         on<LevelEvent.Load> {
-            entities.clear()
+            highlighted.clear()
         }
     }
 

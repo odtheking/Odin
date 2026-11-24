@@ -17,29 +17,26 @@ object Splits : Module(
     name = "Splits",
     description = "Provides visual timers for Kuudra and Dungeons."
 ) {
-    private val hud by HUD("Splits Display HUD", "Shows timers for each split.") { example ->
-        val timeWidth = 75 + if (showTickTime) 20 else -20
+    private val timeWidth: Int get() = 75 + if (showTickTime) 20 else -20
 
-        if (example) {
-            val labelWidth = floor7SplitGroup.maxOf { getStringWidth("${it.name}:") }
-            val timeExample = "59m 59s" + if (showTickTime) " §8(§759.9§8)" else ""
-            val totalWidth = labelWidth + 4 + timeWidth + 2
+    private val hud by HUD("Splits Display HUD", "Shows timers for each split.", example = {
+        val labelWidth = floor7SplitGroup.maxOf { getStringWidth("${it.name}:") }
+        val timeExample = "59m 59s" + if (showTickTime) " §8(§759.9§8)" else ""
+        val totalWidth = labelWidth + 4 + timeWidth + 2
 
-            floor7SplitGroup.forEachIndexed { i, split ->
-                if (fixedWidth) {
-                    text("${split.name}:", 0, i * 9, Colors.WHITE)
-                    text(timeExample, totalWidth - getStringWidth(timeExample) - 2, i * 9, Colors.WHITE)
-                } else text("${split.name}: $timeExample", 0, i * 9, Colors.WHITE)
-            }
-            return@HUD totalWidth to 9 * floor7SplitGroup.size
+        floor7SplitGroup.forEachIndexed { i, split ->
+            if (fixedWidth) {
+                text("${split.name}:", 0, i * 9, Colors.WHITE)
+                text(timeExample, totalWidth - getStringWidth(timeExample) - 2, i * 9, Colors.WHITE)
+            } else text("${split.name}: $timeExample", 0, i * 9, Colors.WHITE)
         }
-
+        totalWidth to 9 * floor7SplitGroup.size
+    }) {
         val rows = currentRows()
-        if (rows.isEmpty()) return@HUD 0 to 0
+        if (rows.isEmpty()) return@HUD
         val segments = rows.dropLast(1)
 
         val labelWidth = segments.maxOfOrNull { getStringWidth(it.name) } ?: 0
-        val totalWidth = labelWidth + 4 + timeWidth + 2
 
         val displayRows = mutableListOf<SplitRow>()
         segments.forEachIndexed { index, row ->
@@ -65,24 +62,10 @@ object Splits : Module(
             text(displayText, timeX, y, Colors.WHITE)
             y += 9
         }
-
-        totalWidth to y
     }
 
-    private val currentSplitHud by HUD("Current Split HUD", "Shows only the current split and its tick time.") { example ->
-        if (example) {
-            val exampleText = "§70s"
-            val w = getStringWidth(exampleText)
-            text(exampleText, 0, 0, Colors.WHITE)
-            return@HUD w to 9
-        }
-
-        val current = currentRows().find { it.isCurrent } ?: return@HUD 0 to 0
-
-        val displayText = "§7${(current.tickTime / 20f).toFixed()}s"
-        val w = getStringWidth(displayText) + 2
-        text(displayText, -w / 2, 0, Colors.WHITE)
-        w to 9
+    private val currentSplitHud by TextHUD("Current Split HUD", "Shows only the current split and its tick time.", example = { "§7120.00s" }) {
+        currentRows().find { it.isCurrent }?.let { "§7${(it.tickTime / 20f).toFixed()}s" }
     }
 
     private val fixedWidth by BooleanSetting("Fixed Width", true, desc = "Always use a fixed HUD width, right-aligning the times.")

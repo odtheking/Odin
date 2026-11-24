@@ -8,8 +8,6 @@ import com.odtheking.odin.events.MessageEvent
 import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
-import com.odtheking.odin.utils.Colors
-import com.odtheking.odin.utils.render.textDim
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.toFixed
 
@@ -31,58 +29,49 @@ object TickTimers : Module(
     private var goldorTickTime = -1
     private var goldorStartTime = -1
 
-    private val goldorHud: HudElement by HUD("Goldor Hud", "Displays a timer for Goldor's Core entrance opening.") {
-        if (it) textDim(formatTimer(35, 60, "§7Tick:"), 0, 0, Colors.MINECRAFT_DARK_RED)
-        else if ((goldorStartTime >= 0 && startTimer) || goldorTickTime >= 0) {
-            val (prefix, time, max) = if (goldorStartTime >= 0 && startTimer) Triple("§aStart:", goldorStartTime, 64) else Triple("§7Tick:", goldorTickTime, 60)
-            textDim(formatTimer(time, max, prefix), 0, 0, Colors.MINECRAFT_DARK_RED)
-        } else 0 to 0
+    private val goldorHud: HudElement by TextHUD("Goldor Hud", "Displays a timer for Goldor's Core entrance opening.", example = { formatTimer(35, 60, "§7Tick:") }) {
+        when {
+            goldorStartTime >= 0 && startTimer -> formatTimer(goldorStartTime, 64, "§aStart:")
+            goldorTickTime >= 0 -> formatTimer(goldorTickTime, 60, "§7Tick:")
+            else -> null
+        }
     }
     private val startTimer by BooleanSetting("Start timer", false, desc = "Displays a timer counting down until devices/terms are able to be activated/completed.").withDependency { goldorHud.enabled }
 
     private var padTickTime = -1
 
-    private val stormHud by HUD("Storm Pad Hud", "Displays a timer for Storm's Pad.") {
-        if (it)                    textDim(formatTimer(15, 20, "§bPad:"), 0, 0, Colors.MINECRAFT_DARK_RED)
-        else if (padTickTime >= 0) textDim(formatTimer(padTickTime, 20, "§bPad:"), 0, 0, Colors.MINECRAFT_DARK_RED)
-        else 0 to 0
+    private val stormHud by TextHUD("Storm Pad Hud", "Displays a timer for Storm's Pad.", example = { formatTimer(15, 20, "§bPad:") }) {
+        if (padTickTime >= 0) formatTimer(padTickTime, 20, "§bPad:") else null
     }
 
     private var lightningTickTime = -1
 
-    private val lightningHud by HUD("Storm Lightning Hud", "Displays a timer for Storm's Lightning.") {
-        if (it)                          textDim(formatTimer(520, 520, "§bLightning:"), 0, 0, Colors.MINECRAFT_DARK_RED)
-        else if (lightningTickTime >= 0) textDim(formatTimer(lightningTickTime, 520, "§bLightning:"), 0, 0, Colors.MINECRAFT_DARK_RED)
-        else 0 to 0
+    private val lightningHud by TextHUD("Storm Lightning Hud", "Displays a timer for Storm's Lightning.", example = { formatTimer(520, 520, "§bLightning:") }) {
+        if (lightningTickTime >= 0) formatTimer(lightningTickTime, 520, "§bLightning:") else null
     }
 
     private var pyTriggered = false
     private var pyTickTime = -1
 
-    private val pyHud by HUD("Storm PY Hud", "Displays a timer for when to crush storm under the purple pillar.") {
-        if (it)                   textDim(formatTimer(55, 55, "§bPY:"), 0, 0, Colors.MINECRAFT_DARK_RED)
-        else if (pyTickTime >= 0) textDim(formatTimer(pyTickTime, 55, "§bPY:"), 0, 0, Colors.MINECRAFT_DARK_RED)
-        else 0 to 0
+    private val pyHud by TextHUD("Storm PY Hud", "Displays a timer for when to crush storm under the purple pillar.", example = { formatTimer(55, 55, "§bPY:") }) {
+        if (pyTickTime >= 0) formatTimer(pyTickTime, 55, "§bPY:") else null
     }
 
     private var stormTick = -1
 
-    private val stormTickHud by HUD("Storm Tick Hud", "Displays a timer for Storm's second phase, optionally counting down to the crush window.") {
-        if (it) {
-            val (time, max, prefix) = Triple(200, 540, "§bStorm:")
-            textDim(formatTimer(time, max, prefix, "§a"), 0, 0, Colors.MINECRAFT_DARK_RED)
-        } else if (stormTick >= 0) textDim(formatTimer(stormTick, 540, "§bStorm:"), 0, 0, Colors.MINECRAFT_DARK_RED)
-        else 0 to 0
+    private val stormTickHud by TextHUD("Storm Tick Hud", "Displays a timer for Storm's second phase, optionally counting down to the crush window.", example = { formatTimer(200, 540, "§bStorm:", "§a") }) {
+        if (stormTick >= 0) formatTimer(stormTick, 540, "§bStorm:") else null
     }
 
     private var fireFreezeTime = -1
 
-    private val fireFreezeHud by HUD("Fire Freeze Hud", "Displays a timer for when to use fire freeze in M3."){
+    private val fireFreezeHud by TextHUD("Fire Freeze Hud", "Displays a timer for when to use fire freeze in M3.", example = { formatTimer(50, 60, "Fire Freeze:") }) {
         val timeTillFreeze = fireFreezeTime - 100
-        if (it)                         textDim(formatTimer(50, 60, "Fire Freeze:"), 0, 0, Colors.MINECRAFT_DARK_RED)
-        else if (timeTillFreeze > 0)    textDim(formatTimer(timeTillFreeze, 60, "Fire Freeze:"), 0, 0, Colors.MINECRAFT_DARK_RED)
-        else if (fireFreezeTime >= 0)   textDim("Use Fire Freeze", 0, 0, Colors.MINECRAFT_DARK_RED)
-        else 0 to 0
+        when {
+            timeTillFreeze > 0 -> formatTimer(timeTillFreeze, 60, "Fire Freeze:")
+            fireFreezeTime >= 0 -> "Use Fire Freeze"
+            else -> null
+        }
     }
 
     init {

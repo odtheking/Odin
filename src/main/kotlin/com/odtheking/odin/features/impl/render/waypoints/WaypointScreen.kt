@@ -9,11 +9,7 @@ import com.odtheking.odin.clickgui.hoverTint
 import com.odtheking.odin.clickgui.settings.impl.ColorSetting
 import com.odtheking.odin.clickgui.settings.impl.NumberSetting
 import com.odtheking.odin.clickgui.settings.impl.label
-import com.odtheking.odin.clickgui.ui.*
-import com.odtheking.odin.features.impl.dungeon.dungeonwaypoints.DIALOG_BUTTON_HEIGHT
-import com.odtheking.odin.features.impl.dungeon.dungeonwaypoints.DIALOG_PADDING
-import com.odtheking.odin.features.impl.dungeon.dungeonwaypoints.Dialog
-import com.odtheking.odin.features.impl.dungeon.dungeonwaypoints.centeredX
+import com.odtheking.odin.clickgui.ui.components.*
 import com.odtheking.odin.utils.Color.Companion.withAlpha
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.render.circle
@@ -85,7 +81,7 @@ class WaypointScreen(private val parent: Screen?) : OdinScreen(Component.literal
         ui.dispose()
     }
 
-    private fun listHeight() = 230.coerceAtMost((mc.window.guiScaledHeight - LIST_Y - STATUS_HEIGHT - DIALOG_BUTTON_HEIGHT - DIALOG_PADDING * 2 - 20).coerceAtLeast(48))
+    private fun listHeight() = dialogListHeight(LIST_Y, 230, STATUS_HEIGHT)
 
     @Composable
     private fun MainDialog() {
@@ -100,7 +96,7 @@ class WaypointScreen(private val parent: Screen?) : OdinScreen(Component.literal
             TextBox(search, { search = it }, placeholder = "Search areas...", maxLength = 24, centered = true)
                 .size(AREA_WIDTH, SEARCH_HEIGHT).at(DIALOG_PADDING, SEARCH_Y)
 
-            ScrollColumn(AREA_WIDTH, DIALOG_PADDING) {
+            ScrollColumn(AREA_WIDTH, ::listHeight) {
                 for (group in AreaGroup.entries) {
                     val areas = WaypointAreas.all.filter { it.group == group && it.label.contains(search.trim(), ignoreCase = true) }
                     if (areas.isEmpty()) continue
@@ -119,27 +115,26 @@ class WaypointScreen(private val parent: Screen?) : OdinScreen(Component.literal
                                         }
                                         .drawBehind { graphics ->
                                             val selected = selectedArea == area.key
-                                            val textY = y + (height - 8) / 2
                                             if (selected) graphics.roundedRect(x + 3, y + 3, x + 5, bottom - 3, GuiTheme.accent.rgba, 1f)
                                             if (index != areas.lastIndex) graphics.fill(x + 8, bottom - 1, right - 8, bottom, Colors.MINECRAFT_DARK_GRAY.rgba)
 
                                             val color = if (selected || interaction.hovered) Colors.WHITE else Colors.MINECRAFT_GRAY
-                                            graphics.text(mc.font, (if (here == area.key) "● " else "") + area.label, x + 8, textY, color.rgba, false)
-                                            if (count > 0) graphics.text(mc.font, "$count", right - 6 - mc.font.width("$count"), textY, GuiTheme.accent.rgba, false)
+                                            graphics.textMiddle((if (here == area.key) "● " else "") + area.label, x + 8, y, bottom, color.rgba)
+                                            if (count > 0) graphics.textMiddle("$count", right - 6 - mc.font.width("$count"), y, bottom, GuiTheme.accent.rgba)
                                         }
                                 }
                             }
-                        }.drawBehind { graphics -> graphics.roundedRect(x, y, right, bottom, GuiTheme.surface.rgba, GuiTheme.RADIUS) }
+                        }.background()
                         Gap(7)
                     }
                 }
-            }
+            }.at(DIALOG_PADDING, LIST_Y)
 
             Text({ "${WaypointAreas.label(selectedArea)}${if (Waypoints.enabled) "" else " §c(module disabled)"}" }, { GuiTheme.accent.rgba })
                 .at(LIST_X + 2, SEARCH_Y + (SEARCH_HEIGHT - 8) / 2)
             if (list.isEmpty()) Text({ "Nothing here yet, use Add Waypoint." }, { Colors.MINECRAFT_GRAY.rgba }).at(LIST_X + 2, LIST_Y + 6)
 
-            ScrollColumn(LIST_WIDTH, LIST_X, 4) {
+            ScrollColumn(LIST_WIDTH, ::listHeight, 4) {
                 for (wp in list) key(wp.id) {
                     val hover = remember { InteractionSource() }
                     var enabled by remember(wp) { mutableStateOf(wp.enabled) }
@@ -152,7 +147,7 @@ class WaypointScreen(private val parent: Screen?) : OdinScreen(Component.literal
                         Switch(enabled) {
                             Waypoints.toggle(wp)
                             enabled = wp.enabled
-                        }.at(GuiTheme.PADDING, (ROW_HEIGHT - SWITCH_HEIGHT) / 2)
+                        }.centeredY(ROW_HEIGHT, GuiTheme.PADDING)
                         Canvas { graphics ->
                             val centerY = y + height / 2
                             val secondary = wp.blockPos.prettyString(" ")
@@ -162,12 +157,10 @@ class WaypointScreen(private val parent: Screen?) : OdinScreen(Component.literal
                             graphics.text(mc.font, secondary, right - mc.font.width(secondary) - 4, centerY - 4, Colors.MINECRAFT_DARK_GRAY.rgba, false)
                             graphics.text(mc.font, wp.label.ifBlank { wp.trigger.label }, x + 15, centerY - 4, color.rgba, false)
                         }.size(LIST_WIDTH - 36 - 26 - GuiTheme.PADDING - 4, ROW_HEIGHT).clip().hoverable(hover).clickable { form = Form(wp) }.tooltip(info).at(36, 0)
-                        Button("§cX", 26, 18) { Waypoints.remove(wp) }.at(LIST_WIDTH - 26 - GuiTheme.PADDING, (ROW_HEIGHT - 18) / 2)
-                    }.size(LIST_WIDTH, ROW_HEIGHT).drawBehind { graphics ->
-                        graphics.roundedRect(x, y, right, bottom, GuiTheme.surface.rgba, GuiTheme.RADIUS)
-                    }
+                        Button("§cX", 26, 18) { Waypoints.remove(wp) }.centeredY(ROW_HEIGHT, LIST_WIDTH - 26 - GuiTheme.PADDING)
+                    }.size(LIST_WIDTH, ROW_HEIGHT).background()
                 }
-            }
+            }.at(LIST_X, LIST_Y)
 
             Text({ status }).offset({ DIALOG_PADDING }, { LIST_Y + listHeight() + 3 })
             Row(FOOTER_GAP) {
@@ -175,23 +168,8 @@ class WaypointScreen(private val parent: Screen?) : OdinScreen(Component.literal
                 Button("Import", 70, DIALOG_BUTTON_HEIGHT) { status = Waypoints.importFromClipboard() }
                 Button("Export", 70, DIALOG_BUTTON_HEIGHT) { status = Waypoints.exportToClipboard() }
                 Button("Done", 70, DIALOG_BUTTON_HEIGHT) { onClose() }
-            }.offset({ (DIALOG_WIDTH - (100 + 70 * 3 + FOOTER_GAP * 3)) / 2 }, footerY)
+            }.centeredX(DIALOG_WIDTH, footerY)
         }.inert { form != null }
-    }
-
-    @Composable
-    private fun ScrollColumn(width: Int, x: Int, spacing: Int = 0, content: @Composable () -> Unit) {
-        val scroll = remember { ScrollState() }
-        Box { Column(spacing) { content() }.offset(y = { scroll.offset }) }
-            .width(width)
-            .height {
-                val viewport = listHeight()
-                scroll.maxScroll = height - viewport
-                viewport
-            }
-            .clip()
-            .at(x, LIST_Y)
-            .onScroll { amount -> scroll.by(amount); true }
     }
 
     @Composable
@@ -232,9 +210,7 @@ class WaypointScreen(private val parent: Screen?) : OdinScreen(Component.literal
             }
         }
 
-        Canvas(size = { mc.window.guiScaledWidth to mc.window.guiScaledHeight }) { graphics ->
-            graphics.fill(this.x, this.y, right, bottom, 0x80000000.toInt())
-        }.clickable { form = null }
+        Scrim { form = null }
 
         Dialog(FORM_WIDTH, { FORM_HEIGHT }) {
             Text({ "§l${if (edit == null) "Add" else "Edit"} Waypoint" }, { GuiTheme.accent.rgba }).centeredX(FORM_WIDTH, 9)
@@ -281,7 +257,7 @@ class WaypointScreen(private val parent: Screen?) : OdinScreen(Component.literal
             Row(4) {
                 Button(if (edit == null) "Add" else "Save", 100, DIALOG_BUTTON_HEIGHT) { submit() }
                 Button(if (edit == null) "Close" else "Cancel", 100, DIALOG_BUTTON_HEIGHT) { form = null }
-            }.at((FORM_WIDTH - 204) / 2, FORM_HEIGHT - DIALOG_PADDING - DIALOG_BUTTON_HEIGHT)
+            }.centeredX(FORM_WIDTH, FORM_HEIGHT - DIALOG_PADDING - DIALOG_BUTTON_HEIGHT)
         }.onKey { event ->
             if (event.key != InputConstants.KEY_RETURN && event.key != InputConstants.KEY_NUMPADENTER) return@onKey false
             submit()
@@ -303,11 +279,13 @@ class WaypointScreen(private val parent: Screen?) : OdinScreen(Component.literal
 
     @Composable
     private fun ChoiceButton(text: String, tooltip: String, width: Int, selected: Boolean, onClick: () -> Unit) {
-        val interaction = remember { InteractionSource() }
-        val hover = animateProgress { interaction.hovered }
-        Box().size(width, 22).hoverable(interaction).clickable(onClick = onClick).tooltip(tooltip)
-            .outlined { if (selected) GuiTheme.accent.withAlpha(0.35f).rgba else GuiTheme.surface.hoverTint(hover.value) }
-            .drawBehind { graphics -> graphics.textCentered(text, x, y, right, bottom, if (selected) Colors.WHITE.rgba else Colors.MINECRAFT_GRAY.rgba) }
+        Button(
+            text, width, 22,
+            textColor = if (selected) Colors.WHITE.rgba else Colors.MINECRAFT_GRAY.rgba,
+            shrink = false,
+            fill = { hover -> if (selected) GuiTheme.accent.withAlpha(0.35f).rgba else GuiTheme.surface.hoverTint(hover) },
+            onClick = onClick,
+        ).tooltip(tooltip)
     }
 
     @Composable

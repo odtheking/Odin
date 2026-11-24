@@ -8,13 +8,15 @@ import com.odtheking.odin.events.*
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.features.Module
-import com.odtheking.odin.utils.*
+import com.odtheking.odin.utils.PersonalBest
+import com.odtheking.odin.utils.center
 import com.odtheking.odin.utils.render.drawText
 import com.odtheking.odin.utils.render.drawTracer
 import com.odtheking.odin.utils.render.drawWireFrameBox
-import com.odtheking.odin.utils.render.textDim
+import com.odtheking.odin.utils.renderPos
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.skyblock.dungeon.M7Phases
+import com.odtheking.odin.utils.toFixed
 import net.minecraft.network.protocol.game.ClientboundLevelParticlesPacket
 import net.minecraft.world.entity.EntityTypes
 
@@ -26,14 +28,8 @@ object WitherDragons : Module(
     private val dragonTimer by BooleanSetting("Dragon Timer", true, desc = "Displays a timer for when M7 dragons spawn.").withDependency { dragonTimerDropDown }
     private val dragonTimerStyle by SelectorSetting("Timer Style", TimerStyle.MILLISECONDS, desc = "The style of the dragon timer.").withDependency { dragonTimer && dragonTimerDropDown }
     private val showSymbol by BooleanSetting("Timer Symbol", true, desc = "Displays a symbol for the timer.").withDependency { dragonTimer && dragonTimerDropDown }
-    private val hud by HUD("Dragon Timer HUD", "Displays the dragon timer in the HUD.") { example ->
-        if (example) textDim("§5P §a4.5s", 0, 0, Colors.WHITE)
-        else {
-            priorityDragon?.let { dragon ->
-                if (dragon.timeToSpawn <= 0) return@HUD 0 to 0
-                textDim("§${dragon.colorCode}${dragon.name.first()}: ${getDragonTimer(dragon.timeToSpawn)}", 0, 0, Colors.WHITE)
-            } ?: (0 to 0)
-        }
+    private val hud by TextHUD("Dragon Timer HUD", "Displays the dragon timer in the HUD.", example = { "§5P §a4.5s" }) {
+        priorityDragon?.takeIf { it.timeToSpawn > 0 }?.let { "§${it.colorCode}${it.name.first()}: ${getDragonTimer(it.timeToSpawn)}" }
     }.withDependency { dragonTimerDropDown }
 
     private val dragonBoxes by BooleanSetting("Dragon Boxes", true, desc = "Displays boxes for where M7 dragons spawn.")

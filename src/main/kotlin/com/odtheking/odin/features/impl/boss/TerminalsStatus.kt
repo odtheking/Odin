@@ -15,6 +15,7 @@ import com.odtheking.odin.utils.containsOneOf
 import com.odtheking.odin.utils.render.*
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.skyblock.dungeon.M7Phases
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.world.entity.decoration.ArmorStand
 import net.minecraft.world.phys.AABB
 
@@ -22,15 +23,18 @@ object TerminalsStatus : Module(
     name = "Terminals Status",
     description = "Shows inactive terminals, devices and levers."
 ) {
-    private val hud by HUD("Term Info", "Shows information about the terminals, levers and devices in the dungeon.") {
-        if (!(DungeonUtils.inBoss && shouldRender) && !it) return@HUD 0 to 0
-        val y = 0
-        val width = textDim("§6Levers ${if (levers == 2) "§a" else "§c"}${levers}§8/§a2", 0, y, Colors.WHITE).first
-        text("§6Terms ${if ((section == 2 && terminals == 5) || (section != 2 && terminals == 4)) "§a" else "§c"}${terminals}§8/§a${if (section == 2) 5 else 4}", 0, y + 9, Colors.WHITE)
-        text("§6Device ${if (device) "§a✔" else "§c✘"}", 0, y + 18, Colors.WHITE)
-        text("§6Gate ${if (gate) "§a✔" else "§c✘"}", 0, y + 27, Colors.WHITE)
+    private val hud by HUD("Term Info", "Shows information about the terminals, levers and devices in the dungeon.", example = {
+        drawTermInfo()
+        getStringWidth("§Levers §a0§8/§a5") to 36
+    }) {
+        if (DungeonUtils.inBoss && shouldRender) drawTermInfo()
+    }
 
-        width to 36
+    private fun GuiGraphicsExtractor.drawTermInfo() {
+        text("§6Levers ${if (levers == 2) "§a" else "§c"}${levers}§8/§a2", 0, 0, Colors.WHITE)
+        text("§6Terms ${if ((section == 2 && terminals == 5) || (section != 2 && terminals == 4)) "§a" else "§c"}${terminals}§8/§a${if (section == 2) 5 else 4}", 0, 9, Colors.WHITE)
+        text("§6Device ${if (device) "§a✔" else "§c✘"}", 0, 18, Colors.WHITE)
+        text("§6Gate ${if (gate) "§a✔" else "§c✘"}", 0, 27, Colors.WHITE)
     }
     private val show by SelectorSetting("Show", Show.All, desc = "Which inactive waypoints to show.")
     private val style by SelectorSetting("Style", Style.Full, desc = "How the inactive waypoints are rendered.")

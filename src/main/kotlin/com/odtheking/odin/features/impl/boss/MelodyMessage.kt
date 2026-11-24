@@ -33,31 +33,16 @@ object MelodyMessage : Module(
     private val melodyProgress by BooleanSetting("Melody Progress", false, desc = "Tells the party about melody terminal progress.")
     private val melodySendCoords by BooleanSetting("Melody Send Coords", false, desc = "Sends the coordinates of the melody terminal.").withDependency { melodyProgress }
 
-    private val melodyGui by HUD("Progress GUI", "Shows a gui with the progress of broadcasting odin users in melody.", true) {
-        var rows = 0
-        var labelWidth = 0
-
-        fun track(data: MelodyData, index: Int, name: String) {
-            rows = maxOf(rows, index + 1)
-            val label = melodyLabel(data, name) ?: ""
-            labelWidth = maxOf(labelWidth, getStringWidth("${data.clay ?: 1} $label"))
+    private val melodyGui by HUD("Progress GUI", "Shows a gui with the progress of broadcasting odin users in melody.", true, example = {
+        val example = MelodyData(3, 1, 2, DungeonClass.ARCHER)
+        drawMelody(example, 0, mc.user.name)
+        (width * 5 + 2 + getStringWidth("${example.clay ?: 1} ${melodyLabel(example, mc.user.name) ?: ""}")) to width
+    }) {
+        if (!melodyWebSocket.connected) return@HUD
+        melodies.entries.forEachIndexed { i, (name, data) ->
+            if (showPlayer == ShowPlayer.NONE && name == mc.user.name) return@forEachIndexed
+            drawMelody(data, i, name)
         }
-
-        if (it) {
-            val example = MelodyData(3, 1, 2, DungeonClass.ARCHER)
-            drawMelody(example, 0, mc.user.name)
-            track(example, 0, mc.user.name)
-        }
-
-        if (melodyWebSocket.connected) {
-            melodies.entries.forEachIndexed { i, (name, data) ->
-                if (showPlayer == ShowPlayer.NONE && name == mc.user.name) return@forEachIndexed
-                drawMelody(data, i, name)
-                track(data, i, name)
-            }
-        }
-
-        (width * 5 + 2 + labelWidth) to (width * rows)
     }
 
     private val showPlayer by SelectorSetting("Show Player", ShowPlayer.NONE, desc = "How player details should be rendered in the Melody GUI.")

@@ -11,7 +11,7 @@ import com.odtheking.odin.clickgui.GuiTheme
 import com.odtheking.odin.clickgui.settings.RenderableSetting
 import com.odtheking.odin.clickgui.settings.Saving
 import com.odtheking.odin.clickgui.ui.SettingRow
-import com.odtheking.odin.clickgui.ui.TextBox
+import com.odtheking.odin.clickgui.ui.components.TextBox
 import com.odtheking.odin.utils.ui.compose.Column
 import com.odtheking.odin.utils.ui.compose.offset
 import com.odtheking.odin.utils.ui.compose.size

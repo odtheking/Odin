@@ -5,7 +5,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.mojang.blaze3d.platform.InputConstants
 import com.odtheking.odin.OdinMod
-import com.odtheking.odin.clickgui.HudLayer
 import com.odtheking.odin.clickgui.settings.AlwaysActive
 import com.odtheking.odin.clickgui.settings.DevModule
 import com.odtheking.odin.clickgui.settings.Setting
@@ -14,7 +13,11 @@ import com.odtheking.odin.clickgui.settings.impl.HudElement
 import com.odtheking.odin.config.ModuleConfig
 import com.odtheking.odin.events.core.EventBus
 import com.odtheking.odin.features.impl.render.ClickGUIModule
+import com.odtheking.odin.utils.Color
+import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.modMessage
+import com.odtheking.odin.utils.render.text
+import com.odtheking.odin.utils.render.textDim
 import net.minecraft.client.gui.GuiGraphicsExtractor
 import kotlin.reflect.full.hasAnnotation
 
@@ -128,13 +131,25 @@ abstract class Module(
         name: String,
         desc: String,
         toggleable: Boolean = true,
-        x: Int = 10,
-        y: Int = 10,
+        x: Float = HudElement.DEFAULT_POS,
+        y: Float = HudElement.DEFAULT_POS,
         scale: Float = 1f,
-        block: GuiGraphicsExtractor.(example: Boolean) -> Pair<Int, Int>
+        example: GuiGraphicsExtractor.() -> Pair<Int, Int>,
+        render: GuiGraphicsExtractor.() -> Unit,
     ): HUDSetting {
-        val element = HudElement(x, y, scale, !toggleable)
-        return HUDSetting(name, element, toggleable, desc, this) { example -> HudLayer.DrawnHudContent(element, example, block) }
+        return HUDSetting(name, HudElement(x, y, scale, !toggleable), toggleable, desc, this, example, render)
+    }
+
+    @Suppress("FunctionName")
+    fun TextHUD(
+        name: String,
+        desc: String,
+        toggleable: Boolean = true,
+        color: Color = Colors.WHITE,
+        example: () -> String,
+        line: () -> String?,
+    ): HUDSetting = HUD(name, desc, toggleable, example = { textDim(example(), 0, 0, color) }) {
+        line()?.let { text(it, 0, 0, color) }
     }
 
     private companion object {

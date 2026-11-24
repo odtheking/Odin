@@ -51,7 +51,13 @@ class Color private constructor(
 
     override fun hashCode(): Int = rgba
 
-    override fun equals(other: Any?): Boolean = other === this || (other is Color && rgba == other.rgba)
+    override fun equals(other: Any?): Boolean {
+        if (other === this) return true
+        if (other !is Color || rgba != other.rgba) return false
+        val a = hsb
+        val b = other.hsb
+        return a === b || (a ?: hsb()).contentEquals(b ?: other.hsb())
+    }
 
     private class ColorSerializer : JsonDeserializer<Color>, JsonSerializer<Color> {
         override fun deserialize(json: JsonElement, type: Type, context: JsonDeserializationContext?): Color {

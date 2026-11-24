@@ -9,7 +9,6 @@ import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.modMessage
 import com.odtheking.odin.utils.render.BoxStyle
 import com.odtheking.odin.utils.render.drawStyledBox
-import com.odtheking.odin.utils.render.textDim
 import com.odtheking.odin.utils.renderBoundingBox
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.core.BlockPos
@@ -23,16 +22,17 @@ object LividSolver : Module(
     name = "Livid Solver",
     description = "Provides a visual cue for the correct Livid's location in the boss fight."
 ) {
-    private val hud by HUD("Invulnerability Timer", "Shows time remaining on Livid's invulnerability.") { example ->
-        if (!example && (!DungeonUtils.inBoss || !DungeonUtils.isFloor(5) || invulnTime <= 0)) return@HUD 0 to 0
-        val time = if (example) 340 else invulnTime
-        val color = when {
+    private val hud by TextHUD("Invulnerability Timer", "Shows time remaining on Livid's invulnerability.", example = { invulnText(340) }) {
+        if (DungeonUtils.inBoss && DungeonUtils.isFloor(5) && invulnTime > 0) invulnText(invulnTime) else null
+    }
+
+    private fun invulnText(time: Int): String =
+        "§bLivid: ${when {
             time > 260 -> "§a"
             time > 130 -> "§e"
             else -> "§c"
-        }
-        textDim("§bLivid: ${color}${time}t ", 0, 0)
-    }
+        }}${time}t"
+
     private val highlightColor by ColorSetting("Highlight Color", Colors.MINECRAFT_LIGHT_PURPLE, true, desc = "Color of the highlight box around Livid.")
 
     private val lividStartRegex = Regex("^\\[BOSS] Livid: Welcome, you've arrived right on time\\. I am Livid, the Master of Shadows\\.$")
@@ -69,8 +69,8 @@ object LividSolver : Module(
         }
 
         on<LevelEvent.Load> {
+            Livid.entries.forEach { it.entity = null }
             currentLivid = Livid.HOCKEY
-            currentLivid.entity = null
             invulnTime = 0
         }
     }

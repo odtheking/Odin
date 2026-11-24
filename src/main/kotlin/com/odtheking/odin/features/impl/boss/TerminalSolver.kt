@@ -1,5 +1,9 @@
 package com.odtheking.odin.features.impl.boss
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import com.odtheking.odin.clickgui.settings.RenderableSetting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.*
 import com.odtheking.odin.events.GuiEvent
@@ -7,11 +11,15 @@ import com.odtheking.odin.events.TerminalEvent
 import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
+import com.odtheking.odin.features.impl.boss.termGUI.TermGrid
+import com.odtheking.odin.features.impl.boss.termGUI.TermGui
 import com.odtheking.odin.utils.Color.Companion.darker
 import com.odtheking.odin.utils.Color.Companion.withAlpha
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalTypes
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalUtils
+import com.odtheking.odin.utils.skyblock.dungeon.terminals.terminalhandler.TerminalHandler
+import com.odtheking.odin.utils.ui.widget.CustomGUIImpl
 import net.minecraft.client.Options
 import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
@@ -72,7 +80,27 @@ object TerminalSolver : Module(
     val customGuiEnabled get() = enabled && renderType == RenderType.CUSTOM_GUI && renderMelody
     private val renderMelody get() = !(cancelMelodySolver && TerminalUtils.currentTerm?.type == TerminalTypes.MELODY)
 
+    private var customGui by mutableStateOf<TermGui?>(null)
+
     init {
+        CustomGUIImpl.register(
+            enabled = { customGuiEnabled && TerminalUtils.currentTerm != null && mc.gui.screen() is AbstractContainerScreen<*> },
+            scale = { 1f / mc.window.guiScale },
+            beforeRender = {
+                customGui = TerminalUtils.currentTerm?.type?.getGUI()
+                guiGraphics.renderDebug()
+            },
+            onKey = { event ->
+                if (!mc.options.keyDrop.matches(event) && mc.options.keyHotbarSlots.none { it.matches(event) }) return@register false
+                val slot = hovered() as? Int ?: return@register true
+                if (customGui?.slotRendering(slot) == null) return@register true
+                TerminalUtils.currentTerm?.click(slot, if (event.hasControlDown()) TerminalHandler.RIGHT_CLICK else TerminalHandler.LEFT_CLICK, clickPrediction)
+                true
+            },
+        ) {
+            customGui?.let { gui -> key(gui) { TermGrid(gui) } }
+        }
+
         on<GuiEvent.SlotClick> {
             TerminalUtils.currentTerm?.let {
                 it.click(slotIndex, button, clickPrediction)

@@ -10,7 +10,7 @@ import com.google.gson.JsonPrimitive
 import com.odtheking.odin.clickgui.settings.RenderableSetting
 import com.odtheking.odin.clickgui.settings.Saving
 import com.odtheking.odin.clickgui.ui.SettingRow
-import com.odtheking.odin.clickgui.ui.Switch
+import com.odtheking.odin.clickgui.ui.components.Switch
 
 class BooleanSetting(
     name: String,

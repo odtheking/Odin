@@ -30,10 +30,7 @@ object Vesuvius : Module(
     private val kuudraPetBonus by NumberSetting("Kuudra Pet Bonus", 0.0, 0.0..20.0, 0.05, desc = "The essence bonus from Kuudra pet.", unit = "%")
     private val lavaLeechBonus by NumberSetting("Lava Leech Bonus", 0.0, 0.0..13.0, 0.05, desc = "The essence bonus from the Lava Leech Shard.", unit = "%")
 
-    private val vesuviusHud by HUD("Croesus Chest HUD", "Displays all chest contents with prices, sorted by profit.") {
-        if (!it) return@HUD 0 to 0
-        drawOverlay(true)
-    }
+    private val vesuviusHud by HUD("Croesus Chest HUD", "Displays all chest contents with prices, sorted by profit.", example = { drawOverlay(true) }) {}
 
     private val previewEnchantedBookRegex = Regex("^Enchanted Book \\(?([\\w ]+) (\\w+)\\)$")
     private val previewEssenceRegex = Regex("^(\\w+) Essence x(\\d+)$")

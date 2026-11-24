@@ -22,9 +22,7 @@ object HudManager : OdinScreen(Component.literal("HUD Manager")) {
     override fun extractRenderState(guiGraphics: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, deltaTicks: Float) {
         super.extractRenderState(guiGraphics, mouseX, mouseY, deltaTicks)
 
-        HudLayer.render(guiGraphics, example = true, mouseX, mouseY)
-
-        for (setting in hudSettingsCache) if (setting.isEnabled) setting.hud.clampToScreen()
+        HudLayer.render(guiGraphics, mouseX, mouseY)
 
         HudLayer.hovered(mouseX, mouseY)?.let { setting ->
             val element = setting.hud
@@ -50,7 +48,6 @@ object HudManager : OdinScreen(Component.literal("HUD Manager")) {
                 InputConstants.KEY_DOWN -> element.y += NUDGE
                 else -> return super.keyPressed(event)
             }
-            element.clampToScreen()
             return true
         }
         return super.keyPressed(event)
@@ -62,11 +59,7 @@ object HudManager : OdinScreen(Component.literal("HUD Manager")) {
     }
 
     fun resetHUDS() {
-        for (setting in hudSettingsCache) {
-            setting.hud.x = 10
-            setting.hud.y = 10
-            setting.hud.scale = 1f
-        }
+        for (setting in hudSettingsCache) setting.hud.reset()
         saveConfigs()
     }
 
@@ -76,7 +69,6 @@ object HudManager : OdinScreen(Component.literal("HUD Manager")) {
 
     private fun resize(element: HudElement, amount: Float) {
         element.scale = (element.scale + amount).coerceIn(HudElement.MIN_SCALE, HudElement.MAX_SCALE)
-        element.clampToScreen()
     }
 
     private fun mousePosition(): Pair<Int, Int> {

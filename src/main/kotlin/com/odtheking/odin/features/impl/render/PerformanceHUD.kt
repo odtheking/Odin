@@ -7,7 +7,8 @@ import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.ServerUtils
-import com.odtheking.odin.utils.render.textDim
+import com.odtheking.odin.utils.render.getStringWidth
+import com.odtheking.odin.utils.render.text
 import com.odtheking.odin.utils.toFixed
 import net.minecraft.client.gui.GuiGraphicsExtractor
 
@@ -24,35 +25,24 @@ object PerformanceHUD : Module(
     private val showTPS by BooleanSetting("Show TPS", true, desc = "Shows the TPS in the HUD.")
     private val showPing by BooleanSetting("Show Ping", true, desc = "Shows the ping in the HUD.")
 
-    private const val HORIZONTAL = 0
+    private val hud by HUD(name, "Shows performance information on the screen.", false, example = { drawMetrics() }) { drawMetrics() }
 
-    private val hud by HUD(name, "Shows performance information on the screen.", false) {
-        if (!showFPS && !showTPS && !showPing) return@HUD 0 to 0
+    private fun GuiGraphicsExtractor.drawMetrics(): Pair<Int, Int> {
+        var pos = 1
+        if (showTPS) pos = drawMetric("TPS: ", ServerUtils.averageTps.toFixed(1), "20.0", pos)
+        if (showFPS) pos = drawMetric("FPS: ", "${mc.fps}", "9999", pos)
+        if (showPing) pos = drawMetric("Ping: ", "${ServerUtils.averagePing}ms", "9999ms", pos)
 
-        var width = 1
-        var height = 1
-        val lineHeight = mc.font.lineHeight
-
-        fun renderMetric(label: String, value: String) {
-            val w = drawText(label, value, if (direction == Direction.HORIZONTAL) width else 1, height)
-            if (direction == Direction.HORIZONTAL) width += w
-            else {
-                width = maxOf(width, w)
-                height += lineHeight
-            }
-        }
-
-        if (showTPS) renderMetric("TPS: ", "${ServerUtils.averageTps.toFixed(1)} ")
-        if (showFPS) renderMetric("FPS: ", "${mc.fps} ")
-        if (showPing) renderMetric("Ping: ", "${ServerUtils.averagePing}ms ")
-
-        width to if (direction == Direction.HORIZONTAL) lineHeight else height
+        return if (direction == Direction.HORIZONTAL) pos to mc.font.lineHeight + 1
+        else getStringWidth("Ping: 9999ms ") + 1 to pos
     }
 
-    private fun GuiGraphicsExtractor.drawText(name: String, value: String, x: Int, y: Int): Int {
-        var width = 0
-        width += textDim(name, x, y, nameColor, true).first
-        width += textDim(value, x + width, y, valueColor, true).first
-        return width
+    private fun GuiGraphicsExtractor.drawMetric(label: String, value: String, widest: String, pos: Int): Int {
+        val horizontal = direction == Direction.HORIZONTAL
+        val x = if (horizontal) pos else 1
+        val y = if (horizontal) 1 else pos
+        text(label, x, y, nameColor)
+        text(value, x + getStringWidth(label), y, valueColor)
+        return pos + if (horizontal) getStringWidth("$label$widest ") else mc.font.lineHeight
     }
 }

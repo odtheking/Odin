@@ -164,25 +164,27 @@ object DungeonUtils {
      * @return `true` if the current dungeon floor matches any of the specified options, otherwise `false`.
      */
     fun isFloor(vararg options: Int): Boolean {
-        return floor?.floorNumber?.let { it in options } ?: false
+        val floorNumber = floor?.floorNumber ?: return false
+        return floorNumber in options
     }
+
+    fun isFloor(option: Int): Boolean = floor?.floorNumber == option
 
     /**
      * Gets the current phase of floor 7 boss.
      *
-     * @return The current phase of floor 7 boss, or `null` if the player is not in the boss room.
+     * @return The current phase of floor 7 boss, or [M7Phases.Unknown] if the player is not in the boss room.
      */
     fun getF7Phase(): M7Phases {
-        if ((!isFloor(7) || !inBoss) && !LocationUtils.isCurrentArea(Island.SinglePlayer)) return M7Phases.Unknown
+        if (!(inBoss && isFloor(7)) && LocationUtils.currentArea != Island.SinglePlayer) return M7Phases.Unknown
 
-        with(mc.player ?: return M7Phases.Unknown) {
-            return when {
-                y > 210 -> M7Phases.P1
-                y > 155 -> M7Phases.P2
-                y > 100 -> M7Phases.P3
-                y > 45 -> M7Phases.P4
-                else -> M7Phases.P5
-            }
+        val y = mc.player?.y ?: return M7Phases.Unknown
+        return when {
+            y > 210 -> M7Phases.P1
+            y > 155 -> M7Phases.P2
+            y > 100 -> M7Phases.P3
+            y > 45 -> M7Phases.P4
+            else -> M7Phases.P5
         }
     }
 

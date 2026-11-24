@@ -10,7 +10,6 @@ import com.odtheking.odin.features.impl.dungeon.map.tile.RoomType
 import com.odtheking.odin.utils.*
 import com.odtheking.odin.utils.Color.Companion.withAlpha
 import com.odtheking.odin.utils.render.BoxStyle
-import com.odtheking.odin.utils.render.textDim
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.skyblock.dungeon.Puzzle
 import net.minecraft.core.BlockPos
@@ -86,9 +85,9 @@ object PuzzleSolvers : Module(
     private val quizSolver by BooleanSetting("Quiz Solver", true, desc = "Solver for the trivia puzzle.").withDependency { quizDropdown }
     private val quizColor by ColorSetting("Quiz Color", Colors.MINECRAFT_GREEN.withAlpha(.75f), true, desc = "Color for the quiz solver.").withDependency { quizDropdown && quizSolver }
     private val quizDepth by BooleanSetting("Quiz Depth", false, desc = "Depth check for the trivia puzzle.").withDependency { quizDropdown && quizSolver }
-    private val quizTimerHud by HUD("Quiz Timer Hud", "Displays a timer counting down until you must answer the quiz question.") { example ->
-        val timer = if (example) Triple(220, 220, 1) else QuizSolver.timer
-        if (quizSolver && timer.first > 0) textDim(formatQuizTimer(timer), 0, 0, Colors.WHITE) else 0 to 0
+    private val quizTimerHud by TextHUD("Quiz Timer Hud", "Displays a timer counting down until you must answer the quiz question.", example = { formatQuizTimer(Triple(220, 220, 1)) }) {
+        val timer = QuizSolver.timer
+        if (quizSolver && timer.first > 0) formatQuizTimer(timer) else null
     }.withDependency { quizDropdown && quizSolver }
     private val quizReset by ActionSetting("Reset Quiz", desc = "Resets the solver.") { QuizSolver.reset() }.withDependency { quizDropdown && quizSolver }
 

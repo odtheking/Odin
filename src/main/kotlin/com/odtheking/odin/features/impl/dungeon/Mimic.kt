@@ -5,9 +5,11 @@ import com.odtheking.odin.events.EntityEvent
 import com.odtheking.odin.events.MessageEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
+import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.sendCommand
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonListener
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
+import net.minecraft.client.renderer.blockentity.state.ChestRenderState
 import net.minecraft.world.entity.monster.zombie.Zombie
 
 object Mimic : Module(
@@ -18,8 +20,16 @@ object Mimic : Module(
     private val princeMessageToggle by BooleanSetting("Send Prince Message", true, desc = "Toggles the prince killed message.")
     private val batMessageToggle by BooleanSetting("Send Bat Message", true, desc = "Toggles the bat killed message.")
 
+    private val markTrappedChests by BooleanSetting("Mark Trapped Chests", true, desc = "Tints trapped chests red on floors 6 and 7 until the mimic is killed.")
+
     private val princeRegex = Regex("^A Prince falls\\. \\+1 Bonus Score$")
     private val batRegex = Regex("^A Bat has been slain\\. \\+1 Bonus Score$")
+
+    @JvmStatic
+    fun trappedChestTint(state: ChestRenderState, tint: Int): Int =
+        if (enabled && markTrappedChests && state.material == ChestRenderState.ChestMaterialType.TRAPPED &&
+            !DungeonUtils.mimicKilled && DungeonUtils.inClear && DungeonUtils.isFloor(6, 7)) Colors.MINECRAFT_RED.rgba
+        else tint
 
     init {
         on<EntityEvent.Event> {

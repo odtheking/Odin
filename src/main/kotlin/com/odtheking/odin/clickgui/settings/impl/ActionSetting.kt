@@ -3,8 +3,8 @@ package com.odtheking.odin.clickgui.settings.impl
 import androidx.compose.runtime.Composable
 import com.odtheking.odin.clickgui.GuiTheme
 import com.odtheking.odin.clickgui.settings.RenderableSetting
-import com.odtheking.odin.clickgui.ui.Button
-import com.odtheking.odin.clickgui.ui.tooltip
+import com.odtheking.odin.clickgui.ui.components.Button
+import com.odtheking.odin.clickgui.ui.components.tooltip
 import com.odtheking.odin.utils.ui.compose.Box
 import com.odtheking.odin.utils.ui.compose.offset
 import com.odtheking.odin.utils.ui.compose.size

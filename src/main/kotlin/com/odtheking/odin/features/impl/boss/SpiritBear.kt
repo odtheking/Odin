@@ -5,8 +5,6 @@ import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
-import com.odtheking.odin.utils.Colors
-import com.odtheking.odin.utils.render.textDim
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.toFixed
 import net.minecraft.core.BlockPos
@@ -16,16 +14,13 @@ object SpiritBear : Module(
     name = "Spirit Bear",
     description = "Displays the current state of Spirit Bear."
 ) {
-    private val hud by HUD(name, "Displays the current state of Spirit Bear in the HUD.", false) { example ->
+    private val hud by TextHUD(name, "Displays the current state of Spirit Bear in the HUD.", false, example = { "§6Bear: §e1.45s" }) {
         when {
-            example -> "§e1.45s"
             !DungeonUtils.isFloor(4) || !DungeonUtils.inBoss -> null
             timer < 0 -> "§d$kills/$maxKills"
             timer > 0 -> "§e${(timer / 20f).toFixed()}s"
             else -> "§aAlive!"
-        }?.let { text ->
-            textDim("§6Bear: $text", 0, 0, Colors.WHITE)
-        } ?: (0 to 0)
+        }?.let { "§6Bear: $it" }
     }
 
     private inline val blockLocations get() = if (DungeonUtils.floor?.isMM == true) m4BlockLocations else f4BlockLocations

@@ -22,7 +22,7 @@ const val UUID_STRING = "uuid"
 
 inline val ItemStack.customData: CompoundTag
     get() =
-        getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).copyTag()
+        getOrDefault(DataComponents.CUSTOM_DATA, CustomData.EMPTY).tag
 
 inline val ItemStack.itemId: String
     get() =

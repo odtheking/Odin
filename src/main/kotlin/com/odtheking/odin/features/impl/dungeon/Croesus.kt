@@ -38,14 +38,10 @@ object Croesus : Module(
     private val includeKey by BooleanSetting("Include Key", desc = "Count Dungeon Chest Key as unclaimed.").withDependency { hideClaimed }
     private val minimized by BooleanSetting("Minimized", false, desc = "Only display profit for each chest instead of all items.")
 
-    private val croesusHud by HUD("Croesus Chest HUD", "Displays all chest contents with prices, sorted by profit.") {
-        if (!it) return@HUD 0 to 0
-        drawOverlay(true)
-    }
+    private val croesusHud by HUD("Croesus Chest HUD", "Displays all chest contents with prices, sorted by profit.", example = { drawOverlay(true) }) {}
 
-    private val chestCount by HUD("Chest Count HUD", "Displays the number of chests opened in the current Croesus session.") {
-        if (DungeonUtils.inDungeons || it) textDim("§6Chests: §a${currentChestCount}", 0, 0)
-        else 0 to 0
+    private val chestCount by TextHUD("Chest Count HUD", "Displays the number of chests opened in the current Croesus session.", example = { "§6Chests: §a${currentChestCount}" }) {
+        if (DungeonUtils.inDungeons) "§6Chests: §a${currentChestCount}" else null
     }
 
     private val chestWarning by NumberSetting("Chest Warning Threshold", 55, 0..60, desc = "Displays a warning in the chest profit HUD if the profit is below this amount.").withDependency { chestCount.enabled }

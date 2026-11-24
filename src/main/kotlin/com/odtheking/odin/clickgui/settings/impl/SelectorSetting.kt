@@ -7,11 +7,15 @@ import com.google.gson.JsonPrimitive
 import com.odtheking.odin.clickgui.GuiTheme
 import com.odtheking.odin.clickgui.settings.RenderableSetting
 import com.odtheking.odin.clickgui.settings.Saving
-import com.odtheking.odin.clickgui.ui.*
+import com.odtheking.odin.clickgui.ui.AnimatedVisibility
+import com.odtheking.odin.clickgui.ui.SettingRow
+import com.odtheking.odin.clickgui.ui.components.Gap
+import com.odtheking.odin.clickgui.ui.components.Pill
+import com.odtheking.odin.clickgui.ui.components.background
+import com.odtheking.odin.clickgui.ui.components.textCentered
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.capitalizeFirst
 import com.odtheking.odin.utils.render.roundedOutline
-import com.odtheking.odin.utils.render.roundedRect
 import com.odtheking.odin.utils.ui.compose.*
 
 val Enum<*>.label: String
@@ -50,7 +54,7 @@ class SelectorSetting<E : Enum<E>>(
                         }
                     }
                         .width(LIST_WIDTH).offset({ LIST_INSET })
-                        .drawBehind { graphics -> graphics.roundedRect(x, y, right, bottom, GuiTheme.surface.rgba, GuiTheme.RADIUS) }
+                        .background()
                     Gap(LIST_INSET)
                 }.width(GuiTheme.ROW_WIDTH)
             }

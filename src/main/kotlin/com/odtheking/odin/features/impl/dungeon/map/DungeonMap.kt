@@ -13,6 +13,7 @@ import com.odtheking.odin.utils.network.WebUtils.gson
 import com.odtheking.odin.utils.network.webSocket
 import com.odtheking.odin.utils.render.hollowFill
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
+import net.minecraft.client.gui.GuiGraphicsExtractor
 
 object DungeonMap : Module(
     name = "Dungeon Map",
@@ -60,16 +61,15 @@ object DungeonMap : Module(
     private val exampleDoors by lazy { buildExampleDoors() }
     private const val MAP_PX = 128
 
-    private val mapHud by HUD("Dungeon Map", "Displays the dungeon map.", false) { example ->
-        if ((!DungeonUtils.inDungeons || (disableBoss && DungeonUtils.inBoss)) && !example) return@HUD 0 to 0
-        fill(0, 0, MAP_PX, MAP_PX, backgroundColor.rgba)
-        hollowFill(0, 0, MAP_PX, MAP_PX, 1, backgroundOutline)
-        pose().pushMatrix()
-
-        if (example) {
+    private val mapHud by HUD("Dungeon Map", "Displays the dungeon map.", false, example = {
+        drawMapFrame {
             pose().translate(5f, 5f)
             renderMap(exampleRooms, exampleDoors, emptyList())
-        } else {
+        }
+        MAP_PX to MAP_PX
+    }) {
+        if (!DungeonUtils.inDungeons || (disableBoss && DungeonUtils.inBoss)) return@HUD
+        drawMapFrame {
             pose().translate(DungeonScan.startX.toFloat(), DungeonScan.startY.toFloat())
             pose().scale(DungeonScan.roomSize / 16f)
 
@@ -77,9 +77,14 @@ object DungeonMap : Module(
 
             if (!DungeonUtils.inBoss) renderPlayers()
         }
-        pose().popMatrix()
+    }
 
-        MAP_PX to MAP_PX
+    private inline fun GuiGraphicsExtractor.drawMapFrame(content: GuiGraphicsExtractor.() -> Unit) {
+        fill(0, 0, MAP_PX, MAP_PX, backgroundColor.rgba)
+        hollowFill(0, 0, MAP_PX, MAP_PX, 1, backgroundOutline)
+        pose().pushMatrix()
+        content()
+        pose().popMatrix()
     }
 
     private data class SyncPayload(val playerName: String, val roomName: String, val tiles: ArrayList<IVec2>, val foundSecrets: Int?)

@@ -21,10 +21,8 @@ import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.protocol.game.ClientboundSoundPacket
-import net.minecraft.network.protocol.game.ServerboundMovePlayerPacket
 import net.minecraft.sounds.SoundEvents
 import net.minecraft.world.entity.Pose
-import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.EmptyBlockGetter
 import net.minecraft.world.level.block.*
 import net.minecraft.world.level.block.piston.PistonHeadBlock
@@ -52,10 +50,6 @@ object Etherwarp : Module(
     private val soundSettings = createSoundSettings("Etherwarp Sound", "entity.experience_orb.pickup") { sounds && dropdown }
     private var etherPos: EtherPos? = null
 
-    private var cachedMainHandItem: ItemStack? = null
-    private var cachedEtherDistance: Double? = null
-    private var cachedIsConduit = false
-
     init {
         onReceive<ClientboundSoundPacket> {
             if (!sounds || sound.value() != SoundEvents.ENDER_DRAGON_HURT || volume != 1f || pitch != 0.53968257f) return@onReceive
@@ -67,16 +61,9 @@ object Etherwarp : Module(
             if (mc.gui.screen() != null || !render) return@on
             val player = mc.player ?: return@on
 
-            val mainHandItem = player.mainHandItem
-            if (cachedMainHandItem !== mainHandItem) {
-                cachedMainHandItem = mainHandItem
-                val data = mainHandItem.isEtherwarpItem()
-                cachedEtherDistance = data?.let(::getEtherwarpDistance)
-                cachedIsConduit = data?.itemId == "ETHERWARP_CONDUIT"
-            }
-
-            val distance = cachedEtherDistance ?: return@on
-            if (!player.isShiftKeyDown && !cachedIsConduit) return@on
+            val data = player.mainHandItem.isEtherwarpItem() ?: return@on
+            if (!player.isShiftKeyDown && data.itemId != "ETHERWARP_CONDUIT") return@on
+            val distance = getEtherwarpDistance(data)
 
             val etherPos = (
                 if (useServerPosition) getEtherPos(Vec3(player.xLast, player.yLast, player.zLast), distance, etherWarp = true, sneaking = player.lastSentInput.shift())
@@ -91,18 +78,12 @@ object Etherwarp : Module(
 
         on<InputEvent> {
             if (key.type != InputConstants.Type.MOUSE || key.value != InputConstants.MOUSE_BUTTON_RIGHT || !LocationUtils.isCurrentArea(Island.SinglePlayer)) return@on
-            if (cachedEtherDistance == null || (mc.player?.isShiftKeyDown == false && !cachedIsConduit)) return@on
+            val data = mc.player?.mainHandItem?.isEtherwarpItem() ?: return@on
+            if (mc.player?.isShiftKeyDown == false && data.itemId != "ETHERWARP_CONDUIT") return@on
 
             etherPos?.pos?.let {
                 if (etherPos?.succeeded == false) return@on
-                mc.player?.connection?.send(
-                    ServerboundMovePlayerPacket.PosRot(
-                        it.x + 0.5, it.y + 1.05, it.z + 0.5, mc.player?.yRot ?: 0f,
-                        mc.player?.xRot ?: 0f, false, false
-                    )
-                )
-                mc.player?.setPos(it.x + 0.5, it.y + 1.05, it.z + 0.5)
-                mc.player?.setDeltaMovement(0.0, 0.0, 0.0)
+                sendCommand("tp ${it.x + 0.5} ${it.y + 1.05} ${it.z + 0.5}")
                 if (sounds) playSoundSettings(soundSettings())
                 else playSoundAtPlayer(SoundEvents.ENDER_DRAGON_HURT, pitch = 0.53968257f)
             }

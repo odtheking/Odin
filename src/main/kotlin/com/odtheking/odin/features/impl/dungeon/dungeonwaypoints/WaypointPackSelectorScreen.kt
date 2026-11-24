@@ -5,14 +5,10 @@ import com.odtheking.odin.OdinMod
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.clickgui.GuiTheme
 import com.odtheking.odin.clickgui.OdinScreen
-import com.odtheking.odin.clickgui.ui.Button
-import com.odtheking.odin.clickgui.ui.SWITCH_HEIGHT
-import com.odtheking.odin.clickgui.ui.Switch
+import com.odtheking.odin.clickgui.ui.components.*
 import com.odtheking.odin.config.DungeonWaypointConfig
 import com.odtheking.odin.config.WaypointPackFileUtils
 import com.odtheking.odin.utils.modMessage
-import com.odtheking.odin.utils.render.roundedRect
-import com.odtheking.odin.utils.render.roundedRectOutlined
 import com.odtheking.odin.utils.ui.compose.*
 import kotlinx.coroutines.launch
 import net.minecraft.client.gui.GuiGraphicsExtractor
@@ -51,31 +47,33 @@ class WaypointPackSelectorScreen(private val parent: Screen?) : OdinScreen(Compo
         ui.dispose()
     }
 
-    private fun listHeight() = 224.coerceAtMost((mc.window.guiScaledHeight - LIST_Y - DIALOG_BUTTON_HEIGHT - DIALOG_PADDING * 2 - 20).coerceAtLeast(48))
+    private fun listHeight() = dialogListHeight(LIST_Y, 224)
 
     @Composable
     private fun PackPanel() {
         val footerY = { LIST_Y + listHeight() + DIALOG_PADDING }
         Dialog(PANEL_WIDTH, { footerY() + DIALOG_BUTTON_HEIGHT + DIALOG_PADDING }) {
             Text({ "§lWaypoint Pack Manager" }).centeredX(PANEL_WIDTH, DIALOG_PADDING)
-            Button("Create Pack", 100, DIALOG_BUTTON_HEIGHT) {
-                prompt = Prompt("Create Pack") { name ->
-                    if (name.isNotBlank()) refreshAfter { DungeonWaypoints.createPack(name) }
-                }
-            }.at(76, ACTIONS_Y)
-            Button("Import", 80, DIALOG_BUTTON_HEIGHT) {
-                prompt = Prompt("Import as New Pack") { name ->
-                    refreshAfter {
-                        DungeonWaypointConfig.decodeWaypoints(name)
-                            ?.takeIf { DungeonWaypoints.importPack(name, it) }
-                            ?.let { modMessage("§aImported waypoints as pack '$name'!") }
-                            ?: modMessage("§cFailed to decode waypoints from clipboard.")
+            Row(8) {
+                Button("Create Pack", 100, DIALOG_BUTTON_HEIGHT) {
+                    prompt = Prompt("Create Pack") { name ->
+                        if (name.isNotBlank()) refreshAfter { DungeonWaypoints.createPack(name) }
                     }
                 }
-            }.at(184, ACTIONS_Y)
+                Button("Import", 80, DIALOG_BUTTON_HEIGHT) {
+                    prompt = Prompt("Import as New Pack") { name ->
+                        refreshAfter {
+                            DungeonWaypointConfig.decodeWaypoints(name)
+                                ?.takeIf { DungeonWaypoints.importPack(name, it) }
+                                ?.let { modMessage("§aImported waypoints as pack '$name'!") }
+                                ?: modMessage("§cFailed to decode waypoints from clipboard.")
+                        }
+                    }
+                }
+            }.centeredX(PANEL_WIDTH, ACTIONS_Y)
             if (loading) Text({ "§7Loading..." }).centeredX(PANEL_WIDTH, LIST_Y + listHeight() / 2 - 4) else PackList()
             Button("Done", 80, DIALOG_BUTTON_HEIGHT) { if (parent != null) mc.setScreenAndShow(parent) else mc.gui.setScreen(null) }
-                .offset({ (PANEL_WIDTH - 80) / 2 }, footerY)
+                .centeredX(PANEL_WIDTH, footerY)
         }
     }
 
@@ -83,24 +81,12 @@ class WaypointPackSelectorScreen(private val parent: Screen?) : OdinScreen(Compo
     private fun PackList() {
         val selected = remember(revision) { DungeonWaypoints.selectedPackIds.toList() }
         val edit = remember(revision) { DungeonWaypoints.editPackId }
-        val scroll = remember { ScrollState() }
 
-        Box {
-            Column(ROW_SPACING) {
-                for (name in packs) key(name) {
-                    PackRow(name, name in selected, name == edit, packs.size > 1)
-                }
-            }.offset(y = { scroll.offset })
-        }
-            .width(ROW_WIDTH)
-            .height {
-                val viewport = listHeight()
-                scroll.maxScroll = height - viewport
-                viewport
+        ScrollColumn(ROW_WIDTH, ::listHeight, ROW_SPACING) {
+            for (name in packs) key(name) {
+                PackRow(name, name in selected, name == edit, packs.size > 1)
             }
-            .clip()
-            .at(DIALOG_PADDING, LIST_Y)
-            .onScroll { amount -> scroll.by(amount); true }
+        }.at(DIALOG_PADDING, LIST_Y)
     }
 
     @Composable
@@ -117,9 +103,9 @@ class WaypointPackSelectorScreen(private val parent: Screen?) : OdinScreen(Compo
                 } else DungeonWaypoints.selectedPackIds.add(name)
                 revision++
                 backgroundSave()
-            }.at(GuiTheme.PADDING, (ROW_HEIGHT - SWITCH_HEIGHT) / 2)
+            }.centeredY(ROW_HEIGHT, GuiTheme.PADDING)
             Box {
-                Text({ (if (editing) "§e★ " else if (nameHover.hovered) "§f" else "§7") + name }).at(0, (ROW_HEIGHT - 8) / 2)
+                Text({ (if (editing) "§e★ " else if (nameHover.hovered) "§f" else "§7") + name }).centeredY(ROW_HEIGHT, 0)
             }.size(150, ROW_HEIGHT).clip().hoverable(nameHover).clickable(onClick = {
                 if (name !in DungeonWaypoints.selectedPackIds) DungeonWaypoints.selectedPackIds.add(name)
                 DungeonWaypoints.editPackId = name
@@ -129,19 +115,16 @@ class WaypointPackSelectorScreen(private val parent: Screen?) : OdinScreen(Compo
             Text({
                 val count = DungeonWaypoints.loadedPacks[name]?.values?.sumOf { it.size }
                 if (count != null) "§a$count §7wp" else "§7? wp"
-            }).at(190, (ROW_HEIGHT - 8) / 2)
+            }).centeredY(ROW_HEIGHT, 190)
             Button("§7✎", 26, 18) {
                 prompt = Prompt("Rename Pack") { newName ->
                     if (newName.isNotBlank() && newName != name) refreshAfter { DungeonWaypoints.renamePack(name, newName) }
                 }
-            }.at(260, (ROW_HEIGHT - 18) / 2)
+            }.centeredY(ROW_HEIGHT, 260)
             Button(if (canDelete) "§cX" else "§8X", 26, 18) {
                 if (canDelete) refreshAfter { DungeonWaypoints.deletePack(name) }
-            }.at(292, (ROW_HEIGHT - 18) / 2)
-        }.size(ROW_WIDTH, ROW_HEIGHT).drawBehind { graphics ->
-            if (editing) graphics.roundedRectOutlined(x, y, right, bottom, GuiTheme.surface.rgba, GuiTheme.accent.rgba, 1f, GuiTheme.RADIUS)
-            else graphics.roundedRect(x, y, right, bottom, GuiTheme.surface.rgba, GuiTheme.RADIUS)
-        }
+            }.centeredY(ROW_HEIGHT, 292)
+        }.size(ROW_WIDTH, ROW_HEIGHT).let { if (editing) it.outlined() else it.background() }
     }
 
     private fun backgroundSave() {

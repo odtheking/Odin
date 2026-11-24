@@ -5,9 +5,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.odtheking.odin.clickgui.settings.RenderableSetting
-import com.odtheking.odin.clickgui.ui.Icon
 import com.odtheking.odin.clickgui.ui.SettingRow
 import com.odtheking.odin.clickgui.ui.animateProgress
+import com.odtheking.odin.clickgui.ui.components.Icon
 import com.odtheking.odin.utils.ui.animations.Easing
 import net.minecraft.resources.Identifier
 import kotlin.math.PI

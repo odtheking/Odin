@@ -11,3 +11,4 @@ accessible field net/minecraft/client/gui/render/pip/PictureInPictureRenderer te
 accessible field net/minecraft/client/player/LocalPlayer xLast D
 accessible field net/minecraft/client/player/LocalPlayer yLast D
 accessible field net/minecraft/client/player/LocalPlayer zLast D
+accessible field net/minecraft/world/item/component/CustomData tag Lnet/minecraft/nbt/CompoundTag;

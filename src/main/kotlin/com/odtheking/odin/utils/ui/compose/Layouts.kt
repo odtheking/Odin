@@ -35,6 +35,12 @@ fun Canvas(draw: Draw): UiNode = Layout(BoxPolicy, draw)
 fun Canvas(size: () -> Pair<Int, Int>, draw: Draw): UiNode =
     Canvas(draw).width { size().first }.height { size().second }
 
+@Composable
+fun UiNode.centered(): UiNode {
+    val host = LocalHost.current
+    return offset({ (host.width - width) / 2 }, { (host.height - height) / 2 })
+}
+
 val LocalTextShadow = staticCompositionLocalOf { false }
 
 @Composable

@@ -7,6 +7,7 @@ import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.lore
+import com.odtheking.odin.utils.render.text
 import com.odtheking.odin.utils.render.textDim
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import net.minecraft.network.chat.Component
@@ -21,13 +22,8 @@ object QuiverDisplay : Module(
     private val showName by BooleanSetting("Show Name", true, desc = "Shows the arrow type's name before the count.")
     private val countColor by ColorSetting("Count Color", Colors.MINECRAFT_GREEN, true, desc = "The color of the arrow count.")
 
-    private val quiverHud by HUD("Quiver HUD", "Displays the number of arrows in your quiver.", false) { example ->
-        val text = when {
-            example -> buildText(Component.literal("Flint Arrow"), "100")
-            arrows != null -> arrows?.let { buildText(it.first, it.second) }
-            else -> null
-        } ?: return@HUD 0 to 0
-        return@HUD textDim(text, 0, 0)
+    private val quiverHud by HUD("Quiver HUD", "Displays the number of arrows in your quiver.", false, example = { textDim(buildText(Component.literal("Flint Arrow"), "100"), 0, 0) }) {
+        arrows?.let { (name, count) -> text(buildText(name, count), 0, 0) }
     }
 
     private val arrowRegex = Regex("^Arrows Remaining: ([\\d,]+)$")

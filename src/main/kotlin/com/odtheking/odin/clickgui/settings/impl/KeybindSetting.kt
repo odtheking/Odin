@@ -7,8 +7,8 @@ import com.google.gson.JsonPrimitive
 import com.mojang.blaze3d.platform.InputConstants
 import com.odtheking.odin.clickgui.settings.RenderableSetting
 import com.odtheking.odin.clickgui.settings.Saving
-import com.odtheking.odin.clickgui.ui.Pill
 import com.odtheking.odin.clickgui.ui.SettingRow
+import com.odtheking.odin.clickgui.ui.components.Pill
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.ui.compose.onFocusChanged
 import com.odtheking.odin.utils.ui.compose.onKey

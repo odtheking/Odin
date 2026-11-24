@@ -16,6 +16,7 @@ fun webSocket(func: WebSocketConnection.() -> Unit) = WebSocketConnection().appl
 
 class WebSocketConnection {
     private val _webSocket = AtomicReference<WebSocket?>(null)
+    private val activeListener = AtomicReference<WebSocket.Listener?>(null)
     private val httpClient by lazy { HttpClient.newHttpClient() }
     private val executor = Executors.newSingleThreadExecutor { Thread(it, "Odin-WebSocket").apply { isDaemon = true } }
     private var onMessageFunc: (String) -> Unit = { }
@@ -49,6 +50,7 @@ class WebSocketConnection {
             private val messageBuilder = StringBuilder()
 
             override fun onOpen(webSocket: WebSocket) {
+                if (activeListener.get() !== this) return webSocket.abort()
                 logger.info("WebSocket connected to $url")
                 _webSocket.set(webSocket)
                 webSocket.request(1)
@@ -83,6 +85,7 @@ class WebSocketConnection {
                 _webSocket.compareAndSet(webSocket, null)
             }
         }
+        activeListener.set(listener)
 
         httpClient.newWebSocketBuilder()
             .header("X-Mod-Version", OdinMod.version.friendlyString)
@@ -93,8 +96,8 @@ class WebSocketConnection {
             }
     }
 
-    fun shutdown() {
-        val ws = _webSocket.getAndSet(null) ?: return
-        executor.execute { ws.sendClose(1000, "Client shutdown") }
+    fun shutdown() = executor.execute {
+        activeListener.set(null)
+        _webSocket.getAndSet(null)?.sendClose(1000, "Client shutdown")
     }
 }

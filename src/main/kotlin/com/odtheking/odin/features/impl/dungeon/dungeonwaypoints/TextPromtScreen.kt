@@ -2,6 +2,7 @@ package com.odtheking.odin.features.impl.dungeon.dungeonwaypoints
 
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.clickgui.OdinScreen
+import com.odtheking.odin.clickgui.ui.components.PromptDialog
 import com.odtheking.odin.utils.ui.compose.UiHost
 import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.network.chat.Component

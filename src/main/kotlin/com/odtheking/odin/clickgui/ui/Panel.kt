@@ -4,12 +4,14 @@ import androidx.compose.runtime.*
 import com.mojang.blaze3d.platform.InputConstants
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.clickgui.GuiTheme
+import com.odtheking.odin.clickgui.ui.components.background
+import com.odtheking.odin.clickgui.ui.components.dropShadow
+import com.odtheking.odin.clickgui.ui.components.textCentered
 import com.odtheking.odin.features.Category
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.features.impl.render.ClickGUIModule.PanelData
 import com.odtheking.odin.utils.render.Corners
 import com.odtheking.odin.utils.render.roundedRect
-import com.odtheking.odin.utils.render.roundedShadow
 import com.odtheking.odin.utils.ui.compose.*
 
 class Panel(val category: Category, val modules: List<Module>, val data: PanelData) {
@@ -38,9 +40,9 @@ class Panel(val category: Category, val modules: List<Module>, val data: PanelDa
                     .clip()
             }
 
-            Box().size(GuiTheme.ROW_WIDTH, GuiTheme.CAP).drawBehind { graphics ->
+            Box().size(GuiTheme.ROW_WIDTH, GuiTheme.CAP).background(CORNERS_BOTTOM) {
                 val accented = data.extended && sorted.lastOrNull()?.enabled == true
-                graphics.roundedRect(x, y, right, bottom, (if (accented) GuiTheme.accent else GuiTheme.background).rgba, CORNERS_BOTTOM)
+                (if (accented) GuiTheme.accent else GuiTheme.background).rgba
             }
         }
             .width(GuiTheme.ROW_WIDTH)
@@ -50,7 +52,7 @@ class Panel(val category: Category, val modules: List<Module>, val data: PanelDa
                 if (data.extended) scroll.by(amount)
                 data.extended
             }
-            .drawBehind { graphics -> graphics.roundedShadow(x, y, right, bottom, GuiTheme.shadow.rgba, GuiTheme.PANEL_BLUR, CORNERS) }
+            .dropShadow()
     }
 
     @Composable
@@ -90,6 +92,5 @@ private fun UiHost.maxY() = (height - GuiTheme.ROW_HEIGHT).coerceAtLeast(0)
 
 private const val MIN_VISIBLE = 72
 
-private val CORNERS = Corners(GuiTheme.RADIUS)
 private val CORNERS_TOP = Corners.top(GuiTheme.RADIUS)
 private val CORNERS_BOTTOM = Corners.bottom(GuiTheme.RADIUS)

@@ -10,6 +10,7 @@ import com.odtheking.odin.utils.render.getStringWidth
 import com.odtheking.odin.utils.render.text
 import com.odtheking.odin.utils.skyblock.dungeon.Blessing
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
+import net.minecraft.client.gui.GuiGraphicsExtractor
 
 object BlessingDisplay : Module(
     name = "Blessing Display",
@@ -35,13 +36,18 @@ object BlessingDisplay : Module(
         BlessingData(Blessing.WISDOM, { wisdom }, { wisdomColor })
     )
 
-    private val hud by HUD(name, "Displays the current active blessings of the dungeon.", false) { example ->
-        if (!DungeonUtils.inDungeons && !example) return@HUD 0 to 0
-        (0..5).reduce { acc, index ->
-            val blessing = blessings[index - 1].takeIf { it.enabled() } ?: return@reduce acc
-            val level = if (example) 19 else if (blessing.type.current > 0) blessing.type.current else return@reduce acc
-            text("${blessing.type.displayString} §a$level§r", 0, 9 * acc, blessing.color())
-            acc + 1
-        }.let { getStringWidth("Power: 19") to 1 + 10 * it }
+    private val hud by HUD(name, "Displays the current active blessings of the dungeon.", false, example = {
+        getStringWidth("Power: 19") to 1 + 10 * drawBlessings { 19 }
+    }) {
+        if (DungeonUtils.inDungeons) drawBlessings { it.type.current.takeIf { level -> level > 0 } }
+    }
+
+    private inline fun GuiGraphicsExtractor.drawBlessings(level: (BlessingData) -> Int?): Int {
+        var rows = 0
+        for (blessing in blessings) {
+            if (!blessing.enabled()) continue
+            text("${blessing.type.displayString} §a${level(blessing) ?: continue}§r", 0, 9 * rows++, blessing.color())
+        }
+        return rows
     }
 }

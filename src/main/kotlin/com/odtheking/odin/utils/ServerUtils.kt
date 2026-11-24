@@ -5,7 +5,6 @@ import com.odtheking.odin.events.core.onReceive
 import net.minecraft.network.protocol.game.ClientboundSetTimePacket
 import net.minecraft.network.protocol.ping.ClientboundPongResponsePacket
 import net.minecraft.util.Util
-import kotlin.math.min
 
 object ServerUtils {
     private var prevTime = 0L
@@ -19,6 +18,8 @@ object ServerUtils {
         private set
 
     private const val TPS_HISTORY = 20
+    private const val PING_SAMPLES = 20
+    private const val MAX_PING = 9999L
 
     private val tpsLog = FloatArray(TPS_HISTORY)
     private var tpsIndex = 0
@@ -31,9 +32,21 @@ object ServerUtils {
     }
 
     fun getTpsString(): String {
-        if (tpsLog.isEmpty()) return "Current: ${averageTps.toFixed(1)}"
+        val count = tpsCount
+        if (count == 0) return "Current: ${averageTps.toFixed(1)}"
 
-        return "Current: ${averageTps.toFixed(1)} (max/min/avg) ${tpsLog.max().toFixed(1)}/${tpsLog.min().toFixed(1)}/${tpsLog.average().toFloat().toFixed(1)}"
+        // The ring buffer fills from index 0, so the first `count` slots are the recorded samples.
+        var max = Float.NEGATIVE_INFINITY
+        var min = Float.POSITIVE_INFINITY
+        var sum = 0f
+        for (i in 0 until count) {
+            val tps = tpsLog[i]
+            if (tps > max) max = tps
+            if (tps < min) min = tps
+            sum += tps
+        }
+
+        return "Current: ${averageTps.toFixed(1)} (max/min/avg) ${max.toFixed(1)}/${min.toFixed(1)}/${(sum / count).toFixed(1)}"
     }
 
     init {
@@ -47,23 +60,21 @@ object ServerUtils {
         }
 
         onReceive<ClientboundPongResponsePacket> {
-            currentPing = (Util.getMillis() - time).toInt().coerceAtLeast(0)
+            val ping = Util.getMillis() - time
+            if (ping !in 0..MAX_PING) return@onReceive
+            currentPing = ping.toInt()
 
             val pingLog = mc.debugOverlay.pingLogger
-
-            val sampleSize = min(pingLog.size(), 20)
-
-            if (sampleSize == 0) {
-                averagePing = currentPing
-                return@onReceive
-            }
-
             var total = 0L
-            for (i in 0 until sampleSize) {
-                total += pingLog.get(i)
+            var count = 0
+            for (i in (pingLog.size() - PING_SAMPLES).coerceAtLeast(0) until pingLog.size()) {
+                val sample = pingLog.get(i)
+                if (sample in 0..MAX_PING) {
+                    total += sample
+                    count++
+                }
             }
-
-            averagePing = (total / sampleSize).toInt()
+            averagePing = if (count == 0) currentPing else (total / count).toInt()
         }
     }
 }

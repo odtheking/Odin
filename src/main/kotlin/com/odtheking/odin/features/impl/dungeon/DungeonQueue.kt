@@ -8,9 +8,7 @@ import com.odtheking.odin.events.MessageEvent
 import com.odtheking.odin.events.PartyEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
-import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.handlers.schedule
-import com.odtheking.odin.utils.render.textDim
 import com.odtheking.odin.utils.sendCommand
 import com.odtheking.odin.utils.toFixed
 
@@ -18,9 +16,9 @@ object DungeonQueue : Module(
     name = "Dungeon Queue",
     description = "Automates dungeon requeuing and displays queue cooldowns."
 ) {
-    private val hud by HUD("Warp Cooldown", "Displays the warp timer in the HUD.") {
-        if (warpTimer - System.currentTimeMillis() <= 0 && !it) return@HUD 0 to 0
-        textDim("§eWarp: §a${if (it) "30" else ((warpTimer - System.currentTimeMillis()) / 1000f).toFixed()}s", 0, 0, Colors.WHITE)
+    private val hud by TextHUD("Warp Cooldown", "Displays the warp timer in the HUD.", example = { "§eWarp: §a30s" }) {
+        val remaining = warpTimer - System.currentTimeMillis()
+        if (remaining > 0) "§eWarp: §a${(remaining / 1000f).toFixed()}s" else null
     }
     private val announceKick by BooleanSetting("Announce Kick", false, desc = "Announce when you get kicked from skyblock.")
 

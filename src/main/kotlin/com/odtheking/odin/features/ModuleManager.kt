@@ -5,7 +5,6 @@ package com.odtheking.odin.features
 import com.mojang.blaze3d.platform.InputConstants
 import com.odtheking.odin.OdinMod
 import com.odtheking.odin.OdinMod.mc
-import com.odtheking.odin.clickgui.HudLayer
 import com.odtheking.odin.clickgui.HudManager
 import com.odtheking.odin.clickgui.settings.impl.HUDSetting
 import com.odtheking.odin.clickgui.settings.impl.KeybindSetting
@@ -133,6 +132,6 @@ object ModuleManager {
     fun render(guiGraphics: GuiGraphicsExtractor, tickCounter: DeltaTracker) {
         if (mc.level == null || mc.player == null || mc.gui.screen() == HudManager) return
 
-        HudLayer.render(guiGraphics, example = false, mouseX = -1, mouseY = -1)
+        for (setting in hudSettingsCache) if (setting.isEnabled) setting.draw(guiGraphics)
     }
 }

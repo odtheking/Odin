@@ -34,8 +34,8 @@ object DungeonWaypoints : Module(
     val titleScale by NumberSetting("Title Scale", 1f, 0.1..4.0, increment = 0.1f, desc = "The scale of the titles of waypoints.")
     val disableDepth by BooleanSetting("Global Depth", false, desc = "Disables depth testing for all waypoints.")
 
-    private val editorHud by HUD("Editor HUD", "Shows information about the waypoint you're placing or looking at.", false) {
-        drawWaypointEditorHud(it)
+    private val editorHud by HUD("Editor HUD", "Shows information about the waypoint you're placing or looking at.", false, example = { drawWaypointEditorExample() }) {
+        drawWaypointEditorHud()
     }
 
     private val settingsDropDown by DropdownSetting("Next Waypoint Settings", desc = "Shows settings for the next waypoint you place.")

@@ -6,7 +6,6 @@ import com.odtheking.odin.events.MessageEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.utils.handlers.TickTask
-import com.odtheking.odin.utils.handlers.schedule
 import com.odtheking.odin.utils.noControlCodes
 import net.minecraft.network.protocol.game.ClientboundSetPlayerTeamPacket
 import net.minecraft.world.entity.ai.attributes.Attributes
@@ -19,7 +18,9 @@ object KuudraUtils {
 
     inline val inKuudra get() = LocationUtils.isCurrentArea(Island.Kuudra)
 
-    val freshers: MutableMap<String, Long?> = mutableMapOf()
+    fun freshTimeLeft(freshedAt: Long): Long = 10_000L - (System.currentTimeMillis() - freshedAt)
+    val activeFresherCount: Int get() = freshers.values.count { freshTimeLeft(it) > 0 }
+    val freshers: MutableMap<String, Long> = mutableMapOf()
     val giantZombies: ArrayList<Giant> = arrayListOf()
     var kuudraEntity: MagmaCube? = null
         private set
@@ -96,16 +97,10 @@ object KuudraUtils {
 
             partyFreshRegex.find(message)?.groupValues?.get(2)?.let { playerName ->
                 freshers[playerName] = System.currentTimeMillis()
-                schedule(200, true) {
-                    freshers[playerName] = null
-                }
             }
 
             ownFreshRegex.find(message)?.let {
                 freshers[mc.player?.name?.string ?: "self"] = System.currentTimeMillis()
-                schedule(200, true) {
-                    freshers[mc.player?.name?.string ?: "self"] = null
-                }
             }
         }
 

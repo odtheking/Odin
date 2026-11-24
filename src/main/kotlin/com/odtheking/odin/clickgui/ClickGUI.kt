@@ -4,7 +4,7 @@ import androidx.compose.runtime.*
 import com.mojang.blaze3d.platform.InputConstants
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.clickgui.ui.Panel
-import com.odtheking.odin.clickgui.ui.TextBox
+import com.odtheking.odin.clickgui.ui.components.TextBox
 import com.odtheking.odin.features.impl.render.ClickGUIModule
 import com.odtheking.odin.utils.ui.compose.FocusRequester
 import com.odtheking.odin.utils.ui.compose.UiHost
@@ -21,37 +21,26 @@ class ClickGUI(panels: List<Panel>) : OdinScreen(Component.literal("Click GUI"))
     private val searchFocus = FocusRequester()
     private val panels = panels.toMutableStateList()
 
-    override val ui by lazy {
+    override val ui: UiHost by lazy {
         UiHost {
             TextBox(
                 searchString, { searchString = it },
                 placeholder = "Search...", maxLength = 18, centered = true, radius = 6f, focusRequester = searchFocus,
-            ).size(SEARCH_WIDTH, SEARCH_HEIGHT).offset({ virtualWidth / 2 - SEARCH_WIDTH / 2 }, { virtualHeight - SEARCH_BOTTOM_MARGIN })
+            ).size(SEARCH_WIDTH, SEARCH_HEIGHT).offset({ ui.width / 2 - SEARCH_WIDTH / 2 }, { ui.height - SEARCH_BOTTOM_MARGIN })
             for (panel in panels) key(panel) {
                 panel.Content({ searchString }) { bringToFront(panel) }
             }
         }
     }
 
-    private var scale: Float = 1f
-    override val guiScale: Float get() = scale
-
-    private val virtualWidth get() = (mc.window.guiScaledWidth / scale).toInt()
-    private val virtualHeight get() = (mc.window.guiScaledHeight / scale).toInt()
-
     override fun extractRenderState(graphics: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, partialTick: Float) {
-        graphics.pose().pushMatrix()
-        graphics.pose().scale(scale, scale)
-
-        ui.render(graphics, virtualWidth, virtualHeight, (mouseX / scale).toInt(), (mouseY / scale).toInt())
-
-        graphics.pose().popMatrix()
+        ui.render(graphics, width, height, mouseX, mouseY)
         super.extractRenderState(graphics, mouseX, mouseY, partialTick)
     }
 
     override fun init() {
         super.init()
-        scale = ClickGUIModule.clickGuiScale / mc.window.guiScale
+        ui.scale = ClickGUIModule.clickGuiScale / mc.window.guiScale
         focusSearch()
     }
 

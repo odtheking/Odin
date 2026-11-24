@@ -4,6 +4,7 @@ import com.odtheking.odin.features.impl.render.ClickGUIModule
 import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.Color.Companion.brighter
 import com.odtheking.odin.utils.Colors
+import com.odtheking.odin.utils.render.Corners
 import net.minecraft.util.ARGB
 
 object GuiTheme {
@@ -16,6 +17,8 @@ object GuiTheme {
     const val INNER_WIDTH = ROW_WIDTH - PADDING * 2
 
     const val PANEL_BLUR = 12f
+
+    val CORNERS = Corners(RADIUS)
 
     val background: Color get() = Colors.gray26
     val surface: Color get() = Colors.gray38

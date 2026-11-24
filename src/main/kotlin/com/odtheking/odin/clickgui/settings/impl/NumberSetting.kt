@@ -10,13 +10,13 @@ import com.odtheking.odin.clickgui.settings.RenderableSetting
 import com.odtheking.odin.clickgui.settings.Saving
 import com.odtheking.odin.clickgui.ui.SettingRow
 import com.odtheking.odin.clickgui.ui.animateProgress
+import com.odtheking.odin.clickgui.ui.components.draggable
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.render.Corners
 import com.odtheking.odin.utils.render.circle
 import com.odtheking.odin.utils.render.roundedRect
 import com.odtheking.odin.utils.render.roundedRectClipped
 import com.odtheking.odin.utils.ui.compose.*
-import net.minecraft.client.input.MouseButtonEvent
 import kotlin.math.round
 import kotlin.math.roundToInt
 import kotlin.math.roundToLong
@@ -119,8 +119,6 @@ private fun Slider(value: Float, onValueChange: (Float) -> Unit): UiNode {
     SideEffect { if (dragging) fill.snapTo(value) else fill.animateTo(value, 200) }
     val knob = animateProgress { dragging || interaction.hovered }
 
-    val seek: UiNode.(MouseButtonEvent) -> Unit = { event -> onValueChange(((event.x() - x) / width).toFloat().coerceIn(0f, 1f)) }
-
     return Canvas { graphics ->
         val top = y + (height - TRACK_HEIGHT) / 2
         graphics.roundedRect(x, top, right, top + TRACK_HEIGHT, GuiTheme.surface.rgba, TRACK_CORNERS)
@@ -130,13 +128,7 @@ private fun Slider(value: Float, onValueChange: (Float) -> Unit): UiNode {
         graphics.circle(x + filled, top + TRACK_HEIGHT / 2, 4f + 1.5f * knob.value, Colors.WHITE.rgba)
     }
         .hoverable(interaction)
-        .pointerInput(
-            onDrag = {
-                dragging = true
-                seek(it)
-            },
-            onRelease = { dragging = false },
-        ) { event -> (event.button() == InputConstants.MOUSE_BUTTON_LEFT).also { if (it) seek(event) } }
+        .draggable(onDrag = { dragging = true }, onRelease = { dragging = false }) { x, _ -> onValueChange(x) }
         .onFocusChanged { if (!it) dragging = false }
 }
 

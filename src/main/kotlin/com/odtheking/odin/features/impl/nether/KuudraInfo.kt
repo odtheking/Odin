@@ -11,7 +11,6 @@ import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.addVec
 import com.odtheking.odin.utils.render.drawText
 import com.odtheking.odin.utils.render.drawWireFrameBox
-import com.odtheking.odin.utils.render.textDim
 import com.odtheking.odin.utils.skyblock.KuudraUtils
 import com.odtheking.odin.utils.toFixed
 
@@ -24,9 +23,8 @@ object KuudraInfo : Module(
     private val kuudraHPDisplay by BooleanSetting("Kuudra HP", true, desc = "Renders Kuudra's HP infront of it.")
     private val healthSize by NumberSetting("Health Size", 4f, 3.0..8.0, 0.1, desc = "Size of the health display.").withDependency { kuudraHPDisplay }
     private val scaledHealth by BooleanSetting("Use Scaled", true, desc = "Use scaled health for the display meaning the health will update in tier 5 when below 25,000.").withDependency { kuudraHPDisplay }
-    private val hud by HUD("Health Display", "Displays the current health of Kuudra.") { example ->
-        if (!example && !KuudraUtils.inKuudra) return@HUD 0 to 0
-        textDim(if (example) "§a99.975M/240M§c❤" else getCurrentHealthDisplay(KuudraUtils.kuudraEntity?.health ?: return@HUD 0 to 0), 0, 0)
+    private val hud by TextHUD("Health Display", "Displays the current health of Kuudra.", example = { "§a99.975M/240M§c❤" }) {
+        if (KuudraUtils.inKuudra) KuudraUtils.kuudraEntity?.health?.let(::getCurrentHealthDisplay) else null
     }
 
     init {

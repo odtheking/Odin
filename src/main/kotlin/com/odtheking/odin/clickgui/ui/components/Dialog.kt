@@ -1,21 +1,17 @@
-package com.odtheking.odin.features.impl.dungeon.dungeonwaypoints
+package com.odtheking.odin.clickgui.ui.components
 
 import androidx.compose.runtime.*
 import com.mojang.blaze3d.platform.InputConstants
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.clickgui.GuiTheme
-import com.odtheking.odin.clickgui.ui.Button
-import com.odtheking.odin.clickgui.ui.TextBox
-import com.odtheking.odin.utils.render.Corners
-import com.odtheking.odin.utils.render.roundedRect
-import com.odtheking.odin.utils.render.roundedShadow
 import com.odtheking.odin.utils.ui.animations.Easing
 import com.odtheking.odin.utils.ui.compose.*
 
-internal const val DIALOG_PADDING = 8
-internal const val DIALOG_BUTTON_HEIGHT = 20
+const val DIALOG_PADDING = 8
+const val DIALOG_BUTTON_HEIGHT = 20
 
-private val CORNERS = Corners(GuiTheme.RADIUS)
+fun dialogListHeight(top: Int, max: Int, reserved: Int = 0) =
+    (mc.window.guiScaledHeight - top - reserved - DIALOG_BUTTON_HEIGHT - DIALOG_PADDING * 2 - 20).coerceIn(48, max)
 
 @Composable
 fun Dialog(width: Int, heightOf: () -> Int, content: @Composable () -> Unit): UiNode {
@@ -25,15 +21,11 @@ fun Dialog(width: Int, heightOf: () -> Int, content: @Composable () -> Unit): Ui
     return Box(content)
         .width(width)
         .height { heightOf() }
-        .offset({ (mc.window.guiScaledWidth - width) / 2 }, { (mc.window.guiScaledHeight - heightOf()) / 2 })
+        .centered()
         .scale { 0.92f + (1f - 0.92f) * open.value }
-        .drawBehind { graphics ->
-            graphics.roundedShadow(x, y, right, bottom, GuiTheme.shadow.rgba, GuiTheme.PANEL_BLUR, CORNERS)
-            graphics.roundedRect(x, y, right, bottom, GuiTheme.background.rgba, CORNERS)
-        }
+        .dropShadow()
+        .background(GuiTheme.CORNERS) { GuiTheme.background.rgba }
 }
-
-fun UiNode.centeredX(parentWidth: Int, y: Int) = offset({ (parentWidth - width) / 2 }, { y })
 
 @Composable
 fun PromptDialog(title: String, onConfirm: (String) -> Unit, onCancel: () -> Unit, scrim: Boolean = true) {
@@ -45,16 +37,16 @@ fun PromptDialog(title: String, onConfirm: (String) -> Unit, onCancel: () -> Uni
         onDispose {}
     }
 
-    if (scrim) Canvas(size = { mc.window.guiScaledWidth to mc.window.guiScaledHeight }) { graphics ->
-        graphics.fill(x, y, right, bottom, 0x80000000.toInt())
-    }
+    if (scrim) Scrim()
     Dialog(240, { 80 }) {
         Text({ "§l$title" }).centeredX(240, DIALOG_PADDING)
         TextBox(text, { text = it }, placeholder = "Enter text", maxLength = 32, focusRequester = focus)
             .size(240 - DIALOG_PADDING * 2, DIALOG_BUTTON_HEIGHT)
             .at(DIALOG_PADDING, 24)
-        Button("Done", 100, DIALOG_BUTTON_HEIGHT) { onConfirm(text) }.at(16, 52)
-        Button("Cancel", 100, DIALOG_BUTTON_HEIGHT, onCancel).at(124, 52)
+        Row(8) {
+            Button("Done", 100, DIALOG_BUTTON_HEIGHT) { onConfirm(text) }
+            Button("Cancel", 100, DIALOG_BUTTON_HEIGHT, onClick = onCancel)
+        }.centeredX(240, 52)
     }.onKey { event ->
         when (event.key) {
             InputConstants.KEY_RETURN, InputConstants.KEY_NUMPADENTER -> onConfirm(text)

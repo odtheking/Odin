@@ -3,11 +3,15 @@ package com.odtheking.odin.clickgui.settings.impl
 import androidx.compose.runtime.*
 import com.google.gson.Gson
 import com.google.gson.JsonElement
-import com.mojang.blaze3d.platform.InputConstants
 import com.odtheking.odin.clickgui.GuiTheme
 import com.odtheking.odin.clickgui.settings.RenderableSetting
 import com.odtheking.odin.clickgui.settings.Saving
-import com.odtheking.odin.clickgui.ui.*
+import com.odtheking.odin.clickgui.ui.AnimatedVisibility
+import com.odtheking.odin.clickgui.ui.SettingRow
+import com.odtheking.odin.clickgui.ui.animateFloatAsState
+import com.odtheking.odin.clickgui.ui.components.Gap
+import com.odtheking.odin.clickgui.ui.components.TextBox
+import com.odtheking.odin.clickgui.ui.components.draggable
 import com.odtheking.odin.features.impl.render.ClickGUIModule
 import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.Color.Companion.darker
@@ -17,7 +21,6 @@ import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.render.*
 import com.odtheking.odin.utils.ui.compose.*
 import net.minecraft.client.gui.GuiGraphicsExtractor
-import net.minecraft.client.input.MouseButtonEvent
 import net.minecraft.resources.Identifier
 import kotlin.math.roundToInt
 
@@ -136,13 +139,6 @@ class ColorSetting(
         const val SWATCH_WIDTH = 22
         const val SWATCH_HEIGHT = 14
     }
-}
-
-private fun UiNode.draggable(onMove: (x: Float, y: Float) -> Unit): UiNode {
-    val move: UiNode.(MouseButtonEvent) -> Unit = { event ->
-        onMove(((event.x() - x) / width).toFloat().coerceIn(0f, 1f), ((event.y() - y) / height).toFloat().coerceIn(0f, 1f))
-    }
-    return pointerInput(onDrag = move) { event -> (event.button() == InputConstants.MOUSE_BUTTON_LEFT).also { if (it) move(event) } }
 }
 
 private fun GuiGraphicsExtractor.drawMarker(bar: UiNode, progress: Float) {

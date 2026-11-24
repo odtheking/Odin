@@ -9,25 +9,22 @@ import com.odtheking.odin.utils.render.textDim
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.toFixed
 import net.minecraft.client.gui.GuiGraphicsExtractor
-import net.minecraft.world.phys.AABB
 
-fun GuiGraphicsExtractor.drawWaypointEditorHud(example: Boolean): Pair<Int, Int> {
-    if (example) {
-        return drawEditorHud(
-            title = "§fEditing Waypoints §8|§f Placing",
-            text = "§fType: §5Normal§7, §r#${Colors.MINECRAFT_RED.hex()}§7, §3Outline§7, §cThrough Walls§7, §2Block Size",
-            color = Colors.MINECRAFT_RED,
-        )
-    }
+fun GuiGraphicsExtractor.drawWaypointEditorExample(): Pair<Int, Int> =
+    drawEditorHud(
+        title = "§fEditing Waypoints §8|§f Placing",
+        text = "§fType: §5Normal§7, §r#${Colors.MINECRAFT_RED.hex()}§7, §3Outline§7, §cThrough Walls§7, §2Block Size",
+        color = Colors.MINECRAFT_RED,
+    )
 
-    if (!DungeonWaypoints.allowEdits) return 0 to 0
+fun GuiGraphicsExtractor.drawWaypointEditorHud() {
+    if (!DungeonWaypoints.allowEdits) return
 
-    val room = DungeonUtils.currentRoom
-    val pos = reachPosition
-    if (room == null || pos == null) return 0 to 0
+    val room = DungeonUtils.currentRoom ?: return
+    val pos = reachPosition ?: return
 
     val hoveredWaypoint = room.waypoints.firstOrNull { it.blockPos == pos }
-    return drawEditorHud(
+    drawEditorHud(
         title = "§fEditing Waypoints §8|§f ${if (hoveredWaypoint == null) "Placing" else "Viewing"}",
         text = hoveredWaypoint?.describe() ?: DungeonWaypoints.describeNextWaypoint(),
         color = hoveredWaypoint?.color ?: DungeonWaypoints.color,
@@ -55,8 +52,5 @@ private fun DungeonWaypoint.describe(): String = buildString {
     title?.takeIf(String::isNotBlank)?.let { append(", §fTitle: §a$it§7") }
     append(", ${if (filled) "§2Filled" else "§3Outline"}")
     append("§7, ${if (depth) "§2Depth Check" else "§cThrough Walls"}")
-    append("§7, §3Size: ${aabb.xSizeText()}")
+    append("§7, §3Size: ${"${(aabb.maxX - aabb.minX).toFixed(2)}x${(aabb.maxY - aabb.minY).toFixed(2)}x${(aabb.maxZ - aabb.minZ).toFixed(2)}"}")
 }
-
-private fun AABB.xSizeText(): String =
-    "${(maxX - minX).toFixed(2)}x${(maxY - minY).toFixed(2)}x${(maxZ - minZ).toFixed(2)}"

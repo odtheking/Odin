@@ -45,10 +45,7 @@ object KuudraTracker : Module(
     private val blueRegex = Regex("Kada Knight Shard|Wheel of Fate|Ananke Feather|Burning Kuudra Core|Matcho Shard|Kuudra Tentacle|Lava Flame Shard|Wither Spectre Shard")
     private val goldRegex = Regex("Boots|Leggings|Chestplate|Helmet|Cloak|Aurora Staff|Hollow Wand|Heavy Pearl|Kraken Shard|Hellwisp Shard|Ananke Shard|Moltenfish Shard|Tormentor")
 
-    val profitHud by HUD("Kuudra Tracker HUD", "Displays the profit of all your Kudura chests.") {
-        if (!it) return@HUD 0 to 0
-        drawOverlay(true)
-    }
+    val profitHud by HUD("Kuudra Tracker HUD", "Displays the profit of all your Kudura chests.", example = { drawOverlay(true) }) {}
 
     private var singleItems by MapSetting("Single Items",mutableMapOf<String, Int>())
     private var multiItems by MapSetting("Multi Items", mutableMapOf<String, Int>())

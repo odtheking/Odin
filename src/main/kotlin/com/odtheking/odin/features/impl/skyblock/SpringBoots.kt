@@ -10,7 +10,6 @@ import com.odtheking.odin.utils.addVec
 import com.odtheking.odin.utils.equalsOneOf
 import com.odtheking.odin.utils.isItem
 import com.odtheking.odin.utils.render.drawWireFrameBox
-import com.odtheking.odin.utils.render.textDim
 import com.odtheking.odin.utils.skyblock.LocationUtils
 import net.minecraft.network.protocol.game.ClientboundSoundPacket
 import net.minecraft.sounds.SoundEvents
@@ -21,13 +20,11 @@ object SpringBoots : Module(
     name = "Spring Boots",
     description = "Shows the current jump height of your spring boots."
 ) {
-    private val hud by HUD("Spring Boots", "Shows how high you will jump.") {
-        if (blockAmount == 0f && !it) return@HUD 0 to 0
-        var width = 1
-        width += textDim("Height: ", width, 1, Colors.MINECRAFT_LIGHT_PURPLE, true).first
-        width += textDim(getColor(blockAmount), width, 1, Colors.WHITE, true).first
-        width to mc.font.lineHeight
+    private val hud by TextHUD("Spring Boots", "Shows how high you will jump.", example = { heightText(61f) }) {
+        if (blockAmount != 0f) heightText(blockAmount) else null
     }
+
+    private fun heightText(blocks: Float) = "§dHeight: ${getColor(blocks)}"
 
     private val pitchSet = setOf(0.82539684f, 0.8888889f, 0.93650794f, 1.0476191f, 1.1746032f, 1.3174603f, 1.7777778f)
     private var blockAmount = 0f

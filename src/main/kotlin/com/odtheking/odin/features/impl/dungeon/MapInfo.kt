@@ -18,6 +18,7 @@ import com.odtheking.odin.utils.render.getStringWidth
 import com.odtheking.odin.utils.render.text
 import com.odtheking.odin.utils.render.textDim
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.core.BlockPos
 import net.minecraft.world.phys.AABB
 
@@ -32,34 +33,33 @@ object MapInfo : Module(
     enum class SecretCount { MINIMUM, REMAINING }
     enum class DeathDisplay { DEATHS, UNFOUND }
 
-    private val roomSecrets by HUD("Room Secrets", "Displays the number of secrets in the current room.") {
-        if ((!DungeonUtils.inClear) && !it) return@HUD 0 to 0
-
-        val secrets = if (it) 0 to 2 else DungeonUtils.currentRoom?.foundSecrets?.let { found ->
-            DungeonUtils.currentRoom?.data?.maxSecrets?.let { max ->
-                if (max == 0) return@HUD 0 to 0
-                found to max
-            }
-        } ?: return@HUD 0 to 0
-        val color = when {
-            secrets.first * 2 < secrets.second -> "§c"
-            secrets.first * 4 < secrets.second * 3 -> "§e"
-            else -> "§a"
-        }
-        val roomText = buildString {
-            append(color)
-            append(secrets.first)
-            append("§7/")
-            append(color)
-            append(secrets.second)
-        }
-
-        textDim(roomText, 0, 0, Colors.WHITE)
+    private val roomSecrets by TextHUD("Room Secrets", "Displays the number of secrets in the current room.", example = { roomSecretsText(0, 2) }) {
+        if (!DungeonUtils.inClear) return@TextHUD null
+        val found = DungeonUtils.currentRoom?.foundSecrets ?: return@TextHUD null
+        val max = DungeonUtils.currentRoom?.data?.maxSecrets ?: return@TextHUD null
+        if (max != 0) roomSecretsText(found, max) else null
     }
 
-    private val fullHud: HudElement by HUD("Full Hud", "Displays a full hud with score, secrets, crypts, and mimic info.") {
-        if ((!DungeonUtils.inDungeons || (disableInBoss && DungeonUtils.inBoss)) && !it) return@HUD 0 to 0
+    private fun roomSecretsText(found: Int, max: Int): String {
+        val color = when {
+            found * 2 < max -> "§c"
+            found * 4 < max * 3 -> "§e"
+            else -> "§a"
+        }
+        return buildString {
+            append(color)
+            append(found)
+            append("§7/")
+            append(color)
+            append(max)
+        }
+    }
 
+    private val fullHud: HudElement by HUD("Full Hud", "Displays a full hud with score, secrets, crypts, and mimic info.", example = { drawFullHud(); fullWidth to 19 }) {
+        if (DungeonUtils.inDungeons && !(disableInBoss && DungeonUtils.inBoss)) drawFullHud()
+    }
+
+    private fun GuiGraphicsExtractor.drawFullHud() {
         val secretText = buildString {
             append("§7Secrets: §b")
             append(DungeonUtils.secretCount)
@@ -106,7 +106,6 @@ object MapInfo : Module(
         val gapEnd = fullWidth - 1 - trWidth
         text(mimicText, (gapStart + (gapEnd - gapStart - mimicWidth) / 2), 10, Colors.WHITE)
         text(cryptText, gapEnd, 10, Colors.WHITE)
-        fullWidth to 19
     }
 
     private val fullAddRemaining by BooleanSetting("Include Remaining", false, desc = "Adds remaining to the secrets display.").withDependency { fullHud.enabled }

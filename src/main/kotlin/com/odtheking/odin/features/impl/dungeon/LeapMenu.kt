@@ -1,11 +1,13 @@
 package com.odtheking.odin.features.impl.dungeon
 
+import androidx.compose.runtime.Composable
 import com.mojang.blaze3d.platform.InputConstants
 import com.odtheking.odin.clickgui.settings.RenderableSetting.Companion.withDependency
 import com.odtheking.odin.clickgui.settings.impl.*
+import com.odtheking.odin.clickgui.ui.hoverable
+import com.odtheking.odin.clickgui.ui.rememberHover
 import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.MessageEvent
-import com.odtheking.odin.events.ScreenEvent
 import com.odtheking.odin.events.SetSlotEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
@@ -17,11 +19,12 @@ import com.odtheking.odin.utils.skyblock.dungeon.DungeonClass
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonPlayer
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils.leapTeammates
-import com.odtheking.odin.utils.ui.compose.Animatable
-import com.odtheking.odin.utils.ui.compose.Motion
+import com.odtheking.odin.utils.ui.compose.*
 import com.odtheking.odin.utils.ui.widget.CustomGUIImpl
+import net.minecraft.client.gui.GuiGraphicsExtractor
 import net.minecraft.client.gui.components.PlayerFaceExtractor
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
+import net.minecraft.client.input.KeyEvent
 import net.minecraft.world.item.Items
 
 object LeapMenu : Module(
@@ -34,7 +37,6 @@ object LeapMenu : Module(
     private val colorStyle by BooleanSetting("Color Style", false, desc = "Which color style to use.")
     private val backgroundColor by ColorSetting("Background Color", Colors.gray38.withAlpha(0.75f), true, desc = "Color of the background of the leap menu.").withDependency { !colorStyle }
     private val scale by NumberSetting("Render Scale", 1f, 0.1..2.0, 0.1f, desc = "Scale of the leap menu.", unit = "x")
-    private val onRelease by BooleanSetting("On Key Release", false, desc = "Whether to trigger the leap on key release instead of key press.")
 
     private val keybindDropdown by DropdownSetting("Keybinds", desc = "Keybinds for the leap menu.").withDependency { type != Sorting.NONE }
     val keybindType by SelectorSetting("Mode", KeybindMode.CORNERS, desc = "How the keybinds should function.").withDependency { keybindDropdown }
@@ -51,7 +53,6 @@ object LeapMenu : Module(
     private val tankKeybind by KeybindSetting("Tank", InputConstants.KEY_5, "Used to leap to the Tank in the leap menu.").withDependency { keybindType == KeybindMode.CLASS && keybindDropdown }
 
     private val leapAnnounce by BooleanSetting("Leap Announce", false, desc = "Announces when you leap to a player.")
-    private val hoverProgress = List(4) { Animatable(0f) }
 
     private val EMPTY = DungeonPlayer("Empty", DungeonClass.EMPTY, 0, null)
     private val leapedRegex = Regex("^You have teleported to (\\w{1,16})!$")
@@ -62,6 +63,7 @@ object LeapMenu : Module(
     const val BOX_HEIGHT = 75
 
     private const val GROW = 5f
+    private const val CENTER_GAP = 24
     private const val HOVER_DURATION = 200
 
     private fun currentLeapScreen(): AbstractContainerScreen<*>? {
@@ -73,97 +75,12 @@ object LeapMenu : Module(
     }
 
     init {
-        fun triggerMouseQuadrant(chest: AbstractContainerScreen<*>, mouseX: Int, mouseY: Int) {
-            val quadrant = (if (mouseY >= chest.height / 2) 2 else 0) + (if (mouseX >= chest.width / 2) 1 else 0)
-            chest.mouseTrigger(leapTeammates.getOrNull(quadrant) ?: EMPTY, quadrant)
-        }
-
         CustomGUIImpl.register(
-            CustomGUIImpl.HandlerSet(enabled = { currentLeapScreen() != null },
-            click = fun ScreenEvent.MouseClick.(): Any {
-                val chest = currentLeapScreen() ?: return false
-                if (onRelease) return true
-                triggerMouseQuadrant(chest, click.x().toInt(), click.y().toInt())
-                return true
-            },
-            release = fun ScreenEvent.MouseRelease.(): Any {
-                val chest = currentLeapScreen() ?: return false
-                if (!onRelease) return true
-                triggerMouseQuadrant(chest, click.x().toInt(), click.y().toInt())
-                return true
-            },
-            key = fun ScreenEvent.KeyPress.(): Any {
-                if (leapTeammates.isEmpty()) return false
-                val keybindList = if (keybindType == KeybindMode.CORNERS) listOf(topLeftKeybind, topRightKeybind, bottomLeftKeybind, bottomRightKeybind)
-                else listOf(archerKeybind, berserkerKeybind, healerKeybind, mageKeybind, tankKeybind)
-                val pressed = InputConstants.getKey(input)
-                if (pressed !in keybindList) return false
-
-                val chest = currentLeapScreen() ?: return false
-
-                val index = if (keybindType == KeybindMode.CORNERS) keybindList.indexOf(pressed)
-                else DungeonClass.entries.find { clazz -> clazz.ordinal == keybindList.indexOf(pressed) }
-                    ?.let { clazz -> leapTeammates.indexOfFirst { it.clazz == clazz } } ?: return false
-
-                if (index < 0) return false
-
-                val playerToLeap = leapTeammates.getOrNull(index) ?: return false
-                if (playerToLeap == EMPTY) return false
-                if (playerToLeap.isDead) return modMessage("This player is dead, can't leap.")
-                leapTo(playerToLeap.name, chest)
-                return true
-            },
-            render = fun ScreenEvent.Render.(): Any {
-                Motion.frameNanos = System.nanoTime()
-
-                val halfW = mc.window.guiScaledWidth / 2
-                val halfH = mc.window.guiScaledHeight / 2
-
-                repeat(4) { i ->
-                    val player = leapTeammates.getOrNull(i) ?: return@repeat
-                    if (player == EMPTY) return@repeat
-
-                    val col = i % 2
-                    val row = i / 2
-                    val nearX = if (col == 0) halfW - 24 else halfW + 24
-                    val nearY = if (row == 0) halfH - 24 else halfH + 24
-                    val localX = if (col == 0) -BOX_WIDTH else 0
-                    val localY = if (row == 0) -BOX_HEIGHT else 0
-
-                    val hovered = (if (col == 0) mouseX < halfW else mouseX >= halfW) && (if (row == 0) mouseY < halfH else mouseY >= halfH)
-                    hoverProgress[i].animateTo(if (hovered) 1f else 0f, HOVER_DURATION)
-                    val grow = hoverProgress[i].value * GROW
-
-                    guiGraphics.pose().pushMatrix()
-                    guiGraphics.pose().translate(nearX.toFloat(), nearY.toFloat())
-                    guiGraphics.pose().scale(scale * (BOX_WIDTH + grow * 2f) / BOX_WIDTH, scale * (BOX_HEIGHT + grow * 2f) / BOX_HEIGHT)
-
-                    guiGraphics.roundedRect(localX, localY, localX + BOX_WIDTH, localY + BOX_HEIGHT, (if (colorStyle) player.clazz.color else backgroundColor).rgba, 9f)
-
-                    val face = (BOX_HEIGHT * 0.76).toInt()
-                    (player.playerSkin ?: mc.player?.skin)?.let { PlayerFaceExtractor.extractRenderState(guiGraphics, it, localX + 9, localY + 9, face) }
-
-                    guiGraphics.text(
-                        if (!onlyClass) player.name else player.clazz.name,
-                        localX + 15 + face,
-                        localY + (BOX_HEIGHT / 2.5).toInt(),
-                        if (!colorStyle) player.clazz.color else backgroundColor
-                    )
-
-                    if (!onlyClass || player.isDead) {
-                        guiGraphics.text(
-                            if (player.isDead) "DEAD" else player.clazz.name.lowercase(),
-                            localX + 15 + face,
-                            localY + (BOX_HEIGHT / 1.7).toInt(),
-                            if (player.isDead) Colors.MINECRAFT_RED else Colors.WHITE
-                        )
-                    }
-
-                    guiGraphics.pose().popMatrix()
-                }
-                return true
-            })
-        )
+            enabled = { currentLeapScreen() != null },
+            onKey = { event -> leapByKey(event) },
+        ) {
+            repeat(4) { quadrant -> LeapQuadrant(quadrant) }
+        }
 
         on<MessageEvent.Chat> {
             if (leapAnnounce && DungeonUtils.inDungeons)
@@ -181,6 +98,87 @@ object LeapMenu : Module(
         on<LevelEvent.Load> {
             leapIndex.clear()
         }
+    }
+
+    @Composable
+    private fun LeapQuadrant(quadrant: Int) {
+        val host = LocalHost.current
+        val hover = rememberHover(HOVER_DURATION)
+        val left = quadrant % 2 == 0
+        val top = quadrant < 2
+
+        Canvas { graphics ->
+            val player = leapTeammates.getOrNull(quadrant)?.takeIf { it != EMPTY } ?: return@Canvas
+            graphics.leapCard(player, if (left) right - CENTER_GAP else x + CENTER_GAP, if (top) bottom - CENTER_GAP else y + CENTER_GAP, left, top, hover.value)
+        }
+            .width { if (left) host.width / 2 else host.width - host.width / 2 }
+            .height { if (top) host.height / 2 else host.height - host.height / 2 }
+            .offset({ if (left) 0 else host.width / 2 }, { if (top) 0 else host.height / 2 })
+            .tag(quadrant)
+            .hoverable(hover)
+            .pointerInput {
+                val chest = currentLeapScreen() ?: return@pointerInput false
+                chest.mouseTrigger(leapTeammates.getOrNull(quadrant) ?: EMPTY, quadrant)
+                true
+            }
+    }
+
+    private fun GuiGraphicsExtractor.leapCard(player: DungeonPlayer, nearX: Int, nearY: Int, left: Boolean, top: Boolean, hover: Float) {
+        val localX = if (left) -BOX_WIDTH else 0
+        val localY = if (top) -BOX_HEIGHT else 0
+        val grow = hover * GROW
+
+        pose().pushMatrix()
+        pose().translate(nearX.toFloat(), nearY.toFloat())
+        pose().scale(scale * (BOX_WIDTH + grow * 2f) / BOX_WIDTH, scale * (BOX_HEIGHT + grow * 2f) / BOX_HEIGHT)
+
+        roundedRect(localX, localY, localX + BOX_WIDTH, localY + BOX_HEIGHT, (if (colorStyle) player.clazz.color else backgroundColor).rgba, 9f)
+
+        val face = (BOX_HEIGHT * 0.76).toInt()
+        (player.playerSkin ?: mc.player?.skin)?.let { PlayerFaceExtractor.extractRenderState(this, it, localX + 9, localY + 9, face) }
+
+        text(
+            if (!onlyClass) player.name else player.clazz.name,
+            localX + 15 + face,
+            localY + (BOX_HEIGHT / 2.5).toInt(),
+            if (!colorStyle) player.clazz.color else backgroundColor
+        )
+
+        if (!onlyClass || player.isDead) {
+            text(
+                if (player.isDead) "DEAD" else player.clazz.name.lowercase(),
+                localX + 15 + face,
+                localY + (BOX_HEIGHT / 1.7).toInt(),
+                if (player.isDead) Colors.MINECRAFT_RED else Colors.WHITE
+            )
+        }
+
+        pose().popMatrix()
+    }
+
+    private fun leapByKey(event: KeyEvent): Boolean {
+        if (leapTeammates.isEmpty()) return false
+        val keybindList = if (keybindType == KeybindMode.CORNERS) listOf(topLeftKeybind, topRightKeybind, bottomLeftKeybind, bottomRightKeybind)
+        else listOf(archerKeybind, berserkerKeybind, healerKeybind, mageKeybind, tankKeybind)
+        val pressed = InputConstants.getKey(event)
+        if (pressed !in keybindList) return false
+
+        val chest = currentLeapScreen() ?: return false
+
+        val index = if (keybindType == KeybindMode.CORNERS) keybindList.indexOf(pressed)
+        else DungeonClass.entries.find { clazz -> clazz.ordinal == keybindList.indexOf(pressed) }
+            ?.let { clazz -> leapTeammates.indexOfFirst { it.clazz == clazz } } ?: return false
+
+        if (index < 0) return false
+
+        val playerToLeap = leapTeammates.getOrNull(index) ?: return false
+        if (playerToLeap == EMPTY) return false
+        if (playerToLeap.isDead) {
+            modMessage("This player is dead, can't leap.")
+            return true
+        }
+        leapTo(playerToLeap.name, chest)
+        return true
     }
 
     fun AbstractContainerScreen<*>.mouseTrigger(player: DungeonPlayer, quadrant: Int) {

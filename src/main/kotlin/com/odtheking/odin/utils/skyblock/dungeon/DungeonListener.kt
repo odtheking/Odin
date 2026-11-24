@@ -114,7 +114,7 @@ object DungeonListener {
             deathRegex.find(message)?.let { match ->
                 dungeonTeammates.find { teammate ->
                     teammate.name == (match.groupValues[1].takeUnless { it == "You" } ?: mc.player?.name?.string)
-                }?.deaths?.inc()
+                }?.let { it.deaths++ }
             }
 
             val partyMatch = partyMessageRegex.find(message) ?: return@on
@@ -144,7 +144,7 @@ object DungeonListener {
         }
 
         on<EntityEvent.Add> {
-            if (entity.type == EntityTypes.PLAYER && entity.uuid.version() != 4 && DungeonUtils.inDungeons)
+            if (entity.type == EntityTypes.PLAYER && entity.uuid.version() == 4 && DungeonUtils.inDungeons)
                 DungeonUtils.dungeonTeammates.find { it.entity == null && it.name == entity.name.string }?.entity = entity as? Player
         }
     }

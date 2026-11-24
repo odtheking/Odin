@@ -6,7 +6,6 @@ import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.events.RenderExtractEvent
 import com.odtheking.odin.features.impl.dungeon.dungeonwaypoints.DungeonWaypoints
 import com.odtheking.odin.utils.Color
-import com.odtheking.odin.utils.Color.Companion.multiplyAlpha
 import com.odtheking.odin.utils.addVec
 import com.odtheking.odin.utils.center
 import net.fabricmc.fabric.api.client.rendering.v1.SubmitRenderPhases
@@ -23,39 +22,40 @@ import net.minecraft.resources.Identifier
 import net.minecraft.util.LightCoordsUtil
 import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.Vec3
-import org.joml.Vector3f
 import org.joml.unaryMinus
 import kotlin.math.cos
 import kotlin.math.max
 import kotlin.math.sin
 
-private fun Int.isFullyOpaque(): Boolean = ((this ushr 24) and 0xFF) == 0xFF
+private fun Int.isFullyOpaque(): Boolean = (this ushr 24) == 0xFF
 
-private fun resolveLineRenderType(depth: Boolean, fullyOpaque: Boolean) = when {
+private fun lineRenderType(depth: Boolean, fullyOpaque: Boolean) = when {
     depth && fullyOpaque -> RenderTypes.LINES
     depth -> CustomRenderType.LINES_TRANSLUCENT_DEPTH
     fullyOpaque -> CustomRenderType.LINES_ESP
     else -> CustomRenderType.LINES_TRANSLUCENT_ESP
 }
 
-private fun resolveQuadRenderType(depth: Boolean, fullyOpaque: Boolean) = when {
+private fun quadRenderType(depth: Boolean, fullyOpaque: Boolean) = when {
     depth && fullyOpaque -> CustomRenderType.QUADS_OPAQUE
     depth -> CustomRenderType.QUADS_TRANSLUCENT
     fullyOpaque -> CustomRenderType.QUADS_ESP
     else -> CustomRenderType.QUADS_TRANSLUCENT_ESP
 }
 
-private fun RenderExtractEvent.submitGeometry(poseStack: PoseStack, renderType: RenderType, depth: Boolean, renderer: SubmitNodeCollector.CustomGeometryRenderer) {
+private fun cameraPosition(): Vec3 = mc.gameRenderer.mainCamera().position()
+
+private fun RenderExtractEvent.submitGeometry(renderType: RenderType, depth: Boolean, renderer: SubmitNodeCollector.CustomGeometryRenderer) {
+    val poseStack = context.poseStack()
     val collector = context.submitNodeCollector()
     if (depth) return collector.submitCustomGeometry(poseStack, renderType, renderer)
     collector.submitCustom(SubmitRenderPhases.SEE_THROUGH_NAME_TAGS, NoDepthSubmit(poseStack.last().copy(), renderType, renderer))
 }
 
-private fun RenderExtractEvent.cameraRelativePose(offset: Vec3 = Vec3.ZERO): PoseStack {
-    val camera = mc.gameRenderer.mainCamera().position()
+private fun RenderExtractEvent.cameraRelativePose(offset: Vec3 = Vec3.ZERO, cameraPos: Vec3): PoseStack {
     val poseStack = context.poseStack()
     poseStack.pushPose()
-    poseStack.translate(offset.x - camera.x, offset.y - camera.y, offset.z - camera.z)
+    poseStack.translate(offset.x - cameraPos.x, offset.y - cameraPos.y, offset.z - cameraPos.z)
     return poseStack
 }
 
@@ -73,7 +73,7 @@ fun RenderExtractEvent.drawTexturedQuad(
     val hw = width * 0.5
     val hh = height * 0.5
 
-    val poseStack = cameraRelativePose()
+    val poseStack = cameraRelativePose(cameraPos = cameraPosition())
     context.submitNodeCollector().submitCustomGeometry(poseStack, RenderTypes.entityCutoutZOffset(texture)) { pose, buffer ->
         fun vertex(p: Vec3, u: Float, v: Float) {
             buffer.addVertex(pose, p.x.toFloat(), p.y.toFloat(), p.z.toFloat())
@@ -106,45 +106,86 @@ fun RenderExtractEvent.drawLine(points: Collection<Vec3>, color1: Color, color2:
 
     val rgba1 = color1.rgba
     val rgba2 = color2.rgba
-    val renderType = resolveLineRenderType(depth, rgba1.isFullyOpaque() && rgba2.isFullyOpaque())
-    val segments = points.zipWithNext()
+    val camera = cameraPosition()
+    val coords = FloatArray(points.size * 3)
+    var i = 0
+    for (point in points) {
+        coords[i++] = (point.x - camera.x).toFloat()
+        coords[i++] = (point.y - camera.y).toFloat()
+        coords[i++] = (point.z - camera.z).toFloat()
+    }
 
-    val poseStack = cameraRelativePose()
-    submitGeometry(poseStack, renderType, depth) { pose, buffer ->
-        for ((from, to) in segments) {
-            PrimitiveRenderer.renderVector(
-                pose, buffer,
-                Vector3f(from.x.toFloat(), from.y.toFloat(), from.z.toFloat()),
-                to.subtract(from), rgba1, rgba2, thickness
-            )
+    submitGeometry(lineRenderType(depth, rgba1.isFullyOpaque() && rgba2.isFullyOpaque()), depth) { pose, buffer ->
+        for (o in 0 until coords.size - 3 step 3) {
+            line(pose, buffer, coords[o], coords[o + 1], coords[o + 2], coords[o + 3], coords[o + 4], coords[o + 5], rgba1, rgba2, thickness)
         }
     }
-    poseStack.popPose()
 }
 
 fun RenderExtractEvent.drawWireFrameBox(aabb: AABB, color: Color, thickness: Float = 3f, depth: Boolean = false) {
-    val renderType = resolveLineRenderType(depth, color.alphaFloat >= 0.999f)
-
-    val poseStack = cameraRelativePose()
-    submitGeometry(poseStack, renderType, depth) { pose, buffer ->
-        PrimitiveRenderer.renderLineBox(pose, buffer, aabb, color.redFloat, color.greenFloat, color.blueFloat, color.alphaFloat, thickness)
-    }
-    poseStack.popPose()
+    wireBox(aabb.minX, aabb.minY, aabb.minZ, aabb.maxX, aabb.maxY, aabb.maxZ, color.rgba, thickness, depth)
 }
 
 fun RenderExtractEvent.drawFilledBox(aabb: AABB, color: Color, depth: Boolean = false) {
-    val renderType = resolveQuadRenderType(depth, color.alphaFloat >= 0.999f)
+    filledBox(aabb.minX, aabb.minY, aabb.minZ, aabb.maxX, aabb.maxY, aabb.maxZ, color.rgba, depth)
+}
 
-    val poseStack = cameraRelativePose()
-    submitGeometry(poseStack, renderType, depth) { pose, buffer ->
-        PrimitiveRenderer.addChainedFilledBoxVertices(
-            pose, buffer,
-            aabb.minX.toFloat(), aabb.minY.toFloat(), aabb.minZ.toFloat(),
-            aabb.maxX.toFloat(), aabb.maxY.toFloat(), aabb.maxZ.toFloat(),
-            color.redFloat, color.greenFloat, color.blueFloat, color.alphaFloat
-        )
+fun RenderExtractEvent.drawFilledOutlineBox(aabb: AABB, color: Color, thickness: Float = 3f, depth: Boolean = true) {
+    val rgba = color.rgba
+    val fillRgba = (rgba and 0xFFFFFF) or ((rgba ushr 25) shl 24)
+    val camera = cameraPosition()
+    val x0 = (aabb.minX - camera.x).toFloat()
+    val y0 = (aabb.minY - camera.y).toFloat()
+    val z0 = (aabb.minZ - camera.z).toFloat()
+    val x1 = (aabb.maxX - camera.x).toFloat()
+    val y1 = (aabb.maxY - camera.y).toFloat()
+    val z1 = (aabb.maxZ - camera.z).toFloat()
+    val e = FILL_INFLATE
+
+    submitGeometry(quadRenderType(depth, fillRgba.isFullyOpaque()), depth) { pose, buffer ->
+        quadBox(pose, buffer, x0 - e, y0 - e, z0 - e, x1 + e, y1 + e, z1 + e, fillRgba)
     }
-    poseStack.popPose()
+    submitGeometry(lineRenderType(depth, rgba.isFullyOpaque()), depth) { pose, buffer ->
+        lineBox(pose, buffer, x0, y0, z0, x1, y1, z1, rgba, thickness)
+    }
+}
+
+private const val FILL_INFLATE = 0.00005f
+
+private fun RenderExtractEvent.wireBox(
+    minX: Double, minY: Double, minZ: Double,
+    maxX: Double, maxY: Double, maxZ: Double,
+    rgba: Int, thickness: Float, depth: Boolean
+) {
+    val camera = cameraPosition()
+    val x0 = (minX - camera.x).toFloat()
+    val y0 = (minY - camera.y).toFloat()
+    val z0 = (minZ - camera.z).toFloat()
+    val x1 = (maxX - camera.x).toFloat()
+    val y1 = (maxY - camera.y).toFloat()
+    val z1 = (maxZ - camera.z).toFloat()
+
+    submitGeometry(lineRenderType(depth, rgba.isFullyOpaque()), depth) { pose, buffer ->
+        lineBox(pose, buffer, x0, y0, z0, x1, y1, z1, rgba, thickness)
+    }
+}
+
+private fun RenderExtractEvent.filledBox(
+    minX: Double, minY: Double, minZ: Double,
+    maxX: Double, maxY: Double, maxZ: Double,
+    rgba: Int, depth: Boolean
+) {
+    val camera = cameraPosition()
+    val x0 = (minX - camera.x).toFloat()
+    val y0 = (minY - camera.y).toFloat()
+    val z0 = (minZ - camera.z).toFloat()
+    val x1 = (maxX - camera.x).toFloat()
+    val y1 = (maxY - camera.y).toFloat()
+    val z1 = (maxZ - camera.z).toFloat()
+
+    submitGeometry(quadRenderType(depth, rgba.isFullyOpaque()), depth) { pose, buffer ->
+        quadBox(pose, buffer, x0, y0, z0, x1, y1, z1, rgba)
+    }
 }
 
 enum class BoxStyle { FILLED, OUTLINE, FILLED_OUTLINE }
@@ -158,10 +199,7 @@ fun RenderExtractEvent.drawStyledBox(
     when (style) {
         BoxStyle.FILLED -> drawFilledBox(aabb, color, depth = depth)
         BoxStyle.OUTLINE -> drawWireFrameBox(aabb, color, depth = depth)
-        BoxStyle.FILLED_OUTLINE -> {
-            drawFilledBox(aabb.inflate(0.00005), color.multiplyAlpha(0.5f), depth = depth)
-            drawWireFrameBox(aabb, color, depth = depth)
-        }
+        BoxStyle.FILLED_OUTLINE -> drawFilledOutlineBox(aabb, color, depth = depth)
     }
 }
 
@@ -170,7 +208,7 @@ fun RenderExtractEvent.drawBeaconBeam(position: BlockPos, color: Color) {
     val animationTime = (mc.level?.gameTime ?: 0L).mod(40L) +  mc.deltaTracker.getGameTimeDeltaPartialTick(false)
     val scale = if (mc.player?.isScoping == true) 1f else max(1f, camera.subtract(Vec3.atCenterOf(position)).horizontalDistance().toFloat() / 96f)
 
-    val poseStack = cameraRelativePose(Vec3.atLowerCornerOf(position))
+    val poseStack = cameraRelativePose(Vec3.atLowerCornerOf(position), camera)
     BeaconRenderer.submitBeaconBeam(
         poseStack, context.submitNodeCollector(), BeaconRenderer.BEAM_LOCATION, 1f,
         animationTime, 0, BeaconRenderer.MAX_RENDER_Y, color.rgba,
@@ -220,177 +258,118 @@ fun RenderExtractEvent.drawCylinder(
     depth: Boolean = false
 ) {
     val rgba = color.rgba
-    val renderType = resolveLineRenderType(depth, rgba.isFullyOpaque())
+    val camera = cameraPosition()
+    val cx = (center.x - camera.x).toFloat()
+    val cz = (center.z - camera.z).toFloat()
+    val bottom = (center.y - camera.y).toFloat()
+    val top = bottom + height
     val angleStep = 2.0 * Math.PI / segments
 
-    val poseStack = cameraRelativePose()
-    submitGeometry(poseStack, renderType, depth) { pose, buffer ->
-        fun segment(from: Vec3, to: Vec3) {
-            PrimitiveRenderer.renderVector(
-                pose, buffer,
-                Vector3f(from.x.toFloat(), from.y.toFloat(), from.z.toFloat()),
-                to.subtract(from), rgba, rgba, thickness
-            )
-        }
+    submitGeometry(lineRenderType(depth, rgba.isFullyOpaque()), depth) { pose, buffer ->
+        var x1 = cx + radius
+        var z1 = cz
+        for (i in 1..segments) {
+            val angle = i * angleStep
+            val x2 = cx + (radius * cos(angle)).toFloat()
+            val z2 = cz + (radius * sin(angle)).toFloat()
 
-        for (i in 0 until segments) {
-            val angle1 = i * angleStep
-            val angle2 = (i + 1) * angleStep
+            line(pose, buffer, x1, top, z1, x2, top, z2, rgba, rgba, thickness)
+            line(pose, buffer, x1, bottom, z1, x2, bottom, z2, rgba, rgba, thickness)
+            line(pose, buffer, x1, bottom, z1, x1, top, z1, rgba, rgba, thickness)
 
-            val x1 = (radius * cos(angle1)).toFloat()
-            val z1 = (radius * sin(angle1)).toFloat()
-            val x2 = (radius * cos(angle2)).toFloat()
-            val z2 = (radius * sin(angle2)).toFloat()
-
-            val p1Top = center.add(x1.toDouble(), height.toDouble(), z1.toDouble())
-            val p2Top = center.add(x2.toDouble(), height.toDouble(), z2.toDouble())
-            val p1Bottom = center.add(x1.toDouble(), 0.0, z1.toDouble())
-            val p2Bottom = center.add(x2.toDouble(), 0.0, z2.toDouble())
-
-            segment(p1Top, p2Top)
-            segment(p1Bottom, p2Bottom)
-            segment(p1Bottom, p1Top)
+            x1 = x2
+            z1 = z2
         }
     }
-    poseStack.popPose()
 }
 
 fun RenderExtractEvent.drawBoxes(waypoints: Collection<DungeonWaypoints.DungeonWaypoint>, disableDepth: Boolean) {
     if (waypoints.isEmpty()) return
 
-    for ((blockPos, color, filled, depth1, aabb1, _, _, isClicked) in waypoints) {
+    for ((blockPos, color, filled, depth1, aabb, _, _, isClicked) in waypoints) {
         if (isClicked || color.isTransparent) continue
 
-        val aabb = aabb1.move(blockPos)
         val depth = depth1 && !disableDepth
+        val x = blockPos.x.toDouble()
+        val y = blockPos.y.toDouble()
+        val z = blockPos.z.toDouble()
 
-        if (filled) drawFilledBox(aabb, color, depth = depth)
-        else drawWireFrameBox(aabb, color, depth = depth)
+        if (filled) filledBox(aabb.minX + x, aabb.minY + y, aabb.minZ + z, aabb.maxX + x, aabb.maxY + y, aabb.maxZ + z, color.rgba, depth)
+        else wireBox(aabb.minX + x, aabb.minY + y, aabb.minZ + z, aabb.maxX + x, aabb.maxY + y, aabb.maxZ + z, color.rgba, 3f, depth)
     }
 }
 
-object PrimitiveRenderer {
+private fun lineBox(
+    pose: PoseStack.Pose, buffer: VertexConsumer,
+    x0: Float, y0: Float, z0: Float,
+    x1: Float, y1: Float, z1: Float,
+    rgba: Int, width: Float
+) {
+    // bottom
+    line(pose, buffer, x0, y0, z0, x1, y0, z0, rgba, rgba, width)
+    line(pose, buffer, x1, y0, z0, x1, y0, z1, rgba, rgba, width)
+    line(pose, buffer, x1, y0, z1, x0, y0, z1, rgba, rgba, width)
+    line(pose, buffer, x0, y0, z1, x0, y0, z0, rgba, rgba, width)
+    // top
+    line(pose, buffer, x0, y1, z0, x1, y1, z0, rgba, rgba, width)
+    line(pose, buffer, x1, y1, z0, x1, y1, z1, rgba, rgba, width)
+    line(pose, buffer, x1, y1, z1, x0, y1, z1, rgba, rgba, width)
+    line(pose, buffer, x0, y1, z1, x0, y1, z0, rgba, rgba, width)
+    // verticals
+    line(pose, buffer, x0, y0, z0, x0, y1, z0, rgba, rgba, width)
+    line(pose, buffer, x1, y0, z0, x1, y1, z0, rgba, rgba, width)
+    line(pose, buffer, x1, y0, z1, x1, y1, z1, rgba, rgba, width)
+    line(pose, buffer, x0, y0, z1, x0, y1, z1, rgba, rgba, width)
+}
 
-    private val edges = intArrayOf(
-        0, 1,  1, 5,  5, 4,  4, 0,
-        3, 2,  2, 6,  6, 7,  7, 3,
-        0, 3,  1, 2,  5, 6,  4, 7
-    )
+private fun quadBox(
+    pose: PoseStack.Pose, buffer: VertexConsumer,
+    x0: Float, y0: Float, z0: Float,
+    x1: Float, y1: Float, z1: Float,
+    rgba: Int
+) {
+    val m = pose.pose()
 
-    fun renderLineBox(
-        pose: PoseStack.Pose,
-        buffer: VertexConsumer,
-        aabb: AABB,
-        r: Float, g: Float, b: Float, a: Float,
-        thickness: Float
-    ) {
-        val x0 = aabb.minX.toFloat()
-        val y0 = aabb.minY.toFloat()
-        val z0 = aabb.minZ.toFloat()
-        val x1 = aabb.maxX.toFloat()
-        val y1 = aabb.maxY.toFloat()
-        val z1 = aabb.maxZ.toFloat()
+    buffer.addVertex(m, x0, y0, z0).setColor(rgba)
+    buffer.addVertex(m, x0, y0, z1).setColor(rgba)
+    buffer.addVertex(m, x0, y1, z1).setColor(rgba)
+    buffer.addVertex(m, x0, y1, z0).setColor(rgba)
 
-        val corners = floatArrayOf(
-            x0, y0, z0,
-            x1, y0, z0,
-            x1, y1, z0,
-            x0, y1, z0,
-            x0, y0, z1,
-            x1, y0, z1,
-            x1, y1, z1,
-            x0, y1, z1
-        )
+    buffer.addVertex(m, x1, y0, z1).setColor(rgba)
+    buffer.addVertex(m, x1, y0, z0).setColor(rgba)
+    buffer.addVertex(m, x1, y1, z0).setColor(rgba)
+    buffer.addVertex(m, x1, y1, z1).setColor(rgba)
 
-        for (i in edges.indices step 2) {
-            val i0 = edges[i] * 3
-            val i1 = edges[i + 1] * 3
+    buffer.addVertex(m, x0, y0, z0).setColor(rgba)
+    buffer.addVertex(m, x0, y1, z0).setColor(rgba)
+    buffer.addVertex(m, x1, y1, z0).setColor(rgba)
+    buffer.addVertex(m, x1, y0, z0).setColor(rgba)
 
-            val x0 = corners[i0]
-            val y0 = corners[i0 + 1]
-            val z0 = corners[i0 + 2]
-            val x1 = corners[i1]
-            val y1 = corners[i1 + 1]
-            val z1 = corners[i1 + 2]
+    buffer.addVertex(m, x1, y0, z1).setColor(rgba)
+    buffer.addVertex(m, x1, y1, z1).setColor(rgba)
+    buffer.addVertex(m, x0, y1, z1).setColor(rgba)
+    buffer.addVertex(m, x0, y0, z1).setColor(rgba)
 
-            val dx = x1 - x0
-            val dy = y1 - y0
-            val dz = z1 - z0
+    buffer.addVertex(m, x0, y0, z0).setColor(rgba)
+    buffer.addVertex(m, x1, y0, z0).setColor(rgba)
+    buffer.addVertex(m, x1, y0, z1).setColor(rgba)
+    buffer.addVertex(m, x0, y0, z1).setColor(rgba)
 
-            buffer.addVertex(pose, x0, y0, z0).setColor(r, g, b, a).setNormal(pose, dx, dy, dz).setLineWidth(thickness)
-            buffer.addVertex(pose, x1, y1, z1).setColor(r, g, b, a).setNormal(pose, dx, dy, dz).setLineWidth(thickness)
-        }
-    }
+    buffer.addVertex(m, x0, y1, z1).setColor(rgba)
+    buffer.addVertex(m, x1, y1, z1).setColor(rgba)
+    buffer.addVertex(m, x1, y1, z0).setColor(rgba)
+    buffer.addVertex(m, x0, y1, z0).setColor(rgba)
+}
 
-    fun addChainedFilledBoxVertices(
-        pose: PoseStack.Pose,
-        buffer: VertexConsumer,
-        minX: Float, minY: Float, minZ: Float,
-        maxX: Float, maxY: Float, maxZ: Float,
-        r: Float, g: Float, b: Float, a: Float
-    ) {
-        val matrix = pose.pose()
-
-        fun vertex(x: Float, y: Float, z: Float) {
-            buffer.addVertex(matrix, x, y, z).setColor(r, g, b, a)
-        }
-
-        vertex(minX, minY, minZ)
-        vertex(minX, minY, maxZ)
-        vertex(minX, maxY, maxZ)
-        vertex(minX, maxY, minZ)
-
-        vertex(maxX, minY, maxZ)
-        vertex(maxX, minY, minZ)
-        vertex(maxX, maxY, minZ)
-        vertex(maxX, maxY, maxZ)
-
-        vertex(minX, minY, minZ)
-        vertex(minX, maxY, minZ)
-        vertex(maxX, maxY, minZ)
-        vertex(maxX, minY, minZ)
-
-        vertex(maxX, minY, maxZ)
-        vertex(maxX, maxY, maxZ)
-        vertex(minX, maxY, maxZ)
-        vertex(minX, minY, maxZ)
-
-        vertex(minX, minY, minZ)
-        vertex(maxX, minY, minZ)
-        vertex(maxX, minY, maxZ)
-        vertex(minX, minY, maxZ)
-
-        vertex(minX, maxY, maxZ)
-        vertex(maxX, maxY, maxZ)
-        vertex(maxX, maxY, minZ)
-        vertex(minX, maxY, minZ)
-    }
-
-    fun renderVector(
-        pose: PoseStack.Pose,
-        buffer: VertexConsumer,
-        start: Vector3f,
-        direction: Vec3,
-        startColor: Int,
-        endColor: Int,
-        thickness: Float
-    ) {
-        val endX = start.x() + direction.x.toFloat()
-        val endY = start.y() + direction.y.toFloat()
-        val endZ = start.z() + direction.z.toFloat()
-
-        val nx = direction.x.toFloat()
-        val ny = direction.y.toFloat()
-        val nz = direction.z.toFloat()
-
-        buffer.addVertex(pose, start.x(), start.y(), start.z())
-            .setColor(startColor)
-            .setNormal(pose, nx, ny, nz)
-            .setLineWidth(thickness)
-
-        buffer.addVertex(pose, endX, endY, endZ)
-            .setColor(endColor)
-            .setNormal(pose, nx, ny, nz)
-            .setLineWidth(thickness)
-    }
+private fun line(
+    pose: PoseStack.Pose, buffer: VertexConsumer,
+    x0: Float, y0: Float, z0: Float,
+    x1: Float, y1: Float, z1: Float,
+    rgba0: Int, rgba1: Int, width: Float
+) {
+    val dx = x1 - x0
+    val dy = y1 - y0
+    val dz = z1 - z0
+    buffer.addVertex(pose, x0, y0, z0).setColor(rgba0).setNormal(pose, dx, dy, dz).setLineWidth(width)
+    buffer.addVertex(pose, x1, y1, z1).setColor(rgba1).setNormal(pose, dx, dy, dz).setLineWidth(width)
 }

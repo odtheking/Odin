@@ -4,10 +4,15 @@ import androidx.compose.runtime.*
 import com.odtheking.odin.clickgui.GuiTheme
 import com.odtheking.odin.clickgui.blend
 import com.odtheking.odin.clickgui.settings.RenderableSetting
+import com.odtheking.odin.clickgui.ui.components.textCentered
+import com.odtheking.odin.clickgui.ui.components.tooltip
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Color.Companion.brighter
 import com.odtheking.odin.utils.Color.Companion.darker
-import com.odtheking.odin.utils.ui.compose.*
+import com.odtheking.odin.utils.ui.compose.Box
+import com.odtheking.odin.utils.ui.compose.clickable
+import com.odtheking.odin.utils.ui.compose.drawBehind
+import com.odtheking.odin.utils.ui.compose.size
 
 @Composable
 fun ModuleView(module: Module, search: () -> String) {
@@ -24,12 +29,11 @@ fun ModuleView(module: Module, search: () -> String) {
 
 @Composable
 private fun ModuleHeader(module: Module, onExpand: () -> Unit) {
-    val interaction = remember { InteractionSource() }
     val toggled = animateProgress(module.enabled)
-    val hover = animateProgress { interaction.hovered }
+    val hover = rememberHover()
 
     Box().size(GuiTheme.ROW_WIDTH, GuiTheme.ROW_HEIGHT)
-        .hoverable(interaction)
+        .hoverable(hover)
         .tooltip(module.description)
         .clickable(onRightClick = onExpand) { module.toggle() }
         .drawBehind { graphics ->

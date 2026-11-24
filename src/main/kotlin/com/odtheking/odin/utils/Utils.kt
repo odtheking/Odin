@@ -19,6 +19,8 @@ import net.minecraft.world.inventory.ContainerInput
 import net.minecraft.world.phys.AABB
 import net.minecraft.world.phys.Vec3
 import java.util.*
+import kotlin.math.abs
+import kotlin.math.floor
 
 inline val String?.noControlCodes: String
     get() {
@@ -111,8 +113,29 @@ fun String.capitalizeWords(): String = split(" ").joinToString(" ") { word ->
     word.replaceFirstChar(Char::titlecase)
 }
 
-fun Number.toFixed(decimals: Int = 2): String =
-    "%.${decimals}f".format(Locale.US, this)
+private val POW10 = LongArray(10) { var p = 1L; repeat(it) { p *= 10 }; p }
+
+fun Number.toFixed(decimals: Int = 2): String {
+    if ((this is Float || this is Double) && decimals in 0..9) {
+        val value = toDouble()
+        val scaled = value * POW10[decimals]
+        if (java.lang.Double.doubleToRawLongBits(value) >= 0L && scaled < 1e9) {
+            val floor = floor(scaled)
+            val frac = scaled - floor
+            if (abs(frac - 0.5) > 1e-6) {
+                val n = (if (frac > 0.5) floor + 1 else floor).toLong()
+                if (decimals == 0) return n.toString()
+                val fraction = (n % POW10[decimals]).toString()
+                return buildString(12) {
+                    append(n / POW10[decimals]).append('.')
+                    repeat(decimals - fraction.length) { append('0') }
+                    append(fraction)
+                }
+            }
+        }
+    }
+    return "%.${decimals}f".format(Locale.US, this)
+}
 
 fun formatTime(time: Long, decimalPlaces: Int = 2): String {
     if (time == 0L) return "0s"

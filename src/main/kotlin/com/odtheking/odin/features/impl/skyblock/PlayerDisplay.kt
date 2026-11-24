@@ -8,6 +8,7 @@ import com.odtheking.odin.events.MessageEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Colors
+import com.odtheking.odin.utils.render.text
 import com.odtheking.odin.utils.render.textDim
 import com.odtheking.odin.utils.skyblock.ActionBarListener
 import com.odtheking.odin.utils.skyblock.LocationUtils
@@ -42,88 +43,54 @@ object PlayerDisplay : Module(
 
     private val showIcons by BooleanSetting("Show Icons", true, desc = "Shows icons indicating what the number means.")
 
-    private val healthHud by HUD("Health HUD", "Displays the player's health.") { example ->
-        val text = when {
-            example -> 3000 to 4000
-            !LocationUtils.isInSkyblock -> return@HUD 0 to 0
-            ActionBarListener.currentHealth != 0 && ActionBarListener.maxHealth != 0 -> ActionBarListener.currentHealth to ActionBarListener.maxHealth
-            else -> return@HUD 0 to 0
-        }
-        return@HUD textDim(generateText(text.first, text.second, "❤"), 0, 0, healthColor)
-    }
+    // Colors are settings, so these use HUD (read every frame) rather than TextHUD (fixed color).
     private val healthColor by ColorSetting("Health Color", Colors.MINECRAFT_RED, true, "The color of the health text.")
-
-    private val manaHud by HUD("Mana HUD", "Displays the player's mana.") { example ->
-        val text = when {
-            example -> generateText(2000, 20000, "✎") + (if (!separateOverflow) " ${generateText(ActionBarListener.overflowMana, "ʬ", hideZeroSF)}" else "")
-
-            !LocationUtils.isInSkyblock -> return@HUD 0 to 0
-            ActionBarListener.maxMana != 0 -> when {
-                ActionBarListener.currentMana == 0 && separateOverflow -> return@HUD 0 to 0
-                else -> generateText(ActionBarListener.currentMana, ActionBarListener.maxMana, "✎") +
-                        (if (!separateOverflow && overflowManaHud.enabled) " ${generateText(ActionBarListener.overflowMana, "ʬ", hideZeroSF)}" else "")
-            }
-
-            else -> return@HUD 0 to 0
-        }
-        return@HUD textDim(text, 0, 0, manaColor)
+    private val healthHud by HUD("Health HUD", "Displays the player's health.", example = { textDim(generateText(3000, 4000, "❤"), 0, 0, healthColor) }) {
+        if (LocationUtils.isInSkyblock && ActionBarListener.currentHealth != 0 && ActionBarListener.maxHealth != 0)
+            text(generateText(ActionBarListener.currentHealth, ActionBarListener.maxHealth, "❤"), 0, 0, healthColor)
     }
+
     private val manaColor by ColorSetting("Mana Color", Colors.MINECRAFT_AQUA, true, "The color of the mana text.")
-
-    private val overflowManaHud by HUD("Overflow Mana HUD", "Displays the player's overflow mana.") { example ->
-        val text = when {
-            example -> 333
-            !LocationUtils.isInSkyblock -> return@HUD 0 to 0
-            separateOverflow -> ActionBarListener.overflowMana
-            else -> return@HUD 0 to 0
-        }
-        return@HUD textDim(generateText(text, "ʬ", hideZeroSF), 0, 0, overflowManaColor)
+    private val manaHud by HUD("Mana HUD", "Displays the player's mana.", example = {
+        textDim(generateText(2000, 20000, "✎") + (if (!separateOverflow) " ${generateText(ActionBarListener.overflowMana, "ʬ", hideZeroSF)}" else ""), 0, 0, manaColor)
+    }) {
+        if (!LocationUtils.isInSkyblock || ActionBarListener.maxMana == 0 || (ActionBarListener.currentMana == 0 && separateOverflow)) return@HUD
+        text(
+            generateText(ActionBarListener.currentMana, ActionBarListener.maxMana, "✎") +
+                (if (!separateOverflow && overflowManaHud.enabled) " ${generateText(ActionBarListener.overflowMana, "ʬ", hideZeroSF)}" else ""),
+            0, 0, manaColor
+        )
     }
+
     private val overflowManaColor by ColorSetting("Overflow Mana Color", Colors.MINECRAFT_DARK_AQUA, true, desc = "The color of the overflow mana text.")
-
-    private val defenseHud by HUD("Defense HUD", "Displays the player's defense.") { example ->
-        val text = when {
-            example -> 1000
-            !LocationUtils.isInSkyblock -> return@HUD 0 to 0
-            ActionBarListener.currentDefense != 0 -> ActionBarListener.currentDefense
-            else -> return@HUD 0 to 0
-        }
-        return@HUD textDim(generateText(text, "❈", true), 0, 0, defenseColor)
+    private val overflowManaHud by HUD("Overflow Mana HUD", "Displays the player's overflow mana.", example = { textDim(generateText(333, "ʬ", hideZeroSF), 0, 0, overflowManaColor) }) {
+        if (LocationUtils.isInSkyblock && separateOverflow)
+            text(generateText(ActionBarListener.overflowMana, "ʬ", hideZeroSF), 0, 0, overflowManaColor)
     }
+
     private val defenseColor by ColorSetting("Defense Color", Colors.MINECRAFT_GREEN, true, desc = "The color of the defense text.")
-
-    private val vitalityHud by HUD("Vitality HUD", "Displays the player's vitality.") { example ->
-        val text = when {
-            example -> 100 to 100
-            !LocationUtils.isInSkyblock -> return@HUD 0 to 0
-            ActionBarListener.isVitalityShown && ActionBarListener.maxVitality != 0 -> ActionBarListener.currentVitality to ActionBarListener.maxVitality
-            else -> return@HUD 0 to 0
-        }
-        return@HUD textDim(generateText(text.first, text.second, "♨"), 0, 0, vitalityColor)
+    private val defenseHud by HUD("Defense HUD", "Displays the player's defense.", example = { textDim(generateText(1000, "❈", true), 0, 0, defenseColor) }) {
+        if (LocationUtils.isInSkyblock && ActionBarListener.currentDefense != 0)
+            text(generateText(ActionBarListener.currentDefense, "❈", true), 0, 0, defenseColor)
     }
+
     private val vitalityColor by ColorSetting("Vitality Color", Colors.MINECRAFT_DARK_RED, true, "The color of the vitality text.")
-
-    private val ehpHud by HUD("EHP HUD", "Displays the player's effective health (EHP).") { example ->
-        val text = when {
-            example -> 1000000
-            !LocationUtils.isInSkyblock -> return@HUD 0 to 0
-            ActionBarListener.effectiveHP != 0 -> ActionBarListener.effectiveHP
-            else -> return@HUD 0 to 0
-        }
-        return@HUD textDim(generateText(text, "", true), 0, 0, ehpColor)
+    private val vitalityHud by HUD("Vitality HUD", "Displays the player's vitality.", example = { textDim(generateText(100, 100, "♨"), 0, 0, vitalityColor) }) {
+        if (LocationUtils.isInSkyblock && ActionBarListener.isVitalityShown && ActionBarListener.maxVitality != 0)
+            text(generateText(ActionBarListener.currentVitality, ActionBarListener.maxVitality, "♨"), 0, 0, vitalityColor)
     }
+
     private val ehpColor by ColorSetting("EHP color", Colors.MINECRAFT_DARK_GREEN, true, "The color of the effective health text.")
-
-    private val speedHud by HUD("Speed HUD", "Displays the player's speed buff.") { example ->
-        val text = when {
-            example -> 100
-            !LocationUtils.isInSkyblock -> return@HUD 0 to 0
-            ActionBarListener.currentSpeed != 0 -> ActionBarListener.currentSpeed
-            else -> return@HUD 0 to 0
-        }
-        return@HUD textDim(generateText(text, "✦", true), 0, 0, speedColor)
+    private val ehpHud by HUD("EHP HUD", "Displays the player's effective health (EHP).", example = { textDim(generateText(1000000, "", true), 0, 0, ehpColor) }) {
+        if (LocationUtils.isInSkyblock && ActionBarListener.effectiveHP != 0)
+            text(generateText(ActionBarListener.effectiveHP, "", true), 0, 0, ehpColor)
     }
+
     private val speedColor by ColorSetting("Speed color", Colors.WHITE, true, "The color of the speed text.")
+    private val speedHud by HUD("Speed HUD", "Displays the player's speed buff.", example = { textDim(generateText(100, "✦", true), 0, 0, speedColor) }) {
+        if (LocationUtils.isInSkyblock && ActionBarListener.currentSpeed != 0)
+            text(generateText(ActionBarListener.currentSpeed, "✦", true), 0, 0, speedColor)
+    }
 
     private val HEALTH_REGEX = Regex("[\\d|,]+/[\\d|,]+\\uE010")
     private val MANA_REGEX = Regex("[\\d|,]+/[\\d|,]+\\uE003( Mana)?")

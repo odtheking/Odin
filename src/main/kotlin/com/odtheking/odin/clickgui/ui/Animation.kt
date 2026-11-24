@@ -30,6 +30,22 @@ fun animateProgress(durationMillis: Int = 150, easing: Easing = Easing.LINEAR, t
     }
 }
 
+class Hover(val source: InteractionSource, private val progress: Animatable) {
+    val hovered: Boolean get() = source.hovered
+    val value: Float get() = progress.value
+}
+
+@Composable
+fun rememberHover(durationMillis: Int = 150, hovered: (() -> Boolean)? = null): Hover {
+    val source = remember { InteractionSource() }
+    val progress = animateProgress(durationMillis) { hovered?.invoke() ?: source.hovered }
+    return remember(progress) { Hover(source, progress) }
+}
+
+fun UiNode.hoverable(hover: Hover) = hoverable(hover.source)
+
+fun UiNode.shrinkOnHover(hover: Hover) = scale { 1f - 0.06f * hover.value }
+
 @Composable
 fun AnimatedVisibility(
     visible: Boolean,
