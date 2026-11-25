@@ -1,9 +1,9 @@
 package com.odtheking.odin.features.impl.boss
 
-import com.odtheking.odin.features.impl.boss.WitherDragons.currentTick
 import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.Colors
 import com.odtheking.odin.utils.alert
+import com.odtheking.odin.utils.handlers.ServerTick
 import com.odtheking.odin.utils.modMessage
 import net.minecraft.core.BlockPos
 import net.minecraft.core.particles.ParticleTypes
@@ -19,7 +19,7 @@ enum class WitherDragonsEnum(
     val color: Color,
     val xRange: ClosedFloatingPointRange<Double>,
     val zRange: ClosedFloatingPointRange<Double>,
-    var timeToSpawn: Int = 100,
+    var spawnTick: Long = 0,
     var state: WitherDragonState = WitherDragonState.DEAD,
     var timesSpawned: Int = 0,
     var entityUUID: UUID? = null,
@@ -32,6 +32,8 @@ enum class WitherDragonsEnum(
     Blue(BlockPos(84, 14, 94), BlockPos(79, 23, 94), AABB(71.5, 13.0, 82.5, 96.5, 26.0, 107.5), 'b', Colors.MINECRAFT_AQUA, 82.0..88.0, 91.0..97.0),
     Purple(BlockPos(56, 14, 125), BlockPos(56, 22, 120), AABB(45.5, 13.0, 113.5, 68.5, 23.0, 136.5), '5', Colors.MINECRAFT_DARK_PURPLE, 53.0..59.0, 122.0..128.0);
 
+    val timeToSpawn: Int get() = (spawnTick - ServerTick.now).coerceAtLeast(0).toInt()
+
     fun setAlive(entityUUID: UUID?) {
         if (entityUUID != null) this.entityUUID = entityUUID
 
@@ -39,7 +41,7 @@ enum class WitherDragonsEnum(
         state = WitherDragonState.ALIVE
 
         timesSpawned++
-        spawnedTime = currentTick
+        spawnedTime = ServerTick.now
         isSprayed = false
 
         if (WitherDragons.enabled && WitherDragons.sendSpawned)
@@ -53,7 +55,7 @@ enum class WitherDragonsEnum(
         WitherDragons.spawnOrder.remove(this)
 
         if (WitherDragons.enabled && WitherDragons.sendTime &&  realTime)
-            WitherDragons.dragonPBs.time(name, (currentTick - spawnedTime) / 20f, "s§7!", "§${colorCode}${name} §7was alive for §6")
+            WitherDragons.dragonPBs.time(name, (ServerTick.now - spawnedTime) / 20f, "s§7!", "§${colorCode}${name} §7was alive for §6")
     }
 
     companion object {
@@ -68,7 +70,7 @@ enum class WitherDragonsEnum(
             }
 
             WitherDragonsEnum.entries.forEach {
-                it.timeToSpawn = 0
+                it.spawnTick = 0
                 it.timesSpawned = 0
                 it.state = WitherDragonState.DEAD
                 it.entityUUID = null
@@ -106,7 +108,7 @@ fun handleSpawnPacket(particle: ClientboundLevelParticlesPacket) {
     } ?: return
 
     dragon.state = WitherDragonState.SPAWNING
-    dragon.timeToSpawn = 100
+    dragon.spawnTick = ServerTick.now + 100
     WitherDragons.spawnOrder.add(dragon)
 
     if (WitherDragons.enabled && WitherDragons.dragonTitle) alert("§${dragon.colorCode}${dragon.name} is spawning!", true)

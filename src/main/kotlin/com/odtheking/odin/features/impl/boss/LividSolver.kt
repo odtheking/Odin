@@ -6,6 +6,7 @@ import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.Colors
+import com.odtheking.odin.utils.handlers.ServerTick
 import com.odtheking.odin.utils.modMessage
 import com.odtheking.odin.utils.render.BoxStyle
 import com.odtheking.odin.utils.render.drawStyledBox
@@ -23,10 +24,11 @@ object LividSolver : Module(
     description = "Provides a visual cue for the correct Livid's location in the boss fight."
 ) {
     private val hud by TextHUD("Invulnerability Timer", "Shows time remaining on Livid's invulnerability.", example = { invulnText(340) }) {
+        val invulnTime = (invulnEndTick - ServerTick.now)
         if (DungeonUtils.inBoss && DungeonUtils.isFloor(5) && invulnTime > 0) invulnText(invulnTime) else null
     }
 
-    private fun invulnText(time: Int): String =
+    private fun invulnText(time: Long): String =
         "§bLivid: ${when {
             time > 260 -> "§a"
             time > 130 -> "§e"
@@ -38,12 +40,12 @@ object LividSolver : Module(
     private val lividStartRegex = Regex("^\\[BOSS] Livid: Welcome, you've arrived right on time\\. I am Livid, the Master of Shadows\\.$")
     private val woolLocation = BlockPos(5, 108, 43)
     private var currentLivid = Livid.HOCKEY
-    private var invulnTime = 0
+    private var invulnEndTick = 0L
 
     init {
         on<MessageEvent.Chat> {
             if (!DungeonUtils.inDungeons || !DungeonUtils.isFloor(5)) return@on
-            if (message.matches(lividStartRegex)) invulnTime = 340
+            if (message.matches(lividStartRegex)) invulnEndTick = ServerTick.now + 340
         }
 
         on<BlockUpdateEvent> {
@@ -64,14 +66,10 @@ object LividSolver : Module(
             }
         }
 
-        on<TickEvent.Server> {
-            if (DungeonUtils.isFloor(5) && invulnTime >= 0) invulnTime--
-        }
-
         on<LevelEvent.Load> {
             Livid.entries.forEach { it.entity = null }
             currentLivid = Livid.HOCKEY
-            invulnTime = 0
+            invulnEndTick = 0L
         }
     }
 

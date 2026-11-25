@@ -35,7 +35,7 @@ object TerminalSounds : Module(
         }
 
         on<TerminalEvent.Click> {
-            if ((solution.isEmpty() || (terminal.type == TerminalTypes.MELODY && slotIndex == 43)) && completeSounds) playSoundSettings(completeSoundSettings())
+            if ((solution.isEmpty() || (terminal.type == TerminalTypes.MELODY && slotIndex == 34)) && completeSounds) playSoundSettings(completeSoundSettings())
             else if (clickSounds) playTerminalSound()
         }
 

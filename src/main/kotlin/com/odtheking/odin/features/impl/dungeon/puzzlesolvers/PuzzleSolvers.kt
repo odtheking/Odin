@@ -109,11 +109,7 @@ object PuzzleSolvers : Module(
     init {
         on<TickEvent.Server> {
             if (!DungeonUtils.inClear) return@on
-            if (waterSolver) {
-                WaterSolver.scan(optimizedSolutions)
-                WaterSolver.onServerTick()
-            }
-            QuizSolver.onServerTick()
+            if (waterSolver) WaterSolver.scan(optimizedSolutions)
         }
 
         on<LevelEvent.Load> {

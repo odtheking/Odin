@@ -10,6 +10,7 @@ import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.Colors
+import com.odtheking.odin.utils.handlers.ServerTick
 import com.odtheking.odin.utils.handlers.schedule
 import com.odtheking.odin.utils.render.drawLine
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
@@ -29,7 +30,7 @@ object MageBeam : Module(
 
     private data class MageBeamData(
         val points: CopyOnWriteArrayList<Vec3> = CopyOnWriteArrayList(),
-        var lastUpdateTick: Int = 0,
+        val tick: Long = 0,
         var closestPoint: Vec3? = null,
         var furthestPoint: Vec3? = null
     ) {
@@ -62,7 +63,6 @@ object MageBeam : Module(
     }
 
     private val activeBeams = CopyOnWriteArrayList<MageBeamData>()
-    private var currentTick = 0
 
     init {
         on<ParticleEvent> {
@@ -71,11 +71,10 @@ object MageBeam : Module(
             val recentBeam = activeBeams.lastOrNull()
             val newPoint = Vec3(x, y, z)
 
-            if (recentBeam != null && (currentTick - recentBeam.lastUpdateTick) < 1 && isPointInBeamDirection(recentBeam.points, newPoint)) {
+            if (recentBeam != null && recentBeam.tick == ServerTick.now && isPointInBeamDirection(recentBeam.points, newPoint)) {
                 recentBeam.points.add(newPoint)
-                recentBeam.lastUpdateTick = currentTick
             } else {
-                val newBeam = MageBeamData(CopyOnWriteArrayList<Vec3>().apply { add(newPoint) }, currentTick)
+                val newBeam = MageBeamData(CopyOnWriteArrayList<Vec3>().apply { add(newPoint) }, ServerTick.now)
                 activeBeams.add(newBeam)
                 schedule(duration, true) {
                     activeBeams.remove(newBeam)
@@ -87,8 +86,6 @@ object MageBeam : Module(
 
         on<TickEvent.Server> {
             if (!DungeonUtils.inDungeons) return@on
-            currentTick++
-
             val playerPos = mc.player?.position() ?: return@on
             for (beam in activeBeams) {
                 beam.updateEndpoints(playerPos)
@@ -112,7 +109,6 @@ object MageBeam : Module(
 
         on<LevelEvent.Load> {
             activeBeams.clear()
-            currentTick = 0
         }
     }
 

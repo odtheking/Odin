@@ -5,6 +5,7 @@ import com.odtheking.odin.events.RenderExtractEvent
 import com.odtheking.odin.events.UseItemOnPostEvent
 import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.JsonResourceLoader
+import com.odtheking.odin.utils.handlers.ServerTick
 import com.odtheking.odin.utils.modMessage
 import com.odtheking.odin.utils.render.drawLine
 import com.odtheking.odin.utils.render.drawText
@@ -22,8 +23,7 @@ object WaterSolver {
     private var waterSolutions: Map<String, Map<String, Map<String, Map<String, List<Double>>>>> = JsonResourceLoader.loadJson(Identifier.fromNamespaceAndPath("odin", "puzzles/water-solutions.json")) ?: emptyMap()
     private var solutions = HashMap<LeverBlock, Array<Double>>()
     private var patternIdentifier = -1
-    private var openedWaterTicks = -1
-    private var tickCounter = 0
+    private var openedWaterTicks = -1L
 
     fun scan(optimized: Boolean) = with (DungeonUtils.currentRoom) {
         if (this?.data?.name != "Water Board" || patternIdentifier != -1) return@with
@@ -85,9 +85,9 @@ object WaterSolver {
                 val timeInTicks = (time * 20).toInt()
                 event.drawText(
                     when (openedWaterTicks) {
-                        -1 if timeInTicks == 0 -> "§a§lCLICK ME!"
-                        -1 -> "§e${time}s"
-                        else -> (openedWaterTicks + timeInTicks - tickCounter).takeIf { it > 0 }?.let { "§e${(it / 20f).toFixed()}s" } ?: "§a§lCLICK ME!"
+                        -1L if timeInTicks == 0 -> "§a§lCLICK ME!"
+                        -1L -> "§e${time}s"
+                        else -> (openedWaterTicks + timeInTicks - ServerTick.now).takeIf { it > 0 }?.let { "§e${(it / 20f).toFixed()}s" } ?: "§a§lCLICK ME!"
                     },
                     Vec3(lever.leverPos).add(0.5, (index + lever.i) * 0.5 + 1.5, 0.5),
                     scale = 1f, true
@@ -102,21 +102,16 @@ object WaterSolver {
         // which Hypixel treats as a regular click, causing a double lever flick i.e. the gate doesn't open.
         if (solutions.isEmpty() || event.interactionResult != InteractionResult.SUCCESS) return
         LeverBlock.entries.find { it.leverPos == event.hitResult.blockPos }?.let {
-            if (it == LeverBlock.WATER && openedWaterTicks == -1) openedWaterTicks = tickCounter
+            if (it == LeverBlock.WATER && openedWaterTicks == -1L) openedWaterTicks = ServerTick.now
             it.i++
         }
-    }
-
-    fun onServerTick() {
-        tickCounter++
     }
 
     fun reset() {
         LeverBlock.entries.forEach { it.i = 0 }
         patternIdentifier = -1
         solutions.clear()
-        openedWaterTicks = -1
-        tickCounter = 0
+        openedWaterTicks = -1L
     }
 
     private enum class WoolColor(val relativePosition: BlockPos) {

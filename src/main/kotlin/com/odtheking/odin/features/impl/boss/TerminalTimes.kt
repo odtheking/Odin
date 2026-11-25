@@ -5,11 +5,11 @@ import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
 import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.MessageEvent
 import com.odtheking.odin.events.TerminalEvent
-import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.features.impl.boss.termsim.TermSimGUI
 import com.odtheking.odin.utils.PersonalBest
+import com.odtheking.odin.utils.handlers.ServerTick
 import com.odtheking.odin.utils.modMessage
 import net.minecraft.network.chat.Component
 
@@ -36,7 +36,7 @@ object TerminalTimes : Module(
     private val times = mutableListOf<Float>()
     private var gateBlown = false
     private var sectionTimer = 0L
-    private var currentTick = 0L
+    private inline val currentTick get() = ServerTick.now * 50
     private var phaseTimer = 0L
     private var lastSplit = ""
 
@@ -69,10 +69,6 @@ object TerminalTimes : Module(
             if (terminalSplits) terminalCompleteRegex.find(message)?.destructured?.let { (name, activated, type, current, total) ->
                 component = Component.literal("§6$name §a$activated a $type! (§c${current}§a/${total}) $lastSplit")
             }
-        }
-
-        on<TickEvent.Server> {
-            if (terminalSplits && !useRealTime) currentTick += 50
         }
 
         on<LevelEvent.Load> {

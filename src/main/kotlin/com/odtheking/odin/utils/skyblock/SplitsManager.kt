@@ -2,11 +2,11 @@ package com.odtheking.odin.utils.skyblock
 
 import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.MessageEvent
-import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.impl.skyblock.Splits
 import com.odtheking.odin.utils.PersonalBest
 import com.odtheking.odin.utils.formatTime
+import com.odtheking.odin.utils.handlers.ServerTick
 import com.odtheking.odin.utils.handlers.schedule
 import com.odtheking.odin.utils.modMessage
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonListener
@@ -18,25 +18,18 @@ data class SplitRow(val name: String, val time: Long, val tickTime: Long, val is
 object SplitsManager {
 
     private var currentSplits: SplitsGroup = SplitsGroup(emptyList(), null)
-    private var tickCounter: Long = 0L
 
     init {
         on<MessageEvent.Chat> {
             if (message == "Starting in 1 second.") startRun() else onSplitMessage(message)
         }
 
-        on<TickEvent.Server> {
-            tickCounter++
-        }
-
         on<LevelEvent.Load> {
             currentSplits = SplitsGroup(emptyList(), null)
-            tickCounter = 0L
         }
     }
 
     private fun startRun() {
-        tickCounter = 0L
         currentSplits = when (LocationUtils.currentArea) {
             Island.Dungeon -> buildDungeonSplits() ?: return
             Island.Kuudra -> buildKuudraSplits() ?: return
@@ -75,7 +68,7 @@ object SplitsManager {
         if (split.time != 0L) return
 
         split.time = System.currentTimeMillis()
-        split.ticks = tickCounter
+        split.ticks = ServerTick.now
 
         val index = splits.indexOf(split)
         if (index == 0) return
@@ -122,7 +115,7 @@ object SplitsManager {
 
         val last = splits.last()
         val latestTime = if (last.time != 0L) last.time else System.currentTimeMillis()
-        val latestTicks = if (last.ticks != 0L) last.ticks else tickCounter
+        val latestTicks = if (last.ticks != 0L) last.ticks else ServerTick.now
 
         val times = LongArray(splits.size).apply { this[splits.lastIndex] = latestTime - splits.first().time }
         val ticks = LongArray(splits.size).apply { this[splits.lastIndex] = latestTicks - splits.first().ticks }

@@ -10,6 +10,7 @@ import com.odtheking.odin.events.core.onReceive
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.PersonalBest
 import com.odtheking.odin.utils.center
+import com.odtheking.odin.utils.handlers.ServerTick
 import com.odtheking.odin.utils.render.drawText
 import com.odtheking.odin.utils.render.drawTracer
 import com.odtheking.odin.utils.render.drawWireFrameBox
@@ -46,7 +47,6 @@ object WitherDragons : Module(
 
     val spawnOrder = mutableListOf<WitherDragonsEnum>()
     val priorityDragon: WitherDragonsEnum? get() = spawnOrder.firstOrNull()
-    var currentTick = 0L
 
     val dragonPBs = PersonalBest(this, "DragonPBs")
 
@@ -77,10 +77,8 @@ object WitherDragons : Module(
 
         on<TickEvent.Server> {
             WitherDragonsEnum.entries.forEach {
-                if (it.timeToSpawn > 0) it.timeToSpawn--
-                else if (it.state == WitherDragonState.SPAWNING) it.setAlive(null)
+                if (it.state == WitherDragonState.SPAWNING && ServerTick.now > it.spawnTick) it.setAlive(null)
             }
-            currentTick++
         }
 
         on<RenderExtractEvent> {

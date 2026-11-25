@@ -2,6 +2,7 @@ package com.odtheking.odin.features.impl.boss
 
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.events.EntityEvent
+import com.odtheking.odin.utils.handlers.ServerTick
 import com.odtheking.odin.utils.modMessage
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon
 import net.minecraft.world.entity.decoration.ArmorStand
@@ -35,7 +36,7 @@ object DragonCheck {
             if (dragon.isSprayed || dragon.state != WitherDragonState.ALIVE || sprayedEntity.distanceTo(entity) > 8) return@forEach
 
             if (WitherDragons.sendSpray) {
-                modMessage("§${dragon.colorCode}${dragon.name} §fdragon was sprayed in §c${(WitherDragons.currentTick - dragon.spawnedTime).let { 
+                modMessage("§${dragon.colorCode}${dragon.name} §fdragon was sprayed in §c${(ServerTick.now - dragon.spawnedTime).let { 
                     "$it §ftick${if (it > 1) "s" else ""}" 
                 }}.")
             }

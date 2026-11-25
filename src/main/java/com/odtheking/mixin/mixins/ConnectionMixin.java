@@ -1,7 +1,7 @@
 package com.odtheking.mixin.mixins;
 
 import com.odtheking.odin.events.PacketEvent;
-import com.odtheking.odin.events.TickEvent;
+import com.odtheking.odin.utils.handlers.ServerTick;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.network.Connection;
@@ -17,7 +17,7 @@ public abstract class ConnectionMixin {
 
     @Inject(method = "channelRead0(Lio/netty/channel/ChannelHandlerContext;Lnet/minecraft/network/protocol/Packet;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/Connection;genericsFtw(Lnet/minecraft/network/protocol/Packet;Lnet/minecraft/network/PacketListener;)V"), cancellable = true)
     private void channelRead0(ChannelHandlerContext ctx, Packet<?> packet, CallbackInfo ci) {
-        if (packet instanceof ClientboundPingPacket pingPacket && pingPacket.getId() != 0) TickEvent.Server.INSTANCE.postAndCatch();
+        if (packet instanceof ClientboundPingPacket pingPacket && pingPacket.getId() != 0) ServerTick.tick();
         if (new PacketEvent.Receive(packet).postAndCatch()) ci.cancel();
     }
 

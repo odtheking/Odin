@@ -7,6 +7,7 @@ import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.*
 import com.odtheking.odin.utils.Color.Companion.withAlpha
+import com.odtheking.odin.utils.handlers.ServerTick
 import com.odtheking.odin.utils.render.BoxStyle
 import com.odtheking.odin.utils.render.drawStyledBox
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
@@ -35,7 +36,7 @@ object SimonSays : Module(
 
     private val startButton = BlockPos(110, 121, 91)
     private val clickInOrder = ArrayList<BlockPos>()
-    private var lastLanternTick = -1
+    private var lastLanternTick = 0L
     private var clickNeeded = 0
     private var firstPhase = true
     private var startClickCounter = 0
@@ -43,7 +44,7 @@ object SimonSays : Module(
     private fun resetSolution() {
         clickInOrder.clear()
         clickNeeded = 0
-        lastLanternTick = -1
+        lastLanternTick = ServerTick.now
     }
 
     init {
@@ -72,7 +73,7 @@ object SimonSays : Module(
                 111 ->
                     if (updated.block == Blocks.OBSIDIAN && old.block == Blocks.SEA_LANTERN && pos !in clickInOrder) {
                         clickInOrder.add(pos.immutable())
-                        lastLanternTick = 0
+                        lastLanternTick = ServerTick.now
                         if (!firstPhase) return@on
                         devMessage(if (clickInOrder.size == 2) "size == 2 reverse." else if (clickInOrder.size == 3) "size == 3 reverse again + skip first" else return@on)
                         when (clickInOrder.size) {
@@ -97,7 +98,7 @@ object SimonSays : Module(
         on<TickEvent.Server> {
             if (DungeonUtils.getF7Phase() != M7Phases.P3 || !firstPhase) return@on
 
-            if (lastLanternTick++ > 10 && grid.count { mc.level?.getBlockState(it)?.block == Blocks.STONE_BUTTON } > 8) {
+            if (ServerTick.now - lastLanternTick > 11 &&grid.count { mc.level?.getBlockState(it)?.block == Blocks.STONE_BUTTON } > 8) {
                 devMessage("Grid reset detected. (${clickInOrder.size})")
                 firstPhase = false
                 startClickCounter = 0

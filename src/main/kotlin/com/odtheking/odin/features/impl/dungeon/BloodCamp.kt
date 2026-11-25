@@ -9,6 +9,7 @@ import com.odtheking.odin.events.*
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.*
+import com.odtheking.odin.utils.handlers.ServerTick
 import com.odtheking.odin.utils.handlers.schedule
 import com.odtheking.odin.utils.render.drawLine
 import com.odtheking.odin.utils.render.drawText
@@ -30,7 +31,7 @@ object BloodCamp : Module(
 ) {
     private val sendMoveTime by BooleanSetting("Move alert", true, desc = "Sends a message & title indicating when the watcher will move.")
     private val moveTimer by TextHUD("Move HUD", "Displays the time until the watcher moves.", example = { "§cMove Timer: 0.50s" }) {
-        moveTimeSeconds?.takeIf { it > 0f }?.let { "§cMove Timer: ${it.toFixed()}s" }
+        (moveTick - ServerTick.now).takeIf { it > 0 }?.let { "§cMove Timer: ${(it / 20f).toFixed()}s" }
     }
 
     private val assistDropdown by DropdownSetting("Blood Assist Dropdown", desc = "Shows settings for rendering boxes on mobs spawning in the blood room.")
@@ -59,14 +60,12 @@ object BloodCamp : Module(
             val entity = entity as? ArmorStand ?: return@on
             if (currentWatcherEntity?.let { it.distanceTo(entity) <= 20 } != true) return@on
 
-            // Only untracked stands need the skull texture check; once a stand passes it, it's cached here.
             val data = entityDataMap[entity] ?: run {
                 val head = entity.getItemBySlot(EquipmentSlot.HEAD)
                 if (head.item != Items.PLAYER_HEAD || head.texture !in allowedMobSkulls) return@on
                 EntityData(newPos, currentTickTime, firstSpawns).also { entityDataMap[entity] = it }
             }
 
-            // Total movement since the stand was first seen, i.e. the direction the mob is travelling.
             val totalDelta = newPos.subtract(data.startVector)
             val endpoint = data.startVector.add((if (totalDelta.lengthSqr() > 0) totalDelta.normalize() else Vec3.ZERO).scale(if (data.firstSpawns) 16.1 else 11.9))
             val timeTook = currentTickTime - data.started
@@ -88,12 +87,11 @@ object BloodCamp : Module(
         on<MessageEvent.Chat> {
             if (!DungeonUtils.inClear) return@on
             if (BLOOD_START_REGEX.matches(message)) {
-                moveTimeSeconds = 20.5f
-                if (sendMoveTime) modMessage("Watcher will move in ${moveTimeSeconds?.toFixed()}s.")
+                moveTick = ServerTick.now + 410
+                if (sendMoveTime) modMessage("Watcher will move in ${20.5f.toFixed()}s.")
 
                 schedule(410, true) {
                     if (sendMoveTime) alert("Kill Mobs")
-                    moveTimeSeconds = null
                 }
             } else if (BLOOD_MOVE_REGEX.matches(message)) firstSpawns = false
         }
@@ -111,18 +109,12 @@ object BloodCamp : Module(
             if (entity.id == currentWatcherEntity?.id) currentWatcherEntity = null
         }
 
-        on<TickEvent.Server> {
-            currentTickTime += 50
-            moveTimeSeconds?.let { moveTimeSeconds = it - 0.05f }
-        }
-
         on<LevelEvent.Load> {
             currentWatcherEntity = null
             entityDataMap.clear()
             renderDataMap.clear()
-            currentTickTime = 0
             firstSpawns = true
-            moveTimeSeconds = null
+            moveTick = 0L
         }
 
         on<RenderBossBarEvent> {
@@ -170,10 +162,9 @@ object BloodCamp : Module(
         }
     }
 
-    private var moveTimeSeconds: Float? = null
-    private var currentTickTime = 0L
+    private var moveTick = 0L
+    private inline val currentTickTime get() = ServerTick.now * 50
 
-    // Only touched from main-thread events (entity move/remove, render, world load).
     private val renderDataMap = HashMap<ArmorStand, RenderEData>()
     private data class RenderEData(
         var currVector: Vec3, var endVector: Vec3, var endVecUpdated: Long, var speedVectors: Vec3,

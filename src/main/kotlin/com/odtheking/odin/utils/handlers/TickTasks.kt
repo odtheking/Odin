@@ -31,6 +31,18 @@ class OneShotTickTask(ticks: Int, serverTick: Boolean = false, task: () -> Unit)
     }
 }
 
+object ServerTick {
+    @Volatile
+    var now = 0L
+        private set
+
+    @JvmStatic
+    fun tick() {
+        now++
+        TickEvent.Server.postAndCatch()
+    }
+}
+
 fun schedule(ticks: Int, serverTick: Boolean = false, task: () -> Unit) {
     OneShotTickTask(ticks, serverTick, task)
 }

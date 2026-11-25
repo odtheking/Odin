@@ -2,9 +2,9 @@ package com.odtheking.odin.features.impl.boss
 
 import com.odtheking.odin.events.BlockUpdateEvent
 import com.odtheking.odin.events.LevelEvent
-import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
+import com.odtheking.odin.utils.handlers.ServerTick
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.toFixed
 import net.minecraft.core.BlockPos
@@ -15,9 +15,10 @@ object SpiritBear : Module(
     description = "Displays the current state of Spirit Bear."
 ) {
     private val hud by TextHUD(name, "Displays the current state of Spirit Bear in the HUD.", false, example = { "§6Bear: §e1.45s" }) {
+        val timer = (spawnTick - ServerTick.now).coerceAtLeast(0)
         when {
             !DungeonUtils.isFloor(4) || !DungeonUtils.inBoss -> null
-            timer < 0 -> "§d$kills/$maxKills"
+            spawnTick < 0 -> "§d$kills/$maxKills"
             timer > 0 -> "§e${(timer / 20f).toFixed()}s"
             else -> "§aAlive!"
         }?.let { "§6Bear: $it" }
@@ -26,7 +27,7 @@ object SpiritBear : Module(
     private inline val blockLocations get() = if (DungeonUtils.floor?.isMM == true) m4BlockLocations else f4BlockLocations
     private inline val maxKills get() = if (DungeonUtils.floor?.isMM == true) 30 else 25
     private val lastBlockLocation = BlockPos(7, 77, 34)
-    private var timer = -1 // state: -1=NotSpawned, 0=Alive, 1+=Spawning
+    private var spawnTick = -1L // -1 = not spawning, otherwise the server tick the bear spawns on
     private var kills = 0
 
     init {
@@ -36,22 +37,18 @@ object SpiritBear : Module(
             when (updated.block) {
                 Blocks.SEA_LANTERN if old.block == Blocks.COAL_BLOCK -> {
                     if (kills < maxKills) kills++
-                    if (pos == lastBlockLocation) timer = 68
+                    if (pos == lastBlockLocation) spawnTick = ServerTick.now + 68
                 }
                 Blocks.COAL_BLOCK if old.block == Blocks.SEA_LANTERN -> {
                     if (kills > 0) kills--
-                    if (pos == lastBlockLocation) timer = -1
+                    if (pos == lastBlockLocation) spawnTick = -1
                 }
             }
         }
 
-        on<TickEvent.Server> {
-            if (timer > 0) timer--
-        }
-
         on<LevelEvent.Load> {
             kills = 0
-            timer = -1
+            spawnTick = -1
         }
     }
 

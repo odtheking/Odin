@@ -8,7 +8,6 @@ import com.odtheking.odin.clickgui.settings.RenderableSetting.Companion.withDepe
 import com.odtheking.odin.clickgui.settings.impl.*
 import com.odtheking.odin.events.GuiEvent
 import com.odtheking.odin.events.TerminalEvent
-import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.features.impl.boss.termGUI.TermGrid
@@ -44,10 +43,7 @@ object TerminalSolver : Module(
     val melodyTermSize by NumberSetting("Melody Size", 1.5f, 1.0..3.0, 0.1, desc = "The size of the melody terminal GUI.").withDependency { !cancelMelodySolver && solverSettings && renderType == RenderType.CUSTOM_GUI }
     val rubixMode by SelectorSetting("Rubix Mode", RubixMode.FEWEST_CLICKS, desc = "Whether the rubix solver should mix in right clicks for the fewest clicks overall, or stick to left clicks only.").withDependency { solverSettings }
 
-    private val firstClickProtSettings by DropdownSetting("Click Prot Dropdown", desc = "Options related to first click protection.")
-    val firstClickProt by NumberSetting("First Click Prot", 200, 0..600, 10, unit = "ms", desc = "The amount of time after opening a terminal where clicks are blocked to prevent bans (recommended value is 500 minus your ping).").withDependency { firstClickProtSettings }
-    val shouldFirstClickProtWithTicks by BooleanSetting("Server Lag", false, desc = "Prevents bans from clicking when the server lags after opening the terminal (disabled in singleplayer").withDependency { firstClickProtSettings }
-    val firstClickProtTicks by NumberSetting("Lag Protection Ticks", 8, 7..16, unit = "ticks", desc = "Each tick = 50ms (recommended value is 8)").withDependency { shouldFirstClickProtWithTicks && firstClickProtSettings }
+    val endTermProtTime by NumberSetting("End Term Prot Time", 350, 0..600, 10, unit = "ms", desc = "The minimum time after opening a terminal before the final click is allowed through.")
 
     private val showColors by DropdownSetting("Color Settings", desc = "Color options for the terminal solver.")
     val backgroundColor by ColorSetting("Background", Colors.gray26.withAlpha(0.5f), true, desc = "Background color of the terminal solver.").withDependency { showColors }
@@ -141,10 +137,6 @@ object TerminalSolver : Module(
         on<TerminalEvent.Close> {
             if (renderType != RenderType.CUSTOM_GUI) mc.resizeGui()
         }
-
-        on<TickEvent.Server> {
-            TerminalUtils.currentTerm?.ticksOpened++
-        }
     }
 
     fun GuiGraphicsExtractor.renderDebug() {
@@ -155,7 +147,6 @@ object TerminalSolver : Module(
                 "§7Window Name: §f${mc.gui.screen()?.title?.string}",
                 "§7Container ID: §f${menu.containerId}",
                 "§7Time Open: §f${System.currentTimeMillis() - term.timeOpened}ms",
-                "§7Ticks Open: §f${term.ticksOpened}",
                 "§7Solution: §f${term.solution.joinToString(", ")}",
                 "§7Clicked Slots: §f${term.clickedSlots}",
             )

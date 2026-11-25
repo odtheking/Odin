@@ -4,16 +4,11 @@ import com.mojang.blaze3d.platform.InputConstants
 import com.odtheking.odin.OdinMod.mc
 import com.odtheking.odin.events.SetSlotEvent
 import com.odtheking.odin.events.TerminalEvent
-import com.odtheking.odin.features.impl.boss.TerminalSimulator
 import com.odtheking.odin.features.impl.boss.TerminalSolver
-import com.odtheking.odin.features.impl.boss.TerminalSolver.firstClickProt
-import com.odtheking.odin.features.impl.boss.TerminalSolver.firstClickProtTicks
-import com.odtheking.odin.features.impl.boss.TerminalSolver.shouldFirstClickProtWithTicks
+import com.odtheking.odin.features.impl.boss.TerminalSolver.endTermProtTime
 import com.odtheking.odin.features.impl.boss.termsim.TermSimGUI
 import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.clickSlot
-import com.odtheking.odin.utils.skyblock.Island
-import com.odtheking.odin.utils.skyblock.LocationUtils
 import com.odtheking.odin.utils.skyblock.dungeon.terminals.TerminalTypes
 import net.minecraft.world.inventory.ContainerInput
 import net.minecraft.world.inventory.Slot
@@ -25,7 +20,6 @@ abstract class TerminalHandler(val type: TerminalTypes) {
     val timeOpened = System.currentTimeMillis()
     val solution = ArrayList<Int>()
     var lastClickTime = 0L
-    var ticksOpened = -1
 
     open fun updateSlot(event: SetSlotEvent) {
         if (event.slots.isEmpty() || event.slotIndex !in 0 until type.windowSize - 9 || event.itemStack.item == Items.STAINED_GLASS_PANE.pick(DyeColor.BLACK)) return
@@ -50,7 +44,7 @@ abstract class TerminalHandler(val type: TerminalTypes) {
     abstract fun solve(slots: List<Slot>, updatedIndex: Int): List<Int>
 
     open fun click(slotIndex: Int, button: Int, simulateClick: Boolean) {
-        if (!canClick(slotIndex, button) || shouldProtect()) return
+        if (!canClick(slotIndex, button) || shouldProtect(slotIndex)) return
 
         val mappedButton = if (button == RIGHT_CLICK && type == TerminalTypes.RUBIX) RIGHT_CLICK else InputConstants.MOUSE_BUTTON_MIDDLE
         clickedSlots.add(slotIndex to mappedButton)
@@ -72,10 +66,9 @@ abstract class TerminalHandler(val type: TerminalTypes) {
 
     open fun canClick(slotIndex: Int, button: Int): Boolean = slotIndex in solution
 
-    fun shouldProtect(): Boolean =
-        !(TerminalSimulator.disableFirstClickProtection && mc.gui.screen() is TermSimGUI)
-                && (System.currentTimeMillis() - timeOpened < firstClickProt ||
-                (!LocationUtils.isCurrentArea(Island.SinglePlayer) && shouldFirstClickProtWithTicks && ticksOpened < firstClickProtTicks))
+    fun shouldProtect(slotIndex: Int): Boolean =
+        ((solution.size == 1 && solution[0] == slotIndex) || (type == TerminalTypes.MELODY && slotIndex == 34))
+                && System.currentTimeMillis() - timeOpened < endTermProtTime
 
     companion object {
         const val LEFT_CLICK = 0

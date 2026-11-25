@@ -1,10 +1,14 @@
 package com.odtheking.odin.features.impl.boss
 
 import com.odtheking.odin.clickgui.settings.impl.BooleanSetting
-import com.odtheking.odin.events.*
+import com.odtheking.odin.events.BlockInteractEvent
+import com.odtheking.odin.events.LevelEvent
+import com.odtheking.odin.events.RenderExtractEvent
+import com.odtheking.odin.events.SetSlotEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.*
+import com.odtheking.odin.utils.handlers.ServerTick
 import com.odtheking.odin.utils.render.drawCustomBeacon
 import com.odtheking.odin.utils.skyblock.dungeon.DungeonUtils
 import com.odtheking.odin.utils.skyblock.dungeon.M7Phases
@@ -18,7 +22,7 @@ object KingRelics : Module(
     private val relicBeacon by BooleanSetting("Relic Beacon", true, desc = "Draws a beacon at the relic cauldron.")
 
     private var currentRelic: Relic? = null
-    private var relicPlaceTick = -1
+    private var relicPlaceTick = -1L // tick the relic was picked up, -1 = not yet, -2 = placed
 
     private val relicPBs = PersonalBest(this, "Relics")
 
@@ -26,7 +30,7 @@ object KingRelics : Module(
         on<SetSlotEvent> {
             if (DungeonUtils.getF7Phase() != M7Phases.P5 || menu !== mc.player?.inventoryMenu || slotIndex != 44) return@on
             currentRelic = Relic.entries.find { it.id == itemStack.itemId }
-            if (currentRelic != null && relicPlaceTick == -1) relicPlaceTick = 0
+            if (currentRelic != null && relicPlaceTick == -1L) relicPlaceTick = ServerTick.now
         }
 
         on<BlockInteractEvent> {
@@ -37,7 +41,7 @@ object KingRelics : Module(
             val block = mc.level?.getBlockState(pos)?.block
             if (!block.equalsOneOf(Blocks.CAULDRON, Blocks.ANVIL)) return@on
 
-            relicPBs.time(relic.name, relicPlaceTick / 20f, message = "§${relic.colorCode}${relic.name} relic §7placed in §6")
+            relicPBs.time(relic.name, (ServerTick.now - relicPlaceTick) / 20f, message = "§${relic.colorCode}${relic.name} relic §7placed in §6")
             relicPlaceTick = -2
         }
 
@@ -49,10 +53,6 @@ object KingRelics : Module(
         on<LevelEvent.Load> {
             relicPlaceTick = -1
             currentRelic = null
-        }
-
-        on<TickEvent.Server> {
-            if (DungeonUtils.getF7Phase() == M7Phases.P5 && relicPlaceTick >= 0) relicPlaceTick++
         }
     }
 

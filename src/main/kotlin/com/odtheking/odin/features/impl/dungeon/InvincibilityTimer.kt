@@ -8,10 +8,10 @@ import com.odtheking.odin.clickgui.settings.impl.SelectorSetting
 import com.odtheking.odin.events.GuiEvent
 import com.odtheking.odin.events.LevelEvent
 import com.odtheking.odin.events.MessageEvent
-import com.odtheking.odin.events.TickEvent
 import com.odtheking.odin.events.core.on
 import com.odtheking.odin.features.Module
 import com.odtheking.odin.utils.*
+import com.odtheking.odin.utils.handlers.ServerTick
 import com.odtheking.odin.utils.render.ItemStateRenderer.Companion.drawItemStack
 import com.odtheking.odin.utils.render.getStringWidth
 import com.odtheking.odin.utils.render.text
@@ -87,10 +87,6 @@ object InvincibilityTimer : Module(
     private val cdColor by ColorSetting("Cooldown Color", Colors.gray38, false, "Color of the cooldown").withDependency { itemCat }
 
     init {
-        on<TickEvent.Server> {
-            InvincibilityType.entries.forEach { it.tick() }
-        }
-
         on<MessageEvent.Chat> {
             if (onlyInDungeons && !DungeonUtils.inDungeons) return@on
             InvincibilityType.entries.firstOrNull { type -> message.matches(type.regex) }?.let { type ->
@@ -154,24 +150,19 @@ object InvincibilityTimer : Module(
 
         val itemStack by lazy { createSkullStack(textureHash) }
 
-        var activeTime: Int = 0
-            private set
-        var currentCooldown: Int = 0
-            private set
+        private var activeEndTick = 0L
+        private var cooldownEndTick = 0L
+        val activeTime get() = (activeEndTick - ServerTick.now).coerceAtLeast(0).toInt()
+        val currentCooldown get() = (cooldownEndTick - ServerTick.now).coerceAtLeast(0).toInt()
 
         fun proc(cooldownTime: Int?) {
-            activeTime = maxInvincibilityTime
-            currentCooldown = (cooldownTime ?: maxCooldownTime) * 20
-        }
-
-        fun tick() {
-            if (currentCooldown > 0) currentCooldown--
-            if (activeTime > 0) activeTime--
+            activeEndTick = ServerTick.now + maxInvincibilityTime
+            cooldownEndTick = ServerTick.now + (cooldownTime ?: maxCooldownTime) * 20
         }
 
         fun reset() {
-            currentCooldown = 0
-            activeTime = 0
+            activeEndTick = 0L
+            cooldownEndTick = 0L
         }
     }
 

@@ -5,6 +5,7 @@ import com.odtheking.odin.events.RoomEnterEvent
 import com.odtheking.odin.features.impl.dungeon.puzzlesolvers.PuzzleSolvers.onPuzzleComplete
 import com.odtheking.odin.utils.Color
 import com.odtheking.odin.utils.JsonResourceLoader
+import com.odtheking.odin.utils.handlers.ServerTick
 import com.odtheking.odin.utils.render.drawBeaconBeam
 import com.odtheking.odin.utils.render.drawFilledBox
 import com.odtheking.odin.utils.startsWithOneOf
@@ -22,20 +23,22 @@ object QuizSolver {
     private var triviaOptions: MutableList<TriviaAnswer> = MutableList(3) { TriviaAnswer(null, false) }
     private data class TriviaAnswer(var blockPos: BlockPos?, var isCorrect: Boolean)
 
-    var timer: Triple<Int, Int, Int> = Triple(0, 0, 0)
-        private set
+    private var timerEndTick = 0L
+    private var timerMax = 0
+    private var timerStage = 0
+    val timer: Triple<Int, Int, Int> get() = Triple((timerEndTick - ServerTick.now).coerceAtLeast(0).toInt(), timerMax, timerStage)
 
-    fun onServerTick() {
-        val (tick, maxTick, stage) = timer
-        if (tick <= 0) return
-        timer = Triple(tick - 1, maxTick, stage)
+    private fun startTimer(duration: Int, stage: Int) {
+        timerEndTick = ServerTick.now + duration
+        timerMax = duration
+        timerStage = stage
     }
 
     fun onMessage(msg: String) {
         when (msg) {
-            "[STATUE] Oruo the Omniscient: I am Oruo the Omniscient. I have lived many lives. I have learned all there is to know." -> timer = Triple(START_DURATION, START_DURATION, 1)
-            "[STATUE] Oruo the Omniscient: 2 questions left... Then you will have proven your worth to me!" -> timer = Triple(QUESTION_DURATION, QUESTION_DURATION, 2)
-            "[STATUE] Oruo the Omniscient: One more question!" -> timer = Triple(QUESTION_DURATION, QUESTION_DURATION, 3)
+            "[STATUE] Oruo the Omniscient: I am Oruo the Omniscient. I have lived many lives. I have learned all there is to know." -> startTimer(START_DURATION, 1)
+            "[STATUE] Oruo the Omniscient: 2 questions left... Then you will have proven your worth to me!" -> startTimer(QUESTION_DURATION, 2)
+            "[STATUE] Oruo the Omniscient: One more question!" -> startTimer(QUESTION_DURATION, 3)
         }
 
         if (msg.startsWith("[STATUE] Oruo the Omniscient: ") && msg.endsWith("correctly!")) {
@@ -83,6 +86,6 @@ object QuizSolver {
     fun reset() {
         triviaOptions = MutableList(3) { TriviaAnswer(null, false) }
         triviaAnswers = null
-        timer = Triple(0, 0, 0)
+        startTimer(0, 0)
     }
 }
