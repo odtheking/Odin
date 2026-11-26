@@ -18,10 +18,9 @@ import net.minecraft.world.level.block.Blocks
 import net.minecraft.world.phys.AABB
 
 object BeamsSolver {
-    private var scanned = false
-    private var lanternPairs: List<List<Int>> = JsonResourceLoader.loadJson(Identifier.fromNamespaceAndPath("odin", "puzzles/creeper-beams-solutions.json")) ?: emptyList()
 
-    private var currentLanternPairs = HashMap<BlockPos, Pair<BlockPos, Color>>()
+    private val lanternPairs: List<List<Int>> = JsonResourceLoader.loadJson(Identifier.fromNamespaceAndPath("odin", "puzzles/creeper-beams-solutions.json")) ?: emptyList()
+    private val currentLanternPairs = HashMap<BlockPos, Pair<BlockPos, Color>>()
 
     fun onRoomEnter(event: RoomEnterEvent) = with(event.room) {
         if (this?.data?.name != "Creeper Beams") return@with reset()
@@ -30,11 +29,13 @@ object BeamsSolver {
 
     private fun recalculateLanternPairs(room: DungeonRoom) {
         currentLanternPairs.clear()
-        lanternPairs.forEachIndexed { index, list ->
-            val pos = room.getRealCoords(BlockPos(list[0], list[1], list[2])).takeIf { mc.level?.getBlockState(it)?.block == Blocks.SEA_LANTERN } ?: return@forEachIndexed
-            val pos2 = room.getRealCoords(BlockPos(list[3], list[4], list[5])).takeIf { mc.level?.getBlockState(it)?.block == Blocks.SEA_LANTERN } ?: return@forEachIndexed
+        var colorIndex = 0
 
-            currentLanternPairs[pos] = pos2 to colors[index % colors.size]
+        lanternPairs.forEach { list ->
+            val pos = room.getRealCoords(BlockPos(list[0], list[1], list[2])).takeIf { mc.level?.getBlockState(it)?.block == Blocks.SEA_LANTERN } ?: return@forEach
+            val pos2 = room.getRealCoords(BlockPos(list[3], list[4], list[5])).takeIf { mc.level?.getBlockState(it)?.block == Blocks.SEA_LANTERN } ?: return@forEach
+
+            currentLanternPairs[pos] = pos2 to colors[colorIndex++ % colors.size]
         }
     }
 
@@ -58,19 +59,13 @@ object BeamsSolver {
         if (
             event.old.block.equalsOneOf(Blocks.PRISMARINE, Blocks.SEA_LANTERN) &&
             event.updated.block.equalsOneOf(Blocks.PRISMARINE, Blocks.SEA_LANTERN)
-        ) {
-            mc.execute {
-                recalculateLanternPairs(DungeonUtils.currentRoom ?: return@execute)
-            }
-            return
-        }
+        ) recalculateLanternPairs(DungeonUtils.currentRoom ?: return)
     }
 
     fun reset() {
-        scanned = false
         currentLanternPairs.clear()
     }
 
-    private val colors = listOf(Colors.MINECRAFT_GOLD, Colors.MINECRAFT_GREEN, Colors.MINECRAFT_LIGHT_PURPLE, Colors.MINECRAFT_DARK_AQUA, Colors.MINECRAFT_YELLOW, Colors.MINECRAFT_DARK_RED, Colors.WHITE, Colors.MINECRAFT_DARK_PURPLE)
+    private val colors = listOf(Colors.MINECRAFT_DARK_RED, Colors.MINECRAFT_GREEN, Colors.MINECRAFT_LIGHT_PURPLE, Colors.MINECRAFT_DARK_AQUA, Colors.MINECRAFT_YELLOW, Colors.MINECRAFT_GOLD, Colors.WHITE, Colors.MINECRAFT_DARK_PURPLE)
 }
 

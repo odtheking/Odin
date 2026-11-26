@@ -20,7 +20,7 @@ import kotlin.math.atan2
 object TPMazeSolver {
     private var tpPads = listOf<BlockPos>()
     private var correctPortals = listOf<BlockPos>()
-    private var visited = CopyOnWriteArraySet<BlockPos>()
+    private val visited = CopyOnWriteArraySet<BlockPos>()
     private var best: BlockPos? = null
 
     fun onRoomEnter(event: RoomEnterEvent) = with(event.room) {
@@ -83,7 +83,7 @@ object TPMazeSolver {
 
     fun reset() {
         correctPortals = listOf()
-        visited = CopyOnWriteArraySet()
+        visited.clear()
         best = null
     }
 

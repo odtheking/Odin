@@ -17,7 +17,7 @@ object QuizSolver {
     private const val START_DURATION = 220
     private const val QUESTION_DURATION = 100
 
-    private var answers: MutableMap<String, List<String>> = JsonResourceLoader.loadJson(Identifier.fromNamespaceAndPath("odin", "puzzles/quiz-answers.json")) ?: mutableMapOf()
+    private val answers: MutableMap<String, List<String>> = JsonResourceLoader.loadJson(Identifier.fromNamespaceAndPath("odin", "puzzles/quiz-answers.json")) ?: mutableMapOf()
     private var triviaAnswers: List<String>? = null
 
     private var triviaOptions: MutableList<TriviaAnswer> = MutableList(3) { TriviaAnswer(null, false) }

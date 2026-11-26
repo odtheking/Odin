@@ -16,7 +16,7 @@ import net.minecraft.world.phys.AABB
 object BoulderSolver {
     private data class BoxPosition(val render: AABB, val click: BlockPos)
     private var currentPositions = mutableListOf<BoxPosition>()
-    private var solutions: Map<String, List<List<Int>>> = JsonResourceLoader.loadJson(Identifier.fromNamespaceAndPath("odin", "puzzles/boulder-solutions.json")) ?: emptyMap()
+    private val solutions: Map<String, List<List<Int>>> = JsonResourceLoader.loadJson(Identifier.fromNamespaceAndPath("odin", "puzzles/boulder-solutions.json")) ?: emptyMap()
 
     fun onRoomEnter(event: RoomEnterEvent) = with(event.room) {
         if (this?.data?.name != "Boulder") return@with reset()

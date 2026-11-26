@@ -11,11 +11,11 @@ import net.minecraft.core.BlockPos
 import net.minecraft.sounds.SoundEvents
 import net.minecraft.world.entity.decoration.ArmorStand
 import net.minecraft.world.phys.AABB
-import java.util.concurrent.CopyOnWriteArraySet
 
 object WeirdosSolver {
-    private var correctPos: BlockPos? = null
-    private var wrongPositions = CopyOnWriteArraySet<BlockPos>()
+
+    private val wrongPositions = HashSet<AABB>()
+    private var correctPos: AABB? = null
 
     fun onNPCMessage(npc: String, msg: String) {
         if (solutions.none { it.matches(msg) } && wrong.none { it.matches(msg) }) return
@@ -25,16 +25,16 @@ object WeirdosSolver {
         val pos = room.getRealCoords(relativePos.offset(1, 0, 0))
 
         if (solutions.any { it.matches(msg) }) {
-            correctPos = pos
+            correctPos = AABB(pos)
             playSoundAtPlayer(SoundEvents.FIREWORK_ROCKET_LARGE_BLAST, 2f, 1f)
-        } else wrongPositions.add(pos)
+        } else wrongPositions.add(AABB(pos))
     }
 
     fun onRenderWorld(event: RenderExtractEvent, weirdosColor: Color, weirdosWrongColor: Color, weirdosStyle: BoxStyle) {
         if (DungeonUtils.currentRoomName != "Three Weirdos") return
-        correctPos?.let { event.drawStyledBox(AABB(it), weirdosColor, weirdosStyle) }
+        correctPos?.let { event.drawStyledBox(it, weirdosColor, weirdosStyle) }
         wrongPositions.forEach {
-            event.drawStyledBox(AABB(it), weirdosWrongColor, weirdosStyle)
+            event.drawStyledBox(it, weirdosWrongColor, weirdosStyle)
         }
     }
 

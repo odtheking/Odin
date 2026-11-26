@@ -20,7 +20,7 @@ import net.minecraft.world.phys.Vec3
 
 object WaterSolver {
 
-    private var waterSolutions: Map<String, Map<String, Map<String, Map<String, List<Double>>>>> = JsonResourceLoader.loadJson(Identifier.fromNamespaceAndPath("odin", "puzzles/water-solutions.json")) ?: emptyMap()
+    private val waterSolutions: Map<String, Map<String, Map<String, Map<String, List<Double>>>>> = JsonResourceLoader.loadJson(Identifier.fromNamespaceAndPath("odin", "puzzles/water-solutions.json")) ?: emptyMap()
     private var solutions = HashMap<LeverBlock, Array<Double>>()
     private var patternIdentifier = -1
     private var openedWaterTicks = -1L

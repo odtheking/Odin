@@ -21,8 +21,8 @@ import java.util.*
 
 object BlazeSolver {
     private val blazes = TreeMap<Int, ArmorStand>()
-    private var descending = false
     private val blazeHealthRegex = Regex("^\\[Lv+\\d+]  Blaze [\\d,]+/([\\d,]+)❤$")
+    private var descending = false
 
     inline val inBlazeRoom get() = DungeonUtils.currentRoomName.equalsOneOf("Lower Blaze", "Higher Blaze")
 
